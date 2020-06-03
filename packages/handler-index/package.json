@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-index",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^4.0.0-beta.7",
+    "@webiny/handler": "^4.0.0-beta.15",
     "mime-types": "^2.1.26",
     "zlib": "^1.0.5"
   },
@@ -31,7 +31,6 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   }
 }

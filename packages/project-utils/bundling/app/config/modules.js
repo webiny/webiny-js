@@ -2,7 +2,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const paths = require("./paths");
 const chalk = require("react-dev-utils/chalk");
 const resolve = require("resolve");
 
@@ -10,8 +9,9 @@ const resolve = require("resolve");
  * Get additional module paths based on the baseUrl of a compilerOptions object.
  *
  * @param {Object} options
+ * @param {Object} paths
  */
-function getAdditionalModulePaths(options = {}) {
+function getAdditionalModulePaths(options = {}, paths) {
     const baseUrl = options.baseUrl;
 
     // We need to explicitly check for null and undefined (and not a falsy value) because
@@ -60,8 +60,9 @@ function getAdditionalModulePaths(options = {}) {
  * Get webpack aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
+ * @param {*} paths
  */
-function getWebpackAliases(options = {}) {
+function getWebpackAliases(options = {}, paths) {
     const baseUrl = options.baseUrl;
 
     if (!baseUrl) {
@@ -81,8 +82,9 @@ function getWebpackAliases(options = {}) {
  * Get jest aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
+ * @param {*} paths
  */
-function getJestAliases(options = {}) {
+function getJestAliases(options = {}, paths) {
     const baseUrl = options.baseUrl;
 
     if (!baseUrl) {
@@ -98,7 +100,7 @@ function getJestAliases(options = {}) {
     }
 }
 
-function getModules() {
+function getModules(paths) {
     // Check if TypeScript is setup
     const hasTsConfig = fs.existsSync(paths.appTsConfig);
     const hasJsConfig = fs.existsSync(paths.appJsConfig);
@@ -128,14 +130,14 @@ function getModules() {
     config = config || {};
     const options = config.compilerOptions || {};
 
-    const additionalModulePaths = getAdditionalModulePaths(options);
+    const additionalModulePaths = getAdditionalModulePaths(options, paths);
 
     return {
         additionalModulePaths: additionalModulePaths,
-        webpackAliases: getWebpackAliases(options),
-        jestAliases: getJestAliases(options),
+        webpackAliases: getWebpackAliases(options, paths),
+        jestAliases: getJestAliases(options, paths),
         hasTsConfig
     };
 }
 
-module.exports = getModules();
+module.exports = ({ paths }) => getModules(paths);

@@ -42,17 +42,23 @@ export default (
         name: "context-cms-validate-access-token",
         type: "context",
         async apply(context) {
+            if (!context.event) {
+                return;
+            }
+
+            if (context.event.isMetaQuery) {
+                return;
+            }
+
             if (process.env.NODE_ENV === "test") {
                 // Skip authentication when running tests
                 return;
             }
 
-            if (!context.event) {
-                return;
-            }
-
             if (context.cms.READ || context.cms.PREVIEW) {
-                const accessToken = context.event.headers["access-token"];
+                const accessToken =
+                    context.event.headers["authorization"] ||
+                    context.event.headers["Authorization"];
                 const { CmsAccessToken } = context.models;
 
                 const token = await CmsAccessToken.findOne({

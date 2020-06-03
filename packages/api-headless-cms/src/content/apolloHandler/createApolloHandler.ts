@@ -66,6 +66,7 @@ export default async function createApolloHandler({
             // Invoke handler and check if environment / environment alias has changed.
             const response = await output.handler(
                 {
+                    isMetaQuery: true,
                     httpMethod: "POST",
                     headers: {},
                     body: JSON.stringify({

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-mailchimp",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,10 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.0.0-beta.7",
-    "@webiny/commodo": "^4.0.0-beta.7",
-    "@webiny/commodo-graphql": "^4.0.0-beta.7",
-    "@webiny/graphql": "^4.0.0-beta.7",
+    "@webiny/api-security": "^4.0.0-beta.15",
+    "@webiny/commodo": "^4.0.0-beta.15",
+    "@webiny/commodo-graphql": "^4.0.0-beta.15",
+    "@webiny/graphql": "^4.0.0-beta.15",
     "got": "^9.6.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4"
@@ -27,7 +27,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.8.3",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/api-settings-manager": "^4.0.0-beta.7",
+    "@webiny/api-settings-manager": "^4.0.0-beta.15",
     "apollo-server-lambda": "^2.9.6"
   },
   "publishConfig": {
@@ -37,8 +37,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

@@ -20,49 +20,59 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     };
 
     const getFields = () => {
-        const fields: any = cloneDeep(layout);
+        let returnFields = [];
+        if (layout) {
+            returnFields = cloneDeep(layout);
+        } else {
+            // If no layout provided, just render all fields one below other.
+            returnFields = [...fields.map(item => [item._id])];
+        }
+
         const validatorPlugins: CmsFormFieldValidatorPlugin[] = getPlugins("form-field-validator");
 
-        fields.forEach(row => {
+        returnFields.forEach(row => {
             row.forEach((id, idIndex) => {
                 row[idIndex] = getFieldById(id);
 
-                row[idIndex].validators = row[idIndex].validation
-                    .map(item => {
-                        const validatorPlugin = validatorPlugins.find(
-                            plugin => plugin.validator.name === item.name
-                        );
+                if (Array.isArray(row[idIndex].validation)) {
+                    row[idIndex].validators = row[idIndex].validation
+                        .map(item => {
+                            const validatorPlugin = validatorPlugins.find(
+                                plugin => plugin.validator.name === item.name
+                            );
 
-                        if (
-                            !validatorPlugin ||
-                            typeof validatorPlugin.validator.validate !== "function"
-                        ) {
-                            return;
-                        }
-
-                        return async value => {
-                            let isInvalid;
-                            try {
-                                const result = await validatorPlugin.validator.validate(
-                                    value,
-                                    item
-                                );
-                                isInvalid = result === false;
-                            } catch (e) {
-                                isInvalid = true;
+                            if (
+                                !validatorPlugin ||
+                                typeof validatorPlugin.validator.validate !== "function"
+                            ) {
+                                return;
                             }
 
-                            if (isInvalid) {
-                                throw new Error(
-                                    I18NValue({ value: item.message }) || "Invalid value."
-                                );
-                            }
-                        };
-                    })
-                    .filter(Boolean);
+                            return async value => {
+                                let isInvalid;
+                                try {
+                                    const result = await validatorPlugin.validator.validate(
+                                        value,
+                                        item
+                                    );
+                                    isInvalid = result === false;
+                                } catch (e) {
+                                    isInvalid = true;
+                                }
+
+                                if (isInvalid) {
+                                    throw new Error(
+                                        I18NValue({ value: item.message }) || "Invalid value."
+                                    );
+                                }
+                            };
+                        })
+                        .filter(Boolean);
+                }
             });
         });
-        return fields;
+
+        return returnFields;
     };
 
     const getDefaultValues = (overrides = {}) => {

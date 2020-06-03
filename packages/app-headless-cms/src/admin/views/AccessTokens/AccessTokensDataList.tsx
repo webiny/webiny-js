@@ -54,18 +54,26 @@ const EnvironmentAliasesDataList = () => {
                                     <Typography use={"overline"}>{t`(default)`}</Typography>
                                 )}
                                 <ListItemTextSecondary>
-                                    {item.environment
-                                        ? t`Assigned to: {environment}`({
-                                              environment: (
-                                                  <Link
-                                                      onClick={e => e.stopPropagation()}
-                                                      to={`/settings/cms/environments?id=${item.environment.id}`}
-                                                      title={t`This environment alias points to the "{environment}" environment.`(
-                                                          { environment: item.environment.name }
-                                                      )}
-                                                  >
-                                                      {item.environment.name}
-                                                  </Link>
+                                    {item.environments.length
+                                        ? t`Assigned to: {environments}`({
+                                              environments: (
+                                                  <>
+                                                      {item.environments
+                                                          .map(env => (
+                                                              <Link
+                                                                  key={env.id}
+                                                                  onClick={e => e.stopPropagation()}
+                                                                  to={`/settings/cms/environments?id=${env.id}`}
+                                                              >
+                                                                  {env.name}
+                                                              </Link>
+                                                          ))
+                                                          .reduce((acc, crtLink) => [
+                                                              acc,
+                                                              ", ",
+                                                              crtLink
+                                                          ])}
+                                                  </>
                                               )
                                           })
                                         : t`No environment.`}

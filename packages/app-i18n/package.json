@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,14 +15,14 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^4.0.0-beta.7",
-    "@webiny/app-admin": "^4.0.0-beta.7",
-    "@webiny/app-security": "^4.0.0-beta.7",
-    "@webiny/form": "^4.0.0-beta.7",
-    "@webiny/plugins": "^4.0.0-beta.7",
-    "@webiny/react-router": "^4.0.0-beta.7",
-    "@webiny/ui": "^4.0.0-beta.7",
-    "@webiny/validation": "^4.0.0-beta.7",
+    "@webiny/app": "^4.0.0-beta.15",
+    "@webiny/app-admin": "^4.0.0-beta.15",
+    "@webiny/app-security": "^4.0.0-beta.15",
+    "@webiny/form": "^4.0.0-beta.15",
+    "@webiny/plugins": "^4.0.0-beta.15",
+    "@webiny/react-router": "^4.0.0-beta.15",
+    "@webiny/ui": "^4.0.0-beta.15",
+    "@webiny/validation": "^4.0.0-beta.15",
     "classnames": "^2.2.6",
     "downshift": "^5.4.2",
     "emotion": "10.0.17",
@@ -57,8 +57,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "svgo": {
     "plugins": {

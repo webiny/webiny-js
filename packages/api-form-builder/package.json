@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-form-builder",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,13 +15,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-i18n": "^4.0.0-beta.7",
-    "@webiny/api-security": "^4.0.0-beta.7",
-    "@webiny/commodo": "^4.0.0-beta.7",
-    "@webiny/commodo-graphql": "^4.0.0-beta.7",
-    "@webiny/graphql": "^4.0.0-beta.7",
-    "@webiny/handler-ssr": "^4.0.0-beta.7",
-    "@webiny/validation": "^4.0.0-beta.7",
+    "@webiny/api-i18n": "^4.0.0-beta.15",
+    "@webiny/api-security": "^4.0.0-beta.15",
+    "@webiny/commodo": "^4.0.0-beta.15",
+    "@webiny/commodo-graphql": "^4.0.0-beta.15",
+    "@webiny/graphql": "^4.0.0-beta.15",
+    "@webiny/handler-ssr": "^4.0.0-beta.15",
+    "@webiny/validation": "^4.0.0-beta.15",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
     "graphql": "^14.5.8",
@@ -38,8 +38,8 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.7",
-    "@webiny/api-settings-manager": "^4.0.0-beta.7",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.15",
+    "@webiny/api-settings-manager": "^4.0.0-beta.15",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {
@@ -49,8 +49,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

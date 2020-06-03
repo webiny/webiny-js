@@ -16,7 +16,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         description: t`Long comments, notes, multi line values.`,
         icon: <LongTextIcon />,
         allowMultipleValues: true,
-        allowPredefinedValues: true,
+        allowPredefinedValues: false, // TODO: implement "renderPredefinedValues" and set to true.
         allowIndexes: {
             singleValue: false,
             multipleValues: false

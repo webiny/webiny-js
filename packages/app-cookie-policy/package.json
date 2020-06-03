@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-cookie-policy",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,14 +11,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app": "^4.0.0-beta.7",
-    "@webiny/app-admin": "^4.0.0-beta.7",
-    "@webiny/app-page-builder": "^4.0.0-beta.7",
-    "@webiny/app-security": "^4.0.0-beta.7",
-    "@webiny/form": "^4.0.0-beta.7",
-    "@webiny/react-router": "^4.0.0-beta.7",
-    "@webiny/ui": "^4.0.0-beta.7",
-    "@webiny/validation": "^4.0.0-beta.7",
+    "@webiny/app": "^4.0.0-beta.15",
+    "@webiny/app-admin": "^4.0.0-beta.15",
+    "@webiny/app-page-builder": "^4.0.0-beta.15",
+    "@webiny/app-security": "^4.0.0-beta.15",
+    "@webiny/form": "^4.0.0-beta.15",
+    "@webiny/react-router": "^4.0.0-beta.15",
+    "@webiny/ui": "^4.0.0-beta.15",
+    "@webiny/validation": "^4.0.0-beta.15",
     "load-src": "^1.0.0",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
@@ -43,8 +43,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

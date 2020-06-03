@@ -20,11 +20,7 @@ const SupportedFileTypes = ({ accept }) => {
     }
 
     if (accept.length === 0) {
-        return (
-            <span>
-                Showing all file extensions.
-            </span>
-        );
+        return <span>Showing all file extensions.</span>;
     }
 
     return (

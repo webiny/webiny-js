@@ -56,6 +56,34 @@ const createFieldsList = contentModel => {
     return fields.join("\n");
 };
 
+export const FIELDS_FIELDS = `
+        _id
+        fieldId
+        type
+        label ${I18N_FIELD}
+        placeholderText ${I18N_FIELD}
+        helpText ${I18N_FIELD}
+        predefinedValues {
+            enabled
+            values {
+                values {
+                    locale
+                    value
+                }
+            }
+        }
+        multipleValues 
+        renderer {
+            name
+        }
+        validation {
+            name
+            settings
+            message ${I18N_FIELD}
+        }
+        settings
+`;
+
 export const CREATE_CONTENT_MODEL = /* GraphQL */ `
     mutation CreateContentModel($data: CmsContentModelInput!) {
         content: createContentModel(data: $data) {
@@ -64,14 +92,12 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
                 name
                 titleFieldId
                 lockedFields {
-                   fieldId
+                    fieldId
                     multipleValues
                     type
                 }
                 fields {
-                    _id
-                    fieldId
-                    multipleValues
+                    ${FIELDS_FIELDS}
                 }
             }
             error ${ERROR_FIELD}
@@ -88,42 +114,17 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 titleFieldId
                 lockedFields {
                     fieldId
-                    multipleValues  
+                    multipleValues
                     type
                 }
                 fields {
-                      _id
-                    fieldId
-                    multipleValues
+                    ${FIELDS_FIELDS}
                 }
                 layout
             }
             error ${ERROR_FIELD}
         }
     }
-`;
-
-export const FIELDS_FIELDS = `
-        _id
-        fieldId
-        type
-        label ${I18N_FIELD}
-        placeholderText ${I18N_FIELD}
-        helpText ${I18N_FIELD}
-        predefinedValues {
-            label ${I18N_FIELD}
-            value ${I18N_FIELD}
-        }
-        multipleValues 
-        renderer {
-            name
-        }
-        validation {
-            name
-            settings
-            message ${I18N_FIELD}
-        }
-        settings
 `;
 
 export const GET_CONTENT_MODEL = /* GraphQL */ `

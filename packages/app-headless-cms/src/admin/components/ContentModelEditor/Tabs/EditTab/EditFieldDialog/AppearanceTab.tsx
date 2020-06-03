@@ -40,6 +40,7 @@ const AppearanceTab = props => {
             if (renderPlugins[0]) {
                 form.setValue("renderer.name", renderPlugins[0].renderer.rendererName);
             } else {
+                console.log(`No renderers for field ${field.fieldId} found.`, field);
                 throw new Error("No renderers found.");
             }
         }

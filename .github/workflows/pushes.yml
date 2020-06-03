@@ -36,10 +36,10 @@ jobs:
         run: yarn test
 
       - name: Set git email
-        run: git config --global user.email "adrian@webiny.com"
+        run: git config --global user.email "info@webiny.com"
 
       - name: Set git username
-        run: git config --global user.name "doitadrian"
+        run: git config --global user.name "webiny"
 
       - name: Create a release on GitHub
         run: yarn lerna version --conventional-prerelease --force-publish --preid beta --yes

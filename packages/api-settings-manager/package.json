@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-settings-manager",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -12,8 +12,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/graphql": "^4.0.0-beta.7",
-    "@webiny/handler": "^4.0.0-beta.7",
+    "@webiny/graphql": "^4.0.0-beta.15",
+    "@webiny/handler": "^4.0.0-beta.15",
     "aws-sdk": "^2.685.0"
   },
   "devDependencies": {
@@ -27,8 +27,7 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "adio": {
     "ignore": {

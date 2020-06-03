@@ -21,10 +21,8 @@ export const FIELDS_FIELDS = `
             ${I18N_FIELDS}
         }  
         predefinedValues {
-            label {
-                ${I18N_FIELDS}
-            }
-            value {
+            enabled
+            values {
                 ${I18N_FIELDS}
             }
         }

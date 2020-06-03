@@ -24,7 +24,7 @@ const RenderFieldElement = (props: {
 
     const getBind = useCallback(
         (index = -1) => {
-            const memoKey = field.fieldId + field.multipleValues + index;
+            const memoKey = field.fieldId + field.multipleValues + index + locale;
             if (memoizedBindComponents.current[memoKey]) {
                 return memoizedBindComponents.current[memoKey];
             }
@@ -79,7 +79,8 @@ const RenderFieldElement = (props: {
                                 } else {
                                     props.appendValue = newValue => onChange([...value, newValue]);
                                     props.prependValue = newValue => onChange([newValue, ...value]);
-                                    props.appendValues = newValues => onChange([...value, ...newValues]);
+                                    props.appendValues = newValues =>
+                                        onChange([...value, ...newValues]);
                                 }
                             }
 
@@ -104,7 +105,7 @@ const RenderFieldElement = (props: {
         });
     }
 
-    return renderPlugin.renderer.render({ field, getBind, Label, contentModel });
+    return renderPlugin.renderer.render({ field, getBind, Label, contentModel, locale });
 };
 
 export default RenderFieldElement;

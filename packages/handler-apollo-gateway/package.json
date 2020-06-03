@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-apollo-gateway",
-  "version": "4.0.0-beta.7",
+  "version": "4.0.0-beta.15",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -16,9 +16,9 @@
   ],
   "dependencies": {
     "@apollo/gateway": "^0.14.1",
-    "@webiny/graphql": "^4.0.0-beta.7",
-    "@webiny/handler": "^4.0.0-beta.7",
-    "@webiny/plugins": "^4.0.0-beta.7",
+    "@webiny/graphql": "^4.0.0-beta.15",
+    "@webiny/handler": "^4.0.0-beta.15",
+    "@webiny/plugins": "^4.0.0-beta.15",
     "apollo-server-env": "^2.4.3",
     "apollo-server-lambda": "^2.4.3",
     "boolean": "^3.0.1",
@@ -40,7 +40,6 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   }
 }
