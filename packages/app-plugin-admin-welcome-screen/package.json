@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-plugin-admin-welcome-screen",
-  "version": "4.0.0-beta.13",
+  "version": "4.0.0-beta.14",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,11 +14,11 @@
   "license": "MIT",
   "dependencies": {
     "@emotion/styled": "^10.0.27",
-    "@webiny/app-admin": "^4.0.0-beta.13",
-    "@webiny/app-security": "^4.0.0-beta.13",
-    "@webiny/plugins": "^4.0.0-beta.13",
-    "@webiny/react-router": "^4.0.0-beta.13",
-    "@webiny/ui": "^4.0.0-beta.13",
+    "@webiny/app-admin": "^4.0.0-beta.14",
+    "@webiny/app-security": "^4.0.0-beta.14",
+    "@webiny/plugins": "^4.0.0-beta.14",
+    "@webiny/react-router": "^4.0.0-beta.14",
+    "@webiny/ui": "^4.0.0-beta.14",
     "emotion": "^10.0.27",
     "react-helmet": "^6.0.0"
   },
