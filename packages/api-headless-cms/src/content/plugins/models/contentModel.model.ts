@@ -144,6 +144,21 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     }
                 }
 
+                // Check if the indexes list contains all fields that actually exists.
+                for (let i = 0; i < this.indexes.length; i++) {
+                    const index = this.indexes[i];
+                    if (Array.isArray(index.fields)) {
+                        for (let j = 0; j < index.fields.length; j++) {
+                            const field = index.fields[j];
+                            if (!this.getField(field)) {
+                                throw new Error(
+                                    `Before removing the "${field}" field, please remove all of the indexes that include it in in their list of fields.`
+                                );
+                            }
+                        }
+                    }
+                }
+
                 if (this.isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
