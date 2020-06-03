@@ -21,7 +21,7 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     name: "admin-welcome-screen-widget-page-builder",
     widget: {
         cta: (
-            <Link to="page-builder/pages" className={linkStyle}>
+            <Link to="/page-builder/pages" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>Build a new Page</ButtonSecondary>
             </Link>
         ),
