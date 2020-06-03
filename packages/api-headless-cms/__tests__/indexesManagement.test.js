@@ -1,42 +1,30 @@
-import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
-import { locales } from "./mocks/I18NLocales";
+import { locales } from "@webiny/api-i18n/testing";
 import mocks from "./mocks/indexesManagement";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 // This is an E2E test that validates that the "CmsContentEntrySearch" table is updated accordingly on the creation
 // and publishing of new content revisions. We are also checking GraphQL responses (create, list, publish) in order
 // to be sure the user sees the correct data when performing these actions.
 describe("Indexes Management test", () => {
     const { environment, database, invoke } = useContentHandler();
-    const ids = { environment: mdbid(), contentModelGroup: mdbid() };
+
+    const initial = {};
 
     beforeAll(async () => {
         // Let's create a basic environment and a content model group.
-        await database.collection("CmsEnvironment").insert({
-            id: ids.environment,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
-
-        await database.collection("CmsContentModelGroup").insert({
-            id: ids.contentModelGroup,
-            name: "Ungrouped",
-            slug: "ungrouped",
-            description: "A generic content model group",
-            icon: "fas/star",
-            environment: ids.environment
-        });
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
     it("should update search catalog accordingly", async () => {
         // 1. Create a basic "Product" model. No additional indexes specified, which means we'll only have the "id" index.
-        const { content, createContentModel } = environment(ids.environment);
+        const { content, createContentModel } = environment(initial.environment.id);
 
         await createContentModel({
             data: {
                 name: "Product",
-                group: ids.contentModelGroup,
+                group: initial.contentModelGroup.id,
                 fields: [
                     {
                         _id: "vqk-UApan",
@@ -85,10 +73,10 @@ describe("Indexes Management test", () => {
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(3);
+        expect(searchEntries.length).toBe(5);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.initialProductCreated({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 productId: productRev1.id
             })
         );
@@ -102,18 +90,18 @@ describe("Indexes Management test", () => {
         productRev1 = await products.publish({ revision: productRev1.id });
         expect(productRev1.meta.published).toBe(true);
 
-        // We should still have three entries in the search table, only this time, every entry should be marked both
+        // We should still have five entries in the search table, only this time, every entry should be marked both
         // as the "latestVersion" and "published".
         searchEntries = await database
             .collection("CmsContentEntrySearch")
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(3);
+        expect(searchEntries.length).toBe(5);
 
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.initialProductPublished({
-                environmentId: ids.environment,
+                environmentId: initial.environment.id,
                 productId: productRev1.id
             })
         );
@@ -144,13 +132,13 @@ describe("Indexes Management test", () => {
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
 
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.secondRevisionCreated({
-                environmentId: ids.environment,
-                productRev1,
-                productRev2
+                environmentId: initial.environment.id,
+                productRev1: productRev1.id,
+                productRev2: productRev2.id
             })
         );
 
@@ -178,19 +166,19 @@ describe("Indexes Management test", () => {
             }
         });
 
-        // Again, we should have six entries, but the previous revision 2 that was present in the search table, should
+        // Again, we should have ten entries, but the previous revision 2 that was present in the search table, should
         // now be replaced with the newly created revision 3. The revision 1 must still be present.
         searchEntries = await database
             .collection("CmsContentEntrySearch")
             .find()
             .sort({ id: -1 });
 
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.thirdRevisionCreated({
-                environmentId: ids.environment,
-                productRev1,
-                productRev3
+                environmentId: initial.environment.id,
+                productRev1: productRev1.id,
+                productRev3: productRev3.id
             })
         );
 
@@ -205,12 +193,12 @@ describe("Indexes Management test", () => {
 
         // We should now have revisions 2 and 3 in the search table, marked as published but not latest, and marked
         // as latest and not published, respectively.
-        expect(searchEntries.length).toBe(6);
+        expect(searchEntries.length).toBe(10);
         expect(searchEntries.map(({ id, _id, ...rest }) => rest)).toEqual(
             mocks.CmsContentEntrySearch.secondRevisionPublished({
-                environmentId: ids.environment,
-                productRev2,
-                productRev3
+                environmentId: initial.environment.id,
+                productRev2: productRev2.id,
+                productRev3: productRev3.id
             })
         );
     });

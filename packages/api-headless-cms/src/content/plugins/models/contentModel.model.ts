@@ -80,27 +80,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     );
                 }
             },
-            async beforeUpdate() {
-                // We must not allow removal of fields that are already in use in content entries.
-                const lockedFields = this.lockedFields || [];
-                for (let i = 0; i < lockedFields.length; i++) {
-                    const lockedField = lockedFields[i];
-                    const existingField = this.fields.find(
-                        item => item.fieldId === lockedField.fieldId
-                    );
-                    if (!existingField) {
-                        throw new Error(
-                            `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
-                        );
-                    }
-
-                    if (lockedField.multipleValues !== existingField.multipleValues) {
-                        throw new Error(
-                            `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
-                        );
-                    }
-                }
-            },
             async beforeSave() {
                 if (this.getField("indexes").isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
@@ -167,6 +146,26 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                                 fields: [this.titleFieldId]
                             }
                         ];
+                    }
+                }
+
+                // We must not allow removal or changes in fields that are already in use in content entries.
+                const lockedFields = this.lockedFields || [];
+                for (let i = 0; i < lockedFields.length; i++) {
+                    const lockedField = lockedFields[i];
+                    const existingField = this.fields.find(
+                        item => item.fieldId === lockedField.fieldId
+                    );
+                    if (!existingField) {
+                        throw new Error(
+                            `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
+                        );
+                    }
+
+                    if (lockedField.multipleValues !== existingField.multipleValues) {
+                        throw new Error(
+                            `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
+                        );
                     }
                 }
 

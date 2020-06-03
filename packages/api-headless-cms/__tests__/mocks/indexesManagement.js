@@ -15,6 +15,16 @@ export default {
             },
             {
                 environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: false,
+                revision: productId,
+                v0: "Kugelschreiber"
+            },
+            {
+                environment: environmentId,
                 model: "product",
                 locale: locales.de.id,
                 revision: productId,
@@ -22,6 +32,16 @@ export default {
                 published: false,
                 fields: "id",
                 v0: productId
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productId,
+                v0: "Pen"
             },
             {
                 environment: environmentId,
@@ -47,6 +67,16 @@ export default {
             },
             {
                 environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: true,
+                revision: productId,
+                v0: "Kugelschreiber"
+            },
+            {
+                environment: environmentId,
                 model: "product",
                 locale: locales.de.id,
                 revision: productId,
@@ -54,6 +84,16 @@ export default {
                 published: true,
                 fields: "id",
                 v0: productId
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: true,
+                revision: productId,
+                v0: "Pen"
             },
             {
                 environment: environmentId,
@@ -71,186 +111,307 @@ export default {
                 environment: environmentId,
                 model: "product",
                 locale: locales.it.id,
-                revision: productRev1.id,
+                revision: productRev1,
                 latestVersion: false,
                 published: true,
                 fields: "id",
-                v0: productRev1.id
+                v0: productRev1
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.de.id,
+                model: "product",
+                published: true,
+                revision: productRev1,
+                v0: "Kugelschreiber"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.de.id,
-                revision: productRev1.id,
+                revision: productRev1,
                 latestVersion: false,
                 published: true,
                 fields: "id",
-                v0: productRev1.id
+                v0: productRev1
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.en.id,
+                model: "product",
+                published: true,
+                revision: productRev1,
+                v0: "Pen"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.en.id,
-                revision: productRev1.id,
+                revision: productRev1,
                 latestVersion: false,
                 published: true,
                 fields: "id",
-                v0: productRev1.id
+                v0: productRev1
             },
             {
                 environment: environmentId,
-                model: "product",
+                fields: "id",
+                latestVersion: true,
                 locale: locales.it.id,
-                revision: productRev2.id,
-                latestVersion: true,
+                model: "product",
                 published: false,
-                fields: "id",
-                v0: productRev2.id
+                revision: productRev2,
+                v0: productRev2
             },
             {
                 environment: environmentId,
-                model: "product",
+                fields: "title",
+                latestVersion: true,
                 locale: locales.de.id,
-                revision: productRev2.id,
-                latestVersion: true,
+                model: "product",
                 published: false,
-                fields: "id",
-                v0: productRev2.id
+                revision: productRev2,
+                v0: "Kugelschreiber 2"
             },
             {
                 environment: environmentId,
-                model: "product",
-                locale: locales.en.id,
-                revision: productRev2.id,
-                latestVersion: true,
-                published: false,
                 fields: "id",
-                v0: productRev2.id
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: false,
+                revision: productRev2,
+                v0: productRev2
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productRev2,
+                v0: "Pen 2"
+            },
+            {
+                environment: environmentId,
+                fields: "id",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productRev2,
+                v0: productRev2
             }
         ],
         thirdRevisionCreated: ({ environmentId, productRev1, productRev3 }) => [
             {
                 environment: environmentId,
+                fields: "id",
+                latestVersion: true,
+                locale: locales.it.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: productRev3
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: "Kugelschreiber 3"
+            },
+            {
+                environment: environmentId,
+                fields: "id",
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: productRev3
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: "Pen 3"
+            },
+            {
+                environment: environmentId,
+                fields: "id",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: productRev3
+            },
+            {
+                environment: environmentId,
                 model: "product",
                 locale: locales.it.id,
-                revision: productRev3.id,
-                latestVersion: true,
-                published: false,
+                revision: productRev1,
+                latestVersion: false,
+                published: true,
                 fields: "id",
-                v0: productRev3.id
+                v0: productRev1
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.de.id,
+                model: "product",
+                published: true,
+                revision: productRev1,
+                v0: "Kugelschreiber"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.de.id,
-                revision: productRev3.id,
-                latestVersion: true,
-                published: false,
+                revision: productRev1,
+                latestVersion: false,
+                published: true,
                 fields: "id",
-                v0: productRev3.id
+                v0: productRev1
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.en.id,
+                model: "product",
+                published: true,
+                revision: productRev1,
+                v0: "Pen"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.en.id,
-                revision: productRev3.id,
-                latestVersion: true,
-                published: false,
-                fields: "id",
-                v0: productRev3.id
-            },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.it.id,
-                revision: productRev1.id,
+                revision: productRev1,
                 latestVersion: false,
                 published: true,
                 fields: "id",
-                v0: productRev1.id
+                v0: productRev1
             },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.de.id,
-                revision: productRev1.id,
-                latestVersion: false,
-                published: true,
-                fields: "id",
-                v0: productRev1.id
-            },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.en.id,
-                revision: productRev1.id,
-                latestVersion: false,
-                published: true,
-                fields: "id",
-                v0: productRev1.id
-            }
+
         ],
         secondRevisionPublished: ({ environmentId, productRev2, productRev3 }) => [
             {
                 environment: environmentId,
+                fields: "id",
+                latestVersion: false,
+                locale: locales.it.id,
+                model: "product",
+                published: true,
+                revision: productRev2,
+                v0: productRev2
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.de.id,
+                model: "product",
+                published: true,
+                revision: productRev2,
+                v0: "Kugelschreiber 2"
+            },
+            {
+                environment: environmentId,
+                fields: "id",
+                latestVersion: false,
+                locale: locales.de.id,
+                model: "product",
+                published: true,
+                revision: productRev2,
+                v0: productRev2
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: false,
+                locale: locales.en.id,
+                model: "product",
+                published: true,
+                revision: productRev2,
+                v0: "Pen 2"
+            },
+            {
+                environment: environmentId,
+                fields: "id",
+                latestVersion: false,
+                locale: locales.en.id,
+                model: "product",
+                published: true,
+                revision: productRev2,
+                v0: productRev2
+            },
+            {
+                environment: environmentId,
                 model: "product",
                 locale: locales.it.id,
-                revision: productRev2.id,
-                latestVersion: false,
-                published: true,
+                revision: productRev3,
+                latestVersion: true,
+                published: false,
                 fields: "id",
-                v0: productRev2.id
+                v0: productRev3
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.de.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: "Kugelschreiber 3"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.de.id,
-                revision: productRev2.id,
-                latestVersion: false,
-                published: true,
+                revision: productRev3,
+                latestVersion: true,
+                published: false,
                 fields: "id",
-                v0: productRev2.id
+                v0: productRev3
+            },
+            {
+                environment: environmentId,
+                fields: "title",
+                latestVersion: true,
+                locale: locales.en.id,
+                model: "product",
+                published: false,
+                revision: productRev3,
+                v0: "Pen 3"
             },
             {
                 environment: environmentId,
                 model: "product",
                 locale: locales.en.id,
-                revision: productRev2.id,
-                latestVersion: false,
-                published: true,
-                fields: "id",
-                v0: productRev2.id
-            },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.it.id,
-                revision: productRev3.id,
+                revision: productRev3,
                 latestVersion: true,
                 published: false,
                 fields: "id",
-                v0: productRev3.id
+                v0: productRev3
             },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.de.id,
-                revision: productRev3.id,
-                latestVersion: true,
-                published: false,
-                fields: "id",
-                v0: productRev3.id
-            },
-            {
-                environment: environmentId,
-                model: "product",
-                locale: locales.en.id,
-                revision: productRev3.id,
-                latestVersion: true,
-                published: false,
-                fields: "id",
-                v0: productRev3.id
-            }
         ]
     }
 };
