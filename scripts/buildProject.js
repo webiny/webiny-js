@@ -56,9 +56,17 @@ for (let i = 0; i < allPackages.list.length; i++) {
 }
 
 const outputStdOut = (title, stdout) => {
-    console.log(yellow(`-------------------------- [START] Packages group: "${title}" --------------------------`));
+    console.log(
+        yellow(
+            `-------------------------- [START] Packages group: "${title}" --------------------------`
+        )
+    );
     console.log(stdout);
-    console.log(yellow(`-------------------------- [END] Packages group: "${title}" --------------------------`));
+    console.log(
+        yellow(
+            `-------------------------- [END] Packages group: "${title}" --------------------------`
+        )
+    );
 };
 
 const executeLernaBuild = packagesGroup => {

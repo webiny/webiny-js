@@ -22,13 +22,11 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     widget: {
         cta: (
             <Link to="page-builder/pages" className={linkStyle}>
-                <ButtonSecondary className={buttonStyle}>
-                    Build a new Page
-                </ButtonSecondary>
+                <ButtonSecondary className={buttonStyle}>Build a new Page</ButtonSecondary>
             </Link>
         ),
         description: "Build stunning landing pages with an easy to use drag and drop editor.",
-        title: "Page Builder"        
+        title: "Page Builder"
     }
 };
 

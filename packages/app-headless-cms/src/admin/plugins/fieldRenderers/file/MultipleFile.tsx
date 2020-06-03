@@ -6,7 +6,10 @@ import { createRenderImagePreview, imageWrapperStyles, imageExtensions } from ".
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-const imagePreviewProps = { transform: { width: 300 }, style: { width: '100%', height: 232, objectFit: 'cover' } };
+const imagePreviewProps = {
+    transform: { width: 300 },
+    style: { width: "100%", height: 232, objectFit: "cover" }
+};
 
 const MultipleFile = props => {
     const [isImage, setIsImage] = useState(true);
@@ -41,35 +44,39 @@ const MultipleFile = props => {
         return { src: props.previewURLs[props.bind.value] || getImageSrc() };
     }, [props.previewURLs, props.bind.value]);
 
-    return <FileUpload
-        {...props.bind}
-        onChange={value => {
-            if (value !== null) {
-                const keys = value.map(file => file.key);
-                const newPreviewURLs = { ...props.previewURLs };
-                if (keys.length === 1) {
-                    props.bind.onChange(keys[0]);
+    return (
+        <FileUpload
+            {...props.bind}
+            onChange={value => {
+                if (value !== null) {
+                    const keys = value.map(file => file.key);
+                    const newPreviewURLs = { ...props.previewURLs };
+                    if (keys.length === 1) {
+                        props.bind.onChange(keys[0]);
 
-                    newPreviewURLs[keys[0]] = value[0].src;
+                        newPreviewURLs[keys[0]] = value[0].src;
+                    } else {
+                        props.appendValue(keys);
+                        value.forEach(file => {
+                            newPreviewURLs[file.key] = file.src;
+                        });
+                    }
+                    props.setPreviewURLs(newPreviewURLs);
                 } else {
-                    props.appendValue(keys);
-                    value.forEach(file => {
-                        newPreviewURLs[file.key] = file.src;
-                    })
+                    props.removeValue();
+                    props.setPreviewURLs({ ...props.previewURLs, [props.bind.value]: null });
                 }
-                props.setPreviewURLs(newPreviewURLs);
-            } else {
-                props.removeValue();
-                props.setPreviewURLs({ ...props.previewURLs, [props.bind.value]: null });
+            }}
+            value={getValue()}
+            imagePreviewProps={imagePreviewProps}
+            multiple={props.field.multipleValues}
+            placeholder={t`Select a file"`}
+            className={imageWrapperStyles}
+            renderImagePreview={
+                !isImage && createRenderImagePreview({ value: props.bind.value, imagePreviewProps })
             }
-        }}
-        value={getValue()}
-        imagePreviewProps={imagePreviewProps}
-        multiple={props.field.multipleValues}
-        placeholder={t`Select a file"`}
-        className={imageWrapperStyles}
-        renderImagePreview={!isImage && createRenderImagePreview({ value: props.bind.value, imagePreviewProps })}
-    />;
+        />
+    );
 };
 
 export default MultipleFile;

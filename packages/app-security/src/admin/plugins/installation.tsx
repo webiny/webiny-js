@@ -67,7 +67,7 @@ const Install = ({ onInstalled }) => {
     const [authUserMessage, setAuthUserMessage] = useState(null);
     const [error, setError] = useState(null);
 
-    const onSubmit = useCallback(async ({ subscribed, ...form}) => {
+    const onSubmit = useCallback(async ({ subscribed, ...form }) => {
         setLoading(true);
         setError(null);
         if (typeof auth.onSubmit === "function") {
@@ -93,27 +93,27 @@ const Install = ({ onInstalled }) => {
             return;
         }
 
-        if(subscribed) {
+        if (subscribed) {
             try {
-                await fetch (
-                    'https://app.mailerlite.com/webforms/submit/g9f1i1?fields%5Bemail%5D=' +
+                await fetch(
+                    "https://app.mailerlite.com/webforms/submit/g9f1i1?fields%5Bemail%5D=" +
                         encodeURIComponent(form.email) +
-                    '&ml-submit=1&ajax=1',
+                        "&ml-submit=1&ajax=1",
                     {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        }
                     }
-                )               
+                );
             } catch (err) {
-                setError("Unable to subscribe you to the newsletter "+ err);
+                setError("Unable to subscribe you to the newsletter " + err);
             }
         }
 
         onInstalled();
     }, []);
-    
+
     const privacyPolicyLink = <a href="https://www.webiny.com/privacy-policy">privacy policy</a>;
 
     return (
@@ -177,15 +177,23 @@ const Install = ({ onInstalled }) => {
                                     )
                                 }
                             })}
-                            {!authUserMessage && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Bind name="subscribed">
-                                            <Checkbox label={<span>I want to receive updates on product improvements and new features. Doing so I accept Webiny's {privacyPolicyLink}.</span> }/>
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            )}
+                        {!authUserMessage && (
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind name="subscribed">
+                                        <Checkbox
+                                            label={
+                                                <span>
+                                                    I want to receive updates on product
+                                                    improvements and new features. Doing so I accept
+                                                    Webiny's {privacyPolicyLink}.
+                                                </span>
+                                            }
+                                        />
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                        )}
                     </SimpleFormContent>
                     <SimpleFormFooter>
                         {!authUserMessage && (

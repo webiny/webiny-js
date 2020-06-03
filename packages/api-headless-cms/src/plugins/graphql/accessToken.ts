@@ -70,12 +70,8 @@ export default {
             listAccessTokens: hasScope("cms:access-token:crud")(resolveList(AccessTokenFetcher))
         },
         CmsMutation: {
-            createAccessToken: hasScope("cms:access-token:crud")(
-                resolveCreate(AccessTokenFetcher)
-            ),
-            updateAccessToken: hasScope("cms:access-token:crud")(
-                resolveUpdate(AccessTokenFetcher)
-            ),
+            createAccessToken: hasScope("cms:access-token:crud")(resolveCreate(AccessTokenFetcher)),
+            updateAccessToken: hasScope("cms:access-token:crud")(resolveUpdate(AccessTokenFetcher)),
             deleteAccessToken: hasScope("cms:access-token:crud")(resolveDelete(AccessTokenFetcher))
         }
     }

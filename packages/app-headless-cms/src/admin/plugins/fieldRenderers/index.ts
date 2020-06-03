@@ -8,4 +8,14 @@ import file from "./file";
 import radioButtons from "./radioButtons";
 import checkboxes from "./checkboxes";
 
-export default [number, text, longText, richText, boolean, dateTime, file, radioButtons, checkboxes];
+export default [
+    number,
+    text,
+    longText,
+    richText,
+    boolean,
+    dateTime,
+    file,
+    radioButtons,
+    checkboxes
+];

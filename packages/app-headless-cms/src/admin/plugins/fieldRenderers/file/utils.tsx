@@ -33,7 +33,7 @@ const IconStyle = css({
 export const createRenderImagePreview = ({ value, imagePreviewProps }) => {
     const fileName = getFileName(value);
 
-    const renderImagePreview = (renderImageProps) => {
+    const renderImagePreview = renderImageProps => {
         return (
             <div {...renderImageProps} {...imagePreviewProps}>
                 <div className={IconWrapperStyle}>
@@ -42,13 +42,13 @@ export const createRenderImagePreview = ({ value, imagePreviewProps }) => {
                 <div className={fileLabel}>{fileName}</div>
             </div>
         );
-    }
+    };
     return renderImagePreview;
 };
 
-const getFileName = (value) => {
+const getFileName = value => {
     if (!value) {
         return "";
     }
     return value.split("/").pop();
-}
+};

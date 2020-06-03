@@ -56,16 +56,18 @@ function CmsEditorFieldRenderer({ field, getBind, Label }) {
                             </Cell>
                         );
                     })}
-                    {value.length >= 1 && <Cell span={3}>
-                        <MultipleFile
-                            previewURLs={previewURLs}
-                            setPreviewURLs={setPreviewURLs}
-                            field={field}
-                            bind={{ value: null, onChange: appendValue }}
-                            appendValue={appendValues}
-                            removeValue={() => null}
-                        />
-                    </Cell>}
+                    {value.length >= 1 && (
+                        <Cell span={3}>
+                            <MultipleFile
+                                previewURLs={previewURLs}
+                                setPreviewURLs={setPreviewURLs}
+                                field={field}
+                                bind={{ value: null, onChange: appendValue }}
+                                appendValue={appendValues}
+                                removeValue={() => null}
+                            />
+                        </Cell>
+                    )}
                 </Grid>
             )}
         </Bind>
@@ -83,7 +85,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return field.type === "file" && field.multipleValues;
         },
         render({ field, getBind, Label }) {
-            return <CmsEditorFieldRenderer field={field} getBind={getBind} Label={Label} />
+            return <CmsEditorFieldRenderer field={field} getBind={getBind} Label={Label} />;
         }
     }
 };
