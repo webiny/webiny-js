@@ -27,6 +27,8 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
 
+    const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
+
     return `
         "${model.description}"
         type ${rTypeName} {
@@ -36,7 +38,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
             createdOn: DateTime
             updatedOn: DateTime
             savedOn: DateTime
-            ${renderFields({ model, type: "read", fieldTypePlugins })}
+            ${fieldsRender.map(f => f.fields).join("\n")}
         }
         
         ${getFilterFieldsRender &&
