@@ -1,4 +1,5 @@
-import { locales } from "./../mocks/I18NLocales";
+import { locales } from "@webiny/api-i18n/testing";
+
 
 const mocks = {
     authorContentModel: ({ contentModelGroupId }) => ({

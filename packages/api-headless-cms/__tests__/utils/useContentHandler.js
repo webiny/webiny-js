@@ -4,7 +4,8 @@ import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import i18n from "@webiny/api-i18n/plugins/i18n";
-import i18nLocales from "../mocks/I18NLocales";
+import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
+
 import getData from "./useContentHandler/getData";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
 import {
@@ -36,7 +37,7 @@ export default ({ database, type = "manage" } = {}) => {
             }
         }),
         i18n,
-        i18nLocales(),
+        mockLocalesPlugins(),
         headlessCmsHandler(),
         dataManagerPlugins()
     );

@@ -1,6 +1,6 @@
 import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
-import mocks from "./mocks/fields";
+import mocks from "./mocks/fields/fieldsBasicCrud";
 import pick from "lodash/pick";
 
 describe("Fields Test", () => {
@@ -45,7 +45,7 @@ describe("Fields Test", () => {
         });
     });
 
-    it(`should assert that the "Ref" field works correctly`, async () => {
+    it(`should be able to assert basic CRUD operations`, async () => {
         const { content, createContentModel } = environment(ids.environment);
 
         await createContentModel({
