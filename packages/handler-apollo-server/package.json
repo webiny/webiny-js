@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-apollo-server",
-  "version": "4.0.0-beta.10",
+  "version": "4.0.0-beta.13",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,9 +15,9 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/graphql": "^4.0.0-beta.10",
-    "@webiny/handler": "^4.0.0-beta.10",
-    "@webiny/plugins": "^4.0.0-beta.10",
+    "@webiny/graphql": "^4.0.0-beta.13",
+    "@webiny/handler": "^4.0.0-beta.13",
+    "@webiny/plugins": "^4.0.0-beta.13",
     "apollo-server-lambda": "^2.13.1",
     "boolean": "^3.0.1",
     "graphql": "^14.4.2",

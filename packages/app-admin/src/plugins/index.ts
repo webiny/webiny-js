@@ -19,7 +19,6 @@ import SendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
 import install from "@webiny/app-admin/plugins/install";
 
 import init from "./init";
-import routes from "./routes";
 
 export default () => [
     // Layout plugins
@@ -39,6 +38,5 @@ export default () => [
     Help,
     SendFeedback,
     install,
-    init,
-    routes
+    init
 ];

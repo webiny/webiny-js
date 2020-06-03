@@ -13,6 +13,7 @@ import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 // Other plugins
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
 import adminPlugins from "@webiny/app-admin/plugins";
+import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
 import cognito from "@webiny/app-plugin-security-cognito";
@@ -103,6 +104,7 @@ export default createTemplate<AdminAppOptions>(opts => {
     ];
 
     const otherPlugins = [
+        welcomeScreenPlugins(),
         fileUploadPlugin(),
         imagePlugin(),
         adminPlugins(),

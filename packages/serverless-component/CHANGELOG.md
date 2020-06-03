@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.0.0-beta.13 (2020-06-02)
+
+**Note:** Version bump only for package @webiny/serverless-component
+
+
+
+
+
+# 4.0.0-beta.12 (2020-06-02)
+
+**Note:** Version bump only for package @webiny/serverless-component
+
+
+
+
+
+# 4.0.0-beta.11 (2020-06-02)
+
+
+### Bug Fixes
+
+* 🐛  Add dependencies for packages in app-admin ([0cbd052](https://github.com/webiny/webiny-js/commit/0cbd0526d90bba17f0ef5b00b29a35d84bbd831a))
+
+
+
+
+
 # 4.0.0-beta.10 (2020-06-02)
 
 **Note:** Version bump only for package @webiny/serverless-component

@@ -5,6 +5,7 @@
     { "path": "../app-admin" },
     { "path": "../app-security" },
     { "path": "../app-i18n" },
+    { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-plugin-security-cognito" },
     { "path": "../app-plugin-security-cognito-theme" },
     { "path": "../app-template" },

@@ -1,5 +1,6 @@
 import React from "react";
-
+import { css } from "emotion";
+import styled from "@emotion/styled";
 import { Link } from "@webiny/react-router";
 import {
     SimpleForm,
@@ -7,22 +8,19 @@ import {
     SimpleFormContent,
     SimpleFormFooter
 } from "@webiny/app-admin/components/SimpleForm";
+import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
+import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Elevation } from "@webiny/ui/Elevation";
-import GithubIcon from "../assets/icons/github-logo.svg";
-import SlackIcon from "../assets/icons/slack-logo.svg";
-import MediumIcon from "../assets/icons/medium-logo.svg";
-import TwitterIcon from "../assets/icons/twitter-logo.svg";
-import TextbookIcon from "../assets/icons/textbook.svg";
-import LaptopIcon from "../assets/icons/laptop.svg";
 
-import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-
-import { css } from "emotion";
-import styled from "@emotion/styled";
-import { AdminWelcomeScreenWidgetPlugin } from "@webiny/app-admin/types";
-import { getPlugins } from "@webiny/plugins";
+import GithubIcon from "../icons/github-logo.svg";
+import SlackIcon from "../icons/slack-logo.svg";
+import MediumIcon from "../icons/medium-logo.svg";
+import TwitterIcon from "../icons/twitter-logo.svg";
+import TextbookIcon from "../icons/textbook.svg";
+import LaptopIcon from "../icons/laptop.svg";
+import { AdminWelcomeScreenWidgetPlugin } from "../types";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -34,7 +32,8 @@ const linkStyle = css({
 
 const imageStyle = css({
     width: "30px",
-    height: "30px"
+    height: "30px",
+    marginBottom: "5px"
 });
 
 const communityStyle = css({
@@ -78,7 +77,6 @@ const widgetButtonStyle = css({
 
 const footerTextStyle = css({
     backgroundColor: "var(--mdc-theme-on-background)",
-    textAlign: "center",
     margin: "1rem"
 });
 
@@ -118,7 +116,7 @@ const Welcome = () => {
                                     <p className={pGetStartedStyle}>
                                         To get started - pick one of the actions below:
                                     </p>
-                                    <br></br>
+                                    <br />
                                 </Typography>
                             </Cell>
                             <div style={{ display: "flex" }}>
@@ -127,7 +125,7 @@ const Welcome = () => {
                                 ).map(pl => {
                                     return (
                                         <Widget key={pl.name}>
-                                            <Elevation z={2}>
+                                            <Elevation z={2} style={{ padding: 10 }}>
                                                 <Typography use={"headline6"}>
                                                     <p className={widgetTitleStyle}>
                                                         {pl.widget.title}
@@ -200,10 +198,10 @@ const Welcome = () => {
                                     className={linkStyle}
                                 >
                                     <Typography use={"headline5"}>
-                                        <div className={footerContainerStyle}>
+                                        <span className={footerContainerStyle}>
                                             <img className={imageStyle} src={LaptopIcon} />
                                             <p className={footerLinkTextStyle}>Code examples</p>
-                                        </div>
+                                        </span>
                                     </Typography>
                                 </Link>
                             </Cell>
