@@ -78,49 +78,6 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    // TODO: bring this test back once we implement "unique" validators.
-    /*test(`get category by slug`, async () => {
-        // Test resolvers
-        const query = /!* GraphQL *!/ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                        slug {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                    }
-                }
-            }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            slug: categories[0].model.slug.value()
-        });
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.getCategory).toMatchObject({
-            data: {
-                id: get(categories[0].data, "id"),
-                title: get(categories[0].data, "fields.title"),
-                slug: get(categories[0].data, "fields.slug")
-            }
-        });
-    });*/
-
     test(`list categories (no parameters)`, async () => {
         // Test resolvers
         const query = /* GraphQL */ `
