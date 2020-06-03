@@ -6,7 +6,7 @@ import { useCallback } from "react";
 
 export type CopyButtonProps = FormComponentProps & {
     value: string;
-    onCopy?: () => any;
+    onCopy?: () => void;
 };
 
 /**
