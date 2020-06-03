@@ -5,7 +5,7 @@ import { FormComponentProps } from "../../types";
 
 export type CopyButtonProps = FormComponentProps & {
     value: string;
-    onCopy?: (message: string) => any;
+    onCopy?: () => any;
 };
 
 /**
@@ -19,7 +19,7 @@ const CopyButton = (props: CopyButtonProps) => {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(value);
-        onCopy("Succesfully copied!");
+        onCopy();
     };
 
     return <IconButton {...otherProps} onClick={copyToClipboard} icon={<CopyToClipboardIcon />} />;
