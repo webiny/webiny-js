@@ -78,7 +78,7 @@ describe(`createDataModel`, () => {
                 { locale: locales.de.id, value: "Hardware DE" }
             ]
         });
-        expect(category.title.value()).toBe("Hardware EN");
+        expect(await category.title.value()).toBe("Hardware EN");
 
         // Test Product
         const Product = context.models["product"];
@@ -106,10 +106,7 @@ describe(`createDataModel`, () => {
                 ]
             },
             itemsInStock: {
-                values: [
-                    { locale: locales.en.id, value: 20 },
-                    { locale: locales.de.id, value: 45 }
-                ]
+                values: [{ locale: locales.en.id, value: 20 }, { locale: locales.de.id, value: 45 }]
             },
             availableOn: {
                 values: [
