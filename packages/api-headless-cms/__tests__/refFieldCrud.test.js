@@ -3,7 +3,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/fields/refFieldCrud";
 import pick from "lodash/pick";
 
-describe("Fields Test", () => {
+describe("Ref Field - CRUD Test", () => {
     const { database, environment } = useContentHandler();
     const ids = { environment: mdbid(), contentModelGroup: mdbid() };
 
