@@ -34,30 +34,12 @@ export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NCont
 
 type I18NValues = { [key: string]: any }[];
 
-export const getI18NValues = (
-    value: I18NValues | I18NValues[],
-    i18n: I18NContext["i18n"],
-    list: boolean
-) => {
-    if (!list) {
-        return getI18NValueItem(value, i18n);
-    }
 
-    if (Array.isArray(value)) {
-        // @ts-ignore
-        return value.map(item => {
-            return getI18NValueItem(item, i18n);
-        });
-    }
-
-    return [];
-};
 
 export const i18nField = ({
     field = null,
     createField = null,
     context: { i18n, commodo },
-    list,
     name,
     ...rest
 }: I18NField) => {
@@ -69,13 +51,12 @@ export const i18nField = ({
     }))();
 
     const i18nFields = fields({
-        list,
         ...rest,
-        value: list ? [] : {},
+        value: {},
         instanceOf: pipe(
             name ? withName(name) : model => model,
             withFields({
-                values: onGet(value => getI18NValues(value, i18n, list))(
+                values: onGet(value => getI18NValueItem(value, i18n))(
                     fields({
                         list: true,
                         value: [],
@@ -92,13 +73,6 @@ export const i18nField = ({
 
                     if (!locale) {
                         locale = i18n.getLocale();
-                    }
-
-                    if (list) {
-                        return this.values.map(values => {
-                            const value = values.find(value => value.locale === locale.id);
-                            return value ? value.value : undefined;
-                        });
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);
