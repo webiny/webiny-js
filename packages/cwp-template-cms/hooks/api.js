@@ -18,7 +18,7 @@ function printFirstDeploySummary({ state }) {
     if (state.cdn && state.apolloGateway) {
         console.log(
             [
-                "🏁 Congratulations! You've just deployed your Webiny API for the first time.",
+                "🏁 Congratulations! You've just deployed your Webiny API stack for the first time.",
                 `⏳ Please note that CDN distribution takes some time to propagate, so allow ~10 minutes for it to become accessible.`,
                 ``,
                 `Once your CDN is up, the following URLs will be available for you to use:`,
