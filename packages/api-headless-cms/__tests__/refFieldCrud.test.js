@@ -1,6 +1,6 @@
 import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
-import mocks from "./mocks/fields/fieldsBasicCrud";
+import mocks from "./mocks/fields/refFieldCrud";
 import pick from "lodash/pick";
 
 describe("Fields Test", () => {
