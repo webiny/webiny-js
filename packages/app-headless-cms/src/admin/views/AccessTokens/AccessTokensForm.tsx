@@ -105,7 +105,7 @@ function EnvironmentAliasesForm() {
                                     <CheckboxGroup
                                         label="Environments"
                                         description={
-                                            "Select the environments this Token will be allowed to access."
+                                            "Select the environments this token will be allowed to access."
                                         }
                                     >
                                         {({ onChange, getValue }) => (

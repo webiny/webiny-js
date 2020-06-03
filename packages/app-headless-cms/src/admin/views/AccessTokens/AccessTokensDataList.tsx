@@ -62,6 +62,7 @@ const EnvironmentAliasesDataList = () => {
                                                       {item.environments
                                                           .map(env => (
                                                               <Link
+                                                                  key={env.id}
                                                                   onClick={e => e.stopPropagation()}
                                                                   to={`/settings/cms/environments?id=${env.id}`}
                                                                   title={t`This environment alias points to the "{environment}" environment.`(
