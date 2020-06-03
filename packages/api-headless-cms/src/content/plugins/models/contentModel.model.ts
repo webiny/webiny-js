@@ -142,6 +142,32 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             `Fields that accept multiple values cannot be used as the entry title (tried to use "${this.titleFieldId}" field)`
                         );
                     }
+
+                    // When a field is set as a title field, we automatically create an index, so that we can
+                    // immediately search entries by its title. Convenient for users, and ensures there is always
+                    // at least one field we can do a search with. Makes generic auto-complete / multi-auto-complete
+                    // components possible.
+                    let indexAlreadyExists = false;
+                    for (let i = 0; i < this.indexes.length; i++) {
+                        const index = this.indexes[i];
+                        if (
+                            Array.isArray(index.fields) &&
+                            index.fields.length === 1 &&
+                            index.fields[0] === this.titleFieldId
+                        ) {
+                            indexAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!indexAlreadyExists) {
+                        this.indexes = [
+                            ...this.indexes,
+                            {
+                                fields: [this.titleFieldId]
+                            }
+                        ];
+                    }
                 }
 
                 // Check if the indexes list contains all fields that actually exists.
