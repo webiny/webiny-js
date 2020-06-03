@@ -86,7 +86,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
             task: task => {
                 try {
                     execa.sync("git", ["--version"]);
-                    execa.sync("git", ["init"]);
+                    execa.sync("git", ["init"], { cwd: root });
                     fs.writeFileSync(path.join(root, ".gitignore"), "node_modules/");
                 } catch (err) {
                     task.skip("Git repo not initialized", err);
