@@ -206,29 +206,29 @@ const Welcome = () => {
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <img className={imageStyle} src={GithubIcon} />
                                 <Link
                                     to="https://github.com/webiny/webiny-js"
                                     className={linkStyle}
                                 >
+                                    <img className={imageStyle} src={GithubIcon} />
                                     <p>Github</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <img className={imageStyle} src={SlackIcon} />
                                 <Link to="https://www.webiny.com/slack/" className={linkStyle}>
+                                    <img className={imageStyle} src={SlackIcon} />
                                     <p>Slack</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <img className={imageStyle} src={MediumIcon} />
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
+                                    <img className={imageStyle} src={MediumIcon} />
                                     <p>Medium</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <img className={imageStyle} src={TwitterIcon} />
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
+                                    <img className={imageStyle} src={TwitterIcon} />
                                     <p>Twitter</p>
                                 </Link>
                             </Cell>
