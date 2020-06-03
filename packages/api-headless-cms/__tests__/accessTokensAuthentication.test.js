@@ -92,7 +92,7 @@ describe.skip("Access Tokens Authentication Test", () => {
         [body] = await environmentRead(ids.environment).invoke({
             headers: {
                 foo: "bar",
-                "access-token": accessToken.token
+                authorization: accessToken.token
             },
             body: {
                 query: LIST_PRODUCTS

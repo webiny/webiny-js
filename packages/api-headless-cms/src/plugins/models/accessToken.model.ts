@@ -15,7 +15,7 @@ export default ({ createBase, context }) =>
         withChangedOnFields(),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
-            description: string({ validation: validation.create("required,maxLength:100") }),
+            description: string({ validation: validation.create("maxLength:100") }),
             token: skipOnPopulate()(
                 string({
                     validation: validation.create("maxLength:64"),

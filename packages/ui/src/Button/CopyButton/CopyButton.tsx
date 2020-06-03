@@ -2,9 +2,11 @@ import * as React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "../assets/file_copy-24px.svg";
 import { IconButton } from "../index";
 import { FormComponentProps } from "../../types";
+import { useCallback } from "react";
 
 export type CopyButtonProps = FormComponentProps & {
     value: string;
+    onCopy?: () => void;
 };
 
 /**
@@ -14,15 +16,16 @@ export type CopyButtonProps = FormComponentProps & {
  * @constructor
  */
 const CopyButton = (props: CopyButtonProps) => {
-    const { value, ...otherProps } = props;
+    const { value, onCopy, ...otherProps } = props;
 
-    return (
-        <IconButton
-            {...otherProps}
-            onClick={() => navigator.clipboard.writeText(value)}
-            icon={<CopyToClipboardIcon />}
-        />
-    );
+    const copyToClipboard = useCallback(() => {
+        navigator.clipboard.writeText(value);
+        if (typeof onCopy === "function") {
+            onCopy();
+        }
+    }, [value]);
+
+    return <IconButton {...otherProps} onClick={copyToClipboard} icon={<CopyToClipboardIcon />} />;
 };
 
 export { CopyButton };

@@ -56,7 +56,9 @@ export default (
             }
 
             if (context.cms.READ || context.cms.PREVIEW) {
-                const accessToken = context.event.headers["access-token"];
+                const accessToken =
+                    context.event.headers["authorization"] ||
+                    context.event.headers["Authorization"];
                 const { CmsAccessToken } = context.models;
 
                 const token = await CmsAccessToken.findOne({
