@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ReactComponent as CopyToClipboardIcon } from "../assets/file_copy-24px.svg";
-import { IconButton, IconButtonProps } from "../index";
+import { IconButton } from "../index";
 import { FormComponentProps } from "../../types";
 
 export type CopyButtonProps = FormComponentProps & {
