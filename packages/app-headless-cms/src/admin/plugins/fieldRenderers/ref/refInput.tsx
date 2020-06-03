@@ -10,7 +10,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
     renderer: {
         rendererName: "ref-input",
         name: t`Reference Input`,
-        description: t`Renders a simple input with its type set to "text".`,
+        description: t`Renders an auto-complete input, allowing selection of a single value.`,
         canUse({ field }) {
             return field.type === "ref" && !field.multipleValues;
         },
