@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import gql from "graphql-tag";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
@@ -28,21 +28,18 @@ const extractValue = (values, list) => {
     return list.filter(item => IDs.some(id => id === item.id));
 }
 
-const plugin: CmsEditorFieldRendererPlugin = {
-    type: "cms-editor-field-renderer",
-    name: "cms-editor-field-renderer-ref-inputs",
-    renderer: {
-        rendererName: "ref-inputs",
-        name: t`Reference Inputs`,
-        description: t`Renders a simple list of text inputs.`,
-        canUse({ field }) {
-            return field.type === "ref" && field.multipleValues;
-        },
-        render({ field, getBind }) {
-            const Bind = getBind();
-            const typeName = upperFirst(field.settings.modelId);
+const MultiAutoCompleteContainer = ({ field, value, onChange }) => {
+    // Initialize values
+    useEffect(() => {
+        if (Array.isArray(value) && value.length !== 0 && value.some(v => typeof v !== "string")) {
+            const onlyIds = value.map(i => i.id);
+            onChange(onlyIds);
+        }
+    }, [value])
 
-            const LIST_CONTENT_ENTRIES = gql`
+    const typeName = upperFirst(field.settings.modelId);
+
+    const LIST_CONTENT_ENTRIES = gql`
                 query HeadlessCmsListContentEntries($sort: [${typeName}ListSorter], $after: String, $before: String, $limit: Int) {
                     list${pluralize(typeName)}(sort: $sort, after: $after, before: $before, limit: $limit) {
                         data {
@@ -58,23 +55,44 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 }
             `;
 
-            const { data } = useQuery(LIST_CONTENT_ENTRIES);
+    const { data } = useQuery(LIST_CONTENT_ENTRIES);
 
-            const contentEntries = get(data, `list${pluralize(typeName)}.data`, []).map(item => {
-                return { id: item.id, name: item.meta.title.value };
-            });
+    const contentEntries = get(data, `list${pluralize(typeName)}.data`, []).map(item => {
+        return { id: item.id, name: item.meta.title.value };
+    });
+
+    return (
+        <MultiAutoComplete
+            value={extractValue(value, contentEntries)}
+            onChange={(value) => {
+                onChange(value.map(item => item.id));
+            }}
+            options={contentEntries}
+            label={I18NValue({ value: field.label })}
+            description={I18NValue({ value: field.helpText })}
+        />
+    );
+}
+
+const plugin: CmsEditorFieldRendererPlugin = {
+    type: "cms-editor-field-renderer",
+    name: "cms-editor-field-renderer-ref-inputs",
+    renderer: {
+        rendererName: "ref-inputs",
+        name: t`Reference Inputs`,
+        description: t`Renders a simple list of text inputs.`,
+        canUse({ field }) {
+            return field.type === "ref" && field.multipleValues;
+        },
+        render({ field, getBind }) {
+            const Bind = getBind();
 
             return (
                 <Bind>
-                    {({ value, onChange }) => (
-                        <MultiAutoComplete
-                            value={extractValue(value, contentEntries)}
-                            onChange={(value) => {
-                                onChange(value.map(item => item.id));
-                            }}
-                            label={I18NValue({ value: field.label })}
-                            description={I18NValue({ value: field.helpText })}
-                            options={contentEntries}
+                    {bind => (
+                        <MultiAutoCompleteContainer
+                            {...bind}
+                            field={field}
                         />
                     )}
                 </Bind>
