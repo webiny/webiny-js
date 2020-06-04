@@ -16,7 +16,9 @@ import upperFirst from "lodash/upperFirst";
 
 const modifyQueryArgs = (args = {}, environment, valuesModel, entry1FieldId) => {
     if (!valuesModel.locale) {
-        throw Error("modifyQueryArgs kobasico");
+        throw Error(
+            `Locale is missing for field ${entry1FieldId}.`
+        );
     }
 
     const returnArgs = cloneDeep<any>(args);
