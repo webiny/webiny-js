@@ -12,12 +12,13 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createTypeField({ model, field }) {
             const localeArg = "(locale: String)";
-            const { modelId, type } = field.settings;
-            const many = type === "many";
+            const { modelId } = field.settings;
             const gqlType = createReadTypeName(modelId);
-            const fieldArgs = many ? createListArgs({ model, field }) : localeArg;
+            const fieldArgs = field.multipleValues ? createListArgs({ model, field }) : localeArg;
 
-            return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
+            return (
+                field.fieldId + fieldArgs + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`
+            );
         },
         createResolver({ field }) {
             return (instance, args) => {
