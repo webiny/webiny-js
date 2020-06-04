@@ -11,6 +11,7 @@ export const createListQuery = model => {
             data {
                 id
                 meta {
+                    published
                     model
                     title {
                         value
@@ -30,6 +31,7 @@ export const createGetQuery = model => {
             data {
                 id
                 meta {
+                    published
                     model
                     title {
                         value

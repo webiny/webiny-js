@@ -23,8 +23,28 @@ const mocks = {
                 }
             },
             {
-                _id: "id-books",
-                fieldId: "books",
+                _id: "id-favorite-book",
+                fieldId: "favoriteBook",
+                type: "ref",
+                settings: {
+                    modelId: "book"
+                },
+                label: {
+                    values: [
+                        {
+                            locale: locales.en.id,
+                            value: "Favorite Book"
+                        },
+                        {
+                            locale: locales.de.id,
+                            value: "Lieblingsbuch"
+                        }
+                    ]
+                }
+            },
+            {
+                _id: "id-other-books",
+                fieldId: "otherBooks",
                 type: "ref",
                 multipleValues: true,
                 settings: {
@@ -34,11 +54,11 @@ const mocks = {
                     values: [
                         {
                             locale: locales.en.id,
-                            value: "Books"
+                            value: "Other Books"
                         },
                         {
                             locale: locales.de.id,
-                            value: "Bücher"
+                            value: "Andere Bücher"
                         }
                     ]
                 }
@@ -100,7 +120,23 @@ const mocks = {
             }
         }
     },
-    author1: ({ book1Id, book2Id }) => ({
+    book3: {
+        data: {
+            title: {
+                values: [
+                    {
+                        locale: locales.en.id,
+                        value: "Book3-en"
+                    },
+                    {
+                        locale: locales.de.id,
+                        value: "Book3-de"
+                    }
+                ]
+            }
+        }
+    },
+    author1: ({ book1Id, book2Id, book3Id }) => ({
         data: {
             title: {
                 values: [
@@ -114,140 +150,31 @@ const mocks = {
                     }
                 ]
             },
-            books: {
+            favoriteBook: {
                 values: [
                     {
                         locale: locales.en.id,
-                        value: [book1Id]
+                        value: book1Id
                     },
                     {
                         locale: locales.de.id,
-                        value: [book2Id]
+                        value: book2Id
                     }
                 ]
-            }
-        }
-    }),
-    author1Revision2: ({ authorId, book1Id, book2Id }) => ({
-        revision: authorId,
-        data: {
-            books: {
+            },
+            otherBooks: {
                 values: [
                     {
                         locale: locales.en.id,
-                        value: []
-                    },
-                    {
-                        locale: locales.de.id,
                         value: [book1Id, book2Id]
                     },
                     {
-                        locale: locales.it.id,
-                        value: [book2Id]
+                        locale: locales.de.id,
+                        value: [book3Id]
                     }
                 ]
             }
         }
-    }),
-    newAuthorRevisionEntries2Entries: ({
-        environmentId,
-        authorRev1Id,
-        authorRev2Id,
-        book1Id,
-        book2Id
-    }) => [
-        {
-            locale: locales.en.id,
-            deleted: false,
-            entry1: authorRev1Id,
-            entry1FieldId: "books",
-            entry2: book1Id,
-            entry1ModelId: "CmsAuthor",
-            entry2ModelId: "CmsBook",
-            environment: environmentId
-        },
-        {
-            locale: locales.de.id,
-            deleted: false,
-            entry1: authorRev1Id,
-            entry1FieldId: "books",
-            entry2: book2Id,
-            entry1ModelId: "CmsAuthor",
-            entry2ModelId: "CmsBook",
-            environment: environmentId
-        },
-        {
-            locale: locales.de.id,
-            deleted: false,
-            entry1: authorRev2Id,
-            entry1FieldId: "books",
-            entry2: book1Id,
-            entry1ModelId: "CmsAuthor",
-            entry2ModelId: "CmsBook",
-            environment: environmentId
-        },
-        {
-            locale: locales.de.id,
-            deleted: false,
-            entry1: authorRev2Id,
-            entry1FieldId: "books",
-            entry2: book2Id,
-            entry1ModelId: "CmsAuthor",
-            entry2ModelId: "CmsBook",
-            environment: environmentId
-        },
-        {
-            locale: locales.it.id,
-            deleted: false,
-            entry1: authorRev2Id,
-            entry1FieldId: "books",
-            entry2: book2Id,
-            entry1ModelId: "CmsAuthor",
-            entry2ModelId: "CmsBook",
-            environment: environmentId
-        }
-    ],
-    getAuthorViaGqlBooksField: ({ book1Id, book2Id }) => ({
-        values: [
-            {
-                value: [],
-                locale: locales.en.id
-            },
-            {
-                value: [
-                    {
-                        id: book2Id,
-                        meta: {
-                            title: {
-                                value: "Book2-en"
-                            }
-                        }
-                    },
-                    {
-                        id: book1Id,
-                        meta: {
-                            title: {
-                                value: "Book1-en"
-                            }
-                        }
-                    }
-                ],
-                locale: locales.de.id
-            },
-            {
-                value: [
-                    {
-                        id: book2Id,
-                        meta: {
-                            title: {
-                                value: "Book2-en"
-                            }
-                        }
-                    }
-                ],
-                locale: locales.it.id
-            }
-        ]
     })
 };
 

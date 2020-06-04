@@ -1,6 +1,5 @@
 import { locales } from "@webiny/api-i18n/testing";
 
-
 const mocks = {
     authorContentModel: ({ contentModelGroupId }) => ({
         name: "Author",
@@ -232,18 +231,20 @@ const mocks = {
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
@@ -251,18 +252,20 @@ const mocks = {
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         }
@@ -278,18 +281,20 @@ const mocks = {
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
@@ -297,45 +302,50 @@ const mocks = {
         {
             deleted: true,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book4Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: false,
             entry1: authorId,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         }
@@ -443,36 +453,40 @@ const mocks = {
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book4Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         }
@@ -518,63 +532,70 @@ const mocks = {
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book4Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: false,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         }
@@ -614,18 +635,20 @@ const mocks = {
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
@@ -633,108 +656,120 @@ const mocks = {
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book4Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author1Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book4Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book3Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.en.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book1Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.de.id
         },
         {
             deleted: true,
             entry1: author2Id,
+            entry1FieldId: "books",
             entry2: book2Id,
-            entry1ClassId: "CmsAuthor",
-            entry2ClassId: "CmsBook",
+            entry1ModelId: "CmsAuthor",
+            entry2ModelId: "CmsBook",
             environment: environmentId,
             locale: locales.it.id
         }

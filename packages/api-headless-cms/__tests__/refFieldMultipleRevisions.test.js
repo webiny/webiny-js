@@ -19,8 +19,9 @@ describe("Ref Field - Multiple Revisions Test", () => {
                         "deleted",
                         "entry1",
                         "entry2",
-                        "entry1ClassId",
-                        "entry2ClassId",
+                        "entry1ModelId",
+                        "entry1FieldId",
+                        "entry2ModelId",
                         "environment"
                     ])
                 )

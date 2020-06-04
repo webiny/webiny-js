@@ -6,6 +6,9 @@ import debounce from "lodash/debounce";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
+import { i18n } from "@webiny/app/i18n";
+import { Link } from "@webiny/react-router";
+const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 function ContentEntriesAutocomplete({ bind, field }) {
     // Value can be an object (received from API) or an ID (set by the Autocomplete component).
@@ -50,9 +53,22 @@ function ContentEntriesAutocomplete({ bind, field }) {
 
     // Calculate a couple of props for the Autocomplete component.
     const id = get(getContentQuery, "data.content.data.id");
+    const published = get(getContentQuery, "data.content.data.meta.published");
     const name = getValue(get(getContentQuery, "data.content.data.meta.title"));
     const loading =
         listContentQuery.loading || refContentModelQuery.loading || getContentQuery.loading;
+
+    const unpublishedEntryInfo =
+        published === false &&
+        t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`(
+            {
+                publishItLink: (
+                    <Link
+                        to={`/cms/content-models/manage/${refContentModel.modelId}?id=${id}`}
+                    >{t`publish it`}</Link>
+                )
+            }
+        );
 
     return (
         <AutoComplete
@@ -61,7 +77,12 @@ function ContentEntriesAutocomplete({ bind, field }) {
             value={{ id, name }}
             options={options}
             label={<I18NValue value={field.label} />}
-            description={<I18NValue value={field.helpText} />}
+            description={
+                <>
+                    <I18NValue value={field.helpText} />
+                    {unpublishedEntryInfo}
+                </>
+            }
             onInput={debounce(search => search && setSearch(search), 250)}
         />
     );

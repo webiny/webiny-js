@@ -44,6 +44,17 @@ export const copyEnvironment = async ({ context, copyFrom, copyTo }) => {
         environment: copyTo
     });
 
+    // Copy all environment content models
+    await copyData({
+        driver,
+        name: "CmsEntries2Entries",
+        query: {
+            environment: copyFrom,
+            deleted: { $ne: true }
+        },
+        environment: copyTo
+    });
+
     return true;
 };
 
