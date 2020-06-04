@@ -1,5 +1,6 @@
 import * as React from "react";
 import Downshift from "downshift";
+import MaterialSpinner from "react-spinner-material";
 import { Input } from "@webiny/ui/Input";
 import { Chips, Chip } from "@webiny/ui/Chips";
 import { getOptionValue, getOptionText } from "./utils";
@@ -22,11 +23,22 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      * Set if custom values (not from list of suggestions) are allowed.
      */
     allowFreeInput?: boolean;
+
+    /* If true, will show a loading spinner on the right side of the input. */
+    loading?: boolean;
 };
 
 type State = {
     inputValue: string;
 };
+
+function Spinner() {
+    if (process.env.REACT_APP_ENV === "ssr") {
+        return null;
+    }
+
+    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+}
 
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
     static defaultProps = {
@@ -256,6 +268,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                     // @ts-ignore
                                     validation,
                                     rawOnChange: true,
+                                    trailingIcon: this.props.loading && <Spinner />,
                                     onChange: e => e,
                                     onBlur: e => e,
                                     onKeyUp: (e: any) => {
