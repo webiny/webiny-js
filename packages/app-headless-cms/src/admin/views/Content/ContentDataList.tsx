@@ -26,6 +26,13 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
+const getValue = item => {
+    if (!item.value) {
+        return { ...item, value: "Untitled" }
+    }
+    return item;
+}
+
 const ContentDataList = ({ contentModel, dataList }) => {
     return (
         <DataList
@@ -42,7 +49,7 @@ const ContentDataList = ({ contentModel, dataList }) => {
                             selected={isSelected(item)}
                         >
                             <ListItemText onClick={() => select(item)}>
-                                <I18NValue value={item.meta.title} />
+                                <I18NValue value={getValue(item.meta.title)} />
                                 <ListItemTextSecondary>
                                     {item.createdBy && item.createdBy.firstName && (
                                         <>

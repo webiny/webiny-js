@@ -63,7 +63,11 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 resolvers: {
                     CmsText: {
                         value(field, args) {
-                            return field.value(args.locale);
+                            // TODO: Revisit, check meta title field returning `undefined`
+                            if (field.value && typeof field.value === "function") {
+                                return field.value(args.locale);
+                            }
+                            return null;
                         }
                     }
                 }
