@@ -48,8 +48,8 @@ const plugin: CmsEditorFieldTypePlugin = {
                 showSnackbar(error.message);
                 return null;
             }
-
-            const contentModels = get(data, "listContentModels.data", []).map(item => {
+            // Format options for the Autocomplete component.
+            const options = get(data, "listContentModels.data", []).map(item => {
                 return { id: item.modelId, name: item.name };
             });
 
@@ -58,15 +58,21 @@ const plugin: CmsEditorFieldTypePlugin = {
                     {loading && <CircularProgress />}
                     <Cell span={12}>
                         <Bind name={"settings.modelId"} validators={validation.create("required")}>
-                            {bind => (
-                                <AutoComplete
-                                    value={get(bind, 'value.id', bind.value)}
-                                    onChange={bind.onChange}
-                                    label={t`Content Model`}
-                                    description={t`Cannot be changed later`}
-                                    options={contentModels}
-                                />
-                            )}
+                            {bind => {
+                                const id = get(bind, 'value.id', bind.value);
+                                // Format value prop for AutoComplete component.
+                                const formattedValueForAutoComplete = options.find(option => option.id === id);
+
+                                return (
+                                    <AutoComplete
+                                        value={formattedValueForAutoComplete}
+                                        onChange={bind.onChange}
+                                        label={t`Content Model`}
+                                        description={t`Cannot be changed later`}
+                                        options={options}
+                                    />
+                                )
+                            }}
                         </Bind>
                     </Cell>
                 </Grid>
