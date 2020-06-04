@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.0.0-beta.18 (2020-06-04)
+
+
+### Bug Fixes
+
+* **cwp-template-cms:** add missing api hook ([d1aa7c3](https://github.com/webiny/webiny-js/commit/d1aa7c334e681340ac14fd2b3d83fa583a8e5fc8))
+
+
+
+
+
 # 4.0.0-beta.17 (2020-06-04)
 
 **Note:** Version bump only for package @webiny/api-settings-manager
