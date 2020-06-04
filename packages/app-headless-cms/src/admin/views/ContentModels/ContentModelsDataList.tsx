@@ -95,8 +95,6 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
         return editHandlers.current[contentModel.id];
     }, undefined);
 
-    const query = new URLSearchParams(location.search);
-
     return (
         <DataList
             {...dataList}
