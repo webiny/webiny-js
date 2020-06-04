@@ -1,6 +1,6 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
-import { getPlugin } from "@webiny/plugins";
+import { getPlugins } from "@webiny/plugins";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
 const I18N_FIELD = /* GraphQL */ `
@@ -33,8 +33,10 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
-        const fieldPlugin = getPlugin<CmsEditorFieldTypePlugin>(
-            `cms-editor-field-type-${field.type}`
+        const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>(`cms-editor-field-type`).find(
+            item => {
+                return item.field.type === field.type;
+            }
         );
 
         if (fieldPlugin.field.graphql && fieldPlugin.field.graphql.queryField) {
