@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
@@ -15,6 +15,14 @@ function ContentEntriesAutocomplete({ bind, field }) {
     const value = get(bind, "value.id", bind.value);
     const [search, setSearch] = useState("");
     const { getValue } = useI18N();
+
+    // Format value coming from API.
+    useEffect(() => {
+        if (typeof bind.value !== "string") {
+            // We only need IDs to send back in request to API.
+            bind.onChange(get(bind.value, "id", bind.value));
+        }
+    }, [bind.value]);
 
     // Fetch ref content model data, so that we can its title field.
     const refContentModelQuery = useQuery(GET_CONTENT_MODEL, {
