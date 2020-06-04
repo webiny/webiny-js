@@ -6,6 +6,9 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
 import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
+import { i18n } from "@webiny/app/i18n";
+import { Link } from "@webiny/react-router";
+const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 function ContentEntriesMultiAutocomplete({ bind, field }) {
     // Value can be an array of object (received from API) or an array of ID (set by the Autocomplete component).
@@ -66,6 +69,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     const valueForAutoComplete = get(listContentQueryFilterById, "data.content.data", []).map(
         item => ({
             id: item.id,
+            published: item.meta.published,
             name: getValue(item.meta.title)
         })
     );
@@ -76,23 +80,48 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
         refContentModelQuery.loading ||
         listContentQueryFilterById.loading;
 
+    let unpublishedEntriesInfo = valueForAutoComplete.filter(item => item.published === false);
+    if (unpublishedEntriesInfo.length) {
+        unpublishedEntriesInfo = t`Before publishing the main content entry, make sure to publish the
+                            following referenced entries: {entries}`({
+            entries: (
+                <>
+                    {unpublishedEntriesInfo.map(
+                        ({ id, name, published }, index) =>
+                            !published && (
+                                <React.Fragment key={id}>
+                                    {index > 0 && ", "}
+                                    <Link
+                                        to={`/cms/content-models/manage/${refContentModel.modelId}?id=${id}`}
+                                    >
+                                        {name}
+                                    </Link>
+                                </React.Fragment>
+                            )
+                    )}
+                </>
+            )
+        });
+    }
+
     return (
         <MultiAutoComplete
             {...bind}
             onChange={values => {
                 // We only need IDs to send back in request to API
-                bind.onChange(
-                    values.map(item => {
-                        return get(item, "id", item);
-                    })
-                );
+                bind.onChange(values.map(item => get(item, "id", item)));
             }}
             loading={loading}
             value={valueForAutoComplete}
             options={options}
             label={<I18NValue value={field.label} />}
-            description={<I18NValue value={field.helpText} />}
             onInput={debounce(search => search && setSearch(search), 250)}
+            description={
+                <>
+                    <I18NValue value={field.helpText} />
+                    {unpublishedEntriesInfo}
+                </>
+            }
         />
     );
 }
