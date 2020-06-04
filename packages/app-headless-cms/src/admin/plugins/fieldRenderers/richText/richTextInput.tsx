@@ -3,6 +3,7 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
+import get from "lodash/get";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -14,7 +15,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Rich Text Input`,
         description: t`Renders a rich text input.`,
         canUse({ field }) {
-            return field.type === "rich-text" && !field.multipleValues && !field.predefinedValues;
+            return field.type === "rich-text" && !field.multipleValues && !get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();

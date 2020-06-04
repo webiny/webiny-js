@@ -6,6 +6,7 @@ import DateTimeWithTimezone from "./DateTimeWithTimezone";
 import Time from "./Time";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
+import get from "lodash/get";
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -15,7 +16,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Date/Time Inputs`,
         description: t`Renders inputs for various formats of dates and times.`,
         canUse({ field }) {
-            return field.type === "datetime" && !field.multipleValues && !field.predefinedValues;
+            return field.type === "datetime" && !field.multipleValues && !get(field, "predefinedValues.enabled");
         },
         render({ field, getBind }) {
             const Bind = getBind();

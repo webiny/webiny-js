@@ -2,7 +2,7 @@ import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { Input } from "@webiny/ui/Input";
-
+import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -14,7 +14,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Text Input`,
         description: t`Renders a simple input with its type set to "text".`,
         canUse({ field }) {
-            return field.type === "text" && !field.multipleValues && !field.predefinedValues;
+            return (
+                field.type === "text" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();

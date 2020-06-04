@@ -3,6 +3,8 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { i18n } from "@webiny/app/i18n";
+import get from "lodash/get";
+
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
 const plugin: CmsEditorFieldRendererPlugin = {
@@ -13,7 +15,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Checkboxes`,
         description: t`Renders checkboxes, allowing selection of multiple values.`,
         canUse({ field }) {
-            return field.multipleValues && field.predefinedValues && field.predefinedValues.enabled;
+            return field.multipleValues && get(field, "predefinedValues.enabled");
         },
         render({ field, getBind, locale }) {
             const Bind = getBind();

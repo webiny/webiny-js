@@ -4,6 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "./../DynamicListMultipleValues";
+import get from "lodash/get";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -15,7 +16,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Text Areas`,
         description: t`Renders a simple list of text areas.`,
         canUse({ field }) {
-            return field.type === "long-text" && field.multipleValues && !field.predefinedValues;
+            return field.type === "long-text" && field.multipleValues && !get(field, "predefinedValues.enabled");
         },
         render(props) {
             return (
