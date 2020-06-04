@@ -13,20 +13,6 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
-const extractValue = value => {
-    if (!value) {
-        return "";
-    }
-
-    if (typeof value === "string") {
-        return value;
-    }
-
-    if (value.id) {
-        return value.id;
-    }
-};
-
 const plugin: CmsEditorFieldTypePlugin = {
     type: "cms-editor-field-type",
     name: "cms-editor-field-type-ref",
@@ -74,10 +60,8 @@ const plugin: CmsEditorFieldTypePlugin = {
                         <Bind name={"settings.modelId"} validators={validation.create("required")}>
                             {bind => (
                                 <AutoComplete
-                                    value={extractValue(bind.value)}
-                                    onChange={value => {
-                                        bind.onChange(value);
-                                    }}
+                                    value={get(bind, 'value.id', bind.value)}
+                                    onChange={bind.onChange}
                                     label={t`Content Model`}
                                     description={t`Cannot be changed later`}
                                     options={contentModels}
