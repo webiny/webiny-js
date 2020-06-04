@@ -49,6 +49,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             indexes: indexes()
         }),
         withProps({
+            get totalFields() {
+                return Array.isArray(this.fields) ? this.fields.length : 0;
+            },
             pluralizedName() {
                 if (!this.name) {
                     return "";
@@ -176,7 +179,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         for (let j = 0; j < index.fields.length; j++) {
                             const field = index.fields[j];
                             // "id" is built-in, no need to do any checks here.
-                            if (field === 'id') {
+                            if (field === "id") {
                                 continue;
                             }
                             if (!this.fields.find(item => item.fieldId === field)) {
