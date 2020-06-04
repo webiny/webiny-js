@@ -50,13 +50,13 @@ describe("Data Manager Handler", () => {
         expect(response.error).toBe(undefined);
 
         let count = await collection("CmsContentEntrySearch").countDocuments();
-        expect(count).toBe(21);
+        expect(count).toBe(28);
 
         let entries = await collection("CmsContentEntrySearch")
             .find({ revision: categories[0].model.id, locale: locales.en.id })
             .toSimpleArray();
 
-        expect(entries.length).toBe(3);
+        expect(entries.length).toBe(4);
 
         // Get content model to fetch model indexes
         const categoryModel = await models.CmsContentModel.findOne({
@@ -105,15 +105,17 @@ describe("Data Manager Handler", () => {
         await categoryModel.save();
 
         let count = await collection("CmsContentEntrySearch").countDocuments();
-        expect(count).toBe(15);
+        expect(count).toBe(22);
 
-        // Remove all indexes - this should only generate `fields=id` index for each locale
+        // Remove all indexes - this should only generate `fields=id` index for each locale.
+        // Update: also, it will include indexes for the title-field! So, we made +7 increment here.
         categoryModel.indexes = [];
         await categoryModel.save();
 
         count = await collection("CmsContentEntrySearch").countDocuments();
         // 3 locales * 3 entries = 9 index entries
-        expect(count).toBe(9);
+        // Update: +7 title entries
+        expect(count).toBe(16);
 
         // Restore indexes
         categoryModel.indexes = [{ fields: ["title"] }, { fields: ["title", "slug"] }];
