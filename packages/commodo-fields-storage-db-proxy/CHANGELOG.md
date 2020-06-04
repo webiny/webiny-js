@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.0.0-beta.19 (2020-06-04)
+
+
+### Bug Fixes
+
+* make sure IDs are saved correctly in single value ref fields ([f08a5d4](https://github.com/webiny/commodo/commit/f08a5d45bb687db475f4ba6fe2bb7bf42f908c12))
+
+
+
+
+
 # 4.0.0-beta.18 (2020-06-04)
 
 
