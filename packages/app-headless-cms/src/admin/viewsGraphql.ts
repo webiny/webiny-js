@@ -71,19 +71,6 @@ export const CREATE_CONTENT_MODEL = gql`
     }
 `;
 
-export const CREATE_REVISION_FROM = gql`
-    mutation HeadlessCmsContentModelsCreateRevisionFrom($revision: ID!) {
-        revision: createRevisionFrom(revision: $revision) {
-            data {
-                id
-            }
-            error {
-                ${ERROR_FIELDS}
-            }
-        }
-    }
-`;
-
 export const DELETE_CONTENT_MODEL = gql`
     mutation HeadlessCmsDeleteContentModel($id: ID!) {
         deleteContentModel(id: $id) {

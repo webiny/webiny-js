@@ -5,7 +5,7 @@ import { css } from "emotion";
 import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_CONTENT_MODEL, CREATE_REVISION_FROM } from "../../viewsGraphql";
+import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
@@ -72,23 +72,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const editRecord = useCallback(contentModel => {
         if (!editHandlers.current[contentModel.id]) {
             editHandlers.current[contentModel.id] = async () => {
-                if (contentModel.published) {
-                    const { data: res } = await client.mutate({
-                        mutation: CREATE_REVISION_FROM,
-                        variables: { revision: contentModel.id },
-                        refetchQueries: ["HeadlessCmsListContentModels"],
-                        awaitRefetchQueries: true
-                    });
-                    const { data, error } = res.revision;
-
-                    if (error) {
-                        return showSnackbar(error.message);
-                    }
-
-                    history.push(`/cms/content-models/${data.id}`);
-                } else {
-                    history.push("/cms/content-models/" + contentModel.id);
-                }
+                history.push("/cms/content-models/" + contentModel.id);
             };
         }
 
