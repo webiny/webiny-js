@@ -1,10 +1,9 @@
 import { merge } from "lodash";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
 import i18nLocale from "./graphql/I18NLocale";
 import install from "./graphql/Install";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
@@ -37,15 +36,16 @@ const plugin: GraphQLSchemaPlugin = {
                 error: I18NError
             }
 
+            type I18NCursors {
+                next: String
+                previous: String
+            }
+
             type I18NListMeta {
+                cursors: I18NCursors
+                hasNextPage: Boolean
+                hasPreviousPage: Boolean
                 totalCount: Int
-                totalPages: Int
-                page: Int
-                perPage: Int
-                from: Int
-                to: Int
-                previousPage: Int
-                nextPage: Int
             }
 
             type I18NError {
@@ -68,20 +68,6 @@ const plugin: GraphQLSchemaPlugin = {
             i18nLocale.resolvers,
             install.resolvers
         )
-    },
-    security: {
-        shield: {
-            I18NQuery: {
-                getI18NLocale: hasScope("i18n:locale:crud"),
-                listI18NLocales: hasScope("i18n:locale:crud")
-                // getI18NInformation // Publicly visible.
-            },
-            I18NMutation: {
-                createI18NLocale: hasScope("i18n:locale:crud"),
-                updateI18NLocale: hasScope("i18n:locale:crud"),
-                deleteI18NLocale: hasScope("i18n:locale:crud")
-            }
-        }
     }
 };
 

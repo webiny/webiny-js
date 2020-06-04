@@ -42,7 +42,7 @@ const getElementPlugin = (element): PbEditorPageElementPlugin => {
         return null;
     }
 
-    const plugins = getPlugins("pb-editor-page-element") as PbEditorPageElementPlugin[];
+    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     return plugins.find(pl => pl.elementType === element.type);
 };
 

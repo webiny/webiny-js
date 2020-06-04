@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../app-cookie-policy",
+    "../app-google-tag-manager",
+    "../app-mailchimp",
+    "../app-typeform",
+    "../app-page-builder",
+    "../app-page-builder-theme",
+    "../app-headless-cms",
+    "../app-form-builder",
+    "../app-form-builder-theme",
+    "../app-template-admin"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    { "path": "../app-cookie-policy/tsconfig.build.json" },
+    { "path": "../app-google-tag-manager/tsconfig.build.json" },
+    { "path": "../app-mailchimp/tsconfig.build.json" },
+    { "path": "../app-typeform/tsconfig.build.json" },
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-page-builder-theme/tsconfig.build.json" },
+    { "path": "../app-headless-cms/tsconfig.build.json" },
+    { "path": "../app-form-builder/tsconfig.build.json" },
+    { "path": "../app-form-builder-theme/tsconfig.build.json" },
+    { "path": "../app-template-admin/tsconfig.build.json" }
+  ]
+}

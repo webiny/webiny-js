@@ -1,7 +1,13 @@
 import { WithFieldsError } from "@webiny/commodo";
 import parseBoolean from "./parseBoolean";
 import InvalidFieldsError from "./InvalidFieldsError";
-import { Response, ListResponse, ErrorResponse, NotFoundResponse } from "@webiny/api";
+import {
+    Response,
+    ListResponse,
+    ErrorResponse,
+    NotFoundResponse,
+    requiresTotalCount
+} from "@webiny/graphql";
 import { FieldResolver } from "./types";
 
 type GetModelType = (context: Object) => any; // TODO: add commodo type when available
@@ -36,7 +42,8 @@ export const resolveGet = (getModel: GetModelType): FieldResolver => async (
 export const resolveList = (getModel: GetModelType): FieldResolver => async (
     root,
     args,
-    context
+    context,
+    info
 ) => {
     const Model: any = getModel(context);
 
@@ -44,9 +51,11 @@ export const resolveList = (getModel: GetModelType): FieldResolver => async (
     const query = { ...args.where };
     const find: any = {
         query,
-        page: args.page,
-        perPage: args.perPage,
-        sort: args.sort
+        limit: args.limit,
+        after: args.after,
+        before: args.before,
+        sort: args.sort,
+        totalCount: requiresTotalCount(info)
     };
 
     if (args.search && args.search.query) {

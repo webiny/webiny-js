@@ -1,4 +1,4 @@
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 
 export default userFetcher => async (
     root: any,

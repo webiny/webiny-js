@@ -7,16 +7,17 @@ import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import MailchimpSettings from "./components/MailchimpSettings";
 import MailchimpElementAdvancedSettings from "./components/MailchimpElementAdvancedSettings";
 import MailchimpElement from "./components/MailchimpElement";
-import { hasRoles } from "@webiny/app-security";
 import { SecureRoute } from "@webiny/app-security/components";
 import { ReactComponent as MailchimpLogo } from "./mailchimp-logo.svg";
-
 import render from "./../render";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin
+    PbEditorPageElementAdvancedSettingsPlugin,
+    PbMenuSettingsItemPlugin
 } from "@webiny/app-page-builder/types";
-import { SettingsPlugin } from "@webiny/app-admin/types";
+import { i18n } from "@webiny/app/i18n";
+import { RoutePlugin } from "@webiny/app/types";
+const t = i18n.ns("app-mailchimp/admin");
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -27,10 +28,10 @@ const PreviewBox = styled("div")({
     }
 });
 
-const roles = ["pb-settings"];
+const ROLE_PB_SETTINGS = ["pb:page:crud"];
 
-export default [
-    ...render,
+export default () => [
+    ...render(),
     {
         name: "pb-page-element-mailchimp",
         type: "pb-editor-page-element",
@@ -46,7 +47,11 @@ export default [
                 );
             }
         },
-        settings: ["pb-editor-page-element-settings-delete", "", "pb-editor-page-element-settings-height"],
+        settings: [
+            "pb-editor-page-element-settings-delete",
+            "",
+            "pb-editor-page-element-settings-height"
+        ],
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }) {
@@ -74,25 +79,27 @@ export default [
         }
     } as PbEditorPageElementAdvancedSettingsPlugin,
     {
-        type: "settings",
-        name: "settings-mailchimp",
-        settings: {
-            show: () => hasRoles(roles),
-            type: "integration",
-            name: "Mailchimp",
-            route: (
-                <Route
-                    path="/mailchimp"
-                    render={() => (
-                        <AdminLayout>
-                            <Helmet title={"Mailchimp"} />
-                            <SecureRoute roles={roles}>
-                                <MailchimpSettings />
-                            </SecureRoute>
-                        </AdminLayout>
-                    )}
-                />
-            )
+        type: "route",
+        name: "route-settings-page-builder-mailchimp",
+        route: (
+            <Route
+                path="/settings/page-builder/mailchimp"
+                render={() => (
+                    <AdminLayout>
+                        <Helmet title={"Page Builder - Mailchimp Settings"} />
+                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
+                            <MailchimpSettings />
+                        </SecureRoute>
+                    </AdminLayout>
+                )}
+            />
+        )
+    } as RoutePlugin,
+    {
+        type: "menu-settings-page-builder",
+        name: "menu-settings-page-builder-mailchimp",
+        render({ Item }) {
+            return <Item label={t`Mailchimp`} path={"/settings/page-builder/mailchimp"} />;
         }
-    } as SettingsPlugin
+    } as PbMenuSettingsItemPlugin
 ];

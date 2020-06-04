@@ -3,11 +3,12 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../api",
+    "../graphql",
     "../api-security",
+    "../api-settings-manager",
     "../commodo",
     "../commodo-graphql",
-    "../http-handler-ssr",
+    "../handler-ssr",
     "../validation"
   ],
   "compilerOptions": {
@@ -16,10 +17,11 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../api-settings-manager/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../http-handler-ssr/tsconfig.build.json" },
+    { "path": "../handler-ssr/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

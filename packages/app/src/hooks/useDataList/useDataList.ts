@@ -2,14 +2,16 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery } from "react-apollo";
 import useRouter from "use-react-router";
 import { get, isEqual } from "lodash";
-import { prepareLoadListParams, redirectToRouteWithQueryParams } from "./utils";
+import { prepareLoadListParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
 import { DocumentNode } from "graphql";
+import { ApolloClient } from "apollo-client";
 
 export type UseDataListParams = {
     useRouter?: boolean;
     variables?: ((params: UseDataListParams) => any) | object;
+    client?: ApolloClient<any>;
     query: DocumentNode;
     getData?: (data: any) => any;
     getMeta?: (data: any) => any;
@@ -34,7 +36,8 @@ export type ReturnProps = {
     setWhere: (where: any) => void;
     setSorters: (sort: any) => void;
     setPerPage: (perPage: number) => void;
-    setPage: (page: number) => void;
+    setPreviousPage: (cursor: string) => void;
+    setNextPage: (cursor: string) => void;
     multiSelect: (items: string | string[], value?: boolean) => void;
     init: () => void;
 };
@@ -45,7 +48,7 @@ const useDataList = (params: UseDataListParams) => {
     let history = null;
     let location = null;
     const routerHook = useRouter();
-    // TODO: const router = ....
+
     if (params.useRouter !== false) {
         history = routerHook.history;
         location = routerHook.location;
@@ -58,20 +61,21 @@ const useDataList = (params: UseDataListParams) => {
         }
 
         return {
+            client: params.client,
             variables: {
                 ...variables,
                 ...prepareLoadListParams(location)
             }
         };
-    }, []);
+    }, undefined);
 
     const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
     const dataListProps: ReturnProps = {
-        data: get(queryData, "list.getData", getData)(queryData.data),
-        meta: get(queryData, "list.getMeta", getMeta)(queryData.data),
-        error: get(queryData, "list.getError", getError)(queryData.data),
+        data: get(params, "getData", getData)(queryData.data),
+        meta: get(params, "getMeta", getMeta)(queryData.data),
+        error: get(params, "getError", getError)(queryData.data),
 
         loading: queryData.loading,
         init() {
@@ -86,37 +90,63 @@ const useDataList = (params: UseDataListParams) => {
                 return;
             }
 
-            if (history) {
-                redirectToRouteWithQueryParams(params, { history, location });
-                return;
-            }
+            // if (history) {
+            //     redirectToRouteWithQueryParams(params, { history, location });
+            //     return;
+            // }
 
             queryData.refetch(params);
         },
         setPerPage(perPage: number): void {
             const preparedParams = {
                 ...dataListProps.__loadParams,
-                perPage: parseInt("" + perPage)
+                limit: parseInt("" + perPage),
+                after: undefined,
+                before: undefined
             };
             this.refresh(preparedParams);
         },
-        setPage(page: number): void {
+        setNextPage(cursor: string): void {
             const preparedParams = {
                 ...dataListProps.__loadParams,
-                page: parseInt("" + page)
+                after: cursor,
+                before: undefined
+            };
+            this.refresh(preparedParams);
+        },
+        setPreviousPage(cursor: string): void {
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                after: undefined,
+                before: cursor
             };
             this.refresh(preparedParams);
         },
         setSearch(search): void {
-            const preparedParams = { ...dataListProps.__loadParams, search };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                search,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         setWhere(where): void {
-            const preparedParams = { ...dataListProps.__loadParams, where };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                where,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         setSorters(sort): void {
-            const preparedParams = { ...dataListProps.__loadParams, sort };
+            const preparedParams = {
+                ...dataListProps.__loadParams,
+                sort,
+                after: undefined,
+                before: undefined
+            };
             this.refresh(preparedParams);
         },
         multiSelect(items, value): void {

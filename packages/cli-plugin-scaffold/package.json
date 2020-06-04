@@ -1,0 +1,37 @@
+{
+  "name": "@webiny/cli-plugin-scaffold",
+  "version": "4.0.0-beta.19",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-plugin-deploy-components"
+  },
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "description": "A tool to bootstrap a Webiny project.",
+  "dependencies": {
+    "inquirer": "^7.1.0",
+    "ora": "^4.0.4"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "scripts": {},
+  "adio": {
+    "ignoreDirs": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "ignore": {
+      "src": [
+        "vm"
+      ]
+    }
+  },
+  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+}

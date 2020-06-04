@@ -1,5 +1,5 @@
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
-import { GraphQLContext, GraphQLFieldResolver } from "@webiny/api/types";
+import { Context, GraphQLFieldResolver } from "@webiny/graphql/types";
 import { JWTPayload, SecurityAuthenticationProviderPlugin } from "../../../types";
 import { JwtToken } from "../../authentication/jwtToken";
 
@@ -10,9 +10,9 @@ const invalidCredentials = new ErrorResponse({
     message: "Invalid credentials."
 });
 
-const generateJWT = async (user, context: GraphQLContext) => {
+const generateJWT = async (user, context: Context) => {
     const expiresOn = new Date();
-    expiresOn.setSeconds(expiresOn.getSeconds() + context.security.token.expiresIn);
+    expiresOn.setSeconds(expiresOn.getSeconds() + parseInt(context.security.token.expiresIn));
 
     // Convert to seconds to represent "number of seconds since the epoch"
     const seconds = Math.floor(expiresOn.getTime() / 1000);

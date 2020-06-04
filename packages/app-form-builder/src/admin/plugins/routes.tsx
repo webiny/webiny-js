@@ -13,6 +13,8 @@ const Loader = ({ children, ...props }) => (
 const FormEditor = lazy(() => import("../views/Editor"));
 const Forms = lazy(() => import("../views/Forms/Forms"));
 
+const ROLE_FORMS_EDITOR = ["forms:form:crud"];
+
 const plugins: RoutePlugin[] = [
     {
         name: "route-form-editors-editor",
@@ -22,7 +24,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/forms/:id"}
                 render={() => (
-                    <SecureRoute roles={["form-editors-editor"]}>
+                    <SecureRoute scopes={ROLE_FORMS_EDITOR}>
                         <Helmet>
                             <title>Edit form</title>
                         </Helmet>
@@ -42,7 +44,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/forms"
                 render={() => (
-                    <SecureRoute roles={["form-editors"]}>
+                    <SecureRoute scopes={ROLE_FORMS_EDITOR}>
                         <AdminLayout>
                             <Helmet title={"Form Builder"} />
                             <Loader>

@@ -7,7 +7,7 @@ const searchDataByKey = (searchKey, object) => {
         return object[searchKey];
     }
 
-    for (let key in object) {
+    for (const key in object) {
         const value = searchDataByKey(searchKey, object[key]);
         if (value) {
             return value;

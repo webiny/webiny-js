@@ -1,0 +1,41 @@
+{
+  "name": "@webiny/handler-apollo-server",
+  "version": "4.0.0-beta.19",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "The Apollo Server as a function.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/graphql": "^4.0.0-beta.19",
+    "@webiny/handler": "^4.0.0-beta.19",
+    "@webiny/plugins": "^4.0.0-beta.19",
+    "apollo-server-lambda": "^2.13.1",
+    "boolean": "^3.0.1",
+    "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "jest-mock-console": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  }
+}

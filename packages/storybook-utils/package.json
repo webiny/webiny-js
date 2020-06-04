@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/storybook-utils",
-  "version": "3.0.1",
+  "version": "4.0.0-beta.19",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
@@ -36,6 +36,6 @@
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
-    "postbuild": "tsc -p tsconfig.build.json"
+    "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
   }
 }

@@ -15,6 +15,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-i18n/admin/installation");
 
@@ -50,6 +51,7 @@ const I18NInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { refetchLocales } = useI18N();
 
     const onSubmit = useCallback(async form => {
         setLoading(true);
@@ -62,6 +64,7 @@ const I18NInstaller = ({ onInstalled }) => {
             return;
         }
 
+        refetchLocales();
         onInstalled();
     }, []);
 
@@ -86,7 +89,9 @@ const I18NInstaller = ({ onInstalled }) => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>Install I18N</ButtonPrimary>
+                        <ButtonPrimary data-testid="install-i18n-button" onClick={submit}>
+                            Install I18N
+                        </ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
@@ -96,7 +101,7 @@ const I18NInstaller = ({ onInstalled }) => {
 
 export default {
     name: "installation-i18n",
-    type: "installation",
+    type: "admin-installation",
     title: "I18N app",
     dependencies: ["installation-security"],
     secure: true,

@@ -5,11 +5,11 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import formModel from "./models/form.model";
 import formSettings from "./models/formSettings.model";
 import formSubmission from "./models/formSubmission.model";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
-export default (): GraphQLContextPlugin => ({
-    name: "graphql-context-models",
-    type: "graphql-context",
+export default (): ContextPlugin => ({
+    name: "context-models",
+    type: "context",
     apply(context) {
         const driver = context.commodo && context.commodo.driver;
 

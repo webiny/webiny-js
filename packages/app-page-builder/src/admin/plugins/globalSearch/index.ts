@@ -1,10 +1,10 @@
-import { GlobalSearchPlugin } from "@webiny/app-admin/types";
+import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 
 // Additional sections in global search.
 
-const plugins: GlobalSearchPlugin[] = [
+const plugins: AdminGlobalSearchPlugin[] = [
     {
-        type: "global-search",
+        type: "admin-global-search",
         name: "global-search-categories",
         route: "/page-builder/categories",
         label: "Categories",
@@ -13,7 +13,7 @@ const plugins: GlobalSearchPlugin[] = [
         }
     },
     {
-        type: "global-search",
+        type: "admin-global-search",
         name: "global-search-pages",
         route: "/page-builder/pages",
         label: "Pages"

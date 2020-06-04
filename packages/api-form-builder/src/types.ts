@@ -1,5 +1,4 @@
-import { Plugin } from "@webiny/api/types";
-
+import { Plugin } from "@webiny/graphql/types";
 type FbFormTriggerData = { [key: string]: any };
 type FbFormSubmissionData = { [key: string]: any };
 
@@ -10,6 +9,7 @@ type FbFormFieldValidator = {
 };
 
 export type FbFormFieldValidatorPlugin = Plugin & {
+    type: "form-field-validator";
     validator: {
         name: string;
         validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
@@ -17,6 +17,7 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 };
 
 export type FbFormFieldPatternValidatorPlugin = Plugin & {
+    type: "form-field-validator-pattern";
     pattern: {
         name: string;
         regex: string;
@@ -32,6 +33,7 @@ export type FbFormTriggerHandlerParams = {
 };
 
 export type FbFormTriggerHandlerPlugin = Plugin & {
+    type: "form-trigger-handler";
     trigger: string;
     handle: (args: FbFormTriggerHandlerParams) => Promise<void>;
 };

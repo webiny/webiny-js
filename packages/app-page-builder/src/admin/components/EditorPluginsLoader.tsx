@@ -14,7 +14,7 @@ export function EditorPluginsLoader({ children, location }) {
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
             const renderPlugins = await import("@webiny/app-page-builder/render/presets/default");
-            registerPlugins(renderPlugins.default);
+            registerPlugins(renderPlugins.default());
 
             globalState.render = true;
             setLoaded({ render: true });
@@ -30,7 +30,7 @@ export function EditorPluginsLoader({ children, location }) {
                         : null
                 ].filter(Boolean)
             );
-            registerPlugins(plugins.map(p => p.default));
+            registerPlugins(plugins.map(p => p.default()));
 
             globalState.editor = true;
             globalState.render = true;

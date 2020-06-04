@@ -5,6 +5,7 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security";
 
 const roleFetcher = ctx => ctx.models.SecurityRole;
 
@@ -27,22 +28,11 @@ export default {
             description: String
             scopes: [String]
         }
-        
+
         input SecurityRoleSearchInput {
             query: String
             fields: [String]
             operator: String
-        }
-
-        type SecurityRoleListMeta {
-            totalCount: Int
-            totalPages: Int
-            page: Int
-            perPage: Int
-            from: Int
-            to: Int
-            previousPage: Int
-            nextPage: Int
         }
 
         type SecurityRoleError {
@@ -63,7 +53,7 @@ export default {
 
         type SecurityRoleListResponse {
             data: [SecurityRole]
-            meta: SecurityRoleListMeta
+            meta: SecurityListMeta
             error: SecurityRoleError
         }
 
@@ -71,11 +61,12 @@ export default {
             getRole(id: ID, where: JSON, sort: String): SecurityRoleResponse
 
             listRoles(
-                page: Int
-                perPage: Int
                 where: JSON
                 sort: JSON
                 search: SecurityRoleSearchInput
+                limit: Int
+                after: String
+                before: String
             ): SecurityRoleListResponse
         }
 
@@ -87,13 +78,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getRole: resolveGet(roleFetcher),
-            listRoles: resolveList(roleFetcher)
+            getRole: hasScope("security:role:crud")(resolveGet(roleFetcher)),
+            listRoles: hasScope("security:role:crud")(resolveList(roleFetcher))
         },
         SecurityMutation: {
-            createRole: resolveCreate(roleFetcher),
-            updateRole: resolveUpdate(roleFetcher),
-            deleteRole: resolveDelete(roleFetcher)
+            createRole: hasScope("security:role:crud")(resolveCreate(roleFetcher)),
+            updateRole: hasScope("security:role:crud")(resolveUpdate(roleFetcher)),
+            deleteRole: hasScope("security:role:crud")(resolveDelete(roleFetcher))
         }
     }
 };

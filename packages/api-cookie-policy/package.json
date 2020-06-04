@@ -1,20 +1,21 @@
 {
   "name": "@webiny/api-cookie-policy",
-  "version": "3.0.3",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-cookie-policy"
   },
   "description": "The API for the Webiny Cookie Policy (webiny-app-cookie-policy) app.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^3.1.0",
-    "@webiny/commodo": "^3.0.1",
-    "@webiny/commodo-graphql": "^3.0.2",
-    "@webiny/validation": "^3.0.1",
+    "@webiny/api-security": "^4.0.0-beta.19",
+    "@webiny/commodo": "^4.0.0-beta.19",
+    "@webiny/commodo-graphql": "^4.0.0-beta.19",
+    "@webiny/validation": "^4.0.0-beta.19",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4"
   },
@@ -23,16 +24,20 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@svgr/webpack": "^4.3.2"
+    "@svgr/webpack": "^4.3.2",
+    "@webiny/api-settings-manager": "^4.0.0-beta.19"
+  },
+  "peerDependencies": {
+    "@webiny/graphql": "^4.0.0-beta.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

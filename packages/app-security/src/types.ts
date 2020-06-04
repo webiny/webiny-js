@@ -25,6 +25,7 @@ export type SecurityViewProps = {
 
 export type SecurityViewInstallationFormPlugin = Plugin & {
     view: React.ComponentType<SecurityViewProps>;
+    onSubmit?(params: { data: { [key: string]: any } }): Promise<void>;
 };
 
 export type SecurityViewUserFormPlugin = Plugin & {

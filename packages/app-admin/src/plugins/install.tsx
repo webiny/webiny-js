@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
-import { InstallationPlugin } from "@webiny/app-admin/types";
+import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 import { Alert } from "@webiny/ui/Alert";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { SimpleForm, SimpleFormContent } from "@webiny/app-admin/components/SimpleForm";
@@ -80,9 +80,9 @@ const FMInstaller = ({ onInstalled }) => {
     );
 };
 
-const plugin: InstallationPlugin = {
+const plugin: AdminInstallationPlugin = {
     name: "installation-fm",
-    type: "installation",
+    type: "admin-installation",
     title: t`File Manager app`,
     dependencies: ["installation-security"],
     secure: true,

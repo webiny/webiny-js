@@ -14,7 +14,7 @@ function CookiePolicy({ settings }) {
     return null;
 }
 
-export default {
+export default (): PbAddonRenderPlugin => ({
     type: "addon-render",
     name: "addon-render-cookie-policy",
     component: (
@@ -26,4 +26,4 @@ export default {
             }}
         </Query>
     )
-} as PbAddonRenderPlugin;
+});

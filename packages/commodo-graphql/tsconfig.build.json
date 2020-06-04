@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "./dist",
-    "../api",
+    "../graphql",
     "../commodo"
   ],
   "compilerOptions": {
@@ -13,7 +13,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../commodo/tsconfig.build.json" }
   ]
 }

@@ -1,13 +1,13 @@
 import { getPlugins, getPlugin } from "@webiny/plugins";
 import invariant from "invariant";
-import { FileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
 
 export default function getFileTypePlugin(file) {
     if (!file) {
         return null;
     }
 
-    const plugins = getPlugins("file-manager-file-type") as FileManagerFileTypePlugin[];
+    const plugins = getPlugins<AdminFileManagerFileTypePlugin>("admin-file-manager-file-type");
 
     let plugin = null;
     for (let i = 0; i < plugins.length; i++) {

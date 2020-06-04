@@ -9,8 +9,10 @@ import routes from "./routes";
 import menus from "./menus";
 import install from "./install";
 import scopesList from "./scopesList";
+import appTemplatePlugins from "./appTemplatePlugins";
+import welcomeScreenWidget from "./welcomeScreenWidget";
 
-export default [
+export default () => [
     header,
     revisionContent,
     previewContent,
@@ -21,5 +23,7 @@ export default [
     routes,
     menus,
     scopesList,
-    install
+    install,
+    appTemplatePlugins,
+    welcomeScreenWidget
 ];

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-google-tag-manager",
-  "version": "3.0.14",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,12 +11,13 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app-admin": "^3.0.8",
-    "@webiny/app-page-builder": "^3.3.1",
-    "@webiny/app-security": "^3.1.3",
-    "@webiny/form": "^3.0.2",
-    "@webiny/react-router": "^2.0.2",
-    "@webiny/ui": "^3.2.1",
+    "@webiny/app": "^4.0.0-beta.19",
+    "@webiny/app-admin": "^4.0.0-beta.19",
+    "@webiny/app-page-builder": "^4.0.0-beta.19",
+    "@webiny/app-security": "^4.0.0-beta.19",
+    "@webiny/form": "^4.0.0-beta.19",
+    "@webiny/react-router": "^4.0.0-beta.19",
+    "@webiny/ui": "^4.0.0-beta.19",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
   },
@@ -35,13 +36,13 @@
     "react-apollo": "^3.1.3"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

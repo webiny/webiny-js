@@ -1,5 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/api";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { ErrorResponse, Response } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {
     const { FormSettings } = context.models;

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "3.2.1",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -60,11 +60,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "1.1.4",
-    "react-transition-group": "^4.3.0",
-    "shortid": "^2.2.12",
-    "slate": "^0.42.2",
-    "slate-plain-serializer": "^0.6.15",
-    "slate-react": "^0.19.3"
+    "react-transition-group": "^4.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -76,9 +72,9 @@
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
-    "@webiny/form": "^3.0.2",
-    "@webiny/storybook-utils": "^3.0.1",
-    "@webiny/validation": "^3.0.1",
+    "@webiny/form": "^4.0.0-beta.19",
+    "@webiny/storybook-utils": "^4.0.0-beta.19",
+    "@webiny/validation": "^4.0.0-beta.19",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
@@ -96,15 +92,15 @@
     "react-dom": "^16.8.6"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}",
-    "prepublishOnly": "yarn build"
+    "build-storybook": "build-storybook -c .storybook -o ${OUT:-.out}"
   },
   "jest": {
     "transform": {

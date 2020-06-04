@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Image } from "@webiny/app/components/Image";
-import { MultiImageUpload } from "@webiny/ui/ImageUpload";
+import { MultiImageUpload as UiMultiImageUpload } from "@webiny/ui/ImageUpload";
 
 // TODO: @adrian define props type
 type Props = any;
 
-export default ({ imagePreviewProps, ...multiImageUploadProps }: Props) => {
+export default function MultiImageUpload({ imagePreviewProps, ...multiImageUploadProps }: Props) {
     return (
-        <MultiImageUpload
+        <UiMultiImageUpload
             renderImagePreview={(renderImageProps: Object) => {
                 return (
                     <Image
@@ -20,4 +20,4 @@ export default ({ imagePreviewProps, ...multiImageUploadProps }: Props) => {
             {...multiImageUploadProps}
         />
     );
-};
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@webiny/serverless-aws-cloudfront",
+  "version": "4.0.0-beta.19",
+  "main": "serverless.js",
+  "license": "MIT",
+  "dependencies": {
+    "@serverless/aws-cloudfront": "^6.0.0",
+    "@webiny/serverless-component": "^4.0.0-beta.19",
+    "lodash.get": "^4.4.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

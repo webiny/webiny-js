@@ -67,7 +67,7 @@ class Menu extends React.Component<any> {
 
     renderPlugins = () => {
         const { value, onChange, editor, exclude } = this.props;
-        const plugins = getPlugins("pb-editor-slate-menu-item") as PbEditorSlateMenuItemPlugin[];
+        const plugins = getPlugins<PbEditorSlateMenuItemPlugin>("pb-editor-slate-menu-item");
         return plugins
             .filter(pl => !exclude.includes(pl.name))
             .map(plugin => {

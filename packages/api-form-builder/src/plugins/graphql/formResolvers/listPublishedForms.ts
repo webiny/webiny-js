@@ -1,13 +1,14 @@
-import { ListResponse } from "@webiny/api";
-import { GraphQLFieldResolver } from "@webiny/api/types";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
-export const listPublishedForms: GraphQLFieldResolver = async (root, args, context) => {
+export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {
     const { Form } = context.models;
 
     const {
-        page = 1,
+        after,
+        before,
         search,
-        perPage = 10,
+        limit = 10,
         parent = null,
         id = null,
         slug = null,
@@ -50,7 +51,17 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
         }
     }
 
-    return await Form.find({ page, perPage, search, sort, query });
+    const findArgs = {
+        after,
+        before,
+        limit,
+        search,
+        sort,
+        query,
+        totalCount: requiresTotalCount(info)
+    };
+
+    return await Form.find(findArgs);
 };
 
 const resolver: GraphQLFieldResolver = async (...args) => {

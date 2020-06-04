@@ -40,7 +40,7 @@ const prepareItems = async ({
     context = {}
 }: {
     items?: { [key: string]: any }[];
-    modifiers: Array<(args: { item: any, context: any }) => any>;
+    modifiers: Array<(args: { item: any; context: any }) => any>;
     context?: { [key: string]: any };
 }) => {
     for (let i = 0; i < modifiers.length; i++) {
@@ -73,7 +73,7 @@ export default async ({ menu, context }: { [key: string]: any }) => {
                         // "item.page" actually represents "parent" value. This is because once we have parent, we can
                         // more easily load the right child page (we just need to search published pages in this case).
                         if (
-                            context.commodo.isId(item.page) &&
+                            context.models.PbPage.isId(item.page) &&
                             !context.distinctParents.data[item.page]
                         ) {
                             context.distinctParents.data[item.page] = null;

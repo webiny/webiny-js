@@ -2,7 +2,7 @@ import React from "react";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { get } from "lodash";
 
-export default {
+export default (): PbRenderElementPlugin => ({
     name: "pb-render-element-typeform",
     type: "pb-render-page-element",
     elementType: "typeform",
@@ -23,4 +23,4 @@ export default {
             </div>
         );
     }
-} as PbRenderElementPlugin;
+});

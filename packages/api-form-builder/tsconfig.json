@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../api" },
+    { "path": "../graphql" },
     { "path": "../api-i18n" },
     { "path": "../api-security" },
+    { "path": "../api-settings-manager" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },
-    { "path": "../http-handler-ssr" },
+    { "path": "../handler-ssr" },
     { "path": "../validation" }
   ]
 }

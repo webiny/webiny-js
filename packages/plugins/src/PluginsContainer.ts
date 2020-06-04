@@ -21,7 +21,7 @@ const assign = (plugins: any, target: Object): void => {
 export class PluginsContainer {
     plugins: Record<string, Plugin> = {};
 
-    constructor(plugins: Plugin[] = []) {
+    constructor(plugins: any = []) {
         assign(plugins, this.plugins);
     }
 

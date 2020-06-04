@@ -1,0 +1,31 @@
+name: Pull Request Actions
+
+on:
+  pull_request:
+    branches: [ release-4.x ]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  build-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Run tests
+        run: yarn test

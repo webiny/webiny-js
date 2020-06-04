@@ -6,7 +6,8 @@
     "dist",
     "../form",
     "../app-i18n",
-    "../app-page-builder"
+    "../app-page-builder",
+    "../app-plugin-admin-welcome-screen"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -16,6 +17,7 @@
   "references": [
     { "path": "../form/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
-    { "path": "../app-page-builder/tsconfig.build.json" }
+    { "path": "../app-page-builder/tsconfig.build.json" },
+    { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" }
   ]
 }

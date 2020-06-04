@@ -7,11 +7,12 @@ const editor: I18NInputRichTextEditorPlugin = {
     plugin: {
         name: "underline",
         editor: {
-            renderMark(props, next) {
-                if (props.mark.type === "underline") {
-                    return <u {...props.attributes}>{props.children}</u>;
+            renderLeaf({ leaf, attributes, children }) {
+                if (leaf.underline === true) {
+                    return <u {...attributes}>{children}</u>;
                 }
-                return next();
+
+                return children;
             }
         }
     }

@@ -1,5 +1,5 @@
 import { WithFieldsError } from "@webiny/commodo";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/api";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
 
 export default userFetcher => async (
@@ -7,7 +7,7 @@ export default userFetcher => async (
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { id, ...data } = args;
+    const { id, data } = args;
     const User = userFetcher(context);
     const user = await User.findById(id);
 

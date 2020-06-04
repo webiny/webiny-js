@@ -80,6 +80,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                                 <a
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
+                                                                    rel="noopener noreferrer"
                                                                 >
                                                                     Don&apos;t have a site key?
                                                                 </a>
@@ -101,6 +102,7 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
                                                                 <a
                                                                     href="https://www.google.com/recaptcha/admin"
                                                                     target={"_blank"}
+                                                                    rel="noopener noreferrer"
                                                                 >
                                                                     Don&apos;t have a site key?
                                                                 </a>

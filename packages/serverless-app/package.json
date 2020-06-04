@@ -1,0 +1,15 @@
+{
+  "name": "@webiny/serverless-app",
+  "version": "4.0.0-beta.19",
+  "main": "serverless.js",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/serverless-component": "^4.0.0-beta.19",
+    "@webiny/serverless-function": "^4.0.0-beta.19"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "./dist",
-    "../api",
+    "../graphql",
     "../api-security",
     "../commodo-graphql",
     "../validation"
@@ -15,7 +15,7 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api/tsconfig.build.json" },
+    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }

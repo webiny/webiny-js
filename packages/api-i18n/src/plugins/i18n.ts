@@ -1,22 +1,33 @@
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { Context as APIContext, ContextPlugin } from "@webiny/graphql/types";
 import acceptLanguageParser from "accept-language-parser";
-import { GraphQLContextI18NGetLocales } from "@webiny/api-i18n/types";
+import { Context as I18NContext, ContextI18NGetLocales } from "@webiny/api-i18n/types";
 
-const plugin: GraphQLContextPlugin = {
-    type: "graphql-context",
-    name: "graphql-context-i18n",
+const getAcceptLanguageHeader = event => {
+    if (!event) {
+        return null;
+    }
+
+    for (const key in event.headers) {
+        if (key.toLowerCase() === "accept-language") {
+            return event.headers[key];
+        }
+    }
+
+    return null;
+};
+
+const plugin: ContextPlugin<APIContext & I18NContext> = {
+    type: "context",
+    name: "context-i18n",
     apply: async context => {
-        const locales = context.plugins.byName<GraphQLContextI18NGetLocales>(
-            "graphql-context-i18n-get-locales"
-        );
+        const locales = context.plugins.byName<ContextI18NGetLocales>("context-i18n-get-locales");
 
         if (!locales) {
-            throw new Error(
-                'Cannot load locales - missing "graphql-context-i18n-get-locales" plugin.'
-            );
+            throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
         }
 
         const { event } = context;
+
         const self = {
             __i18n: {
                 acceptLanguage: null,
@@ -34,12 +45,17 @@ const plugin: GraphQLContextPlugin = {
                 }
 
                 const allLocales = self.getLocales();
-                const acceptLanguage = acceptLanguageParser.pick(
-                    allLocales.map(item => item.code),
-                    event.headers["accept-language"]
-                );
 
-                let currentLocale;
+                let acceptLanguage, currentLocale;
+                const acceptLanguageHeader = getAcceptLanguageHeader(event);
+
+                if (acceptLanguageHeader) {
+                    acceptLanguage = acceptLanguageParser.pick(
+                        allLocales.map(item => item.code),
+                        acceptLanguageHeader
+                    );
+                }
+
                 if (acceptLanguage) {
                     currentLocale = allLocales.find(item => item.code === acceptLanguage);
                 }
@@ -49,6 +65,7 @@ const plugin: GraphQLContextPlugin = {
                 }
 
                 self.__i18n.locale = currentLocale;
+
                 return self.__i18n.locale;
             },
             getLocales() {

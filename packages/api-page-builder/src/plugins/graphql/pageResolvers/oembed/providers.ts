@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 export default [
     {
         provider_name: "23HQ",

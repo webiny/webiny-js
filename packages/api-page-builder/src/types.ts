@@ -1,15 +1,7 @@
-import { GraphQLContext, Plugin } from "@webiny/api/types";
-
-export type PbResolverListPagesPlugin = Plugin & {
-    name: "pb-resolver-list-pages";
-    resolve(params: {
-        args: any;
-        context: GraphQLContext;
-    }): Promise<{ pages: any[]; totalCount: number }>;
-};
+import { Context, Plugin } from "@webiny/graphql/types";
 
 export type PbInstallPlugin = Plugin & {
     name: "pb-install";
-    before: ({ context: GraphQLContext, data: any }) => void;
-    after: ({ context: GraphQLContext, data: any }) => void;
+    before: (params: { context: Context; data: any }) => void;
+    after: (params: { context: Context; data: any }) => void;
 };

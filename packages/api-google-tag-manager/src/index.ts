@@ -1,12 +1,16 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings, resolveGetSettings } from "@webiny/commodo-graphql";
+import { emptyResolver, resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
+import { Context } from "@webiny/graphql/types";
+import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+
+type SettingsContext = Context & SettingsManagerContext;
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-models-google-tag-manager",
+        type: "context",
+        name: "context-models-google-tag-manager",
         apply({ models }) {
             models.GoogleTagManagerSettings = googleTagManagerSettings({
                 createBase: models.createBase
@@ -63,19 +67,21 @@ export default () => [
                     googleTagManager: emptyResolver
                 },
                 GtmQuery: {
-                    getSettings: resolveGetSettings(({ models }) => models.GoogleTagManagerSettings)
+                    getSettings: async (_, args, context: SettingsContext) => {
+                        try {
+                            const data = await context.settingsManager.getSettings(
+                                "google-tag-manager"
+                            );
+                            return { data };
+                        } catch (err) {
+                            return new ErrorResponse(err);
+                        }
+                    }
                 },
                 GtmMutation: {
-                    updateSettings: resolveUpdateSettings(
-                        ({ models }) => models.GoogleTagManagerSettings
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)
                     )
-                }
-            }
-        },
-        security: {
-            shield: {
-                GtmMutation: {
-                    updateSettings: hasScope("pb:settings")
                 }
             }
         }

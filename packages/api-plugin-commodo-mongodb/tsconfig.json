@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": [{ "path": "../api" }]
+  "references": [{ "path": "../graphql" }]
 }

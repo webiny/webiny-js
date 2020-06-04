@@ -1,0 +1,11 @@
+{
+  "name": "api-files-manage",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler": "^4.0.0-beta.0",
+    "@webiny/serverless-files": "^4.0.0-beta.0"
+  }
+}

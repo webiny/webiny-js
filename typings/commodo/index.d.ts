@@ -1,5 +1,9 @@
+export type pipe = Function;
+export type compose = Function;
+
 declare module "@webiny/commodo" {
     export const withStorage: any;
+    export const withStorageName: any;
     export const withCrudLogs: any;
     export const withSoftDelete: any;
     export const withFields: any;
@@ -11,6 +15,8 @@ declare module "@webiny/commodo" {
     export const onGet: any;
     export const object: any;
     export const number: any;
+    export const int: any;
+    export const float: any;
     export const date: any;
     export const ref: any;
     export const skipOnPopulate: any;
@@ -20,7 +26,9 @@ declare module "@webiny/commodo" {
     export const fields: any;
     export const withStaticProps: any;
     export const createPaginationMeta: any;
+    export const createField: any;
     export const Collection: any;
+    export const getName: any;
 }
 
 declare module "@webiny/commodo/fields" {
@@ -34,6 +42,7 @@ declare module "@webiny/commodo/fields" {
 
 declare module "@webiny/commodo/fields-storage" {
     export const withStorage: any;
+    export const withStorageName: any;
 }
 
 declare module "@webiny/commodo/hooks" {
@@ -47,6 +56,14 @@ declare module "@webiny/commodo/repropose" {
 
 declare module "@webiny/commodo/fields-date" {
     export const date: any;
+}
+
+declare module "@webiny/commodo/fields-int" {
+    export const int: any;
+}
+
+declare module "@webiny/commodo/fields-float" {
+    export const float: any;
 }
 
 declare module "@webiny/commodo/fields-object" {

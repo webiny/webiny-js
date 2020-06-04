@@ -7,16 +7,17 @@ import {
     DialogContent,
     DialogActions,
     DialogButton,
-    DialogCancel, DialogOnClose
+    DialogCancel,
+    DialogOnClose
 } from "@webiny/ui/Dialog";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import {Form, FormOnSubmit} from "@webiny/form";
+import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
-import {PbEditorBlockCategoryPlugin} from "@webiny/app-page-builder/types";
+import { PbEditorBlockCategoryPlugin } from "@webiny/app-page-builder/types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -50,7 +51,7 @@ type EditBlockDialogProps = {
 const EditBlockDialog = (props: EditBlockDialogProps) => {
     const { open, onClose, onSubmit, plugin, loading } = props;
 
-    const plugins = getPlugins("pb-editor-block-category") as PbEditorBlockCategoryPlugin[];
+    const plugins = getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category");
     const blockCategoriesOptions = plugins.map(item => ({
         value: item.name,
         label: item.title

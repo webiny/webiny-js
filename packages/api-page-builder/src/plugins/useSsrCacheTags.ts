@@ -1,13 +1,13 @@
 import { withHooks } from "@webiny/commodo";
-import SsrApiClient from "@webiny/http-handler-ssr/Client";
+import SsrApiClient from "@webiny/handler-ssr/Client";
 import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/api";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
 
 export default () => [
     {
-        type: "graphql-context",
-        name: "graphql-context-ssr-cache-client",
+        type: "context",
+        name: "context-ssr-cache-client",
         async apply(context) {
             const { PbSettings } = context.models;
             if (!PbSettings) {
@@ -28,8 +28,8 @@ export default () => [
     },
     {
         // After a page was published, we want to invalidate the SSR cache.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-on-publish-gt-1",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-on-publish-gt-1",
         apply({ getSsrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
@@ -54,8 +54,8 @@ export default () => [
     },
     {
         // After a page was published, we want to invalidate caches that contain pages list element.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-after-publish-pages-list",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-after-publish-pages-list",
         apply({ getSsrApiClient, models: { PbPage } }) {
             withHooks({
                 async afterPublish() {
@@ -69,8 +69,8 @@ export default () => [
     },
     {
         // After settings were changed, invalidate all pages that contain pb-page tag.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-invalidate-ssr-cache-settings",
+        type: "context",
+        name: "context-extend-pb-page-invalidate-ssr-cache-settings",
         apply({ getSsrApiClient, models: { PbSettings } }) {
             withHooks({
                 beforeSave() {
@@ -100,8 +100,8 @@ export default () => [
     },
     {
         // After settings were changed, invalidate all pages that contain pb-menu tag.
-        type: "graphql-context",
-        name: "graphql-context-extend-pb-page-pb-menu-invalidate-ssr-cache-cache-menu",
+        type: "context",
+        name: "context-extend-pb-page-pb-menu-invalidate-ssr-cache-cache-menu",
         apply({ getSsrApiClient, models: { PbMenu } }) {
             // If the menu has changed, we need to delete page caches.
             withHooks({
@@ -153,35 +153,30 @@ export default () => [
             `,
             resolvers: {
                 PbMutation: {
-                    invalidateSsrCache: async (_, args, { models, getSsrApiClient }) => {
-                        const { PbPage } = models;
-                        const page = await PbPage.findById(args.revision);
-                        if (!page) {
-                            return new NotFoundResponse(args.revision);
-                        }
+                    invalidateSsrCache: hasScope("pb:page:crud")(
+                        async (_, args, { models, getSsrApiClient }) => {
+                            const { PbPage } = models;
+                            const page = await PbPage.findById(args.revision);
+                            if (!page) {
+                                return new NotFoundResponse(args.revision);
+                            }
 
-                        if (!page.published) {
-                            return new ErrorResponse({
-                                code: "PB_SSR_CACHE_INVALIDATION_ABORTED",
-                                message: "Cannot refresh SSR cache, revision is not published."
+                            if (!page.published) {
+                                return new ErrorResponse({
+                                    code: "PB_SSR_CACHE_INVALIDATION_ABORTED",
+                                    message: "Cannot refresh SSR cache, revision is not published."
+                                });
+                            }
+
+                            const ssrApiClient = await getSsrApiClient();
+                            await ssrApiClient.invalidateSsrCacheByPath({
+                                path: page.url,
+                                refresh: args.refresh
                             });
+
+                            return new Response(page);
                         }
-
-                        const ssrApiClient = await getSsrApiClient();
-                        await ssrApiClient.invalidateSsrCacheByPath({
-                            path: page.url,
-                            refresh: args.refresh
-                        });
-
-                        return new Response(page);
-                    }
-                }
-            }
-        },
-        security: {
-            shield: {
-                PbMutation: {
-                    invalidateSsrCache: hasScope("pb:page:crud")
+                    )
                 }
             }
         }

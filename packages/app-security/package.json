@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "3.1.3",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,13 +14,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app": "^3.0.6",
-    "@webiny/app-admin": "^3.0.8",
-    "@webiny/form": "^3.0.2",
-    "@webiny/plugins": "^3.0.1",
-    "@webiny/react-router": "^2.0.2",
-    "@webiny/ui": "^3.2.1",
-    "@webiny/validation": "^3.0.1",
+    "@emotion/styled": "^10.0.27",
+    "@webiny/app": "^4.0.0-beta.19",
+    "@webiny/app-admin": "^4.0.0-beta.19",
+    "@webiny/form": "^4.0.0-beta.19",
+    "@webiny/plugins": "^4.0.0-beta.19",
+    "@webiny/react-router": "^4.0.0-beta.19",
+    "@webiny/ui": "^4.0.0-beta.19",
+    "@webiny/validation": "^4.0.0-beta.19",
     "apollo-link": "^1.2.1",
     "dot-prop-immutable": "^1.4.0",
     "emotion": "10.0.17",
@@ -46,13 +47,13 @@
     "react-dom": "^16.8.6"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "svgo": {
     "plugins": {

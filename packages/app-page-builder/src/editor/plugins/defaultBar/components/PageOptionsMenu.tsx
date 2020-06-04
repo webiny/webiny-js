@@ -17,11 +17,15 @@ const menuStyles = css({
 });
 
 export default function PageOptionsMenu() {
-    const plugins = getPlugins(
+    const plugins = getPlugins<PbEditorDefaultBarRightPageOptionsPlugin>(
         "pb-editor-default-bar-right-page-options"
-    ) as PbEditorDefaultBarRightPageOptionsPlugin[];
+    );
     return (
-        <Menu data-testid="pb-editor-page-options-menu" className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
+        <Menu
+            data-testid="pb-editor-page-options-menu"
+            className={menuStyles}
+            handle={<IconButton icon={<MoreVerticalIcon />} />}
+        >
             {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
         </Menu>
     );

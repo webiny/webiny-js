@@ -1,10 +1,11 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "3.1.7",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-page-builder"
   },
   "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
   "contributors": [
@@ -15,12 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api": "^3.0.2",
-    "@webiny/api-security": "^3.1.0",
-    "@webiny/commodo": "^3.0.1",
-    "@webiny/commodo-graphql": "^3.0.2",
-    "@webiny/http-handler-ssr": "^2.2.0",
-    "@webiny/validation": "^3.0.1",
+    "@webiny/api-security": "^4.0.0-beta.19",
+    "@webiny/commodo": "^4.0.0-beta.19",
+    "@webiny/commodo-graphql": "^4.0.0-beta.19",
+    "@webiny/graphql": "^4.0.0-beta.19",
+    "@webiny/handler-ssr": "^4.0.0-beta.19",
+    "@webiny/validation": "^4.0.0-beta.19",
     "download": "^5.0.3",
     "extract-zip": "^1.6.7",
     "form-data": "^2.5.0",
@@ -45,21 +46,22 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@webiny/api-settings-manager": "^4.0.0-beta.19",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "adio": {
     "ignoreDirs": [
       "migration",
-      "src/install"
+      "src/installation"
     ],
     "ignore": {
       "src": [

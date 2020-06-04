@@ -21,6 +21,21 @@ import { DELETE_FILE } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/file-details");
 
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "li-title": {
+                children?: React.ReactNode;
+            };
+
+            "li-content": {
+                children?: React.ReactNode;
+            };
+        }
+    }
+}
+
 const style: any = {
     wrapper: css({
         padding: 10,

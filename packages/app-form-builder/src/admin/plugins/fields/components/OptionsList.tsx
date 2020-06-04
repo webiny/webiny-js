@@ -99,7 +99,7 @@ const OptionsList = ({ form, multiple }: OptionsListProps) => {
         });
 
     return (
-        <Bind name={"options"} validators={validation.create("required,minLength:2")}>
+        <Bind name={"options"} validators={validation.create("required,minLength:1")}>
             {({
                 validation: optionsValidation,
                 value: optionsValue,

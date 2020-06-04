@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-files-resolvers-mongodb",
-  "version": "2.0.1",
+  "version": "4.0.0-beta.19",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -14,7 +14,8 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/runtime": "^7.5.5"
+    "@babel/runtime": "^7.5.5",
+    "@webiny/commodo": "^4.0.0-beta.19"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -22,12 +23,12 @@
     "@babel/preset-env": "^7.5.5"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json",
-    "prepublishOnly": "yarn build"
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   }
 }

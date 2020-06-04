@@ -1,3 +1,3 @@
 import richTextEditor from "./richTextEditor";
 
-export default [richTextEditor];
+export default () => [richTextEditor];

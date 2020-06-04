@@ -22,7 +22,7 @@ const asyncModifiers = async ({ context, modifierType, element }) => {
     const plugins = getModifierPlugins(element.type, modifierType, context.plugins);
 
     for (let i = 0; i < plugins.length; i++) {
-        let plugin = plugins[i];
+        const plugin = plugins[i];
         await plugin[modifierType]({ element, context });
     }
 

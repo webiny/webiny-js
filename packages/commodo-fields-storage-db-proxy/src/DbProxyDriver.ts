@@ -1,24 +1,26 @@
-import isId from "./isId";
-import generateId from "./generateId";
-import { createPaginationMeta } from "@commodo/fields-storage";
-import { getName } from "@commodo/name";
 import LambdaClient from "aws-sdk/clients/lambda";
 import { EJSON } from "bson";
 
 const MONGO_CONNECTION_ERRORS = ["MongoServerSelectionError", "MongoNetworkError"];
 
 class DbProxyClient {
-    dbProxyFunctionName: string;
+    dbProxyFunction: string;
 
-    constructor({ dbProxyFunctionName }) {
-        this.dbProxyFunctionName = dbProxyFunctionName;
+    constructor({ dbProxyFunction }) {
+        this.dbProxyFunction = dbProxyFunction;
     }
 
     async runOperation(requestPayload) {
+        const singleOperation = !Array.isArray(requestPayload);
+
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
         const { Payload } = await Lambda.invoke({
-            FunctionName: this.dbProxyFunctionName,
-            Payload: JSON.stringify({ body: EJSON.stringify(requestPayload) })
+            FunctionName: this.dbProxyFunction,
+            Payload: JSON.stringify({
+                body: EJSON.stringify({
+                    operations: singleOperation ? [requestPayload] : requestPayload
+                })
+            })
         }).promise();
 
         let parsedPayload;
@@ -42,125 +44,106 @@ class DbProxyClient {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
 
-        const { result } = EJSON.parse(parsedPayload.response);
-        return result;
+        const { results } = EJSON.parse(parsedPayload.response) as any;
+
+        if (singleOperation) {
+            return results[0];
+        }
+
+        return results;
     }
 }
+
+type Item = {
+    name: string;
+    query: { [key: string]: any };
+    data: { [key: string]: any };
+};
 
 class DbProxyDriver {
     client: DbProxyClient;
 
-    constructor({ dbProxyFunctionName = process.env.DB_PROXY_FUNCTION_NAME } = {}) {
-        this.client = new DbProxyClient({ dbProxyFunctionName });
+    constructor({ dbProxyFunction = process.env.DB_PROXY_FUNCTION } = {}) {
+        this.client = new DbProxyClient({ dbProxyFunction });
     }
 
-    // eslint-disable-next-line
-    async save({ model, isCreate }) {
-        return isCreate ? this.create({ model }) : this.update({ model });
-    }
-
-    async create({ model }) {
-        if (!model.id) {
-            model.id = generateId();
-        }
-
-        const data = await model.toStorage();
-
-        try {
-            await this.client.runOperation({
-                collection: this.getCollectionName(model),
+    async create(items: Item[]) {
+        const payload = items.map(({ name, data }) => {
+            return {
+                collection: this.getCollectionName(name),
                 operation: ["insertOne", data]
-            });
-            return true;
-        } catch (e) {
-            model.id && model.getField("id").reset();
-            throw e;
-        }
-    }
-
-    async update({ model }) {
-        const data = await model.toStorage();
-        await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: ["updateOne", { id: model.id }, { $set: data }]
+            };
         });
+
+        await this.client.runOperation(payload);
 
         return true;
     }
 
-    // eslint-disable-next-line
-    async delete({ model }) {
-        await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: ["deleteOne", { id: model.id }]
+    async update(items: Item[]) {
+        const payload = items.map(({ name, query, data }) => {
+            return {
+                collection: this.getCollectionName(name),
+                operation: ["updateOne", query, { $set: data }]
+            };
         });
+
+        await this.client.runOperation(payload);
+
         return true;
     }
 
-    async find({ model, options }) {
-        const clonedOptions = { limit: 10, offset: 0, ...options };
-
-        DbProxyDriver.__preparePerPageOption(clonedOptions);
-        DbProxyDriver.__preparePageOption(clonedOptions);
-        DbProxyDriver.__prepareSearchOption(clonedOptions);
-
-        const $facet: any = {
-            results: [{ $skip: clonedOptions.offset }, { $limit: clonedOptions.limit }]
-        };
-
-        if (clonedOptions.sort) {
-            $facet.results.unshift({ $sort: clonedOptions.sort });
-        }
-
-        if (options.meta !== false) {
-            $facet.totalCount = [{ $count: "value" }];
-        }
-
-        const pipeline = [
-            { $match: clonedOptions.query },
-            {
-                $facet
-            }
-        ];
-
-        const [results = {}] = await this.client.runOperation({
-            collection: this.getCollectionName(model),
-            operation: ["aggregate", pipeline]
-        });
-
-        if (!Array.isArray(results.results)) {
-            results.results = [];
-        }
-
-        if (!Array.isArray(results.totalCount)) {
-            results.totalCount = [];
-        }
-
-        return [
-            results.results,
-            createPaginationMeta({
-                totalCount: results.totalCount[0] ? results.totalCount[0].value : 0,
-                page: options.page,
-                perPage: options.perPage
-            })
-        ];
-    }
-
-    async findOne({ model, options }) {
+    async delete({ name, options }) {
         const clonedOptions = { ...options };
-        DbProxyDriver.__preparePerPageOption(clonedOptions);
-        DbProxyDriver.__preparePageOption(clonedOptions);
+
         DbProxyDriver.__prepareSearchOption(clonedOptions);
+
+        await this.client.runOperation({
+            collection: this.getCollectionName(name),
+            operation: ["deleteMany", clonedOptions.query]
+        });
+
+        return true;
+    }
+
+    async find({ name, options }) {
+        const clonedOptions = { limit: 0, offset: 0, ...options };
+
+        DbProxyDriver.__prepareSearchOption(clonedOptions);
+        DbProxyDriver.__prepareProjectFields(clonedOptions);
+
+        const results = await this.client.runOperation({
+            collection: this.getCollectionName(name),
+            operation: [
+                "find",
+                clonedOptions.query,
+                {
+                    limit: clonedOptions.limit,
+                    sort: clonedOptions.sort,
+                    offset: clonedOptions.offset,
+                    project: clonedOptions.project
+                }
+            ]
+        });
+
+        return [!Array.isArray(results) ? [] : results, {}];
+    }
+
+    async findOne({ name, options }) {
+        const clonedOptions = { ...options };
+        DbProxyDriver.__prepareSearchOption(clonedOptions);
+        DbProxyDriver.__prepareProjectFields(clonedOptions);
 
         // Get first documents from cursor using each
         const results = await this.client.runOperation({
-            collection: this.getCollectionName(model),
+            collection: this.getCollectionName(name),
             operation: [
                 "find",
                 clonedOptions.query,
                 {
                     limit: 1,
-                    sort: clonedOptions.sort
+                    sort: clonedOptions.sort,
+                    project: clonedOptions.project
                 }
             ]
         });
@@ -168,41 +151,23 @@ class DbProxyDriver {
         return results[0];
     }
 
-    async count({ model, options }) {
+    async count({ name, options }) {
         const clonedOptions = { ...options };
         DbProxyDriver.__prepareSearchOption(clonedOptions);
 
         // Get first documents from cursor using each
         return await this.client.runOperation({
-            collection: this.getCollectionName(model),
+            collection: this.getCollectionName(name),
             operation: ["count", clonedOptions.query]
         });
     }
 
-    isId(value) {
-        return isId(value);
-    }
-
-    getCollectionName(model) {
-        return getName(model);
+    getCollectionName(name) {
+        return name;
     }
 
     getClient() {
         return this.client;
-    }
-
-    static __preparePerPageOption(options) {
-        if ("perPage" in options) {
-            options.limit = options.perPage;
-            delete options.perPage;
-        }
-    }
-
-    static __preparePageOption(options) {
-        if ("page" in options) {
-            options.offset = options.limit * (options.page - 1);
-            delete options.page;
-        }
     }
 
     static __prepareSearchOption(options) {
@@ -228,6 +193,21 @@ class DbProxyDriver {
             }
 
             delete options.search;
+        }
+    }
+
+    static __prepareProjectFields(options) {
+        // Here we convert requested fields into a "project" parameter
+        if (options.fields) {
+            options.project = options.fields.reduce(
+                (acc, item) => {
+                    acc[item] = 1;
+                    return acc;
+                },
+                { id: 1 }
+            );
+
+            delete options.fields;
         }
     }
 }

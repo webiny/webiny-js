@@ -16,17 +16,21 @@ let subscribedToOffsetChange = false;
 let dragPreviewRef = null;
 
 const onOffsetChange = monitor => () => {
-    if (!dragPreviewRef) return;
+    if (!dragPreviewRef) {
+        return;
+    }
 
     const offset = monitor.getClientOffset();
-    if (!offset) return;
+    if (!offset) {
+        return;
+    }
 
     const transform = `translate(${offset.x - 15}px, ${offset.y - 15}px)`;
     dragPreviewRef.style["transform"] = transform;
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-export default () => {
+export default function DragPreview() {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
     const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
@@ -85,4 +89,4 @@ export default () => {
             </div>
         </div>
     );
-};
+}

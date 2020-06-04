@@ -1,22 +1,32 @@
 import { DbProxyDriver, id, isId, withId } from "@webiny/commodo-fields-storage-db-proxy";
-import { GraphQLContextPlugin } from "@webiny/api/types";
+import { ContextPlugin } from "@webiny/graphql/types";
 
-export default (options): GraphQLContextPlugin => ({
-    name: "graphql-context-commodo",
-    type: "graphql-context",
-    async preApply(context) {
-        if (!context.commodo) {
-            context.commodo = {
-                isId,
-                withId
-            };
-        }
-
-        if (!context.commodo.fields) {
-            context.commodo.fields = {};
-        }
-
-        context.commodo.fields.id = id;
-        context.commodo.driver = new DbProxyDriver({ dbProxyFunctionName: options.functionArn });
+function apply(context, options: DbProxyOptions) {
+    if (!context.commodo) {
+        context.commodo = {
+            isId,
+            withId
+        };
     }
-});
+
+    if (!context.commodo.fields) {
+        context.commodo.fields = {};
+    }
+
+    context.commodo.fields.id = id;
+    context.commodo.driver = new DbProxyDriver({ dbProxyFunction: options.functionName });
+}
+
+interface DbProxyOptions {
+    functionName: string;
+}
+
+export default (options: DbProxyOptions) => [
+    {
+        name: "context-commodo",
+        type: "context",
+        preApply(context) {
+            return apply(context, options);
+        }
+    } as ContextPlugin
+];

@@ -36,8 +36,11 @@ story.add(
             title: text("Title", "A list of all users", "Basic"),
             multiActions: boolean("Multi actions", false, "Basic"),
 
-            setPage: page => {
-                console.log(`Implement setPage method (selected ${page}).`);
+            setNextPage: cursor => {
+                console.log(`Implement setNextPage method (selected ${cursor}).`);
+            },
+            setPreviousPage: cursor => {
+                console.log(`Implement setPreviousPage method (selected ${cursor}).`);
             },
             // @ts-ignore
             perPageOptions: array("perPageOptions", [10, 25, 50], ",", "Basic"),

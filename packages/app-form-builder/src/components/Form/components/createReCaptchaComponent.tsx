@@ -2,7 +2,6 @@ import * as React from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { reCaptchaEnabled } from "./../functions";
 import { FbFormModel, FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
-import { I18NStringValue } from "@webiny/app-i18n/types";
 
 type CreateReCaptchaComponentArgs = {
     props: FbFormRenderComponentProps;

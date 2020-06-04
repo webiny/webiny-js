@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as LinkIcon } from "@webiny/app-i18n/admin/assets/icons/link.svg";
-import LinkDialog from "./LinkDialog";
-import LinkTooltip from "./LinkTooltip";
+import { LinkDialog } from "./LinkDialog";
+import { LinkTooltip } from "./LinkTooltip";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
 const plugin: I18NInputRichTextEditorPlugin = {
@@ -9,14 +9,32 @@ const plugin: I18NInputRichTextEditorPlugin = {
     type: "i18n-input-rich-text-editor",
     plugin: {
         name: "link",
-        editor: {
-            renderNode(props, next) {
-                const { attributes, children, node } = props;
+        menu: {
+            render({ MenuButton, editor, activatePlugin }) {
+                return (
+                    <MenuButton
+                        onMouseDown={() => {
+                            if (!editor.selection) {
+                                return;
+                            }
 
-                if (node.type === "link") {
-                    const { data } = node;
-                    const href = data.get("href");
-                    const noFollow = data.get("noFollow");
+                            activatePlugin("link");
+                        }}
+                    >
+                        <LinkIcon />
+                    </MenuButton>
+                );
+            },
+            renderDialog(props) {
+                return <LinkDialog {...props} />;
+            }
+        },
+        editor: {
+            renderElement(props, next) {
+                const { attributes, children, element } = props;
+
+                if (element.type === "link") {
+                    const { href, noFollow } = element;
                     return (
                         <a {...attributes} {...{ href, rel: noFollow ? "nofollow" : null }}>
                             {children}
@@ -26,31 +44,13 @@ const plugin: I18NInputRichTextEditorPlugin = {
 
                 return next();
             },
-            renderEditor({ editor, onChange, activatePlugin }, next) {
-                const children = next();
-
+            renderEditor({ activatePlugin }, next) {
                 return (
-                    <div>
-                        {children}
-                        <LinkTooltip
-                            editor={editor}
-                            onChange={onChange}
-                            activatePlugin={activatePlugin}
-                        />
-                    </div>
+                    <>
+                        {next()}
+                        <LinkTooltip activatePlugin={activatePlugin} />
+                    </>
                 );
-            }
-        },
-        menu: {
-            render({ MenuButton, activatePlugin }) {
-                return (
-                    <MenuButton onMouseDown={() => activatePlugin("link")}>
-                        <LinkIcon />
-                    </MenuButton>
-                );
-            },
-            renderDialog(props) {
-                return <LinkDialog {...props} />;
             }
         }
     }

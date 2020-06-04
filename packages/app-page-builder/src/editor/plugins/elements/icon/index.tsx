@@ -5,7 +5,10 @@ import styled from "@emotion/styled";
 import Icon from "./Icon";
 import { getSvg } from "./utils";
 import Action from "./../../elementSettings/components/Action";
-import { PbEditorPageElementPlugin, PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin
+} from "@webiny/app-page-builder/types";
 
 export default () => {
     const PreviewBox = styled("div")({

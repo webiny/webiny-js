@@ -1,8 +1,8 @@
-import { ListResponse } from "@webiny/api";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql";
 
-export const listPages = async ({ context, args }) => {
+export const listPages = async ({ context, args, info }) => {
     const { PbPage } = context.models;
-    const { page = 1, perPage = 10, sort = null, search = null, parent = null } = args;
+    const { limit = 10, after, before, sort = null, parent = null } = args;
 
     const query: any = {
         latestVersion: true
@@ -12,11 +12,27 @@ export const listPages = async ({ context, args }) => {
         query.parent = parent;
     }
 
-    const pages = await PbPage.find({ sort, page, perPage, search, query });
-    return pages;
+    let search = null;
+    if (args.search) {
+        search = {
+            query: args.search,
+            fields: ["title"],
+            operator: "or"
+        };
+    }
+
+    return await PbPage.find({
+        sort,
+        limit,
+        after,
+        before,
+        search,
+        query,
+        totalCount: requiresTotalCount(info)
+    });
 };
 
-export default async (root: any, args: Object, context: Object) => {
-    const list = await listPages({ args, context });
+export default async (root: any, args: Object, context: Object, info) => {
+    const list = await listPages({ args, context, info });
     return new ListResponse(list, list.getMeta());
 };

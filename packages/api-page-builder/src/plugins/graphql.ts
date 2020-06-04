@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/api";
-import { hasScope } from "@webiny/api-security";
+import { emptyResolver } from "@webiny/graphql";
 import page from "./graphql/Page";
 import category from "./graphql/Category";
 import menu from "./graphql/Menu";
@@ -23,17 +22,6 @@ export default {
                 operator: String
             }
 
-            type PbListMeta {
-                totalCount: Int
-                totalPages: Int
-                page: Int
-                perPage: Int
-                from: Int
-                to: Int
-                previousPage: Int
-                nextPage: Int
-            }
-
             type PbError {
                 code: String
                 message: String
@@ -48,6 +36,18 @@ export default {
             type PbBooleanResponse {
                 data: Boolean
                 error: PbError
+            }
+
+            type PbCursors {
+                next: String
+                previous: String
+            }
+
+            type PbListMeta {
+                cursors: PbCursors
+                hasNextPage: Boolean
+                hasPreviousPage: Boolean
+                totalCount: Int
             }
 
             type PbQuery {
@@ -87,38 +87,5 @@ export default {
             settings.resolvers,
             install.resolvers
         )
-    },
-    security: {
-        shield: {
-            PbQuery: {
-                getMenu: hasScope("pb:menu:crud"),
-                listMenus: hasScope("pb:menu:crud"),
-                getCategory: hasScope("pb:category:crud"),
-                listCategories: hasScope("pb:category:crud"),
-                listPages: hasScope("pb:page:crud"),
-                listElements: hasScope("pb:element:crud"),
-                oembedData: hasScope("pb:oembed:read")
-            },
-            PbMutation: {
-                createMenu: hasScope("pb:menu:crud"),
-                updateMenu: hasScope("pb:menu:crud"),
-                deleteMenu: hasScope("pb:menu:crud"),
-                createCategory: hasScope("pb:category:crud"),
-                updateCategory: hasScope("pb:category:crud"),
-                deleteCategory: hasScope("pb:category:crud"),
-
-                createPage: hasScope("pb:page:crud"),
-                deletePage: hasScope("pb:page:crud"),
-
-                createRevisionFrom: hasScope("pb:page:crud"),
-                updateRevision: hasScope("pb:page:crud"),
-                publishRevision: hasScope("pb:page:crud"),
-                deleteRevision: hasScope("pb:page:crud"),
-
-                createElement: hasScope("pb:element:crud"),
-                updateElement: hasScope("pb:element:crud"),
-                deleteElement: hasScope("pb:element:crud")
-            }
-        }
     }
 };

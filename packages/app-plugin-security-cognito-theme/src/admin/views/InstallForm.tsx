@@ -26,13 +26,6 @@ const InstallForm = ({ Bind, fields, error }) => {
                     <Input autoComplete="off" type="password" label={t`Password`} />
                 </Bind>
             </Cell>
-            <Cell span={12}>
-                Other resources that will be installed:
-                <ul>
-                    <li>- core security roles</li>
-                    <li>- core security groups</li>
-                </ul>
-            </Cell>
         </Grid>
     );
 };

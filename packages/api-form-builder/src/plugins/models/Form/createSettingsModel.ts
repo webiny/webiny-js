@@ -2,9 +2,16 @@ import { get } from "lodash";
 import { i18nString, i18nObject } from "@webiny/api-i18n/fields";
 import { withFields, string, fields, boolean, withProps } from "@webiny/commodo";
 import { flow } from "lodash";
+import { Context as APIContext } from "@webiny/graphql/types";
+import { Context as I18NContext } from "@webiny/api-i18n/types";
+import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
-export default ({ context, FormSettings }) => {
+export type CreateSettingsModel = {
+    context: APIContext & I18NContext & CommodoContext;
+    FormSettings: any;
+};
 
+export default ({ context, FormSettings }: CreateSettingsModel) => {
     // When installing the FormBuilder app on a blank system, defaultLocale will be blank, because I18N app wasn't
     // installed yet, meaning no default locale was selected.
     let defaultLocale = null;

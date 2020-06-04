@@ -7,7 +7,9 @@ import {
     ListItemText as RmwcListItemText,
     ListItemTextProps as RmwcListItemTextProps,
     ListItemPrimaryText as RmwcListItemPrimaryText,
-    ListItemSecondaryText as RmwcListItemSecondaryText
+    ListItemSecondaryText as RmwcListItemSecondaryText,
+    SimpleListItem as RmwcSimpleListItem,
+    SimpleListItemProps as RmwcSimpleListItemProps
 } from "@rmwc/list";
 import { Typography } from "@webiny/ui/Typography";
 import classNames from "classnames";
@@ -34,6 +36,8 @@ export type ListProps = RmwcListProps & {
     children?: any;
 
     className?: string;
+
+    style?: React.CSSProperties;
 };
 
 /**
@@ -217,4 +221,8 @@ export const ListSelectBox = (props: ListSelectBoxProps) => {
             <SelectBoxWrapper>{props.children}</SelectBoxWrapper>
         </ListItemGraphic>
     );
+};
+
+export const SimpleListItem = (props: RmwcSimpleListItemProps & { onClick?: any }) => {
+    return <RmwcSimpleListItem {...props} />;
 };

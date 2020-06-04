@@ -1,0 +1,51 @@
+{
+  "private": true,
+  "dependencies": {
+    "@webiny/cli": "latest",
+    "@webiny/cli-plugin-deploy-components": "latest",
+    "@webiny/cli-plugin-scaffold": "latest",
+    "@webiny/cli-plugin-scaffold-graphql-service": "latest",
+    "@webiny/cli-plugin-scaffold-lambda": "latest",
+    "@webiny/project-utils": "latest",
+    "@webiny/serverless-api-gateway": "latest",
+    "@webiny/serverless-app": "latest",
+    "@webiny/serverless-aws-api-gateway": "latest",
+    "@webiny/serverless-aws-cloudfront": "latest",
+    "@webiny/serverless-aws-cognito-user-pool": "latest",
+    "@webiny/serverless-aws-lambda": "latest",
+    "@webiny/serverless-aws-s3-object": "latest",
+    "@webiny/serverless-component": "latest",
+    "@webiny/serverless-files": "latest",
+    "@webiny/serverless-function": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.22",
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-import-resolver-babel-module": "^5.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "api/apolloGateway",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/formBuilder",
+      "api/cms/*",
+      "api/i18n/*",
+      "api/pageBuilder",
+      "api/security/*",
+      "api/settingsManager"
+    ]
+  }
+}

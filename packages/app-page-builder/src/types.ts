@@ -13,6 +13,12 @@ import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slat
 import { EditorBarProps } from "@webiny/app-page-builder/editor/components/Editor/Bar";
 import { Form } from "@webiny/form/Form";
 export { Redux } from "@webiny/app-page-builder/editor/redux";
+import { Item } from "@webiny/app-admin/plugins/Menu/Navigation/components";
+
+export type PbMenuSettingsItemPlugin = Plugin & {
+    type: "menu-settings-page-builder";
+    render(props: { Item: typeof Item }): React.ReactNode;
+};
 
 export type PbElement = {
     id: string;

@@ -46,7 +46,7 @@ const leftPanel = css({
 });
 
 type SplitViewProps = {
-    children: React.ReactElement<any>[];
+    children: React.ReactElement<any> | React.ReactElement<any>[];
     className?: string;
 };
 

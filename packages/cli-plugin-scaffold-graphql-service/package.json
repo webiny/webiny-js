@@ -1,0 +1,39 @@
+{
+  "name": "@webiny/cli-plugin-scaffold-graphql-service",
+  "version": "4.0.0-beta.19",
+  "description": "Generate Webiny GraphQL service",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-scaffold-graphql-service"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webiny/webiny-js/issues"
+  },
+  "homepage": "https://github.com/webiny/webiny-js#readme",
+  "dependencies": {
+    "@babel/core": "^7.9.6",
+    "find-up": "^4.1.0",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.kebabcase": "^4.1.1",
+    "ncp": "^2.0.0",
+    "prettier": "^2.0.5"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template",
+      "node_modules",
+      "__tests__"
+    ]
+  }
+}

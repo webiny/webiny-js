@@ -1,6 +1,5 @@
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/api";
-import { hasScope } from "@webiny/api-security";
+import { emptyResolver } from "@webiny/graphql";
 import gql from "graphql-tag";
 import {
     I18NStringValueType,
@@ -13,7 +12,7 @@ import form from "./graphql/form";
 import formSubmission from "./graphql/formSubmission";
 import formsSettings from "./graphql/formsSettings";
 import { install, isInstalled } from "./graphql/install";
-import { GraphQLSchemaPlugin } from "@webiny/api/types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
@@ -54,15 +53,16 @@ const plugin: GraphQLSchemaPlugin = {
                 data: JSON
             }
 
+            type FormCursors {
+                next: String
+                previous: String
+            }
+
             type FormListMeta {
+                cursors: FormCursors
+                hasNextPage: Boolean
+                hasPreviousPage: Boolean
                 totalCount: Int
-                totalPages: Int
-                page: Int
-                perPage: Int
-                from: Int
-                to: Int
-                previousPage: Int
-                nextPage: Int
             }
 
             type FormDeleteResponse {
@@ -89,31 +89,6 @@ const plugin: GraphQLSchemaPlugin = {
             formSubmission.resolvers,
             formsSettings.resolvers
         )
-    },
-    security: {
-        shield: {
-            FormsQuery: {
-                getSettings: hasScope("forms:settings"),
-                getForm: hasScope("forms:form:crud"),
-                listForms: hasScope("forms:form:crud"),
-                listFormSubmissions: hasScope("forms:form:crud")
-                // listPublishedForms: hasScope("forms:form:crud") // Expose publicly.
-                // getPublishedForms: hasScope("forms:form:crud") // Expose publicly.
-            },
-            FormsMutation: {
-                updateSettings: hasScope("forms:settings"),
-                createForm: hasScope("forms:form:crud"),
-                deleteForm: hasScope("forms:form:crud"),
-                createRevisionFrom: hasScope("forms:form:crud"),
-                updateRevision: hasScope("forms:form:crud"),
-                publishRevision: hasScope("forms:form:revision:publish"),
-                unpublishRevision: hasScope("forms:form:revision:unpublish"),
-                deleteRevision: hasScope("forms:form:crud"),
-                exportFormSubmissions: hasScope("forms:form:submissions:export")
-                // saveFormView: hasScope("forms:form:revision:delete") // Expose publicly.
-                // createFormSubmission: hasScope("forms:form:revision:delete") // Expose publicly.
-            }
-        }
     }
 };
 

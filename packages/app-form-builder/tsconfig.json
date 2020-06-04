@@ -3,6 +3,7 @@
   "references": [
     { "path": "../form" },
     { "path": "../app-i18n" },
-    { "path": "../app-page-builder" }
+    { "path": "../app-page-builder" },
+    { "path": "../app-plugin-admin-welcome-screen" }
   ]
 }
