@@ -65,6 +65,7 @@ const plugin: CmsEditorFieldTypePlugin = {
 
                                 return (
                                     <AutoComplete
+                                        {...bind}
                                         value={formattedValueForAutoComplete}
                                         onChange={bind.onChange}
                                         label={t`Content Model`}
