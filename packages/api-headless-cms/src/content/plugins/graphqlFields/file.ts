@@ -33,6 +33,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createTypeField({ field }) {
             const localeArg = "(locale: String)";
+            if (field.multipleValues) {
+                return `${field.fieldId}${localeArg}: [String]`;
+            }
 
             return `${field.fieldId}${localeArg}: String`;
         }
