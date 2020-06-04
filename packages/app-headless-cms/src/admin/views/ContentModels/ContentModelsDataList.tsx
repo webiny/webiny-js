@@ -47,8 +47,14 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const deleteRecord = async item => {
         const res = await client.mutate({
             mutation: DELETE_CONTENT_MODEL,
-            variables: { id: item.id }
+            variables: { id: item.id },
+            awaitRefetchQueries: true,
+            refetchQueries: [
+                "HeadlessCmsListContentModels",
+                "HeadlessCmsListMenuContentGroupsModels"
+            ]
         });
+
         const { data, error } = get(res, "data.deleteContentModel");
 
         if (data) {
