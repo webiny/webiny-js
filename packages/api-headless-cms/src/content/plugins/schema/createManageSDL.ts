@@ -28,10 +28,11 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
     const inputFieldsRender = renderInputFields({ model, fieldTypePlugins });
-    const fieldsRender = renderFields({ model, type: "manage", fieldTypePlugins });
+    const fields = renderFields({ model, type: "manage", fieldTypePlugins });
 
     return /* GraphQL */ `
         "${model.description}"
+        ${fields.map(f => f.typeDefs).filter(Boolean).join("\n")}
         type ${mTypeName} {
             id: ID
             createdBy: SecurityUser
@@ -40,7 +41,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             updatedOn: DateTime
             savedOn: DateTime
             meta: ${mTypeName}Meta
-            ${fieldsRender}
+            ${fields.map(f => f.fields).join("\n")}
         }
 
         type ${mTypeName}Meta {
@@ -56,52 +57,52 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             revisions: [${mTypeName}]
             title: CmsText
         }
-                
+
         ${inputFieldsRender &&
             `input ${mTypeName}Input {
             ${inputFieldsRender}
         }`}
-        
+
         ${getFilterFieldsRender &&
             `input ${mTypeName}GetWhereInput {
             ${getFilterFieldsRender}
         }`}
-        
-        
+
+
         ${listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
             ${listFilterFieldsRender}
         }`}
-        
+
         ${getFilterFieldsRender &&
             `input ${mTypeName}UpdateWhereInput {
             ${getFilterFieldsRender}
         }`}
-        
+
               ${getFilterFieldsRender &&
                   `input ${mTypeName}DeleteWhereInput {
             ${getFilterFieldsRender}
         }`}
-        
+
         type ${mTypeName}Response {
             data: ${mTypeName}
             error: CmsError
         }
-        
+
         type ${mTypeName}ListResponse {
             data: [${mTypeName}]
             meta: CmsListMeta
             error: CmsError
         }
-        
+
         ${sortEnumRender &&
             `enum ${mTypeName}ListSorter {
             ${sortEnumRender}
         }`}
-        
+
         extend type Query {
             get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
-            
+
             list${pluralize(typeName)}(
                 where: ${mTypeName}ListWhereInput
                 sort: [${mTypeName}ListSorter]
@@ -110,18 +111,18 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
                 before: String
             ): ${mTypeName}ListResponse
         }
-        
+
         extend type Mutation{
             create${typeName}(data: ${mTypeName}Input!): ${mTypeName}Response
-            
+
             create${typeName}From(revision: ID!, data: ${mTypeName}Input): ${mTypeName}Response
-            
+
             update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response
-            
+
             delete${typeName}(where: ${mTypeName}DeleteWhereInput!): CmsDeleteResponse
-            
+
             publish${typeName}(revision: ID!): ${mTypeName}Response
-            
+
             unpublish${typeName}(revision: ID!): ${mTypeName}Response
         }
     `;

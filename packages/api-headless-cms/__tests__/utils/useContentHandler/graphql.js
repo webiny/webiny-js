@@ -28,8 +28,28 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
     status
 `;
 
+const I18N_FIELD_WITH_CONTENT = /* GraphQL */ `
+    {
+        values {
+            value {
+                id
+                meta {
+                    title {
+                        value
+                    }
+                }
+            }
+            locale
+        }
+    }
+`;
+
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
+        if (field.type === "ref") {
+            return `${field.fieldId} ${I18N_FIELD_WITH_CONTENT}`;
+        }
+
         return `${field.fieldId} ${I18N_FIELD}`;
     });
 
@@ -114,6 +134,9 @@ export const GET_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
+                indexes {
+                    fields
+                }
                 lockedFields {
                     fieldId
                     multipleValues

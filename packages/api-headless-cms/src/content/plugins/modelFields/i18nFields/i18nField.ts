@@ -1,4 +1,4 @@
-import { pipe, onGet, fields, withFields, withProps } from "@webiny/commodo";
+import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import { Context as I18NContext } from "@webiny/api-i18n/types";
@@ -9,7 +9,8 @@ const getRawData = value => {
 };
 
 export type I18NField = {
-    field: any;
+    field?: any;
+    createField?: (valuesInstance: any) => any;
     context: CommodoContext & I18NContext;
     [key: string]: any;
 };
@@ -33,42 +34,33 @@ export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NCont
 
 type I18NValues = { [key: string]: any }[];
 
-export const getI18NValues = (
-    value: I18NValues | I18NValues[],
-    i18n: I18NContext["i18n"],
-    list: boolean
-) => {
-    if (!list) {
-        return getI18NValueItem(value, i18n);
-    }
 
-    if (Array.isArray(value)) {
-        // @ts-ignore
-        return value.map(item => {
-            return getI18NValueItem(item, i18n);
-        });
-    }
 
-    return [];
-};
-
-export const i18nField = ({ field, context: { i18n, commodo }, list, ...rest }: I18NField) => {
+export const i18nField = ({
+    field = null,
+    createField = null,
+    context: { i18n, commodo },
+    name,
+    ...rest
+}: I18NField) => {
     const { id } = commodo.fields;
 
+    const ValuesModel = withFields(valuesModel => ({
+        locale: id({ validation: validation.create("required") }),
+        value: typeof createField === "function" ? createField(valuesModel) : field
+    }))();
+
     const i18nFields = fields({
-        list,
         ...rest,
-        value: list ? [] : {},
+        value: {},
         instanceOf: pipe(
+            name ? withName(name) : model => model,
             withFields({
-                values: onGet(value => getI18NValues(value, i18n, list))(
+                values: onGet(value => getI18NValueItem(value, i18n))(
                     fields({
                         list: true,
                         value: [],
-                        instanceOf: withFields({
-                            locale: id({ validation: validation.create("required") }),
-                            value: field
-                        })()
+                        instanceOf: ValuesModel
                     })
                 )
             }),
@@ -81,13 +73,6 @@ export const i18nField = ({ field, context: { i18n, commodo }, list, ...rest }: 
 
                     if (!locale) {
                         locale = i18n.getLocale();
-                    }
-
-                    if (list) {
-                        return this.values.map(values => {
-                            const value = values.find(value => value.locale === locale.id);
-                            return value ? value.value : undefined;
-                        });
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);

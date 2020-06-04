@@ -90,18 +90,23 @@ export default () => {
             createBase: createEnvironmentBase
         });
 
-        context.createEnvironmentBase = createEnvironmentBase;
+        context.models.createEnvironmentBase = createEnvironmentBase;
 
         // Build Commodo models from CmsContentModels
         const contentModels = await context.models.CmsContentModel.find();
+        const createdContentModels = {};
         for (let i = 0; i < contentModels.length; i++) {
             const contentModel = contentModels[i];
-            context.models[contentModel.modelId] = createDataModel(
+            createdContentModels[contentModel.modelId] = createDataModel(
                 createEnvironmentBaseFactory({ context, addEnvironmentField: false }),
                 contentModel,
                 context
             );
         }
+
+        Object.assign(context.models, createdContentModels);
+
+        context.models.contentModels = createdContentModels;
     }
 
     return [

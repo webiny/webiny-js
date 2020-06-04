@@ -1,11 +1,15 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "@webiny/api-headless-cms/types";
+import {
+    CmsFieldTypePlugins,
+    CmsContentModel,
+    CmsModelFieldDefinition
+} from "@webiny/api-headless-cms/types";
 
 interface RenderFields {
     (params: {
         model: CmsContentModel;
         type: string;
         fieldTypePlugins: CmsFieldTypePlugins;
-    }): string;
+    }): CmsModelFieldDefinition[];
 }
 
 export const renderFields: RenderFields = ({ model, type, fieldTypePlugins }) => {
@@ -17,8 +21,13 @@ export const renderFields: RenderFields = ({ model, type, fieldTypePlugins }) =>
                     `Missing "cms-model-field-to-graphql" plugin for field type "${f.type}"`
                 );
             }
-            return fieldTypePlugins[f.type][type].createTypeField({ model, field: f });
+            const defs = fieldTypePlugins[f.type][type].createTypeField({ model, field: f });
+
+            if (typeof defs === "string") {
+                return { fields: defs };
+            }
+
+            return defs;
         })
-        .filter(Boolean)
-        .join("\n");
+        .filter(Boolean);
 };

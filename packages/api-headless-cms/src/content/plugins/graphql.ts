@@ -130,6 +130,7 @@ export default ({ type }) => [
                     createdBy: SecurityUser
                     titleFieldId: String
                     fields: [CmsContentModelField]
+                    totalFields: Int
                     indexes: [ContentModelIndexes]
                     lockedFields: [CmsLockedField]
                 }

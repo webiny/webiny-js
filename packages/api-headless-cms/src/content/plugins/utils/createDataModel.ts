@@ -2,6 +2,7 @@ import mdbid from "mdbid";
 import {
     pipe,
     withName,
+    withStorageName,
     withHooks,
     withFields,
     withProps,
@@ -26,6 +27,7 @@ import { withModelFiltering } from "./withModelFiltering";
 import { createValidation } from "./createValidation";
 import pick from "lodash/pick";
 import omit from "lodash/omit";
+import upperFirst from "lodash/upperFirst";
 
 async function deleteRevisionIndexes(revision, context) {
     const { CmsContentEntrySearch } = context.models;
@@ -52,7 +54,9 @@ export const createDataModel = (
 
     // Create content model
     const Model: any = pipe(
-        withName("CmsContentEntry"),
+        withName(`Cms${upperFirst(contentModel.modelId)}`),
+        // All entries need to end up in the same database collection / table.
+        withStorageName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
             contentModel,
             async toStorage() {

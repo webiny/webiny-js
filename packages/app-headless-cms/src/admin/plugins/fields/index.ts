@@ -6,6 +6,7 @@ import number from "./number";
 import boolean from "./boolean";
 import dateTime from "./dateTime";
 import file from "./file";
+import ref from "./ref";
 
 const plugins: CmsEditorFieldTypePlugin[] = [
     text,
@@ -14,7 +15,8 @@ const plugins: CmsEditorFieldTypePlugin[] = [
     dateTime,
     richText,
     longText,
-    file
+    file,
+    ref
 ];
 
 export default plugins;

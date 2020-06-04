@@ -35,6 +35,23 @@ describe("Data Manager Client", () => {
         const contentModel = await context.models.CmsContentModel.findOne({
             query: { modelId: "category" }
         });
+
+
+        // If we are going to create a new index with the "price" field in it, let's make sure the field actually exists.
+        if (!contentModel.fields.find(item => item.fieldId === 'price')) {
+            contentModel.fields = [
+                ...contentModel.fields,
+                {
+                    _id: "xyzecirp",
+                    label: {
+                        values: [{ locale: locales.en.id, value: "Price" }]
+                    },
+                    type: "number",
+                    fieldId: "price"
+                }
+            ];
+        }
+
         contentModel.indexes = [{ fields: ["price"] }];
         await contentModel.save();
 
@@ -50,6 +67,21 @@ describe("Data Manager Client", () => {
         const contentModel = await context.models.CmsContentModel.findOne({
             query: { modelId: "category" }
         });
+
+        if (!contentModel.fields.find(item => item.fieldId === 'price')) {
+            contentModel.fields = [
+                ...contentModel.fields,
+                {
+                    _id: "xyzecirp",
+                    label: {
+                        values: [{ locale: locales.en.id, value: "Price" }]
+                    },
+                    type: "number",
+                    fieldId: "price"
+                }
+            ];
+        }
+
         contentModel.indexes = [{ fields: ["price"] }];
         await contentModel.save();
 

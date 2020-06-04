@@ -7,6 +7,7 @@ import dateTime from "./dateTime";
 import file from "./file";
 import radioButtons from "./radioButtons";
 import checkboxes from "./checkboxes";
+import ref from "./ref";
 
 export default [
     number,
@@ -16,6 +17,7 @@ export default [
     boolean,
     dateTime,
     file,
+    ref,
     radioButtons,
     checkboxes
 ];

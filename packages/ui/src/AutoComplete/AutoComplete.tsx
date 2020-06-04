@@ -9,15 +9,27 @@ import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText } from "./utils";
 import { isEqual } from "lodash";
+import MaterialSpinner from "react-spinner-material";
 
 export type AutoCompleteProps = AutoCompleteBaseProps & {
     /* A callback that is executed each time a value is changed. */
     onChange?: (value: any, selection: any) => void;
+
+    /* If true, will show a loading spinner on the right side of the input. */
+    loading?: boolean;
 };
 
 type State = {
     inputValue: string;
 };
+
+function Spinner() {
+    if (process.env.REACT_APP_ENV === "ssr") {
+        return null;
+    }
+
+    return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+}
 
 class AutoComplete extends React.Component<AutoCompleteProps, State> {
     static defaultProps = {
@@ -40,9 +52,9 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
     componentDidUpdate(previousProps: any) {
         const { value, options } = this.props;
-        const { value: previousValue, options: previousOptions } = previousProps;
+        const { value: previousValue } = previousProps;
 
-        if (!isEqual(value, previousValue) || !isEqual(options, previousOptions)) {
+        if (!isEqual(value, previousValue)) {
             let item = null;
 
             if (value) {
@@ -177,6 +189,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     // @ts-ignore
                                     validation,
                                     rawOnChange: true,
+                                    trailingIcon: this.props.loading && <Spinner />,
                                     onChange: e => e,
                                     onBlur: e => e,
                                     onFocus: e => {

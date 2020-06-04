@@ -1,5 +1,4 @@
 import * as React from "react";
-import { css } from "emotion";
 import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
 import useReactRouter from "use-react-router";
 import {
@@ -13,11 +12,6 @@ import { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import cloneDeep from "lodash/cloneDeep";
-
-const pageInnerWrapper = css({
-    overflowY: "scroll",
-    position: "relative"
-});
 
 const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
@@ -98,9 +92,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
                         return;
                     }
 
-                    const data = cloneDeep(
-                        cache.readQuery<any>({ query: LIST_CONTENT })
-                    );
+                    const data = cloneDeep(cache.readQuery<any>({ query: LIST_CONTENT }));
                     const previousItemIndex = data.content.data.findIndex(item => item.id === id);
                     data.content.data.splice(previousItemIndex, 1, response.data.content.data);
                     cache.writeQuery({ query: LIST_CONTENT, data });
@@ -121,27 +113,25 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
     );
 
     return (
-        <div className={pageInnerWrapper}>
-            <ContentModelForm
-                locale={getLocale()}
-                loading={getLoading()}
-                contentModel={contentModel}
-                content={content}
-                onForm={contentForm => setState({ contentForm })}
-                onSubmit={async data => {
-                    if (content.id) {
-                        if (get(content, "meta.locked")) {
-                            await createContentFrom(content.id, data);
-                            return;
-                        }
-                        await updateContent(content.id, data);
+        <ContentModelForm
+            locale={getLocale()}
+            loading={getLoading()}
+            contentModel={contentModel}
+            content={content}
+            onForm={contentForm => setState({ contentForm })}
+            onSubmit={async data => {
+                if (content.id) {
+                    if (get(content, "meta.locked")) {
+                        await createContentFrom(content.id, data);
                         return;
                     }
+                    await updateContent(content.id, data);
+                    return;
+                }
 
-                    await createContent(data);
-                }}
-            />
-        </div>
+                await createContent(data);
+            }}
+        />
     );
 };
 

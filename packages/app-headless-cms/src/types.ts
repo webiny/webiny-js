@@ -31,6 +31,9 @@ export type CmsEditorFieldTypePlugin = Plugin & {
             form: FormChildrenFunctionParams;
             getBind: (index?: number) => any;
         }) => React.ReactNode;
+        graphql?: {
+            queryField?: string;
+        };
     };
 };
 
@@ -46,6 +49,7 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
             Label: typeof Label;
             getBind: (index?: number) => any;
             locale: string;
+            contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };
 };
@@ -81,6 +85,7 @@ export type CmsEditorContentModel = {
     fields: CmsEditorField[];
     name: string;
     modelId: string;
+    titleFieldId: string;
     settings: any;
     status: string;
     savedOn: string;

@@ -49,6 +49,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             indexes: indexes()
         }),
         withProps({
+            get totalFields() {
+                return Array.isArray(this.fields) ? this.fields.length : 0;
+            },
             pluralizedName() {
                 if (!this.name) {
                     return "";
@@ -78,27 +81,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     throw new Error(
                         "Cannot delete content model because there are existing entries."
                     );
-                }
-            },
-            async beforeUpdate() {
-                // We must not allow removal of fields that are already in use in content entries.
-                const lockedFields = this.lockedFields || [];
-                for (let i = 0; i < lockedFields.length; i++) {
-                    const lockedField = lockedFields[i];
-                    const existingField = this.fields.find(
-                        item => item.fieldId === lockedField.fieldId
-                    );
-                    if (!existingField) {
-                        throw new Error(
-                            `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
-                        );
-                    }
-
-                    if (lockedField.multipleValues !== existingField.multipleValues) {
-                        throw new Error(
-                            `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
-                        );
-                    }
                 }
             },
             async beforeSave() {
@@ -141,6 +123,71 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         throw new Error(
                             `Fields that accept multiple values cannot be used as the entry title (tried to use "${this.titleFieldId}" field)`
                         );
+                    }
+
+                    // When a field is set as a title field, we automatically create an index, so that we can
+                    // immediately search entries by its title. Convenient for users, and ensures there is always
+                    // at least one field we can do a search with. Makes generic auto-complete / multi-auto-complete
+                    // components possible.
+                    let indexAlreadyExists = false;
+                    for (let i = 0; i < this.indexes.length; i++) {
+                        const index = this.indexes[i];
+                        if (
+                            Array.isArray(index.fields) &&
+                            index.fields.length === 1 &&
+                            index.fields[0] === this.titleFieldId
+                        ) {
+                            indexAlreadyExists = true;
+                            break;
+                        }
+                    }
+
+                    if (!indexAlreadyExists) {
+                        this.indexes = [
+                            ...this.indexes,
+                            {
+                                fields: [this.titleFieldId]
+                            }
+                        ];
+                    }
+                }
+
+                // We must not allow removal or changes in fields that are already in use in content entries.
+                const lockedFields = this.lockedFields || [];
+                for (let i = 0; i < lockedFields.length; i++) {
+                    const lockedField = lockedFields[i];
+                    const existingField = this.fields.find(
+                        item => item.fieldId === lockedField.fieldId
+                    );
+                    if (!existingField) {
+                        throw new Error(
+                            `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
+                        );
+                    }
+
+                    if (lockedField.multipleValues !== existingField.multipleValues) {
+                        throw new Error(
+                            `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
+                        );
+                    }
+                }
+
+                // Check if the indexes list contains all fields that actually exists.
+                for (let i = 0; i < this.indexes.length; i++) {
+                    const index = this.indexes[i];
+                    if (Array.isArray(index.fields)) {
+                        for (let j = 0; j < index.fields.length; j++) {
+                            const field = index.fields[j];
+                            // "id" is built-in, no need to do any checks here.
+                            if (field === "id") {
+                                continue;
+                            }
+                            if (!this.fields.find(item => item.fieldId === field)) {
+                                throw new Error(
+                                    `Before removing the "${field}" field, please remove all of the indexes that include it in in their list of fields.`
+                                );
+                            }
+                        }
                     }
                 }
 

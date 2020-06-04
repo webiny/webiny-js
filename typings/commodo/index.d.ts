@@ -3,6 +3,7 @@ export type compose = Function;
 
 declare module "@webiny/commodo" {
     export const withStorage: any;
+    export const withStorageName: any;
     export const withCrudLogs: any;
     export const withSoftDelete: any;
     export const withFields: any;
@@ -41,6 +42,7 @@ declare module "@webiny/commodo/fields" {
 
 declare module "@webiny/commodo/fields-storage" {
     export const withStorage: any;
+    export const withStorageName: any;
 }
 
 declare module "@webiny/commodo/hooks" {

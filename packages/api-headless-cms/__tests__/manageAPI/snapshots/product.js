@@ -1,5 +1,24 @@
 export default /* GraphQL */ `
     "Products being sold in our webshop"
+    type CmsRefProductCategoryLocalized {
+        value: Category
+        locale: ID!
+    }
+
+    type CmsRefProductCategory {
+        value(locale: String): Category
+        values: [CmsRefProductCategoryLocalized]!
+    }
+
+    type CmsRefProductReviewsLocalized {
+        value: Review
+        locale: ID!
+    }
+
+    type CmsRefProductReviews {
+        value(locale: String): Review
+        values: [CmsRefProductReviewsLocalized]!
+    }
     type Product {
         id: ID
         createdBy: SecurityUser
@@ -9,8 +28,8 @@ export default /* GraphQL */ `
         savedOn: DateTime
         meta: ProductMeta
         title: CmsText
-        category: CmsRefOne
-        reviews: CmsRefMany
+        category: CmsRefProductCategory
+        reviews: CmsRefProductReviews
         price: CmsNumber
         inStock: CmsBoolean
         itemsInStock: CmsNumber
@@ -33,8 +52,8 @@ export default /* GraphQL */ `
 
     input ProductInput {
         title: CmsTextInput
-        category: CmsRefOneInput
-        reviews: CmsRefManyInput
+        category: CmsRefInput
+        reviews: CmsRefInput
         price: CmsNumberInput
         inStock: CmsBooleanInput
         itemsInStock: CmsNumberInput
