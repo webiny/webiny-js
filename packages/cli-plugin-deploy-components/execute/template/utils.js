@@ -8,6 +8,26 @@ const { red } = require("chalk");
 const debug = require("debug");
 const kebabCase = require("lodash.kebabcase");
 
+const getResourceName = (component, name) => {
+    const resourceNameParts = [
+        component.context.instance.id,
+        component.context.instance.stackName,
+        component.context.instance.env,
+        component.context.instance.resource,
+        name ? kebabCase(name) : null
+    ].filter(Boolean);
+
+    let resourceName = resourceNameParts.join("_");
+
+    if (resourceName.length > 64) {
+        const diff = resourceName.length - 64;
+        resourceNameParts[1] = resourceNameParts[1].substr(0, resourceNameParts[1].length - diff);
+        resourceName = resourceNameParts.join("_");
+    }
+
+    return resourceName;
+};
+
 const getOutputs = allComponents => {
     const outputs = {};
 
@@ -246,18 +266,10 @@ const executeComponent = async (
     component.context.instance.resource = resource;
     component.context.instance.getResourceName = (name = null) => {
         if (name && name.startsWith(component.context.instance.id)) {
-            return name;
+            return name.substr(0, 64);
         }
 
-        return [
-            component.context.instance.id,
-            component.context.instance.stackName,
-            component.context.instance.env,
-            component.context.instance.resource,
-            name ? kebabCase(name) : null
-        ]
-            .filter(Boolean)
-            .join("_");
+        return getResourceName(component, name);
     };
     const availableOutputs = getOutputs(allComponents);
     try {
