@@ -2,18 +2,22 @@ import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 import { createTypeName } from "../utils/createTypeName";
+import { createReadTypeName } from "../utils/createTypeName";
+import { createListArgs } from "../utils/createListArgs";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
     read: {
-        createTypeField({ field }) {
+        createTypeField({ model, field }) {
             const localeArg = "(locale: String)";
-            if (field.multipleValues) {
-                return `${field.fieldId}${localeArg}: [ID]`;
-            }
-            return `${field.fieldId}${localeArg}: ID`;
+            const { modelId, type } = field.settings;
+            const many = type === "many";
+            const gqlType = createReadTypeName(modelId);
+            const fieldArgs = many ? createListArgs({ model, field }) : localeArg;
+
+            return field.fieldId + fieldArgs + `: ${many ? `${gqlType}ListResponse` : gqlType}`;
         },
         createResolver({ field }) {
             return (instance, args) => {
