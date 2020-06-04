@@ -17,8 +17,9 @@ describe("Ref Field - CRUD Test", () => {
                         "deleted",
                         "entry1",
                         "entry2",
-                        "entry1ClassId",
-                        "entry2ClassId",
+                        "entry1FieldId",
+                        "entry1ModelId",
+                        "entry2ModelId",
                         "environment"
                     ])
                 )
