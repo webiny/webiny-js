@@ -168,6 +168,7 @@ export default [
                     values: [{ locale: locales.en.id, value: "Reviews" }]
                 },
                 fieldId: "reviews",
+                multipleValues: true,
                 type: "ref",
                 validation: [],
                 settings: {
