@@ -120,6 +120,9 @@ Thanks goes to these wonderful people:
     <td align="center"><a href="https://sundeepcharan.com"><img src="https://avatars3.githubusercontent.com/u/32637757?v=4" width="100px;" alt=""/><br /><sub><b>Sundeep Charan Ramkumar</b></sub></a><br /></td>
     <td align="center"><a href="https://github.com/boyuan459"><img src="https://avatars0.githubusercontent.com/u/8401511?v=4" width="100px;" alt=""/><br /><sub><b>boyuan459</b></sub></a><br /></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/asashay"><img src="https://avatars2.githubusercontent.com/u/10714670?v=4" width="100px;" alt=""/><br /><sub><b>Alex Oliynyk</b></sub></a><br /></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
