@@ -10,14 +10,14 @@ export default /* GraphQL */ `
         values: [CmsRefProductCategoryLocalized]!
     }
 
-    type CmsRefProductReviewsLocalized {
-        value: Review
+    type CmsRefProductReviewsListLocalized {
+        value: [Review]
         locale: ID!
     }
 
-    type CmsRefProductReviews {
-        value(locale: String): Review
-        values: [CmsRefProductReviewsLocalized]!
+    type CmsRefProductReviewsList {
+        value(locale: String): [Review]
+        values: [CmsRefProductReviewsListLocalized]!
     }
     type Product {
         id: ID
@@ -29,7 +29,7 @@ export default /* GraphQL */ `
         meta: ProductMeta
         title: CmsText
         category: CmsRefProductCategory
-        reviews: CmsRefProductReviews
+        reviews: CmsRefProductReviewsList
         price: CmsNumber
         inStock: CmsBoolean
         itemsInStock: CmsNumber
@@ -53,7 +53,7 @@ export default /* GraphQL */ `
     input ProductInput {
         title: CmsTextInput
         category: CmsRefInput
-        reviews: CmsRefInput
+        reviews: CmsRefListInput
         price: CmsNumberInput
         inStock: CmsBooleanInput
         itemsInStock: CmsNumberInput

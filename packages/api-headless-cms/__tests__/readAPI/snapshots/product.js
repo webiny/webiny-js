@@ -9,14 +9,7 @@ export default /* GraphQL */ `
         savedOn: DateTime
         title(locale: String): String
         category(locale: String): Category
-        reviews(
-            locale: String
-            where: ReviewListWhereInput
-            sort: [ReviewListSorter]
-            limit: Int
-            after: String
-            before: String
-        ): ReviewListResponse
+        reviews(locale: String): [Review]
         price(locale: String): Number
         inStock(locale: String): Boolean
         itemsInStock(locale: String): Number
