@@ -16,7 +16,7 @@ import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 const CloneAction = props => {
     const { element, children } = props;
 
-    const onClick = useHandler(props, ({ element, updateElement }) => {
+    const onClick = useHandler(props, ({ element, updateElement }) => () => {
         const state = redux.store.getState();
         element = getElementWithChildren(state, element.id);
         const parent = getParentElementWithChildren(state, element.id);
@@ -41,7 +41,6 @@ const CloneAction = props => {
     return React.cloneElement(children, { onClick });
 };
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(CloneAction);
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(CloneAction);
