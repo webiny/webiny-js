@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-app",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-component": "^4.0.1",
-    "@webiny/serverless-function": "^4.0.1"
+    "@webiny/serverless-component": "^4.0.2",
+    "@webiny/serverless-function": "^4.0.2"
   },
   "publishConfig": {
     "access": "public",
