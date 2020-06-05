@@ -15,6 +15,7 @@ import headlessCmsPlugins from "@webiny/app-headless-cms/admin/plugins";
 
 export default (options: AdminAppOptions) => {
     const plugins = [
+        ...(options.plugins || []),
         pageBuilderPlugins(),
         pageBuilderTheme(),
         formBuilderPlugins(),
