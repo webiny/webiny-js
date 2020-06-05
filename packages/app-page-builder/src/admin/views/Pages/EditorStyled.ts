@@ -16,18 +16,12 @@ const imageAnim = keyframes`
         opacity: 1;
         width: 320px;
     }
-    80% {
+    100% {
         transform: translateY(0) scaleY(1) scaleX(1);
         transform-origin: 50% 50%;
         filter: blur(0);
         opacity: 1;
         width: 320px;
-    }
-    100% {
-        transform: translateY(300px) scaleY(2.5) scaleX(0.2);
-        transform-origin: 50% 0%;
-        filter: blur(40px);
-        opacity: 0;
     }
 `;
 
