@@ -288,7 +288,7 @@ export type PbEditorPageElementPlugin = Plugin & {
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
-    render: (params: { plugin: PbEditorPageElementPlugin }) => ReactNode;
+    render: (params: { element: PbElement; plugin: PbEditorPageElementPlugin }) => ReactNode;
 };
 
 export type PbPageDetailsPlugin = Plugin & {
