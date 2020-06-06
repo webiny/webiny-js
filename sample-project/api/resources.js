@@ -193,6 +193,7 @@ module.exports = () => ({
                     handler: "handler.handler",
                     memory: 1600,
                     timeout: 30,
+                    layers: ["arn:aws:lambda:us-east-1:656932293860:layer:files-transform-sharp:2"],
                     env: {
                         S3_BUCKET: process.env.S3_BUCKET
                     }
