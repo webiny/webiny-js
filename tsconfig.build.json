@@ -137,6 +137,7 @@
     "./packages/serverless-aws-api-gateway",
     "./packages/serverless-aws-cloudfront",
     "./packages/serverless-aws-cognito-user-pool",
+    "./packages/serverless-aws-iam-role",
     "./packages/serverless-aws-lambda",
     "./packages/serverless-aws-s3",
     "./packages/serverless-aws-s3-object",
