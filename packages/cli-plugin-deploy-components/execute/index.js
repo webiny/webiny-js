@@ -1,5 +1,11 @@
+const AWS = require("aws-sdk");
 const { resolve, join } = require("path");
 const { Context } = require("./Context");
+
+// For slower internet connections we want to set a longer timeout
+AWS.config.update({
+    httpOptions: { timeout: process.env.AWS_CLIENT_TIMEOUT || 300000 }
+});
 
 module.exports.execute = async (inputs, method, context) => {
     const projectRoot = context.paths.projectRoot;
