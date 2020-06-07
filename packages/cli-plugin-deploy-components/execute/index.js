@@ -9,7 +9,7 @@ AWS.config.update({
 
 module.exports.execute = async (inputs, method, context) => {
     const projectRoot = context.paths.projectRoot;
-    const { env, debug, folder } = inputs;
+    const { env, debug, stack } = inputs;
 
     // Load .env.json from project root
     await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
@@ -19,8 +19,8 @@ module.exports.execute = async (inputs, method, context) => {
         logger: context,
         projectName: context.projectName,
         stateRoot: join(projectRoot, ".webiny", "state"),
-        stackStateRoot: join(projectRoot, ".webiny", "state", folder, env),
-        stackName: `${context.projectName}_${folder}`,
+        stackStateRoot: join(projectRoot, ".webiny", "state", stack, env),
+        stackName: `${context.projectName}_${stack}`,
         env,
         debug
     });
