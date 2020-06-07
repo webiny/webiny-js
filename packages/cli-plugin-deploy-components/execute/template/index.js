@@ -219,7 +219,6 @@ class Template extends Component {
 
         this.context.status(`Removing`);
 
-        this.context.debug("Flushing template state and removing all components.");
         await syncState({}, this);
 
         this.state = {};
