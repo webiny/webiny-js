@@ -45,7 +45,7 @@ const FileManagerSettings = () => {
                                         {(queryInProgress || mutationInProgress) && (
                                             <CircularProgress />
                                         )}
-                                        <SimpleFormHeader title="File Manager Settings" />
+                                        <SimpleFormHeader title="General File Manager Settings" />
                                         <SimpleFormContent>
                                             <Grid>
                                                 <Cell span={12}>

@@ -9,6 +9,7 @@
     { "path": "../app-plugin-security-cognito" },
     { "path": "../app-plugin-security-cognito-theme" },
     { "path": "../app-template" },
-    { "path": "../ui" }
+    { "path": "../ui" },
+    { "path": "../app-file-manager" }
   ]
 }

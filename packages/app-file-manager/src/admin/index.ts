@@ -1,5 +1,5 @@
-import menus from './menus/menus';
+import plugins from './plugins/';
 
 export default () => [
-    menus
+    plugins
 ];

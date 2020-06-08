@@ -18,6 +18,7 @@ import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 import securityPlugins from "@webiny/app-security/admin/plugins";
 import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
+import fileManagerPlugins from "@webiny/app-file-manager/admin";
 
 // ApolloClient
 import { createApolloClient } from "./apolloClient";
@@ -112,6 +113,7 @@ export default createTemplate<AdminAppOptions>(opts => {
         securityPlugins(),
         cognito(opts.cognito),
         cognitoTheme(),
+        fileManagerPlugins(),
         ...(opts.plugins || [])
     ];
 

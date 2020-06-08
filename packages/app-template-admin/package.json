@@ -20,6 +20,7 @@
     "@webiny/app": "^4.0.2",
     "@webiny/app-admin": "^4.0.2",
     "@webiny/app-i18n": "^4.0.2",
+    "@webiny/app-file-manager": "^4.0.2",
     "@webiny/app-plugin-admin-welcome-screen": "^4.0.2",
     "@webiny/app-plugin-security-cognito": "^4.0.2",
     "@webiny/app-plugin-security-cognito-theme": "^4.0.2",
