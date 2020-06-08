@@ -2,18 +2,17 @@ import * as React from "react";
 import { Route } from "@webiny/react-router";
 import { Helmet } from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
-import FileManagerSettings from "./components/FileManagerSettings";
+import FileManagerSettings from "../views/FileManagerSettings";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
-import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 import { AdminMenuSettingsPlugin } from '@webiny/app-admin/types';
 
 const t = i18n.ns("app-file-manager/admin");
 
-const ROLE_PB_SETTINGS = ["pb:page:crud"];
+const ROLE_FM_SETTINGS = ["cms:file-manager:crud"];
 
-export default () => [
+export default [
     {
         type: "route",
         name: "route-settings-page-builder-file-manager",
@@ -23,7 +22,7 @@ export default () => [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={"Headless CMS - File Manager Settings"} />
-                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
+                        <SecureRoute scopes={ROLE_FM_SETTINGS}>
                             <FileManagerSettings />
                         </SecureRoute>
                     </AdminLayout>

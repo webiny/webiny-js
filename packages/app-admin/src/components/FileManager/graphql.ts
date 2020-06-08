@@ -83,3 +83,16 @@ export const DELETE_FILE = gql`
         }
     }
 `;
+
+export const GET_FILE_SETTINGS = gql`
+    query getSettings {
+        files {
+            getSettings {
+                data {
+                    uploadMinFileSize
+                    uploadMaxFileSize
+                }
+            }
+        }
+    }
+        `

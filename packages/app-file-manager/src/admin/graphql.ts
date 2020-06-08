@@ -10,14 +10,14 @@ const fields = /* GraphQL */ `
 `;
 
 const graphql = {
-    query: gql`
+    GET_SETTINGS: gql`
             query getSettings {
                 files {
                     getSettings${fields}
                 }
             }
         `,
-    mutation: gql`
+    UPDATE_SETTINGS: gql`
         mutation updateSettings($data: FileManagerSettingsInput) {
             files {
                 updateSettings(data: $data) ${fields}

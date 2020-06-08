@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Switch } from "@webiny/ui/Switch";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -20,9 +19,9 @@ import {
 const FileManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
     return (
-        <Query query={graphql.query}>
+        <Query query={graphql.GET_SETTINGS}>
             {({ data, loading: queryInProgress }) => (
-                <Mutation mutation={graphql.mutation}>
+                <Mutation mutation={graphql.UPDATE_SETTINGS}>
                     {(update, { loading: mutationInProgress }) => {
                         const settings = get(data, "files.getSettings.data") || {};
 
@@ -33,8 +32,8 @@ const FileManagerSettings = () => {
                                     await update({
                                         variables: {
                                             data: {
-                                                uploadMinFileSize: parseInt(data.uploadMinFileSize),
-                                                uploadMaxFileSize: parseInt(data.uploadMaxFileSize)
+                                                uploadMinFileSize: parseFloat(data.uploadMinFileSize),
+                                                uploadMaxFileSize: parseFloat(data.uploadMaxFileSize)
                                             }
                                         }
                                     });
@@ -55,7 +54,8 @@ const FileManagerSettings = () => {
                                                             <Bind name={"uploadMinFileSize"}>
                                                                 <Input
                                                                     type="number"
-                                                                    label="Minimum File Upload Size (Bytes)"
+                                                                    label="Minimum file upload size"
+                                                                    description="In bytes"
                                                                 />
                                                             </Bind>
                                                         </Cell>
@@ -67,7 +67,8 @@ const FileManagerSettings = () => {
                                                             <Bind name={"uploadMaxFileSize"}>
                                                                 <Input
                                                                     type="number"
-                                                                    label="Maximum File Upload Size (Bytes)"
+                                                                    label="Maximum file upload size"
+                                                                    description="In bytes"
                                                                 />
                                                             </Bind>
                                                         </Cell>

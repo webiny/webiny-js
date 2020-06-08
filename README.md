@@ -28,8 +28,7 @@
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 [![Join our Slack community https://www.webiny.com/slack](https://img.shields.io/badge/Slack-Join%20our%20community!-orange)](https://www.webiny.com/slack) <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-24-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 </p>
@@ -123,12 +122,12 @@ Thanks goes to these wonderful people:
   <tr>
     <td align="center"><a href="http://alexoliynyk.me/"><img src="https://avatars2.githubusercontent.com/u/10714670?v=4" width="100px;" alt=""/><br /><sub><b>Alex Oliynyk</b></sub></a><br /></td>
     <td align="center"><a href="https://www.linkedin.com/in/rahulsuresh98/"><img src="https://avatars2.githubusercontent.com/u/22114682?v=4" width="100px;" alt=""/><br /><sub><b>Rahul Suresh</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/jmrapp1"><img src="https://avatars0.githubusercontent.com/u/376226?v=4" width="100px;" alt=""/><br /><sub><b>Jon Rapp</b></sub></a><br /></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

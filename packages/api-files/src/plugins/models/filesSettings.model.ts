@@ -36,8 +36,14 @@ export default ({ createBase }) => {
                 value: {},
                 instanceOf: withFields({
                     installed: boolean({ value: false }),
-                    uploadMinFileSize: number({ value: 0 }),
-                    uploadMaxFileSize: number({ value: 26214401 }),
+                    uploadMinFileSize: number({
+                        value: 0,
+                        validation: validation.create("required,gte:0")
+                    }),
+                    uploadMaxFileSize: number({
+                        value: 26214401,
+                        validation: validation.create("required")
+                    }),
                     srcPrefix: onSet(value => {
                         // Make sure srcPrefix always ends with forward slash.
                         if (typeof value === "string") {
