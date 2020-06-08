@@ -12,7 +12,6 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/app": "^4.0.2",
     "@webiny/app-admin": "^4.0.2",
-    "@webiny/app-page-builder": "^4.0.2",
     "@webiny/app-security": "^4.0.2",
     "@webiny/form": "^4.0.2",
     "@webiny/react-router": "^4.0.2",
