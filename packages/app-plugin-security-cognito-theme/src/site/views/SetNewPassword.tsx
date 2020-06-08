@@ -34,7 +34,7 @@ const SetNewPassword = ({ setPassword, error, loading, authProps }) => {
                         <Row>
                             <Bind
                                 name="password"
-                                validators={validation.create("required,password")}
+                                validators={validation.create("required")}
                             >
                                 <Input
                                     autoComplete={false}

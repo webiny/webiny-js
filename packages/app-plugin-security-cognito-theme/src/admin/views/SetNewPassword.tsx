@@ -67,7 +67,7 @@ const SetNewPassword: React.FC<SetNewPasswordChildrenProps> = ({
                                         <Cell span={12}>
                                             <Bind
                                                 name="password"
-                                                validators={validation.create("required,password")}
+                                                validators={validation.create("required")}
                                             >
                                                 <Input
                                                     autoComplete={"off"}
