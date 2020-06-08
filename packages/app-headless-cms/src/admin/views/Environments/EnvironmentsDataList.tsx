@@ -1,6 +1,5 @@
-import React, {useState} from "react";
+import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
@@ -15,7 +14,7 @@ import {
     ListActions
 } from "@webiny/ui/List";
 import { Link } from "@webiny/react-router";
-import {ConfirmationMessage} from "./utils";
+import {ConfirmationDialogWithInput} from "./ConfirmationDialogWithInput";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
@@ -50,8 +49,6 @@ const EnvironmentsDataList = () => {
             ]}
         >
             {({ data, isSelected, select }) => {
-                const [disableConfirm, setDisableConfirm] = useState(true);
-
                 return (
                     <List data-testid="default-data-list">
                         {data.map(item => (
@@ -85,10 +82,10 @@ const EnvironmentsDataList = () => {
 
                                 <ListItemMeta>
                                     <ListActions>
-                                        <ConfirmationDialog
+                                        <ConfirmationDialogWithInput
                                             title={"Remove environment"}
-                                            message={<ConfirmationMessage itemName={item.name} disableConfirm={disableConfirm} setDisableConfirm={setDisableConfirm}/>}
-                                            disableConfirm={disableConfirm}
+                                            message={t`This action {verb} be undone. This will permanently delete the {name} environment and all of it's content.`({ name: <b>{item.name}</b>, verb: <b>cannot</b>  })}
+                                            resourceName={item.name}
                                         >
                                             {({ showConfirmation }) => (
                                                 <DeleteIcon
@@ -107,7 +104,7 @@ const EnvironmentsDataList = () => {
                                                     }}
                                                 />
                                             )}
-                                        </ConfirmationDialog>
+                                        </ConfirmationDialogWithInput>
                                     </ListActions>
                                 </ListItemMeta>
                             </ListItem>
