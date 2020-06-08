@@ -3,11 +3,18 @@ import { I18NValue } from "@webiny/app-i18n/components";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
+import {ReactNode} from "react";
+
+type TrailingIconType = {
+    icon: ReactNode,
+    onClick: any
+}
 
 type Props = {
     type?: string;
     bind: BindComponentRenderProp;
     field: CmsEditorField;
+    trailingIcon?: TrailingIconType;
 };
 
 const Input = (props: Props) => {
@@ -24,6 +31,7 @@ const Input = (props: Props) => {
             placeholder={I18NValue({ value: props.field.placeholderText })}
             description={I18NValue({ value: props.field.helpText })}
             type={props.type}
+            trailingIcon={props.trailingIcon}
         />
     );
 };
