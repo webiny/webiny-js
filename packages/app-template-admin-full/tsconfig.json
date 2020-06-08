@@ -10,6 +10,7 @@
     { "path": "../app-headless-cms" },
     { "path": "../app-form-builder" },
     { "path": "../app-form-builder-theme" },
-    { "path": "../app-template-admin" }
+    { "path": "../app-template-admin" },
+    { "path": "../app-file-manager" }
   ]
 }

@@ -2,6 +2,8 @@ import { flow } from "lodash";
 import {
     withStaticProps,
     withName,
+    number,
+    int,
     string,
     boolean,
     fields,
@@ -34,6 +36,8 @@ export default ({ createBase }) => {
                 value: {},
                 instanceOf: withFields({
                     installed: boolean({ value: false }),
+                    uploadMinFileSize: number({ value: 0 }),
+                    uploadMaxFileSize: number({ value: 26214401 }),
                     srcPrefix: onSet(value => {
                         // Make sure srcPrefix always ends with forward slash.
                         if (typeof value === "string") {
