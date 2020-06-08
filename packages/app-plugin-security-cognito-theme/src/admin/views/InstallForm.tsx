@@ -22,7 +22,7 @@ const InstallForm = ({ Bind, fields, error }) => {
             <Cell span={12}>{fields.lastName}</Cell>
             <Cell span={12}>{fields.email}</Cell>
             <Cell span={12}>
-                <Bind name="password" validators={validation.create("required,password")}>
+                <Bind name="password" validators={validation.create("required")}>
                     <Input autoComplete="off" type="password" label={t`Password`} />
                 </Bind>
             </Cell>
