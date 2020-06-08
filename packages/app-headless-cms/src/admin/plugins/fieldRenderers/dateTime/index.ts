@@ -1,3 +1,4 @@
+import dateTimeField from "./dateTimeField";
 import dateTimeFields from "./dateTimeFields";
 
-export default [dateTimeFields];
+export default [dateTimeField, dateTimeFields];
