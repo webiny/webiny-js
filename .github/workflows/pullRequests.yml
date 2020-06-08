@@ -2,7 +2,7 @@ name: Pull Request Actions
 
 on:
   pull_request:
-    branches: [ release-4.x ]
+    branches: [ develop ]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
