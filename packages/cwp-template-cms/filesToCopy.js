@@ -5,6 +5,16 @@ module.exports = [
         newFile: ".env.json"
     },
     {
+        dir: "",
+        oldFile: "example.gitignore",
+        newFile: ".gitignore"
+    },
+    {
+        dir: "",
+        oldFile: "example.gitattributes",
+        newFile: ".gitattributes"
+    },
+    {
         dir: "api",
         oldFile: "example.env.json",
         newFile: ".env.json"
