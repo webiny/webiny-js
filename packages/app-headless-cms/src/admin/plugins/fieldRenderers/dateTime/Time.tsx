@@ -14,9 +14,10 @@ const Time = props => {
             }}
             field={{
                 ...props.field,
-                label: null // TODO: Add relevant Icon or label
+                label: props.label
             }}
             type={"time"}
+            trailingIcon={props.trailingIcon}
         />
     );
 };
