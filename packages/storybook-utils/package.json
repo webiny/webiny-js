@@ -37,5 +37,8 @@
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
     "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
+  },
+  "publishConfig": {
+    "directory": "dist"
   }
 }
