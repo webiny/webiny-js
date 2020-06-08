@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
@@ -15,6 +15,7 @@ import {
     ListActions
 } from "@webiny/ui/List";
 import { Link } from "@webiny/react-router";
+import {ConfirmationMessage} from "./utils";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
@@ -48,64 +49,72 @@ const EnvironmentsDataList = () => {
                 }
             ]}
         >
-            {({ data, isSelected, select }) => (
-                <List data-testid="default-data-list">
-                    {data.map(item => (
-                        <ListItem key={item.id} selected={isSelected(item)}>
-                            <ListItemText onClick={() => select(item)}>
-                                {item.name}{" "}
-                                {item.default && (
-                                    <Typography use={"overline"}>{t`(default)`}</Typography>
-                                )}
-                                <ListItemTextSecondary>
-                                    {item.environmentAlias
-                                        ? t`Assigned to: {environmentAlias}`({
-                                              environmentAlias: (
-                                                  <Link
-                                                      onClick={e => e.stopPropagation()}
-                                                      to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
-                                                      title={t`This environment is linked with the "{environmentAlias}" alias.`(
-                                                          {
-                                                              environmentAlias:
-                                                                  item.environmentAlias.name
-                                                          }
-                                                      )}
-                                                  >
-                                                      {item.environmentAlias.name}
-                                                  </Link>
-                                              )
-                                          })
-                                        : t`Not linked with an alias.`}
-                                </ListItemTextSecondary>
-                            </ListItemText>
+            {({ data, isSelected, select }) => {
+                const [disableConfirm, setDisableConfirm] = useState(true);
 
-                            <ListItemMeta>
-                                <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(async () => {
-                                                        // If we deleted the environment that was currently selected,
-                                                        // let's automatically switch to the first available one.
-                                                        await actions.delete(item);
+                return (
+                    <List data-testid="default-data-list">
+                        {data.map(item => (
+                            <ListItem key={item.id} selected={isSelected(item)}>
+                                <ListItemText onClick={() => select(item)}>
+                                    {item.name}{" "}
+                                    {item.default && (
+                                        <Typography use={"overline"}>{t`(default)`}</Typography>
+                                    )}
+                                    <ListItemTextSecondary>
+                                        {item.environmentAlias
+                                            ? t`Assigned to: {environmentAlias}`({
+                                                environmentAlias: (
+                                                    <Link
+                                                        onClick={e => e.stopPropagation()}
+                                                        to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
+                                                        title={t`This environment is linked with the "{environmentAlias}" alias.`(
+                                                            {
+                                                                environmentAlias:
+                                                                item.environmentAlias.name
+                                                            }
+                                                        )}
+                                                    >
+                                                        {item.environmentAlias.name}
+                                                    </Link>
+                                                )
+                                            })
+                                            : t`Not linked with an alias.`}
+                                    </ListItemTextSecondary>
+                                </ListItemText>
 
-                                                        if (isSelectedEnvironment(item)) {
-                                                            selectAvailableEnvironment([item]);
-                                                        }
+                                <ListItemMeta>
+                                    <ListActions>
+                                        <ConfirmationDialog
+                                            title={"Remove environment"}
+                                            message={<ConfirmationMessage itemName={item.name} disableConfirm={disableConfirm} setDisableConfirm={setDisableConfirm}/>}
+                                            disableConfirm={disableConfirm}
+                                        >
+                                            {({ showConfirmation }) => (
+                                                <DeleteIcon
+                                                    onClick={() => {
+                                                        showConfirmation(async () => {
+                                                            // If we deleted the environment that was currently selected,
+                                                            // let's automatically switch to the first available one.
+                                                            await actions.delete(item);
 
-                                                        refreshEnvironments();
-                                                    });
-                                                }}
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
-                                </ListActions>
-                            </ListItemMeta>
-                        </ListItem>
-                    ))}
-                </List>
-            )}
+                                                            if (isSelectedEnvironment(item)) {
+                                                                selectAvailableEnvironment([item]);
+                                                            }
+
+                                                            refreshEnvironments();
+                                                        });
+                                                    }}
+                                                />
+                                            )}
+                                        </ConfirmationDialog>
+                                    </ListActions>
+                                </ListItemMeta>
+                            </ListItem>
+                        ))}
+                    </List>
+                )
+            }}
         </DataList>
     );
 };
