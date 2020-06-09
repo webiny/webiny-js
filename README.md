@@ -1,12 +1,7 @@
-<hr/><p align="center" style="border: 1px solid red; background: red">
-<a target="_blank" href="https://careers.webiny.com/senior-javascript-engineer/en">📢 We are hiring a Senior JavaScript Engineer - Click to Apply!</a>
-  <p>
-<hr/>
-<br>
 <p align="center">
   <img src="./static/webiny-logo.svg" width="250">
   <br><br>
-  <strong>Developer-friendly Serverless CMS powered by GraphQL and React</strong>
+  <strong>The Easiest Way to Adopt Serverless</strong>
 </p>
 <p align="center">
   <img src="./static/page-builder-video.gif" width="700">
