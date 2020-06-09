@@ -79,7 +79,7 @@ class AwsLambda extends Component {
                 },
                 region: config.region
             });
-            config.role = { arn: outputsAwsIamRole.arn };
+            config.role = outputsAwsIamRole.arn;
         }
 
         this.context.instance.status("Packaging");
