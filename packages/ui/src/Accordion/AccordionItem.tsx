@@ -133,7 +133,7 @@ class AccordionItem extends React.Component<AccordionItemProps, State> {
                         <Icon icon={this.state.closed ? <DownArrow /> : <UpArrow />} />
                     </ListItemMeta>
                 </ListItem>
-                <Transition id="swaggg" in={!this.state.closed} timeout={duration}>
+                <Transition in={!this.state.closed} timeout={duration}>
                     {state => (
                         <Content
                             style={{ ...defaultStyle, ...transitionStyles[state] }}
