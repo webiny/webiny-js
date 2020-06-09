@@ -12,7 +12,7 @@ describe("Removing fields that are present in indexes", () => {
         initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
-    it(`should not allow deletion of a field that is present in one or more indexes`, async () => {
+    it(`should allow deletion of a field that is present in one or more indexes`, async () => {
         const { createContentModel, getContentModel, updateContentModel } = environment(
             initial.environment.id
         );
@@ -21,9 +21,9 @@ describe("Removing fields that are present in indexes", () => {
             mocks.authorContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
-        const getAuthorContentModel = await getContentModel(authorContentModel);
-        let error;
+        let getAuthorContentModel = await getContentModel(authorContentModel);
 
+        let error = null;
         await updateContentModel(
             mocks.updatedAuthorContentModel({
                 authorContentModelId: getAuthorContentModel.id,
@@ -42,8 +42,27 @@ describe("Removing fields that are present in indexes", () => {
             error = e;
         }
 
-        expect(error.message).toBe(
-            'Before removing the "title" field, please remove all of the indexes that include it in in their list of fields.'
-        );
+        expect(error).toBe(null);
+
+        getAuthorContentModel = await getContentModel(authorContentModel);
+        expect(getAuthorContentModel).toEqual({
+            id: getAuthorContentModel.id,
+            name: "Author",
+            titleFieldId: null,
+            indexes: [
+                {
+                    fields: ["id"]
+                }
+            ],
+            lockedFields: [],
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "age",
+                    multipleValues: false
+                }
+            ],
+            layout: []
+        });
     });
 });
