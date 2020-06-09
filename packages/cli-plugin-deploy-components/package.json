@@ -50,6 +50,7 @@
     ],
     "ignore": {
       "src": [
+        "mongodb",
         "vm"
       ],
       "dependencies": [

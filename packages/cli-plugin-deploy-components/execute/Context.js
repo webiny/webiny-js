@@ -29,7 +29,6 @@ class Context {
         });
 
         this._status = new Status();
-        this._status.start();
     }
 
     async init() {

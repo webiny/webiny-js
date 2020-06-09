@@ -56,6 +56,7 @@ module.exports = async ({ options, ...inputs }, context) => {
     const isFirstDeploy = !(await isEnvDeployed({ env }));
     if (isFirstDeploy) {
         inputs.watch = false;
+
         console.log(
             `This is the first deploy of ${green(env)} environment, so it may take a few minutes.`
         );
@@ -91,7 +92,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         }
     };
 
-    await execute({ ...inputs, stack, callback: afterDeploy }, "default", context);
+    await execute({ ...inputs, stack, callback: afterDeploy, isFirstDeploy }, "default", context);
 
     // Restore the original `cwd`
     process.chdir(cwd);

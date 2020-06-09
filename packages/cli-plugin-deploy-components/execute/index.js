@@ -9,7 +9,7 @@ AWS.config.update({
 
 module.exports.execute = async (inputs, method, context) => {
     const projectRoot = context.paths.projectRoot;
-    const { env, debug, stack } = inputs;
+    const { env, debug, stack, isFirstDeploy } = inputs;
 
     // Load .env.json from project root
     await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
@@ -33,6 +33,40 @@ module.exports.execute = async (inputs, method, context) => {
         // Load .env.json from cwd (this will change depending on the folder you specified)
         await context.loadEnv(resolve(".env.json"), inputs.env, { debug });
 
+        if (method === "default" && isFirstDeploy) {
+            // Let's check for correct Mongo credentials
+            if (process.env.MONGODB_SERVER) {
+                const ora = require("ora");
+                console.log("");
+                const spinner = ora({
+                    text: `Making sure your database is configured correctly...`,
+                    indent: 2
+                }).start();
+
+                const { MongoClient } = require("mongodb");
+                try {
+                    const connection = await MongoClient.connect(process.env.MONGODB_SERVER, {
+                        useNewUrlParser: true,
+                        useUnifiedTopology: true,
+                        connectTimeoutMS: 5000,
+                        socketTimeoutMS: 5000,
+                        serverSelectionTimeoutMS: 5000
+                    });
+
+                    // Let's immediately close the connection so we don't end up with a zombie connection.
+                    await connection.close();
+                    spinner.succeed(`Great! Your MongoDB is accessible.`);
+                    console.log("");
+                } catch (e) {
+                    spinner.fail(
+                        `Could not connect to the MongoDB server, make sure the connection string is correct and that the database server allows outside connections. Check https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection for more information.`
+                    );
+                    process.exit(1);
+                }
+            }
+        }
+
+        componentContext._status.start();
         const Template = require("./template");
         const component = new Template(`Webiny`, componentContext);
         await component.init();
