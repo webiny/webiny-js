@@ -10,16 +10,24 @@ import { MenuButton } from "./index";
 import { Menu } from "./Menu";
 import { FormComponentProps } from "@webiny/ui/types";
 import { pluginsToProps } from "./pluginsToProps";
-import { Range, Descendant } from "slate";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     borderRadius: 2,
     boxSizing: "border-box",
-    padding: 10
+    padding: 10,
+
+    "& > div:first-of-type": {
+        marginLeft: "-8px"
+    },
 });
 
 const EditorContent = styled("div")({
+    height: "45vh",
+    minHeight: 200,
+    overflow: "auto",
+    resize: "vertical",
+
     "> div > div": {
         boxSizing: "border-box",
         padding: 10,
