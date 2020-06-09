@@ -1,4 +1,4 @@
-name: Build, test and release ("latest" tag)
+name: Build
 
 on:
   push:
