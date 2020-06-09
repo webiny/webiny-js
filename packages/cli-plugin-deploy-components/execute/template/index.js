@@ -35,18 +35,23 @@ class Template extends Component {
         validateInputs(inputs);
 
         let template;
-        if (fs.existsSync(`resources.js`)) {
-            const newTemplate = await require(path.resolve("resources.js"))({
-                cli: inputs,
-                context
-            });
-            template = newTemplate.resources;
-        } else if (fs.existsSync(`resources.ts`)) {
-            const resources = require(path.resolve("resources.ts")).default;
-            const newTemplate = await resources({ cli: inputs });
-            template = newTemplate.resources;
-        } else {
-            template = await findTemplate();
+        try {
+            if (fs.existsSync(`resources.js`)) {
+                const newTemplate = await require(path.resolve("resources.js"))({
+                    cli: inputs,
+                    context
+                });
+                template = newTemplate.resources;
+            } else if (fs.existsSync(`resources.ts`)) {
+                const resources = require(path.resolve("resources.ts")).default;
+                const newTemplate = await resources({ cli: inputs });
+                template = newTemplate.resources;
+            } else {
+                template = await findTemplate();
+            }
+        } catch (err) {
+            console.log(`🚨 ${err.message}`);
+            process.exit(1);
         }
 
         if (inputs.resources.length) {
