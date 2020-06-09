@@ -6,7 +6,7 @@ export default {
     name: "form-field-validator-gte",
     validator: {
         name: "gte",
-        validate: (value, validator) => {
+        validate: (form, field, value, validator) => {
             const gteValue = validator.settings.value;
             if (typeof gteValue !== "undefined") {
                 return validation.validate(value, `gte:${gteValue}`);

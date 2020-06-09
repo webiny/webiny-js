@@ -14,7 +14,7 @@ export default {
             name: "form-field-validator-pattern",
             validator: {
                 name: "pattern",
-                validate: (value, validator) => {
+                validate: (form, field, value, validator) => {
                     if (!value) {
                         return true;
                     }

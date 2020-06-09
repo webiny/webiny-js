@@ -6,5 +6,6 @@ import minLength from "./minLength";
 import maxLength from "./maxLength";
 import pattern from "./pattern";
 import patternPlugins from "./patternPlugins";
+import unique from "./unique";
 
-export default [gte, inValidator, lte, pattern, patternPlugins, required, maxLength, minLength];
+export default [gte, inValidator, lte, pattern, patternPlugins, required, maxLength, minLength, unique];

@@ -6,7 +6,7 @@ export default {
     name: "form-field-validator-lte",
     validator: {
         name: "lte",
-        validate: (value, validator) => {
+        validate: (form, field, value, validator) => {
             const lteValue = validator.settings.value;
             if (typeof lteValue !== "undefined") {
                 return validation.validate(value, `lte:${lteValue}`);

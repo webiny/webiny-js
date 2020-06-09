@@ -6,7 +6,7 @@ export default {
     name: "form-field-validator-required",
     validator: {
         name: "required",
-        validate: value => {
+        validate: (form, field, value) => {
             return validation.validate(value, "required");
         }
     }

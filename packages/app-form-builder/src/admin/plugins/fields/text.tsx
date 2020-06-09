@@ -11,7 +11,7 @@ const plugin: FbBuilderFieldPlugin = {
     field: {
         name: "text",
         type: "text",
-        validators: ["required", "minLength", "maxLength", "pattern"],
+        validators: ["required", "minLength", "maxLength", "pattern", "unique"],
         label: "Short Text",
         description: "Titles, names, single line input",
         icon: <TextIcon />,

@@ -2,6 +2,7 @@ import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
+import getFormSubmissionByFieldAndValue from './formSubmissionResolvers/getFormSubmission';
 
 const getFormSubmission = ctx => ctx.models.FormSubmission;
 
@@ -52,6 +53,12 @@ export default {
                 sort: String
             ): FormSubmissionResponse
             
+            getFormSubmissionByFieldAndValue(
+                formId: ID!
+                fieldId: String!
+                value: String!
+            ): FormSubmissionsListResponse
+            
             listFormSubmissions(
                 sort: JSON
                 search: String
@@ -81,7 +88,8 @@ export default {
     resolvers: {
         FormsQuery: {
             listFormSubmissions: hasScope("forms:form:crud")(resolveList(getFormSubmission)),
-            getFormSubmission: resolveGet(getFormSubmission)
+            getFormSubmission: resolveGet(getFormSubmission),
+            getFormSubmissionByFieldAndValue: getFormSubmissionByFieldAndValue
         },
         FormsMutation: {
             createFormSubmission,

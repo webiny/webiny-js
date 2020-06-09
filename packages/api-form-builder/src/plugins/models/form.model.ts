@@ -250,6 +250,8 @@ export default ({ context, createBase, FormSettings }) => {
                             let isInvalid = true;
                             try {
                                 const result = await validatorPlugin.validator.validate(
+                                    this,
+                                    field,
                                     data[field.fieldId],
                                     validator
                                 );
