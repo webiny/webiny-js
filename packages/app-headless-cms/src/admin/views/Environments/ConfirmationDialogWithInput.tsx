@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
+import {css} from "emotion";
 import noop from "lodash/noop";
-
 import {
     Dialog,
     DialogButton,
@@ -8,9 +8,50 @@ import {
     DialogActions,
     DialogTitle,
     DialogContent
-} from "./../Dialog";
+} from "@webiny/ui/Dialog";
+import {Typography} from "@webiny/ui/Typography";
+import {Input} from "@webiny/ui/Input";
+import { CircularProgress } from "@webiny/ui/Progress";
+import {Alert} from "@webiny/ui/Alert";
+import {i18n} from "@webiny/app/i18n";
 
-import { CircularProgress } from "../Progress";
+const t = i18n.ns("app-headless-cms/admin/environments/data-list-utils");
+
+const messageStyle = css ({
+    '& .mdc-dialog__surface': {
+        maxWidth: '540px !important',
+    },
+    '& .mdc-dialog__content': {
+        'span': {
+            display: 'inline-block',
+            marginBottom: 16
+        },
+        'b': {
+            fontWeight: 'bold'
+        }
+    },
+    '& .mdc-dialog__actions': {
+        alignItems: 'center !important'
+    },
+    '& .mdc-dialog__button': {
+        width: '100%',
+        '&:nth-child(2)': {
+            marginLeft: '0px !important'
+        }
+    }
+});
+
+const confirmButtonStyles = css ({
+   backgroundColor: '#FED7D7 !important',
+   color: '#9B2C2C !important',
+   '&:disabled': {
+       opacity: 0.4
+   }
+});
+
+const inputStyles = css ({
+    margin: '16px 0px'
+});
 
 interface ChildrenRenderProp {
     showConfirmation: (onAccept?: Function, onCancel?: Function) => any;
@@ -38,22 +79,25 @@ type Props = {
     children: (props: ChildrenRenderProp) => React.ReactNode;
 
     // Is `Confirm` button disabled
-    disableConfirm?: boolean
+    resourceName?: string
 };
 
 type State = {
     show: boolean;
     loading: boolean;
+    name: string;
+    disableConfirm: boolean;
 };
 
 /**
  * Use ConfirmationDialog component to display a list of choices, once the handler is triggered.
  */
-class ConfirmationDialog extends React.Component<Props, State> {
+class ConfirmationDialogWithInput extends React.Component<Props, State> {
     static defaultProps = {
         title: "Confirmation",
         message: "Are you sure you want to continue?",
-        loading: <CircularProgress />
+        loading: <CircularProgress />,
+        resourceName: null
     };
 
     __isMounted = false;
@@ -65,7 +109,9 @@ class ConfirmationDialog extends React.Component<Props, State> {
 
     state = {
         show: false,
-        loading: false
+        loading: false,
+        name: "",
+        disableConfirm: true
     };
 
     componentDidMount() {
@@ -74,6 +120,18 @@ class ConfirmationDialog extends React.Component<Props, State> {
 
     componentWillUnmount() {
         this.__isMounted = false;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.name === this.state.name) {
+            return;
+        }
+
+        if (this.state.disableConfirm && this.state.name === this.props.resourceName) {
+            this.setState({ disableConfirm: false });
+        } else {
+            this.setState({ disableConfirm: true });
+        }
     }
 
     showConfirmation = (onAccept?: Function, onCancel?: Function) => {
@@ -103,25 +161,37 @@ class ConfirmationDialog extends React.Component<Props, State> {
         }
     };
 
+    handleOnchange = (value) => {
+        this.setState({ name: value });
+    }
+
     render() {
         return (
             <React.Fragment>
                 <Dialog
+                    className={messageStyle}
                     open={this.state.show}
                     onClose={this.hideConfirmation}
                     data-testid={this.props["data-testid"]}
                 >
                     {this.state.loading ? this.props.loading : null}
                     <DialogTitle>{this.props.title}</DialogTitle>
-                    <DialogContent>{this.props.message}</DialogContent>
+                    <DialogContent>
+                        <Alert title={"Wait! Let's review what you're about to do."} type={"warning"} />
+                        <Typography use={"body1"}>{this.props.message}</Typography> <br />
+                        <Typography use={"body1"}>{t`Please type {resourceName} to confirm.`({ resourceName: <b>{this.props.resourceName}</b> })}</Typography>
+                        <Input className={inputStyles} value={this.state.name} onChange={this.handleOnchange}/>
+                    </DialogContent>
+
                     <DialogActions>
                         <DialogCancel onClick={this.onCancel}>Cancel</DialogCancel>
                         <DialogButton
+                            className={confirmButtonStyles}
                             data-testid="confirmationdialog-confirm-action"
                             onClick={this.onAccept}
-                            disabled={this.props.disableConfirm}
+                            disabled={this.state.disableConfirm}
                         >
-                            Confirm
+                            I understand the consequences, delete this environment
                         </DialogButton>
                     </DialogActions>
                 </Dialog>
@@ -133,4 +203,4 @@ class ConfirmationDialog extends React.Component<Props, State> {
     }
 }
 
-export { ConfirmationDialog };
+export { ConfirmationDialogWithInput };
