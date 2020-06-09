@@ -2,8 +2,10 @@ import { Response, ErrorResponse } from "@webiny/graphql";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
 
-export default async (root: any, args: { [key: string]: any }) => {
+export default async (root: any, args: { [key: string]: any }, context) => {
     const { data: files } = args;
+    const settings = await context.settingsManager.getSettings("file-manager");
+
     if (!Array.isArray(files)) {
         return new ErrorResponse({
             code: "UPLOAD_FILES_NON_ARRAY",
@@ -28,7 +30,7 @@ export default async (root: any, args: { [key: string]: any }) => {
     const promises = [];
     for (let i = 0; i < files.length; i++) {
         const item = files[i];
-        promises.push(getPreSignedPostPayload(item));
+        promises.push(getPreSignedPostPayload(item, settings));
     }
 
     return new Response(await Promise.all(promises));

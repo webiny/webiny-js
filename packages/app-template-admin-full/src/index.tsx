@@ -12,6 +12,7 @@ import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 import headlessCmsPlugins from "@webiny/app-headless-cms/admin/plugins";
+import fileManagerPlugins from "@webiny/app-file-manager/admin";
 
 export default (options: AdminAppOptions) => {
     const plugins = [
@@ -25,7 +26,8 @@ export default (options: AdminAppOptions) => {
         googleTagManagerPlugins(),
         typeformPlugins(),
         mailchimpPlugins(),
-        headlessCmsPlugins()
+        headlessCmsPlugins(),
+        fileManagerPlugins()
     ];
 
     return adminAppTemplate({ ...options, plugins });

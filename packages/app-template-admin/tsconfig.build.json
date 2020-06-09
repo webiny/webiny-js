@@ -11,8 +11,9 @@
     "../app-plugin-admin-welcome-screen",
     "../app-plugin-security-cognito",
     "../app-plugin-security-cognito-theme",
-    "../app-template ",
-    "../ui"
+    "../app-template",
+    "../ui",
+    "../app-file-manager"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -28,6 +29,7 @@
     { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
     { "path": "../app-plugin-security-cognito-theme/tsconfig.build.json" },
     { "path": "../app-template/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
+    { "path": "../ui/tsconfig.build.json" },
+    { "path": "../app-file-manager/tsconfig.build.json" }
   ]
 }

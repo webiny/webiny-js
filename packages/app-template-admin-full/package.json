@@ -25,7 +25,8 @@
     "@webiny/app-page-builder": "^4.0.2",
     "@webiny/app-page-builder-theme": "^4.0.2",
     "@webiny/app-template-admin": "^4.0.2",
-    "@webiny/app-typeform": "^4.0.2"
+    "@webiny/app-typeform": "^4.0.2",
+    "@webiny/app-file-manager": "^4.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
