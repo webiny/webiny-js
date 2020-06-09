@@ -222,7 +222,7 @@ const getPolicy = async ({ name, region, accountId }) => {
 };
 
 const configChanged = (prevLambda, lambda) => {
-    const keys = ["description", "runtime", "role", "handler", "memory", "timeout", "env", "hash"];
+    const keys = ["description", "runtime", "role", "handler", "memory", "timeout", "env", "hash", "layers"];
     const inputs = pick(keys, lambda);
     inputs.role = { arn: inputs.role.arn }; // remove other inputs.role component outputs
     const prevInputs = pick(keys, prevLambda);
