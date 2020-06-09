@@ -35,7 +35,7 @@ describe("Used fields", () => {
             mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
         );
 
-        expect(contentModel.lockedFields).toBe(null);
+        expect(contentModel.lockedFields).toEqual([]);
 
         // 2. Create a new product entry.
         const products = await content("product");
