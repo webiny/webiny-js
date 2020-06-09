@@ -5,9 +5,7 @@ import mime from "mime";
 import { validation } from "@webiny/validation";
 
 const S3_BUCKET = process.env.S3_BUCKET;
-const UPLOAD_MAX_FILE_SIZE = process.env.UPLOAD_MAX_FILE_SIZE;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 26214400; // 25MB
-const UPLOAD_MIN_FILE_SIZE = process.env.UPLOAD_MIN_FILE_SIZE;
 
 const sanitizeFileSizeValue = (value, defaultValue) => {
     try {
@@ -18,7 +16,7 @@ const sanitizeFileSizeValue = (value, defaultValue) => {
     }
 };
 
-export default async data => {
+export default async (data, settings) => {
     const contentType = mime.getType(data.name);
     if (!contentType) {
         throw Error(`File's content type could not be resolved.`);
@@ -32,9 +30,9 @@ export default async data => {
     // Replace all whitespace.
     key = key.replace(/\s/g, "");
 
-    const uploadMinFileSize = sanitizeFileSizeValue(UPLOAD_MIN_FILE_SIZE, 0);
+    const uploadMinFileSize = sanitizeFileSizeValue(settings.uploadMinFileSize, 0);
     const uploadMaxFileSize = sanitizeFileSizeValue(
-        UPLOAD_MAX_FILE_SIZE,
+        settings.uploadMaxFileSize,
         UPLOAD_MAX_FILE_SIZE_DEFAULT
     );
 

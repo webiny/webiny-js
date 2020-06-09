@@ -256,9 +256,7 @@ module.exports = () => ({
                     memory: 512,
                     env: {
                         ...apolloServiceEnv,
-                        S3_BUCKET: process.env.S3_BUCKET,
-                        UPLOAD_MIN_FILE_SIZE: "0",
-                        UPLOAD_MAX_FILE_SIZE: "26214400"
+                        S3_BUCKET: process.env.S3_BUCKET
                     }
                 }
             }

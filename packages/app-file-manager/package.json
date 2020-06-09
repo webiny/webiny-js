@@ -1,0 +1,46 @@
+{
+  "name": "@webiny/app-file-manager",
+  "version": "4.0.2",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Jon Rapp ",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/app": "^4.0.2",
+    "@webiny/app-admin": "^4.0.2",
+    "@webiny/app-security": "^4.0.2",
+    "@webiny/form": "^4.0.2",
+    "@webiny/react-router": "^4.0.2",
+    "@webiny/ui": "^4.0.2",
+    "lodash.get": "^4.4.2",
+    "react-helmet": "^5.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
+    "@svgr/webpack": "^4.3.2",
+    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
+  },
+  "peerDependencies": {
+    "graphql-tag": "^2.10.1",
+    "react": "^16.8.6",
+    "react-apollo": "^3.1.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
+}
