@@ -47,9 +47,7 @@ module.exports.execute = async (inputs, method, context) => {
         }
     } catch (err) {
         componentContext.clearStatus();
-        console.log();
-        console.log(err);
-        console.log();
+        throw err;
     } finally {
         componentContext.clearStatus();
     }
