@@ -11,6 +11,7 @@ type TrailingIconType = {
 }
 
 type Props = {
+    step?: number;
     type?: string;
     bind: BindComponentRenderProp;
     field: CmsEditorField;
@@ -20,6 +21,7 @@ type Props = {
 const Input = (props: Props) => {
     return (
         <UiInput
+            {...props}
             {...props.bind}
             onChange={value => {
                 if (props.type === "number") {
