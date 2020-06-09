@@ -72,8 +72,8 @@ const DateTimeWithTimezone = props => {
                         ...props.bind,
                         value: time,
                         onChange: value => {
-                            setTime(`${value}:00`);
-                            return props.bind.onChange(`${date}T${value}:00${timezone}`);
+                            setTime(value);
+                            return props.bind.onChange(`${date}T${value}${timezone}`);
                         }
                     }}
                     field={{
@@ -81,6 +81,7 @@ const DateTimeWithTimezone = props => {
                         label: appendTextToLabel(props.field.label, " time")
                     }}
                     type={"time"}
+                    step={5}
                 />
             </Cell>
             <Cell span={cellSize}>
