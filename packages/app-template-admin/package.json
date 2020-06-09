@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@emotion/styled": "^10.0.27",
     "@webiny/app": "^4.0.2",
     "@webiny/app-admin": "^4.0.2",
     "@webiny/app-i18n": "^4.0.2",
