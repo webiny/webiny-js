@@ -120,9 +120,9 @@ function renderFile(props) {
 
 const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles }) => {
     if (hasPreviouslyUploadedFiles) {
-        return <NoResults/>;
+        return <NoResults />;
     }
-    return <DropFilesHere empty onClick={browseFiles}/>;
+    return <DropFilesHere empty onClick={browseFiles} />;
 };
 
 function FileManagerView(props: FileManagerViewProps) {
@@ -185,23 +185,23 @@ function FileManagerView(props: FileManagerViewProps) {
                 const { data } = gqlQuery.current.getQueryResult();
                 const nextPage = get(data, "files.listFiles.meta.nextPage");
                 nextPage &&
-                fetchMore({
-                    variables: { page: nextPage },
-                    updateQuery: (prev, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return prev;
+                    fetchMore({
+                        variables: { page: nextPage },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.files.listFiles.data = [
+                                ...prev.files.listFiles.data,
+                                ...fetchMoreResult.files.listFiles.data
+                            ];
+
+                            return next;
                         }
-
-                        const next = { ...fetchMoreResult };
-
-                        next.files.listFiles.data = [
-                            ...prev.files.listFiles.data,
-                            ...fetchMoreResult.files.listFiles.data
-                        ];
-
-                        return next;
-                    }
-                });
+                    });
             }
         }, 500),
         []
@@ -311,7 +311,7 @@ function FileManagerView(props: FileManagerViewProps) {
     return (
         <Files
             multiple
-            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + 'b' : maxSize}
+            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : maxSize}
             multipleMaxSize={multipleMaxSize}
             multipleMaxCount={multipleMaxCount}
             accept={accept}
@@ -329,7 +329,7 @@ function FileManagerView(props: FileManagerViewProps) {
                     })}
                     barLeft={
                         <InputSearch>
-                            <Icon className={searchIcon} icon={<SearchIcon/>}/>
+                            <Icon className={searchIcon} icon={<SearchIcon />} />
                             <input
                                 ref={searchInput}
                                 onChange={e => searchOnChange(e.target.value)}
@@ -352,7 +352,7 @@ function FileManagerView(props: FileManagerViewProps) {
                         ) : (
                             // @ts-ignore
                             <ButtonPrimary onClick={browseFiles} disabled={uploading}>
-                                <ButtonIcon icon={<UploadIcon/>}/>
+                                <ButtonIcon icon={<UploadIcon />} />
                                 {t`Upload...`}
                             </ButtonPrimary>
                         )
@@ -394,31 +394,31 @@ function FileManagerView(props: FileManagerViewProps) {
                                 <FileList>
                                     {list.length
                                         ? list.map(file =>
-                                            renderFile({
-                                                uploadFile,
-                                                file,
-                                                showFileDetails: () => showFileDetails(file.src),
-                                                selected: selected.find(
-                                                    current => current.src === file.src
-                                                ),
-                                                onSelect: async () => {
-                                                    if (multiple) {
-                                                        toggleSelected(file);
-                                                        return;
-                                                    }
+                                              renderFile({
+                                                  uploadFile,
+                                                  file,
+                                                  showFileDetails: () => showFileDetails(file.src),
+                                                  selected: selected.find(
+                                                      current => current.src === file.src
+                                                  ),
+                                                  onSelect: async () => {
+                                                      if (multiple) {
+                                                          toggleSelected(file);
+                                                          return;
+                                                      }
 
-                                                    await onChange(file);
-                                                    onClose();
-                                                }
-                                            })
-                                        )
+                                                      await onChange(file);
+                                                      onClose();
+                                                  }
+                                              })
+                                          )
                                         : renderEmpty({
-                                            hasPreviouslyUploadedFiles,
-                                            browseFiles
-                                        })}
+                                              hasPreviouslyUploadedFiles,
+                                              browseFiles
+                                          })}
                                 </FileList>
                             </Scrollbar>
-                            <BottomInfoBar accept={accept} uploading={uploading}/>
+                            <BottomInfoBar accept={accept} uploading={uploading} />
                         </FileListWrapper>
                     </>
                 </OverlayLayout>

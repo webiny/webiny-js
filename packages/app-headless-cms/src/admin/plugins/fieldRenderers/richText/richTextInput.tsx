@@ -15,7 +15,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Rich Text Input`,
         description: t`Renders a rich text input.`,
         canUse({ field }) {
-            return field.type === "rich-text" && !field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "rich-text" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();

@@ -56,7 +56,7 @@ const mocks = {
         data: {
             name: "Author",
             group: contentModelGroupId,
-            titleFieldId: 'sku',
+            titleFieldId: "sku",
             fields: [
                 {
                     _id: "vqk-UApa0",
@@ -108,7 +108,7 @@ const mocks = {
                             }
                         ]
                     }
-                },
+                }
             ]
         }
     })

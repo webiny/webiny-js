@@ -59,9 +59,11 @@ const plugin: CmsEditorFieldTypePlugin = {
                     <Cell span={12}>
                         <Bind name={"settings.modelId"} validators={validation.create("required")}>
                             {bind => {
-                                const id = get(bind, 'value.id', bind.value);
+                                const id = get(bind, "value.id", bind.value);
                                 // Format value prop for AutoComplete component.
-                                const formattedValueForAutoComplete = options.find(option => option.id === id);
+                                const formattedValueForAutoComplete = options.find(
+                                    option => option.id === id
+                                );
 
                                 return (
                                     <AutoComplete
@@ -72,7 +74,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                                         description={t`Cannot be changed later`}
                                         options={options}
                                     />
-                                )
+                                );
                             }}
                         </Bind>
                     </Cell>

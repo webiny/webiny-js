@@ -40,7 +40,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            lockedFields: skipOnPopulate()(fields({ list: true, instanceOf: LockedFieldsModel, value: [] })),
+            lockedFields: skipOnPopulate()(
+                fields({ list: true, instanceOf: LockedFieldsModel, value: [] })
+            ),
             fields: fields({
                 list: true,
                 value: [],
