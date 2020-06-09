@@ -266,6 +266,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Jon R</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/afzalsayed96">
+                        <img src="https://avatars1.githubusercontent.com/u/14029371?v=4" width="100px;" alt="Afzal Sayed"/>
+                        <br />
+                        <sub><b>Afzal Sayed</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
