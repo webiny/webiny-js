@@ -1,3 +1,4 @@
 import richTextInput from "./richTextInput";
+import richTextInputs from "./richTextInputs";
 
-export default [richTextInput]
+export default [richTextInput, richTextInputs];
