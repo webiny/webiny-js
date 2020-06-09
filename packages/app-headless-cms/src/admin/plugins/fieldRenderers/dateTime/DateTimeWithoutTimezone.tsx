@@ -54,8 +54,8 @@ const DateTimeWithoutTimezone = props => {
                         ...props.bind,
                         value: time,
                         onChange: value => {
-                            setTime(`${value}:00`);
-                            return props.bind.onChange(`${date} ${value}:00`);
+                            setTime(value);
+                            return props.bind.onChange(`${date} ${value}`);
                         }
                     }}
                     field={{
@@ -63,6 +63,7 @@ const DateTimeWithoutTimezone = props => {
                         label: appendTextToLabel(props.field.label, " time")
                     }}
                     type={"time"}
+                    step={5}
                 />
             </Cell>
             <RemoveFieldButton trailingIcon={props.trailingIcon} />
