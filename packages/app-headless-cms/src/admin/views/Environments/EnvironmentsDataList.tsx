@@ -84,7 +84,7 @@ const EnvironmentsDataList = () => {
                                     <ListActions>
                                         <ConfirmationDialogWithInput
                                             title={"Remove environment"}
-                                            message={t`This action {verb} be undone. This will permanently delete the {name} environment and all of it's content.`({ name: <b>{item.name}</b>, verb: <b>cannot</b>  })}
+                                            message={t`This action {verb} be undone. This will permanently delete the {name} environment and all of the created content.`({ name: <b>{item.name}</b>, verb: <b>cannot</b>  })}
                                             resourceName={item.name}
                                         >
                                             {({ showConfirmation }) => (

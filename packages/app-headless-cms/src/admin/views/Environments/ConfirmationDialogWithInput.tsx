@@ -34,7 +34,10 @@ const messageStyle = css ({
         alignItems: 'center !important'
     },
     '& .mdc-dialog__button': {
-        width: '100%'
+        width: '100%',
+        '&:nth-child(2)': {
+            marginLeft: '0px !important'
+        }
     }
 });
 
@@ -174,9 +177,9 @@ class ConfirmationDialogWithInput extends React.Component<Props, State> {
                     {this.state.loading ? this.props.loading : null}
                     <DialogTitle>{this.props.title}</DialogTitle>
                     <DialogContent>
-                        <Alert title={"Unexpected bad thing will happen if you don't read this!"} type={"warning"} />
+                        <Alert title={"Wait! Let's review what you're about to do."} type={"warning"} />
                         <Typography use={"body1"}>{this.props.message}</Typography> <br />
-                        <Typography use={"body1"}>{t`Please type {itemName} to confirm.`({ itemName: <b>{this.props.resourceName}</b> })}</Typography>
+                        <Typography use={"body1"}>{t`Please type {resourceName} to confirm.`({ resourceName: <b>{this.props.resourceName}</b> })}</Typography>
                         <Input className={inputStyles} value={this.state.name} onChange={this.handleOnchange}/>
                     </DialogContent>
 
