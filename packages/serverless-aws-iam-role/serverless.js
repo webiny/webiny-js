@@ -16,16 +16,13 @@ class ServerlessAwsIamRole extends Component {
             region: inputs.region
         });
 
-        const state = this.state.output || {};
-
-        const name = state.name || this.context.instance.getResourceName();
-
-        const output = {
-            name,
+        const state = this.state.output || {
             service: inputs.service,
             policy: inputs.policy,
             region: inputs.region
         };
+
+        state.name = state.name || this.context.instance.getResourceName();
 
         // If policy is defined inline, remove ARN
         if (inputs.policy.Version && inputs.policy.Statement) {
@@ -33,8 +30,8 @@ class ServerlessAwsIamRole extends Component {
         }
 
         if (!state.arn) {
-            this.context.instance.debug(`Creating role %o.`, name);
-            output.arn = await createRole({ iam, name, ...inputs });
+            this.context.instance.debug(`Creating role %o.`, state.name);
+            state.arn = await createRole({ iam, name: state.name, ...inputs });
         } else {
             if (!isEqual(this.state.inputs, inputs)) {
                 if (state.service !== inputs.service) {
@@ -50,13 +47,12 @@ class ServerlessAwsIamRole extends Component {
         }
 
         this.state.inputs = inputs;
-        this.state.output = output;
-
+        this.state.output = state;
         await this.save();
 
         this.context.instance.debug(
             `Role %o was successfully deployed to region %o.`,
-            name,
+            state.name,
             inputs.region
         );
 
@@ -64,8 +60,6 @@ class ServerlessAwsIamRole extends Component {
     }
 
     async remove() {
-        this.context.instance.status(`Removing`);
-
         if (!this.state.output || !this.state.output.name) {
             return;
         }
