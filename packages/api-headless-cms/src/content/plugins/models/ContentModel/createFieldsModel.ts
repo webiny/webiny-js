@@ -2,6 +2,7 @@ import { validation } from "@webiny/validation";
 import { withFields, string, object, setOnce, boolean, fields } from "@webiny/commodo";
 import { i18nField } from "@webiny/api-headless-cms/content/plugins/modelFields/i18nFields";
 import { any } from "@webiny/api-headless-cms/content/plugins/models/anyField";
+import idValidation from "./idValidation";
 
 const requiredShortString = validation.create("required,maxLength:256");
 const shortString = validation.create("maxLength:265");
@@ -13,7 +14,7 @@ export default context => {
 
     return withFields({
         _id: setOnce()(string({ validation: requiredShortString })),
-        fieldId: setOnce()(string({ validation: requiredShortString })),
+        fieldId: setOnce()(string({ validation: idValidation })),
         label: i18nField({
             field: string({ validation: requiredShortString }),
             context
