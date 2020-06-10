@@ -18,6 +18,7 @@ import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import { indexes } from "./indexesField";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import idValidation from "./ContentModel/idValidation";
 
 const required = validation.create("required");
 
@@ -32,7 +33,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 validation: validation.create("required,maxLength:100"),
                 value: "Untitled"
             }),
-            modelId: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
+            modelId: setOnce()(string({ validation: idValidation })),
             description: string({ validation: validation.create("maxLength:200") }),
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
@@ -40,7 +41,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            lockedFields: skipOnPopulate()(fields({ list: true, instanceOf: LockedFieldsModel, value: [] })),
+            lockedFields: skipOnPopulate()(
+                fields({ list: true, instanceOf: LockedFieldsModel, value: [] })
+            ),
             fields: fields({
                 list: true,
                 value: [],
