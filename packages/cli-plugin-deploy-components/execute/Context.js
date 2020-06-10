@@ -61,7 +61,7 @@ class Context {
 
     async writeState(id, state) {
         const stateFilePath = path.join(this.stackStateRoot, `${id}.json`);
-        if (Object.keys(state).length === 0) {
+        if (Object.keys(state).length === 0 && fs.existsSync(stateFilePath)) {
             await fs.unlink(stateFilePath);
         } else {
             await writeJsonFile(stateFilePath, state);
