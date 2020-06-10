@@ -60,6 +60,10 @@ const createRole = async ({ iam, name, service, policy }) => {
         policy
     });
 
+    // Need this timeout to let IAM process the role and get internal stuff in place.
+    // The values was determined by trial and error testing.
+    await new Promise(res => setTimeout(res, 5000));
+
     return roleRes.Role.Arn;
 };
 
