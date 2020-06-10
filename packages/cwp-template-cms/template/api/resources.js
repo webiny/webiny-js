@@ -236,9 +236,7 @@ module.exports = () => ({
                     deleteBucketOnRemove: false,
                     region: process.env.AWS_REGION,
                     name: process.env.S3_BUCKET,
-                    storage: {
-                        accelerated: false
-                    },
+                    accelerated: false,
                     cors: {
                         CORSRules: [
                             {
