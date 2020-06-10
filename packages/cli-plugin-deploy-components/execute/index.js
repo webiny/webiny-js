@@ -48,9 +48,9 @@ module.exports.execute = async (inputs, method, context) => {
                     const connection = await MongoClient.connect(process.env.MONGODB_SERVER, {
                         useNewUrlParser: true,
                         useUnifiedTopology: true,
-                        connectTimeoutMS: 5000,
-                        socketTimeoutMS: 5000,
-                        serverSelectionTimeoutMS: 5000
+                        connectTimeoutMS: 15000,
+                        socketTimeoutMS: 15000,
+                        serverSelectionTimeoutMS: 15000
                     });
 
                     // Let's immediately close the connection so we don't end up with a zombie connection.
