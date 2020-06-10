@@ -1,7 +1,7 @@
 import React from "react";
 import {css} from "emotion";
 import {Cell} from "@webiny/ui/Grid";
-import {ButtonDefault} from "@webiny/ui/Button";
+import {IconButton} from "@webiny/ui/Button";
 
 export const UTC_TIMEZONES = [
     {
@@ -189,7 +189,9 @@ export const DEFAULT_DATE = getCurrentDateString();
 export const DEFAULT_TIMEZONE = "+01:00";
 
 const deleteIconStyles = css ({
-    color: 'var(--mdc-theme-text-secondary-on-background) !important'
+    width: "100% !important",
+    height: "100% !important",
+    color: "var(--mdc-theme-text-secondary-on-background) !important"
 });
 
 export const RemoveFieldButton = ({ trailingIcon }) => {
@@ -198,9 +200,7 @@ export const RemoveFieldButton = ({ trailingIcon }) => {
     }
     return (
         <Cell span={1}>
-            <ButtonDefault className={deleteIconStyles} onClick={trailingIcon.onClick}>
-            {trailingIcon.icon}
-            </ButtonDefault>
+            <IconButton className={deleteIconStyles} onClick={trailingIcon.onClick} icon={trailingIcon.icon} />
         </Cell>
     )
 }
