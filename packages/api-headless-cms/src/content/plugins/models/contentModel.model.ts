@@ -40,7 +40,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            lockedFields: skipOnPopulate()(fields({ list: true, instanceOf: LockedFieldsModel, value: [] })),
+            lockedFields: skipOnPopulate()(
+                fields({ list: true, instanceOf: LockedFieldsModel, value: [] })
+            ),
             fields: fields({
                 list: true,
                 value: [],
@@ -95,6 +97,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 }
 
                 const fields = this.fields || [];
+
+                if (this.titleFieldId && !fields.find(item => item.fieldId === this.titleFieldId)) {
+                    throw new Error(
+                        `Cannot remove field "${this.titleFieldId}" because it's currently set as the title field. Please chose another title field first and try again.`
+                    );
+                }
 
                 // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
