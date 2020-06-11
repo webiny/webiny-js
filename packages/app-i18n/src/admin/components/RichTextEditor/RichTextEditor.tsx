@@ -15,11 +15,7 @@ const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     borderRadius: 2,
     boxSizing: "border-box",
-    padding: 10,
-
-    "& > div:first-of-type": {
-        marginLeft: "-8px"
-    },
+    padding: 10
 });
 
 const EditorContent = styled("div")({
@@ -27,6 +23,7 @@ const EditorContent = styled("div")({
     minHeight: 200,
     overflow: "auto",
     resize: "vertical",
+    padding: "0px 8px",
 
     "> div > div": {
         boxSizing: "border-box",
