@@ -1,7 +1,7 @@
 import React from "react";
 import Input from "./Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import {DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton} from "./utils";
+import { DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton } from "./utils";
 
 const DateTimeWithoutTimezone = props => {
     // "2020-05-18 09:00:00"
