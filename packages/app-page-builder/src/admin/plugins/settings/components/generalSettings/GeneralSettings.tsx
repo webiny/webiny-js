@@ -18,7 +18,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import {DOMAIN_QUERY} from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
+import { DOMAIN_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
 
 const GeneralSettings = () => {
     const { showSnackbar } = useSnackbar();
