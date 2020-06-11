@@ -24,7 +24,7 @@ We are strongly following the [Conventional Commits specification](https://www.c
 
 You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE. Just make sure your commit messages are properly written.
 
-#### IMPORTANT NOTE
+#### ❗️ IMPORTANT NOTE
 Always follow the specification (even though later down the road, your PR might get merged by squashing all commits). Otherwise, the PR will [automatically get rejected](https://github.com/webiny/action-conventional-commits), and you will have to change your commit messages, which can only be done by creating a new PR.
 
 ##### Additional explanation
@@ -43,7 +43,7 @@ Try to make your PRs as informative as possible:
 For example:
 ![Snipaste_2020-04-19_20-10-44](https://user-images.githubusercontent.com/5121148/79717886-20ebe280-82db-11ea-9c23-f46e5ab01724.png)
 
-There's nothing nicer than a well-formed PR. 🤓
+There's nothing nicer than a well-written PR. 🤓
 
 ## Repo overview
 
