@@ -7,7 +7,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/ico
 import get from "lodash/get";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
 
-const t = i18n.ns("app-headless-cms/admin/fields/text");
+const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -15,15 +15,19 @@ const plugin: CmsEditorFieldRendererPlugin = {
     renderer: {
         rendererName: "rich-text-inputs",
         name: t`Rich Text Inputs`,
-        description: t`Renders a simple list of rich text inputs.`,
+        description: t`Renders a simple list of rich text editors.`,
         canUse({ field }) {
-            return field.type === "rich-text" && field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "rich-text" &&
+                field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render(props) {
             const { field } = props;
             return (
                 <DynamicListMultipleValues {...props}>
-                    {({bind, index}) => (
+                    {({ bind, index }) => (
                         <I18NRichTextEditor
                             {...bind.index}
                             label={I18NValue({ value: `Value ${index + 1}` })}
