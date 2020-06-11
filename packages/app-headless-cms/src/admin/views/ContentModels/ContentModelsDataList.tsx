@@ -20,8 +20,8 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
-import {IconButton} from "@webiny/ui/Button";
-import {Tooltip} from "@webiny/ui/Tooltip";
+import { IconButton } from "@webiny/ui/Button";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
@@ -35,8 +35,8 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
-const viewEntriesIconStyles = css ({
-   color: "var(--mdc-theme-text-secondary-on-background)"
+const viewEntriesIconStyles = css({
+    color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
 export type ContentModelsDataListProps = {
@@ -146,8 +146,10 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                 <ListActions>
                                     <Tooltip content={t`View content`} placement={"top"}>
                                         <IconButton
-                                            icon={<ViewListIcon className={viewEntriesIconStyles}/>}
-                                            label={"View entries"}
+                                            icon={
+                                                <ViewListIcon className={viewEntriesIconStyles} />
+                                            }
+                                            label={t`View entries`}
                                             onClick={viewContentEntries(contentModel)}
                                         />
                                     </Tooltip>
@@ -156,7 +158,10 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                     </Tooltip>
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
-                                            <Tooltip content={t`Delete content model`} placement={"top"}>
+                                            <Tooltip
+                                                content={t`Delete content model`}
+                                                placement={"top"}
+                                            >
                                                 <DeleteIcon
                                                     onClick={() =>
                                                         showConfirmation(async () =>
