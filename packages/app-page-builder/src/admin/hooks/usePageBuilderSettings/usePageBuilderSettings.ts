@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import getPagePreviewUrlFunction from "./getPagePreviewUrl";
 
-const DOMAIN_QUERY = gql`
+export const DOMAIN_QUERY = gql`
     query PbGetDomain {
         pageBuilder {
             getSettings {
