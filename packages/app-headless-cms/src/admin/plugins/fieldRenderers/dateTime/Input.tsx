@@ -3,12 +3,11 @@ import { I18NValue } from "@webiny/app-i18n/components";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
-import {ReactNode} from "react";
 
 type TrailingIconType = {
-    icon: ReactNode,
-    onClick: any
-}
+    icon: React.ReactNode;
+    onClick: any;
+};
 
 type Props = {
     step?: number;

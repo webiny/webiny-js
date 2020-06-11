@@ -95,7 +95,7 @@ const DateTimeWithTimezone = props => {
                     options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
                 />
             </Cell>
-            <RemoveFieldButton trailingIcon={props.trailingIcon}/>
+            <RemoveFieldButton trailingIcon={props.trailingIcon} />
         </Grid>
     );
 };

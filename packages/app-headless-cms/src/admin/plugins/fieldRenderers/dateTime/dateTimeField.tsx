@@ -16,7 +16,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Date/Time Input`,
         description: t`Renders input for various formats of date and time.`,
         canUse({ field }) {
-            return field.type === "datetime" && !field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "datetime" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();
