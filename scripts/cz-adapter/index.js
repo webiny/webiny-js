@@ -54,6 +54,11 @@ module.exports = {
                 }
             },
             {
+                type: "input",
+                name: "scope",
+                message: "Provide a scope of your commit (if any):\n"
+            },
+            {
                 type: "maxlength-input",
                 maxLength: 60,
                 name: "subject",
@@ -71,9 +76,6 @@ module.exports = {
                 message: "List any breaking changes:\n"
             }
         ]).then(async answers => {
-            // Add emoji to commit message
-            answers.subject = commitTypes[answers.type].emoji + "  " + answers.subject;
-
             // Build commit message
             const message = buildCommit(answers, { breaklineChar: "\n" });
             console.log("\n\nCommit message:");

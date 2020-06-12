@@ -1,3 +1,5 @@
+const { getLayerArn } = require("@webiny/aws-layers");
+
 const apolloServiceEnv = {
     COGNITO_REGION: process.env.AWS_REGION,
     COGNITO_USER_POOL_ID: "${cognito.userPool.Id}",
@@ -21,6 +23,18 @@ const apolloGatewayServices = {
 
 module.exports = () => ({
     resources: {
+        lambdaRole: {
+            deploy: {
+                component: "@webiny/serverless-aws-iam-role",
+                inputs: {
+                    region: process.env.AWS_REGION,
+                    service: "lambda.amazonaws.com",
+                    policy: {
+                        arn: "arn:aws:iam::aws:policy/AdministratorAccess"
+                    }
+                }
+            }
+        },
         apolloGateway: {
             watch: ["./apolloGateway/build"],
             build: {
@@ -30,6 +44,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "Apollo Gateway",
                     code: "./apolloGateway/build",
@@ -48,6 +63,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "Handles interaction with MongoDB",
                     code: "./databaseProxy/build",
@@ -84,6 +100,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Settings Manager",
                     region: process.env.AWS_REGION,
                     code: "./settingsManager/build",
@@ -106,6 +123,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Security GraphQL API",
                     region: process.env.AWS_REGION,
                     code: "./security/graphql/build",
@@ -125,6 +143,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     code: "./security/validateAccessToken/build",
                     handler: "handler.handler",
@@ -146,6 +165,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Serves previously uploaded files.",
                     region: process.env.AWS_REGION,
                     code: "./files/download/build",
@@ -168,12 +188,14 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Performs image optimization, resizing, etc.",
                     region: process.env.AWS_REGION,
                     code: "./files/transform/build",
                     handler: "handler.handler",
                     memory: 1600,
                     timeout: 30,
+                    layers: [getLayerArn("webiny-v4-sharp", process.env.AWS_REGION)],
                     env: {
                         S3_BUCKET: process.env.S3_BUCKET
                     }
@@ -189,6 +211,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Triggered when a file is deleted.",
                     region: process.env.AWS_REGION,
                     code: "./files/manage/build",
@@ -216,9 +239,7 @@ module.exports = () => ({
                     deleteBucketOnRemove: false,
                     region: process.env.AWS_REGION,
                     name: process.env.S3_BUCKET,
-                    storage: {
-                        accelerated: false
-                    },
+                    accelerated: false,
                     cors: {
                         CORSRules: [
                             {
@@ -249,6 +270,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "Files GraphQL API",
                     code: "./files/graphql/build",
@@ -270,6 +292,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "I18N GraphQL API",
                     code: "./i18n/graphql/build",
@@ -288,6 +311,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     code: "./i18n/locales/build",
                     handler: "handler.handler",
@@ -324,6 +348,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "Page Builder GraphQL API",
                     code: "./pageBuilder/build",
@@ -347,6 +372,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "Form Builder GraphQL API",
                     code: "./formBuilder/build",
@@ -369,6 +395,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     region: process.env.AWS_REGION,
                     description: "CMS Admin GraphQL API",
                     code: "./cms/graphql/build",
@@ -390,6 +417,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "CMS Content API",
                     region: process.env.AWS_REGION,
                     code: "./cms/content/build",
@@ -413,6 +441,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "CMS Data Manager",
                     region: process.env.AWS_REGION,
                     code: "./cms/dataManager/build",

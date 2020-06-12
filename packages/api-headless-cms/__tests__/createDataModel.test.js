@@ -106,7 +106,10 @@ describe(`createDataModel`, () => {
                 ]
             },
             itemsInStock: {
-                values: [{ locale: locales.en.id, value: 20 }, { locale: locales.de.id, value: 45 }]
+                values: [
+                    { locale: locales.en.id, value: 20 },
+                    { locale: locales.de.id, value: 45 }
+                ]
             },
             availableOn: {
                 values: [

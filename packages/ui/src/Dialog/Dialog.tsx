@@ -110,6 +110,8 @@ type DialogButtonProps = RmwcDialogButtonProps & {
      * Callback to execute then button is clicked.
      */
     onClick?: (e: React.MouseEvent) => void;
+
+    className?: string;
 };
 
 /**

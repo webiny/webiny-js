@@ -57,6 +57,7 @@ export class Input extends React.Component<InputProps> {
     static rmwcProps = [
         "label",
         "type",
+        "step",
         "disabled",
         "placeholder",
         "outlined",
