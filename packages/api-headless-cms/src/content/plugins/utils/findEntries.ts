@@ -52,6 +52,15 @@ export default async function findEntries<T = CmsContext>({
         query.locale = context.cms.locale.id;
     }
 
+    // For `manage` API we always want to multiple `limit` by available locales
+    if (context.cms.MANAGE) {
+        const locales = context.i18n.getLocales();
+        const newLimit = limit * locales.length;
+
+        // cap max limit to 100, to avoid `MAX_PER_PAGE_EXCEEDED` error
+        limit = Math.min(newLimit, 100);
+    }
+
     // Find IDs using search collection
     const searchEntries = await CmsContentEntrySearch.find({
         query,
