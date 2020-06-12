@@ -21,6 +21,7 @@ export type CmsEditorFieldTypePlugin = Plugin & {
             singleValue: boolean;
             multipleValues: false; // At the moment, we don't support indexing fields with multiple values.
         };
+        multipleValuesLabel?: string;
         createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;

@@ -9,6 +9,7 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { FormChildrenFunctionParams } from "@webiny/form/Form";
+import pluralize from "pluralize";
 
 type GeneralTabProps = {
     field: CmsEditorField;
@@ -65,6 +66,11 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
             typeof fieldPlugin.field.renderPredefinedValues === "function",
         [field.fieldId]
     );
+    
+    const multipleValuesLabel = useMemo(() => {
+        const defaultLabel = `Use as a list of ${pluralize(fieldPlugin.field.label.toLowerCase())}`;
+        return fieldPlugin.field.multipleValuesLabel || defaultLabel;
+    }, [fieldPlugin.field.type]);
 
     return (
         <>
@@ -90,7 +96,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                 <Cell span={6}>
                     <Bind name={"multipleValues"}>
                         <Switch
-                            label={"Multiple values"}
+                            label={multipleValuesLabel}
                             disabled={!fieldPlugin.field.allowMultipleValues}
                         />
                     </Bind>
