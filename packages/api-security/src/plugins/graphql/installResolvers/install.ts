@@ -82,22 +82,23 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         if (!user) {
             // Create new user
             user = new SecurityUser();
-            await user.populate({ ...data, roles: [fullAccessRole] }).save();
+            await user.populate({ ...data, roles: [fullAccessRole] });
             result.user = true;
         } else {
             // Update user's data
             user.firstName = data.firstName;
             user.lastName = data.lastName;
-            await user.save();
         }
 
-        try {
+        const authUser = await authPlugin.getUser({ email: args.data.email });
+        if (!authUser) {
             await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
-            result.authUser = true;
-        } catch {
+        } else {
             // Update firstName/lastName, but do not touch the existing password
             await authPlugin.updateUser({ data: omit(args.data, ["password"]), user }, context);
         }
+        await user.save();
+        result.authUser = true;
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
             const attrError = InvalidFieldsError.from(e);

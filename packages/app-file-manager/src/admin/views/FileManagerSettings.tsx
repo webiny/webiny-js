@@ -32,8 +32,12 @@ const FileManagerSettings = () => {
                                     await update({
                                         variables: {
                                             data: {
-                                                uploadMinFileSize: parseFloat(data.uploadMinFileSize),
-                                                uploadMaxFileSize: parseFloat(data.uploadMaxFileSize)
+                                                uploadMinFileSize: parseFloat(
+                                                    data.uploadMinFileSize
+                                                ),
+                                                uploadMaxFileSize: parseFloat(
+                                                    data.uploadMaxFileSize
+                                                )
                                             }
                                         }
                                     });

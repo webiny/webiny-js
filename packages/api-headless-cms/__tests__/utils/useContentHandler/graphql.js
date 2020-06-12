@@ -127,6 +127,15 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
     }
 `;
 
+export const DELETE_CONTENT_MODEL = /* GraphQL */ `
+    mutation HeadlessCmsDeleteContentModel($id: ID!) {
+        deleteContentModel(id: $id) {
+            data
+            error ${ERROR_FIELD}
+        }
+    }
+`;
+
 export const GET_CONTENT_MODEL = /* GraphQL */ `
     query GetContentModel($id: ID!) {
         content: getContentModel(id: $id) {

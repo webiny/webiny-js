@@ -28,7 +28,6 @@ describe("Creating indexes on title field change", () => {
             }
         ]);
 
-
         let updatedAuthorContentModel = await updateContentModel(
             mocks.updatedAuthorContentModel({
                 authorContentModelId: getAuthorContentModel.id,
@@ -40,17 +39,12 @@ describe("Creating indexes on title field change", () => {
 
         expect(getUpdatedAuthorContentModel.indexes).toEqual([
             {
-                "fields": [
-                    "id"
-                ]
+                fields: ["id"]
             },
             {
-                "fields": [
-                    "title"
-                ]
+                fields: ["title"]
             }
         ]);
-
 
         updatedAuthorContentModel = await updateContentModel(
             mocks.newTitleFieldUpdateAuthorContentModel({
@@ -63,21 +57,14 @@ describe("Creating indexes on title field change", () => {
 
         expect(getUpdatedAuthorContentModel.indexes).toEqual([
             {
-                "fields": [
-                    "id"
-                ]
+                fields: ["id"]
             },
             {
-                "fields": [
-                    "title"
-                ]
+                fields: ["title"]
             },
             {
-                "fields": [
-                    "sku"
-                ]
+                fields: ["sku"]
             }
         ]);
-
     });
 });

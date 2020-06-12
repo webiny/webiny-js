@@ -1,5 +1,3 @@
-import menus from './menus';
+import menus from "./menus";
 
-export default [
-    menus
-];
+export default [menus];

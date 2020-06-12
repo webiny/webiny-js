@@ -2,6 +2,17 @@
 const yargs = require("yargs");
 const { blue } = require("chalk");
 const indentString = require("indent-string");
+
+// Add indentation to console.log output
+const log = console.log;
+console.log = (first = "", ...args) => {
+    if (typeof first === "string") {
+        log(indentString(first, 2), ...args);
+    } else {
+        log(first, ...args);
+    }
+};
+
 const { createCommands } = require("./commands");
 const context = require("./context");
 
@@ -24,16 +35,6 @@ yargs
     });
 
 createCommands(yargs, context);
-
-// Add indentation to console.log output
-const log = console.log;
-console.log = (first = "", ...args) => {
-    if (typeof first === "string") {
-        log(indentString(first, 2), ...args);
-    } else {
-        log(first, ...args);
-    }
-};
 
 // Run
 yargs.argv;

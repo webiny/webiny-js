@@ -36,6 +36,9 @@ type Props = {
 
     // An element that will trigger the confirmation dialog.
     children: (props: ChildrenRenderProp) => React.ReactNode;
+
+    // Is `Confirm` button disabled
+    disableConfirm?: boolean;
 };
 
 type State = {
@@ -116,6 +119,7 @@ class ConfirmationDialog extends React.Component<Props, State> {
                         <DialogButton
                             data-testid="confirmationdialog-confirm-action"
                             onClick={this.onAccept}
+                            disabled={this.props.disableConfirm}
                         >
                             Confirm
                         </DialogButton>

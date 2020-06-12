@@ -23,9 +23,7 @@ const UserForm = ({ Bind, data, fields }) => {
                         <Cell span={12}>
                             <Bind
                                 name="password"
-                                validators={validation.create(
-                                    data.id ? "password" : "required,password"
-                                )}
+                                validators={data.id ? null : validation.create("required")}
                             >
                                 <Input
                                     autoComplete="off"

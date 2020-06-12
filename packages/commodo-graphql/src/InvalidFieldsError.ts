@@ -2,37 +2,35 @@ import each from "lodash.foreach";
 import get from "lodash.get";
 import { WithFieldsError } from "@webiny/commodo";
 
-function formatInvalidFields(invalidFields, prefix = "") {
-    const formatted = {};
+function formatInvalidFields(invalidFields, prefix = "", formattedErrors) {
     each(invalidFields, ({ code, data, message }, name) => {
-        if (code !== WithFieldsError.VALIDATION_FAILED_INVALID_FIELD) {
+        const path = prefix ? `${prefix}.${name}` : name;
+
+        if (code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
+            formatInvalidFields(data.invalidFields, path, formattedErrors);
             return;
         }
 
-        const path = prefix ? `${prefix}.${name}` : name;
+        if (code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELD) {
+            if (Array.isArray(data)) {
+                return each(data, (err, index) => {
+                    const {
+                        data: { invalidFields },
+                        message
+                    } = err;
+                    if (!invalidFields) {
+                        formattedErrors[`${path}.${index}`] = message;
+                        return;
+                    }
 
-        if (Array.isArray(data)) {
-            return each(data, (err, index) => {
-                const {
-                    data: { invalidFields },
-                    message
-                } = err;
-                if (!invalidFields) {
-                    formatted[`${path}.${index}`] = message;
+                    formatInvalidFields(invalidFields, `${path}.${index}`, formattedErrors);
                     return;
-                }
+                });
+            }
 
-                return Object.assign(
-                    formatted,
-                    formatInvalidFields(invalidFields, `${path}.${index}`)
-                );
-            });
+            formattedErrors[path] = get(data, "message", message);
         }
-
-        formatted[path] = get(data, "message", message);
     });
-
-    return formatted;
 }
 
 class InvalidFieldsError extends WithFieldsError {
@@ -40,7 +38,11 @@ class InvalidFieldsError extends WithFieldsError {
         const { message, code } = error;
 
         const data = error.data;
-        data.invalidFields = formatInvalidFields(get(error, "data.invalidFields", {}));
+        const formattedErrors = {};
+
+        formatInvalidFields(get(error, "data.invalidFields", {}), "", formattedErrors);
+
+        data.invalidFields = formattedErrors;
 
         // @ts-ignore TODO: remove the ignore once we have commodo types
         return new InvalidFieldsError(message, code, data);

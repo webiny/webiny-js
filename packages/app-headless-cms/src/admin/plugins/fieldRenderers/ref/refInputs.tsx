@@ -18,11 +18,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render(props) {
             const Bind = props.getBind();
             return (
-                <Bind>
-                    {bind => (
-                        <ContentEntriesMultiAutocomplete {...props} bind={bind} />
-                    )}
-                </Bind>
+                <Bind>{bind => <ContentEntriesMultiAutocomplete {...props} bind={bind} />}</Bind>
             );
         }
     }

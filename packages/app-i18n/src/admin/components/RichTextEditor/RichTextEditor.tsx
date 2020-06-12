@@ -10,22 +10,12 @@ import { MenuButton } from "./index";
 import { Menu } from "./Menu";
 import { FormComponentProps } from "@webiny/ui/types";
 import { pluginsToProps } from "./pluginsToProps";
-import {ButtonDefault} from "@webiny/ui/Button";
 
 const EditorWrapper = styled("div")({
     border: "1px solid var(--mdc-theme-on-background)",
     borderRadius: 2,
     boxSizing: "border-box",
     padding: 10
-});
-
-// @ts-ignore
-const removeButton = css ({
-    position: "absolute !important",
-    right: 0,
-    top: 42,
-    color: "var(--mdc-theme-text-secondary-on-background) !important",
-    zIndex: 1
 });
 
 const EditorContent = styled("div")({
@@ -46,9 +36,6 @@ const classes = {
     disable: css({
         opacity: 0.7,
         pointerEvents: "none"
-    }),
-    wrapper: css ({
-        position: 'relative',
     })
 };
 
@@ -82,10 +69,6 @@ export type RichTextEditorProps = FormComponentProps & {
     description?: string;
     placeholder?: string;
     label?: string;
-    trailingIcon?: {
-        icon: React.ReactNode;
-        onClick: any;
-    };
     plugins?: RichTextEditorPlugin[];
 };
 
@@ -186,11 +169,11 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
     };
 
     render() {
-        const { plugins, label, disabled, description, validation, placeholder, trailingIcon } = this.props;
+        const { plugins, label, disabled, description, validation, placeholder } = this.props;
         const { renderEditor, ...editorProps } = this.editorProps;
 
         return (
-            <div className={classNames({ [classes.disable]: disabled }, classes.wrapper)}>
+            <div className={classNames({ [classes.disable]: disabled })}>
                 {label && (
                     <div
                         className={classNames(
@@ -201,15 +184,6 @@ export class RichTextEditor extends React.Component<RichTextEditorProps, State> 
                         {label}
                     </div>
                 )}
-                {trailingIcon && (
-                        <ButtonDefault
-                            className={removeButton}
-                            onClick={trailingIcon.onClick}
-                        >
-                            {trailingIcon.icon}
-                        </ButtonDefault>
-                    )
-                }
                 <EditorWrapper>
                     <Slate
                         editor={this.editor as any}

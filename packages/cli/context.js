@@ -23,6 +23,23 @@ class Context {
         };
 
         this.config = require(path.join(projectRoot, "webiny.root.js"));
+
+        // Check if `projectName` was injected properly
+        if (this.config.projectName === "[PROJECT_NAME]") {
+            console.log(
+                [
+                    "",
+                    "🚨 IMPORTANT 🚨",
+                    "Looks like your project was not bootstrapped correctly! We recommend creating a new project from scratch.",
+                    "If you see errors during project creation, please report them to us:",
+                    "🔗 Github:\thttps://github.com/webiny/webiny-js",
+                    "🔗 Slack:\thttps://www.webiny.com/slack",
+                    ""
+                ].join("\n")
+            );
+            process.exit(1);
+        }
+
         this.projectName = this.config.projectName;
         this.plugins = new PluginsContainer();
     }
