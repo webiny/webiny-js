@@ -16,7 +16,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Number Inputs`,
         description: t`Renders a simple list of number inputs.`,
         canUse({ field }) {
-            return field.type === "number" && field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "number" &&
+                field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render(props) {
             return (

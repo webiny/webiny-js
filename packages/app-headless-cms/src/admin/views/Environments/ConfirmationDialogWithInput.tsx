@@ -1,5 +1,5 @@
 import React from "react";
-import {css} from "emotion";
+import { css } from "emotion";
 import noop from "lodash/noop";
 import {
     Dialog,
@@ -9,48 +9,48 @@ import {
     DialogTitle,
     DialogContent
 } from "@webiny/ui/Dialog";
-import {Typography} from "@webiny/ui/Typography";
-import {Input} from "@webiny/ui/Input";
+import { Typography } from "@webiny/ui/Typography";
+import { Input } from "@webiny/ui/Input";
 import { CircularProgress } from "@webiny/ui/Progress";
-import {Alert} from "@webiny/ui/Alert";
-import {i18n} from "@webiny/app/i18n";
+import { Alert } from "@webiny/ui/Alert";
+import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list-utils");
 
-const messageStyle = css ({
-    '& .mdc-dialog__surface': {
-        maxWidth: '540px !important',
+const messageStyle = css({
+    "& .mdc-dialog__surface": {
+        maxWidth: "540px !important"
     },
-    '& .mdc-dialog__content': {
-        'span': {
-            display: 'inline-block',
+    "& .mdc-dialog__content": {
+        span: {
+            display: "inline-block",
             marginBottom: 16
         },
-        'b': {
-            fontWeight: 'bold'
+        b: {
+            fontWeight: "bold"
         }
     },
-    '& .mdc-dialog__actions': {
-        alignItems: 'center !important'
+    "& .mdc-dialog__actions": {
+        alignItems: "center !important"
     },
-    '& .mdc-dialog__button': {
-        width: '100%',
-        '&:nth-child(2)': {
-            marginLeft: '0px !important'
+    "& .mdc-dialog__button": {
+        width: "100%",
+        "&:nth-child(2)": {
+            marginLeft: "0px !important"
         }
     }
 });
 
-const confirmButtonStyles = css ({
-   backgroundColor: '#FED7D7 !important',
-   color: '#9B2C2C !important',
-   '&:disabled': {
-       opacity: 0.4
-   }
+const confirmButtonStyles = css({
+    backgroundColor: "#FED7D7 !important",
+    color: "#9B2C2C !important",
+    "&:disabled": {
+        opacity: 0.4
+    }
 });
 
-const inputStyles = css ({
-    margin: '16px 0px'
+const inputStyles = css({
+    margin: "16px 0px"
 });
 
 interface ChildrenRenderProp {
@@ -79,7 +79,7 @@ type Props = {
     children: (props: ChildrenRenderProp) => React.ReactNode;
 
     // Is `Confirm` button disabled
-    resourceName?: string
+    resourceName?: string;
 };
 
 type State = {
@@ -161,9 +161,9 @@ class ConfirmationDialogWithInput extends React.Component<Props, State> {
         }
     };
 
-    handleOnchange = (value) => {
+    handleOnchange = value => {
         this.setState({ name: value });
-    }
+    };
 
     render() {
         return (
@@ -177,10 +177,21 @@ class ConfirmationDialogWithInput extends React.Component<Props, State> {
                     {this.state.loading ? this.props.loading : null}
                     <DialogTitle>{this.props.title}</DialogTitle>
                     <DialogContent>
-                        <Alert title={"Wait! Let's review what you're about to do."} type={"warning"} />
+                        <Alert
+                            title={"Wait! Let's review what you're about to do."}
+                            type={"warning"}
+                        />
                         <Typography use={"body1"}>{this.props.message}</Typography> <br />
-                        <Typography use={"body1"}>{t`Please type {resourceName} to confirm.`({ resourceName: <b>{this.props.resourceName}</b> })}</Typography>
-                        <Input className={inputStyles} value={this.state.name} onChange={this.handleOnchange}/>
+                        <Typography use={"body1"}>
+                            {t`Please type {resourceName} to confirm.`({
+                                resourceName: <b>{this.props.resourceName}</b>
+                            })}
+                        </Typography>
+                        <Input
+                            className={inputStyles}
+                            value={this.state.name}
+                            onChange={this.handleOnchange}
+                        />
                     </DialogContent>
 
                     <DialogActions>

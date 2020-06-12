@@ -36,9 +36,8 @@ describe("Data Manager Client", () => {
             query: { modelId: "category" }
         });
 
-
         // If we are going to create a new index with the "price" field in it, let's make sure the field actually exists.
-        if (!contentModel.fields.find(item => item.fieldId === 'price')) {
+        if (!contentModel.fields.find(item => item.fieldId === "price")) {
             contentModel.fields = [
                 ...contentModel.fields,
                 {
@@ -68,7 +67,7 @@ describe("Data Manager Client", () => {
             query: { modelId: "category" }
         });
 
-        if (!contentModel.fields.find(item => item.fieldId === 'price')) {
+        if (!contentModel.fields.find(item => item.fieldId === "price")) {
             contentModel.fields = [
                 ...contentModel.fields,
                 {

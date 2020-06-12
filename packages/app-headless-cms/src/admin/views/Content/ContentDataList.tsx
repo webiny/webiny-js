@@ -28,10 +28,10 @@ const listItemMinHeight = css({
 
 const getValue = item => {
     if (!item.value) {
-        return { ...item, value: "Untitled" }
+        return { ...item, value: "Untitled" };
     }
     return item;
-}
+};
 
 const ContentDataList = ({ contentModel, dataList }) => {
     return (

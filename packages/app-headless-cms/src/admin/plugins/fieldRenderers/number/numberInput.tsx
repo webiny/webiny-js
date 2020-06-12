@@ -14,7 +14,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Number Input`,
         description: t`Renders a simple input with its type set to "number".`,
         canUse({ field }) {
-            return field.type === "number" && !field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "number" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();

@@ -95,4 +95,4 @@ export const GET_FILE_SETTINGS = gql`
             }
         }
     }
-        `
+`;
