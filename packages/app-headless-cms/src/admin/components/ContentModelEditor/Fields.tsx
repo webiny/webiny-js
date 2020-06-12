@@ -24,10 +24,17 @@ const FieldContainer = styled("div")({
     }
 });
 
+const FileInfo = styled("div")({});
+
 const FieldLabel = styled("div")({
     textTransform: "uppercase",
     lineHeight: "145%",
     color: "var(--mdc-theme-on-surface)"
+});
+
+const FieldDescription = styled("div")({
+    fontSize: 14,
+    color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
 const FieldHandle = styled("div")({
@@ -35,7 +42,7 @@ const FieldHandle = styled("div")({
     color: "var(--mdc-theme-on-surface)"
 });
 
-const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }) => {
+const Field = ({ onFieldDragStart, fieldType: { type, label, icon, description } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", type }}>
             {({ drag }) => (
@@ -44,7 +51,10 @@ const Field = ({ onFieldDragStart, fieldType: { type, label, icon } }) => {
                         <FieldHandle>
                             <Icon icon={icon} />
                         </FieldHandle>
-                        <FieldLabel>{label}</FieldLabel>
+                        <FileInfo>
+                            <FieldLabel>{label}</FieldLabel>
+                            <FieldDescription>{description}</FieldDescription>
+                        </FileInfo>
                     </FieldContainer>
                 </div>
             )}
