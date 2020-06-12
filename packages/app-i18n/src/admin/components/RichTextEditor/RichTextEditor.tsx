@@ -19,6 +19,12 @@ const EditorWrapper = styled("div")({
 });
 
 const EditorContent = styled("div")({
+    height: "45vh",
+    minHeight: 200,
+    overflow: "auto",
+    resize: "vertical",
+    padding: "0px 8px",
+
     "> div > div": {
         boxSizing: "border-box",
         padding: 10,
