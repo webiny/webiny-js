@@ -44,6 +44,7 @@
     "lodash": "^4.17.10",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
+    "pluralize": "^8.0.0",
     "react-apollo": "^3.1.0",
     "react-dnd": "^9.3.4",
     "react-dnd-html5-backend": "^9.3.4",
