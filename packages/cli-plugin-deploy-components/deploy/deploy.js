@@ -1,4 +1,4 @@
-const { join } = require("path");
+const { join, basename } = require("path");
 const fs = require("fs");
 const { green, red } = require("chalk");
 const notifier = require("node-notifier");
@@ -15,15 +15,21 @@ const notify = ({ message }) => {
     });
 };
 
+const getStackName = folder => {
+    folder = folder.split("/").pop();
+    return folder === "." ? basename(process.cwd()) : folder;
+};
+
 module.exports = async ({ options, ...inputs }, context) => {
     const { env, folder } = inputs;
+    const stack = getStackName(folder);
 
-    const isEnvDeployed = async ({ folder, env }) => {
+    const isEnvDeployed = async ({ env }) => {
         const envFile = join(
             context.paths.projectRoot,
             ".webiny",
             "state",
-            folder,
+            stack,
             env,
             `Webiny.json`
         );
@@ -47,9 +53,10 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     process.chdir(newCwd);
 
-    const isFirstDeploy = !(await isEnvDeployed({ folder, env }));
+    const isFirstDeploy = !(await isEnvDeployed({ env }));
     if (isFirstDeploy) {
         inputs.watch = false;
+
         console.log(
             `This is the first deploy of ${green(env)} environment, so it may take a few minutes.`
         );
@@ -57,11 +64,11 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     const afterDeploy = async ({ output, duration }) => {
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
-        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
+        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
 
         if (options.hooks) {
             // Get hooks for current stack
-            const hooks = options.hooks[folder] || [];
+            const hooks = options.hooks[stack] || [];
 
             for (let i = 0; i < hooks.length; i++) {
                 const hook = hooks[i];
@@ -71,7 +78,7 @@ module.exports = async ({ options, ...inputs }, context) => {
                         const handler = require(hookPath);
                         if (handler.hooks && typeof handler.hooks.afterDeploy === "function") {
                             await handler.hooks.afterDeploy({
-                                stack: folder,
+                                stack,
                                 isFirstDeploy,
                                 env,
                                 state: output
@@ -85,7 +92,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         }
     };
 
-    await execute({ ...inputs, callback: afterDeploy }, "default", context);
+    await execute({ ...inputs, stack, callback: afterDeploy, isFirstDeploy }, "default", context);
 
     // Restore the original `cwd`
     process.chdir(cwd);

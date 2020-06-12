@@ -78,7 +78,7 @@ const createLambda = async ({
     zipPath,
     bucket,
     role,
-    layer
+    layers
 }) => {
     const params = {
         FunctionName: name,
@@ -87,7 +87,7 @@ const createLambda = async ({
         Handler: handler,
         MemorySize: memory,
         Publish: true,
-        Role: role.arn,
+        Role: role,
         Runtime: runtime,
         Timeout: timeout,
         Environment: {
@@ -95,8 +95,8 @@ const createLambda = async ({
         }
     };
 
-    if (layer && layer.arn) {
-        params.Layers = [layer.arn];
+    if (Array.isArray(layers)) {
+        params.Layers = layers;
     }
 
     if (bucket) {
@@ -121,14 +121,14 @@ const updateLambdaConfig = async ({
     env,
     description,
     role,
-    layer
+    layers
 }) => {
     const functionConfigParams = {
         FunctionName: name,
         Description: description,
         Handler: handler,
         MemorySize: memory,
-        Role: role.arn,
+        Role: role,
         Runtime: runtime,
         Timeout: timeout,
         Environment: {
@@ -136,8 +136,8 @@ const updateLambdaConfig = async ({
         }
     };
 
-    if (layer && layer.arn) {
-        functionConfigParams.Layers = [layer.arn];
+    if (Array.isArray(layers)) {
+        functionConfigParams.Layers = layers;
     }
 
     const res = await lambda.updateFunctionConfiguration(functionConfigParams).promise();
@@ -175,9 +175,7 @@ const getLambda = async ({ lambda, name }) => {
             description: res.Description,
             timeout: res.Timeout,
             runtime: res.Runtime,
-            role: {
-                arn: res.Role
-            },
+            role: res.Role,
             handler: res.Handler,
             memory: res.MemorySize,
             hash: res.CodeSha256,
@@ -222,9 +220,8 @@ const getPolicy = async ({ name, region, accountId }) => {
 };
 
 const configChanged = (prevLambda, lambda) => {
-    const keys = ["description", "runtime", "role", "handler", "memory", "timeout", "env", "hash"];
+    const keys = ["description", "runtime", "role", "handler", "memory", "timeout", "env", "hash", "layers"];
     const inputs = pick(keys, lambda);
-    inputs.role = { arn: inputs.role.arn }; // remove other inputs.role component outputs
     const prevInputs = pick(keys, prevLambda);
     return not(equals(inputs, prevInputs));
 };

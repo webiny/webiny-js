@@ -5,6 +5,7 @@ import { css } from "emotion";
 import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
+import { ReactComponent as ViewListIcon } from "@webiny/app-headless-cms/admin/icons/view_list.svg";
 import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -19,6 +20,8 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
+import { IconButton } from "@webiny/ui/Button";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
@@ -30,6 +33,10 @@ const rightAlign = css({
 
 const listItemMinHeight = css({
     minHeight: "66px !important"
+});
+
+const viewEntriesIconStyles = css({
+    color: "var(--mdc-theme-text-secondary-on-background)"
 });
 
 export type ContentModelsDataListProps = {
@@ -85,6 +92,10 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
         return editHandlers.current[contentModel.id];
     }, undefined);
 
+    const viewContentEntries = useCallback(contentModel => {
+        return () => history.push("/cms/content-models/manage/" + contentModel.modelId);
+    }, undefined);
+
     return (
         <DataList
             {...dataList}
@@ -133,16 +144,32 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <ListActions>
-                                    <EditIcon onClick={editRecord(contentModel)} />
+                                    <Tooltip content={t`View content`} placement={"top"}>
+                                        <IconButton
+                                            icon={
+                                                <ViewListIcon className={viewEntriesIconStyles} />
+                                            }
+                                            label={t`View entries`}
+                                            onClick={viewContentEntries(contentModel)}
+                                        />
+                                    </Tooltip>
+                                    <Tooltip content={t`Edit content model`} placement={"top"}>
+                                        <EditIcon onClick={editRecord(contentModel)} />
+                                    </Tooltip>
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() =>
-                                                    showConfirmation(async () =>
-                                                        deleteRecord(contentModel)
-                                                    )
-                                                }
-                                            />
+                                            <Tooltip
+                                                content={t`Delete content model`}
+                                                placement={"top"}
+                                            >
+                                                <DeleteIcon
+                                                    onClick={() =>
+                                                        showConfirmation(async () =>
+                                                            deleteRecord(contentModel)
+                                                        )
+                                                    }
+                                                />
+                                            </Tooltip>
                                         )}
                                     </ConfirmationDialog>
                                 </ListActions>
