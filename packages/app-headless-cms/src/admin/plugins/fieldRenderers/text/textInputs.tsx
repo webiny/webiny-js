@@ -16,7 +16,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Text Inputs`,
         description: t`Renders a simple list of text inputs.`,
         canUse({ field }) {
-            return field.type === "text" && field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "text" &&
+                field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render(props) {
             return (

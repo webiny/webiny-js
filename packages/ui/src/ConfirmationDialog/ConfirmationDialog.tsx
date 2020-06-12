@@ -38,7 +38,7 @@ type Props = {
     children: (props: ChildrenRenderProp) => React.ReactNode;
 
     // Is `Confirm` button disabled
-    disableConfirm?: boolean
+    disableConfirm?: boolean;
 };
 
 type State = {

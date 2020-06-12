@@ -32,7 +32,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
     return /* GraphQL */ `
         "${model.description}"
-        ${fields.map(f => f.typeDefs).filter(Boolean).join("\n")}
+        ${fields
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
         type ${mTypeName} {
             id: ID
             createdBy: SecurityUser
