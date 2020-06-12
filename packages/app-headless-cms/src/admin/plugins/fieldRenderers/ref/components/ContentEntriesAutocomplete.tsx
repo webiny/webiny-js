@@ -46,6 +46,10 @@ function ContentEntriesAutocomplete({ bind, field }) {
         skip: !search || !titleFieldId,
         variables: { where: { [`${titleFieldId}_contains`]: search } }
     });
+    const listLastContentQuery = useQuery(LIST_CONTENT, {
+        // TODO: set`limit` 10 after #983 closes
+        variables: { limit: 100 }
+    });
 
     // Once we have a valid ID, we load the data.
     const getContentQuery = useQuery(GET_CONTENT, {
@@ -55,6 +59,12 @@ function ContentEntriesAutocomplete({ bind, field }) {
 
     // Format options for the Autocomplete component.
     const options = get(listContentQuery, "data.content.data", []).map(item => ({
+        id: item.id,
+        name: getValue(item.meta.title)
+    }));
+
+    // Format default options for the Autocomplete component.
+    const defaultOptions = get(listLastContentQuery, "data.content.data", []).map(item => ({
         id: item.id,
         name: getValue(item.meta.title)
     }));
@@ -83,7 +93,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
             {...bind}
             loading={loading}
             value={{ id, name }}
-            options={options}
+            options={search ? options : defaultOptions}
             label={<I18NValue value={field.label} />}
             description={
                 <>
@@ -91,7 +101,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
                     {unpublishedEntryInfo}
                 </>
             }
-            onInput={debounce(search => search && setSearch(search), 250)}
+            onInput={debounce(search => setSearch(search), 250)}
         />
     );
 }

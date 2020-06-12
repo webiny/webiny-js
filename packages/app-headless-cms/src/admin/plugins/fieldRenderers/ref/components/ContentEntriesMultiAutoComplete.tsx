@@ -53,6 +53,11 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
         variables: { where: { [`${titleFieldId}_contains`]: search } }
     });
 
+    const listLatestContentQuery = useQuery(LIST_CONTENT, {
+        // TODO: set`limit` 10 after #983 closes
+        variables: { limit: 100 }
+    });
+
     // Once we have a valid IDs, we load the data.
     const listContentQueryFilterById = useQuery(LIST_CONTENT, {
         skip: !value || !titleFieldId,
@@ -61,6 +66,12 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
 
     // Format options for the Autocomplete component.
     const options = get(listContentQuery, "data.content.data", []).map(item => ({
+        id: item.id,
+        name: getValue(item.meta.title)
+    }));
+
+    // Format default options for the Autocomplete component.
+    const defaultOptions = get(listLatestContentQuery, "data.content.data", []).map(item => ({
         id: item.id,
         name: getValue(item.meta.title)
     }));
@@ -113,9 +124,9 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
             }}
             loading={loading}
             value={valueForAutoComplete}
-            options={options}
+            options={search ? options : defaultOptions}
             label={<I18NValue value={field.label} />}
-            onInput={debounce(search => search && setSearch(search), 250)}
+            onInput={debounce(search => setSearch(search), 250)}
             description={
                 <>
                     <I18NValue value={field.helpText} />
