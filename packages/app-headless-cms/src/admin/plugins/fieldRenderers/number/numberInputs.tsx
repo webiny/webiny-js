@@ -28,6 +28,10 @@ const plugin: CmsEditorFieldRendererPlugin = {
                     {({ bind, index }) => (
                         <Input
                             {...bind.index}
+                            onChange={value => {
+                                value = parseFloat(value);
+                                return bind.index.onChange(value);
+                            }}
                             autoFocus
                             onEnter={() => bind.field.appendValue("")}
                             label={t`Value {number}`({ number: index + 1 })}
