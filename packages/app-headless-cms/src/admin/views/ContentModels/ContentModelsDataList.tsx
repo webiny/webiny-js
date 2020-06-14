@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
 import TimeAgo from "timeago-react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { css } from "emotion";
 import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -47,7 +47,7 @@ export type ContentModelsDataListProps = {
 const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const { dataList } = props;
 
-    const { location, history } = useReactRouter();
+    const { location, history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 

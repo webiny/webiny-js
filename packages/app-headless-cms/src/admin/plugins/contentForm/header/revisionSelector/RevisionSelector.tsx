@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
@@ -21,7 +21,8 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = ({ location, history, entry }) => {
+const RevisionSelector = ({ entry }) => {
+    const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     return (
@@ -47,4 +48,4 @@ const RevisionSelector = ({ location, history, entry }) => {
     );
 };
 
-export default withRouter(RevisionSelector);
+export default RevisionSelector;

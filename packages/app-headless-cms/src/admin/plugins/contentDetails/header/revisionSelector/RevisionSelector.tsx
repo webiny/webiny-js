@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
@@ -24,7 +24,8 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = ({ location, history, content, getLoading, revisionsList }) => {
+const RevisionSelector = ({ content, getLoading, revisionsList }) => {
+    const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
@@ -62,4 +63,4 @@ const RevisionSelector = ({ location, history, content, getLoading, revisionsLis
     );
 };
 
-export default withRouter(RevisionSelector);
+export default RevisionSelector;

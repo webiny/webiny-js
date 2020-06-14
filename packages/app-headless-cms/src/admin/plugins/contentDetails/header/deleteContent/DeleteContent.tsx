@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
@@ -15,7 +15,7 @@ const t = i18n.ns("app-headless-cms/admin/plugins/content/header/delete");
 
 const DeleteContent = ({ contentModel, content, dataList, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showDialog } = useDialog();
 
     const DELETE_CONTENT = useMemo(() => {

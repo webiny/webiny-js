@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { css } from "emotion";
-import { withRouter } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { getRevisions } from "@webiny/app-page-builder/editor/selectors";
 import { ButtonDefault } from "@webiny/ui/Button";
@@ -24,7 +24,8 @@ const menuList = css({
     }
 });
 
-const Revisions = ({ revisions, history }) => {
+const Revisions = ({ revisions }) => {
+    const { history } = useRouter();
     return (
         <Menu
             className={menuList}
@@ -58,5 +59,5 @@ const Revisions = ({ revisions, history }) => {
 };
 
 export default connect<any, any, any>(state => ({ revisions: getRevisions(state) }))(
-    withRouter(React.memo(Revisions))
+    React.memo(Revisions)
 );

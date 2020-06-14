@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useDataList } from "@webiny/app/hooks/useDataList";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { getData, getError } from "./functions";
 import { get } from "lodash";
 import { i18n } from "@webiny/app/i18n";
@@ -31,7 +31,7 @@ export type CrudContextValue = {
 export const CrudProvider = ({ children, ...props }: CrudProviderProps) => {
     const { showSnackbar } = useSnackbar();
     const { showDialog } = useDialog();
-    const { location, history } = useReactRouter();
+    const { location, history } = useRouter();
 
     const list = useDataList({
         query: get(props, "list.query", props.list),

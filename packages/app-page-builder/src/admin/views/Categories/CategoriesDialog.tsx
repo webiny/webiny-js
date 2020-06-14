@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { withRouter, WithRouterProps } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { Query } from "react-apollo";
 import {
     Dialog,
@@ -26,21 +26,20 @@ const narrowDialog = css({
     }
 });
 
-export type CategoriesDialogProps = WithRouterProps<{
+export type CategoriesDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
     onSelect: Function;
-    history: History;
     children: any;
-}>;
+};
 
 const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
     open,
     onClose,
     onSelect,
-    history,
     children
 }) => {
+    const { history } = useRouter();
     return (
         <Dialog
             open={open}
@@ -87,4 +86,4 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
     );
 };
 
-export default withRouter<CategoriesDialogProps>(CategoriesDialog);
+export default CategoriesDialog;
