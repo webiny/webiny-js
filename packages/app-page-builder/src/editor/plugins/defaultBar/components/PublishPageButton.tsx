@@ -6,10 +6,11 @@ import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { withRouter } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { PUBLISH_REVISION } from "./PublishPageButton/graphql";
 
-const PublishPageButton = ({ page, history }) => {
+const PublishPageButton = ({ page }) => {
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     return (
         <ConfirmationDialog
@@ -57,4 +58,4 @@ export default connect<any, any, any>(
     null,
     null,
     { areStatePropsEqual: isEqual }
-)(withRouter(PublishPageButton));
+)(PublishPageButton);

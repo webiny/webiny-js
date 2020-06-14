@@ -2,7 +2,7 @@ import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as BackIcon } from "./icons/round-arrow_back-24px.svg";
 import { css } from "emotion";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { match } from "react-router";
 
 const backStyles = css({
@@ -10,7 +10,7 @@ const backStyles = css({
 });
 
 const BackButton = React.memo(() => {
-    const router = useReactRouter();
+    const router = useRouter();
 
     const matched: match<{
         id?: string;

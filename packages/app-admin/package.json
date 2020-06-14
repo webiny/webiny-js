@@ -39,8 +39,7 @@
     "react-transition-group": "^4.3.0",
     "shortid": "^2.2.12",
     "store": "^2.0.12",
-    "timeago-react": "^2.0.0",
-    "use-react-router": "^1.0.7"
+    "timeago-react": "^2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

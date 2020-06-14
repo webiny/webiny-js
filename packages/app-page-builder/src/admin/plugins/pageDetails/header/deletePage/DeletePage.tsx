@@ -1,7 +1,7 @@
 import React from "react";
 import dot from "dot-prop-immutable";
 import { useApolloClient } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -15,7 +15,7 @@ import { DELETE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 const DeletePage = props => {
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showDialog } = useDialog();
 
     const title = get(props, "pageDetails.page.title", "N/A");

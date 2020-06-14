@@ -1,12 +1,12 @@
 import React from "react";
 import { useApolloClient } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";
 import { match } from "react-router";
 
 const FormEditorApp = () => {
-    const router = useReactRouter();
+    const router = useRouter();
     const client = useApolloClient();
 
     const matched: match<{

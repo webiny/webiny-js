@@ -1,6 +1,6 @@
 import * as React from "react";
 import { set } from "dot-prop-immutable";
-import { withRouter, WithRouterProps } from "@webiny/react-router";
+import { useRouter, UseRouter } from "@webiny/react-router";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
 import {
@@ -28,7 +28,7 @@ import {
     searchWrapper
 } from "./styled";
 
-type SearchBarProps = WithRouterProps<{}>;
+type SearchBarProps = UseRouter;
 
 type SearchBarState = {
     active: boolean;
@@ -241,4 +241,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-export default withRouter<SearchBarProps>(SearchBar);
+const SearchBarContainer = () => {
+    const routerProps = useRouter();
+
+    return <SearchBar {...routerProps} />;
+};
+
+export default SearchBarContainer;

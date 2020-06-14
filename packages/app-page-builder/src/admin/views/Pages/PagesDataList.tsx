@@ -1,6 +1,6 @@
 import * as React from "react";
 import TimeAgo from "timeago-react";
-import { withRouter, WithRouterProps } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
@@ -20,12 +20,13 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-export type PagesDataListProps = WithRouterProps<{
+export type PagesDataListProps = {
     dataList: any;
-}>;
+};
 
 const PagesDataList: React.FC<PagesDataListProps> = props => {
-    const { dataList, location, history } = props;
+    const { location, history } = useRouter();
+    const { dataList } = props;
     const query = new URLSearchParams(location.search);
 
     return (
@@ -83,4 +84,4 @@ const PagesDataList: React.FC<PagesDataListProps> = props => {
     );
 };
 
-export default withRouter<PagesDataListProps>(PagesDataList);
+export default PagesDataList;
