@@ -1,5 +1,5 @@
 import React from "react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "react-apollo";
 import { cloneDeep, get } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
@@ -19,7 +19,7 @@ export type UseRevisionProps = {
 }
 
 export const useRevision = ({ revision, form }: UseRevisionProps) => {
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 

@@ -4,7 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Dialog, DialogTitle, DialogContent } from "@webiny/ui/Dialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { ReactComponent as DoneIcon } from "@webiny/app-headless-cms/admin/icons/done-24px.svg";
 import { ReactComponent as ForwardIcon } from "@webiny/app-headless-cms/admin/icons/arrow_forward-24px.svg";
 
@@ -60,7 +60,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
         environments: { currentEnvironment, environments, selectEnvironment }
     } = useCms();
 
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     return (
         <Dialog

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import {
     CREATE_REVISION_FORM,
     DELETE_REVISION
@@ -11,7 +11,7 @@ import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDeta
 
 export function useRevisionHandlers({ rev }) {
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const client = useApolloClient();
     const { page } = usePageDetails();
     const { publishRevision } = usePublishRevisionHandler({ page });

@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -31,7 +31,7 @@ const Revisions = () => {
         state: { data }
     } = useFormEditor();
 
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     const revisions = data.revisions || [];
     return (

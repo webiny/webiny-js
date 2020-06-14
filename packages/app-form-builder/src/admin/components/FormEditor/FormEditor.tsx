@@ -1,5 +1,5 @@
 import * as React from "react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 // Components
 import EditorBar from "./Bar";
@@ -13,7 +13,7 @@ const FormEditor = () => {
         state: { data, id }
     } = useFormEditor();
 
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     React.useEffect(() => {

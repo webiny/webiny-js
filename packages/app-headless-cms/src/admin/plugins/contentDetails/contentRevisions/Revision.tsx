@@ -22,7 +22,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
@@ -61,7 +61,7 @@ const Revision = props => {
     const { revision, createContentFrom, deleteContent, publishContent, switchTab } = props;
     const { icon, text: tooltipText } = getIcon(revision);
 
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     return (
         <ConfirmationDialog

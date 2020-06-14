@@ -3,7 +3,7 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -25,7 +25,7 @@ const setHomePage = gql`
 `;
 
 const SetAsHomepageButton = ({ page }) => {
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     return (
