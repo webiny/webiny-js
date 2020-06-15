@@ -5,6 +5,12 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { getPlugins } from "@webiny/plugins";
 import RenderFieldElement from "./ContentFormRender/RenderFieldElement";
+import styled from "@emotion/styled";
+
+const FormWrapper = styled("div")({
+    height: "65vh",
+    overflow: "auto",
+})
 
 export const ContentFormRender = ({
     getFields,
@@ -38,7 +44,7 @@ export const ContentFormRender = ({
             ref={ref}
         >
             {({ Bind }) => (
-                <div data-testid={"cms-content-form"}>
+                <FormWrapper data-testid={"cms-content-form"}>
                     {loading && <CircularProgress />}
                     <Grid>
                         {/* Let's render all form fields. */}
@@ -58,7 +64,7 @@ export const ContentFormRender = ({
                             </React.Fragment>
                         ))}
                     </Grid>
-                </div>
+                </FormWrapper>
             )}
         </Form>
     );
