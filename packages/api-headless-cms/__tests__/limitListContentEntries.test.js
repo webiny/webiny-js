@@ -29,11 +29,17 @@ describe("List content entries with limit param test", () => {
 
         expect(bookList.length).toBe(4);
 
-        // TODO: Should be clean up the entries
-        await books.delete({ revision: book1.id });
-        await books.delete({ revision: book2.id });
-        await books.delete({ revision: book3.id });
-        await books.delete({ revision: book4.id });
+        expect(bookList[0].id).toEqual(book4.id);
+        expect(bookList[0].meta.value).toEqual(book4.title.value);
+
+        expect(bookList[1].id).toEqual(book3.id);
+        expect(bookList[1].meta.value).toEqual(book3.title.value);
+
+        expect(bookList[2].id).toEqual(book2.id);
+        expect(bookList[2].meta.value).toEqual(book2.title.value);
+
+        expect(bookList[3].id).toEqual(book1.id);
+        expect(bookList[3].meta.value).toEqual(book1.title.value);
     });
 
     it("should return two entries when limit is set to 2", async () => {
@@ -51,10 +57,10 @@ describe("List content entries with limit param test", () => {
 
         expect(bookList.length).toBe(2);
 
-        // TODO: Should be clean up the entries
-        await books.delete({ revision: book1.id });
-        await books.delete({ revision: book2.id });
-        await books.delete({ revision: book3.id });
-        await books.delete({ revision: book4.id });
+        expect(bookList[0].id).toEqual(book4.id);
+        expect(bookList[0].meta.value).toEqual(book4.title.value);
+
+        expect(bookList[1].id).toEqual(book3.id);
+        expect(bookList[1].meta.value).toEqual(book3.title.value);
     });
 });
