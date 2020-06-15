@@ -17,6 +17,7 @@
       "allowBranch": [
         "master",
         "next",
+        "develop",
         "release-*"
       ],
       "conventionalCommits": true,
