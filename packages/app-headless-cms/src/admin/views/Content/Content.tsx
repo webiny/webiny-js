@@ -99,7 +99,10 @@ const Content = () => {
         return null;
     }
 
-    return <ContentRender contentModel={contentModel} />;
+    // Added "key" prop which somehow fixes the "Internal Error: may not update existing query string in store" error
+    // that would occur when doing a search on a different content model (via the global search bar).
+    // Didn't find what was actually causing the issue, nor the Google returned any results for the error above.
+    return <ContentRender contentModel={contentModel} key={contentModel.modelId} />;
 };
 
 export default Content;
