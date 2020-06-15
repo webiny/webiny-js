@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
@@ -12,7 +12,7 @@ import { get } from "lodash";
 const EditRevision = () => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { page } = usePageDetails();
     const [inProgress, setInProgress] = useState();
 

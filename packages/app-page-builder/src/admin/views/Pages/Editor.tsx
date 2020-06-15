@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { Provider } from "react-redux";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { Query, useApolloClient } from "react-apollo";
 import { get } from "lodash";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
@@ -35,9 +35,11 @@ let pageSet = null;
 
 const Editor = () => {
     const client = useApolloClient();
-    const { match, history } = useReactRouter<any>();
+    const { match, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
+
+    const params: { id: string } = match.params as any;
 
     const renderEditor = useCallback(
         ({ data, loading }) => {
@@ -97,7 +99,7 @@ const Editor = () => {
     return (
         <Query
             query={GET_PAGE()}
-            variables={{ id: match.params.id }}
+            variables={{ id: params.id }}
             onCompleted={data => {
                 const error = get(data, "pageBuilder.page.error.message");
                 if (error) {

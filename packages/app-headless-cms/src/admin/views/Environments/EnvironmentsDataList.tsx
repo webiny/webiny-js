@@ -14,7 +14,7 @@ import {
     ListActions
 } from "@webiny/ui/List";
 import { Link } from "@webiny/react-router";
-import {ConfirmationDialogWithInput} from "./ConfirmationDialogWithInput";
+import { ConfirmationDialogWithInput } from "./ConfirmationDialogWithInput";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
@@ -61,21 +61,21 @@ const EnvironmentsDataList = () => {
                                     <ListItemTextSecondary>
                                         {item.environmentAlias
                                             ? t`Assigned to: {environmentAlias}`({
-                                                environmentAlias: (
-                                                    <Link
-                                                        onClick={e => e.stopPropagation()}
-                                                        to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
-                                                        title={t`This environment is linked with the "{environmentAlias}" alias.`(
-                                                            {
-                                                                environmentAlias:
-                                                                item.environmentAlias.name
-                                                            }
-                                                        )}
-                                                    >
-                                                        {item.environmentAlias.name}
-                                                    </Link>
-                                                )
-                                            })
+                                                  environmentAlias: (
+                                                      <Link
+                                                          onClick={e => e.stopPropagation()}
+                                                          to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
+                                                          title={t`This environment is linked with the "{environmentAlias}" alias.`(
+                                                              {
+                                                                  environmentAlias:
+                                                                      item.environmentAlias.name
+                                                              }
+                                                          )}
+                                                      >
+                                                          {item.environmentAlias.name}
+                                                      </Link>
+                                                  )
+                                              })
                                             : t`Not linked with an alias.`}
                                     </ListItemTextSecondary>
                                 </ListItemText>
@@ -84,7 +84,9 @@ const EnvironmentsDataList = () => {
                                     <ListActions>
                                         <ConfirmationDialogWithInput
                                             title={"Remove environment"}
-                                            message={t`This action {verb} be undone. This will permanently delete the {name} environment and all of the created content.`({ name: <b>{item.name}</b>, verb: <b>cannot</b>  })}
+                                            message={t`This action {verb} be undone. This will permanently delete the {name} environment and all of the created content.`(
+                                                { name: <b>{item.name}</b>, verb: <b>cannot</b> }
+                                            )}
                                             resourceName={item.name}
                                         >
                                             {({ showConfirmation }) => (
@@ -110,7 +112,7 @@ const EnvironmentsDataList = () => {
                             </ListItem>
                         ))}
                     </List>
-                )
+                );
             }}
         </DataList>
     );

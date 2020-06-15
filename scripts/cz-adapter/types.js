@@ -54,7 +54,7 @@ module.exports = {
         description: "Merge commits",
         title: "Merge"
     },
-    WIP: {
+    wip: {
         emoji: "🚧",
         description: "Work in progress",
         title: "WIP"

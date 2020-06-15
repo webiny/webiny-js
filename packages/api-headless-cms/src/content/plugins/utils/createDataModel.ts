@@ -275,11 +275,10 @@ export const createDataModel = (
 
                     await Promise.all(revisions.map(rev => rev.delete()));
 
-                    if (await Model.count() === 0) {
+                    if ((await Model.count()) === 0) {
                         // Also, let's check if we have zero entries. If so, unlock all of the fields in the content model.
                         contentModel.lockedFields = [];
                         await contentModel.save();
-
                     }
                 }
             }

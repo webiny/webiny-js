@@ -1,5 +1,8 @@
 const path = require("path");
 const fs = require("fs");
+const uniqueId = require("uniqid");
+const { trackActivity, trackError } = require("@webiny/tracking");
+const { version } = require("../../package.json");
 const { Component } = require("@webiny/serverless-component");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
@@ -35,18 +38,23 @@ class Template extends Component {
         validateInputs(inputs);
 
         let template;
-        if (fs.existsSync(`resources.js`)) {
-            const newTemplate = await require(path.resolve("resources.js"))({
-                cli: inputs,
-                context
-            });
-            template = newTemplate.resources;
-        } else if (fs.existsSync(`resources.ts`)) {
-            const resources = require(path.resolve("resources.ts")).default;
-            const newTemplate = await resources({ cli: inputs });
-            template = newTemplate.resources;
-        } else {
-            template = await findTemplate();
+        try {
+            if (fs.existsSync(`resources.js`)) {
+                const newTemplate = await require(path.resolve("resources.js"))({
+                    cli: inputs,
+                    context
+                });
+                template = newTemplate.resources;
+            } else if (fs.existsSync(`resources.ts`)) {
+                const resources = require(path.resolve("resources.ts")).default;
+                const newTemplate = await resources({ cli: inputs });
+                template = newTemplate.resources;
+            } else {
+                template = await findTemplate();
+            }
+        } catch (err) {
+            console.log(`🚨 ${err.message}`);
+            process.exit(1);
         }
 
         if (inputs.resources.length) {
@@ -59,48 +67,76 @@ class Template extends Component {
 
     async deployAll(inputs = {}) {
         this.context.status("Deploying");
+        const activityId = uniqueId();
 
-        const template = await getTemplate(inputs);
-
-        const resolvedTemplate = resolveTemplate(inputs, template);
-
-        this.context.debug("Collecting components from the template.");
-
-        const allComponents = setDependencies(getAllComponents(resolvedTemplate));
-
-        const graph = createGraph(allComponents);
-
-        await syncState(allComponents, this);
-
-        this.context.debug(`Executing the template's components graph.`);
-
-        const start = Date.now();
-        const allComponentsWithOutputs = await executeGraph(
-            allComponents,
-            graph,
-            this,
-            inputs,
-            async ({ resource, buildConfig }) => {
-                await buildResource({
-                    resource,
-                    debug: inputs.debug,
-                    config: buildConfig,
-                    context: this.context
-                });
-            }
-        );
-
-        const outputs = getOutputs(allComponentsWithOutputs);
-
-        this.state.outputs = outputs;
-        await this.save();
-
-        await inputs.callback({
-            output: this.state.outputs,
-            duration: (Date.now() - start) / 1000
+        await trackActivity({
+            activityId,
+            type: `${inputs.stack}-deploy-start`,
+            cliVersion: version,
+            context: this.context
         });
 
-        return outputs;
+        try {
+            const template = await getTemplate(inputs);
+
+            const resolvedTemplate = resolveTemplate(inputs, template);
+
+            this.context.debug("Collecting components from the template.");
+
+            const allComponents = setDependencies(getAllComponents(resolvedTemplate));
+
+            const graph = createGraph(allComponents);
+
+            await syncState(allComponents, this);
+
+            this.context.debug(`Executing the template's components graph.`);
+
+            const start = Date.now();
+            const allComponentsWithOutputs = await executeGraph(
+                allComponents,
+                graph,
+                this,
+                inputs,
+                async ({ resource, buildConfig }) => {
+                    await buildResource({
+                        resource,
+                        debug: inputs.debug,
+                        config: buildConfig,
+                        context: this.context
+                    });
+                }
+            );
+
+            const outputs = getOutputs(allComponentsWithOutputs);
+
+            this.state.outputs = outputs;
+            await this.save();
+
+            await inputs.callback({
+                output: this.state.outputs,
+                duration: (Date.now() - start) / 1000
+            });
+
+            await trackActivity({
+                activityId,
+                type: `${inputs.stack}-deploy-end`,
+                cliVersion: version,
+                context: this.context
+            });
+
+            return outputs;
+        } catch (e) {
+            await trackError({
+                context: this.context,
+                activityId,
+                type: `${inputs.stack}_deploy`,
+                cliVersion: version,
+                errorMessage: e.message,
+                errorStack: e.stack
+            });
+
+            throw e;
+        }
     }
 
     async deployResources(resources, inputs, context) {
@@ -219,7 +255,6 @@ class Template extends Component {
 
         this.context.status(`Removing`);
 
-        this.context.debug("Flushing template state and removing all components.");
         await syncState({}, this);
 
         this.state = {};

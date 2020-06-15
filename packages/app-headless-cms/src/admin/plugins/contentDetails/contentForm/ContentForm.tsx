@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import {
     createCreateFromMutation,
     createCreateMutation,
@@ -15,7 +15,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM, LIST_CONTENT } = useMemo(() => {
@@ -92,7 +92,9 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
                         return;
                     }
 
-                    const data = cloneDeep(cache.readQuery<any>({ query: LIST_CONTENT }));
+                    const data = cloneDeep(
+                        cache.readQuery<any>({ query: LIST_CONTENT })
+                    );
                     const previousItemIndex = data.content.data.findIndex(item => item.id === id);
                     data.content.data.splice(previousItemIndex, 1, response.data.content.data);
                     cache.writeQuery({ query: LIST_CONTENT, data });

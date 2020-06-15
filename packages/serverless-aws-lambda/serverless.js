@@ -29,6 +29,7 @@ const outputsList = [
     "env",
     "role",
     "arn",
+    "layers",
     "region",
     "permissions"
 ];
@@ -44,7 +45,8 @@ const defaults = {
     runtime: "nodejs10.x",
     env: {},
     region: "us-east-1",
-    permissions: []
+    permissions: [],
+    layers: []
 };
 
 class AwsLambda extends Component {
@@ -61,12 +63,9 @@ class AwsLambda extends Component {
             config.region
         );
 
-        const lambda = new AwsSdkLambda({
-            region: config.region,
-            credentials: this.context.instance.credentials.aws
-        });
+        const lambda = new AwsSdkLambda({ region: config.region });
 
-        const awsIamRole = await this.load("@serverless/aws-iam-role");
+        const awsIamRole = await this.load("@webiny/serverless-aws-iam-role");
 
         // If no role exists, create a default role
         let outputsAwsIamRole;
@@ -80,10 +79,7 @@ class AwsLambda extends Component {
                 },
                 region: config.region
             });
-            config.role = { arn: outputsAwsIamRole.arn };
-        } else {
-            outputsAwsIamRole = await awsIamRole(config.role);
-            config.role = { arn: outputsAwsIamRole.arn };
+            config.role = outputsAwsIamRole.arn;
         }
 
         this.context.instance.status("Packaging");
@@ -233,9 +229,6 @@ class AwsLambda extends Component {
             region,
             credentials: this.context.instance.credentials.aws
         });
-
-        const awsIamRole = await this.load("@serverless/aws-iam-role");
-        await awsIamRole.remove();
 
         this.context.instance.debug(`Removing lambda %o from the %o region.`, name, region);
         await deleteLambda({ lambda, name });

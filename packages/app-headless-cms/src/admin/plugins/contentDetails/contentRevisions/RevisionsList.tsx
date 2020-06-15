@@ -12,7 +12,7 @@ import {
     createPublishMutation
 } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -41,7 +41,7 @@ const style = {
 const RevisionsList = props => {
     const { showSnackbar } = useSnackbar();
     const { content, contentModel, setLoading, dataList, revisionsList } = props;
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
         return {

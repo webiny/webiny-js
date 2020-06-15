@@ -1,6 +1,6 @@
 module.exports = async (options = {}) => {
     const path = require("path");
-    const appIndexJs = path.resolve("src", "index.tsx");
+    const appIndexJs = options.entry || path.resolve("src", "index.tsx");
 
     if (!options.openBrowser) {
         options.openBrowser = true;

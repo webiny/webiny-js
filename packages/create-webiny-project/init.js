@@ -102,6 +102,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                     cwd: root
                 });
 
+                const latestVersion = await getPackageVersion("@webiny/cli", tag);
+
                 await Promise.all(
                     workspaces.map(async jsonPath => {
                         const relativeJsonPath = jsonPath;
@@ -128,7 +130,6 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                             tsconfig.extends = baseTsConfigPath;
                             fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
                         }
-
                         await Promise.all(
                             keys.map(async name => {
                                 if (tag.startsWith(".")) {
@@ -140,10 +141,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                                             path.join(process.cwd(), tag, name)
                                         );
                                 } else {
-                                    // Pull tag version from npm
+                                    //Tag version is now the return of the getPackageVersion of @webiny/cli package
                                     try {
-                                        json.dependencies[name] =
-                                            `^` + (await getPackageVersion(name, tag));
+                                        json.dependencies[name] = `^` + latestVersion;
                                     } catch (err) {
                                         console.log(
                                             `Failed to get package version for "${name}: ${err.message}"`

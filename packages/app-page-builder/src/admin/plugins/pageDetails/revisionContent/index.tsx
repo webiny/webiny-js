@@ -1,6 +1,9 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbPageDetailsPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbPageDetailsPlugin,
+    PbPageDetailsRevisionContentPlugin
+} from "@webiny/app-page-builder/types";
 import { Tabs } from "@webiny/ui/Tabs";
 
 const plugin: PbPageDetailsPlugin = {
@@ -9,7 +12,7 @@ const plugin: PbPageDetailsPlugin = {
     render({ pageDetails, ...rest }) {
         return (
             <Tabs>
-                {renderPlugins(
+                {renderPlugins<PbPageDetailsRevisionContentPlugin>(
                     "pb-page-details-revision-content",
                     { pageDetails, ...rest },
                     { wrapper: false }

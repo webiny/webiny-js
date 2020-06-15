@@ -13,8 +13,7 @@ import classNames from "classnames";
 const Content = styled("div")({
     width: "100%",
     borderBottom: "1px solid var(--mdc-theme-background)",
-    boxSizing: "border-box",
-    padding: "20px 20px 20px 65px"
+    boxSizing: "border-box"
 });
 
 const listItem = css({
@@ -48,12 +47,25 @@ const openedState = css({
 const duration = 150;
 const defaultStyle = {
     transition: `all ${duration}ms ease-in-out`,
-    opacity: 0
+    opacity: 0,
+    height: 0
 };
 
 const transitionStyles = {
-    entering: { opacity: 0 },
-    entered: { opacity: 1 }
+    entering: {
+        opacity: 0,
+        height: 0,
+        padding: "20px 20px 20px 65px"
+    },
+    entered: {
+        opacity: 1,
+        height: "auto",
+        padding: "20px 20px 20px 65px"
+    },
+    exiting: {
+        height: "auto",
+        padding: "20px 20px 20px 65px"
+    }
 };
 
 type State = {
@@ -121,7 +133,7 @@ class AccordionItem extends React.Component<AccordionItemProps, State> {
                         <Icon icon={this.state.closed ? <DownArrow /> : <UpArrow />} />
                     </ListItemMeta>
                 </ListItem>
-                <Transition in={!this.state.closed} timeout={duration} unmountOnExit>
+                <Transition in={!this.state.closed} timeout={duration}>
                     {state => (
                         <Content
                             style={{ ...defaultStyle, ...transitionStyles[state] }}

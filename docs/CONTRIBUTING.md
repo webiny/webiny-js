@@ -8,7 +8,7 @@ This guide is for anyone who wants to contribute to the Webiny project.
 
 ### Branches
 
-`master` is the main branch from which we publish packages. All `issue` branches should be branched from `master` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
+`master` is the main branch from which we publish packages. All `issue` branches should be branched from `develop` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
 
 ### Workflow
 
@@ -18,11 +18,17 @@ This guide is for anyone who wants to contribute to the Webiny project.
 - try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
 - you can add as many commits as you wish to your PR
 
-### Commit message format
+### Commit messages
 
-We are following the [conventional commits](<[https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)>) standard.
+We are strongly following the [Conventional Commits specification](https://www.conventionalcommits.org/).
 
-You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE, just make sure your commit messages are properly formatted.
+You can use `yarn commit` to commit via `commitizen` or you can commit manually, or via IDE. Just make sure your commit messages are properly written.
+
+#### ❗️ IMPORTANT NOTE
+Always follow the specification (even though later down the road, your PR might get merged by squashing all commits). Otherwise, the PR will [automatically get rejected](https://github.com/webiny/action-conventional-commits), and you will have to change your commit messages, which can only be done by creating a new PR.
+
+##### Additional explanation
+When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge - without squash. And when that is about to happen, it's important that all commit messages were properly written.
 
 ### Pull Requests (PRs)
 
@@ -37,7 +43,7 @@ Try to make your PRs as informative as possible:
 For example:
 ![Snipaste_2020-04-19_20-10-44](https://user-images.githubusercontent.com/5121148/79717886-20ebe280-82db-11ea-9c23-f46e5ab01724.png)
 
-There's nothing nicer than a well-formed PR. 🤓
+There's nothing nicer than a well-written PR. 🤓
 
 ## Repo overview
 
@@ -82,7 +88,7 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 
 3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
 
-4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#3-setup-database-connection for more details.
+4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
 
 5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
