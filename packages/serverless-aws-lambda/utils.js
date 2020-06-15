@@ -220,7 +220,17 @@ const getPolicy = async ({ name, region, accountId }) => {
 };
 
 const configChanged = (prevLambda, lambda) => {
-    const keys = ["description", "runtime", "role", "handler", "memory", "timeout", "env", "hash", "layers"];
+    const keys = [
+        "description",
+        "runtime",
+        "role",
+        "handler",
+        "memory",
+        "timeout",
+        "env",
+        "hash",
+        "layers"
+    ];
     const inputs = pick(keys, lambda);
     const prevInputs = pick(keys, prevLambda);
     return not(equals(inputs, prevInputs));
