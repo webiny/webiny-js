@@ -1,30 +1,30 @@
 import { locales } from "./../mocks/I18NLocales";
 
 export default {
-    withTitleFieldOnly: ({ contentModelGroupId }) => ({
+    book: ({ contentModelGroupId }) => ({
         data: {
-            name: "Product",
+            name: "Book",
             group: contentModelGroupId,
             fields: [
                 {
-                    _id: "vqk-UApa0",
-                    fieldId: "someId",
+                    _id: "vqk-UApa0-1",
+                    fieldId: "name",
                     type: "text",
                     label: {
                         values: [
                             {
                                 locale: locales.en.id,
-                                value: "someId-en"
+                                value: "Name"
                             },
                             {
                                 locale: locales.de.id,
-                                value: "someId-de"
+                                value: "Name"
                             }
                         ]
                     }
                 },
                 {
-                    _id: "vqk-UApa0",
+                    _id: "vqk-UApa0-1",
                     fieldId: "title",
                     type: "text",
                     label: {
@@ -43,46 +43,30 @@ export default {
             ]
         }
     }),
-
-    tryToRemoveTitleField: ({ contentModelId }) => ({
+    removeTitleField: ({ contentModelId, contentModelGroupId }) => ({
         id: contentModelId,
         data: {
+            name: "Book",
+            group: contentModelGroupId,
             fields: [
                 {
-                    _id: "vqk-UApa0",
-                    fieldId: "someId",
+                    _id: "vqk-UApa0-1",
+                    fieldId: "title",
                     type: "text",
                     label: {
                         values: [
                             {
                                 locale: locales.en.id,
-                                value: "someId-en"
+                                value: "Title"
                             },
                             {
                                 locale: locales.de.id,
-                                value: "someId-de"
+                                value: "Titel"
                             }
                         ]
                     }
                 }
             ]
         }
-    }),
-    createProduct: {
-        title: {
-            values: [
-                {
-                    locale: locales.en.id,
-                    value: "Test Pen"
-                },
-                {
-                    locale: locales.de.id,
-                    value: "Test Kugelschreiber"
-                }
-            ]
-        }
-    },
-    createProductWithoutValues: {
-        data: {}
-    }
+    })
 };

@@ -204,6 +204,13 @@ Thanks goes to these wonderful people:
                     </a>
                     <br />
                 </td></tr><tr><td align="center">
+                    <a href="https://github.com/EmilK15">
+                        <img src="https://avatars0.githubusercontent.com/u/9532882?v=4" width="100px;" alt="Emil Kais"/>
+                        <br />
+                        <sub><b>Emil Kais</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
                     <a href="https://github.com/visshaljagtap">
                         <img src="https://avatars2.githubusercontent.com/u/35190080?v=4" width="100px;" alt="Vishal Jagtap"/>
                         <br />
@@ -225,13 +232,20 @@ Thanks goes to these wonderful people:
                     </a>
                     <br />
                 </td><td align="center">
+                    <a href="https://github.com/AlbionaHoti">
+                        <img src="https://avatars1.githubusercontent.com/u/22985657?v=4" width="100px;" alt="Albiona"/>
+                        <br />
+                        <sub><b>Albiona</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
                     <a href="https://github.com/Jeremytijal">
                         <img src="https://avatars3.githubusercontent.com/u/40340340?v=4" width="100px;" alt="Jeremytijal"/>
                         <br />
                         <sub><b>Jeremytijal</b></sub>
                     </a>
                     <br />
-                </td><td align="center">
+                </td></tr><tr><td align="center">
                     <a href="https://sundeepcharan.com">
                         <img src="https://avatars3.githubusercontent.com/u/32637757?v=4" width="100px;" alt="Sundeep Charan Ramkumar"/>
                         <br />
@@ -245,7 +259,7 @@ Thanks goes to these wonderful people:
                         <sub><b>boyuan459</b></sub>
                     </a>
                     <br />
-                </td></tr><tr><td align="center">
+                </td><td align="center">
                     <a href="http://alexoliynyk.me/">
                         <img src="https://avatars2.githubusercontent.com/u/10714670?v=4" width="100px;" alt="Alex Oliynyk"/>
                         <br />

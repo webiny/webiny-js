@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/unlockingFields";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Unlocking Fields Test", () => {
+describe("Unlocking fields test", () => {
     const { environment, database } = useContentHandler();
 
     const initial = {};
@@ -13,7 +13,7 @@ describe("Unlocking Fields Test", () => {
         initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
-    it("should unlock all fields if when all content entries are deleted", async () => {
+    it("should unlock all fields if all content entries were deleted", async () => {
         const { content, createContentModel, updateContentModel, getContentModel } = environment(
             initial.environment.id
         );
@@ -36,43 +36,87 @@ describe("Unlocking Fields Test", () => {
 
         // Removing a single field must not be allowed.
         let errors = [];
-        for (let i = 0; i < mocks.fields.length; i++) {
-            try {
-                await updateContentModel({
-                    id: contentModel.id,
-                    data: {
-                        fields: mocks.fields[i]
-                    }
-                });
-            } catch (e) {
-                errors.push(e.message);
-            }
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[1], mocks.fields[2]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
+        }
+
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[0], mocks.fields[2]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
+        }
+
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[0], mocks.fields[1]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
         }
 
         expect(errors).toEqual([
-            `Cannot remove the field "age" because it's already in use in created content.`,
-            `Cannot remove the field "title" because it's already in use in created content.`
+            `Cannot remove field "name" because it's currently set as the title field. Please chose another title field first and try again.`,
+            `Cannot remove the field "title" because it's already in use in created content.`,
+            `Cannot remove the field "age" because it's already in use in created content.`
         ]);
 
         // Deleting fields should still not be allowed. We still have book2 existing.
         await books.delete({ revision: book1.id });
+
+        // Removing a single field must not be allowed.
         errors = [];
-        for (let i = 0; i < mocks.fields.length; i++) {
-            try {
-                await updateContentModel({
-                    id: contentModel.id,
-                    data: {
-                        fields: mocks.fields[i]
-                    }
-                });
-            } catch (e) {
-                errors.push(e.message);
-            }
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[1], mocks.fields[2]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
+        }
+
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[0], mocks.fields[2]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
+        }
+
+        try {
+            await updateContentModel({
+                id: contentModel.id,
+                data: {
+                    fields: [mocks.fields[0], mocks.fields[1]]
+                }
+            });
+        } catch (e) {
+            errors.push(e.message);
         }
 
         expect(errors).toEqual([
-            `Cannot remove the field "age" because it's already in use in created content.`,
-            `Cannot remove the field "title" because it's already in use in created content.`
+            `Cannot remove field "name" because it's currently set as the title field. Please chose another title field first and try again.`,
+            `Cannot remove the field "title" because it's already in use in created content.`,
+            `Cannot remove the field "age" because it's already in use in created content.`
         ]);
 
         // Removing fields should be now allowed, since both entries are deleted.
@@ -81,13 +125,18 @@ describe("Unlocking Fields Test", () => {
         await updateContentModel({
             id: contentModel.id,
             data: {
-                fields: mocks.fields[0]
+                fields: [mocks.fields[0], mocks.fields[1]]
             }
         });
 
         contentModel = await getContentModel({ id: contentModel.id });
         expect(contentModel).toEqual({
             fields: [
+                {
+                    _id: "vqk-UApa0-1",
+                    fieldId: "name",
+                    multipleValues: false
+                },
                 {
                     _id: "vqk-UApa0-1",
                     fieldId: "title",
@@ -100,35 +149,44 @@ describe("Unlocking Fields Test", () => {
                     fields: ["id"]
                 },
                 {
-                    fields: ["title"]
+                    fields: ["name"]
                 }
             ],
             layout: [],
             lockedFields: [],
             name: "Book",
-            titleFieldId: "title"
+            titleFieldId: "name"
         });
 
         await updateContentModel({
             id: contentModel.id,
             data: {
-                fields: []
+                fields: [mocks.fields[0]]
             }
         });
 
         contentModel = await getContentModel({ id: contentModel.id });
         expect(contentModel).toEqual({
+            fields: [
+                {
+                    _id: "vqk-UApa0-1",
+                    fieldId: "name",
+                    multipleValues: false
+                }
+            ],
             id: contentModel.id,
-            name: "Book",
-            titleFieldId: null,
             indexes: [
                 {
                     fields: ["id"]
+                },
+                {
+                    fields: ["name"]
                 }
             ],
+            layout: [],
             lockedFields: [],
-            fields: [],
-            layout: []
+            name: "Book",
+            titleFieldId: "name"
         });
     });
 });

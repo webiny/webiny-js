@@ -19,9 +19,23 @@ const ContentRender = ({ contentModel }) => {
 
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
 
+    const query = new URLSearchParams(location.search);
+
+    let variables = {};
+    if (query.get("search")) {
+        // We use the title field with the "contains" operator for doing basic searches.
+        const searchField = contentModel.titleFieldId + "_contains";
+        variables = {
+            where: {
+                [searchField]: query.get("search")
+            }
+        };
+    }
+
     const dataList = useDataList({
         client: apolloClient,
         query: LIST_QUERY,
+        variables,
         getData: response => {
             return get(response, "content.data");
         },
@@ -84,7 +98,10 @@ const Content = () => {
         return null;
     }
 
-    return <ContentRender contentModel={contentModel} />;
+    // Added "key" prop which somehow fixes the "Internal Error: may not update existing query string in store" error
+    // that would occur when doing a search on a different content model (via the global search bar).
+    // Didn't find what was actually causing the issue, nor the Google returned any results for the error above.
+    return <ContentRender contentModel={contentModel} key={contentModel.modelId} />;
 };
 
 export default Content;

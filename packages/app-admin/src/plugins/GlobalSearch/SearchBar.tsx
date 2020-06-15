@@ -49,7 +49,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         },
         plugins: {
             // List of all registered "admin-global-search" plugins.
-            list: getPlugins<AdminGlobalSearchPlugin>("admin-global-search"),
+            get list() {
+                return getPlugins<AdminGlobalSearchPlugin>("admin-global-search");
+            },
             hotKeys: getPlugins<AdminGlobalSearchPreventHotkeyPlugin>(
                 "admin-global-search-prevent-hotkey"
             ),

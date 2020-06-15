@@ -104,6 +104,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
                 const fields = this.fields || [];
 
+                if (this.titleFieldId && !fields.find(item => item.fieldId === this.titleFieldId)) {
+                    throw new Error(
+                        `Cannot remove field "${this.titleFieldId}" because it's currently set as the title field. Please chose another title field first and try again.`
+                    );
+                }
+
                 // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
                 if (this.titleFieldId && fields.find(item => item.fieldId === this.titleFieldId)) {

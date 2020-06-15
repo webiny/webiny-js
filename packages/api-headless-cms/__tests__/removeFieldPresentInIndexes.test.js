@@ -13,6 +13,7 @@ describe("Removing fields that are present in indexes", () => {
     });
 
     it(`should allow deletion of a field that is present in one or more indexes`, async () => {
+        // In other words - deleting fields should automatically delete indexes.
         const { createContentModel, getContentModel, updateContentModel } = environment(
             initial.environment.id
         );
@@ -32,6 +33,7 @@ describe("Removing fields that are present in indexes", () => {
         );
 
         try {
+            // Removes the "title" field.
             await updateContentModel(
                 mocks.removeFieldUpdateAuthorContentModel({
                     authorContentModelId: getAuthorContentModel.id,
@@ -46,23 +48,31 @@ describe("Removing fields that are present in indexes", () => {
 
         getAuthorContentModel = await getContentModel(authorContentModel);
         expect(getAuthorContentModel).toEqual({
-            id: getAuthorContentModel.id,
-            name: "Author",
-            titleFieldId: null,
-            indexes: [
-                {
-                    fields: ["id"]
-                }
-            ],
-            lockedFields: [],
             fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "uniqueSlug",
+                    multipleValues: false
+                },
                 {
                     _id: "vqk-UApa0",
                     fieldId: "age",
                     multipleValues: false
                 }
             ],
-            layout: []
+            id: getAuthorContentModel.id,
+            indexes: [
+                {
+                    fields: ["id"]
+                },
+                {
+                    fields: ["uniqueSlug"]
+                }
+            ],
+            layout: [],
+            lockedFields: [],
+            name: "Author",
+            titleFieldId: "uniqueSlug"
         });
     });
 });
