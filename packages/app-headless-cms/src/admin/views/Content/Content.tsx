@@ -16,13 +16,23 @@ const t = i18n.ns("app-headless-cms/admin/content");
 
 const ContentRender = ({ contentModel }) => {
     const apolloClient = useApolloClient();
-    const { history } = useReactRouter();
+    const { history, location } = useReactRouter();
 
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
+
+    const query = new URLSearchParams(location.search);
+
+    // We use the title field with the "contains" operator for doing basic searches.
+    const searchField = contentModel.titleFieldId + "_contains";
 
     const dataList = useDataList({
         client: apolloClient,
         query: LIST_QUERY,
+        variables: {
+            where: {
+                [searchField]: query.get("search")
+            }
+        },
         getData: response => {
             return get(response, "content.data");
         },
