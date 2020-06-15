@@ -54,8 +54,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     });
 
     const listLatestContentQuery = useQuery(LIST_CONTENT, {
-        // TODO: set`limit` 10 after #983 closes
-        variables: { limit: 100 }
+        variables: { limit: 10 }
     });
 
     // Once we have a valid IDs, we load the data.
