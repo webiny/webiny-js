@@ -8,7 +8,7 @@ import RenderFieldElement from "./ContentFormRender/RenderFieldElement";
 import styled from "@emotion/styled";
 
 const FormWrapper = styled("div")({
-    height: "65vh",
+    height: "70vh",
     overflow: "auto",
 })
 

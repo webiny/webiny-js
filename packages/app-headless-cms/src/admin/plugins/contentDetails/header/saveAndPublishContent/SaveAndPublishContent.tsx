@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
@@ -54,7 +54,7 @@ const SaveAndPublishButton = ({
         )
     });
     return (
-        <ButtonDefault
+        <ButtonPrimary
             className={buttonStyles}
             onClick={() => {
                 state.contentForm.submit();
@@ -63,7 +63,7 @@ const SaveAndPublishButton = ({
             disabled={!content.id || getLoading()}
         >
             {t`Save & Publish`}
-        </ButtonDefault>
+        </ButtonPrimary>
     );
 };
 
