@@ -22,6 +22,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: true,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of dates and times`,
         createField() {
             return {
                 type: this.type,

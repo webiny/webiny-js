@@ -20,7 +20,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         type: "ref",
         validators: [],
         label: t`Reference`,
-        description: t`For example a Product can ref its category(s).`,
+        description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false,
@@ -28,6 +28,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: false,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of references`,
         createField() {
             return {
                 type: this.type,
