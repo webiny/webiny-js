@@ -88,7 +88,7 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 
 3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
 
-4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#3-setup-database-connection for more details.
+4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
 
 5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
