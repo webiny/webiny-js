@@ -16,7 +16,7 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/content-form-options-menu");
 
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 
