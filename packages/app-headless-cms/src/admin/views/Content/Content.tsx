@@ -22,17 +22,21 @@ const ContentRender = ({ contentModel }) => {
 
     const query = new URLSearchParams(location.search);
 
-    // We use the title field with the "contains" operator for doing basic searches.
-    const searchField = contentModel.titleFieldId + "_contains";
+    let variables = {};
+    if (query.get("search")) {
+        // We use the title field with the "contains" operator for doing basic searches.
+        const searchField = contentModel.titleFieldId + "_contains";
+        variables = {
+            where: {
+                [searchField]: query.get("search")
+            }
+        };
+    }
 
     const dataList = useDataList({
         client: apolloClient,
         query: LIST_QUERY,
-        variables: {
-            where: {
-                [searchField]: query.get("search")
-            }
-        },
+        variables,
         getData: response => {
             return get(response, "content.data");
         },
