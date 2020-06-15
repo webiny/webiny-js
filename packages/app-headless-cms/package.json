@@ -53,8 +53,7 @@
     "react-virtualized": "^9.21.2",
     "shortid": "^2.2.14",
     "slugify": "^1.4.0",
-    "timeago-react": "^2.0.0",
-    "use-react-router": "^1.0.7"
+    "timeago-react": "^2.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

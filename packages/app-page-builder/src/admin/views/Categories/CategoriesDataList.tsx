@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter } from "@webiny/react-router";
+import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
@@ -73,4 +73,4 @@ const CategoriesDataList = () => {
     );
 };
 
-export default withRouter(CategoriesDataList);
+export default CategoriesDataList;

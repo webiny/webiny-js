@@ -10,9 +10,7 @@ module.exports = {
                         "./apps/admin/webiny.config.js",
                         "./apps/site/webiny.config.js"
                     ],
-                    apps: [
-                        "@webiny/cwp-template-full/hooks/apps",
-                    ]
+                    apps: ["@webiny/cwp-template-full/hooks/apps"]
                 }
             }),
             "@webiny/cli-plugin-scaffold",

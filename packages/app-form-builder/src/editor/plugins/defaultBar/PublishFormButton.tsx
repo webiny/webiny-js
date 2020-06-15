@@ -1,6 +1,6 @@
 import React from "react";
 import { Mutation } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -16,7 +16,7 @@ const PublishFormButton = () => {
     } = useFormEditor();
 
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     return (
         <ConfirmationDialog

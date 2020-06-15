@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from "react";
 import TimeAgo from "timeago-react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { css } from "emotion";
 import { get, upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
@@ -41,7 +41,7 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const { dataList } = props;
 
-    const { location, history } = useReactRouter();
+    const { location, history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
 

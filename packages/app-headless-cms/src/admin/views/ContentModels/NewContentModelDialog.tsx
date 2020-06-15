@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
@@ -47,7 +47,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
 }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     const [createContentModel] = useMutation(CREATE_CONTENT_MODEL);
     const { data } = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS, {

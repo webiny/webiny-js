@@ -15,7 +15,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Text Area`,
         description: t`Renders a simple text area, suitable for larger amounts of text.`,
         canUse({ field }) {
-            return field.type === "long-text" && !field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "long-text" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();

@@ -1,3 +1,8 @@
+import React from "react";
+import { css } from "emotion";
+import { Cell } from "@webiny/ui/Grid";
+import { IconButton } from "@webiny/ui/Button";
+
 export const UTC_TIMEZONES = [
     {
         value: "-12:00",
@@ -176,4 +181,29 @@ export const getCurrentDateString = () => {
  */
 export const appendTextToLabel = (label, text) => {
     return { values: label.values.map(el => ({ ...el, value: `${el.value}${text}` })) };
+};
+
+export const DEFAULT_TIME = "00:00:00";
+export const DEFAULT_DATE = getCurrentDateString();
+export const DEFAULT_TIMEZONE = "+01:00";
+
+const deleteIconStyles = css({
+    width: "100% !important",
+    height: "100% !important",
+    color: "var(--mdc-theme-text-secondary-on-background) !important"
+});
+
+export const RemoveFieldButton = ({ trailingIcon }) => {
+    if (!trailingIcon) {
+        return null;
+    }
+    return (
+        <Cell span={1}>
+            <IconButton
+                className={deleteIconStyles}
+                onClick={trailingIcon.onClick}
+                icon={trailingIcon.icon}
+            />
+        </Cell>
+    );
 };

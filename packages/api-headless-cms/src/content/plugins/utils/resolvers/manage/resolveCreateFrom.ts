@@ -25,7 +25,7 @@ export const resolveCreateFrom = ({ model }): GraphQLFieldResolver<any, any, Cms
             const field = model.fields[i];
             if (baseRevision.getField(field.fieldId)) {
                 const fieldValue = await baseRevision[field.fieldId];
-                newRevision[field.fieldId] = fieldValue
+                newRevision[field.fieldId] = fieldValue;
             }
         }
 

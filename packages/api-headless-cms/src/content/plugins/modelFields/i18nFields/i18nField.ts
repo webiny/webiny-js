@@ -34,8 +34,6 @@ export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NCont
 
 type I18NValues = { [key: string]: any }[];
 
-
-
 export const i18nField = ({
     field = null,
     createField = null,

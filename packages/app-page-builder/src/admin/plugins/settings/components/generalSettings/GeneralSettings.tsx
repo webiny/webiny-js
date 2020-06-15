@@ -9,7 +9,7 @@ import { Query, Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { get } from "lodash";
+import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
 
 import {
@@ -18,6 +18,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { DOMAIN_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
 
 const GeneralSettings = () => {
     const { showSnackbar } = useSnackbar();
@@ -26,8 +27,21 @@ const GeneralSettings = () => {
             {({ data, loading: queryInProgress }) => {
                 const settings = get(data, "pageBuilder.getSettings.data") || {};
                 return (
-                    <Mutation mutation={graphql.mutation}>
-                        {(update, { loading: mutationInProgress }) => (
+                    <Mutation
+                        mutation={graphql.mutation}
+                        update={(cache, { data }) => {
+                            const dataFromCache = cache.readQuery({ query: DOMAIN_QUERY });
+                            const updatedSettings = get(data, "pageBuilder.updateSettings.data");
+
+                            if (updatedSettings) {
+                                cache.writeQuery({
+                                     query: DOMAIN_QUERY,
+                                     data: set(dataFromCache, "pageBuilder.getSettings.data", updatedSettings)
+                                });
+                            }
+                        }}
+                    >
+                        {(update, {loading: mutationInProgress}) => (
                             <Form
                                 data={settings}
                                 onSubmit={async data => {
