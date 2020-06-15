@@ -18,6 +18,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: true,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of booleans`,
         createField() {
             return {
                 type: this.type,

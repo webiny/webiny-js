@@ -24,6 +24,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: true,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of numbers`,
         createField() {
             return {
                 type: this.type,

@@ -20,6 +20,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: false,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of rich texts`,
         createField() {
             return {
                 type: this.type,

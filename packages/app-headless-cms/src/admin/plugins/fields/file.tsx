@@ -19,7 +19,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: true,
             multipleValues: false
         },
-        multipleValuesLabel: "Use as a list of files or an image gallery",
+        multipleValuesLabel: t`Use as a list of files or an image gallery`,
         createField() {
             return {
                 type: this.type,
