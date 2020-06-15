@@ -2,7 +2,7 @@ name: Build (beta)
 
 on:
   push:
-    branches: [ release-4.x ]
+    branches: [ release-** ]
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
