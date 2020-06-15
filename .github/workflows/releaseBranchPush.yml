@@ -1,4 +1,4 @@
-name: Push Actions
+name: Build (beta)
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build-test-release:
-    name: Build, test and release
+    name: Build, test and release ("beta" tag)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
