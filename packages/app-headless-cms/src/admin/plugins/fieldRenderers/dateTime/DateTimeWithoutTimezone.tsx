@@ -1,10 +1,7 @@
 import React from "react";
 import Input from "./Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { getCurrentDateString, appendTextToLabel } from "./utils";
-
-const DEFAULT_TIME = "00:00:00";
-const DEFAULT_DATE = getCurrentDateString();
+import { DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton } from "./utils";
 
 const DateTimeWithoutTimezone = props => {
     // "2020-05-18 09:00:00"
@@ -30,11 +27,12 @@ const DateTimeWithoutTimezone = props => {
         }
     }, [props.bind.value]);
 
+    const cellSize = props.trailingIcon ? 5 : 6;
+
     return (
         <Grid>
             <Cell span={6}>
                 <Input
-                    {...props}
                     bind={{
                         ...props.bind,
                         value: date,
@@ -50,15 +48,14 @@ const DateTimeWithoutTimezone = props => {
                     type={"date"}
                 />
             </Cell>
-            <Cell span={6}>
+            <Cell span={cellSize}>
                 <Input
-                    {...props}
                     bind={{
                         ...props.bind,
                         value: time,
                         onChange: value => {
-                            setTime(`${value}:00`);
-                            return props.bind.onChange(`${date} ${value}:00`);
+                            setTime(value);
+                            return props.bind.onChange(`${date} ${value}`);
                         }
                     }}
                     field={{
@@ -66,8 +63,10 @@ const DateTimeWithoutTimezone = props => {
                         label: appendTextToLabel(props.field.label, " time")
                     }}
                     type={"time"}
+                    step={5}
                 />
             </Cell>
+            <RemoveFieldButton trailingIcon={props.trailingIcon} />
         </Grid>
     );
 };

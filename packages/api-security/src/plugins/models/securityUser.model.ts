@@ -1,7 +1,6 @@
 import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import md5 from "md5";
-import bcrypt from "bcryptjs";
 import {
     withHooks,
     withProps,
@@ -36,16 +35,6 @@ export default ({ createBase, context }): any => {
                 });
 
                 return value;
-            })(
-                string({
-                    validation: validation.create("required")
-                })
-            ),
-            password: onSet(value => {
-                if (value) {
-                    return bcrypt.hashSync(value, bcrypt.genSaltSync(10));
-                }
-                return instance.password;
             })(
                 string({
                     validation: validation.create("required")

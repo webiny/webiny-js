@@ -6,7 +6,7 @@ import FileManagerSettings from "../views/FileManagerSettings";
 import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
-import { AdminMenuSettingsPlugin } from '@webiny/app-admin/types';
+import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-file-manager/admin");
 
@@ -37,10 +37,7 @@ export default [
             return (
                 <SecureView scopes={ROLE_FM_SETTINGS}>
                     <Section label={t`File Manager`}>
-                        <Item
-                            label={t`General`}
-                            path="/settings/file-manager/general"
-                        />
+                        <Item label={t`General`} path="/settings/file-manager/general" />
                     </Section>
                 </SecureView>
             );

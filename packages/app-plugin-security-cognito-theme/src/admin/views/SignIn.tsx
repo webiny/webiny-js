@@ -62,7 +62,7 @@ const SignIn: React.FC<SignInChildrenProps> = ({ signIn, error, loading, authPro
                                 <Cell span={12}>
                                     <Bind
                                         name="password"
-                                        validators={validation.create("required,password")}
+                                        validators={validation.create("required")}
                                     >
                                         <Input type={"password"} label={"Your password"} />
                                     </Bind>

@@ -1,13 +1,13 @@
 export default /* GraphQL */ `
     "Product review"
     type CmsRefReviewProductLocalized {
-      value: Product
-      locale: ID!
+        value: Product
+        locale: ID!
     }
-    
+
     type CmsRefReviewProduct {
-      value(locale: String): Product
-      values: [CmsRefReviewProductLocalized]!
+        value(locale: String): Product
+        values: [CmsRefReviewProductLocalized]!
     }
     type Review {
         id: ID

@@ -1,6 +1,6 @@
 import React from "react";
 import { useApolloClient } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -12,7 +12,7 @@ import { cloneDeep, get } from "lodash";
 const DeleteForm = ({ form, revision, selectRevision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     const parentRevision = revision.parent === revision.id;
     let message = "You are about to delete this form revision, are you sure want to continue?";

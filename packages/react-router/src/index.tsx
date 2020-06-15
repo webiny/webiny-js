@@ -1,27 +1,23 @@
-import React from "react";
-
-import { BrowserRouter as RBrowserRouter, StaticRouter as RStaticRouter } from "react-router-dom";
-import { withRouter as RWithRouter, RouteComponentProps } from "react-router";
-import { RouterConsumer } from "./context/RouterContext";
+import React, { useContext } from "react";
+import {
+    BrowserRouter as RBrowserRouter,
+    RouteChildrenProps,
+    StaticRouter as RStaticRouter
+} from "react-router-dom";
+import { __RouterContext } from "react-router";
+import { RouterContext, ReactRouterContextValue } from "./context/RouterContext";
 
 export * from "react-router-dom";
 
 export { Link } from "./Link";
 
-export type WithRouterProps<TProps> = TProps &
-    RouteComponentProps & {
-        onLink(link: string): void;
-    };
+export type UseRouter = RouteChildrenProps & ReactRouterContextValue;
 
-export function withRouter<T extends {}>(
-    BaseComponent
-): React.ComponentType<Omit<T, keyof WithRouterProps<{}>>> {
-    // eslint-disable-next-line react/display-name
-    return RWithRouter(props => (
-        <RouterConsumer>
-            <BaseComponent {...props} />
-        </RouterConsumer>
-    ));
+export function useRouter(): UseRouter {
+    return {
+        ...useContext(RouterContext),
+        ...useContext(__RouterContext)
+    };
 }
 
 import enhancer from "./routerEnhancer";

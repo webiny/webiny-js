@@ -3,10 +3,13 @@ export default body => {
         throw body.errors;
     }
 
-    const { data, error } = body.data.content;
-    if (error) {
-        throw error;
+    if (typeof body.data.content === "object") {
+        const { data, error } = body.data.content;
+        if (error) {
+            throw error;
+        }
+        return data;
     }
 
-    return data;
+    return body.data.content;
 };

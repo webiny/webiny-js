@@ -45,7 +45,7 @@ const SignIn = ({ signIn, error, authProps, loading }) => {
                         </Bind>
                     </Row>
                     <Row>
-                        <Bind name="password" validators={validation.create("required,password")}>
+                        <Bind name="password" validators={validation.create("required")}>
                             <Input type={"password"} label={"Your password"} outlined={true} />
                         </Bind>
                     </Row>

@@ -9,7 +9,7 @@ import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
-import { getSettings } from './resolvers/settings';
+import { getSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
 
 const getFile = ({ models }): any => models.File;
@@ -119,7 +119,7 @@ export default [
                     uploadMinFileSize: Number
                     uploadMaxFileSize: Number
                 }
-                
+
                 type FileManagerSettingsResponse {
                     data: FileManagerSettings
                     error: FileError
@@ -142,7 +142,7 @@ export default [
 
                     # Is File Manager installed?
                     isInstalled: FilesBooleanResponse
-                    
+
                     getSettings: FileManagerSettingsResponse
                 }
 
@@ -161,7 +161,7 @@ export default [
 
                     # Install File manager
                     install(srcPrefix: String): FilesBooleanResponse
-                    
+
                     updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
                 }
 

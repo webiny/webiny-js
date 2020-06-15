@@ -15,7 +15,11 @@ const plugin: CmsEditorFieldRendererPlugin = {
         name: t`Boolean Input`,
         description: t`Renders a simple switch button.`,
         canUse({ field }) {
-            return field.type === "boolean" && !field.multipleValues && !get(field, "predefinedValues.enabled");
+            return (
+                field.type === "boolean" &&
+                !field.multipleValues &&
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render({ field, getBind }) {
             const Bind = getBind();

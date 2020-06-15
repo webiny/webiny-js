@@ -1,6 +1,6 @@
 import React from "react";
 import { Query } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
@@ -58,7 +58,7 @@ const EmptyPageDetails = () => {
 };
 
 const PageDetails = ({ refreshPages }) => {
-    const { history, location } = useReactRouter();
+    const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     const query = new URLSearchParams(location.search);

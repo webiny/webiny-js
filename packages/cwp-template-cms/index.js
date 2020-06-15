@@ -16,13 +16,11 @@ module.exports = async ({ appName, root }) => {
 
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
-        if (!fs.existsSync(path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile))) {
-            fs.moveSync(
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
-                []
-            );
-        }
+        fs.moveSync(
+            path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
+            path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
+            { overwrite: true }
+        );
     }
 
     //Update api/.env.json

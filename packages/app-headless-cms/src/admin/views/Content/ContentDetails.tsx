@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -30,7 +30,7 @@ declare global {
     }
 }
 const ContentDetails = ({ contentModel, dataList }) => {
-    const { history, location } = useReactRouter();
+    const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [state, setState] = useState({});
 

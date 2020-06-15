@@ -21,7 +21,7 @@ const UserAccountForm = ({ Bind, data, fields }) => {
                     <Grid>
                         <Cell span={12}>{fields.email}</Cell>
                         <Cell span={12}>
-                            <Bind name="password" validators={validation.create("password")}>
+                            <Bind name="password">
                                 <Input
                                     autoComplete="off"
                                     description={data.id && t`Type a new password to reset it.`}
