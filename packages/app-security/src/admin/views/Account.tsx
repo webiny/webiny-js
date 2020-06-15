@@ -15,6 +15,7 @@ import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import AccuntTokens from "./AccountTokens";
+import { SnackbarAction } from "@webiny/ui/Snackbar";
 
 import {
     SimpleForm,
@@ -102,7 +103,7 @@ const UserAccountForm = () => {
         setState({ loading: false });
         if (error) {
             return showSnackbar(error.message, {
-                action: "Close"
+                action: <SnackbarAction label="Close" onClick={() => showSnackbar(null)} />
             });
         }
 
