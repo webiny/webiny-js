@@ -34,7 +34,7 @@ const SaveAndPublishButton = ({
         async id => {
             setLoading(true);
             const response = await publishContentMutation({
-                variables: { revision: content.id || id }
+                variables: { revision: id || content.id }
             });
 
             const contentData = get(response, "data.content");
