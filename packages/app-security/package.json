@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-security",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,13 +15,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.27",
-    "@webiny/app": "^4.1.0-beta.0",
-    "@webiny/app-admin": "^4.1.0-beta.0",
-    "@webiny/form": "^4.1.0-beta.0",
-    "@webiny/plugins": "^4.1.0-beta.0",
-    "@webiny/react-router": "^4.1.0-beta.0",
-    "@webiny/ui": "^4.1.0-beta.0",
-    "@webiny/validation": "^4.1.0-beta.0",
+    "@webiny/app": "^4.1.0-beta.1",
+    "@webiny/app-admin": "^4.1.0-beta.1",
+    "@webiny/form": "^4.1.0-beta.1",
+    "@webiny/plugins": "^4.1.0-beta.1",
+    "@webiny/react-router": "^4.1.0-beta.1",
+    "@webiny/ui": "^4.1.0-beta.1",
+    "@webiny/validation": "^4.1.0-beta.1",
     "apollo-link": "^1.2.1",
     "dot-prop-immutable": "^1.4.0",
     "emotion": "10.0.17",

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-commodo-db-proxy",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo-fields-storage-db-proxy": "^4.1.0-beta.0",
+    "@webiny/commodo-fields-storage-db-proxy": "^4.1.0-beta.1",
     "bson": "^4.0.4",
     "mongodb": "^3.5.7"
   },
@@ -25,8 +25,8 @@
     "@babel/preset-env": "^7.5.5",
     "@shelf/jest-mongodb": "^1.1.5",
     "@types/mongodb": "^3.5.16",
-    "@webiny/graphql": "^4.1.0-beta.0",
-    "@webiny/handler": "^4.1.0-beta.0"
+    "@webiny/graphql": "^4.1.0-beta.1",
+    "@webiny/handler": "^4.1.0-beta.1"
   },
   "publishConfig": {
     "access": "public",
