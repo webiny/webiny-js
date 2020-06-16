@@ -14,10 +14,11 @@ import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/content-form-options-menu");
+const t = i18n.ns(
+    "app-headless-cms/admin/plugins/content-details/header/content-form-options-menu"
+);
 
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
-import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 
 const menuStyles = css({
@@ -31,7 +32,6 @@ const menuStyles = css({
 });
 
 const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, setLoading }) => {
-
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
@@ -87,12 +87,6 @@ const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, s
                     <Icon icon={<DeleteIcon />} />
                 </ListItemGraphic>
                 Delete
-            </MenuItem>
-            <MenuItem onClick={() => history.push(`/cms/content-models/${contentModel.id}`)}>
-                <ListItemGraphic>
-                    <Icon icon={<EditIcon />} />{" "}
-                </ListItemGraphic>
-                Edit model
             </MenuItem>
         </Menu>
     );
