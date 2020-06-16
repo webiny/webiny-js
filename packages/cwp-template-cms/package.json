@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cwp-template-cms",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "repository": {
     "type": "git",
     "directory": "packages/cwp-template-cms"

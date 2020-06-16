@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 4.1.0-beta.3 (2020-06-16)
+
+
+### Bug Fixes
+
+* replace "id" and "content.id" ([d1d4bb9](https://github.com/webiny/webiny-js/commit/d1d4bb909d99b2b94678dcf3071b77a379687056))
+
+
+
+
+
 # 4.1.0-beta.2 (2020-06-16)
 
 **Note:** Version bump only for package @webiny/serverless-aws-s3-object

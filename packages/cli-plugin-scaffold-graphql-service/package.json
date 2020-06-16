@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-graphql-service",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "description": "Generate Webiny GraphQL service",
   "main": "index.js",
   "repository": {

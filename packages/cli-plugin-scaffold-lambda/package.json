@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-lambda",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "description": "Scaffolds a custom lambda for you",
   "main": "index.js",
   "scripts": {},

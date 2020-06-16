@@ -2,7 +2,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "command": {
     "version": {
       "preid": "next",

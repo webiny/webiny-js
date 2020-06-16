@@ -1,6 +1,6 @@
 {
   "name": "@webiny/i18n-react",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/i18n": "^4.1.0-beta.2",
+    "@webiny/i18n": "^4.1.0-beta.3",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

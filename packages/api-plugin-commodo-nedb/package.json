@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-plugin-commodo-nedb",
-	"version": "4.1.0-beta.2",
+	"version": "4.1.0-beta.3",
 	"main": "index.js",
 	"license": "MIT",
 	"repository": {
@@ -21,7 +21,7 @@
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
 		"@commodo/fields-storage-nedb": "^2.0.0-next.16",
-		"@webiny/graphql": "^4.1.0-beta.2"
+		"@webiny/graphql": "^4.1.0-beta.3"
 	},
 	"publishConfig": {
 		"access": "public",

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-page-builder",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,12 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.1.0-beta.2",
-    "@webiny/commodo": "^4.1.0-beta.2",
-    "@webiny/commodo-graphql": "^4.1.0-beta.2",
-    "@webiny/graphql": "^4.1.0-beta.2",
-    "@webiny/handler-ssr": "^4.1.0-beta.2",
-    "@webiny/validation": "^4.1.0-beta.2",
+    "@webiny/api-security": "^4.1.0-beta.3",
+    "@webiny/commodo": "^4.1.0-beta.3",
+    "@webiny/commodo-graphql": "^4.1.0-beta.3",
+    "@webiny/graphql": "^4.1.0-beta.3",
+    "@webiny/handler-ssr": "^4.1.0-beta.3",
+    "@webiny/validation": "^4.1.0-beta.3",
     "download": "^5.0.3",
     "extract-zip": "^1.6.7",
     "form-data": "^2.5.0",
@@ -46,7 +46,7 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-settings-manager": "^4.1.0-beta.2",
+    "@webiny/api-settings-manager": "^4.1.0-beta.3",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {

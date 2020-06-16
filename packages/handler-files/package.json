@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-files",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^4.1.0-beta.2",
+    "@webiny/handler": "^4.1.0-beta.3",
     "isutf8": "^2.1.0",
     "mime-types": "^2.1.26",
     "zlib": "^1.0.5"

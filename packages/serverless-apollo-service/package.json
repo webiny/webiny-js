@@ -1,12 +1,12 @@
 {
   "name": "@webiny/serverless-apollo-service",
-  "version": "4.1.0-beta.2",
+  "version": "4.1.0-beta.3",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-api-gateway": "^4.1.0-beta.2",
-    "@webiny/serverless-component": "^4.1.0-beta.2",
-    "@webiny/serverless-function": "^4.1.0-beta.2",
+    "@webiny/serverless-api-gateway": "^4.1.0-beta.3",
+    "@webiny/serverless-component": "^4.1.0-beta.3",
+    "@webiny/serverless-function": "^4.1.0-beta.3",
     "lodash.get": "^4.4.2",
     "lodash.pick": "^4.4.0"
   },
