@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-plugin-security-cognito",
-  "version": "4.0.3-beta.0",
+  "version": "4.1.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,10 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "@aws-amplify/auth": "^1.3.3",
-    "@webiny/app": "^4.0.3-beta.0",
-    "@webiny/app-security": "^4.0.3-beta.0",
-    "@webiny/plugins": "^4.0.3-beta.0",
-    "@webiny/ui": "^4.0.3-beta.0",
+    "@webiny/app": "^4.1.0-beta.0",
+    "@webiny/app-security": "^4.1.0-beta.0",
+    "@webiny/plugins": "^4.1.0-beta.0",
+    "@webiny/ui": "^4.1.0-beta.0",
     "graphql-tag": "^2.10.1",
     "invariant": "^2.2.4",
     "react-apollo": "^3.1.0",

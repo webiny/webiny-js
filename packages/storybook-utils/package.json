@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@webiny/storybook-utils",
-  "version": "4.0.3-beta.0",
+  "version": "4.1.0-beta.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"

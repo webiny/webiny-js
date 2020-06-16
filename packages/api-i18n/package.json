@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "4.0.3-beta.0",
+  "version": "4.1.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -16,11 +16,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.0.3-beta.0",
-    "@webiny/commodo": "^4.0.3-beta.0",
-    "@webiny/commodo-graphql": "^4.0.3-beta.0",
-    "@webiny/graphql": "^4.0.3-beta.0",
-    "@webiny/validation": "^4.0.3-beta.0",
+    "@webiny/api-security": "^4.1.0-beta.0",
+    "@webiny/commodo": "^4.1.0-beta.0",
+    "@webiny/commodo-graphql": "^4.1.0-beta.0",
+    "@webiny/graphql": "^4.1.0-beta.0",
+    "@webiny/validation": "^4.1.0-beta.0",
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
@@ -31,7 +31,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.3-beta.0"
+    "@webiny/api-plugin-commodo-db-proxy": "^4.1.0-beta.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"

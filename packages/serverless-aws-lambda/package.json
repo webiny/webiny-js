@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-lambda",
-  "version": "4.0.3-beta.0",
+  "version": "4.1.0-beta.0",
   "main": "./serverless.js",
   "publishConfig": {
     "access": "public",
@@ -15,9 +15,9 @@
   "license": "Apache",
   "dependencies": {
     "@serverless/core": "^1.0.0",
-    "@webiny/serverless-aws-iam-role": "^4.0.3-beta.0",
-    "@webiny/serverless-aws-s3": "^4.0.3-beta.0",
-    "@webiny/serverless-component": "^4.0.3-beta.0",
+    "@webiny/serverless-aws-iam-role": "^4.1.0-beta.0",
+    "@webiny/serverless-aws-s3": "^4.1.0-beta.0",
+    "@webiny/serverless-component": "^4.1.0-beta.0",
     "archiver": "^3.0.0",
     "aws-sdk": "^2.474.0",
     "fs-extra": "^7.0.0",
