@@ -79,6 +79,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             }
 
             showSnackbar("Content saved successfully.");
+            return response;
         },
         [contentModel.modelId]
     );
@@ -111,6 +112,8 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             const { id: revisionId } = response.data.content.data;
             query.set("id", revisionId);
             history.push({ search: query.toString() });
+
+            return response;
         },
         [contentModel.modelId]
     );
@@ -125,13 +128,11 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             onSubmit={async data => {
                 if (content.id) {
                     if (get(content, "meta.locked")) {
-                        await createContentFrom(content.id, data);
-                        return;
+                        return createContentFrom(content.id, data);
                     }
-                    await updateContent(content.id, data);
-                    return;
+                    return updateContent(content.id, data);
                 }
-                return await createContent(data);
+                return createContent(data);
             }}
         />
     );
