@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app",
-  "version": "4.1.0-beta.3",
+  "version": "4.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,11 +15,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/i18n": "^4.1.0-beta.3",
-    "@webiny/i18n-react": "^4.1.0-beta.3",
-    "@webiny/plugins": "^4.1.0-beta.3",
-    "@webiny/react-router": "^4.1.0-beta.3",
-    "@webiny/ui": "^4.1.0-beta.3",
+    "@webiny/i18n": "^4.1.0",
+    "@webiny/i18n-react": "^4.1.0",
+    "@webiny/plugins": "^4.1.0",
+    "@webiny/react-router": "^4.1.0",
+    "@webiny/ui": "^4.1.0",
     "apollo-client": "^2.6.8",
     "apollo-link": "^1.2.1",
     "graphql": "^14.5.8",
