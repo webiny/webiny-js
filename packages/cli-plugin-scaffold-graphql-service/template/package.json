@@ -7,10 +7,10 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^0.1.0",
-    "@webiny/handler-apollo-server": "^0.1.0",
-    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4",
-    "@webiny/api-security": "^3.1.0",
-    "@webiny/project-utils": "^1.0.2"
+    "@webiny/handler": "^4.0.2",
+    "@webiny/handler-apollo-server": "^4.0.2",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.2",
+    "@webiny/api-security": "^4.0.2",
+    "@webiny/project-utils": "^4.0.2"
   }
 }
