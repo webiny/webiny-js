@@ -1,13 +1,13 @@
 {
   "name": "@webiny/app-page-builder-theme",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^4.1.0-beta.0",
-    "@webiny/app-page-builder": "^4.1.0-beta.0",
-    "@webiny/plugins": "^4.1.0-beta.0",
-    "@webiny/react-router": "^4.1.0-beta.0",
+    "@webiny/app": "^4.1.0-beta.1",
+    "@webiny/app-page-builder": "^4.1.0-beta.1",
+    "@webiny/plugins": "^4.1.0-beta.1",
+    "@webiny/react-router": "^4.1.0-beta.1",
     "classnames": "^2.2.6",
     "emotion": "^10.0.17",
     "graphql-tag": "2.10.1",

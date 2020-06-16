@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-files",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,11 +17,11 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@shelf/jest-mongodb": "^1.1.3",
-    "@webiny/api-security": "^4.1.0-beta.0",
-    "@webiny/commodo": "^4.1.0-beta.0",
-    "@webiny/commodo-graphql": "^4.1.0-beta.0",
-    "@webiny/graphql": "^4.1.0-beta.0",
-    "@webiny/validation": "^4.1.0-beta.0",
+    "@webiny/api-security": "^4.1.0-beta.1",
+    "@webiny/commodo": "^4.1.0-beta.1",
+    "@webiny/commodo-graphql": "^4.1.0-beta.1",
+    "@webiny/graphql": "^4.1.0-beta.1",
+    "@webiny/validation": "^4.1.0-beta.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4",

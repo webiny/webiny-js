@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli",
-  "version": "4.1.0-beta.0",
+  "version": "4.1.0-beta.1",
   "main": "index.js",
   "bin": {
     "webiny": "./bin.js"
@@ -13,8 +13,8 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/plugins": "^4.1.0-beta.0",
-    "@webiny/tracking": "^4.1.0-beta.0",
+    "@webiny/plugins": "^4.1.0-beta.1",
+    "@webiny/tracking": "^4.1.0-beta.1",
     "camelcase": "^5.3.1",
     "chalk": "^2.4.2",
     "debug": "^4.1.1",
