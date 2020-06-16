@@ -42,7 +42,7 @@ jobs:
         run: git config --global user.name "webiny"
 
       - name: Create a release on GitHub
-        run: yarn lerna version --force-publish --yes
+        run: yarn lerna version --force-publish --conventional-graduate --yes
 
       - name: Release packages to NPM
         run: yarn lerna publish from-package --yes
