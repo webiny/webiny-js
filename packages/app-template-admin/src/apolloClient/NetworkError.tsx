@@ -32,7 +32,39 @@ const Paragraph = styled("span")({
 
 const NetworkError = ({ children }) => {
     const { data } = useQuery(GET_ERROR, { fetchPolicy: "cache-only" });
-    
+
+    if (!process.env.REACT_APP_GRAPHQL_API_URL && process.env.NODE_ENV === "production") {
+        return (
+            <Elevation className={errorStyle} z={2}>
+                <Alert type={"danger"} title={"GraphQL API is unavailable"}>
+                    <Paragraph>
+                        Looks like you&#39;ve deployed your apps before deploying an API for them.
+                        <br />
+                        Make sure you deploy a matching API environment before deploying your apps
+                        by running
+                        <Code>yarn webiny deploy api --env=your-env</Code>. This is necessary for
+                        your apps to be built correctly.
+                        <br />
+                        Once your API is deployed, deploy your apps by running
+                        <Code>yarn webiny deploy apps --env=your-env</Code>.
+                    </Paragraph>
+                    <br />
+                    <Paragraph>
+                        For step by step instructions on deploying your apps, visit our{" "}
+                        <a
+                            target={"_blank"}
+                            rel={"noreferrer"}
+                            href={"https://docs.webiny.com/docs/get-started/going-live"}
+                        >
+                            Going Live guide
+                        </a>
+                        .
+                    </Paragraph>
+                </Alert>
+            </Elevation>
+        );
+    }
+
     if (!process.env.REACT_APP_GRAPHQL_API_URL && process.env.NODE_ENV === "development") {
         return (
             <Elevation className={errorStyle} z={2}>
