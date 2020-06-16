@@ -61,6 +61,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
+            return response;
         },
         [contentModel.modelId]
     );
@@ -130,8 +131,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
                     await updateContent(content.id, data);
                     return;
                 }
-
-                await createContent(data);
+                return await createContent(data);
             }}
         />
     );

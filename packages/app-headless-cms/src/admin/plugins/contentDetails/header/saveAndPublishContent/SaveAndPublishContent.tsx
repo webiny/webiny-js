@@ -22,7 +22,6 @@ const SaveAndPublishButton = ({
     state
 }) => {
     const { showSnackbar } = useSnackbar();
-
     const { PUBLISH_CONTENT } = useMemo(() => {
         return {
             PUBLISH_CONTENT: createPublishMutation(contentModel)
@@ -31,21 +30,24 @@ const SaveAndPublishButton = ({
 
     const [publishContentMutation] = useMutation(PUBLISH_CONTENT);
 
-    const onPublish = useCallback(async () => {
-        setLoading(true);
-        const response = await publishContentMutation({
-            variables: { revision: content.id }
-        });
+    const onPublish = useCallback(
+        async id => {
+            setLoading(true);
+            const response = await publishContentMutation({
+                variables: { revision: content.id || id }
+            });
 
-        const contentData = get(response, "data.content");
-        setLoading(false);
-        if (contentData.error) {
-            return showSnackbar(contentData.error.message);
-        }
+            const contentData = get(response, "data.content");
+            setLoading(false);
+            if (contentData.error) {
+                return showSnackbar(contentData.error.message);
+            }
 
-        showSnackbar(t`Content published successfully.`);
-        revisionsList.refetch();
-    }, [content.id]);
+            showSnackbar(t`Content published successfully.`);
+            revisionsList.refetch();
+        },
+        [content.id]
+    );
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Publish content`,
@@ -57,10 +59,16 @@ const SaveAndPublishButton = ({
         <ButtonPrimary
             className={buttonStyles}
             onClick={() => {
-                state.contentForm.submit();
-                showConfirmation(onPublish);
+                showConfirmation(async () => {
+                    const response = await state.contentForm.submit();
+                    if (response.data.content.error) {
+                        return;
+                    }
+                    const { id } = response.data.content.data;
+                    await onPublish(id);
+                });
             }}
-            disabled={!content.id || getLoading()}
+            disabled={getLoading()}
         >
             {t`Save & Publish`}
         </ButtonPrimary>
