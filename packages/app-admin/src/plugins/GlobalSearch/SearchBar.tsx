@@ -1,6 +1,6 @@
 import * as React from "react";
 import { set } from "dot-prop-immutable";
-import { withRouter, WithRouterProps } from "@webiny/react-router";
+import { useRouter, UseRouter } from "@webiny/react-router";
 import Downshift from "downshift";
 import { getPlugins } from "@webiny/plugins";
 import {
@@ -28,7 +28,7 @@ import {
     searchWrapper
 } from "./styled";
 
-type SearchBarProps = WithRouterProps<{}>;
+type SearchBarProps = UseRouter;
 
 type SearchBarState = {
     active: boolean;
@@ -49,7 +49,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         },
         plugins: {
             // List of all registered "admin-global-search" plugins.
-            list: getPlugins<AdminGlobalSearchPlugin>("admin-global-search"),
+            get list() {
+                return getPlugins<AdminGlobalSearchPlugin>("admin-global-search");
+            },
             hotKeys: getPlugins<AdminGlobalSearchPreventHotkeyPlugin>(
                 "admin-global-search-prevent-hotkey"
             ),
@@ -241,4 +243,10 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     }
 }
 
-export default withRouter<SearchBarProps>(SearchBar);
+const SearchBarContainer = () => {
+    const routerProps = useRouter();
+
+    return <SearchBar {...routerProps} />;
+};
+
+export default SearchBarContainer;

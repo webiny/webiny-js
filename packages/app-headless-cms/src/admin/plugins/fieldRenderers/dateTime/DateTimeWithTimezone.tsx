@@ -2,11 +2,14 @@ import React from "react";
 import Input from "./Input";
 import Select from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { UTC_TIMEZONES, getCurrentDateString, appendTextToLabel } from "./utils";
-
-const DEFAULT_TIME = "00:00:00";
-const DEFAULT_DATE = getCurrentDateString();
-const DEFAULT_TIMEZONE = "+01:00";
+import {
+    UTC_TIMEZONES,
+    DEFAULT_TIME,
+    DEFAULT_DATE,
+    DEFAULT_TIMEZONE,
+    appendTextToLabel,
+    RemoveFieldButton
+} from "./utils";
 
 const DateTimeWithTimezone = props => {
     // "2020-05-18T09:00+10:00"
@@ -42,11 +45,12 @@ const DateTimeWithTimezone = props => {
         }
     }, [props.bind.value]);
 
+    const cellSize = props.trailingIcon ? 3 : 4;
+
     return (
         <Grid>
             <Cell span={4}>
                 <Input
-                    {...props}
                     bind={{
                         ...props.bind,
                         value: date,
@@ -64,13 +68,12 @@ const DateTimeWithTimezone = props => {
             </Cell>
             <Cell span={4}>
                 <Input
-                    {...props}
                     bind={{
                         ...props.bind,
                         value: time,
                         onChange: value => {
-                            setTime(`${value}:00`);
-                            return props.bind.onChange(`${date}T${value}:00${timezone}`);
+                            setTime(value);
+                            return props.bind.onChange(`${date}T${value}${timezone}`);
                         }
                     }}
                     field={{
@@ -78,9 +81,10 @@ const DateTimeWithTimezone = props => {
                         label: appendTextToLabel(props.field.label, " time")
                     }}
                     type={"time"}
+                    step={5}
                 />
             </Cell>
-            <Cell span={4}>
+            <Cell span={cellSize}>
                 <Select
                     label="Timezone"
                     value={timezone}
@@ -91,6 +95,7 @@ const DateTimeWithTimezone = props => {
                     options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
                 />
             </Cell>
+            <RemoveFieldButton trailingIcon={props.trailingIcon} />
         </Grid>
     );
 };

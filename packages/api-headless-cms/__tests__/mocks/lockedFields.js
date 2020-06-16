@@ -8,6 +8,23 @@ export default {
             fields: [
                 {
                     _id: "vqk-UApa0",
+                    fieldId: "someId",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "someId-en"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "someId-de"
+                            }
+                        ]
+                    }
+                },
+                {
+                    _id: "vqk-UApa0",
                     fieldId: "title",
                     type: "text",
                     label: {
@@ -29,7 +46,27 @@ export default {
 
     tryToRemoveTitleField: ({ contentModelId }) => ({
         id: contentModelId,
-        data: { fields: [] }
+        data: {
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "someId",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "someId-en"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "someId-de"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
     }),
     createProduct: {
         title: {

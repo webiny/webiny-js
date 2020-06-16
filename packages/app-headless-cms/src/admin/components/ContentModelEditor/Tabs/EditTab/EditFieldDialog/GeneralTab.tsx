@@ -90,7 +90,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                 <Cell span={6}>
                     <Bind name={"multipleValues"}>
                         <Switch
-                            label={"Multiple values"}
+                            label={fieldPlugin.field.multipleValuesLabel}
                             disabled={!fieldPlugin.field.allowMultipleValues}
                         />
                     </Bind>

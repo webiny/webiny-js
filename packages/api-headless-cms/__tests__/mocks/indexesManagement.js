@@ -308,8 +308,7 @@ export default {
                 published: true,
                 fields: "id",
                 v0: productRev1
-            },
-
+            }
         ],
         secondRevisionPublished: ({ environmentId, productRev2, productRev3 }) => [
             {
@@ -411,7 +410,7 @@ export default {
                 published: false,
                 fields: "id",
                 v0: productRev3
-            },
+            }
         ]
     }
 };

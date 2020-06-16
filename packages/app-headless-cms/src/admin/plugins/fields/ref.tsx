@@ -20,7 +20,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         type: "ref",
         validators: [],
         label: t`Reference`,
-        description: t`For example a Product can ref its category(s).`,
+        description: t`Reference existing content entries. For example, a book can reference one or more authors.`,
         icon: <RefIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false,
@@ -28,6 +28,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             singleValue: false,
             multipleValues: false
         },
+        multipleValuesLabel: t`Use as a list of references`,
         createField() {
             return {
                 type: this.type,
@@ -59,9 +60,11 @@ const plugin: CmsEditorFieldTypePlugin = {
                     <Cell span={12}>
                         <Bind name={"settings.modelId"} validators={validation.create("required")}>
                             {bind => {
-                                const id = get(bind, 'value.id', bind.value);
+                                const id = get(bind, "value.id", bind.value);
                                 // Format value prop for AutoComplete component.
-                                const formattedValueForAutoComplete = options.find(option => option.id === id);
+                                const formattedValueForAutoComplete = options.find(
+                                    option => option.id === id
+                                );
 
                                 return (
                                     <AutoComplete
@@ -72,7 +75,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                                         description={t`Cannot be changed later`}
                                         options={options}
                                     />
-                                )
+                                );
                             }}
                         </Bind>
                     </Cell>

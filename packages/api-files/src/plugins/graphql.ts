@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { emptyResolver } from "@webiny/commodo-graphql";
+import { emptyResolver, resolveUpdateSettings } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
 
@@ -9,6 +9,7 @@ import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
+import { getSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
 
 const getFile = ({ models }): any => models.File;
@@ -109,6 +110,21 @@ export default [
                     error: FileError
                 }
 
+                type FileManagerSettings {
+                    uploadMinFileSize: Number
+                    uploadMaxFileSize: Number
+                }
+
+                input FileManagerSettingsInput {
+                    uploadMinFileSize: Number
+                    uploadMaxFileSize: Number
+                }
+
+                type FileManagerSettingsResponse {
+                    data: FileManagerSettings
+                    error: FileError
+                }
+
                 type FilesQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -126,6 +142,8 @@ export default [
 
                     # Is File Manager installed?
                     isInstalled: FilesBooleanResponse
+
+                    getSettings: FileManagerSettingsResponse
                 }
 
                 type FilesDeleteResponse {
@@ -143,6 +161,8 @@ export default [
 
                     # Install File manager
                     install(srcPrefix: String): FilesBooleanResponse
+
+                    updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
                 }
 
                 input FilesInstallInput {
@@ -173,7 +193,8 @@ export default [
                     getFile: hasScope("files:file:crud")(resolveGet(getFile)),
                     listFiles: listFiles,
                     listTags: listTags,
-                    isInstalled
+                    isInstalled,
+                    getSettings: getSettings
                 },
                 FilesMutation: {
                     uploadFile: hasScope("files:file:crud")(uploadFile),
@@ -182,7 +203,10 @@ export default [
                     updateFile: hasScope("files:file:crud")(resolveUpdate(getFile)),
                     createFiles,
                     deleteFile: hasScope("files:file:crud")(deleteFile),
-                    install
+                    install,
+                    updateSettings: hasScope("pb:settings")(
+                        resolveUpdateSettings(({ models }) => models.FilesSettings)
+                    )
                 }
             }
         }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import {
     createCreateFromMutation,
     createCreateMutation,
@@ -15,7 +15,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
-    const { history } = useReactRouter();
+    const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM, LIST_CONTENT } = useMemo(() => {
@@ -61,6 +61,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
+            return response;
         },
         [contentModel.modelId]
     );
@@ -78,6 +79,7 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             }
 
             showSnackbar("Content saved successfully.");
+            return response;
         },
         [contentModel.modelId]
     );
@@ -92,7 +94,9 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
                         return;
                     }
 
-                    const data = cloneDeep(cache.readQuery<any>({ query: LIST_CONTENT }));
+                    const data = cloneDeep(
+                        cache.readQuery<any>({ query: LIST_CONTENT })
+                    );
                     const previousItemIndex = data.content.data.findIndex(item => item.id === id);
                     data.content.data.splice(previousItemIndex, 1, response.data.content.data);
                     cache.writeQuery({ query: LIST_CONTENT, data });
@@ -108,6 +112,8 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             const { id: revisionId } = response.data.content.data;
             query.set("id", revisionId);
             history.push({ search: query.toString() });
+
+            return response;
         },
         [contentModel.modelId]
     );
@@ -122,14 +128,11 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
             onSubmit={async data => {
                 if (content.id) {
                     if (get(content, "meta.locked")) {
-                        await createContentFrom(content.id, data);
-                        return;
+                        return createContentFrom(content.id, data);
                     }
-                    await updateContent(content.id, data);
-                    return;
+                    return updateContent(content.id, data);
                 }
-
-                await createContent(data);
+                return createContent(data);
             }}
         />
     );

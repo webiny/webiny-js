@@ -166,7 +166,10 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
             models: CmsContentModel[];
             model: CmsContentModel;
         }): GraphQLSchemaModule;
-        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): CmsModelFieldDefinition | string;
+        createTypeField(params: {
+            model: CmsContentModel;
+            field: CmsContentModelField;
+        }): CmsModelFieldDefinition | string;
         createInputField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         createResolver(params: {
             models: CmsContentModel[];

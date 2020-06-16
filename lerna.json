@@ -2,7 +2,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "4.0.2",
+  "version": "4.1.0-beta.3",
   "command": {
     "version": {
       "preid": "next",
@@ -17,6 +17,7 @@
       "allowBranch": [
         "master",
         "next",
+        "develop",
         "release-*"
       ],
       "conventionalCommits": true,

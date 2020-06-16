@@ -52,6 +52,38 @@ export default async function findEntries<T = CmsContext>({
         query.locale = context.cms.locale.id;
     }
 
+    /*
+       The following code resolves the "limit" issue that happens when accessing the MANAGE API.
+
+       Description:
+       There is a difference in how the data is being queries/filtered when comparing READ/PREVIEW and MANAGE APIs.
+       When accessing READ/PREVIEW APIs, we always have single-locale filtering, and in that case, applying "limit" to
+       queries works correctly. But, when performing queries against the MANAGE API, internally, locale filtering is
+       not applied, which introduces an interesting problem.
+
+       If you take a look at the code below, you'll see that we are actually performing two queries:
+       1) Query the "CmsContentEntrySearch" collection - we only use the received content model entries IDs.
+       2) Use the IDs received from the first query to load the actual content model entries.
+
+       The problem occurs when the "limit" parameter is applied and there are multiple locales in the system. Because
+       the single-locale filtering is not applied in the MANAGE API, the result set received from the first query
+       might actually contain duplicates - rows that are actually referencing the same content model entry, but are
+       representing search entries for different locales. So, having duplicate content model entry IDs in the first
+       query result set would cause the final one to contain less results than specified by the "limit" parameter.
+
+       In order to ensure that the final result set always contains the needed number of entries specified by the
+       "limit" param, we just multiply it by the number of locales and use that as a new limit when performing the
+       first query. Received IDs are then deduplicated and only the first {limit} entries are taken into consideration,
+       while the rest is simply discarded.
+    */
+    if (context.cms.MANAGE) {
+        const locales = context.i18n.getLocales();
+        const newLimit = limit * locales.length;
+
+        // cap max limit to 100, to avoid `MAX_PER_PAGE_EXCEEDED` error
+        limit = Math.min(newLimit, 100);
+    }
+
     // Find IDs using search collection
     const searchEntries = await CmsContentEntrySearch.find({
         query,

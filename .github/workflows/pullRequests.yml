@@ -2,7 +2,7 @@ name: Pull Request Actions
 
 on:
   pull_request:
-    branches: [ release-4.x ]
+    branches: [ develop ]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: webiny/action-conventional-commits@v1.0.2
 
       - uses: actions/setup-node@v2-beta
         with:

@@ -13,7 +13,8 @@
     "../app-headless-cms",
     "../app-form-builder",
     "../app-form-builder-theme",
-    "../app-template-admin"
+    "../app-template-admin",
+    "../app-file-manager"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -30,6 +31,7 @@
     { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-form-builder/tsconfig.build.json" },
     { "path": "../app-form-builder-theme/tsconfig.build.json" },
-    { "path": "../app-template-admin/tsconfig.build.json" }
+    { "path": "../app-template-admin/tsconfig.build.json" },
+    { "path": "../app-file-manager/tsconfig.build.json" }
   ]
 }

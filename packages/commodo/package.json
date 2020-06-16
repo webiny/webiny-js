@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/commodo",
-	"version": "4.0.2",
+	"version": "4.1.0-beta.3",
 	"main": "index.js",
 	"types": "types.d.ts",
 	"repository": {
@@ -15,12 +15,12 @@
 	],
 	"license": "MIT",
 	"dependencies": {
-		"@commodo/fields": "^1.1.0-next.1",
-		"@commodo/fields-storage": "^2.0.0-next.14",
-		"@commodo/fields-storage-ref": "^1.1.0-next.1",
-		"@commodo/fields-storage-soft-delete": "^2.0.0-next.14",
-		"@commodo/hooks": "^1.1.0-next.1",
-		"@commodo/name": "^1.2.0-next.1",
+		"@commodo/fields": "^1.1.0",
+		"@commodo/fields-storage": "^2.0.0",
+		"@commodo/fields-storage-ref": "^1.1.0",
+		"@commodo/fields-storage-soft-delete": "^2.0.0",
+		"@commodo/hooks": "^1.1.0",
+		"@commodo/name": "^1.2.0",
 		"commodo-fields-date": "^1.0.3",
 		"commodo-fields-float": "^1.0.2",
 		"commodo-fields-int": "^1.0.1",

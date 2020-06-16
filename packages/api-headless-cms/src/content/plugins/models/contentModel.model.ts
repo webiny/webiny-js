@@ -18,6 +18,7 @@ import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import { indexes } from "./indexesField";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import idValidation from "./ContentModel/idValidation";
 
 const required = validation.create("required");
 
@@ -27,12 +28,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
     const CmsContentModel = pipe(
         withName(`CmsContentModel`),
-        withFields({
+        withFields(() => ({
             name: string({
                 validation: validation.create("required,maxLength:100"),
                 value: "Untitled"
             }),
-            modelId: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
+            modelId: setOnce()(string({ validation: idValidation })),
             description: string({ validation: validation.create("maxLength:200") }),
             layout: object({ value: [] }),
             group: ref({ instanceOf: context.models.CmsContentModelGroup, validation: required }),
@@ -40,14 +41,16 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            lockedFields: skipOnPopulate()(fields({ list: true, instanceOf: LockedFieldsModel })),
+            lockedFields: skipOnPopulate()(
+                fields({ list: true, instanceOf: LockedFieldsModel, value: [] })
+            ),
             fields: fields({
                 list: true,
                 value: [],
                 instanceOf: ContentModelFieldsModel
             }),
             indexes: indexes()
-        }),
+        })),
         withProps({
             get totalFields() {
                 return Array.isArray(this.fields) ? this.fields.length : 0;
@@ -83,6 +86,11 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     );
                 }
             },
+            async afterDelete() {
+                const environment = context.cms.getEnvironment();
+                environment.changedOn = new Date();
+                await environment.save();
+            },
             async beforeSave() {
                 if (this.getField("indexes").isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
@@ -95,6 +103,12 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 }
 
                 const fields = this.fields || [];
+
+                if (this.titleFieldId && !fields.find(item => item.fieldId === this.titleFieldId)) {
+                    throw new Error(
+                        `Cannot remove field "${this.titleFieldId}" because it's currently set as the title field. Please chose another title field first and try again.`
+                    );
+                }
 
                 // If no title field set, just use the first "text" field.
                 let hasTitleFieldId = false;
@@ -173,7 +187,8 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 }
 
                 // Check if the indexes list contains all fields that actually exists.
-                for (let i = 0; i < this.indexes.length; i++) {
+                const updatedIndexes = [];
+                indexesFor: for (let i = 0; i < this.indexes.length; i++) {
                     const index = this.indexes[i];
                     if (Array.isArray(index.fields)) {
                         for (let j = 0; j < index.fields.length; j++) {
@@ -182,14 +197,16 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             if (field === "id") {
                                 continue;
                             }
+
                             if (!this.fields.find(item => item.fieldId === field)) {
-                                throw new Error(
-                                    `Before removing the "${field}" field, please remove all of the indexes that include it in in their list of fields.`
-                                );
+                                break indexesFor;
                             }
                         }
                     }
+                    updatedIndexes.push(index);
                 }
+
+                this.indexes = updatedIndexes;
 
                 if (this.isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {

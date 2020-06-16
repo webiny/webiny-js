@@ -6,17 +6,13 @@ const Time = props => {
     return (
         <Input
             {...props}
-            bind={{
-                ...props.bind,
-                onChange: value => {
-                    return props.bind.onChange(`${value}:00`);
-                }
-            }}
             field={{
                 ...props.field,
-                label: null // TODO: Add relevant Icon or label
+                label: props.label
             }}
             type={"time"}
+            step={5}
+            trailingIcon={props.trailingIcon}
         />
     );
 };

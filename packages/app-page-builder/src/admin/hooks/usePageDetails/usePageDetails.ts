@@ -1,6 +1,6 @@
 import { useContext } from "react";
-import { PageDetailsContext } from "../../contexts/PageDetails";
+import { PageDetailsContext, PbPageDetailsContextValue } from "../../contexts/PageDetails";
 
-export function usePageDetails() {
+export function usePageDetails(): PbPageDetailsContextValue {
     return useContext(PageDetailsContext);
 }

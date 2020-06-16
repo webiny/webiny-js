@@ -1,5 +1,5 @@
 import React from "react";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { ContentModelEditorProvider } from "./Context";
 import ContentModelEditor from "./ContentModelEditor";
 import { match } from "react-router";
@@ -10,7 +10,7 @@ type QueryMatch = {
 };
 
 const ContentModelEditorApp = () => {
-    const router = useReactRouter();
+    const router = useRouter();
 
     const {
         environments: { apolloClient }

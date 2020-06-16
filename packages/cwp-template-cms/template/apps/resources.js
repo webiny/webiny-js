@@ -1,17 +1,33 @@
 module.exports = ({ cli }) => {
     return {
         resources: {
+            lambdaRole: {
+                deploy: {
+                    component: "@webiny/serverless-aws-iam-role",
+                    inputs: {
+                        region: process.env.AWS_REGION,
+                        service: "lambda.amazonaws.com",
+                        policy: {
+                            arn: "arn:aws:iam::aws:policy/AdministratorAccess"
+                        }
+                    }
+                }
+            },
             admin: {
                 build: {
                     root: "./admin",
                     script: `yarn build:${cli.env}`
                 },
                 deploy: {
-                    component: "@webiny/serverless-app",
+                    component: "@webiny/serverless-function",
                     inputs: {
+                        role: "${lambdaRole.arn}",
                         region: process.env.AWS_REGION,
                         description: "Webiny Admin",
-                        code: "./admin/build"
+                        code: "./admin/build",
+                        handler: "handler.handler",
+                        memory: 128,
+                        timeout: 30
                     }
                 }
             },

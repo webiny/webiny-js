@@ -12,7 +12,8 @@ describe("Removing fields that are present in indexes", () => {
         initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
-    it(`should not allow deletion of a field that is present in one or more indexes`, async () => {
+    it(`should allow deletion of a field that is present in one or more indexes`, async () => {
+        // In other words - deleting fields should automatically delete indexes.
         const { createContentModel, getContentModel, updateContentModel } = environment(
             initial.environment.id
         );
@@ -21,9 +22,9 @@ describe("Removing fields that are present in indexes", () => {
             mocks.authorContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
-        const getAuthorContentModel = await getContentModel(authorContentModel);
-        let error;
+        let getAuthorContentModel = await getContentModel(authorContentModel);
 
+        let error = null;
         await updateContentModel(
             mocks.updatedAuthorContentModel({
                 authorContentModelId: getAuthorContentModel.id,
@@ -32,6 +33,7 @@ describe("Removing fields that are present in indexes", () => {
         );
 
         try {
+            // Removes the "title" field.
             await updateContentModel(
                 mocks.removeFieldUpdateAuthorContentModel({
                     authorContentModelId: getAuthorContentModel.id,
@@ -42,8 +44,35 @@ describe("Removing fields that are present in indexes", () => {
             error = e;
         }
 
-        expect(error.message).toBe(
-            'Before removing the "title" field, please remove all of the indexes that include it in in their list of fields.'
-        );
+        expect(error).toBe(null);
+
+        getAuthorContentModel = await getContentModel(authorContentModel);
+        expect(getAuthorContentModel).toEqual({
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "uniqueSlug",
+                    multipleValues: false
+                },
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "age",
+                    multipleValues: false
+                }
+            ],
+            id: getAuthorContentModel.id,
+            indexes: [
+                {
+                    fields: ["id"]
+                },
+                {
+                    fields: ["uniqueSlug"]
+                }
+            ],
+            layout: [],
+            lockedFields: [],
+            name: "Author",
+            titleFieldId: "uniqueSlug"
+        });
     });
 });

@@ -13,7 +13,25 @@ const mocks = {
         data: {
             name: "Author",
             group: contentModelGroupId,
+            indexes: [{ fields: ["id"] }, { fields: ["uniqueSlug"] }, { fields: ["uniqueSlug", "title"] }],
             fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "uniqueSlug",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Slug-en"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Slug-de"
+                            }
+                        ]
+                    }
+                },
                 {
                     _id: "vqk-UApa0",
                     fieldId: "title",
@@ -57,6 +75,23 @@ const mocks = {
             name: "Author",
             group: contentModelGroupId,
             fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "uniqueSlug",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Slug-en"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Slug-de"
+                            }
+                        ]
+                    }
+                },
                 {
                     _id: "vqk-UApa0",
                     fieldId: "age",

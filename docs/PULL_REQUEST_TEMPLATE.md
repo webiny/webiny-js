@@ -3,6 +3,7 @@
 <!--- If suggesting a new feature or change, please discuss it in an issue first -->
 <!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
 <!--- Please link to the issue here: -->
+Closes #ISSUE_NUMBER
 
 ## Your solution
 <!--- Please describe your solution, have you encountered any issues along the way? -->

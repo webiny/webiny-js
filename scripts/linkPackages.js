@@ -5,6 +5,6 @@
  * - package root directory
  */
 (async () => {
-    const { linkPackages } = require("@webiny/project-utils/packages");
+    const { linkPackages } = require("../packages/project-utils/packages");
     await linkPackages();
 })();

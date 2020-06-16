@@ -7,18 +7,20 @@ const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const { v4: uuidv4 } = require("uuid");
 
+const s3BucketName = (projectId, appName) => {
+    return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-files`;
+};
+
 module.exports = async ({ appName, root }) => {
     const { name, version } = require("./package.json");
 
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
-        if (!fs.existsSync(path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile))) {
-            fs.moveSync(
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
-                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
-                []
-            );
-        }
+        fs.moveSync(
+            path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
+            path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
+            { overwrite: true }
+        );
     }
 
     //Update api/.env.json
@@ -34,7 +36,7 @@ module.exports = async ({ appName, root }) => {
         .slice(0, 60);
 
     apiEnv.default["JWT_SECRET"] = jwtSecret;
-    apiEnv.default["S3_BUCKET"] = `${projectId}-${appName}-files`;
+    apiEnv.default["S3_BUCKET"] = s3BucketName(projectId, appName);
     await writeJsonFile(apiEnvJson, apiEnv);
 
     const baseEnvPath = path.join(root, ".env.json");

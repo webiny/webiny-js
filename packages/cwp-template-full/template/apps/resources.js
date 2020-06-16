@@ -1,6 +1,18 @@
 module.exports = ({ cli }) => {
     return {
         resources: {
+            lambdaRole: {
+                deploy: {
+                    component: "@webiny/serverless-aws-iam-role",
+                    inputs: {
+                        region: process.env.AWS_REGION,
+                        service: "lambda.amazonaws.com",
+                        policy: {
+                            arn: "arn:aws:iam::aws:policy/AdministratorAccess"
+                        }
+                    }
+                }
+            },
             databaseProxy: {
                 build: {
                     root: "./databaseProxy",
@@ -9,6 +21,7 @@ module.exports = ({ cli }) => {
                 deploy: {
                     component: "@webiny/serverless-function",
                     inputs: {
+                        role: "${lambdaRole.arn}",
                         region: process.env.AWS_REGION,
                         description: "Handles interaction with MongoDB",
                         code: "./databaseProxy/build",
@@ -31,6 +44,7 @@ module.exports = ({ cli }) => {
                 deploy: {
                     component: "@webiny/serverless-function",
                     inputs: {
+                        role: "${lambdaRole.arn}",
                         description: "Webiny Site",
                         region: process.env.AWS_REGION,
                         memory: 128,
@@ -52,6 +66,7 @@ module.exports = ({ cli }) => {
                 deploy: {
                     component: "@webiny/serverless-function",
                     inputs: {
+                        role: "${lambdaRole.arn}",
                         description: "Site SSR",
                         region: process.env.AWS_REGION,
                         code: "./site/build-ssr",
@@ -69,6 +84,7 @@ module.exports = ({ cli }) => {
                 deploy: {
                     component: "@webiny/serverless-function",
                     inputs: {
+                        role: "${lambdaRole.arn}",
                         region: process.env.AWS_REGION,
                         description: "Webiny Admin",
                         code: "./admin/build",

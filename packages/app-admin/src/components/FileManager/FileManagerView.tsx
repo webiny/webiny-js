@@ -3,9 +3,9 @@ import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import File from "./File";
-import { useQuery, useMutation, useApolloClient } from "react-apollo";
+import { useQuery, useMutation, useApolloClient, Query } from "react-apollo";
 import { FilesRules } from "react-butterfiles";
-import { LIST_FILES, CREATE_FILE } from "./graphql";
+import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
 import { get, debounce, cloneDeep } from "lodash";
 import getFileUploader from "./getFileUploader";
@@ -23,10 +23,12 @@ import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
+import gql from "graphql-tag";
 
 const style = {
     draggingFeedback: css({
@@ -304,10 +306,12 @@ function FileManagerView(props: FileManagerViewProps) {
         setTimeout(() => showSnackbar(t`File upload complete.`), 750);
     };
 
+    const settingsQuery = useQuery(GET_FILE_SETTINGS);
+    const settings = get(settingsQuery.data, "files.getSettings.data") || {};
     return (
         <Files
             multiple
-            maxSize={maxSize}
+            maxSize={settings.uploadMaxFileSize ? settings.uploadMaxFileSize + "b" : maxSize}
             multipleMaxSize={multipleMaxSize}
             multipleMaxCount={multipleMaxCount}
             accept={accept}

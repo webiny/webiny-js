@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
@@ -17,7 +17,7 @@ const Pages = props => {
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { history } = useReactRouter();
+    const { history } = useRouter();
 
     const dataList = useDataList({
         query: LIST_PAGES,

@@ -1,7 +1,7 @@
 import React from "react";
 import { Query } from "react-apollo";
 import { renderPlugins } from "@webiny/app/plugins";
-import useReactRouter from "use-react-router";
+import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM } from "@webiny/app-form-builder/admin/viewsGraphql";
@@ -50,7 +50,7 @@ export type FormDetailsProps = {
 };
 
 const FormDetails = ({ refreshForms }: FormDetailsProps) => {
-    const { location, history } = useReactRouter();
+    const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const query = new URLSearchParams(location.search);
     const formId = query.get("id");
