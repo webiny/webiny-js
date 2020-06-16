@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-aws-s3-object",
-  "version": "4.0.2",
+  "version": "4.0.3-beta.0",
   "main": "./serverless.js",
   "publishConfig": {
     "access": "public",
@@ -9,7 +9,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-component": "^4.0.2",
+    "@webiny/serverless-component": "^4.0.3-beta.0",
     "archiver": "^3.0.0",
     "aws-sdk": "^2.488.0",
     "folder-hash": "^3.3.0",

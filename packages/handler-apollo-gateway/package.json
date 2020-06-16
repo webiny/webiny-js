@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-apollo-gateway",
-  "version": "4.0.2",
+  "version": "4.0.3-beta.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -16,9 +16,9 @@
   ],
   "dependencies": {
     "@apollo/gateway": "^0.14.1",
-    "@webiny/graphql": "^4.0.2",
-    "@webiny/handler": "^4.0.2",
-    "@webiny/plugins": "^4.0.2",
+    "@webiny/graphql": "^4.0.3-beta.0",
+    "@webiny/handler": "^4.0.3-beta.0",
+    "@webiny/plugins": "^4.0.3-beta.0",
     "apollo-server-env": "^2.4.3",
     "apollo-server-lambda": "^2.4.3",
     "boolean": "^3.0.1",

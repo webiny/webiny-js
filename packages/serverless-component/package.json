@@ -1,6 +1,6 @@
 {
   "name": "@webiny/serverless-component",
-  "version": "4.0.2",
+  "version": "4.0.3-beta.0",
   "license": "Apache 2.0",
   "author": "Serverless, Inc.",
   "contributors": [

@@ -5,4 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.3-beta.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/app-file-manager
+**Note:** Version bump only for package @webiny/aws-layers

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/graphql",
-  "version": "4.0.2",
+  "version": "4.0.3-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "dependencies": {
     "@apollo/federation": "^0.16.0",
     "@babel/runtime": "^7.5.5",
-    "@webiny/plugins": "^4.0.2",
+    "@webiny/plugins": "^4.0.3-beta.0",
     "apollo-graphql": "^0.4.4",
     "graphql": "^14.6.0",
     "graphql-iso-date": "^3.6.1",

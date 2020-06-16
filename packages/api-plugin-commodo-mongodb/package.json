@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-plugin-commodo-mongodb",
-	"version": "4.0.2",
+	"version": "4.0.3-beta.0",
 	"main": "index.js",
 	"license": "MIT",
 	"repository": {
@@ -22,7 +22,7 @@
 		"@babel/cli": "^7.5.5",
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
-		"@webiny/graphql": "^4.0.2"
+		"@webiny/graphql": "^4.0.3-beta.0"
 	},
 	"publishConfig": {
 		"access": "public",
