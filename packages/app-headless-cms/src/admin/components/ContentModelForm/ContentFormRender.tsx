@@ -9,8 +9,8 @@ import styled from "@emotion/styled";
 
 const FormWrapper = styled("div")({
     height: "70vh",
-    overflow: "auto",
-})
+    overflow: "auto"
+});
 
 export const ContentFormRender = ({
     getFields,
