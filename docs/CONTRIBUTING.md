@@ -8,7 +8,7 @@ This guide is for anyone who wants to contribute to the Webiny project.
 
 ### Branches
 
-`master` is the main branch from which we publish packages. All `issue` branches should be branched from `develop` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
+`master` is the main branch on which we develop. All `issue` branches should be branched from `master` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
 
 ### Workflow
 
