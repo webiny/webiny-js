@@ -55,6 +55,17 @@ export default (
                 return;
             }
 
+            if (
+                context.user &&
+                context.user.id &&
+                context.user.access &&
+                context.user.access.fullAccess
+            ) {
+                // A valid JWT was provided and context.user was populated with our user's data, including their user ID.
+                // If they have fullAccess, then they're admins which are allowed to access the API...
+                return;
+            }
+
             if (context.cms.READ || context.cms.PREVIEW) {
                 const accessToken =
                     context.event.headers["authorization"] ||
@@ -76,10 +87,10 @@ export default (
                         `You are not authorized to access "${currentEnvironment.name}" environment!`
                     );
                 }
-            }
-
-            if (context.cms.MANAGE && !context.user) {
-                throw new Error("Not authorized!");
+            } else if (context.cms.MANAGE) {
+                throw new Error(
+                    "Not authorized! Make sure you provided a valid JWT in the 'authorization' header."
+                );
             }
         }
     },
