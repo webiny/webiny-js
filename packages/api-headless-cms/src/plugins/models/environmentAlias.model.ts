@@ -10,6 +10,14 @@ import {
     withHooks,
     withProps
 } from "@webiny/commodo";
+import slugify from "slugify";
+
+const toSlug = text =>
+    slugify(text, {
+        replacement: "-",
+        lower: true,
+        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
+    });
 
 export default ({ createBase, context }) => {
     const CmsEnvironmentAlias = pipe(
@@ -30,6 +38,7 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeCreate() {
+                this.slug = toSlug(this.slug);
                 const existingGroup = await CmsEnvironmentAlias.count({
                     query: { slug: this.slug }
                 });
