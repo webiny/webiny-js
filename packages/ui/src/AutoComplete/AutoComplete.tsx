@@ -211,7 +211,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
-                                        if (keyCode.length > 1) {
+                                        if (keyCode.length > 1 && keyCode !== "backspace") {
                                             return;
                                         }
 
