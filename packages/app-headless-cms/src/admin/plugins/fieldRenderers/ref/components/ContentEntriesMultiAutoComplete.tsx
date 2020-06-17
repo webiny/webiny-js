@@ -59,8 +59,18 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
         variables: { where: { ["id_in"]: value } }
     });
 
+    const listLatestContentQuery = useQuery(LIST_CONTENT, {
+        variables: { limit: 10 }
+    });
+
     // Format options for the Autocomplete component.
     const options = get(listContentQuery, "data.content.data", []).map(item => ({
+        id: item.id,
+        name: getValue(item.meta.title)
+    }));
+
+    // Format default options for the Autocomplete component.
+    const defaultOptions = get(listLatestContentQuery, "data.content.data", []).map(item => ({
         id: item.id,
         name: getValue(item.meta.title)
     }));
@@ -113,9 +123,9 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
             }}
             loading={loading}
             value={valueForAutoComplete}
-            options={options}
+            options={search ? options : defaultOptions}
             label={<I18NValue value={field.label} />}
-            onInput={debounce(search => search && setSearch(search), 250)}
+            onInput={debounce(search => setSearch(search), 250)}
             description={
                 <>
                     <I18NValue value={field.helpText} />
