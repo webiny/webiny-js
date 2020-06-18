@@ -10,8 +10,22 @@ import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText } from "./utils";
 import { isEqual } from "lodash";
 import MaterialSpinner from "react-spinner-material";
+import { css } from "emotion";
+
+const menuStyles = css({
+    top: "unset !important",
+    bottom: 75
+});
+
+export enum Placement {
+    top = "top",
+    bottom = "bottom"
+}
 
 export type AutoCompleteProps = AutoCompleteBaseProps & {
+    /* Placement position of dropdown menu, can be either `top` or `bottom` */
+    placement?: Placement;
+
     /* A callback that is executed each time a value is changed. */
     onChange?: (value: any, selection: any) => void;
 
@@ -36,6 +50,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         valueProp: "id",
         textProp: "name",
         options: [],
+        placement: Placement.bottom,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
@@ -82,7 +97,8 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         highlightedIndex,
         selectedItem,
         getMenuProps,
-        getItemProps
+        getItemProps,
+        placement
     }: any) {
         if (!isOpen) {
             return null;
@@ -114,7 +130,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
         }
 
         return (
-            <Elevation z={1}>
+            <Elevation z={1} className={classNames({ [menuStyles]: placement === Placement.top })}>
                 <ul {...getMenuProps()}>
                     {filtered.map((item, index) => {
                         const itemValue = getOptionValue(item, this.props);
@@ -162,6 +178,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             textProp, // eslint-disable-line
             onInput,
             validation = { isValid: null },
+            placement,
             ...otherInputProps
         } = this.props;
 
@@ -232,7 +249,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     }
                                 })}
                             />
-                            {this.renderOptions({ ...rest, options })}
+                            {this.renderOptions({ ...rest, options, placement })}
                         </div>
                     )}
                 </Downshift>
