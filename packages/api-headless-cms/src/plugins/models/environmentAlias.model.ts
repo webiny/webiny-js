@@ -38,12 +38,16 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeCreate() {
-                this.slug = toSlug(this.slug);
+                const slugged = toSlug(this.slug);
+                this.slug = slugged;
                 const existingGroup = await CmsEnvironmentAlias.count({
                     query: { slug: this.slug }
                 });
                 if (existingGroup > 0) {
                     throw Error(`Environment alias with the slug "${this.slug}" already exists.`);
+                }
+                if(this.slug !== slugged) {
+                    throw Error(`Environment alias "${this.slug}" is not the proper format. It should be "${slugged}". Please use lowercase.`);
                 }
             },
             async beforeSave() {
