@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
-import { getOptionValue, getOptionText } from "./utils";
+import { getOptionValue, getOptionText, findInAlias } from "./utils";
 import { isEqual } from "lodash";
 import MaterialSpinner from "react-spinner-material";
 
@@ -17,6 +17,9 @@ export type AutoCompleteProps = AutoCompleteBaseProps & {
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
+
+    /* If true, will use `aliases` key in option item to match search value */
+    useAlias?: boolean;
 };
 
 type State = {
@@ -77,6 +80,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
      * Renders options - based on user's input. It will try to match input text with available options.
      */
     renderOptions({
+        useAlias,
         options,
         isOpen,
         highlightedIndex,
@@ -94,6 +98,10 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             // 2) At the end, we want to show only options that are matched by typed text.
             if (!this.state.inputValue) {
                 return true;
+            }
+
+            if (useAlias) {
+                return findInAlias(item, this.state.inputValue);
             }
 
             return getOptionText(item, this.props)
@@ -155,6 +163,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
     render() {
         const {
+            useAlias,
             options,
             onChange,
             value, // eslint-disable-line
@@ -232,7 +241,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     }
                                 })}
                             />
-                            {this.renderOptions({ ...rest, options })}
+                            {this.renderOptions({ ...rest, options, useAlias })}
                         </div>
                     )}
                 </Downshift>
