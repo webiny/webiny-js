@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
@@ -10,7 +10,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-function ContentEntriesMultiAutocomplete({ bind, field }) {
+function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
     // Value can be an array of object (received from API) or an array of ID (set by the Autocomplete component).
     const value = bind.value.map(item => {
         return get(item, "id", item);
@@ -29,7 +29,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
         }
     }, [bind.value]);
 
-    const { getValue } = useI18N();
+    const { getValue, getValues } = useI18N();
 
     // Fetch ref content model data, so that we can its title field.
     const refContentModelQuery = useQuery(GET_CONTENT_MODEL, {
@@ -62,26 +62,57 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     const listLatestContentQuery = useQuery(LIST_CONTENT, {
         variables: { limit: 10 }
     });
+    // Format options for the Autocomplete component based on`locale`
+    const getAutoCompleteOptionsFromList = useCallback(
+        list =>
+            get(list, "data.content.data", [])
+                .map(item => {
+                    const name = getValue(item.meta.title, locale);
+
+                    if (!name || name.trim().length === 0) {
+                        return null;
+                    }
+                    return {
+                        id: item.id,
+                        name: name,
+                        aliases: getValues(item.meta.title).filter(
+                            // Filter out empty strings
+                            alias => alias.trim().length !== 0
+                        )
+                    };
+                })
+                .filter(Boolean),
+        [locale]
+    );
 
     // Format options for the Autocomplete component.
-    const options = get(listContentQuery, "data.content.data", []).map(item => ({
-        id: item.id,
-        name: getValue(item.meta.title)
-    }));
+    const options = useMemo(() => getAutoCompleteOptionsFromList(listContentQuery), [
+        listContentQuery
+    ]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = get(listLatestContentQuery, "data.content.data", []).map(item => ({
-        id: item.id,
-        name: getValue(item.meta.title)
-    }));
+    const defaultOptions = useMemo(() => getAutoCompleteOptionsFromList(listLatestContentQuery), [
+        listLatestContentQuery
+    ]);
 
     // Format value prop for the Autocomplete component.
-    const valueForAutoComplete = get(listContentQueryFilterById, "data.content.data", []).map(
-        item => ({
-            id: item.id,
-            published: item.meta.published,
-            name: getValue(item.meta.title)
-        })
+    const valueForAutoComplete = useMemo(
+        () =>
+            get(listContentQueryFilterById, "data.content.data", [])
+                .map(item => {
+                    const name = getValue(item.meta.title, locale);
+
+                    if (!name) {
+                        return null;
+                    }
+                    return {
+                        id: item.id,
+                        published: item.meta.published,
+                        name: name
+                    };
+                })
+                .filter(Boolean),
+        [listContentQueryFilterById]
     );
 
     // Calculate loading prop for the Autocomplete component.
@@ -124,6 +155,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
             loading={loading}
             value={valueForAutoComplete}
             options={search ? options : defaultOptions}
+            useAlias={true}
             label={<I18NValue value={field.label} />}
             onInput={debounce(search => setSearch(search), 250)}
             description={
