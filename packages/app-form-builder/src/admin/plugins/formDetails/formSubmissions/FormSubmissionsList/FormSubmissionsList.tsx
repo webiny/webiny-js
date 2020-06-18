@@ -37,7 +37,7 @@ const FullName = ({ submission }) => {
 };
 
 const FormVersion = ({ submission }) => {
-    return <span>Form revision #${submission.form.revision.version}</span>;
+    return <span>Form revision #{submission.form.revision.version}</span>;
 };
 
 const renderExportFormSubmissionsTooltip = dataList => {
