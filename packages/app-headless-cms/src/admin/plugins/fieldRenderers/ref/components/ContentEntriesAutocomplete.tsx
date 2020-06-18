@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
@@ -10,11 +10,11 @@ import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-function ContentEntriesAutocomplete({ bind, field }) {
+function ContentEntriesAutocomplete({ bind, field, locale }) {
     // Value can be an object (received from API) or an ID (set by the Autocomplete component).
     const value = get(bind, "value.id", bind.value);
     const [search, setSearch] = useState("");
-    const { getValue } = useI18N();
+    const { getValue, getValues } = useI18N();
 
     // Format value coming from API.
     useEffect(() => {
@@ -57,17 +57,38 @@ function ContentEntriesAutocomplete({ bind, field }) {
         variables: { where: { id: value } }
     });
 
+    // Format options for the Autocomplete component based on`locale`
+    const getAutoCompleteOptionsFromList = useCallback(
+        list =>
+            get(list, "data.content.data", [])
+                .map(item => {
+                    const name = getValue(item.meta.title, locale);
+
+                    if (!name || name.trim().length === 0) {
+                        return null;
+                    }
+                    return {
+                        id: item.id,
+                        name: name,
+                        aliases: getValues(item.meta.title).filter(
+                            // Filter out empty strings
+                            alias => alias.trim().length !== 0
+                        )
+                    };
+                })
+                .filter(Boolean),
+        [locale]
+    );
+
     // Format options for the Autocomplete component.
-    const options = get(listContentQuery, "data.content.data", []).map(item => ({
-        id: item.id,
-        name: getValue(item.meta.title)
-    }));
+    const options = useMemo(() => getAutoCompleteOptionsFromList(listContentQuery), [
+        listContentQuery
+    ]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = get(listLastContentQuery, "data.content.data", []).map(item => ({
-        id: item.id,
-        name: getValue(item.meta.title)
-    }));
+    const defaultOptions = useMemo(() => getAutoCompleteOptionsFromList(listLastContentQuery), [
+        listLastContentQuery
+    ]);
 
     // Calculate a couple of props for the Autocomplete component.
     const id = get(getContentQuery, "data.content.data.id");
@@ -94,6 +115,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
             loading={loading}
             value={{ id, name }}
             options={search ? options : defaultOptions}
+            useAlias={true}
             label={<I18NValue value={field.label} />}
             description={
                 <>
