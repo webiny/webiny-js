@@ -21,6 +21,9 @@ import { Mutation } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
+import { getPlugins } from "@webiny/plugins";
+import { FbFormDetailsSubmissionsListMultiSelectActionPlugin } from "@webiny/app-form-builder/types";
+
 const t = i18n.namespace("FormsApp.FormsDataList");
 
 const rightAlign = css({
@@ -69,49 +72,60 @@ const FormSubmissionsList = props => {
                     multiSelectAll={dataList.multiSelectAll}
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
-                        <Mutation mutation={EXPORT_FORM_SUBMISSIONS}>
-                            {update => (
-                                <Tooltip
-                                    content={renderExportFormSubmissionsTooltip(dataList)}
-                                    placement={"bottom"}
-                                >
-                                    <IconButton
-                                        disabled={exportInProgress}
-                                        icon={<ImportExport />}
-                                        onClick={async () => {
-                                            setExportInProgress(true);
-                                            const args = {
-                                                variables: {
-                                                    parent: null,
-                                                    ids: null
+                        <>
+                            <Mutation mutation={EXPORT_FORM_SUBMISSIONS}>
+                                {update => (
+                                    <Tooltip
+                                        content={renderExportFormSubmissionsTooltip(dataList)}
+                                        placement={"bottom"}
+                                    >
+                                        <IconButton
+                                            disabled={exportInProgress}
+                                            icon={<ImportExport />}
+                                            onClick={async () => {
+                                                setExportInProgress(true);
+                                                const args = {
+                                                    variables: {
+                                                        parent: null,
+                                                        ids: null
+                                                    }
+                                                };
+                                                if (dataList.isNoneMultiSelected()) {
+                                                    args.variables.parent = form.parent;
+                                                } else {
+                                                    args.variables.ids = dataList
+                                                        .getMultiSelected()
+                                                        .map(item => item.id);
                                                 }
-                                            };
-                                            if (dataList.isNoneMultiSelected()) {
-                                                args.variables.parent = form.parent;
-                                            } else {
-                                                args.variables.ids = dataList
-                                                    .getMultiSelected()
-                                                    .map(item => item.id);
-                                            }
 
-                                            const { data } = await update(args);
-                                            setExportInProgress(false);
-                                            if (data.forms.exportFormSubmissions.error) {
-                                                showSnackbar(
-                                                    data.forms.exportFormSubmissions.error.message
+                                                const { data } = await update(args);
+                                                setExportInProgress(false);
+                                                if (data.forms.exportFormSubmissions.error) {
+                                                    showSnackbar(
+                                                        data.forms.exportFormSubmissions.error
+                                                            .message
+                                                    );
+                                                    return;
+                                                }
+
+                                                window.open(
+                                                    data.forms.exportFormSubmissions.data.src,
+                                                    "_blank"
                                                 );
-                                                return;
-                                            }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                )}
+                            </Mutation>
 
-                                            window.open(
-                                                data.forms.exportFormSubmissions.data.src,
-                                                "_blank"
-                                            );
-                                        }}
-                                    />
-                                </Tooltip>
-                            )}
-                        </Mutation>
+                            {getPlugins<FbFormDetailsSubmissionsListMultiSelectActionPlugin>(
+                                "fb-form-details-submissions-list-multi-select-action"
+                            ).map(plugin => (
+                                <React.Fragment key={plugin.name}>
+                                    {plugin.render({ dataList })}
+                                </React.Fragment>
+                            ))}
+                        </>
                     }
                     sorters={[
                         {
