@@ -19,11 +19,19 @@ const EditorWrapper = styled("div")({
 });
 
 const EditorContent = styled("div")({
-    height: "45vh",
+    height: 250,
     minHeight: 200,
     overflow: "auto",
     resize: "vertical",
     padding: "0px 8px",
+    /*
+    * Make content editable slate editor height tall enough,
+    * so that when user click inside editor content wrapper it get `focus`
+    * https://github.com/webiny/webiny-js/issues/1013
+    * */
+    "& > div": {
+        height: "90%",
+    },
 
     "> div > div": {
         boxSizing: "border-box",
