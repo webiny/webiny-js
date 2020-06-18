@@ -28,17 +28,28 @@ export function useI18N() {
         getLocales() {
             return state.locales;
         },
-        getValue(valueObject?: I18NValueObject): string {
+        getValue(valueObject?: I18NValueObject, locale?: string): string {
             if (!valueObject) {
                 return "";
             }
-
+            locale = locale || self.getLocale().id;
             if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(item => item.locale === self.getLocale().id);
+                const output = valueObject.values.find(item => item.locale === locale);
                 return output ? output.value : "";
             }
 
             return valueObject.value || "";
+        },
+        getValues(valueObject?: I18NValueObject): string[] {
+            if (!valueObject) {
+                return [];
+            }
+
+            if (Array.isArray(valueObject.values)) {
+                return valueObject.values.map(item => item.value);
+            }
+
+            return valueObject.value ? [valueObject.value] : [];
         },
         state
     };
