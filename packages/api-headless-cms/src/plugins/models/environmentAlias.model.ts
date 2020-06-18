@@ -8,7 +8,8 @@ import {
     ref,
     withName,
     withHooks,
-    withProps
+    withProps,
+    onSet
 } from "@webiny/commodo";
 import slugify from "slugify";
 
@@ -25,7 +26,10 @@ export default ({ createBase, context }) => {
         withChangedOnFields(),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
-            slug: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
+            slug: pipe(
+                setOnce(),
+                onSet(val => toSlug(val))
+            )(string({ validation: validation.create("required,maxLength:100") })),
             description: string({ validation: validation.create("maxLength:200") }),
             environment: ref({
                 instanceOf: context.models.CmsEnvironment
@@ -38,16 +42,11 @@ export default ({ createBase, context }) => {
                 }
             },
             async beforeCreate() {
-                const slugged = toSlug(this.slug);
-                this.slug = slugged;
                 const existingGroup = await CmsEnvironmentAlias.count({
                     query: { slug: this.slug }
                 });
                 if (existingGroup > 0) {
                     throw Error(`Environment alias with the slug "${this.slug}" already exists.`);
-                }
-                if(this.slug !== slugged) {
-                    throw Error(`Environment alias "${this.slug}" is not the proper format. It should be "${slugged}". Please use lowercase.`);
                 }
             },
             async beforeSave() {
