@@ -39,4 +39,16 @@ const updateEnvValues = (envDir, envMap) => async ({ env, state }) => {
     await writeJson(envPath, json);
 };
 
-module.exports = { getStateValues, updateEnvValues };
+const setEnvironmentFromState = ({ env, stack, map }, context) => {
+    const { outputs: state } = require(context.resolve(
+        ".webiny",
+        "state",
+        stack,
+        env,
+        "Webiny.json"
+    ));
+
+    Object.assign(process.env, getStateValues(state, map));
+};
+
+module.exports = { getStateValues, updateEnvValues, setEnvironmentFromState };
