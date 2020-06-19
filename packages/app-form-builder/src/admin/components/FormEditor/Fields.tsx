@@ -46,6 +46,7 @@ const FormAccordionContent = styled("div")({
 const accordionItem = css({
     "&.webiny-ui-accordion-item": {
         ".webiny-ui-accordion-item__list-item": {
+            zIndex: 1,
             height: "14px",
             borderRadius: "15px !important",
             padding: "15px 20px 14px 20px",
@@ -61,7 +62,7 @@ const accordionItem = css({
         ".webiny-ui-accordion-item__content": {
             border: "1px solid var(--mdc-theme-on-background)",
             borderRadius: 15,
-            paddingTop: 60,
+            paddingTop: "60px !important",
             marginTop: -65,
             marginBottom: 20
         }
