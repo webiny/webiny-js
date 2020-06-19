@@ -11,14 +11,7 @@ import {
     withProps,
     onSet
 } from "@webiny/commodo";
-import slugify from "slugify";
-
-const toSlug = text =>
-    slugify(text, {
-        replacement: "-",
-        lower: true,
-        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-    });
+import toSlug from '../../utils/toSlug';
 
 export default ({ createBase, context }) => {
     const CmsEnvironmentAlias = pipe(

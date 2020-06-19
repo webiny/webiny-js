@@ -1,6 +1,6 @@
-import mdbid from "mdbid";
 import useGqlHandler from "./utils/useGqlHandler";
 import { Database } from "@commodo/fields-storage-nedb";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import slugify from "slugify";
 
 const toSlug = text =>
@@ -52,15 +52,12 @@ const CREATE_ENVIRONMENT_ALIAS = /* GraphQL */ `
 describe("Environment Alias test", () => {
     const database = new Database();
     const { invoke } = useGqlHandler({ database });
-    const initialEnvironment = { id: mdbid() };
+
+    const initial = {};
 
     beforeAll(async () => {
-        await database.collection("CmsEnvironment").insert({
-            id: initialEnvironment.id,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
     let id;
