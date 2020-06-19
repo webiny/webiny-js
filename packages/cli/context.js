@@ -9,7 +9,7 @@ const debug = require("debug")("webiny");
 const webinyRootPath = findUp.sync("webiny.root.js");
 if (!webinyRootPath) {
     console.log(
-        `Couldn't locate "webiny.root.js"! Webiny CLI can only be used from within a Webiny project.`
+        `🚨 Couldn't locate "webiny.root.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
     process.exit(1);
 }
