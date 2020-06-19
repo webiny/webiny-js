@@ -112,7 +112,7 @@ class Template extends Component {
             this.state.outputs = outputs;
             await this.save();
 
-            await inputs.callback({
+            await inputs.afterExecute({
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
             });
@@ -156,7 +156,7 @@ class Template extends Component {
 
         const resolvedTemplate = resolveTemplate(inputs, template);
         const allComponents = setDependencies(getAllComponents(resolvedTemplate));
-        const { debug, watch, callback } = inputs;
+        const { debug, watch, afterExecute } = inputs;
 
         await new Promise(async (resolve, reject) => {
             // `firstBuild` is the first build cycle before entering the `watch` mode
@@ -190,7 +190,7 @@ class Template extends Component {
                             if (firstBuild) {
                                 next();
                             } else {
-                                await callback({
+                                await afterExecute({
                                     context: this.context,
                                     output: this.state.outputs,
                                     duration: (Date.now() - start) / 1000
@@ -232,7 +232,7 @@ class Template extends Component {
                 return reject(err);
             }
 
-            await callback({
+            await afterExecute({
                 context: this.context,
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
