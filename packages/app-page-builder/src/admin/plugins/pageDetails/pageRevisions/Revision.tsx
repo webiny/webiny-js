@@ -26,6 +26,11 @@ import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/as
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageRevision } from "@webiny/app-page-builder/types";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import {
+    ConfigureDomainMessage,
+    configureDomainTitle
+} from "@webiny/app-page-builder/utils/configureDomain";
 
 type RevisionProps = {
     rev: PbPageRevision;
@@ -65,9 +70,14 @@ const Div = ({ children }) => {
 
 const Revision = ({ rev }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
-    const { getPagePreviewUrl } = usePageBuilderSettings();
+    const { getPagePreviewUrl, getDomain, isSiteRunning } = usePageBuilderSettings();
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
         rev
+    });
+
+    const { showConfirmation: showPreviewConfirmation } = useConfirmationDialog({
+        title: configureDomainTitle,
+        message: <ConfigureDomainMessage domain={getDomain()} />
     });
 
     return (
@@ -119,7 +129,15 @@ const Revision = ({ rev }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            <MenuItem onClick={() => window.open(getPagePreviewUrl(rev), "_blank")}>
+                            <MenuItem
+                                onClick={() => {
+                                    if (isSiteRunning) {
+                                        window.open(getPagePreviewUrl(rev), "_blank");
+                                    } else {
+                                        showPreviewConfirmation(null);
+                                    }
+                                }}
+                            >
                                 <ListItemGraphic>
                                     <Icon icon={<PreviewIcon />} />
                                 </ListItemGraphic>
