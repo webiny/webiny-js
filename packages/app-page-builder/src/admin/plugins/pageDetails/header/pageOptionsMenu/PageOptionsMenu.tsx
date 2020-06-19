@@ -15,6 +15,10 @@ import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
+import {
+    ConfigureDomainMessage,
+    configureDomainTitle
+} from "@webiny/app-page-builder/utils/configureDomain";
 
 const menuStyles = css({
     width: 250,
@@ -31,7 +35,7 @@ const PageOptionsMenu = props => {
         pageDetails: { page }
     } = props;
 
-    const { getPageUrl, getPagePreviewUrl } = usePageBuilderSettings();
+    const { getPageUrl, getPagePreviewUrl, getDomain, isSiteRunning } = usePageBuilderSettings();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
@@ -42,6 +46,11 @@ const PageOptionsMenu = props => {
                 {!page.published && "Note that your page will be automatically published."}
             </span>
         )
+    });
+
+    const { showConfirmation: showSettingsConfirmation } = useConfirmationDialog({
+        title: configureDomainTitle,
+        message: <ConfigureDomainMessage domain={getDomain()} />
     });
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
@@ -68,7 +77,15 @@ const PageOptionsMenu = props => {
                     View
                 </MenuItem>
             ) : (
-                <MenuItem onClick={() => window.open(getPagePreviewUrl(page), target)}>
+                <MenuItem
+                    onClick={() => {
+                        if (isSiteRunning) {
+                            window.open(getPagePreviewUrl(page), target);
+                        } else {
+                            showSettingsConfirmation(null);
+                        }
+                    }}
+                >
                     <ListItemGraphic>
                         <Icon
                             data-testid="pb-page-details-header-page-options-menu-preview"
