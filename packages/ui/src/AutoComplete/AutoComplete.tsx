@@ -23,7 +23,7 @@ export enum Placement {
 }
 
 export type AutoCompleteProps = AutoCompleteBaseProps & {
-    /* Placement position of dropdown menu, can be either `top` or `bottom` */
+    /* Placement position of dropdown menu, can be either `top` or `bottom`. */
     placement?: Placement;
 
     /* A callback that is executed each time a value is changed. */
