@@ -233,9 +233,33 @@ const setNotificationConfiguration = async (s3, bucketName, config) => {
     }
 };
 
-const deleteBucket = async (s3, bucketName) => {
+const deleteBucket = async (s3, Bucket) => {
     try {
-        await s3.deleteBucket({ Bucket: bucketName }).promise();
+        let Marker = null;
+        while (true) {
+            const { Contents, IsTruncated } = await s3.listObjects({ Bucket, Marker }).promise();
+
+            if (!Contents.length) {
+                break;
+            }
+
+            await s3
+                .deleteObjects({
+                    Bucket,
+                    Delete: {
+                        Objects: Contents.map(obj => ({ Key: obj.Key }))
+                    }
+                })
+                .promise();
+
+            if (!IsTruncated) {
+                break;
+            }
+
+            Marker = Contents[Contents.length - 1].Key;
+        }
+
+        await s3.deleteBucket({ Bucket }).promise();
     } catch (error) {
         if (error.code !== "NoSuchBucket") {
             throw error;
