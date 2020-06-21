@@ -9,6 +9,7 @@ const { createReadStream } = require("fs-extra");
 const archiver = require("archiver");
 const { utils } = require("@serverless/core");
 const pRetry = require("p-retry");
+const { green } = require("chalk");
 
 const PRETRY_ARGS = { retries: 3 };
 
@@ -45,13 +46,28 @@ const ensureBucket = async (s3, name, debug) => {
     } catch (e) {
         if (e.code === "NotFound") {
             debug(`Bucket ${name} does not exist. Creating...`);
-            await s3.createBucket({ Bucket: name }).promise();
-            // there's a race condition when using acceleration
-            // so we need to sleep for a couple seconds. See this issue:
-            // https://github.com/serverless/components/issues/428
-            debug(`Bucket ${name} created. Confirming it's ready...`);
-            await bucketCreation(s3, name);
-            debug(`Bucket ${name} creation confirmed.`);
+            try {
+                await s3.createBucket({ Bucket: name }).promise();
+                // there's a race condition when using acceleration
+                // so we need to sleep for a couple seconds.
+                debug(`Bucket ${name} created. Confirming it's ready...`);
+                await bucketCreation(s3, name);
+                debug(`Bucket ${name} creation confirmed.`);
+            } catch (e) {
+                if (e.code === "OperationAborted") {
+                    console.log(
+                        [
+                            "",
+                            `🚨 Unable to create bucket! If you have recently deleted a bucket, it will take some time before you can use the same bucket name.`,
+                            `You can either wait, or use a different bucket name by updating the ${green(
+                                "S3_BUCKET"
+                            )} variable.`,
+                            ""
+                        ].join("\n")
+                    );
+                    process.exit(1);
+                }
+            }
         } else if (e.code === "Forbidden" && e.message === null) {
             throw Error(
                 `Forbidden: Invalid credentials or this AWS S3 bucket name may already be taken`
