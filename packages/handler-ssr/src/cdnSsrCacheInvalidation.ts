@@ -2,7 +2,7 @@ import CloudFront from "aws-sdk/clients/cloudfront";
 import { withHooks } from "@webiny/commodo/hooks";
 
 export default () => ({
-    type: "context",
+    type: "handler-context",
     name: "context-cdn-ssr-cache-invalidation",
     apply(options) {
         if (!options.context.models || !options.context.models.SsrCache) {
