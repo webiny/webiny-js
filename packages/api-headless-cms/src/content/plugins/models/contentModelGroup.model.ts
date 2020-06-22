@@ -9,15 +9,8 @@ import {
     withHooks
 } from "@webiny/commodo";
 
-import slugify from "slugify";
 import shortid from "shortid";
-
-const toSlug = text =>
-    slugify(text, {
-        replacement: "-",
-        lower: true,
-        remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-    });
+import toSlug from "../../../utils/toSlug";
 
 export default ({ createBase, context }) => {
     const CmsGroup: any = compose(
