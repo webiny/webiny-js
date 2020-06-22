@@ -14,7 +14,7 @@ function ContentEntriesAutocomplete({ bind, field, locale }) {
     // Value can be an object (received from API) or an ID (set by the Autocomplete component).
     const value = get(bind, "value.id", bind.value);
     const [search, setSearch] = useState("");
-    const { getValue, getValues } = useI18N();
+    const { getValue, getValues, getDefaultLocale } = useI18N();
 
     // Format value coming from API.
     useEffect(() => {
@@ -57,14 +57,37 @@ function ContentEntriesAutocomplete({ bind, field, locale }) {
         variables: { where: { id: value } }
     });
 
+    // Get `title` value
+    const getTitleValue = useCallback((item: any, useDefaultLocale: boolean) => {
+        const defaultLocale = getDefaultLocale();
+        const titleInCurrentLocale = getValue(item.meta.title, locale);
+        const titleInDefaultLocale = getValue(item.meta.title, defaultLocale.id);
+
+        let name;
+
+        if (titleInCurrentLocale && titleInCurrentLocale.trim().length) {
+            name = titleInCurrentLocale;
+        }
+
+        if (
+            useDefaultLocale &&
+            !name &&
+            titleInDefaultLocale &&
+            titleInDefaultLocale.trim().length
+        ) {
+            name = titleInDefaultLocale;
+        }
+        return name;
+    }, []);
+
     // Format options for the Autocomplete component based on`locale`
     const getAutoCompleteOptionsFromList = useCallback(
-        list =>
+        (list: any, useDefaultLocale = true) =>
             get(list, "data.content.data", [])
                 .map(item => {
-                    const name = getValue(item.meta.title, locale);
+                    const name = getTitleValue(item, useDefaultLocale);
 
-                    if (!name || name.trim().length === 0) {
+                    if (!name) {
                         return null;
                     }
                     return {
@@ -81,14 +104,15 @@ function ContentEntriesAutocomplete({ bind, field, locale }) {
     );
 
     // Format options for the Autocomplete component.
-    const options = useMemo(() => getAutoCompleteOptionsFromList(listContentQuery), [
+    const options = useMemo(() => getAutoCompleteOptionsFromList(listContentQuery, false), [
         listContentQuery
     ]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = useMemo(() => getAutoCompleteOptionsFromList(listLastContentQuery), [
-        listLastContentQuery
-    ]);
+    const defaultOptions = useMemo(
+        () => getAutoCompleteOptionsFromList(listLastContentQuery, true),
+        [listLastContentQuery]
+    );
 
     // Calculate a couple of props for the Autocomplete component.
     const id = get(getContentQuery, "data.content.data.id");
