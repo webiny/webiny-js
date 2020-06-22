@@ -8,6 +8,7 @@ import debounce from "lodash/debounce";
 import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
+import { getValues } from "./refInputUtils";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
@@ -17,7 +18,7 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
     });
     const [search, setSearch] = useState("");
 
-    const { getValue, getValues, getDefaultLocale } = useI18N();
+    const { getValue, getDefaultLocale } = useI18N();
 
     // Fetch ref content model data, so that we can its title field.
     const refContentModelQuery = useQuery(GET_CONTENT_MODEL, {
