@@ -8,7 +8,6 @@ import {
     CmsContentModelFormProps,
     CmsFormFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
-import { getFormattedData } from "@webiny/app-headless-cms/admin/components/ContentModelForm/utils";
 
 export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { contentModel: contentModelRaw } = props;
@@ -106,10 +105,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             onChange={onChange}
             onSubmit={async data => {
                 const fieldsIds = contentModel.fields.map(item => item.fieldId);
-                const selectedData = pick(data, [...fieldsIds]);
-                const formattedData = getFormattedData(selectedData);
-
-                return onSubmit(formattedData);
+                return onSubmit(pick(data, [...fieldsIds]));
             }}
         />
     );
