@@ -3,6 +3,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/menus");
 import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-black-24px.svg";
 import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
+import { ReactComponent as InformationIcon } from "../../icons/info.svg"
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { useNavigation } from "@webiny/app-admin/plugins/Menu/Navigation/components";
@@ -117,13 +118,14 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
                                 e.stopPropagation();
                                 setInfoOpened(true);
                             }}>
-                                (i)
+                                <InformationIcon className={style.icon}/>
                             </div>
                         </Typography>
                         <EnvironmentInfoDialog
                             open={infoOpened}
                             onClose={() => {
                                 setInfoOpened(false);
+                                hideMenu();
                             }}
                             name={currentEnvironment ? currentEnvironment.name : t`N/A`}
                             url={currentEnvironment ? currentEnvironment.environmentAlias.url : undefined}
