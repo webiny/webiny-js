@@ -18,8 +18,7 @@ const apolloGatewayServices = {
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
     LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilderGraphQL.name}",
     LAMBDA_SERVICE_FORM_BUILDER: "${formBuilderGraphQL.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}",
-    LAMBDA_SERVICE_API_TEST_667: "${apiTest667.name}"
+    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}"
 };
 
 module.exports = () => ({
@@ -518,24 +517,6 @@ module.exports = () => ({
                         }
                     }
                 ]
-            }
-        },
-        apiTest667: {
-            watch: ["./test667/build"],
-            build: {
-                root: "./test667",
-                script: "yarn build"
-            },
-            deploy: {
-                component: "@webiny/serverless-function",
-                inputs: {
-                    region: process.env.AWS_REGION,
-                    description: "GraphQL API",
-                    code: "./test667/build",
-                    handler: "handler.handler",
-                    memory: 512,
-                    env: apolloServiceEnv
-                }
             }
         }
     }
