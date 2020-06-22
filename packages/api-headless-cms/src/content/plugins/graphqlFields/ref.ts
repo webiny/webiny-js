@@ -33,7 +33,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createSchema() {
             return {
                 typeDefs: gql`
-                    ${i18nFieldInput("CmsRef", "ID")}
+                    ${i18nFieldInput("CmsRef", "RefInput")}
                 `
             };
         },
