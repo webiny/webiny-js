@@ -1,7 +1,6 @@
 import { withUser } from "@webiny/api-security";
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { ContextPlugin } from "@webiny/graphql/types";
-import { Context } from "@webiny/api-plugin-commodo-db-proxy/types";
 import contentModel from "./models/contentModel.model";
 import cmsAccessToken from "../../plugins/models/accessToken.model";
 import CmsEnvironment2AccessToken from "../../plugins/models/environment2accessToken";
@@ -125,6 +124,6 @@ export default () => {
             apply(context) {
                 return apply(context);
             }
-        } as ContextPlugin<Context>
+        } as ContextPlugin<CmsContext>
     ];
 };
