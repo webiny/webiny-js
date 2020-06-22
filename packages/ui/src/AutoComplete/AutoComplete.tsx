@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
-import { getOptionValue, getOptionText } from "./utils";
+import { getOptionValue, getOptionText, findInAliases } from "./utils";
 import { isEqual } from "lodash";
 import MaterialSpinner from "react-spinner-material";
 import { css } from "emotion";
@@ -110,6 +110,10 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
             // 2) At the end, we want to show only options that are matched by typed text.
             if (!this.state.inputValue) {
                 return true;
+            }
+
+            if (item.aliases) {
+                return findInAliases(item, this.state.inputValue);
             }
 
             return getOptionText(item, this.props)
@@ -228,7 +232,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
-                                        if (keyCode.length > 1) {
+                                        if (keyCode.length > 1 && keyCode !== "backspace") {
                                             return;
                                         }
 
