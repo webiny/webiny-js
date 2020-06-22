@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
-import { getOptionValue, getOptionText, findInAlias } from "./utils";
+import { getOptionValue, getOptionText, findInAliases } from "./utils";
 import { isEqual } from "lodash";
 import MaterialSpinner from "react-spinner-material";
 import { css } from "emotion";
@@ -31,9 +31,6 @@ export type AutoCompleteProps = AutoCompleteBaseProps & {
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
-
-    /* If true, will use `aliases` key in option item to match search value */
-    useAlias?: boolean;
 };
 
 type State = {
@@ -95,7 +92,6 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
      * Renders options - based on user's input. It will try to match input text with available options.
      */
     renderOptions({
-        useAlias,
         options,
         isOpen,
         highlightedIndex,
@@ -116,8 +112,8 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                 return true;
             }
 
-            if (useAlias) {
-                return findInAlias(item, this.state.inputValue);
+            if (item.aliases) {
+                return findInAliases(item, this.state.inputValue);
             }
 
             return getOptionText(item, this.props)
@@ -179,7 +175,6 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
     render() {
         const {
-            useAlias,
             options,
             onChange,
             value, // eslint-disable-line
@@ -258,7 +253,7 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     }
                                 })}
                             />
-                            {this.renderOptions({ ...rest, options, placement, useAlias })}
+                            {this.renderOptions({ ...rest, options, placement })}
                         </div>
                     )}
                 </Downshift>

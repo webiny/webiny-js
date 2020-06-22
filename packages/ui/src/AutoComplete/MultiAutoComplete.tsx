@@ -3,7 +3,7 @@ import Downshift from "downshift";
 import MaterialSpinner from "react-spinner-material";
 import { Input } from "@webiny/ui/Input";
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { getOptionValue, getOptionText, findInAlias } from "./utils";
+import { getOptionValue, getOptionText, findInAliases } from "./utils";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import classNames from "classnames";
@@ -26,9 +26,6 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
 
     /* If true, will show a loading spinner on the right side of the input. */
     loading?: boolean;
-
-    /* If true, will use `aliases` key in option item to match search value */
-    useAlias?: boolean;
 };
 
 type State = {
@@ -70,7 +67,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     };
 
     getOptions() {
-        const { unique, value, allowFreeInput, useSimpleValues, useAlias, options } = this.props;
+        const { unique, value, allowFreeInput, useSimpleValues, options } = this.props;
 
         const filtered = options.filter(item => {
             // We need to filter received options.
@@ -95,10 +92,10 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                 return true;
             }
 
-            if (useAlias) {
-                return findInAlias(item, this.state.inputValue);
+            if (item.aliases) {
+                return findInAliases(item, this.state.inputValue);
             }
-            
+
             return getOptionText(item, this.props)
                 .toLowerCase()
                 .includes(this.state.inputValue.toLowerCase());

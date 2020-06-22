@@ -164,7 +164,6 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
             loading={loading}
             value={valueForAutoComplete}
             options={search ? options : defaultOptions}
-            useAlias={true}
             label={<I18NValue value={field.label} />}
             onInput={debounce(search => setSearch(search), 250)}
             description={

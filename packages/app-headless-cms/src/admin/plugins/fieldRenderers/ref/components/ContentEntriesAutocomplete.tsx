@@ -131,7 +131,6 @@ function ContentEntriesAutocomplete({ bind, field, locale }) {
             loading={loading}
             value={{ id, name }}
             options={search ? options : defaultOptions}
-            useAlias={true}
             label={<I18NValue value={field.label} />}
             description={
                 <>
