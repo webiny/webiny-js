@@ -13,6 +13,7 @@ import { registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "@webin
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 import get from "lodash/get";
+import EnvironmentInfoDialog from "../../components/EnvironmentInfoDialog";
 
 const style = {
     itemsList: css({
@@ -38,18 +39,22 @@ const style = {
     }),
     environmentLiLabel: css({
         marginLeft: 2,
-        width: 110,
+        width: 65,
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
     }),
     changeEnvironmentLiLink: css({
         color: "var(--mdc-theme-primary)"
+    }),
+    informationLabel: css({
+        color: "var(--mdc-theme-primary)"
     })
 };
 
 const HeadlessCmsMenu = ({ Menu, children }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
+    const [infoOpened, setInfoOpened] = useState(false);
     const { hideMenu } = useNavigation();
 
     const {
@@ -69,6 +74,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
         );
     }, "");
 
+    console.log(currentEnvironment);
     // Generate "admin-global-search" plugins - enables the user to search content via the global search bar.
     useEffect(() => {
         // 1. Unregister all previously registered plugins.
@@ -105,6 +111,23 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
                         <Typography use={"caption"} className={style.environmentLiLabel}>
                             {currentEnvironment ? currentEnvironment.name : t`N/A`}
                         </Typography>
+                        <Typography use={"caption"} className={style.informationLabel}>
+                            <div onClick={e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setInfoOpened(true);
+                            }}>
+                                (i)
+                            </div>
+                        </Typography>
+                        <EnvironmentInfoDialog
+                            open={infoOpened}
+                            onClose={() => {
+                                setInfoOpened(false);
+                            }}
+                            name={currentEnvironment ? currentEnvironment.name : t`N/A`}
+                            url={currentEnvironment ? currentEnvironment.environmentAlias.url : undefined}
+                        />
                     </li>
                     <li>
                         <Typography use={"caption"}>

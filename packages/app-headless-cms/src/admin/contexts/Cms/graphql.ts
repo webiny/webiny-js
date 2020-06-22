@@ -13,6 +13,11 @@ export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
                         id
                         name
                         isProduction
+                        url {
+                            manage
+                            read
+                            preview
+                        }
                     }
                 }
             }
