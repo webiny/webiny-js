@@ -47,10 +47,10 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                     <p>{graphqlApiUrl}</p>
                     {
                         url && <div>
-                                <p>{process.env.REACT_APP_GRAPHQL_API_URL}</p>
-                                <p>{`${graphqlApiUrl}${url.manage}`}</p>
-                                <p>{`${graphqlApiUrl}${url.preview}`}</p>
-                                <p>{`${graphqlApiUrl}${url.read}`}</p>
+                                <p>GraphQL API: {process.env.REACT_APP_GRAPHQL_API_URL}</p>
+                                <p>Content Delivery API: {`${graphqlApiUrl}${url.read}`}</p>
+                                <p>Content Preview API: {`${graphqlApiUrl}${url.preview}`}</p>
+                                <p>Content Management API: {`${graphqlApiUrl}${url.manage}`}</p>
                             </div>
                     }
                 </div>
