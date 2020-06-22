@@ -5,6 +5,7 @@ import filterOperators from "./filterOperators";
 import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
+import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 
 type HeadlessPluginsOptions = {
     type: string;
@@ -37,6 +38,7 @@ export default (
             }
         }
     } as ContextPlugin,
+    addRefFieldHooks(),
     models(),
     {
         name: "context-cms-validate-access-token",
