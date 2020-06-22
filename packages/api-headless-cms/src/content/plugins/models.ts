@@ -11,9 +11,10 @@ import contentModelGroup from "./models/contentModelGroup.model";
 import contentEntrySearch from "./models/contentEntrySearch.model";
 import { createDataModel } from "./utils/createDataModel";
 import { createEnvironmentBase as createEnvironmentBaseFactory } from "./utils/createEnvironmentBase";
+import { CmsContext, ContextBeforeContentModelsPlugin } from "@webiny/api-headless-cms/types";
 
 export default () => {
-    async function apply(context) {
+    async function apply(context: CmsContext) {
         const driver = context.commodo && context.commodo.driver;
 
         if (!driver) {
@@ -91,6 +92,14 @@ export default () => {
         });
 
         context.models.createEnvironmentBase = createEnvironmentBase;
+
+        const beforeContentModelsPlugins = context.plugins.byType<ContextBeforeContentModelsPlugin>(
+            "context-before-content-models"
+        );
+
+        for (let i = 0; i < beforeContentModelsPlugins.length; i++) {
+            await beforeContentModelsPlugins[i].apply(context);
+        }
 
         // Build Commodo models from CmsContentModels
         const contentModels = await context.models.CmsContentModel.find();
