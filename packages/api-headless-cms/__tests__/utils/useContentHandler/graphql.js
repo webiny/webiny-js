@@ -129,7 +129,7 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
 
 export const DELETE_CONTENT_MODEL = /* GraphQL */ `
     mutation HeadlessCmsDeleteContentModel($id: ID!) {
-        deleteContentModel(id: $id) {
+        content: deleteContentModel(id: $id) {
             data
             error ${ERROR_FIELD}
         }
