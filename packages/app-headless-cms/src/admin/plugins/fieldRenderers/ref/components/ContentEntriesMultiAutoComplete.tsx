@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { I18NValue } from "@webiny/app-i18n/components";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
@@ -16,18 +16,6 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
         return get(item, "id", item);
     });
     const [search, setSearch] = useState("");
-
-    // Format value coming from API
-    useEffect(() => {
-        if (bind.value.some(v => typeof v !== "string")) {
-            // We only need IDs to send back in request to API
-            bind.onChange(
-                bind.value.map(item => {
-                    return get(item, "id", item);
-                })
-            );
-        }
-    }, [bind.value]);
 
     const { getValue, getValues, getDefaultLocale } = useI18N();
 
@@ -173,10 +161,6 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
     return (
         <MultiAutoComplete
             {...bind}
-            onChange={values => {
-                // We only need IDs to send back in request to API
-                bind.onChange(values.map(item => get(item, "id", item)));
-            }}
             loading={loading}
             value={valueForAutoComplete}
             options={search ? options : defaultOptions}
