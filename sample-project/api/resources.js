@@ -18,7 +18,8 @@ const apolloGatewayServices = {
     LAMBDA_SERVICE_FILES: "${filesGraphQL.name}",
     LAMBDA_SERVICE_PAGE_BUILDER: "${pageBuilderGraphQL.name}",
     LAMBDA_SERVICE_FORM_BUILDER: "${formBuilderGraphQL.name}",
-    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}"
+    LAMBDA_SERVICE_HEADLESS_CMS: "${cmsGraphQL.name}",
+    LAMBDA_SERVICE_API_TEST_667: "${apiTest667.name}"
 };
 
 module.exports = () => ({
@@ -276,10 +277,7 @@ module.exports = () => ({
                     code: "./files/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
-                    env: {
-                        ...apolloServiceEnv,
-                        S3_BUCKET: process.env.S3_BUCKET
-                    }
+                    env: { ...apolloServiceEnv, S3_BUCKET: process.env.S3_BUCKET }
                 }
             }
         },
@@ -379,10 +377,7 @@ module.exports = () => ({
                     handler: "handler.handler",
                     memory: 512,
                     timeout: 30,
-                    env: {
-                        ...apolloServiceEnv,
-                        I18N_LOCALES_FUNCTION: "${i18nLocales.name}"
-                    }
+                    env: { ...apolloServiceEnv, I18N_LOCALES_FUNCTION: "${i18nLocales.name}" }
                 }
             }
         },
@@ -523,6 +518,24 @@ module.exports = () => ({
                         }
                     }
                 ]
+            }
+        },
+        apiTest667: {
+            watch: ["./test667/build"],
+            build: {
+                root: "./test667",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    region: process.env.AWS_REGION,
+                    description: "GraphQL API",
+                    code: "./test667/build",
+                    handler: "handler.handler",
+                    memory: 512,
+                    env: apolloServiceEnv
+                }
             }
         }
     }
