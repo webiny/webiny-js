@@ -20,6 +20,18 @@ const getStackName = folder => {
     return folder === "." ? basename(process.cwd()) : folder;
 };
 
+const processHooks = async (hook, { context, ...options }) => {
+    const plugins = context.plugins.byType(hook);
+
+    for (let i = 0; i < plugins.length; i++) {
+        try {
+            await plugins[i].hook(options, context);
+        } catch (err) {
+            console.log(`🚨 Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
+        }
+    }
+};
+
 module.exports = async ({ options, ...inputs }, context) => {
     const { env, folder } = inputs;
     const stack = getStackName(folder);
@@ -62,37 +74,32 @@ module.exports = async ({ options, ...inputs }, context) => {
         );
     }
 
-    const afterDeploy = async ({ output, duration }) => {
-        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
-        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
+    const beforeExecute = async () => {
+        if (!inputs.watch) {
+            const hooksParams = { isFirstDeploy, context, env, stack };
 
-        if (options.hooks) {
-            // Get hooks for current stack
-            const hooks = options.hooks[stack] || [];
-
-            for (let i = 0; i < hooks.length; i++) {
-                const hook = hooks[i];
-                if (typeof hook === "string") {
-                    try {
-                        const hookPath = hook.startsWith(".") ? context.resolve(hook) : hook;
-                        const handler = require(hookPath);
-                        if (handler.hooks && typeof handler.hooks.afterDeploy === "function") {
-                            await handler.hooks.afterDeploy({
-                                stack,
-                                isFirstDeploy,
-                                env,
-                                state: output
-                            });
-                        }
-                    } catch (err) {
-                        console.log(`⚠️ Hook ${green(hook)} encountered an error: ${err.message}`);
-                    }
-                }
-            }
+            await processHooks("hook-before-deploy", hooksParams);
+            await processHooks("hook-stack-before-deploy", hooksParams);
         }
     };
 
-    await execute({ ...inputs, stack, callback: afterDeploy, isFirstDeploy }, "default", context);
+    const afterExecute = async ({ output, duration }) => {
+        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
+        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
+
+        if (!inputs.watch) {
+            const hooksParams = { isFirstDeploy, context, env, state: output, stack };
+
+            await processHooks("hook-stack-after-deploy", hooksParams);
+            await processHooks("hook-after-deploy", hooksParams);
+        }
+    };
+
+    await execute(
+        { ...inputs, stack, beforeExecute, afterExecute, isFirstDeploy },
+        "default",
+        context
+    );
 
     // Restore the original `cwd`
     process.chdir(cwd);

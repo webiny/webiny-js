@@ -9,7 +9,7 @@ const debug = require("debug")("webiny");
 const webinyRootPath = findUp.sync("webiny.root.js");
 if (!webinyRootPath) {
     console.log(
-        `Couldn't locate "webiny.root.js"! Webiny CLI can only be used from within a Webiny project.`
+        `🚨 Couldn't locate "webiny.root.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
     process.exit(1);
 }
@@ -18,8 +18,7 @@ const projectRoot = path.dirname(webinyRootPath);
 class Context {
     constructor() {
         this.paths = {
-            projectRoot,
-            packagesPath: this.resolve("packages")
+            projectRoot
         };
 
         this.config = require(path.join(projectRoot, "webiny.root.js"));

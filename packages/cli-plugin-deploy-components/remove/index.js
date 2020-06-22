@@ -1,5 +1,3 @@
-const { dim } = require("chalk");
-
 module.exports = {
     type: "cli-command",
     name: "cli-command-remove",
@@ -7,7 +5,7 @@ module.exports = {
         yargs.example("$0 remove api --env=dev");
         yargs.command(
             "remove <folder>",
-            `Remove resources from <folder>.\n${dim("(NOTE: run from project root)")}`,
+            `Remove resources from <folder>.`,
             yargs => {
                 yargs.positional("folder", {
                     describe: `Folder to remove. Requires resources.js file`,

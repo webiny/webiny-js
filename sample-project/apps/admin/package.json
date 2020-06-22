@@ -14,9 +14,9 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "env-cmd -r .env.json -e default,local webiny run start",
-    "build:dev": "env-cmd -r .env.json -e default,dev webiny run build",
-    "build:prod": "env-cmd -r .env.json -e default,prod webiny run build"
+    "start": "env-cmd -r .env.json -e default webiny run start --env=local --stack=api",
+    "build:dev": "env-cmd -r .env.json -e default webiny run build --env=dev --stack=api",
+    "build:prod": "env-cmd -r .env.json -e default webiny run build --env=prod --stack=api"
   },
   "browserslist": {
     "development": [

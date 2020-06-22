@@ -18,7 +18,7 @@ export type UseDataListParams = {
     getError?: (data: any) => any;
 };
 
-export type ReturnProps = {
+export type DataListProps = {
     __loadParams: any;
     refresh: (params?: any) => void;
     data: any[];
@@ -72,7 +72,7 @@ const useDataList = (params: UseDataListParams) => {
     const queryData = useQuery(params.query, getQueryOptions());
     const prevLoadParamsRef = useRef({});
 
-    const dataListProps: ReturnProps = {
+    const dataListProps: DataListProps = {
         data: get(params, "getData", getData)(queryData.data),
         meta: get(params, "getMeta", getMeta)(queryData.data),
         error: get(params, "getError", getError)(queryData.data),

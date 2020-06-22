@@ -82,20 +82,6 @@ test("plugins - registerPlugins, unregisterPlugin, getPlugin, getPlugins", async
     expect(getPlugin("test-3")).toEqual(undefined);
 });
 
-test("plugins - throw error if plugin name is missing", async () => {
-    try {
-        registerPlugins({
-            type: "test",
-            __name: "test-1",
-            namE: "test-1"
-        });
-    } catch (e) {
-        return;
-    }
-
-    throw Error(`Error should've been thrown.`);
-});
-
 test(`plugins - if present, "init" method must be executed upon adding`, async () => {
     let initialized = false;
     registerPlugins({

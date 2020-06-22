@@ -10,6 +10,7 @@ import {
     FormChildrenFunctionParamsSubmit
 } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
+import { DataListProps } from "@webiny/app/hooks/useDataList/useDataList";
 
 export type FbBuilderFieldValidator = {
     name: string;
@@ -100,6 +101,16 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
     render: (props: { form: FbFormModel }) => React.ReactNode;
 };
 
+
+/**
+ * Enables adding additional multi-select actions in the form submissions section.
+ * @see https://docs.webiny.com/docs/webiny-apps/form-builder/development/plugins-reference/app#fb-form-details-submissions-list-multi-select-action
+ */
+export type FbFormDetailsSubmissionsListMultiSelectActionPlugin = Plugin & {
+    type: "fb-form-details-submissions-list-multi-select-action";
+    render: (props: { dataList: DataListProps }) => React.ReactNode;
+};
+
 export type FbFormModel = {
     id: FieldIdType;
     version: number;
@@ -128,7 +139,7 @@ export type FbFormModelField = {
     placeholderText?: I18NStringValue;
     validation?: FbBuilderFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: {[key: string]: any};
+    settings: { [key: string]: any };
 };
 
 export type FbFormSubmissionData = {
