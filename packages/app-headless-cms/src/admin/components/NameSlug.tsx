@@ -51,6 +51,7 @@ function NameSlug({ newEntry, Bind, setValue, name = {}, slug = {}, validateSlug
                             {...slug}
                             disabled={!newEntry}
                             label={t`Slug`}
+                            onChange={(val) => bindProps.onChange(toSlug(val))}
                         />
                     )}
                 </Bind>
