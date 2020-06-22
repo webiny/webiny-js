@@ -8,6 +8,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
+import { ScopesMultiAutoComplete } from "@webiny/app-security/admin/components";
 
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
@@ -28,6 +29,15 @@ function EnvironmentAliasesForm() {
     const { showSnackbar } = useSnackbar();
     const { form: crudForm } = useCrud();
     const environments = useCms().environments.environments;
+
+    const filterReadScope = ({ scope }) => {
+        if (!scope) {
+            return;
+        }
+
+        const scopeSegments = scope.split(":");
+        return scopeSegments[0] === "cms" && scopeSegments[1] === "read";
+    };
 
     return (
         <Form {...crudForm}>
@@ -56,6 +66,11 @@ function EnvironmentAliasesForm() {
                                             label={t`Description`}
                                         />
                                     )}
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="scopes">
+                                    <ScopesMultiAutoComplete filter={filterReadScope} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
