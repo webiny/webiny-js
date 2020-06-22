@@ -39,4 +39,28 @@ const updateEnvValues = (envDir, envMap) => async ({ env, state }) => {
     await writeJson(envPath, json);
 };
 
-module.exports = { getStateValues, updateEnvValues };
+const setEnvironmentFromState = ({ env, stack, map }, context) => {
+    const stateFile = context.resolve(".webiny", "state", stack, env, "Webiny.json");
+    if (!fs.existsSync(stateFile)) {
+        console.log(
+            [
+                "",
+                `🚨 State file ${green(context.replaceProjectRoot(stateFile))} does not exist!`,
+                `Make sure you have deployed your ${green(stack)} stack for the ${green(
+                    env
+                )} environment.`,
+                "",
+                `To deploy the stack, run the following command from the root of your project:`,
+                "",
+                `  $ ${green(`yarn webiny deploy ${stack} --env=${env}`)}`,
+                ""
+            ].join("\n")
+        );
+        process.exit(1);
+    }
+    const { outputs: state } = require(stateFile);
+
+    Object.assign(process.env, getStateValues(state, map));
+};
+
+module.exports = { getStateValues, updateEnvValues, setEnvironmentFromState };

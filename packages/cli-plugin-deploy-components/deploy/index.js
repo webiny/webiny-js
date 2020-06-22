@@ -1,14 +1,11 @@
-const { dim } = require("chalk");
-
 module.exports = (options = {}) => ({
     type: "cli-command",
     name: "cli-command-deploy",
     create({ yargs, context }) {
         yargs.example("$0 deploy api --env=dev");
-
         yargs.command(
             "deploy <folder> [resources...]",
-            `Deploy resources from <folder>.\n${dim("(NOTE: run from project root)")}`,
+            `Deploy resources from <folder>.`,
             yargs => {
                 yargs.positional("folder", {
                     describe: `Folder to deploy. Requires resources.js file`,

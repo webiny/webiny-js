@@ -61,8 +61,6 @@ const accordionItem = css({
         ".webiny-ui-accordion-item__content": {
             border: "1px solid var(--mdc-theme-on-background)",
             borderRadius: 15,
-            paddingTop: 60,
-            marginTop: -65,
             marginBottom: 20
         }
     }

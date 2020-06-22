@@ -1,16 +1,21 @@
 const { green } = require("chalk");
 
-module.exports = {
-    hooks: {
-        afterDeploy(params) {
-            if (params.isFirstDeploy) {
-                printFirstDeploySummary(params);
-            } else {
-                printDeploySummary(params);
-            }
+module.exports = (opts = {}) => ({
+    type: "hook-stack-after-deploy",
+    hook(params) {
+        const stackName = opts.stackName || "apps";
+
+        if (params.stack !== stackName) {
+            return;
+        }
+
+        if (params.isFirstDeploy) {
+            printFirstDeploySummary(params);
+        } else {
+            printDeploySummary(params);
         }
     }
-};
+});
 
 function printFirstDeploySummary({ state }) {
     if (!state.cdn) {

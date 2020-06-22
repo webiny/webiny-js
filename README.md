@@ -287,6 +287,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Afzal Sayed</b></sub>
                     </a>
                     <br />
+                </td></tr><tr><td align="center">
+                    <a href="https://github.com/Anshuman71">
+                        <img src="https://avatars2.githubusercontent.com/u/28081510?v=4" width="100px;" alt="Anshuman Bhardwaj"/>
+                        <br />
+                        <sub><b>Anshuman Bhardwaj</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
