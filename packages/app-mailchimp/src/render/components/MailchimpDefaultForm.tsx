@@ -1,6 +1,8 @@
 import * as React from "react";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-mailchimp");
 const style = css({
     ".webiny-pb-page-element-mailchimp-form__wrapper": {
         position: "relative",
@@ -38,7 +40,7 @@ class MailchimpDefaultForm extends React.Component<any, State> {
                                         "webiny-pb-page-element-mailchimp-form__subscribe_input webiny-pb-page-element-input__field"
                                     }
                                     value={value}
-                                    placeholder={"Your e-mail"}
+                                    placeholder={t`Your e-mail`}
                                 />
                                 <div className="webiny-pb-page-element-mailchimp-form__msg webiny-pb-page-element-input__helper-text">
                                     {validation.isValid === false && validation.message}
@@ -50,7 +52,7 @@ class MailchimpDefaultForm extends React.Component<any, State> {
                                             "webiny-pb-page-element-mailchimp-form__msg webiny-pb-page-element-input__helper-text"
                                         }
                                     >
-                                        Error: {this.state.error}
+                                        {t`Error: {this.state.error}`}
                                     </div>
                                 )}
                                 {this.state.success && (
@@ -59,7 +61,7 @@ class MailchimpDefaultForm extends React.Component<any, State> {
                                             "webiny-pb-page-element-mailchimp-form__msg webiny-pb-page-element-input__helper-text"
                                         }
                                     >
-                                        You are on the list. Thank you!
+                                        {t`You are on the list. Thank you!`}
                                     </div>
                                 )}
                             </div>
@@ -83,7 +85,7 @@ class MailchimpDefaultForm extends React.Component<any, State> {
                             });
                         }}
                     >
-                        Subscribe
+                        {t`Subscribe`}
                     </button>
                 </div>
             </div>
