@@ -3,6 +3,7 @@
   "references": [
     { "path": "../graphql" },
     { "path": "../commodo-graphql" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../api-headless-cms" }
   ]
 }
