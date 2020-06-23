@@ -23,7 +23,7 @@ export const validateAccessToken = async ({ context }: { context: any }) => {
     });
 
     if (!token) {
-        throw new Error("Not authorized! 333 sef");
+        throw new Error("Not authorized!");
     }
 
     const allowedEnvironments = await token.environments;
@@ -88,7 +88,7 @@ export default (
             }
 
             if (context.cms.MANAGE && !context.user) {
-                throw new Error("Not authorized! 44444 sef");
+                throw new Error("Not authorized!");
             }
         }
     },
