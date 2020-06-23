@@ -121,6 +121,7 @@ module.exports = () => ({
             deploy: {
                 component: "@webiny/serverless-function",
                 inputs: {
+                    role: "${lambdaRole.arn}",
                     description: "Security GraphQL API",
                     region: process.env.AWS_REGION,
                     code: "./security/graphql/build",

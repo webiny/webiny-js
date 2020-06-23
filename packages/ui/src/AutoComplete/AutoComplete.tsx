@@ -123,7 +123,10 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
 
         if (!filtered.length) {
             return (
-                <Elevation z={1}>
+                <Elevation
+                    z={1}
+                    className={classNames({ [menuStyles]: placement === Placement.top })}
+                >
                     <ul {...getMenuProps()}>
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
