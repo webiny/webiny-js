@@ -75,7 +75,6 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
         );
     }, "");
 
-    console.log(currentEnvironment);
     // Generate "admin-global-search" plugins - enables the user to search content via the global search bar.
     useEffect(() => {
         // 1. Unregister all previously registered plugins.
