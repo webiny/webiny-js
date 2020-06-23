@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 4.1.1-beta.1 (2020-06-23)
+
+
+### Bug Fixes
+
+* **cwp-templates:** explicitly disable prettier trailingComma ([bb1ccf9](https://github.com/webiny/webiny-js/commit/bb1ccf92251f2b18cc5c4f98f5ffd59b607189ea))
+
+
+
+
+
 ## 4.1.1-beta.0 (2020-06-22)
 
 **Note:** Version bump only for package @webiny/api-plugin-commodo-mongodb
