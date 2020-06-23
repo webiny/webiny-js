@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2020-06-23)
+
+
+### Bug Fixes
+
+* **app-templates:** handle default and not-found route using plugins ([8cbfbd4](https://github.com/webiny/webiny-js/commit/8cbfbd40902b7df8ae72d0efaefd0fb5f2087add))
+
+
+### Features
+
+* **app-template:** introduce Routes component ([a32ee1e](https://github.com/webiny/webiny-js/commit/a32ee1e072b4e67e47094729012079813641851e))
+
+
+
+
+
 # [4.2.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.0...v4.2.0-beta.1) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-template

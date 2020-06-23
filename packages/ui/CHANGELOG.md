@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2020-06-23)
+
+
+### Bug Fixes
+
+* **ui:** update "No results." placement ([f8230bb](https://github.com/webiny/webiny-js/commit/f8230bb00795844dbc8bf25c31d0f99b8de89588))
+
+
+
+
+
 # [4.2.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.0...v4.2.0-beta.1) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/ui

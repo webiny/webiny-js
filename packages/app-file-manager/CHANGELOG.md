@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2020-06-23)
+
+
+### Bug Fixes
+
+* **app-file-manager:** update import path ([8247535](https://github.com/webiny/webiny-js/commit/824753588761e817bc6716013808ce747c628288))
+
+
+
+
+
 # [4.2.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.0...v4.2.0-beta.1) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-file-manager
