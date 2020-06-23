@@ -6,6 +6,8 @@ import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
 import ContentModelMenuItems from "./menus/ContentModelMenuItems";
 
 const t = i18n.ns("app-headless-cms/admin/menus");
+const ROLE_H_CMS_SETTINGS = ["forms:settings"];
+
 export default [
     {
         type: "admin-menu",
@@ -48,11 +50,13 @@ export default [
         name: "menu-settings-cms-environments",
         render({ Section, Item }) {
             return (
-                <Section label={t`Headless CMS`}>
-                    <Item label={t`Environments`} path={"/settings/cms/environments"} />
-                    <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />
-                    <Item label={t`Access Tokens`} path={"/settings/cms/accessTokens"} />
-                </Section>
+                <SecureView scopes={ROLE_H_CMS_SETTINGS}>
+                    <Section label={t`Headless CMS`}>
+                        <Item label={t`Environments`} path={"/settings/cms/environments"} />
+                        <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />
+                        <Item label={t`Access Tokens`} path={"/settings/cms/accessTokens"} />
+                    </Section>
+                </SecureView>
             );
         }
     } as AdminMenuSettingsPlugin
