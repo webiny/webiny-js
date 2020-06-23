@@ -213,10 +213,9 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                         cwd: root,
                         maxBuffer: "500_000_000"
                     };
-
                     let logStream;
                     if (log) {
-                        logStream = fs.createWriteStream(path.join(root, "logs.txt"), {
+                        logStream = fs.createWriteStream(path.join("./", "cwp-logs.txt"), {
                             flags: "a"
                         });
                         const runner = execa("yarn", [], options);
@@ -238,19 +237,19 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 try {
                     await require(templatePath)({ appName, root });
                 } catch (err) {
-                    console.log(err);
                     throw new Error("Unable to perform template-specific actions.", err);
                 }
             }
         }
     ]);
 
-    try {
-        await tasks.run();
-    } catch (err) {
-        console.error("Unable to complete project initialization", err);
-        return;
-    }
+    await tasks.run().catch(async err => {
+        console.error(err);
+        console.log("\nCleaning up project...");
+        await execa("rm", ["-r", root]);
+        console.log("Project cleaned!");
+        process.exit(1);
+    });
 
     await trackActivity({
         activityId,

@@ -4,6 +4,9 @@ const semver = require("semver");
 const execa = require("execa");
 
 function getPackageVersion(name, tag = "latest") {
+    if (semver.valid(tag)) {
+        return tag;
+    }
     const getVersion = async () => {
         const { stdout: registry } = await execa("npm", ["config", "get", "registry"]);
         const res = await fetch(`${registry}${name}`);

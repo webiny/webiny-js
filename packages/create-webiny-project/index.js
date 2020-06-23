@@ -214,8 +214,7 @@ async function run({ root, appName, template, tag, log }) {
                 title: `Install template package`,
                 task: async ctx => {
                     try {
-                        // await install({ root, dependencies });
-                        throw new Error("Unable to find template pa", err);
+                        await install({ root, dependencies });
                     } catch (err) {
                         throw new Error("Failed to install template package", err, ctx);
                     }
@@ -224,12 +223,13 @@ async function run({ root, appName, template, tag, log }) {
         ]);
 
         await tasks.run().catch(async err => {
-            console.error(err);
             fs.writeFileSync(
                 path.join("./", "cwp-error-logs.txt"),
                 JSON.stringify(err, null, 2) + os.EOL
             );
+            console.log("\nCleaning up project...");
             await execa("rm", ["-r", root]);
+            console.log("Project cleaned!");
             process.exit(1);
         });
 

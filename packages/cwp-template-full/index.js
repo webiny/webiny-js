@@ -6,6 +6,7 @@ const path = require("path");
 const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const { v4: uuidv4 } = require("uuid");
+const execa = require("execa");
 
 const s3BucketName = (projectId, appName) => {
     return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-files`;
@@ -21,6 +22,10 @@ module.exports = async ({ appName, root }) => {
             { overwrite: true }
         );
     }
+
+    //Commit .gitignore
+    execa.sync("git", ["add", ".gitignore"], { cwd: root });
+    execa.sync("git", ["commit", "-m", `"Commited .gitignore"`], { cwd: root });
 
     //Update api/.env.json
     const apiEnvJson = path.join(root, "api", ".env.json");
