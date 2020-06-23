@@ -128,7 +128,7 @@ export type FbFormModelField = {
     placeholderText?: I18NStringValue;
     validation?: FbBuilderFieldValidator[];
     options?: Array<{ value: string; label: I18NStringValue }>;
-    settings: {[key: string]: any};
+    settings: { [key: string]: any };
 };
 
 export type FbFormSubmissionData = {

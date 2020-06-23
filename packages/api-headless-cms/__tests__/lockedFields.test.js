@@ -50,14 +50,14 @@ describe("Used fields", () => {
 
         expect(contentModel.lockedFields).toEqual([
             {
-                "fieldId": "someId",
-                "multipleValues": false,
-                "type": "text"
+                fieldId: "someId",
+                multipleValues: false,
+                type: "text"
             },
             {
-                "fieldId": "title",
-                "multipleValues": false,
-                "type": "text"
+                fieldId: "title",
+                multipleValues: false,
+                type: "text"
             }
         ]);
 
