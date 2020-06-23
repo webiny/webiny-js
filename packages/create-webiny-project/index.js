@@ -212,17 +212,26 @@ async function run({ root, appName, template, tag, log }) {
         const tasks = new Listr([
             {
                 title: `Install template package`,
-                task: async () => {
+                task: async ctx => {
                     try {
-                        await install({ root, dependencies });
+                        // await install({ root, dependencies });
+                        throw new Error("Unable to find template pa", err);
                     } catch (err) {
-                        throw new Error("Failed to install template package");
+                        throw new Error("Failed to install template package", err, ctx);
                     }
                 }
             }
         ]);
 
-        await tasks.run();
+        await tasks.run().catch(async err => {
+            console.error(err);
+            fs.writeFileSync(
+                path.join("./", "cwp-error-logs.txt"),
+                JSON.stringify(err, null, 2) + os.EOL
+            );
+            await execa("rm", ["-r", root]);
+            process.exit(1);
+        });
 
         await init({ root, appName, templateName, tag, log });
     } catch (reason) {
