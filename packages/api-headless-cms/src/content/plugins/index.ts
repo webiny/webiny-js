@@ -13,6 +13,28 @@ type HeadlessPluginsOptions = {
     dataManagerFunction?: string;
 };
 
+export const validateAccessToken = async ({ context }: { context: any }) => {
+    const accessToken =
+        context.event.headers["authorization"] || context.event.headers["Authorization"];
+    const { CmsAccessToken } = context.models;
+
+    const token = await CmsAccessToken.findOne({
+        query: { token: accessToken }
+    });
+
+    if (!token) {
+        throw new Error("Not authorized! 333 sef");
+    }
+
+    const allowedEnvironments = await token.environments;
+    const currentEnvironment = context.cms.getEnvironment();
+    if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
+        throw new Error(
+            `You are not authorized to access "${currentEnvironment.name}" environment!`
+        );
+    }
+};
+
 export default (
     options: HeadlessPluginsOptions = {
         type: null,
@@ -58,30 +80,15 @@ export default (
             }
 
             if (context.cms.READ || context.cms.PREVIEW) {
-                const accessToken =
-                    context.event.headers["authorization"] ||
-                    context.event.headers["Authorization"];
-                const { CmsAccessToken } = context.models;
-
-                const token = await CmsAccessToken.findOne({
-                    query: { token: accessToken }
-                });
-
-                if (!token) {
-                    throw new Error("Not authorized!");
-                }
-
-                const allowedEnvironments = await token.environments;
-                const currentEnvironment = context.cms.getEnvironment();
-                if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
-                    throw new Error(
-                        `You are not authorized to access "${currentEnvironment.name}" environment!`
-                    );
+                try {
+                    await validateAccessToken({ context });
+                } catch (e) {
+                    throw new Error(e);
                 }
             }
 
             if (context.cms.MANAGE && !context.user) {
-                throw new Error("Not authorized!");
+                throw new Error("Not authorized! 44444 sef");
             }
         }
     },
