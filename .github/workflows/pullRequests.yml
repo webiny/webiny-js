@@ -8,13 +8,19 @@ env:
   NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
-  build-test:
+  validate-commits:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - uses: webiny/action-conventional-commits@v1.0.2
+
+  build-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2-beta
         with:

@@ -142,6 +142,11 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
     }): void;
 };
 
+export type ContextBeforeContentModelsPlugin<T = Context> = Plugin & {
+    type: "context-before-content-models";
+    apply?: (context: T) => void | Promise<void>;
+};
+
 export type CmsModelFieldDefinition = {
     fields: string;
     typeDefs?: string;

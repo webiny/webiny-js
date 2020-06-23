@@ -1,0 +1,51 @@
+name: Build (latest)
+
+on:
+  repository_dispatch:
+    types: [release-latest]
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  build-test-release:
+    name: Build, test and release ("latest" tag)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12'
+
+      - name: Create ".npmrc" file in the project root
+        run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Set git email
+        run: git config --global user.email "info@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny"
+
+      - name: Create a release on GitHub
+        run: yarn lerna version --force-publish --conventional-graduate --yes
+
+      - name: Release packages to NPM
+        run: yarn lerna publish from-package --yes

@@ -62,6 +62,7 @@ export default createTemplate<AdminAppOptions>(opts => {
                             path="/"
                             render={() => <Redirect to={opts.defaultRoute || "/"} />}
                         />
+                        <Route component={() => <Redirect to={opts.defaultRoute || "/"} /> } />
                     </BrowserRouter>
                 );
             }

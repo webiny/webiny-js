@@ -83,7 +83,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         },
         {
             title: `Initialize git`,
-            task: task => {
+            task: (ctx, task) => {
                 try {
                     execa.sync("git", ["--version"]);
                     execa.sync("git", ["init"], { cwd: root });

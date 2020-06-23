@@ -28,13 +28,13 @@ export function useI18N() {
         getLocales() {
             return state.locales;
         },
-        getValue(valueObject?: I18NValueObject): string {
+        getValue(valueObject?: I18NValueObject, locale?: string): string {
             if (!valueObject) {
                 return "";
             }
-
+            locale = locale || self.getLocale().id;
             if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(item => item.locale === self.getLocale().id);
+                const output = valueObject.values.find(item => item.locale === locale);
                 return output ? output.value : "";
             }
 
