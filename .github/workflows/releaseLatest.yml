@@ -38,14 +38,14 @@ jobs:
       - name: Run tests
         run: yarn test
 
-#      - name: Set git email
-#        run: git config --global user.email "info@webiny.com"
-#
-#      - name: Set git username
-#        run: git config --global user.name "webiny"
-#
-#      - name: Create a release on GitHub
-#        run: yarn lerna version --force-publish --conventional-graduate --yes
-#
-#      - name: Release packages to NPM
-#        run: yarn lerna publish from-package --yes
+      - name: Set git email
+        run: git config --global user.email "info@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny"
+
+      - name: Create a release on GitHub
+        run: yarn lerna version --force-publish --conventional-graduate --yes
+
+      - name: Release packages to NPM
+        run: yarn lerna publish from-package --yes
