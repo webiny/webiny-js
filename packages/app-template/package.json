@@ -16,7 +16,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/app": "^4.2.0",
-    "@webiny/plugins": "^4.2.0"
+    "@webiny/plugins": "^4.2.0",
+    "@webiny/react-router": "^4.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

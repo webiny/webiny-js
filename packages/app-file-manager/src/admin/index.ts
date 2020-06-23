@@ -1,3 +1,3 @@
-import plugins from "./plugins/";
+import plugins from "./plugins";
 
 export default () => [plugins];

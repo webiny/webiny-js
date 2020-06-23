@@ -26,6 +26,7 @@ import { NetworkError } from "./apolloClient/NetworkError";
 
 // Router
 import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
+import { RoutePlugin } from "@webiny/app/types";
 
 export type AdminAppOptions = {
     cognito: {
@@ -54,17 +55,7 @@ export default createTemplate<AdminAppOptions>(opts => {
             type: "app-template-renderer",
             name: "app-template-renderer-router",
             render(children) {
-                return (
-                    <BrowserRouter basename={process.env.PUBLIC_URL}>
-                        {children}
-                        <Route
-                            exact
-                            path="/"
-                            render={() => <Redirect to={opts.defaultRoute || "/"} />}
-                        />
-                        <Route component={() => <Redirect to={opts.defaultRoute || "/"} /> } />
-                    </BrowserRouter>
-                );
+                return <BrowserRouter basename={process.env.PUBLIC_URL}>{children}</BrowserRouter>;
             }
         },
         {
@@ -105,7 +96,23 @@ export default createTemplate<AdminAppOptions>(opts => {
         }
     ];
 
+    const routes: RoutePlugin[] = [
+        {
+            type: "route",
+            name: "route-root",
+            route: (
+                <Route exact path="/" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
+            )
+        },
+        {
+            type: "route",
+            name: "route-not-found",
+            route: <Route path="*" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
+        }
+    ];
+
     const otherPlugins = [
+        ...routes,
         welcomeScreenPlugins(),
         fileUploadPlugin(),
         imagePlugin(),
