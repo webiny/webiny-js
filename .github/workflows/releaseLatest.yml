@@ -14,12 +14,12 @@ jobs:
     name: Build, test and release ("latest" tag)
     runs-on: ubuntu-latest
     steps:
+      - run: echo ${{ github.event.client_payload.branch }}
+
       - uses: actions/checkout@v2
         with:
-          ref: release-4.2.0
+          ref: ${{ github.event.client_payload.branch }}
           fetch-depth: 0
-
-      - run: echo ${{ github.event.client_payload.branch }}
 
       - uses: actions/setup-node@v2-beta
         with:
