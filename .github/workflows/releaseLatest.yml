@@ -14,8 +14,6 @@ jobs:
     name: Build, test and release ("latest" tag)
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ github.event.client_payload.branch }}
-
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.client_payload.branch }}
