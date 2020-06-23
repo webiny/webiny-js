@@ -101,7 +101,6 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
     render: (props: { form: FbFormModel }) => React.ReactNode;
 };
 
-
 /**
  * Enables adding additional multi-select actions in the form submissions section.
  * @see https://docs.webiny.com/docs/webiny-apps/form-builder/development/plugins-reference/app#fb-form-details-submissions-list-multi-select-action

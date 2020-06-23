@@ -218,5 +218,5 @@ export default [
                 validation: []
             }
         ]
-    },
+    }
 ];
