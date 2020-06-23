@@ -45,16 +45,7 @@ export default createTemplate<SiteAppOptions>(opts => {
             type: "app-template-renderer",
             name: "app-template-renderer-router",
             render(children) {
-                return (
-                    <BrowserRouter basename={process.env.PUBLIC_URL}>
-                        {children}
-                        <Route
-                            exact
-                            path="/"
-                            render={() => <Redirect to={opts.defaultRoute || "/"} />}
-                        />
-                    </BrowserRouter>
-                );
+                return <BrowserRouter basename={process.env.PUBLIC_URL}>{children}</BrowserRouter>;
             }
         },
         {
@@ -73,7 +64,14 @@ export default createTemplate<SiteAppOptions>(opts => {
         }
     ];
 
+    const defaultRoute = {
+        type: "route",
+        name: "route-root",
+        route: <Route exact path="/" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
+    };
+
     const otherPlugins = [
+        defaultRoute,
         fileUploadPlugin(),
         imagePlugin(),
         pageBuilderPlugins(),

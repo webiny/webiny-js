@@ -6,7 +6,7 @@
 
 The base package for building Webiny and React powered web apps.
 
-For more information, please visit [the official docs](https://docs.webiny.com/docs/developer-tutorials/local-setup). 
+For more information, please visit [the official docs](https://docs.webiny.com/docs/webiny/introduction). 
   
 ## Install
 ```

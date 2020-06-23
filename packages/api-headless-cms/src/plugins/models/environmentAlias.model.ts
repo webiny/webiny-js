@@ -8,8 +8,10 @@ import {
     ref,
     withName,
     withHooks,
-    withProps
+    withProps,
+    onSet
 } from "@webiny/commodo";
+import toSlug from '../../utils/toSlug';
 
 export default ({ createBase, context }) => {
     const CmsEnvironmentAlias = pipe(
@@ -17,7 +19,10 @@ export default ({ createBase, context }) => {
         withChangedOnFields(),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
-            slug: setOnce()(string({ validation: validation.create("required,maxLength:100") })),
+            slug: pipe(
+                setOnce(),
+                onSet(val => toSlug(val))
+            )(string({ validation: validation.create("required,maxLength:100") })),
             description: string({ validation: validation.create("maxLength:200") }),
             environment: ref({
                 instanceOf: context.models.CmsEnvironment
