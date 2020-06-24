@@ -19,6 +19,7 @@ const writeJsonFile = require("write-json-file");
 
 const packageJson = require("./package.json");
 const { getPackageVersion } = require("./utils");
+const rimraf = require("rimraf");
 
 let basePath = path.join("./", "cwp-logs.txt");
 
@@ -257,7 +258,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         fs.appendFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
         console.error(err);
         console.log("\nCleaning up project...");
-        await execa("rm", ["-r", root]);
+        rimraf.sync(root);
         console.log("Project cleaned!");
         process.exit(1);
     });

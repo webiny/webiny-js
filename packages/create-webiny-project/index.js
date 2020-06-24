@@ -21,11 +21,6 @@ yargs
     .usage("Usage: $0 <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
-    .example("$0 my-project")
-    .example(
-        "$0 create-webiny-project --template=../path/to/template --tag=../path/to/webiny/files"
-    )
-    .example("$0 create-webiny-project --log=./my-logs.txt")
     .help()
     .alias("help", "h")
     .fail(function(msg, err) {
@@ -39,7 +34,7 @@ yargs
     });
 
 yargs.command(
-    "$0 <project-name>",
+    "$0 <project-name> [options]",
     "Name of application and template to use",
     yargs => {
         yargs.positional("project-name", {
@@ -66,6 +61,11 @@ yargs.command(
             type: "string",
             demandOption: false
         });
+        yargs.example("$0 <project-name>");
+        yargs.example(
+            "$0 <project-name> --template=../path/to/template --tag=../path/to/webiny/files"
+        );
+        yargs.example("$0 <project-name> --log=./my-logs.txt");
     },
     argv => createApp(argv)
 ).argv;
