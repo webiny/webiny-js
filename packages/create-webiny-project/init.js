@@ -20,6 +20,8 @@ const writeJsonFile = require("write-json-file");
 const packageJson = require("./package.json");
 const { getPackageVersion } = require("./utils");
 
+let basePath = path.join("./", "cwp-logs.txt");
+
 module.exports = async function({ root, appName, templateName, tag, log }) {
     const appPackage = require(path.join(root, "package.json"));
 
@@ -47,12 +49,13 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     const tasks = new Listr([
         {
             title: "Create project folders",
-            task: () => {
+            task: ctx => {
                 const templateDir = path.join(templatePath, "template");
                 if (fs.existsSync(templateDir)) {
                     fs.copySync(templateDir, root);
                 } else {
-                    throw new Error(`Could not locate supplied template: ${green(templateDir)}`);
+                    ctx.error = `Could not locate supplied template: ${green(templateDir)}`;
+                    throw new Error(ctx.error);
                 }
             }
         },
@@ -95,13 +98,12 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         },
         {
             title: "Get proper package versions",
-            task: async () => {
+            task: async ctx => {
                 // Set proper @webiny package versions
                 const workspaces = await fg(["**/package.json"], {
                     ignore: ["**/dist/**", "**/node_modules/**", root],
                     cwd: root
                 });
-
                 const latestVersion = await getPackageVersion("@webiny/cli", tag);
 
                 await Promise.all(
@@ -145,9 +147,8 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                                     try {
                                         json.dependencies[name] = `^` + latestVersion;
                                     } catch (err) {
-                                        console.log(
-                                            `Failed to get package version for "${name}: ${err.message}"`
-                                        );
+                                        ctx.error = `Failed to get package version for "${name}: ${err.message}"`;
+                                        console.log(ctx.error);
                                         process.exit(1);
                                     }
                                 }
@@ -160,7 +161,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         },
         {
             title: "Resolve packages",
-            task: async () => {
+            task: async ctx => {
                 // Add package resolutions if `tag` is pointing to a local folder.
 
                 // Why? This is very useful when you're testing packages that are not yet published to `npm`.
@@ -201,13 +202,14 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                         }
                     }
                 } catch (err) {
+                    ctx.error = err;
                     throw new Error("Unable to resolve packages.", err);
                 }
             }
         },
         {
             title: "Install dependencies",
-            task: async () => {
+            task: async ctx => {
                 try {
                     const options = {
                         cwd: root,
@@ -215,7 +217,10 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                     };
                     let logStream;
                     if (log) {
-                        logStream = fs.createWriteStream(path.join("./", "cwp-logs.txt"), {
+                        if (log.startsWith(".") || log.startsWitch("file:")) {
+                            basePath = log;
+                        }
+                        logStream = fs.createWriteStream(basePath, {
                             flags: "a"
                         });
                         const runner = execa("yarn", [], options);
@@ -226,17 +231,19 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                         await execa("yarn", [], options);
                     }
                 } catch (err) {
+                    ctx.error = err;
                     throw new Error("Unable to install the necessary packages.", err);
                 }
             }
         },
         {
             title: "Run template-specific actions",
-            task: async () => {
+            task: async ctx => {
                 //run the setup for cwp-template-full
                 try {
                     await require(templatePath)({ appName, root });
                 } catch (err) {
+                    ctx.error = err;
                     throw new Error("Unable to perform template-specific actions.", err);
                 }
             }
@@ -244,6 +251,10 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     ]);
 
     await tasks.run().catch(async err => {
+        if (log.startsWith(".") || log.startsWitch("file:")) {
+            basePath = log;
+        }
+        fs.appendFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
         console.error(err);
         console.log("\nCleaning up project...");
         await execa("rm", ["-r", root]);

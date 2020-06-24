@@ -15,15 +15,17 @@ console.log = str => originalLog(indent(str, 2));
 
 const packageJson = require("./package.json");
 const init = require("./init.js");
+const rimraf = require("rimraf");
 
 yargs
     .usage("Usage: $0 <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
-    .example("$0 my-project --template=full")
+    .example("$0 my-project")
     .example(
         "$0 create-webiny-project --template=../path/to/template --tag=../path/to/webiny/files"
     )
+    .example("$0 create-webiny-project --log=./my-logs.txt")
     .help()
     .alias("help", "h")
     .fail(function(msg, err) {
@@ -58,9 +60,10 @@ yargs.command(
             demandOption: false
         });
         yargs.option("log", {
-            describe: "creates a log file for user to see of installation.",
+            describe:
+                "Creates a log file for user to see of installation. Defaults to creating cwp-logs.txt in current directory.",
             alias: "l",
-            type: "boolean",
+            type: "string",
             demandOption: false
         });
     },
@@ -223,12 +226,13 @@ async function run({ root, appName, template, tag, log }) {
         ]);
 
         await tasks.run().catch(async err => {
-            fs.writeFileSync(
-                path.join("./", "cwp-error-logs.txt"),
-                JSON.stringify(err, null, 2) + os.EOL
-            );
+            let basePath = path.join("./", "cwp-logs.txt");
+            if (log.startsWith(".") || log.startsWitch("file:")) {
+                basePath = log;
+            }
+            fs.writeFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
             console.log("\nCleaning up project...");
-            await execa("rm", ["-r", root]);
+            rimraf.sync(root);
             console.log("Project cleaned!");
             process.exit(1);
         });

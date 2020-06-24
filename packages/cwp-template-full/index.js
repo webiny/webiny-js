@@ -25,7 +25,7 @@ module.exports = async ({ appName, root }) => {
 
     //Commit .gitignore
     execa.sync("git", ["add", ".gitignore"], { cwd: root });
-    execa.sync("git", ["commit", "-m", `"Commited .gitignore"`], { cwd: root });
+    execa.sync("git", ["commit", "-m", `"chore: initialize .gitignore"`], { cwd: root });
 
     //Update api/.env.json
     const apiEnvJson = path.join(root, "api", ".env.json");
