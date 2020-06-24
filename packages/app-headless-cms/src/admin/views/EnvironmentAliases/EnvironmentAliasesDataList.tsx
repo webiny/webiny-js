@@ -88,7 +88,13 @@ const EnvironmentAliasesDataList = () => {
                                             }}>
                                                 <InformationIcon className={style.icon}/>
                                             </div>
-                                    </Typography>                                    
+                                    </Typography>  
+                                    <EnvironmentInfoDialog
+                                        open={infoOpened}
+                                        onClose={() => setInfoOpened(false)}
+                                        name={selectedInfo.name}
+                                        url={selectedInfo.url}
+                                    />                                  
                                 </div>
                                 {item.default && (
                                     <Typography use={"overline"}>{t`(default)`}</Typography>
@@ -109,12 +115,6 @@ const EnvironmentAliasesDataList = () => {
                                               )
                                           })
                                         : t`No environment.`}
-                                    <EnvironmentInfoDialog
-                                        open={infoOpened}
-                                        onClose={() => setInfoOpened(false)}
-                                        name={selectedInfo.name}
-                                        url={selectedInfo.url}
-                                    />
                                 </ListItemTextSecondary>
                             </ListItemText>
 
