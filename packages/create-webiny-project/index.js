@@ -56,12 +56,13 @@ yargs.command(
         });
         yargs.option("log", {
             describe:
-                "Creates a log file for user to see of installation. Defaults to creating cwp-logs.txt in current directory.",
+                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory.",
             alias: "l",
             type: "string",
             demandOption: false
         });
         yargs.example("$0 <project-name>");
+        yargs.example("$0 <project-name> --template=cms");
         yargs.example(
             "$0 <project-name> --template=../path/to/template --tag=../path/to/webiny/files"
         );
