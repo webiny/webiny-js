@@ -16,7 +16,6 @@ const defaults = {
     region: "us-east-1"
 };
 
-
 class AwsS3 extends Component {
     async default(inputs = {}) {
         const config = mergeDeepRight(defaults, inputs);
