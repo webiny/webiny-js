@@ -63,9 +63,7 @@ yargs.command(
         });
         yargs.example("$0 <project-name>");
         yargs.example("$0 <project-name> --template=cms");
-        yargs.example(
-            "$0 <project-name> --template=../path/to/template --tag=../path/to/webiny/files"
-        );
+        yargs.example("$0 <project-name> --template=../path/to/template");
         yargs.example("$0 <project-name> --log=./my-logs.txt");
     },
     argv => createApp(argv)
