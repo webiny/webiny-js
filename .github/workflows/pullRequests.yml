@@ -9,7 +9,7 @@ env:
 
 jobs:
   validate-commits:
-    name: Build and test
+    name: Validate commit messages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
