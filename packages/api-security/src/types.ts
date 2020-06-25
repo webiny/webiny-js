@@ -32,4 +32,5 @@ export type SecurityAuthenticationProviderPlugin = Plugin & {
     countUsers?: () => Promise<number>;
     // Create a payload that will be encoded in the JWT token
     createJWTPayload?: ({ defaultPayload }: JWTPayload, context: Context) => Promise<JWTPayload>;
+    // TODO [Andrei]: add "authorizationScope" plugin type
 };

@@ -31,4 +31,5 @@ export default (options: HandlerApolloServerOptions) => [
     createHandlerApolloServer(options),
     createSchema,
     apolloHandler
+    // TODO [Andrei]: add AT authorization plugins here
 ];
