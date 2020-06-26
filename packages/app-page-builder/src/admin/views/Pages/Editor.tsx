@@ -11,7 +11,7 @@ import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-
+import { DialogContainer } from "@webiny/app-admin/plugins/Dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
@@ -46,7 +46,7 @@ const Editor = () => {
             if (loading || !ready) {
                 return (
                     <LoadingEditor>
-                        <img src={editorMock} />
+                        <img src={editorMock} alt={"page builder editor mock"} />
                         <LoadingTitle>
                             <Typography tag={"div"} use={"headline6"}>
                                 Loading Editor<span>.</span>
@@ -89,6 +89,9 @@ const Editor = () => {
                     </Provider>
                     <div style={{ zIndex: 10, position: "absolute" }}>
                         <Snackbar />
+                    </div>
+                    <div>
+                        <DialogContainer />
                     </div>
                 </React.Fragment>
             );
