@@ -1,34 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import getPagePreviewUrlFunction from "./getPagePreviewUrl";
-
-function useSiteStatus(url) {
-    const [active, setActive] = useState(true);
-
-    useEffect(() => {
-        async function getResponse(url) {
-            let response = null;
-            try {
-                response = await fetch(url, {
-                    method: "GET",
-                    mode: "no-cors"
-                });
-                setActive(response);
-            } catch (e) {
-                console.error(e);
-                setActive(false);
-            }
-        }
-
-        if (url && url.includes("localhost")) {
-            getResponse(url).then(() => console.log(`Done!!`));
-        }
-    }, [url]);
-
-    return active;
-}
 
 export const DOMAIN_QUERY = gql`
     query PbGetDomain {
@@ -49,8 +23,6 @@ export function usePageBuilderSettings() {
     const getDomain = () => {
         return get(data, "pageBuilder.getSettings.data.domain");
     };
-
-    const isSiteRunning = useSiteStatus(getDomain());
 
     const getPageUrl = useCallback(
         page => {
@@ -73,7 +45,6 @@ export function usePageBuilderSettings() {
     );
 
     return {
-        isSiteRunning,
         getDomain,
         getPageUrl,
         getPagePreviewUrl,
