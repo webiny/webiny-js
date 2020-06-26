@@ -110,6 +110,7 @@ export type LockedField = {
     fieldId: string;
     multipleValues: boolean;
     type: string;
+    [key: string]: any;
 };
 
 export type CmsContentModel = {
@@ -181,6 +182,18 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
             model: CmsContentModel;
             field: CmsContentModelField;
         }): GraphQLFieldResolver;
+    };
+};
+
+export type CmsModelLockedFieldPlugin = Plugin & {
+    type: "cms-model-locked-field";
+    fieldType: string;
+    manage: {
+        checkLockedFieldInvariant?(params: {
+            lockedField: LockedField;
+            field: CmsContentModelField;
+        }): void;
+        createLockedField?(params: { field: CmsContentModelField }): any;
     };
 };
 
