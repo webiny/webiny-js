@@ -2,7 +2,7 @@ import * as React from "react";
 import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FormsSettings from "./components/FormsSettings";
-import { SecureRoute } from "@webiny/app-security/components";
+import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import Helmet from "react-helmet";
 import { RoutePlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
@@ -35,9 +35,11 @@ const plugins = [
         name: "menu-settings-form-builder",
         render({ Item, Section }) {
             return (
-                <Section label={t`Form Builder`}>
-                    <Item label={t`reCAPTCHA`} path={"/settings/form-builder/recaptcha"} />
-                </Section>
+                <SecureView scopes={ROLE_FORMS_SETTINGS}>
+                    <Section label={t`Form Builder`}>
+                        <Item label={t`reCAPTCHA`} path={"/settings/form-builder/recaptcha"} />
+                    </Section>
+                </SecureView>
             );
         }
     } as AdminMenuSettingsPlugin
