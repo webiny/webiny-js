@@ -19,18 +19,17 @@ import { ReactComponent as LockIcon } from "@webiny/app-page-builder/admin/asset
 import { ReactComponent as BeenHereIcon } from "@webiny/app-page-builder/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/app-page-builder/admin/assets/gesture.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
-import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import {
+    usePageBuilderSettings,
+    useSiteStatus
+} from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageRevision } from "@webiny/app-page-builder/types";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import {
-    ConfigureDomainMessage,
-    configureDomainTitle
-} from "@webiny/app-page-builder/utils/configureDomain";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/configureDomain";
 
 type RevisionProps = {
     rev: PbPageRevision;
@@ -70,15 +69,14 @@ const Div = ({ children }) => {
 
 const Revision = ({ rev }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(rev);
-    const { getPagePreviewUrl, getDomain, isSiteRunning } = usePageBuilderSettings();
+    const { getDomain, getPagePreviewUrl } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
         rev
     });
 
-    const { showConfirmation: showPreviewConfirmation } = useConfirmationDialog({
-        title: configureDomainTitle,
-        message: <ConfigureDomainMessage domain={getDomain()} />
-    });
+    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
 
     return (
         <ConfirmationDialog
@@ -132,9 +130,9 @@ const Revision = ({ rev }: RevisionProps) => {
                             <MenuItem
                                 onClick={() => {
                                     if (isSiteRunning) {
-                                        window.open(getPagePreviewUrl(rev), "_blank");
+                                        window.open(getPagePreviewUrl(rev), "_blank", "noopener");
                                     } else {
-                                        showPreviewConfirmation(null);
+                                        showConfigureDomainDialog();
                                     }
                                 }}
                             >
