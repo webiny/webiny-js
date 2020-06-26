@@ -6,7 +6,10 @@ import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/as
 import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
-import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import {
+    usePageBuilderSettings,
+    useSiteStatus
+} from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { css } from "emotion";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -15,10 +18,7 @@ import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
-import {
-    ConfigureDomainMessage,
-    configureDomainTitle
-} from "@webiny/app-page-builder/utils/configureDomain";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/configureDomain";
 
 const menuStyles = css({
     width: 250,
@@ -35,7 +35,9 @@ const PageOptionsMenu = props => {
         pageDetails: { page }
     } = props;
 
-    const { getPageUrl, getPagePreviewUrl, getDomain, isSiteRunning } = usePageBuilderSettings();
+    const { getPageUrl, getPagePreviewUrl, getDomain } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
@@ -48,13 +50,20 @@ const PageOptionsMenu = props => {
         )
     });
 
-    const { showConfirmation: showSettingsConfirmation } = useConfirmationDialog({
-        title: configureDomainTitle,
-        message: <ConfigureDomainMessage domain={getDomain()} />
-    });
+    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
+
+    const handlePreviewClick = () => {
+        const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
+
+        if (isSiteRunning) {
+            window.open(url, target, "noopener");
+        } else {
+            showConfigureDomainDialog();
+        }
+    };
 
     return (
         <Menu
@@ -67,7 +76,7 @@ const PageOptionsMenu = props => {
             }
         >
             {page.locked ? (
-                <MenuItem onClick={() => window.open(getPageUrl(page), target)}>
+                <MenuItem onClick={handlePreviewClick}>
                     <ListItemGraphic>
                         <Icon
                             data-testid="pb-page-details-header-page-options-menu-preview"
@@ -77,15 +86,7 @@ const PageOptionsMenu = props => {
                     View
                 </MenuItem>
             ) : (
-                <MenuItem
-                    onClick={() => {
-                        if (isSiteRunning) {
-                            window.open(getPagePreviewUrl(page), target);
-                        } else {
-                            showSettingsConfirmation(null);
-                        }
-                    }}
-                >
+                <MenuItem onClick={handlePreviewClick}>
                     <ListItemGraphic>
                         <Icon
                             data-testid="pb-page-details-header-page-options-menu-preview"
