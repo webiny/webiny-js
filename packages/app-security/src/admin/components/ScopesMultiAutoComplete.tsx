@@ -22,7 +22,7 @@ const ScopesMultiAutoComplete = props => {
     useEffect(() => {
         const getScopesList = async () => {
             const plugins = getPlugins<SecurityScopesListPlugin>("security-scopes-list");
-            const scopes = [];
+            let scopes = [];
             for (let i = 0; i < plugins.length; i++) {
                 const plugin = plugins[i];
                 if (!plugin.scopes) {
@@ -39,6 +39,11 @@ const ScopesMultiAutoComplete = props => {
                 }
 
                 scopes.push(...pluginScopes);
+            }
+
+            if (props.filter) {
+                // An optional "filter" callback can be provided
+                scopes = scopes.filter(props.filter);
             }
 
             setScopesList(scopes);
