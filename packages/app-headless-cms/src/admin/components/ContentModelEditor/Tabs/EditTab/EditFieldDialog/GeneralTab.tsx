@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useRef, useMemo } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { camelCase } from "lodash";
+import { camelCase, get } from "lodash";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
@@ -19,8 +19,9 @@ type GeneralTabProps = {
 const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getField } = useContentModelEditor();
+    const { getField, state } = useContentModelEditor();
     const { getValue } = useI18N();
+    const lockedFields = get(state, "data.lockedFields", []);
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
@@ -55,7 +56,8 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
             afterChangeLabel,
-            uniqueFieldIdValidator
+            uniqueFieldIdValidator,
+            lockedField: lockedFields.find(lockedField => lockedField.fieldId === field.fieldId)
         });
     }
 
