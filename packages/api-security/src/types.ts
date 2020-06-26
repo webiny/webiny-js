@@ -10,8 +10,13 @@ export type SecurityOptions = {
 };
 
 export type SecurityPlugin = Plugin & {
-    type: "graphql-security";
+    type: "authentication";
     authenticate(context: any): Promise<void>;
+};
+
+export type AuthorizationScopePlugin = Plugin & {
+    type: "authorization";
+    hasScope(context: any): Promise<boolean>;
 };
 
 export type JWTPayload = { [key: string]: any };
@@ -32,5 +37,4 @@ export type SecurityAuthenticationProviderPlugin = Plugin & {
     countUsers?: () => Promise<number>;
     // Create a payload that will be encoded in the JWT token
     createJWTPayload?: ({ defaultPayload }: JWTPayload, context: Context) => Promise<JWTPayload>;
-    // TODO [Andrei]: add "authorizationScope" plugin type
 };
