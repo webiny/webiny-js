@@ -2,6 +2,7 @@ import authenticateJwt from "./authentication/authenticateJwt";
 import authenticatePat from "./authentication/authenticatePat";
 import { SecurityOptions, SecurityPlugin } from "../types";
 import { ContextPlugin } from "@webiny/graphql/types";
+import authorizationPlugins from "./authorization";
 
 export default (options: SecurityOptions) => [
     {
@@ -17,24 +18,25 @@ export default (options: SecurityOptions) => [
             context.user = null;
             context.getUser = () => context.user;
 
-            const securityPlugins = context.plugins.byType<SecurityPlugin>("graphql-security");
+            const securityPlugins = context.plugins.byType<SecurityPlugin>("authentication");
             for (let i = 0; i < securityPlugins.length; i++) {
                 await securityPlugins[i].authenticate(context);
             }
 
-            if (options.public === false && !context.user) {
+            if (options.public === false && !context.token) {
                 throw Error("Not authenticated!");
             }
         }
     } as ContextPlugin,
     {
-        type: "graphql-security",
-        name: "graphql-security-jwt",
+        type: "authentication",
+        name: "authentication-jwt",
         authenticate: authenticateJwt
     } as SecurityPlugin,
     {
-        type: "graphql-security",
-        name: "graphql-security-pat",
+        type: "authentication",
+        name: "authentication-pat",
         authenticate: authenticatePat(options)
-    } as SecurityPlugin
+    } as SecurityPlugin,
+    authorizationPlugins
 ];
