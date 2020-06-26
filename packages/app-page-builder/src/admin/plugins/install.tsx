@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
