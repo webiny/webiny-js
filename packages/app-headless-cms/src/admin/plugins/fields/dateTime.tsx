@@ -35,7 +35,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings({ form: { Bind }, lockedField }) {
             return (
                 <Grid>
                     <Cell span={12}>
@@ -48,7 +48,11 @@ const plugin: CmsEditorFieldTypePlugin = {
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"settings.type"}>
-                            <Select label={t`Format`} description={t`Cannot be changed later`}>
+                            <Select
+                                label={t`Format`}
+                                description={t`Cannot be changed later`}
+                                disabled={lockedField && lockedField.fieldId}
+                            >
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>
                                 <option value={t`dateTimeWithTimezone`}>
