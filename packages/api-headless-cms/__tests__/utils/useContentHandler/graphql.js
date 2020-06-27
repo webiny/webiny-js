@@ -91,11 +91,7 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
@@ -112,11 +108,7 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
@@ -146,11 +138,7 @@ export const GET_CONTENT_MODEL = /* GraphQL */ `
                 indexes {
                     fields
                 }
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     _id
                     fieldId
