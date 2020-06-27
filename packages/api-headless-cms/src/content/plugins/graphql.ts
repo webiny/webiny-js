@@ -109,12 +109,6 @@ export default ({ type }) => [
                     data: Boolean
                     error: CmsError
                 }
-
-                type CmsLockedField {
-                    fieldId: String
-                    multipleValues: Boolean
-                    type: String
-                }
                 
                 type CmsContentModel {
                     id: ID
@@ -132,7 +126,7 @@ export default ({ type }) => [
                     fields: [CmsContentModelField]
                     totalFields: Int
                     indexes: [ContentModelIndexes]
-                    lockedFields: [CmsLockedField]
+                    lockedFields: [JSON]
                 }
 
                 input CmsContentModelInput {
