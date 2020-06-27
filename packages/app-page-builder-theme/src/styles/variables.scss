@@ -41,5 +41,6 @@ body{
 }
 
 body.dark-theme {
-  --webiny-theme-color-text-primary: var(--mdc-theme-text-primary-on-background);
+  --webiny-theme-color-text-primary: rgba(255, 255, 255, 0.87);
+  --webiny-theme-color-surface: #242424;
 }
