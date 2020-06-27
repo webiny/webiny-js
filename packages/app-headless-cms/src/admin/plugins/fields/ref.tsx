@@ -76,7 +76,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                                         description={t`Cannot be changed later`}
                                         options={options}
                                         placement={Placement.top}
-                                        disabled={lockedField && lockedField.fieldId}
+                                        disabled={lockedField && lockedField.modelId}
                                     />
                                 );
                             }}

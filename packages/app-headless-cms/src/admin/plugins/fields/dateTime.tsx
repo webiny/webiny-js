@@ -51,7 +51,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                             <Select
                                 label={t`Format`}
                                 description={t`Cannot be changed later`}
-                                disabled={lockedField && lockedField.fieldId}
+                                disabled={lockedField && lockedField.formatType}
                             >
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>
