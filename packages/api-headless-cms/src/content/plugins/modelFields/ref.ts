@@ -176,11 +176,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                 })
             }))
         )(model);
-    },
-    createLockedFieldModel({ model }) {
-        withFields({
-            modelId: string()
-        })(model);
     }
 };
 

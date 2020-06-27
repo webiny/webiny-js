@@ -124,11 +124,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
         withFields({
             [field.fieldId]: getDateField({ field, validation: false })
         })(model);
-    },
-    createLockedFieldModel({ model }) {
-        withFields({
-            formatType: string()
-        })(model);
     }
 };
 
