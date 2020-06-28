@@ -22,6 +22,7 @@ const buttonStyle = css({
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
     name: "admin-welcome-screen-widget-form-builder",
+    scopes: ROLE_FORMS_EDITOR,
     widget: {
         cta: (
             <SecureView scopes={ROLE_FORMS_EDITOR}>

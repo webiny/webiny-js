@@ -21,6 +21,7 @@ import TwitterIcon from "../icons/twitter-logo.svg";
 import TextbookIcon from "../icons/textbook.svg";
 import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
+import { SecureView } from "@webiny/app-security/components";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -124,23 +125,25 @@ const Welcome = () => {
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
                                     return (
-                                        <Widget key={pl.name}>
-                                            <Elevation z={2} style={{ padding: 10 }}>
-                                                <Typography use={"headline6"}>
-                                                    <p className={widgetTitleStyle}>
-                                                        {pl.widget.title}
-                                                    </p>
-                                                </Typography>
-                                                <Typography use={"body1"}>
-                                                    <p className={widgetDescriptionStyle}>
-                                                        {pl.widget.description}
-                                                    </p>
-                                                </Typography>
-                                                <div className={widgetButtonStyle}>
-                                                    {pl.widget.cta}
-                                                </div>
-                                            </Elevation>
-                                        </Widget>
+                                        <SecureView scopes={pl.scopes}>
+                                            <Widget key={pl.name}>
+                                                <Elevation z={2} style={{ padding: 10 }}>
+                                                    <Typography use={"headline6"}>
+                                                        <p className={widgetTitleStyle}>
+                                                            {pl.widget.title}
+                                                        </p>
+                                                    </Typography>
+                                                    <Typography use={"body1"}>
+                                                        <p className={widgetDescriptionStyle}>
+                                                            {pl.widget.description}
+                                                        </p>
+                                                    </Typography>
+                                                    <div className={widgetButtonStyle}>
+                                                        {pl.widget.cta}
+                                                    </div>
+                                                </Elevation>
+                                            </Widget>
+                                        </SecureView>
                                     );
                                 })}
                             </div>
