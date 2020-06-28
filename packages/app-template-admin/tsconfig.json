@@ -8,8 +8,9 @@
     { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-plugin-security-cognito" },
     { "path": "../app-plugin-security-cognito-theme" },
+    { "path": "../app-file-manager" },
     { "path": "../app-template" },
-    { "path": "../ui" },
-    { "path": "../app-file-manager" }
+    { "path": "../react-router" },
+    { "path": "../ui" }
   ]
 }
