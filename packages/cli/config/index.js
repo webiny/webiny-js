@@ -6,31 +6,26 @@ const writeJson = require("write-json-file");
 
 const configPath = path.join(os.homedir(), ".webiny", "config");
 
+let config;
+
 const verifyConfig = () => {
     // Check user ID
     try {
-        const config = readJson.sync(configPath);
+        config = readJson.sync(configPath);
         if (!config.id) {
             throw Error("Invalid Webiny config!");
         }
     } catch (e) {
         // A new config file is written if it doesn't exist or is invalid.
-        writeJson.sync(configPath, { id: uuid(), tracking: true });
-    }
-};
-
-const setTracking = enabled => {
-    try {
-        const config = readJson.sync(configPath);
-        if (!config.id) {
-            config.id = uuid();
-        }
-        config.tracking = enabled;
+        config = { id: uuid() };
         writeJson.sync(configPath, config);
-    } catch (e) {
-        // A new config file is written if it doesn't exist.
-        writeJson.sync(configPath, { id: uuid(), tracking: enabled });
     }
+
+    return config;
 };
 
-module.exports = { verifyConfig, setTracking };
+const getId = () => {
+    return config.id;
+};
+
+module.exports = { verifyConfig, getId };

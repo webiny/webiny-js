@@ -3,7 +3,6 @@ const { isEmpty, path } = require("ramda");
 const { Graph, alg } = require("graphlib");
 const traverse = require("traverse");
 const { utils } = require("@serverless/core");
-const { trackComponent } = require("@webiny/tracking");
 const { red } = require("chalk");
 const debug = require("debug");
 const kebabCase = require("lodash.kebabcase");
@@ -284,7 +283,6 @@ const executeComponent = async (
         const componentInputs = resolveObject(allComponents[resource].inputs, availableOutputs);
         allComponents[resource].outputs = (await component(componentInputs)) || {};
         instance.context.instance.debug = templateDebug;
-        await trackComponent({ context: instance.context, component: componentData.path });
     } catch (err) {
         instance.context.log(`An error occurred during deployment of ${red(resource)}`);
         throw err;
@@ -327,11 +325,6 @@ const syncState = async (allComponents, instance) => {
                 instance.context.status("Removing", resource);
                 await component.remove();
                 instance.context.instance.debug = templateDebug;
-                await trackComponent({
-                    context: instance.context,
-                    component: instance.state.components[resource],
-                    method: "remove"
-                });
             } catch (e) {
                 instance.context.log(`An error occurred while removing ${resource}: ${e.stack}`);
             }
