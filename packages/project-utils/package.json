@@ -24,6 +24,7 @@
     "@svgr/webpack": "4.3.3",
     "@types/webpack-env": "^1.15.2",
     "@webiny/app": "^4.2.0",
+    "@webiny/cli": "^4.2.0",
     "@webiny/handler": "^4.2.0",
     "@webiny/handler-files": "^4.2.0",
     "@webiny/handler-index": "^4.2.0",

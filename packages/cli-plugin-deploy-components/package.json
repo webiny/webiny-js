@@ -34,7 +34,6 @@
     "strip-ansi": "^6.0.0",
     "traverse": "^0.6.6",
     "typescript": "^3.8.3",
-    "uniqid": "^5.2.0",
     "write-json-file": "^4.3.0"
   },
   "license": "MIT",
