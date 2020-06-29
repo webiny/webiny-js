@@ -11,7 +11,7 @@ const assign = (plugins: any, target: Object): void => {
 
         let name = plugin._name || plugin.name;
         if (!name) {
-            name = uniqid(plugin.type + "-");
+            plugin.name = name = uniqid(plugin.type + "-");
         }
 
         target[name] = plugin;
