@@ -23,6 +23,9 @@ import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
 import { SecureView } from "@webiny/app-security/components";
 
+import { hasScopes } from "@webiny/app-security"; 
+import { ResourcesType } from "../identity";
+
 const linkStyle = css({
     textDecoration: "none",
     "&:hover": {
@@ -104,6 +107,9 @@ const Welcome = () => {
     }
 
     const { fullName } = security.user;
+    
+    const scopes = getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget");
+    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
 
     return (
         <Grid>
@@ -113,10 +119,17 @@ const Welcome = () => {
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>
-                                <Typography use={"headline6"}>
-                                    <p className={pGetStartedStyle}>
-                                        To get started - pick one of the actions below:
-                                    </p>
+                                <Typography use={"headline6"}>      
+                                    {checkedScopes && 
+                                        <p className={pGetStartedStyle}>
+                                            To get started - pick one of the actions below:
+                                        </p>
+                                    }
+                                    {!checkedScopes && 
+                                        <p className={pGetStartedStyle}>
+                                            Please contact administrator for permission to use the site's actions.
+                                        </p>
+                                    }
                                     <br />
                                 </Typography>
                             </Cell>
