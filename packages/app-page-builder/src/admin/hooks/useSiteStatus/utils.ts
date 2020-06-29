@@ -11,12 +11,12 @@ function getCacheTimer(time) {
     return cacheTimer;
 }
 
-export async function fetchWithCache(params: { url: string; time?: number; byPassCache: boolean }) {
-    const { url, time = 5 * MINUTE, byPassCache } = params;
+export async function fetchWithCache(params: { url: string; time?: number; ignoreCache: boolean }) {
+    const { url, time = 5 * MINUTE, ignoreCache } = params;
 
     const now = new Date().getTime();
 
-    if (!CACHE[url] || CACHE[url].cacheTimer < now || byPassCache) {
+    if (!CACHE[url] || CACHE[url].cacheTimer < now || ignoreCache) {
         try {
             const response = await fetch(url, {
                 method: "GET",
@@ -35,10 +35,10 @@ export async function fetchWithCache(params: { url: string; time?: number; byPas
     return CACHE[url];
 }
 
-export const pingSite = async (params: { url: string; cb: any; byPassCache: boolean }) => {
-    const { url, cb, byPassCache } = params;
+export const pingSite = async (params: { url: string; cb: any; ignoreCache: boolean }) => {
+    const { url, cb, ignoreCache } = params;
     try {
-        const response = await fetchWithCache({ url, byPassCache });
+        const response = await fetchWithCache({ url, ignoreCache });
 
         cb(response && response.active);
     } catch (e) {

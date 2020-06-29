@@ -3,14 +3,12 @@ import { connect } from "@webiny/app-page-builder/editor/redux";
 import { omit, isEqual } from "lodash";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { MenuItem } from "@webiny/ui/Menu";
-import {
-    usePageBuilderSettings,
-    useSiteStatus
-} from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/configureDomain";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/useConfigureDomain";
 
 const openTarget = window.Cypress ? "_self" : "_blank";
 
