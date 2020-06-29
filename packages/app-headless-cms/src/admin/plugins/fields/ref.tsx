@@ -42,7 +42,13 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings({ form: { Bind, data: formData }, contentModel }) {
+            const lockedFields = get(contentModel, "lockedFields", []);
+            const fieldId = get(formData, "fieldId", null);
+            const lockedField = lockedFields.find(
+                lockedField => lockedField.fieldId === fieldId
+            );
+
             const { data, loading, error } = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
             const { showSnackbar } = useSnackbar();
 
@@ -87,6 +93,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                                         description={t`Cannot be changed later`}
                                         options={options}
                                         placement={Placement.top}
+                                        disabled={lockedField && lockedField.modelId}
                                     />
                                 );
                             }}
