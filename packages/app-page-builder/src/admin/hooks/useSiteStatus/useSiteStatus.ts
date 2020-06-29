@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import { pingSite } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettingsUtils";
+import { pingSite } from "./utils";
 
 export const useSiteStatus = url => {
     const [active, setActive] = useState(true);
 
     useEffect(() => {
         if (url) {
-            pingSite({ url, cb: setActive, byPassCache: false }).then();
+            pingSite({ url, cb: setActive, ignoreCache: false });
         }
     }, [url]);
 
     return [
         active,
         () => {
-            pingSite({ url, cb: setActive, byPassCache: true }).then();
+            pingSite({ url, cb: setActive, ignoreCache: true });
         }
     ];
 };
