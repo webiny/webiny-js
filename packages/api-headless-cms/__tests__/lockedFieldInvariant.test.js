@@ -114,7 +114,7 @@ describe("Locked Field - Invariant test", () => {
             error = e;
         }
         expect(error.message).toBe(
-            `Cannot change "type" for the "simple" field because it's already in use in created content.`
+            `Cannot change "format" for the "simple" field because it's already in use in created content.`
         );
 
         error = null;
