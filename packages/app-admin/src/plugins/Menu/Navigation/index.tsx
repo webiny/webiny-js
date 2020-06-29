@@ -5,7 +5,7 @@ import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { AdminHeaderLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
+import { AdminMenuLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
@@ -22,7 +22,7 @@ const Navigation = () => {
     useEffect(initSections, []);
 
     const logo = useMemo(() => {
-        const logoPlugin = getPlugin<AdminHeaderLogoPlugin>("admin-header-logo");
+        const logoPlugin = getPlugin<AdminMenuLogoPlugin>("admin-menu-logo");
         if (logoPlugin) {
             return React.cloneElement(logoPlugin.render(), { className: logoStyle });
         }
