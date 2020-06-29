@@ -27,9 +27,9 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
-export type AdminHeaderLogoPlugin = Plugin & {
-    name: "admin-header-logo";
-    type: "admin-header-logo";
+export type AdminMenuLogoPlugin = Plugin & {
+    name: "admin-menu-logo";
+    type: "admin-menu-logo";
     render(): React.ReactElement;
 };
 
