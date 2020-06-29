@@ -16,7 +16,23 @@ import {
 import { Link } from "@webiny/react-router";
 import { ConfirmationDialogWithInput } from "./ConfirmationDialogWithInput";
 
+import styled from "@emotion/styled";
+
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
+
+const Wrapper = styled("div")({
+    display: "flex",
+    alignItems: "baseline",
+    "& a": {
+        fontSize: 14,
+        marginLeft: 8
+    }
+});
+
+const getSeparator = (index, length) => {
+    const lastIndex = length - 1;
+    return index < lastIndex ? "," : "";
+};
 
 const EnvironmentsDataList = () => {
     const { actions, list } = useCrud();
@@ -58,26 +74,32 @@ const EnvironmentsDataList = () => {
                                     {item.default && (
                                         <Typography use={"overline"}>{t`(default)`}</Typography>
                                     )}
-                                    <ListItemTextSecondary>
-                                        {item.environmentAlias
-                                            ? t`Assigned to: {environmentAlias}`({
-                                                  environmentAlias: (
-                                                      <Link
-                                                          onClick={e => e.stopPropagation()}
-                                                          to={`/settings/cms/environments/aliases?id=${item.environmentAlias.id}`}
-                                                          title={t`This environment is linked with the "{environmentAlias}" alias.`(
-                                                              {
-                                                                  environmentAlias:
-                                                                      item.environmentAlias.name
-                                                              }
-                                                          )}
-                                                      >
-                                                          {item.environmentAlias.name}
-                                                      </Link>
-                                                  )
-                                              })
-                                            : t`Not linked with an alias.`}
-                                    </ListItemTextSecondary>
+                                    <Wrapper>
+                                        <ListItemTextSecondary>
+                                            {item.environmentAliases &&
+                                            item.environmentAliases.length
+                                                ? t`Assigned to:`
+                                                : t`Not linked with an alias.`}
+                                        </ListItemTextSecondary>
+                                        {item.environmentAliases &&
+                                            item.environmentAliases.map((envAlias, index) => (
+                                                <Link
+                                                    onClick={e => e.stopPropagation()}
+                                                    to={`/settings/cms/environments/aliases?id=${envAlias.id}`}
+                                                    title={t`This environment is linked with the "{environmentAlias}" alias.`(
+                                                        {
+                                                            environmentAlias: envAlias.name
+                                                        }
+                                                    )}
+                                                >
+                                                    {envAlias.name}
+                                                    {getSeparator(
+                                                        index,
+                                                        item.environmentAliases.length
+                                                    )}
+                                                </Link>
+                                            ))}
+                                    </Wrapper>
                                 </ListItemText>
 
                                 <ListItemMeta>

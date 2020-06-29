@@ -76,6 +76,13 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                         {environments.map(item => {
                             const selected =
                                 currentEnvironment && item.id === currentEnvironment.id;
+                            let aliases;
+                            if (item.environmentAliases.length) {
+                                aliases = item.environmentAliases
+                                    .map(environmentAlias => environmentAlias.name)
+                                    .join(", ");
+                            }
+
                             return (
                                 <ListItem
                                     key={item.id}
@@ -104,10 +111,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     <ListItemText>
                                         <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
                                         <ListItemTextSecondary>
-                                            Alias:{" "}
-                                            {item.environmentAlias
-                                                ? item.environmentAlias.name
-                                                : t`None`}
+                                            Alias: {aliases ? aliases : t`None`}
                                         </ListItemTextSecondary>
                                     </ListItemText>
                                 </ListItem>
