@@ -5,7 +5,7 @@ import { useRouter } from "@webiny/react-router";
 export const Telemetry = ({ children }) => {
     if (process.env.REACT_APP_WEBINY_TELEMETRY !== "false") {
         const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
-        const API_URL = "http://posth-publi-14rhok399qeha-1644056996.us-east-1.elb.amazonaws.com";
+        const API_URL = "https://t.webiny.com";
 
         const sendEvent = useCallback(payload => {
             const formData = new FormData();
