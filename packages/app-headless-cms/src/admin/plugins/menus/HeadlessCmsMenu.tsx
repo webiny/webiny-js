@@ -3,7 +3,6 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/menus");
 import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-black-24px.svg";
 import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
-import { ReactComponent as InformationIcon } from "../../icons/info.svg"
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { useNavigation } from "@webiny/app-admin/plugins/Menu/Navigation/components";
@@ -14,7 +13,6 @@ import { registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "@webin
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 import get from "lodash/get";
-import EnvironmentInfoDialog from "../../components/EnvironmentInfoDialog";
 
 const style = {
     itemsList: css({
@@ -27,10 +25,6 @@ const style = {
             paddingBottom: 2
         }
     }),
-    icon: css({
-        width: 16,
-        height: 16
-    }),
     environmentLi: css({
         color: "var(--mdc-theme-text-secondary-on-background)"
     }),
@@ -40,22 +34,17 @@ const style = {
     }),
     environmentLiLabel: css({
         marginLeft: 2,
-        width: 65,
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"
     }),
     changeEnvironmentLiLink: css({
         color: "var(--mdc-theme-primary)"
-    }),
-    informationLabel: css({
-        color: "var(--mdc-theme-primary)"
     })
 };
 
 const HeadlessCmsMenu = ({ Menu, children }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
-    const [infoOpened, setInfoOpened] = useState(false);
     const { hideMenu } = useNavigation();
 
     const {
@@ -111,24 +100,6 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
                         <Typography use={"caption"} className={style.environmentLiLabel}>
                             {currentEnvironment ? currentEnvironment.name : t`N/A`}
                         </Typography>
-                        <Typography use={"caption"} className={style.informationLabel}>
-                            <div onClick={e => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setInfoOpened(true);
-                            }}>
-                                <InformationIcon className={style.icon}/>
-                            </div>
-                        </Typography>
-                        <EnvironmentInfoDialog
-                            open={infoOpened}
-                            onClose={() => {
-                                setInfoOpened(false);
-                                hideMenu();
-                            }}
-                            name={currentEnvironment ? currentEnvironment.name : t`N/A`}
-                            url={currentEnvironment ? currentEnvironment.environmentAlias.url : undefined}
-                        />
                     </li>
                     <li>
                         <Typography use={"caption"}>

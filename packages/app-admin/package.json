@@ -19,6 +19,7 @@
     "@webiny/plugins": "^4.1.0",
     "@webiny/react-router": "^4.1.0",
     "@webiny/ui": "^4.1.0",
+    "@webiny/app-headless-cms": "^4.1.0",
     "apollo-client": "^2.6.8",
     "bytes": "^3.1.0",
     "classnames": "^2.2.6",

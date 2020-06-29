@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Dialog, DialogTitle, DialogContent } from "@webiny/ui/Dialog";
 import { CopyButton } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { LIST_ENVIRONMENT_ALIASES } from "../views/EnvironmentAliases/graphql";
+import { LIST_ENVIRONMENT_ALIASES } from "./views/EnvironmentAliases/graphql";
 
 export type NewContentModelDialogProps = {
     open: boolean;
@@ -18,7 +18,7 @@ export type NewContentModelDialogProps = {
     };
 };
 
-const t = i18n.ns("app-headless-cms/admin/components/environment-selector-dialog");
+const t = i18n.ns("app-admin/navigation");
 
 const style = {
     narrowDialog: css({
@@ -38,6 +38,14 @@ const style = {
     aliasTitle: css({
         textDecoration: "underline",
         minWidth: "200px"
+    }),
+    api: css({
+        fontSize: "1.25rem",
+        fontWeight: "bold",
+        minWidth: "200px"
+    }),
+    aliasContainer: css({
+        marginTop: "10px"
     })
 };
 
@@ -70,19 +78,19 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                     {
                         url && aliases.length > 0 ?
                             <div>
+                                <div className={style.apiUrl}>
+                                    <p className={style.api}>GraphQL URL:</p>
+                                    <p>{process.env.REACT_APP_GRAPHQL_API_URL}</p>
+                                    <CopyButton
+                                        value={process.env.REACT_APP_GRAPHQL_API_URL}
+                                        onCopy={() => showSnackbar("Successfully copied!")}
+                                    />
+                                </div>
                                 {
                                     aliases.map((elem) => {
                                         return(
-                                            <div key={elem.id}>
+                                            <div key={elem.id} className={style.aliasContainer}>
                                                 <p className={style.alias}>Alias: {elem.name}</p>
-                                                <div className={style.apiUrl}>
-                                                    <p className={style.aliasTitle}>GraphQL API:</p>
-                                                    <p>{process.env.REACT_APP_GRAPHQL_API_URL}</p>
-                                                    <CopyButton
-                                                        value={process.env.REACT_APP_GRAPHQL_API_URL}
-                                                        onCopy={() => showSnackbar("Successfully copied!")}
-                                                    />
-                                                </div>
                                                 <div className={style.apiUrl}>
                                                     <p className={style.aliasTitle}>Content Delivery API:</p>
                                                     <p>{`${graphqlApiUrl}${elem.url.read}`}</p>

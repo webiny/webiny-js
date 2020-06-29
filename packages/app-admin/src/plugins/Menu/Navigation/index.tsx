@@ -1,25 +1,43 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { sortBy } from "lodash";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
+import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { AdminHeaderLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
 import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
+import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
+import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
+const style = {
+    environmentContainer: css({
+        color: "var(--mdc-theme-text-secondary-on-background)"
+    }),
+    infoContainer: css({
+        alignSelf: "center",
+    })
+};
+
 const Navigation = () => {
     const { hideMenu, menuIsShown, initSections } = useNavigation();
+    const [infoOpened, setInfoOpened] = useState(false);
 
     useEffect(initSections, []);
+
+    const {
+        environments: { currentEnvironment }
+    } = useCms();
 
     const logo = useMemo(() => {
         const logoPlugin = getPlugin<AdminHeaderLogoPlugin>("admin-header-logo");
@@ -54,6 +72,27 @@ const Navigation = () => {
             <DrawerContent className={navContent}>{menus}</DrawerContent>
             <MenuFooter>
                 <List nonInteractive>
+                    <div className={style.infoContainer}
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setInfoOpened(true);
+                        }}>
+                        <ListItem ripple={false}>
+                            <ListItemGraphic>
+                                <Icon icon={<InfoIcon />}/>
+                            </ListItemGraphic>
+                            {t`API information`}
+                            <EnvironmentInfoDialog
+                                open={infoOpened}
+                                onClose={() => {
+                                    setInfoOpened(false);
+                                }}
+                                name={currentEnvironment ? currentEnvironment.name : t`N/A`}
+                                url={currentEnvironment ? currentEnvironment.environmentAlias.url : undefined}
+                            />
+                        </ListItem>
+                    </div>
                     <a href="https://docs.webiny.com/" rel="noopener noreferrer" target="_blank">
                         <ListItem ripple={false}>
                             <ListItemGraphic>

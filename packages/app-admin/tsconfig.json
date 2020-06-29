@@ -6,6 +6,7 @@
     { "path": "../app" },
     { "path": "../plugins" },
     { "path": "../react-router" },
-    { "path": "../form" }
+    { "path": "../form" },
+    { "path": "../app-headless-cms" }
   ]
 }
