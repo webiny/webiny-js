@@ -18,20 +18,21 @@ export const ConfigureDomainMessage = ({ domain }) => {
     const isLocalHost = domain && domain.includes("localhost");
     return (
         <span className={confirmationMessageStyles}>
-            No site is running at <strong>{domain}</strong>
+            {t`No site is running at`} <strong>{domain}</strong>.
+            <br />
             <br />
             {isLocalHost ? (
                 <span>
-                    Either start the server by <code>cd apps/site && yarn start</code>{" "}
+                    {t`Either start the server by running`} <code>cd apps/site && yarn start</code>{" "}
                 </span>
             ) : (
                 <span>
-                    Either deploy the site by running <code>yarn webiny deploy apps</code>{" "}
+                    {t`Either deploy the site by running`} <code>yarn webiny deploy apps</code>{" "}
                 </span>
             )}
             <br />
-            or update the domain by going into{" "}
-            <a href={"/settings/page-builder/general"}>page builder settings</a>
+            {t`or update the domain by going into the`}{" "}
+            <a href={"/settings/page-builder/general"}>{t`page builder settings.`}</a>
         </span>
     );
 };
@@ -44,8 +45,8 @@ export const useConfigureDomainDialog = (domain, onAccept = null) => {
             showDialog(<ConfigureDomainMessage domain={domain} />, {
                 title: configureDomainTitle,
                 actions: {
-                    accept: { label: "Refresh", onClick: onAccept },
-                    cancel: { label: "Cancel" }
+                    accept: { label: t`Retry`, onClick: onAccept },
+                    cancel: { label: t`Cancel` }
                 }
             });
         }
