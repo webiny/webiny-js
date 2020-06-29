@@ -16,15 +16,18 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
         })),
         withProps({
             initial: false, // Set in the installation process in order to create the initial environment.
-            get environmentAlias() {
+            get environmentAliases() {
                 const { CmsEnvironmentAlias } = context.models;
-                return CmsEnvironmentAlias.findOne({
+                return CmsEnvironmentAlias.find({
                     query: { environment: this.id }
                 });
             },
             get isProduction() {
-                return this.environmentAlias.then(environmentAlias => {
-                    return environmentAlias && environmentAlias.isProduction === true;
+                return this.environmentAliases.then(environmentAliases => {
+                    return environmentAliases.some(
+                        environmentAlias =>
+                            environmentAlias && environmentAlias.isProduction === true
+                    );
                 });
             }
         }),
@@ -46,18 +49,29 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 }
             },
             async beforeDelete() {
-                const environmentAlias = await this.environmentAlias;
-                if (environmentAlias) {
+                const environmentAliases = await this.environmentAliases;
+                const environmentAliasesName = environmentAliases.map(
+                    environmentAlias => environmentAlias.name
+                );
+
+                if (environmentAliasesName && environmentAliasesName.length) {
                     throw new Error(
-                        `Cannot delete the environment because it's currently linked to the "${environmentAlias.name}" environment alias.`
+                        `Cannot delete the environment because it's currently linked to the "${environmentAliasesName.join(
+                            ", "
+                        )}" environment aliases.`
                     );
                 }
             },
             async afterChange() {
-                const environmentAlias = await this.environmentAlias;
-                if (environmentAlias) {
-                    environmentAlias.changedOn = new Date();
-                    await environmentAlias.save();
+                const environmentAliases = await this.environmentAliases;
+
+                for (let i = 0; i < environmentAliases.length; i++) {
+                    const environmentAlias = environmentAliases[i];
+
+                    if (environmentAlias) {
+                        environmentAlias.changedOn = new Date();
+                        await environmentAlias.save();
+                    }
                 }
             },
             async afterDelete() {
