@@ -9,7 +9,7 @@ export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
                     id
                     name
                     isProduction
-                    environmentAlias {
+                    environmentAliases {
                         id
                         name
                         isProduction
