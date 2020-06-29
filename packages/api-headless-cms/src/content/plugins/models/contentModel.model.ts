@@ -192,8 +192,8 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         .filter(pl => pl.fieldType === lockedField.type);
                     // Check `lockedField` invariant for specific field
                     cmsLockedFieldPlugins.forEach(plugin => {
-                        if (plugin.manage.checkLockedFieldInvariant) {
-                            plugin.manage.checkLockedFieldInvariant({
+                        if (typeof plugin.checkLockedField === "function") {
+                            plugin.checkLockedField({
                                 lockedField,
                                 field: existingField
                             });

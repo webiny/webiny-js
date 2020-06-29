@@ -4,7 +4,6 @@ import modelFields from "./modelFields";
 import filterOperators from "./filterOperators";
 import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
-import lockedFields from "./lockedFields";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 
@@ -89,6 +88,5 @@ export default (
     graphql(options),
     modelFields,
     graphqlFields,
-    lockedFields,
     filterOperators()
 ];

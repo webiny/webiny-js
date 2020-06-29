@@ -1,4 +1,7 @@
-import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsModelFieldToCommodoFieldPlugin,
+    CmsModelLockedFieldPlugin
+} from "@webiny/api-headless-cms/types";
 import {
     withFields,
     ref,
@@ -179,4 +182,22 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     }
 };
 
-export default plugin;
+const lockedFieldPlugin: CmsModelLockedFieldPlugin = {
+    name: "cms-model-locked-field-ref",
+    type: "cms-model-locked-field",
+    fieldType: "ref",
+    checkLockedField({ lockedField, field }) {
+        if (lockedField.modelId && lockedField.modelId !== field.settings.modelId) {
+            throw new Error(
+                `Cannot change "modelId" for the "${lockedField.fieldId}" field because it's already in use in created content.`
+            );
+        }
+    },
+    getLockedFieldData({ field }) {
+        return {
+            modelId: field.settings.modelId
+        };
+    }
+};
+
+export default [plugin, lockedFieldPlugin];

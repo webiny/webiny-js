@@ -179,8 +179,8 @@ export const createDataModel = (
                                 .filter(pl => pl.fieldType === field.type);
 
                             cmsLockedFieldPlugins.forEach(plugin => {
-                                if (plugin.manage.createLockedField) {
-                                    const data = plugin.manage.createLockedField({
+                                if (typeof plugin.getLockedFieldData === "function") {
+                                    const data = plugin.getLockedFieldData({
                                         field
                                     });
                                     lockedFieldData = { ...lockedFieldData, ...data };
