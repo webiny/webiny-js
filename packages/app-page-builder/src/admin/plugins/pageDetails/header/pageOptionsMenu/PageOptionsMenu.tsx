@@ -6,10 +6,8 @@ import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/as
 import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
-import {
-    usePageBuilderSettings,
-    useSiteStatus
-} from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { css } from "emotion";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -18,7 +16,7 @@ import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/configureDomain";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/useConfigureDomain";
 
 const menuStyles = css({
     width: 250,
