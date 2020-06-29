@@ -63,11 +63,6 @@ export type AdminMenuPlugin = Plugin & {
     order?: number;
 };
 
-export type AdminMenuContentSectionPlugin = Plugin & {
-    type: "admin-menu-content-section";
-    render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
-};
-
 /**
  * Enables adding custom header elements to the left side of the top bar.
  * @see https://docs.webiny.com/docs/webiny-apps/admin/development/plugins-reference/app#admin-header-left
