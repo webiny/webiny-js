@@ -5,6 +5,7 @@ import { Select } from "@webiny/ui/Select";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+import { get } from "lodash";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -35,7 +36,13 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind }, lockedField }) {
+        renderSettings({ form: { Bind, data }, contentModel }) {
+            const lockedFields = get(contentModel, "lockedFields", []);
+            const fieldId = get(data, "fieldId", null);
+            const lockedField = lockedFields.find(
+                lockedField => lockedField.fieldId === fieldId
+            );
+
             return (
                 <Grid>
                     <Cell span={12}>
