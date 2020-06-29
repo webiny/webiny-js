@@ -1,5 +1,6 @@
-import mdbid from "mdbid";
-import { createUtils } from "./utils";
+import useGqlHandler from "./utils/useGqlHandler";
+import { Database } from "@commodo/fields-storage-nedb";
+import { createEnvironment, createEnvironmentAlias } from "@webiny/api-headless-cms/testing";
 
 const CREATE_ENVIRONMENT = /* GraphQL */ `
     mutation createEnvironment($data: CmsEnvironmentInput!) {
@@ -32,6 +33,11 @@ const GET_ENVIRONMENT = /* GraphQL */ `
                         id
                         name
                     }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
                 }
             }
         }
@@ -49,6 +55,11 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
                         id
                         name
                     }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
                 }
             }
         }
@@ -56,18 +67,13 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
 `;
 
 describe("Environments test", () => {
-    const { useDatabase, useApolloHandler } = createUtils();
-    const { invoke } = useApolloHandler();
-    const { getCollection } = useDatabase();
-    const initialEnvironment = { id: mdbid() };
+    const database = new Database();
+    const { invoke } = useGqlHandler({ database });
+
+    const initial = {};
 
     beforeAll(async () => {
-        await getCollection("CmsEnvironment").insertOne({
-            id: initialEnvironment.id,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
+        initial.environment = await createEnvironment({ database });
     });
 
     it("should create a new environment", async () => {
@@ -92,10 +98,16 @@ describe("Environments test", () => {
                 variables: {
                     data: {
                         name: "new-environment-1",
-                        createdFrom: initialEnvironment.id
+                        createdFrom: initial.environment.id
                     }
                 }
             }
+        });
+
+        // link `environment with alias`
+        await createEnvironmentAlias({
+            database,
+            environmentId: body.data.cms.createEnvironment.data.id
         });
 
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
@@ -108,17 +120,20 @@ describe("Environments test", () => {
                 query: GET_ENVIRONMENT,
                 variables: {
                     where: {
-                        name: "Initial Environment"
+                        name: "new-environment-1"
                     }
                 }
             }
         });
 
         expect(body.data.cms.getEnvironment.data.id).toBeTruthy();
-        expect(body.data.cms.getEnvironment.data.createdFrom).toBeNull();
+        // check for aliases
+        expect(body.data.cms.getEnvironment.data.environmentAliases).toBeTruthy();
+        expect(body.data.cms.getEnvironment.data.environmentAliases.length).toBe(1);
+        expect(body.data.cms.getEnvironment.data.environmentAliases[0].name).toBeTruthy();
     });
 
-    it("should be able to list environments", async () => {
+    it("should be able to list environments with alias", async () => {
         let [body] = await invoke({
             body: {
                 query: LIST_ENVIRONMENTS
@@ -127,16 +142,22 @@ describe("Environments test", () => {
 
         const initialListLength = body.data.cms.listEnvironments.data.length;
 
-        await invoke({
+        const [createdEnvironmentBody] = await invoke({
             body: {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
                         name: "new-environment-1",
-                        createdFrom: initialEnvironment.id
+                        createdFrom: initial.environment.id
                     }
                 }
             }
+        });
+
+        // link `environment with alias`
+        await createEnvironmentAlias({
+            database,
+            environmentId: createdEnvironmentBody.data.cms.createEnvironment.data.id
         });
 
         [body] = await invoke({
@@ -146,5 +167,16 @@ describe("Environments test", () => {
         });
 
         expect(body.data.cms.listEnvironments.data.length).toBe(initialListLength + 1);
+
+        expect(
+            body.data.cms.listEnvironments.data[initialListLength].environmentAliases.length
+        ).toBe(1);
+
+        expect(
+            body.data.cms.listEnvironments.data[initialListLength].environmentAliases[0].name
+        ).toBeTruthy();
+        expect(
+            body.data.cms.listEnvironments.data[initialListLength].environmentAliases[0].slug
+        ).toBeTruthy();
     });
 });
