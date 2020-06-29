@@ -91,11 +91,7 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
@@ -112,11 +108,7 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 id
                 name
                 titleFieldId
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }
@@ -129,7 +121,7 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
 
 export const DELETE_CONTENT_MODEL = /* GraphQL */ `
     mutation HeadlessCmsDeleteContentModel($id: ID!) {
-        deleteContentModel(id: $id) {
+        content: deleteContentModel(id: $id) {
             data
             error ${ERROR_FIELD}
         }
@@ -146,11 +138,7 @@ export const GET_CONTENT_MODEL = /* GraphQL */ `
                 indexes {
                     fields
                 }
-                lockedFields {
-                    fieldId
-                    multipleValues
-                    type
-                }
+                lockedFields
                 fields {
                     _id
                     fieldId

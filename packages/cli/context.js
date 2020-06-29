@@ -18,8 +18,7 @@ const projectRoot = path.dirname(webinyRootPath);
 class Context {
     constructor() {
         this.paths = {
-            projectRoot,
-            packagesPath: this.resolve("packages")
+            projectRoot
         };
 
         this.config = require(path.join(projectRoot, "webiny.root.js"));

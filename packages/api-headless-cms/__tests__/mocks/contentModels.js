@@ -60,59 +60,6 @@ export default [
         ]
     },
     {
-        name: "Review",
-        description: "Product review",
-        modelId: "review",
-        group: contentModelGroup.id,
-        indexes: [{ fields: ["id"] }],
-        getUniqueIndexFields() {
-            return ["id"];
-        },
-        fields: [
-            {
-                _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Text" }]
-                },
-                type: "text",
-
-                fieldId: "text",
-                validation: [
-                    {
-                        name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "This field is required" }]
-                        }
-                    }
-                ]
-            },
-            {
-                _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Product" }]
-                },
-                type: "ref",
-
-                fieldId: "product",
-                validation: [],
-                settings: {
-                    type: "one",
-                    modelId: "product"
-                }
-            },
-            {
-                _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Rating" }]
-                },
-                type: "number",
-
-                fieldId: "rating",
-                validation: []
-            }
-        ]
-    },
-    {
         name: "Product",
         modelId: "product",
         description: "Products being sold in our webshop",
@@ -162,20 +109,7 @@ export default [
                     modelId: "category"
                 }
             },
-            {
-                _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Reviews" }]
-                },
-                fieldId: "reviews",
-                multipleValues: true,
-                type: "ref",
-                validation: [],
-                settings: {
-                    type: "many",
-                    modelId: "review"
-                }
-            },
+
             {
                 _id: shortId.generate(),
                 label: {
@@ -232,6 +166,56 @@ export default [
                         }
                     }
                 ]
+            }
+        ]
+    },
+    {
+        name: "Review",
+        description: "Product review",
+        modelId: "review",
+        group: contentModelGroup.id,
+        indexes: [{ fields: ["id"] }],
+        getUniqueIndexFields() {
+            return ["id"];
+        },
+        fields: [
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Text" }]
+                },
+                type: "text",
+                fieldId: "text",
+                validation: [
+                    {
+                        name: "required",
+                        message: {
+                            values: [{ locale: locales.en.id, value: "This field is required" }]
+                        }
+                    }
+                ]
+            },
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Product" }]
+                },
+                type: "ref",
+                fieldId: "product",
+                validation: [],
+                settings: {
+                    type: "one",
+                    modelId: "product"
+                }
+            },
+            {
+                _id: shortId.generate(),
+                label: {
+                    values: [{ locale: locales.en.id, value: "Rating" }]
+                },
+                type: "number",
+                fieldId: "rating",
+                validation: []
             }
         ]
     }

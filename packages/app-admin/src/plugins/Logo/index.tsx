@@ -1,18 +1,29 @@
 import React from "react";
 import Logo from "./Logo";
 import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
-import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderLeftPlugin, AdminMenuLogoPlugin } from "@webiny/app-admin/types";
 
-const plugin: AdminHeaderLeftPlugin = {
-    name: "admin-header-logo",
-    type: "admin-header-left",
-    render() {
-        return (
-            <TopAppBarTitle>
-                <Logo />
-            </TopAppBarTitle>
-        );
-    }
-};
-
-export default plugin;
+export default [
+    {
+        name: "admin-header-logo",
+        type: "admin-header-left",
+        render() {
+            return (
+                <TopAppBarTitle>
+                    <Logo white />
+                </TopAppBarTitle>
+            );
+        }
+    } as AdminHeaderLeftPlugin,
+    {
+        name: "admin-menu-logo",
+        type: "admin-menu-logo",
+        render() {
+            return (
+                <TopAppBarTitle>
+                    <Logo />
+                </TopAppBarTitle>
+            );
+        }
+    } as AdminMenuLogoPlugin
+];

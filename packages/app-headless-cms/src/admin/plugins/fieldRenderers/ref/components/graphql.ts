@@ -14,7 +14,10 @@ export const createListQuery = model => {
                     published
                     model
                     title {
-                        value
+                        values {
+                            locale
+                            value
+                        }
                     }
                 }
             }

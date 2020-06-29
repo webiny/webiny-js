@@ -172,12 +172,28 @@ export const createDataModel = (
                             ) {
                                 continue;
                             }
+                            // Get `lockedField` data for specific field
+                            let lockedFieldData = {};
+                            const cmsLockedFieldPlugins = context.plugins
+                                .byType("cms-model-locked-field")
+                                .filter(pl => pl.fieldType === field.type);
+
+                            cmsLockedFieldPlugins.forEach(plugin => {
+                                if (typeof plugin.getLockedFieldData === "function") {
+                                    const data = plugin.getLockedFieldData({
+                                        field
+                                    });
+                                    lockedFieldData = { ...lockedFieldData, ...data };
+                                }
+                            });
+
                             lockedFields = [
                                 ...lockedFields,
                                 {
                                     fieldId: field.fieldId,
                                     multipleValues: field.multipleValues,
-                                    type: field.type
+                                    type: field.type,
+                                    ...lockedFieldData
                                 }
                             ];
                         }

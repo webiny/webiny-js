@@ -4,7 +4,7 @@ const { uploadObject, createContentHash } = require("./utils");
 
 class ServerlessAwsS3Object extends Component {
     async default(inputs = {}) {
-        const { region, bucket, object, deleteObjectOnRemove } = inputs;
+        const { region, bucket, object } = inputs;
         const s3 = new S3({ region });
         const contentHash = await createContentHash(object.source);
 
@@ -22,7 +22,6 @@ class ServerlessAwsS3Object extends Component {
         this.state.bucket = bucket;
         this.state.region = region;
         this.state.object = object;
-        this.state.deleteObjectOnRemove = deleteObjectOnRemove;
         this.state.hash = contentHash;
         this.state.output = { key: object.key };
         await this.save();
@@ -31,14 +30,6 @@ class ServerlessAwsS3Object extends Component {
     }
 
     async remove() {
-        if (this.state.deleteObjectOnRemove !== true) {
-            this.context.instance.debug(
-                `%o is set to %o. Object will NOT be removed from the bucket.`,
-                "deleteObjectOnRemove",
-                false
-            );
-        }
-
         const s3 = new S3({ region: this.state.region });
 
         this.context.instance.debug(

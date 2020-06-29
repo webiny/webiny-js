@@ -1,12 +1,11 @@
 {
   "name": "@webiny/tracking",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
     "load-json-file": "^6.2.0",
-    "lodash.get": "^4.4.0",
-    "request": "^2.88.0"
+    "posthog-node": "^1.0.3"
   },
   "publishConfig": {
     "access": "public",

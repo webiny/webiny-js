@@ -9,10 +9,15 @@ AWS.config.update({
 
 module.exports.execute = async (inputs, method, context) => {
     const projectRoot = context.paths.projectRoot;
-    const { env, debug, stack, isFirstDeploy } = inputs;
+    const { env, debug, stack, isFirstDeploy, beforeExecute } = inputs;
 
     // Load .env.json from project root
     await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
+
+    // Execute `beforeExecute` before instantiating template state
+    if (typeof beforeExecute === "function") {
+        await beforeExecute();
+    }
 
     // Create component context
     const componentContext = new Context({

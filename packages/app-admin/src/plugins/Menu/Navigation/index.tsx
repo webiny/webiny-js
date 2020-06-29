@@ -6,7 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { AdminHeaderLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
+import { AdminMenuLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
@@ -40,7 +40,7 @@ const Navigation = () => {
     } = useCms();
 
     const logo = useMemo(() => {
-        const logoPlugin = getPlugin<AdminHeaderLogoPlugin>("admin-header-logo");
+        const logoPlugin = getPlugin<AdminMenuLogoPlugin>("admin-menu-logo");
         if (logoPlugin) {
             return React.cloneElement(logoPlugin.render(), { className: logoStyle });
         }

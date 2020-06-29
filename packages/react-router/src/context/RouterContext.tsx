@@ -10,7 +10,12 @@ export type ReactRouterContextValue = {
 export const RouterContext = React.createContext<ReactRouterContextValue>(null);
 
 export const RouterProvider = ({ children }) => {
-    const apolloClient = useApolloClient();
+    let apolloClient = null;
+    try {
+        apolloClient = useApolloClient();
+    } catch {
+        // If there is no ApolloProvider, apolloClient will not exist.
+    }
 
     const value = useMemo(() => {
         const plugins = getPlugins<ReactRouterOnLinkPlugin>("react-router-on-link");

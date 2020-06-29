@@ -15,15 +15,12 @@ console.log = str => originalLog(indent(str, 2));
 
 const packageJson = require("./package.json");
 const init = require("./init.js");
+const rimraf = require("rimraf");
 
 yargs
     .usage("Usage: $0 <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
-    .example("$0 my-project --template=full")
-    .example(
-        "$0 create-webiny-project --template=../path/to/template --tag=../path/to/webiny/files"
-    )
     .help()
     .alias("help", "h")
     .fail(function(msg, err) {
@@ -37,7 +34,7 @@ yargs
     });
 
 yargs.command(
-    "$0 <project-name>",
+    "$0 <project-name> [options]",
     "Name of application and template to use",
     yargs => {
         yargs.positional("project-name", {
@@ -58,11 +55,16 @@ yargs.command(
             demandOption: false
         });
         yargs.option("log", {
-            describe: "creates a log file for user to see of installation.",
+            describe:
+                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory.",
             alias: "l",
-            type: "boolean",
+            type: "string",
             demandOption: false
         });
+        yargs.example("$0 <project-name>");
+        yargs.example("$0 <project-name> --template=cms");
+        yargs.example("$0 <project-name> --template=../path/to/template");
+        yargs.example("$0 <project-name> --log=./my-logs.txt");
     },
     argv => createApp(argv)
 ).argv;
@@ -212,17 +214,27 @@ async function run({ root, appName, template, tag, log }) {
         const tasks = new Listr([
             {
                 title: `Install template package`,
-                task: async () => {
+                task: async ctx => {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
-                        throw new Error("Failed to install template package");
+                        throw new Error("Failed to install template package", err, ctx);
                     }
                 }
             }
         ]);
 
-        await tasks.run();
+        await tasks.run().catch(async err => {
+            let basePath = path.join("./", "cwp-logs.txt");
+            if (log.startsWith(".") || log.startsWitch("file:")) {
+                basePath = log;
+            }
+            fs.writeFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
+            console.log("\nCleaning up project...");
+            rimraf.sync(root);
+            console.log("Project cleaned!");
+            process.exit(1);
+        });
 
         await init({ root, appName, templateName, tag, log });
     } catch (reason) {

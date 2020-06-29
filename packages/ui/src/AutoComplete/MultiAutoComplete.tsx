@@ -3,7 +3,7 @@ import Downshift from "downshift";
 import MaterialSpinner from "react-spinner-material";
 import { Input } from "@webiny/ui/Input";
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { getOptionValue, getOptionText } from "./utils";
+import { getOptionValue, getOptionText, findInAliases } from "./utils";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import classNames from "classnames";
@@ -90,6 +90,10 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
             // 2) At the end, we want to show only options that are matched by typed text.
             if (!this.state.inputValue) {
                 return true;
+            }
+
+            if (item.aliases) {
+                return findInAliases(item, this.state.inputValue);
             }
 
             return getOptionText(item, this.props)

@@ -3,15 +3,12 @@ module.exports = {
     projectName: "[PROJECT_NAME]",
     cli: {
         plugins: [
-            require("@webiny/cli-plugin-deploy-components")({
-                hooks: {
-                    api: ["@webiny/cwp-template-cms/hooks/api", "./apps/admin/webiny.config.js"],
-                    apps: ["@webiny/cwp-template-cms/hooks/apps"]
-                }
-            }),
-            "@webiny/cli-plugin-scaffold",
-            "@webiny/cli-plugin-scaffold-graphql-service",
-            "@webiny/cli-plugin-scaffold-lambda"
+            require("@webiny/cli-plugin-deploy-components")(),
+            require("@webiny/cwp-template-cms/hooks/api")(),
+            require("@webiny/cwp-template-cms/hooks/apps")(),
+            require("@webiny/cli-plugin-scaffold"),
+            require("@webiny/cli-plugin-scaffold-graphql-service"),
+            require("@webiny/cli-plugin-scaffold-lambda")
         ]
     }
 };

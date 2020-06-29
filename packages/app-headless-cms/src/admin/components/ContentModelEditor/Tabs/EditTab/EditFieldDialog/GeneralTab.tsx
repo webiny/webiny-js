@@ -19,7 +19,7 @@ type GeneralTabProps = {
 const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
-    const { getField } = useContentModelEditor();
+    const { getField, data } = useContentModelEditor();
     const { getValue } = useI18N();
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
@@ -55,7 +55,8 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         additionalSettings = fieldPlugin.field.renderSettings({
             form,
             afterChangeLabel,
-            uniqueFieldIdValidator
+            uniqueFieldIdValidator,
+            contentModel: data
         });
     }
 

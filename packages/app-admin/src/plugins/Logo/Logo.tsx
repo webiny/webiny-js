@@ -1,6 +1,7 @@
 import React from "react";
 import { isEqual } from "lodash";
 import { ReactComponent as WebinyLogo } from "@webiny/app-admin/assets/images/webiny-logo.svg";
+import { Link } from "@webiny/react-router";
 
 class Logo extends React.Component<any> {
     static defaultProps = {
@@ -9,7 +10,8 @@ class Logo extends React.Component<any> {
         mobileWidth: 100,
         mobileHeight: 36,
         altText: "Webiny",
-        className: ""
+        className: "",
+        white: false
     };
 
     checkDisplayInterval = null;
@@ -31,14 +33,19 @@ class Logo extends React.Component<any> {
     }
 
     render() {
-        const { className, altText } = this.props;
+        const { className, altText, white } = this.props;
 
         const style = {
             width: this.props.width,
             height: this.props.height,
             display: this.props.display,
-            marginTop: 12
+            marginTop: 12,
+            color: undefined
         };
+
+        if (white) {
+            style.color = "white";
+        }
 
         if (this.state.display !== "desktop") {
             style.width = this.props.mobileWidth;
@@ -46,11 +53,13 @@ class Logo extends React.Component<any> {
         }
 
         return (
-            <WebinyLogo
-                className={["webiny-logo", className].join(" ")}
-                style={style}
-                alt={altText}
-            />
+            <Link to={"/"}>
+                <WebinyLogo
+                    className={["webiny-logo", className].join(" ")}
+                    style={style}
+                    alt={altText}
+                />
+            </Link>
         );
     }
 }

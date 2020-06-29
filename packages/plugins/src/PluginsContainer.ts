@@ -1,4 +1,5 @@
 import { Plugin } from "./types";
+import uniqid from "uniqid";
 
 const assign = (plugins: any, target: Object): void => {
     for (let i = 0; i < plugins.length; i++) {
@@ -8,9 +9,9 @@ const assign = (plugins: any, target: Object): void => {
             continue;
         }
 
-        const name = plugin._name || plugin.name;
+        let name = plugin._name || plugin.name;
         if (!name) {
-            throw Error(`Plugin must have a "name" or "_name" key.`);
+            plugin.name = name = uniqid(plugin.type + "-");
         }
 
         target[name] = plugin;

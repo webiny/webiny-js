@@ -132,6 +132,7 @@
     "commit:verify": "yarn lint-staged",
     "commodo-versions": "node ./scripts/commodoVersions.js",
     "webiny-versions": "node ./scripts/webinyVersions.js",
+    "release-latest": "node ./scripts/releaseLatest.js",
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",

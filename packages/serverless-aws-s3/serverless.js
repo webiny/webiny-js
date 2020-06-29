@@ -1,5 +1,3 @@
-const { basename, dirname } = require("path");
-const fs = require("fs");
 const { mergeDeepRight } = require("ramda");
 const { Component } = require("@webiny/serverless-component");
 const {
@@ -7,9 +5,6 @@ const {
     clearBucket,
     accelerateBucket,
     deleteBucket,
-    uploadDir,
-    packAndUploadDir,
-    uploadFile,
     ensureBucket,
     configureCors,
     setNotificationConfiguration
@@ -20,14 +15,6 @@ const defaults = {
     accelerated: true,
     region: "us-east-1"
 };
-
-function resolveFilePath(path) {
-    if (!path.startsWith(".") && !path.startsWith("/")) {
-        return require.resolve();
-    }
-
-    return path;
-}
 
 class AwsS3 extends Component {
     async default(inputs = {}) {
@@ -79,7 +66,6 @@ class AwsS3 extends Component {
         this.state.name = config.name;
         this.state.region = config.region;
         this.state.accelerated = config.accelerated;
-        this.state.deleteBucketOnRemove = config.deleteBucketOnRemove === true;
         this.state.notificationConfiguration = config.notificationConfiguration;
         this.state.url = `https://${config.name}.s3.amazonaws.com`;
         this.state.upload = config.upload;
@@ -96,15 +82,6 @@ class AwsS3 extends Component {
     async remove() {
         if (!this.state.name) {
             this.context.instance.debug(`Nothing to remove; bucket name not found in state.`);
-            return;
-        }
-
-        if (this.state.deleteBucketOnRemove !== true) {
-            this.context.instance.debug(
-                `%o is set to %o. Bucket will NOT be removed.`,
-                "deleteBucketOnRemove",
-                false
-            );
             return;
         }
 
@@ -141,71 +118,6 @@ class AwsS3 extends Component {
         await this.save();
 
         return outputs;
-    }
-
-    async upload({ bucket, region, files }) {
-        this.context.instance.debug(`Starting upload to bucket %o in region %o`, bucket, region);
-
-        const clients = getClients(this.context.instance.credentials.aws, region);
-
-        for (let i = 0; i < files.length; i++) {
-            const obj = files[i];
-
-            resolveFilePath(obj);
-
-            if (obj.dir && fs.existsSync(obj.dir)) {
-                if (obj.zip) {
-                    this.context.instance.debug(
-                        `Packing and uploading directory %o to bucket %o`,
-                        obj.dir,
-                        bucket
-                    );
-                    // pack & upload using multipart uploads
-                    const defaultKey = Math.random()
-                        .toString(36)
-                        .substring(6);
-
-                    await packAndUploadDir({
-                        s3: this.state.accelerated ? clients.accelerated : clients.regular,
-                        bucketName: name,
-                        dirPath: obj.dir,
-                        key: obj.key || `${defaultKey}.zip`,
-                        cacheControl: obj.cacheControl
-                    });
-                } else {
-                    this.context.instance.debug(
-                        `Uploading directory %o to bucket %o`,
-                        obj.dir,
-                        bucket
-                    );
-                    // upload directory contents
-                    await uploadDir(
-                        this.state.accelerated ? clients.accelerated : clients.regular,
-                        name,
-                        obj.dir,
-                        obj.cacheControl,
-                        { keyPrefix: obj.keyPrefix }
-                    );
-                }
-            } else if (obj.file && fs.existsSync(obj.file)) {
-                // upload a single file using multipart uploads
-                this.context.instance.debug(`Uploading file %o to bucket %o`, obj.file, bucket);
-
-                await uploadFile({
-                    s3: this.state.accelerated ? clients.accelerated : clients.regular,
-                    bucketName: name,
-                    filePath: obj.file,
-                    key: obj.key || basename(obj.file),
-                    cacheControl: obj.cacheControl
-                });
-
-                this.context.instance.debug(
-                    `File %o uploaded with key %o`,
-                    obj.file,
-                    obj.key || basename(obj.file)
-                );
-            }
-        }
     }
 }
 

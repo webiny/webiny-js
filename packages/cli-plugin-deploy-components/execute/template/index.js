@@ -1,8 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const uniqueId = require("uniqid");
-const { trackActivity, trackError } = require("@webiny/tracking");
-const { version } = require("../../package.json");
+const { sendEvent } = require("@webiny/tracking");
 const { Component } = require("@webiny/serverless-component");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
@@ -67,13 +65,12 @@ class Template extends Component {
 
     async deployAll(inputs = {}) {
         this.context.status("Deploying");
-        const activityId = uniqueId();
 
-        await trackActivity({
-            activityId,
-            type: `${inputs.stack}-deploy-start`,
-            cliVersion: version,
-            context: this.context
+        await sendEvent({
+            event: "stack-deploy-start",
+            data: {
+                stack: inputs.stack
+            }
         });
 
         try {
@@ -112,27 +109,27 @@ class Template extends Component {
             this.state.outputs = outputs;
             await this.save();
 
-            await inputs.callback({
+            await sendEvent({
+                event: "stack-deploy-end",
+                data: {
+                    stack: inputs.stack
+                }
+            });
+
+            await inputs.afterExecute({
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
             });
 
-            await trackActivity({
-                activityId,
-                type: `${inputs.stack}-deploy-end`,
-                cliVersion: version,
-                context: this.context
-            });
-
             return outputs;
         } catch (e) {
-            await trackError({
-                context: this.context,
-                activityId,
-                type: `${inputs.stack}_deploy`,
-                cliVersion: version,
-                errorMessage: e.message,
-                errorStack: e.stack
+            await sendEvent({
+                event: "stack-deploy-error",
+                data: {
+                    stack: inputs.stack,
+                    errorMessage: e.message,
+                    errorStack: e.stack
+                }
             });
 
             throw e;
@@ -156,7 +153,7 @@ class Template extends Component {
 
         const resolvedTemplate = resolveTemplate(inputs, template);
         const allComponents = setDependencies(getAllComponents(resolvedTemplate));
-        const { debug, watch, callback } = inputs;
+        const { debug, watch, afterExecute } = inputs;
 
         await new Promise(async (resolve, reject) => {
             // `firstBuild` is the first build cycle before entering the `watch` mode
@@ -190,7 +187,7 @@ class Template extends Component {
                             if (firstBuild) {
                                 next();
                             } else {
-                                await callback({
+                                await afterExecute({
                                     context: this.context,
                                     output: this.state.outputs,
                                     duration: (Date.now() - start) / 1000
@@ -232,7 +229,7 @@ class Template extends Component {
                 return reject(err);
             }
 
-            await callback({
+            await afterExecute({
                 context: this.context,
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
