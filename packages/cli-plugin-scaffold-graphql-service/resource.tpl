@@ -7,6 +7,7 @@
     deploy: {
         component: "@webiny/serverless-function",
         inputs: {
+            role: "${lambdaRole.arn}",
             region: process.env.AWS_REGION,
             description: "GraphQL API",
             code: "./[PACKAGE_PATH]/build",

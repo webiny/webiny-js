@@ -3,7 +3,7 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import PageBuilderSettings from "./components/PageBuilderSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
-import { SecureRoute } from "@webiny/app-security/components";
+import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import { getPlugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
@@ -55,15 +55,17 @@ const plugins = [
         name: "menu-settings-page-builder",
         render({ Section, Item }) {
             return (
-                <Section label={t`Page Builder`}>
-                    {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
-                        plugin => (
-                            <React.Fragment key={plugin.name + new Date()}>
-                                {plugin.render({ Item })}
-                            </React.Fragment>
-                        )
-                    )}
-                </Section>
+                <SecureView scopes={ROLE_PB_SETTINGS}>
+                    <Section label={t`Page Builder`}>
+                        {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
+                            plugin => (
+                                <React.Fragment key={plugin.name + new Date()}>
+                                    {plugin.render({ Item })}
+                                </React.Fragment>
+                            )
+                        )}
+                    </Section>
+                </SecureView>
             );
         }
     } as AdminMenuSettingsPlugin,

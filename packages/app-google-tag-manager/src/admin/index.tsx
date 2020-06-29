@@ -21,7 +21,7 @@ export default () => [
                 path="/settings/page-builder/google-tag-manager"
                 render={() => (
                     <AdminLayout>
-                        <Helmet title={"Page Builder - Google Tag Manager Settings"} />
+                        <Helmet title={t`Page Builder - Google Tag Manager Settings`} />
                         <SecureRoute scopes={ROLE_PB_SETTINGS}>
                             <GoogleTagManagerSettings />
                         </SecureRoute>

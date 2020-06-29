@@ -15,7 +15,9 @@ const { Octokit } = require("@octokit/rest");
 (async () => {
     try {
         if (!argv.token) {
-            throw new Error(`"--token" argument missing. Make sure it contains a valid GitHub access token.`);
+            throw new Error(
+                `"--token" argument missing. Make sure it contains a valid GitHub access token.`
+            );
         }
 
         if (!argv.branch) {

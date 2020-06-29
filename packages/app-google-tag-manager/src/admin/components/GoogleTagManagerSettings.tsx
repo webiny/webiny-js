@@ -9,6 +9,7 @@ import { Input } from "@webiny/ui/Input";
 import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import get from "lodash.get";
+import { i18n } from "@webiny/app/i18n";
 
 import {
     SimpleForm,
@@ -16,6 +17,9 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+
+const t = i18n.ns("app-google-tag-manager/admin");
+
 
 const GoogleTagManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
@@ -35,7 +39,7 @@ const GoogleTagManagerSettings = () => {
                                             data: data
                                         }
                                     });
-                                    showSnackbar("Settings updated successfully.");
+                                    showSnackbar(t`Settings updated successfully.`);
                                 }}
                             >
                                 {({ Bind, form, data }) => (
@@ -43,7 +47,7 @@ const GoogleTagManagerSettings = () => {
                                         {(queryInProgress || mutationInProgress) && (
                                             <CircularProgress />
                                         )}
-                                        <SimpleFormHeader title="Google Tag Manager Settings">
+                                        <SimpleFormHeader title={t`Google Tag Manager Settings`}>
                                             <Bind
                                                 name={"enabled"}
                                                 afterChange={enabled => {
@@ -52,7 +56,7 @@ const GoogleTagManagerSettings = () => {
                                                     }
                                                 }}
                                             >
-                                                <Switch label="Enabled" />
+                                                <Switch label={t`Enabled`} />
                                             </Bind>
                                         </SimpleFormHeader>
                                         {data.enabled ? (
@@ -66,7 +70,7 @@ const GoogleTagManagerSettings = () => {
                                                                         <Input
                                                                             label="Container ID"
                                                                             description={
-                                                                                'Formatted as "GTM-XXXXXX".'
+                                                                                t`Formatted as "GTM-XXXXXX".`
                                                                             }
                                                                         />
                                                                     </Bind>
@@ -77,7 +81,7 @@ const GoogleTagManagerSettings = () => {
                                                 </SimpleFormContent>
                                                 <SimpleFormFooter>
                                                     <ButtonPrimary onClick={form.submit}>
-                                                        Save
+                                                        {t`Save`}
                                                     </ButtonPrimary>
                                                 </SimpleFormFooter>
                                             </>

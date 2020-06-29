@@ -12,15 +12,9 @@ module.exports = {
         });
 
         yargs.command("disable-tracking", "Disable tracking of Webiny stats.", async () => {
-            const { trackActivity } = require("@webiny/tracking");
-            const uniqueId = require("uniqid");
-            const { version } = require(require.resolve("@webiny/cli/package.json"));
+            const { sendEvent } = require("@webiny/tracking");
 
-            await trackActivity({
-                type: "tracking-disabled",
-                cliVersion: version,
-                activityId: uniqueId()
-            });
+            await sendEvent({ event: "disable-tracking" });
             setTracking(false);
             console.log("INFO: tracking of Webiny stats is now DISABLED!");
         });

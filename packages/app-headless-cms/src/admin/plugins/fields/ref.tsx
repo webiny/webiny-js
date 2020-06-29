@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { validation } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
@@ -43,17 +43,28 @@ const plugin: CmsEditorFieldTypePlugin = {
             };
         },
         renderSettings({ form: { Bind }, lockedField }) {
-            const { data, loading, error } = useQuery(LIST_CONTENT_MODELS);
+            const { data, loading, error } = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
             const { showSnackbar } = useSnackbar();
 
             if (error) {
                 showSnackbar(error.message);
                 return null;
             }
+
             // Format options for the Autocomplete component.
-            const options = get(data, "listContentModels.data", []).map(item => {
-                return { id: item.modelId, name: item.name };
-            });
+            const options = useMemo(() => {
+                const optionList = [];
+                get(data, "listContentModelGroups.data", []).forEach(({ contentModels }) => {
+                    if (contentModels) {
+                        const currentOptions = contentModels.map(item => {
+                            return { id: item.modelId, name: item.name };
+                        });
+
+                        optionList.push(...currentOptions);
+                    }
+                });
+                return optionList;
+            }, [data]);
 
             return (
                 <Grid>

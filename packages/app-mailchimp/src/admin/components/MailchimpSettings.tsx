@@ -16,6 +16,8 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-mailchimp/admin");
 
 const MailchimpSettings = () => {
     const { showSnackbar } = useSnackbar();
@@ -44,7 +46,7 @@ const MailchimpSettings = () => {
                                     if (error) {
                                         return showSnackbar(error);
                                     }
-                                    showSnackbar("Settings updated successfully.");
+                                    showSnackbar(t`Settings updated successfully.`);
                                 }}
                             >
                                 {({ Bind, form, data }) => (
@@ -52,7 +54,7 @@ const MailchimpSettings = () => {
                                         {(queryInProgress || mutationInProgress) && (
                                             <CircularProgress />
                                         )}
-                                        <SimpleFormHeader title="Mailchimp Settings">
+                                        <SimpleFormHeader title={t`Mailchimp Settings`}>
                                             <Bind
                                                 name={"enabled"}
                                                 afterChange={enabled => {
@@ -61,7 +63,7 @@ const MailchimpSettings = () => {
                                                     }
                                                 }}
                                             >
-                                                <Switch label="Enabled" />
+                                                <Switch label={t`Enabled`} />
                                             </Bind>
                                         </SimpleFormHeader>
                                         {data.enabled ? (
@@ -73,10 +75,10 @@ const MailchimpSettings = () => {
                                                                 <Cell span={6}>
                                                                     <Bind name={"apiKey"}>
                                                                         <Input
-                                                                            label="API key"
+                                                                            label={t`API key`}
                                                                             description={
                                                                                 <>
-                                                                                    Click{" "}
+                                                                                    {t`Click`}{" "}
                                                                                     <a
                                                                                         /* eslint-disable-next-line react/jsx-no-target-blank */
                                                                                         target={
@@ -84,12 +86,9 @@ const MailchimpSettings = () => {
                                                                                         }
                                                                                         href="https://mailchimp.com/help/about-api-keys/"
                                                                                     >
-                                                                                        here
+                                                                                        {t`here`}
                                                                                     </a>{" "}
-                                                                                    for more
-                                                                                    information
-                                                                                    about Mailchimp
-                                                                                    API keys.
+                                                                                  {t`for more information about Mailchimp API keys.`}
                                                                                 </>
                                                                             }
                                                                         />
@@ -101,7 +100,7 @@ const MailchimpSettings = () => {
                                                 </SimpleFormContent>
                                                 <SimpleFormFooter>
                                                     <ButtonPrimary onClick={form.submit}>
-                                                        Save
+                                                        {t`Save`}
                                                     </ButtonPrimary>
                                                 </SimpleFormFooter>
                                             </>
