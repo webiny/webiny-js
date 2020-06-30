@@ -1,5 +1,6 @@
 import pluralize from "pluralize";
 import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { hasScope } from "@webiny/api-security";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
@@ -15,16 +16,31 @@ export interface CreateReadResolvers {
     }): any;
 }
 
-export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
+export const createReadResolvers: CreateReadResolvers = ({
+    models,
+    model,
+    fieldTypePlugins,
+    context
+}) => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
+    const apiType = context.cms.READ ? "read" : "preview";
+    const environment = context.cms.getEnvironment().id; // TODO [Andrei] use .slug here
+    const scope = `cms:${apiType}:${environment}:${model.modelId}`;
+
+    // TODO [Andrei] [later]: test scopes
+    console.log("scope = ");
+    console.log("");
+    console.log("");
+    console.log(scope);
+
     return {
         Query: {
-            [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralize(typeName)}`]: resolveList({ model })
+            [`get${typeName}`]: hasScope(scope)(resolveGet({ model })),
+            [`list${pluralize(typeName)}`]: hasScope(scope)(resolveList({ model }))
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];
