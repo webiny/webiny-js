@@ -1,6 +1,6 @@
 import useGqlHandler from "./utils/useGqlHandler";
-import { Database } from "@commodo/fields-storage-nedb";
 import { createEnvironment, createEnvironmentAlias } from "@webiny/api-headless-cms/testing";
+import mocks from "./mocks/environments";
 
 const CREATE_ENVIRONMENT = /* GraphQL */ `
     mutation createEnvironment($data: CmsEnvironmentInput!) {
@@ -67,16 +67,16 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
 `;
 
 describe("Environments test", () => {
-    const database = new Database();
-    const { invoke } = useGqlHandler({ database });
+    const { invoke, database } = useGqlHandler();
 
-    const initial = {};
-
-    beforeAll(async () => {
-        initial.environment = await createEnvironment({ database });
+    afterEach(async () => {
+        await database.collection("CmsEnvironment").remove({}, { multi: true });
+        await database.collection("CmsEnvironmentAlias").remove({}, { multi: true });
     });
 
     it("should create a new environment", async () => {
+        const initial = { environment: await createEnvironment({ database }) };
+
         let [body] = await invoke({
             body: {
                 query: CREATE_ENVIRONMENT,
@@ -111,38 +111,12 @@ describe("Environments test", () => {
         });
 
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
-        expect(body.data.cms.createEnvironment.data.createdFrom.id).toBeTruthy();
+        expect(body.data.cms.createEnvironment.data.createdFrom.id).toBe(initial.environment.id);
     });
 
     it(`should utilize "where" filtering correctly`, async () => {
-        let [body] = await invoke({
-            body: {
-                query: GET_ENVIRONMENT,
-                variables: {
-                    where: {
-                        name: "new-environment-1"
-                    }
-                }
-            }
-        });
-
-        expect(body.data.cms.getEnvironment.data.id).toBeTruthy();
-        // check for aliases
-        expect(body.data.cms.getEnvironment.data.environmentAliases).toBeTruthy();
-        expect(body.data.cms.getEnvironment.data.environmentAliases.length).toBe(1);
-        expect(body.data.cms.getEnvironment.data.environmentAliases[0].name).toBeTruthy();
-    });
-
-    it("should be able to list environments with alias", async () => {
-        let [body] = await invoke({
-            body: {
-                query: LIST_ENVIRONMENTS
-            }
-        });
-
-        const initialListLength = body.data.cms.listEnvironments.data.length;
-
-        const [createdEnvironmentBody] = await invoke({
+        const initial = { environment: await createEnvironment({ database }) };
+        await invoke({
             body: {
                 query: CREATE_ENVIRONMENT,
                 variables: {
@@ -154,29 +128,58 @@ describe("Environments test", () => {
             }
         });
 
+        let [body] = await invoke({
+            body: {
+                query: GET_ENVIRONMENT,
+                variables: {
+                    where: {
+                        name: "new-environment-1"
+                    }
+                }
+            }
+        });
+
+        expect(body).toEqual(
+            mocks.getEnvironments({ environmentId: body.data.cms.getEnvironment.data.id })
+        );
+    });
+
+    it("should be able to list environments with alias", async () => {
+        const initial = { environment: await createEnvironment({ database }) };
+
+        let environmentsList = await database.collection("CmsEnvironment").find();
+        expect(environmentsList.length).toBe(1);
+        const [createdEnvironmentBody] = await invoke({
+            body: {
+                query: CREATE_ENVIRONMENT,
+                variables: {
+                    data: {
+                        name: "new-environment-list-envs-test-1",
+                        createdFrom: initial.environment.id
+                    }
+                }
+            }
+        });
+
+        environmentsList = await database.collection("CmsEnvironment").find();
+        expect(environmentsList.length).toBe(2);
+
         // link `environment with alias`
         await createEnvironmentAlias({
             database,
             environmentId: createdEnvironmentBody.data.cms.createEnvironment.data.id
         });
 
-        [body] = await invoke({
+        let [body] = await invoke({
             body: {
                 query: LIST_ENVIRONMENTS
             }
         });
 
-        expect(body.data.cms.listEnvironments.data.length).toBe(initialListLength + 1);
-
-        expect(
-            body.data.cms.listEnvironments.data[initialListLength].environmentAliases.length
-        ).toBe(1);
-
-        expect(
-            body.data.cms.listEnvironments.data[initialListLength].environmentAliases[0].name
-        ).toBeTruthy();
-        expect(
-            body.data.cms.listEnvironments.data[initialListLength].environmentAliases[0].slug
-        ).toBeTruthy();
+        expect(body).toEqual(
+            mocks.listEnvironments({
+                environmentId: createdEnvironmentBody.data.cms.createEnvironment.data.id
+            })
+        );
     });
 });
