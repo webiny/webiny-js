@@ -57,11 +57,10 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
 }) => {
     const { showSnackbar } = useSnackbar();
     const graphqlApiUrl = process.env.REACT_APP_API_URL;
-    const [aliases, setAliases] = useState([]);
-
+    const [totalAliases, setTotalAliases] = useState([]);
     useQuery(LIST_ENVIRONMENT_ALIASES, {
         onCompleted: data => {
-            setAliases(data.cms.environmentAliases.data.filter((elem) => elem.environment.name === name));
+            setTotalAliases(data.cms.environmentAliases.data);
         }
     });
 
@@ -76,7 +75,7 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
             <DialogContent>
                 <div>
                     {
-                        url && aliases.length > 0 ?
+                        url ?
                             <div>
                                 <div className={style.apiUrl}>
                                     <p className={style.api}>GraphQL URL:</p>
@@ -87,7 +86,7 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                                     />
                                 </div>
                                 {
-                                    aliases.map((elem) => {
+                                    totalAliases.filter((elem) => elem.environment.name === name).map((elem) => {
                                         return(
                                             <div key={elem.id} className={style.aliasContainer}>
                                                 <p className={style.alias}>Alias: {elem.name}</p>

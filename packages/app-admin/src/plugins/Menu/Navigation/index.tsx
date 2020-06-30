@@ -16,6 +16,7 @@ import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/git
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
 
+
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
@@ -83,20 +84,13 @@ const Navigation = () => {
                             e.preventDefault();
                             e.stopPropagation();
                             setInfoOpened(true);
-                        }}>
+                        }}
+                    >
                         <ListItem ripple={false}>
                             <ListItemGraphic>
                                 <Icon icon={<InfoIcon />}/>
                             </ListItemGraphic>
                             {t`API information`}
-                            <EnvironmentInfoDialog
-                                open={infoOpened}
-                                onClose={() => {
-                                    setInfoOpened(false);
-                                }}
-                                name={currentEnvironment ? currentEnvironment.name : t`N/A`}
-                                url={currentEnvironment ? currentEnvironment.environmentAlias.url : undefined}
-                            />
                         </ListItem>
                     </div>
                     <a href="https://docs.webiny.com/" rel="noopener noreferrer" target="_blank">
@@ -148,6 +142,14 @@ const Navigation = () => {
                         </div>
                     </ListItem>
                 </List>
+                {
+                    currentEnvironment &&
+                        <EnvironmentInfoDialog
+                            open={infoOpened}
+                            onClose={() => setInfoOpened(false)}
+                            name={currentEnvironment.name || t`N\A`}
+                        />
+                }
             </MenuFooter>
         </Drawer>
     );

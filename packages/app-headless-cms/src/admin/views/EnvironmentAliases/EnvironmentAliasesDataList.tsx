@@ -41,7 +41,7 @@ const EnvironmentAliasesDataList = () => {
     const { actions, list } = useCrud();
     const [infoOpened, setInfoOpened] = useState(false);
     const [selectedInfo, setSelectedInfo] = useState({
-        name: t`N\A`,
+        name: "",
         url: {
             manage: "",
             preview: "",
@@ -80,21 +80,24 @@ const EnvironmentAliasesDataList = () => {
                                 <div className={style.environmentText}>
                                     {item.name}{" "}
                                     <Typography use={"caption"} className={style.informationLabel}>
-                                            <div onClick={e => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setInfoOpened(true);
-                                                setSelectedInfo(item);
-                                            }}>
-                                                <InformationIcon className={style.icon}/>
-                                            </div>
-                                    </Typography>  
-                                    <EnvironmentInfoDialog
-                                        open={infoOpened}
-                                        onClose={() => setInfoOpened(false)}
-                                        name={selectedInfo.name}
-                                        url={selectedInfo.url}
-                                    />                                  
+                                        <div onClick={e => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setInfoOpened(true);
+                                            setSelectedInfo(item);
+                                        }}>
+                                            <InformationIcon className={style.icon}/>
+                                        </div>
+                                    </Typography>
+                                    {
+                                        selectedInfo.name &&
+                                            <EnvironmentInfoDialog
+                                                open={infoOpened}
+                                                onClose={() => setInfoOpened(false)}
+                                                name={selectedInfo.name}
+                                                url={selectedInfo.url}
+                                            />
+                                    }
                                 </div>
                                 {item.default && (
                                     <Typography use={"overline"}>{t`(default)`}</Typography>
