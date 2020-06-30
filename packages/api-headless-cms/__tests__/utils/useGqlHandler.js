@@ -7,7 +7,7 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
-export default ({ database }) => {
+export default ({ database } = {}) => {
     if (!database) {
         database = new Database();
     }
