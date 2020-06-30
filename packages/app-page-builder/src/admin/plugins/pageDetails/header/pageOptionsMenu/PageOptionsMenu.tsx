@@ -52,16 +52,15 @@ const PageOptionsMenu = props => {
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
+    const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
 
     const handlePreviewClick = useCallback(() => {
-        const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
-
         if (isSiteRunning) {
             window.open(url, target, "noopener");
         } else {
             showConfigureDomainDialog();
         }
-    }, [page.id, isSiteRunning, getPagePreviewUrl, getPageUrl]);
+    }, [url, isSiteRunning]);
 
     return (
         <Menu
