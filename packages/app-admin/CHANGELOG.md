@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* export menu and header logo separately ([9a265f8](https://github.com/webiny/webiny-js/commit/9a265f85384dc1a233f51ea5fd5bb15e9efea268))
+* remove "AdminMenuContentSectionPlugin" type ([a69c1ac](https://github.com/webiny/webiny-js/commit/a69c1acbf150543a67686d6c4bc64ca489c4f04f))
+* replace "admin-header-logo" with "admin-menu-logo" ([454ef5c](https://github.com/webiny/webiny-js/commit/454ef5c3286916e3f1d0e59b74c5eefeaa1d1088))
+
+
+### Features
+
+* add "AdminMenuLogoPlugin" ([45d4f21](https://github.com/webiny/webiny-js/commit/45d4f21c7d5bcc3b8a8c43a5272cc890caf4ce68))
+* add "white" prop ([706a20b](https://github.com/webiny/webiny-js/commit/706a20bac0281575f57e05cc0a768703e989a8bf))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-admin

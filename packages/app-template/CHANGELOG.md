@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* **app-template:** sort routes and handle catch-all route paths ([9b5841b](https://github.com/webiny/webiny-js/commit/9b5841b15c2b3103d13dd80ed09446a9a047039b))
+* **app-template:** sort routes so * is always the last item ([4db91d7](https://github.com/webiny/webiny-js/commit/4db91d73d800573dc4acff58a7d493aa4266cb50))
+* **app-template:** use https URL for telemetry ([c065a03](https://github.com/webiny/webiny-js/commit/c065a0357f82300a91a3acd123daa111a0769dfe))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-template
