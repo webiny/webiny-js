@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+
+### Bug Fixes
+
+* improve logging ([c9ab439](https://github.com/webiny/webiny-js/commit/c9ab439f3156fafc9aa549d771cea73a07de14fb))
+
+
+
+
+
 # [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
 
 
