@@ -19,15 +19,15 @@ import { ReactComponent as LockIcon } from "@webiny/app-page-builder/admin/asset
 import { ReactComponent as BeenHereIcon } from "@webiny/app-page-builder/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/app-page-builder/admin/assets/gesture.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
-import {useSiteStatus} from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
+import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageRevision } from "@webiny/app-page-builder/types";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/useConfigureDomain";
 
 type RevisionProps = {
     rev: PbPageRevision;
