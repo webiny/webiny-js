@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* hide settings menu items from unwarranted users ([#1066](https://github.com/webiny/webiny-js/issues/1066)) ([72c5fce](https://github.com/webiny/webiny-js/commit/72c5fce0bc72ce27c9e1a5bba3dba836db0c9e24))
+* replace "Content" section in the main menu with "Page Builder" and "Form Builder" ([856482b](https://github.com/webiny/webiny-js/commit/856482b858f5e7181031d51fcef7c425ecaff1f9))
+
+
+### Features
+
+* **app-page-builder:** add `configure domain` confirmation ([07fe0bf](https://github.com/webiny/webiny-js/commit/07fe0bf5af22e39c0149f4dd039d83c53882bb41))
+* **app-page-builder:** add `DialogContainer` ([b05759d](https://github.com/webiny/webiny-js/commit/b05759d9c19767c411614f9da597e6247861f376))
+* **app-page-builder:** add `useConfigureDomainDialog` hook ([7276266](https://github.com/webiny/webiny-js/commit/72762669aa83850d4ee901bdff098ab6236573f8))
+* **app-page-builder:** add `useSiteStatus` ([0e3030b](https://github.com/webiny/webiny-js/commit/0e3030bc32ecf60569a1f6d8f4e00049001f693d))
+* **app-page-builder:** add `useSiteStatus` hook ([5f48957](https://github.com/webiny/webiny-js/commit/5f48957a7d7cff57904b934187e345206ac678d7))
+* **app-page-builder:** remove `domain` input ([bcc41d0](https://github.com/webiny/webiny-js/commit/bcc41d0dbd54315d0014e98d15921cc56a711976))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-page-builder

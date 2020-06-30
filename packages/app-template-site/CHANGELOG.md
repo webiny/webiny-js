@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* **app-template-site:** remove root route ([c9a1fa3](https://github.com/webiny/webiny-js/commit/c9a1fa3504528e172f653d80468909b8a0920a99))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-template-site

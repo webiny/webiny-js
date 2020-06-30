@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Features
+
+* i18n for the mailchimp app ([03d7913](https://github.com/webiny/webiny-js/commit/03d791396bf34b91540ddccfe7e3ec01368c921e))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-mailchimp

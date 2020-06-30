@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* add @webiny/app to dependencies ([18ce699](https://github.com/webiny/webiny-js/commit/18ce69976e32e4e16368b7e9950be60c5cd02a13))
+
+
+### Features
+
+* i18n support for typeform app using t template literal ([c880db4](https://github.com/webiny/webiny-js/commit/c880db453e328f3b278aab3e5f18e574267656f2))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-typeform

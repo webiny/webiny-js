@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** add lambda role to generated resource ([4e512c3](https://github.com/webiny/webiny-js/commit/4e512c325a6f16e28234e1f1c91e489af9707899))
+* **cli-plugin-scaffold-graphql-service:** update template code ([a14efed](https://github.com/webiny/webiny-js/commit/a14efed50c4ed1cbe9fdd3b01d41702c65efcf22))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
