@@ -1,14 +1,26 @@
 import { validation } from "@webiny/validation";
-import { pipe, withFields, withProps, string, ref, withName, withHooks } from "@webiny/commodo";
+import {
+    pipe,
+    withFields,
+    withProps,
+    string,
+    ref,
+    withName,
+    withHooks,
+    setOnce
+} from "@webiny/commodo";
 import withChangedOnFields from "./withChangedOnFields";
 import { CmsContext } from "../../types";
+import shortid from "shortid";
+import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
-    return pipe(
+    const CmsEnvironment = pipe(
         withName("CmsEnvironment"),
         withChangedOnFields(),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
+            slug: setOnce()(string()),
             description: string({ validation: validation.create("maxLength:200") }),
             createdFrom: ref({
                 instanceOf: context.models.CmsEnvironment
@@ -26,6 +38,18 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 return this.environmentAlias.then(environmentAlias => {
                     return environmentAlias && environmentAlias.isProduction === true;
                 });
+            },
+            get contentModels() {
+                // TODO [Andrei] [now]: CmsContentModel comes from /content, so we need to load those models here...
+                //  can I just import the plugin?
+                const { CmsContentModel } = context.models;
+
+                console.log(context.models);
+                console.log(CmsContentModel);
+                console.log(CmsContentModel.find({}));
+
+                return CmsContentModel.find({});
+                // return CmsContentModel.find({ environment: this.id });
             }
         }),
         withHooks({
@@ -35,6 +59,27 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         throw new Error('Base environment ("createdFrom" field) not set.');
                     }
                 }
+
+                // If there is a slug assigned, check if it's unique ...
+                if (this.slug) {
+                    const existingGroup = await CmsEnvironment.findOne({
+                        query: { slug: this.slug }
+                    });
+                    if (existingGroup) {
+                        throw Error(`Environment with slug "${this.slug}" already exists.`);
+                    }
+                    return;
+                }
+
+                // ... otherwise, assign a unique slug automatically.
+                this.slug = toSlug(this.name);
+                const existingGroup = await CmsEnvironment.findOne({ query: { slug: this.slug } });
+                if (!existingGroup) {
+                    return;
+                }
+
+                this.getField("slug").state.set = false;
+                this.slug = `${this.slug}-${shortid.generate()}`;
             },
             async afterCreate() {
                 const sourceEnvironment = await this.createdFrom;
@@ -65,4 +110,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             }
         })
     )(createBase());
+
+    return CmsEnvironment;
 };
