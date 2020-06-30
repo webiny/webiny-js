@@ -24,7 +24,6 @@ import { AdminWelcomeScreenWidgetPlugin } from "../types";
 import { SecureView } from "@webiny/app-security/components";
 
 import { hasScopes } from "@webiny/app-security"; 
-import { ResourcesType } from "../identity";
 
 const linkStyle = css({
     textDecoration: "none",
