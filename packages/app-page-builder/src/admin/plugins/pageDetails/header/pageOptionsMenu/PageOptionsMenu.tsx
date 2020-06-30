@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
@@ -14,9 +14,9 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/utils/useConfigureDomain";
 
 const menuStyles = css({
     width: 250,
@@ -53,7 +53,7 @@ const PageOptionsMenu = props => {
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
 
-    const handlePreviewClick = () => {
+    const handlePreviewClick = useCallback(() => {
         const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
 
         if (isSiteRunning) {
@@ -61,7 +61,7 @@ const PageOptionsMenu = props => {
         } else {
             showConfigureDomainDialog();
         }
-    };
+    }, [page.id, isSiteRunning, getPagePreviewUrl, getPageUrl]);
 
     return (
         <Menu
