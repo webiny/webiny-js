@@ -64,14 +64,7 @@ export default createTemplate<SiteAppOptions>(opts => {
         }
     ];
 
-    const defaultRoute = {
-        type: "route",
-        name: "route-root",
-        route: <Route exact path="/" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
-    };
-
     const otherPlugins = [
-        defaultRoute,
         fileUploadPlugin(),
         imagePlugin(),
         pageBuilderPlugins(),
