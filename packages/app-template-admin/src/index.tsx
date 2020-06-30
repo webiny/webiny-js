@@ -99,13 +99,6 @@ export default createTemplate<AdminAppOptions>(opts => {
     const routes: RoutePlugin[] = [
         {
             type: "route",
-            name: "route-root",
-            route: (
-                <Route exact path="/" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
-            )
-        },
-        {
-            type: "route",
             name: "route-not-found",
             route: <Route path="*" render={() => <Redirect to={opts.defaultRoute || "/"} />} />
         }
