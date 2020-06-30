@@ -7,11 +7,18 @@ const Listr = require("listr");
 const os = require("os");
 const path = require("path");
 const yargs = require("yargs");
-const indent = require("indent-string");
+const indentString = require("indent-string");
 const validateProjectName = require("validate-npm-package-name");
 
-const originalLog = console.log;
-console.log = str => originalLog(indent(str, 2));
+// Add indentation to console.log output
+const log = console.log;
+console.log = (first = "", ...args) => {
+    if (typeof first === "string") {
+        log(indentString(first, 2), ...args);
+    } else {
+        log(first, ...args);
+    }
+};
 
 const packageJson = require("./package.json");
 const init = require("./init.js");
