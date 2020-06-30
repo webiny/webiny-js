@@ -5,14 +5,11 @@ import { RoutePlugin } from "@webiny/app/types";
 
 export const Routes = () => {
     const plugins = getPlugins<RoutePlugin>("route").sort((a, b) => {
-        const pathA = a.route.props.path || "*";
-        const pathB = b.route.props.path || "*";
-
-        if (pathA === "*" || pathA === "/") {
+        if (a.name === "route-not-found" || a.name === "route-root") {
             return 1;
         }
 
-        if (pathB === "*" || pathB === "/") {
+        if (b.name === "route-not-found" || b.name === "route-root") {
             return -1;
         }
 
