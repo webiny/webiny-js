@@ -32,7 +32,6 @@
     "p-retry": "^4.2.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.2",
-    "uniqid": "^5.2.0",
     "uuid": "^8.1.0",
     "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0",

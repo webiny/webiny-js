@@ -13,11 +13,9 @@ const Listr = require("listr");
 const loadJsonFile = require("load-json-file");
 const os = require("os");
 const path = require("path");
-const uniqueId = require("uniqid");
-const { trackActivity } = require("@webiny/tracking");
+const { sendEvent } = require("@webiny/tracking");
 const writeJsonFile = require("write-json-file");
 
-const packageJson = require("./package.json");
 const { getPackageVersion } = require("./utils");
 const rimraf = require("rimraf");
 
@@ -31,12 +29,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         return;
     }
 
-    const activityId = uniqueId();
-    await trackActivity({
-        activityId,
-        type: "create-webiny-project-start",
-        cliVersion: packageJson.version
-    });
+    await sendEvent({ event: "create-webiny-project-start" });
 
     if (templateName.startsWith("file:")) {
         templateName = templateName.replace("file:", "");
@@ -255,19 +248,24 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
         if (log.startsWith(".") || log.startsWitch("file:")) {
             basePath = log;
         }
+
         fs.appendFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
+
+        await sendEvent({
+            event: "create-webiny-project-error",
+            data: {
+                errorMessage: err.message,
+                errorStack: err.stack
+            }
+        });
+
         console.error(err);
-        console.log("\nCleaning up project...");
+        console.log("\nRemoving project files ...");
         rimraf.sync(root);
-        console.log("Project cleaned!");
         process.exit(1);
     });
 
-    await trackActivity({
-        activityId,
-        type: "create-webiny-project-end",
-        cliVersion: packageJson.version
-    });
+    await sendEvent({ event: "create-webiny-project-end" });
 
     console.log(
         [
