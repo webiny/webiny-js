@@ -9,7 +9,6 @@ import { getPlugin, getPlugins } from "@webiny/plugins";
 import { AdminMenuLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
@@ -20,6 +19,8 @@ import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoD
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
+import get from "lodash.get";
+
 const style = {
     environmentContainer: css({
         color: "var(--mdc-theme-text-secondary-on-background)"
@@ -29,15 +30,20 @@ const style = {
     })
 };
 
+const getCurrentEnvironmentFromLocalStorage = () => {
+    try {
+        return JSON.parse(get(window, "localStorage.cms_environment"));
+    } catch {
+        return null;
+    }
+};
+
 const Navigation = () => {
     const { hideMenu, menuIsShown, initSections } = useNavigation();
     const [infoOpened, setInfoOpened] = useState(false);
 
     useEffect(initSections, []);
-
-    const {
-        environments: { currentEnvironment }
-    } = useCms();
+    const currentEnvironment =  getCurrentEnvironmentFromLocalStorage();
 
     const logo = useMemo(() => {
         const logoPlugin = getPlugin<AdminMenuLogoPlugin>("admin-menu-logo");
