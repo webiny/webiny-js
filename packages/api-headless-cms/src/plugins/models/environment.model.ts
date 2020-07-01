@@ -7,14 +7,67 @@ import {
     ref,
     withName,
     withHooks,
-    setOnce
+    setOnce,
+    withStaticProps
 } from "@webiny/commodo";
 import withChangedOnFields from "./withChangedOnFields";
 import { CmsContext } from "../../types";
 import shortid from "shortid";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import {cloneDeep} from "lodash";
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
+    const modifyQueryArgs = (args = {}, environment) => {
+        const returnArgs = cloneDeep<any>(args);
+        if (returnArgs.query) {
+            returnArgs.query = {
+                $and: [{ environment: environment.id }, returnArgs.query]
+            };
+        } else {
+            returnArgs.query = { environment: environment.id };
+        }
+
+        return returnArgs;
+    };
+
+
+        // const createBaseContentModel = ({ context }) => () => {
+        //     const environment = context.cms.getEnvironment();
+        //     return
+        //     pipe(
+        //         withFields({
+        //             id: context.commodo.fields.id(),
+        //             environment: setOnce()(context.commodo.fields.id())
+        //         }),
+        //         withStaticProps(({ find, count, findOne }) => ({
+        //                 find(args) {
+        //                     return find.call(this, modifyQueryArgs(args, environment));
+        //                 },
+        //             })
+        //         // withStorage({ driver }),
+        //         // withUser(context),
+        //         // withSoftDelete(),
+        //         // withCrudLogs()
+        //     )();
+        // }
+
+    const environment = (context.cms.getEnvironment && context.cms.getEnvironment()) || process.env.TEST_ENV_ID;
+    const CmsContentModel = pipe(
+        withFields({
+            id: context.commodo.fields.id(),
+            environment: setOnce()(context.commodo.fields.id())
+        }),
+        withStaticProps(({ find, count, findOne }) => ({
+            find(args) {
+                return find.call(this, modifyQueryArgs(args, environment));
+            },
+        })),
+        withName(`CmsContentModel`),
+        withFields(() => ({
+            name: string()
+        })),
+    )();
+
     const CmsEnvironment = pipe(
         withName("CmsEnvironment"),
         withChangedOnFields(),
@@ -40,16 +93,18 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 });
             },
             get contentModels() {
-                // TODO [Andrei] [now]: CmsContentModel comes from /content, so we need to load those models here...
-                //  can I just import the plugin?
-                const { CmsContentModel } = context.models;
+                try {
+                    // TODO [Andrei]: fix the garbage CmsContentModel... (contentmodel.model.ts)
+                    // console.log(CmsContentModel);
+                    // console.log(CmsContentModel.find({}));
 
-                console.log(context.models);
-                console.log(CmsContentModel);
-                console.log(CmsContentModel.find({}));
-
-                return CmsContentModel.find({});
-                // return CmsContentModel.find({ environment: this.id });
+                    // return CmsContentModel.find({});
+                    return [{modelId: "sal"}, {modelId: "1234"}]
+                    // return CmsContentModel.find({ environment: this.id });
+                } catch(e) {
+                    console.log(e)
+                    throw new Error(e)
+                }
             }
         }),
         withHooks({
