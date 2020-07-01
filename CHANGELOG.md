@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.3.1) (2020-07-01)
+
+
+### Bug Fixes
+
+* correct query error message ([4c72139](https://github.com/webiny/webiny-js/commit/4c72139c30bc1929b5ea938a13ff4aa70e2ca68e))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package webiny-js
