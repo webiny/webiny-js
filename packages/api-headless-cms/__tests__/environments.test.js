@@ -11,6 +11,9 @@ const CREATE_ENVIRONMENT = /* GraphQL */ `
                     createdFrom {
                         id
                     }
+                    contentModels {
+                        modelId
+                    }
                 }
                 error {
                     message
@@ -68,18 +71,18 @@ describe("Environments test", () => {
     const modelId = { id: mdbid() };
 
     beforeAll(async () => {
-        await getCollection("CmsContentModel").insertOne({
-            id: modelId,
-            environment: initialEnvironment,
-            name: "Test Model"
-        });
-
         await getCollection("CmsEnvironment").insertOne({
             id: initialEnvironment.id,
             name: "Initial Environment",
             description: "This is the initial environment.",
             createdFrom: null,
             slug: "test slug"
+        });
+
+        await getCollection("CmsContentModel").insertOne({
+            id: modelId,
+            environment: initialEnvironment.id,
+            name: "Test Model"
         });
     });
 
@@ -115,6 +118,11 @@ describe("Environments test", () => {
 
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
         expect(body.data.cms.createEnvironment.data.createdFrom.id).toBeTruthy();
+
+        expect(body.data.cms.createEnvironment.data.contentModels).toBeTruthy();
+
+        // TODO [Andrei] [js]: make sure this test passes after contentModels is fixed
+        // expect.skip(body.data.cms.listEnvironments.data.contentModels).toEqual(1);
     });
 
     it("should not create two environments with the same slug", async () => {
@@ -131,6 +139,7 @@ describe("Environments test", () => {
             }
         });
 
+        console.log(body.data.cms.createEnvironment);
         expect(body.data.cms.createEnvironment.error.message).toEqual(
             expect.stringMatching(/already exists/)
         );
@@ -168,6 +177,7 @@ describe("Environments test", () => {
                 variables: {
                     data: {
                         name: "new-environment-1",
+                        slug: "some-slug",
                         createdFrom: initialEnvironment.id
                     }
                 }
@@ -181,8 +191,5 @@ describe("Environments test", () => {
         });
 
         expect(body.data.cms.listEnvironments.data.length).toBe(initialListLength + 1);
-        // console.log(body.data.cms.listEnvironments.data.map(x => x.contentModels));
-        // TODO [Andrei] [now]: fix this test
-        // expect(body.data.cms.listEnvironments.data[0].contentModels).toBeTruthy();
     });
 });
