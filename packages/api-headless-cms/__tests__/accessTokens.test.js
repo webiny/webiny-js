@@ -9,6 +9,7 @@ const CREATE_ACCESS_TOKEN = /* GraphQL */ `
                     name
                     token
                     description
+                    scopes
                     environments {
                         id
                         name
@@ -32,6 +33,7 @@ const LIST_ACCESS_TOKENS = /* GraphQL */ `
                     name
                     description
                     token
+                    scopes
                     environments {
                         id
                         name
@@ -55,6 +57,7 @@ const GET_ACCESS_TOKEN = /* GraphQL */ `
                     name
                     description
                     token
+                    scopes
                     environments {
                         id
                         name
@@ -92,6 +95,7 @@ describe("Environments test", () => {
     const { getCollection } = useDatabase();
     const { invoke } = useApolloHandler();
     const initialEnvironment = { id: mdbid() };
+    const modelId = { id: mdbid() };
     const accessTokenInput = {
         name: "Access Token #1",
         description: "description...",
@@ -116,6 +120,14 @@ describe("Environments test", () => {
             description: "... test env description ...",
             createdFrom: null
         });
+
+        await getCollection("CmsContentModel").insertOne({
+            id: modelId,
+            environment: initialEnvironment.id,
+            name: "Test Model"
+        });
+
+        process.env.TEST_ENV_ID = initialEnvironment.id
     });
     it("Should create an Access Token", async () => {
         let [{ errors, data }] = await invoke({
@@ -134,6 +146,8 @@ describe("Environments test", () => {
         expect(createdAccessToken.id).toBeTruthy();
         expect(createdAccessToken.token).toBeTruthy();
         expect(createdAccessToken.environments).toBeTruthy();
+        expect(createdAccessToken.scopes.length).toBeGreaterThanOrEqual(2);
+        expect(createdAccessToken.scopes[0].split(":").length).toEqual(4);
     });
     it("Should list access tokens", async () => {
         let [{ errors, data }] = await invoke({

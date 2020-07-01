@@ -18,6 +18,7 @@ export default {
             token: String
             createdOn: DateTime
             environments: [CmsEnvironment]
+            scopes: [String]
         }
 
         # Response types
