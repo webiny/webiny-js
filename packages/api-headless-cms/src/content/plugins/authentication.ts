@@ -1,20 +1,3 @@
-// TODO [Andrei] [Now]: write test for authentication.ts
-//  C:\Users\Andrei\Desktop\Webiny\webiny3\packages\api-headless-cms\__tests__\schemaRebuilding.test.js
-//  C:\Users\Andrei\Desktop\Webiny\webiny3\packages\api-headless-cms\__tests__\accessTokensAuthentication.test.js
-
-/*
-{
-  listContentModels{
-    data{
-      id
-    }
-  }
-}
-
-# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNWU3MzkzYmY1OGQ0ODMwMDA3OTVkYmM1IiwidHlwZSI6InVzZXIiLCJhY2Nlc3MiOnsic2NvcGVzIjpbXSwicm9sZXMiOltdLCJmdWxsQWNjZXNzIjp0cnVlfX0sImV4cCI6MTU5NTUyMjQ5NCwiaWF0IjoxNTkyOTMwNDk1fQ.UIDsuGF5JcKoRprMQJBi2hA7CpJ8UHsBKJ5wwXskLI8
-# PAT = d218e7fe9bd71e1c73a6804b77a3f94bc288edc84187465b
-# AT = 7e12cf9da7611de4cdfcfc3eed05c9fa147276baeb169883
- */
 import { withStorage, withFields, string, withName, pipe } from "@webiny/commodo";
 
 const createAccessToken = createBase => pipe(withName("CmsAccessToken"))(createBase());
