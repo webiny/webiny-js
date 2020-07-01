@@ -39,20 +39,19 @@ export default ({ createBase, context }) =>
         withProps({
             get scopes() {
                 const { CmsEnvironment } = context.models;
-                const envId =
-                    (context.cms.getEnvironment && context.cms.getEnvironment()) ||
-                    process.env.TEST_ENV_ID;
 
-                return CmsEnvironment.findOne({ id: envId }).then(env => {
-                    const contentModels = env.contentModels;
+                return CmsEnvironment.find({}).then(envs => {
                     const scopes = [];
 
-                    for (let apiType of ["read", "preview"]) {
-                        for (let contentModel of contentModels) {
-                            const modelId = contentModel.modelId;
-                            const currentScope = `cms:${apiType}:${envId}:${modelId}`;
+                    for (let env of envs) {
+                        const contentModels = env.contentModels;
+                        for (let apiType of ["read", "preview"]) {
+                            for (let contentModel of contentModels) {
+                                const modelId = contentModel.modelId;
+                                const currentScope = `cms:${apiType}:${env.id}:${modelId}`;
 
-                            scopes.push(currentScope);
+                                scopes.push(currentScope);
+                            }
                         }
                     }
 
