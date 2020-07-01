@@ -51,5 +51,5 @@ export type SecurityScopesListPlugin = Plugin & {
     scopes:
         | SecurityScopesListPluginScope[]
         | (() => SecurityScopesListPluginScope[])
-        | (() => Promise<SecurityScopesListPluginScope[]>);
+        | (({ apolloClient }) => Promise<SecurityScopesListPluginScope[]>);
 };
