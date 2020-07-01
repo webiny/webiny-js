@@ -28,7 +28,7 @@ export const createReadResolvers: CreateReadResolvers = ({
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
     const apiType = context.cms.READ ? "read" : "preview";
-    const environment = context.cms.getEnvironment().id; // TODO [Andrei] use .slug here
+    const environment = context.cms.getEnvironment().slug;
     const scope = `cms:${apiType}:${environment}:${model.modelId}`;
 
     // TODO [Andrei] [later]: test scopes
