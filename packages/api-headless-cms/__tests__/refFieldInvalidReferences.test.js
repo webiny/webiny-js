@@ -31,7 +31,7 @@ describe("Ref Field - Invalid References In Test", () => {
         }
 
         expect(error.message).toBe(
-            `Cannot save content model because the ref field "favoriteBook" references a content model (book) that has no title field assigned.`
+            `Cannot save content model because the ref field "favoriteBook" references a content model "book" that has no title field assigned.`
         );
 
         error = null;
@@ -47,9 +47,9 @@ describe("Ref Field - Invalid References In Test", () => {
 
         expect(error).toBe(null);
 
-        // The following is basically the same test, but CRUD operations are done as we're doing them in the actually
-        // UI, meaning, first we create a model, then we update it with fields.
-        await createContentModel(
+        // The following is basically the same test, but CRUD operations are done in the same order as in the UI.
+        // So, first we create a model, then we update it with fields.
+        const modelA = await createContentModel(
             refMocks.modelA({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
@@ -65,7 +65,16 @@ describe("Ref Field - Invalid References In Test", () => {
         }
 
         expect(error.message).toBe(
-            `Cannot save content model because the ref field "a" references a content model (a) that has no title field assigned.`
+            `Cannot save content model because the ref field "a" references a content model "a" that has no title field assigned.`
         );
+
+        error = null;
+        try {
+            await updateContentModel(refMocks.modelAUpdate({ modelId: modelA.id }));
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error).toBe(null);
     });
 });

@@ -135,6 +135,30 @@ const mocks = {
                 }
             ]
         }
+    }),
+    modelAUpdate: ({ modelId }) => ({
+        id: modelId,
+        data: {
+            fields: [
+                {
+                    _id: "vqk-UApa0",
+                    fieldId: "title",
+                    type: "text",
+                    label: {
+                        values: [
+                            {
+                                locale: locales.en.id,
+                                value: "Title"
+                            },
+                            {
+                                locale: locales.de.id,
+                                value: "Titel"
+                            }
+                        ]
+                    }
+                },
+            ]
+        }
     })
 };
 
