@@ -36,7 +36,6 @@ function EnvironmentAliasesForm() {
         }
 
         const scopeSegments = scope.split(":");
-        // TODO [Andrei]: test that this works
         return scopeSegments[0] === "cms";
     };
 
