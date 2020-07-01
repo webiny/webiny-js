@@ -29,7 +29,7 @@ export default ({ createBase, context }) => {
             for (let apiType of ["read", "preview"]) {
                 for (let contentModel of contentModels) {
                     const modelId = contentModel.modelId;
-                    const currentScope = `cms:${apiType}:${env.id}:${modelId}`;
+                    const currentScope = `cms:${apiType}:${env.slug}:${modelId}`;
 
                     scopes.push(currentScope);
                 }
