@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+
+### Bug Fixes
+
+* extract plugin into a separate file ([5e47f7b](https://github.com/webiny/webiny-js/commit/5e47f7b47ea6d60f8eb5ab1b496bb9c902e1d2b9))
+* remove unused import ([55ecd6f](https://github.com/webiny/webiny-js/commit/55ecd6f3bda00d6aff91159ffffa11785fae4767))
+* use titleFieldId in order to perform referenceIn checks ([629c844](https://github.com/webiny/webiny-js/commit/629c8443e3d8e21a6f0ba51b122d30c2b47c8326))
+
+
+
+
+
 # [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
 
 
