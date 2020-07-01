@@ -6,6 +6,7 @@ import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
+import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
 
 type HeadlessPluginsOptions = {
     type: string;
@@ -38,6 +39,7 @@ export default (
             }
         }
     } as ContextPlugin,
+    checkRefFieldsBeforeSave(),
     addRefFieldHooks(),
     models(),
     {
