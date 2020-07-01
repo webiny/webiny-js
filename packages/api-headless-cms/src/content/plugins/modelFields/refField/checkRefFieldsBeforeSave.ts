@@ -27,12 +27,14 @@ const checkRefFieldsBeforeSave = () => ({
                 for (let i = 0; i < refFields.length; i++) {
                     const refField = refFields[i];
                     const contentModel = await CmsContentModel.findOne({
-                        modelId: refField.settings.modelId
+                        query: {
+                            modelId: refField.settings.modelId
+                        }
                     });
 
                     if (!contentModel.titleFieldId) {
                         throw new Error(
-                            `Cannot save content model because the ref field "${refField.fieldId}" references a content model (${refField.settings.modelId}) that has no title field assigned.`
+                            `Cannot save content model because the ref field "${refField.fieldId}" references a content model "${refField.settings.modelId}" that has no title field assigned.`
                         );
                     }
                 }
