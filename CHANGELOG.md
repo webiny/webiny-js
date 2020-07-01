@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+
+### Bug Fixes
+
+* **project-utils:** set anonymous user id during production build ([4cc4990](https://github.com/webiny/webiny-js/commit/4cc4990a11600d09374bcd1e28446e5d4fe511b9))
+
+
+
+
+
 # [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
 
 
