@@ -114,6 +114,26 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         throw new Error('Base environment ("createdFrom" field) not set.');
                     }
                 }
+
+                if (this.slug) {
+                    const existingGroup = await CmsEnvironment.findOne({
+                        query: { slug: this.slug }
+                    });
+                    if (existingGroup) {
+                        throw Error(`Environment with slug "${this.slug}" already exists.`);
+                    }
+                    return;
+                }
+
+                // // ... otherwise, assign a unique slug automatically.
+                // this.slug = toSlug(this.name);
+                // const existingGroup = await CmsEnvironment.findOne({ query: { slug: this.slug } });
+                // if (!existingGroup) {
+                //     return;
+                // }
+                //
+                // this.getField("slug").state.set = false;
+                // this.slug = `${this.slug}-${shortid.generate()}`;
             },
             async afterCreate() {
                 const sourceEnvironment = await this.createdFrom;
