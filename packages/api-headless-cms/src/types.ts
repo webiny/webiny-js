@@ -18,6 +18,7 @@ export type CmsLocalizedModelFieldValue<T> = {
 export type CmsEnvironment = {
     id: string;
     name: string;
+    slug: string;
     description: string;
     changedOn: Date;
     save(): Promise<boolean>;
