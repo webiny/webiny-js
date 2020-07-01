@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+
+### Bug Fixes
+
+* **app-page-builder:** replace `a` with `Link` component ([0a4a7e7](https://github.com/webiny/webiny-js/commit/0a4a7e7fb3d0644218a67dd8b2e42cb85c047219))
+
+
+
+
+
 # [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/app-page-builder
