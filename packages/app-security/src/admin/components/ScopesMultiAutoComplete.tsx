@@ -5,6 +5,7 @@ import { getPlugins } from "@webiny/plugins";
 import { SecurityScopesListPlugin } from "@webiny/app-security/types";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
+import { useApolloClient } from "react-apollo";
 
 const t = i18n.ns("app-security/admin/roles/form");
 
@@ -17,6 +18,7 @@ const styles = {
 };
 
 const ScopesMultiAutoComplete = props => {
+    const client = useApolloClient();
     const [scopesList, setScopesList] = useState([]);
 
     useEffect(() => {
@@ -35,7 +37,7 @@ const ScopesMultiAutoComplete = props => {
                 let pluginScopes = plugin.scopes;
 
                 if (typeof pluginScopes === "function") {
-                    pluginScopes = await pluginScopes();
+                    pluginScopes = await pluginScopes({ apolloClient: client });
                 }
 
                 scopes.push(...pluginScopes);
