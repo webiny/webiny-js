@@ -72,13 +72,8 @@ export default ({ createBase, context }) => {
                         return;
                     }
                     const availableScopes = await getAvailableScopes();
-                    console.log(1);
-                    console.log(scopes);
-                    console.log(availableScopes);
                     for (let scope of scopes) {
-                        console.log("Testing " + scope);
                         if (!availableScopes.includes(scope)) {
-                            console.log("Bad scope!");
                             throw new Error(
                                 `Scope ${scope} is invalid! Use one of the existing scopes: ${availableScopes}`
                             );
