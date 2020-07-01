@@ -1,4 +1,4 @@
-import { withFields, pipe, string, withProps, withHooks, fields } from "@webiny/commodo";
+import { withFields, pipe, string, withHooks, fields } from "@webiny/commodo";
 
 const RefFieldListItemModel = withFields({
     modelId: string({ validation: "required" }),
