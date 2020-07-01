@@ -37,12 +37,14 @@ export default {
             name: String
             description: String
             environments: [ID]
+            scopes: [String]
         }
 
         input CmsAccessTokenUpdateInput {
             name: String
             description: String
             environments: [ID]
+            scopes: [String]
         }
 
         extend type CmsQuery {

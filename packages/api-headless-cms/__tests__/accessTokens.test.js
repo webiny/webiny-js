@@ -74,6 +74,7 @@ const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
             updateAccessToken(id: $id, data: $data) {
                 data {
                     name
+                    scopes
                 }
             }
         }
@@ -124,7 +125,8 @@ describe("Environments test", () => {
         await getCollection("CmsContentModel").insertOne({
             id: modelId,
             environment: initialEnvironment.id,
-            name: "Test Model"
+            name: "Test Model",
+            modelId: "testModel"
         });
 
         process.env.TEST_ENV_ID = initialEnvironment.id
@@ -146,8 +148,7 @@ describe("Environments test", () => {
         expect(createdAccessToken.id).toBeTruthy();
         expect(createdAccessToken.token).toBeTruthy();
         expect(createdAccessToken.environments).toBeTruthy();
-        expect(createdAccessToken.scopes.length).toBeGreaterThanOrEqual(2);
-        expect(createdAccessToken.scopes[0].split(":").length).toEqual(4);
+        expect(createdAccessToken.scopes).toBeFalsy();
     });
     it("Should list access tokens", async () => {
         let [{ errors, data }] = await invoke({
@@ -191,6 +192,47 @@ describe("Environments test", () => {
             throw JSON.stringify(errors, null, 2);
         }
         expect(data.cms.updateAccessToken.data.name).toEqual(newTokenName);
+    });
+
+    it("Should not update access token with invalid scopes", async () => {
+        let [{ errors, data }] = await invoke({
+            body: {
+                query: UPDATE_ACCESS_TOKEN,
+                variables: {
+                    id: createdAccessToken.id,
+                    data: {
+                        scopes: ["asdf"]
+                    }
+                }
+            }
+        });
+
+        if (errors) {
+            throw JSON.stringify(errors, null, 2);
+        }
+        expect(data.cms.updateAccessToken.data).toBeNull();
+    });
+
+    // TODO [Andrei]: after fixing CmsContentModel.listContentModels, make sure this test works
+    it.skip("Should update access token with valid scopes", async () => {
+        let [{ errors, data }] = await invoke({
+            body: {
+                query: UPDATE_ACCESS_TOKEN,
+                variables: {
+                    id: createdAccessToken.id,
+                    data: {
+                        scopes: [`cms:read:${initialEnvironment.id}:testModel`]
+                    }
+                }
+            }
+        });
+
+        if (errors) {
+            throw JSON.stringify(errors, null, 2);
+        }
+
+        expect(createdAccessToken.scopes.length).toEqual(1);
+        expect(createdAccessToken.scopes[0].split(":").length).toEqual(4);
     });
 
     it("Should delete access token", async () => {
