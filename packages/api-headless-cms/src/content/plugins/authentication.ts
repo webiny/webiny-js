@@ -49,7 +49,7 @@ export default {
         console.log(accessToken);
 
         const token = await CmsAccessToken.findOne({
-            // TODO [Andrei] Fix "Cannot read property 'CmsEnvironment' of undefined", here:36
+            // TODO [Andrei] [help pls] Fix "Cannot read property 'CmsEnvironment' of undefined", here:36
             query: { token: accessToken }
         });
         console.log(2);

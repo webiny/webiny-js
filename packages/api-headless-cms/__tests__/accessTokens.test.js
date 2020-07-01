@@ -119,7 +119,8 @@ describe("Environments test", () => {
             id: initialEnvironment.id,
             name: "Test Environment",
             description: "... test env description ...",
-            createdFrom: null
+            createdFrom: null,
+            slug: "some-slug"
         });
 
         await getCollection("CmsContentModel").insertOne({
@@ -128,8 +129,6 @@ describe("Environments test", () => {
             name: "Test Model",
             modelId: "testModel"
         });
-
-        process.env.TEST_ENV_ID = initialEnvironment.id
     });
     it("Should create an Access Token", async () => {
         let [{ errors, data }] = await invoke({
@@ -213,7 +212,7 @@ describe("Environments test", () => {
         expect(data.cms.updateAccessToken.data).toBeNull();
     });
 
-    // TODO [Andrei]: after fixing CmsContentModel.listContentModels, make sure this test works
+    // TODO [Andrei] [js]: after fixing CmsContentModel.listContentModels, make sure this test works
     it.skip("Should update access token with valid scopes", async () => {
         let [{ errors, data }] = await invoke({
             body: {
