@@ -20,7 +20,11 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "load-json-file": "^6.2.0",
+    "write-json-file": "^4.3.0",
+    "pluralize": "^8.0.0",
+    "case": "^1.6.3"
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^1.1.5"
