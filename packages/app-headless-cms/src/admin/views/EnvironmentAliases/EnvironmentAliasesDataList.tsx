@@ -74,6 +74,15 @@ const EnvironmentAliasesDataList = () => {
         >
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
+                    {
+                        selectedInfo.name &&
+                            <EnvironmentInfoDialog
+                                open={infoOpened}
+                                onClose={() => setInfoOpened(false)}
+                                name={selectedInfo.name}
+                                url={selectedInfo.url}
+                            />
+                    }
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
@@ -89,15 +98,6 @@ const EnvironmentAliasesDataList = () => {
                                             <InformationIcon className={style.icon}/>
                                         </div>
                                     </Typography>
-                                    {
-                                        selectedInfo.name &&
-                                            <EnvironmentInfoDialog
-                                                open={infoOpened}
-                                                onClose={() => setInfoOpened(false)}
-                                                name={selectedInfo.name}
-                                                url={selectedInfo.url}
-                                            />
-                                    }
                                 </div>
                                 {item.default && (
                                     <Typography use={"overline"}>{t`(default)`}</Typography>
