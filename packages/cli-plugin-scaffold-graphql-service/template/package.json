@@ -12,5 +12,8 @@
     "@webiny/api-plugin-commodo-db-proxy": "^4.0.2",
     "@webiny/api-security": "^4.0.2",
     "@webiny/project-utils": "^4.0.2"
+  },
+  "devDependencies": {
+    "@webiny/api-plugin-commodo-nedb": "^4.3.0"
   }
 }
