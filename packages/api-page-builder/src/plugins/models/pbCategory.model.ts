@@ -3,9 +3,10 @@ import { validation } from "@webiny/validation";
 
 import { withFields, string, withHooks, withName } from "@webiny/commodo";
 
-import { PbContext } from "@webiny/api-page-builder/types";
+/*import { PbContext } from "@webiny/api-page-builder/types";
 
-export default ({ createBase, context } : { createBase: Function, context: PbContext }) =>
+export default ({ createBase, context } : { createBase: Function, context: PbContext }) =>*/
+export default ({ createBase, context }) =>
     flow(
         withName("PbCategory"),
         withHooks({
