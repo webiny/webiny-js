@@ -107,8 +107,12 @@ const Welcome = () => {
 
     const { fullName } = security.user;
     
-    const scopes = getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget");
-    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
+    /*const scopes = getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget");
+    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;    */
+
+    const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
+        "admin-welcome-screen-widget"
+    ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
 
     return (
         <Grid>
@@ -119,12 +123,13 @@ const Welcome = () => {
                         <ContentTheme>
                             <Cell span={12}>
                                 <Typography use={"headline6"}>      
-                                    {checkedScopes && 
+                                    <h6>{getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget")}</h6>
+                                    {canSeeAnyWidget && 
                                         <p className={pGetStartedStyle}>
                                             To get started - pick one of the actions below:
                                         </p>
                                     }
-                                    {!checkedScopes && 
+                                    {!canSeeAnyWidget && 
                                         <p className={pGetStartedStyle}>
                                             Please contact administrator for permission to use the site's actions.
                                         </p>
