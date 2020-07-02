@@ -122,8 +122,7 @@ const Welcome = () => {
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>
-                                <Typography use={"headline6"}>      
-                                    <h6>{getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget")}</h6>
+                                <Typography use={"headline6"}>
                                     {canSeeAnyWidget && 
                                         <p className={pGetStartedStyle}>
                                             To get started - pick one of the actions below:
