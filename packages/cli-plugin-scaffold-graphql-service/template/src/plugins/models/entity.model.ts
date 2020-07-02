@@ -3,7 +3,7 @@ import { withFields, withName, string, pipe } from "@webiny/commodo";
 
 export default ({ createBase }) =>
     pipe(
-        withName("Book"),
+        withName("Entity"),
         withFields(() => ({
             title: string()
         }))

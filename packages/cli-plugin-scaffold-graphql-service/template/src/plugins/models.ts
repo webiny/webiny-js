@@ -1,8 +1,7 @@
-import { flow } from "lodash";
 // @ts-ignore
-import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
+import { withStorage, withCrudLogs, withSoftDelete, withFields, pipe } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
-import book from "./models/book.model";
+import entity from "./models/entity.model";
 
 export default () => ({
     name: "context-models",
@@ -17,7 +16,7 @@ export default () => ({
         }
 
         const createBase = () =>
-            flow(
+            pipe(
                 withFields({
                     id: context.commodo.fields.id()
                 }),
@@ -28,7 +27,7 @@ export default () => ({
             )();
 
         context.models = {
-            Book: book({ createBase }),
+            Entity: entity({ createBase }),
             createBase
         };
     }
