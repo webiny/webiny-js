@@ -26,6 +26,7 @@ const style = {
         color: "var(--mdc-theme-primary)"
     }),
     icon: css({
+        color: "rgba(255, 255, 255, 0.54)",
         width: 16,
         height: 16,
         marginTop: "4px",
@@ -41,7 +42,9 @@ const EnvironmentAliasesDataList = () => {
     const { actions, list } = useCrud();
     const [infoOpened, setInfoOpened] = useState(false);
     const [selectedInfo, setSelectedInfo] = useState({
-        name: "",
+        environment: {
+            name: ""
+        },
         url: {
             manage: "",
             preview: "",
@@ -75,11 +78,11 @@ const EnvironmentAliasesDataList = () => {
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
                     {
-                        selectedInfo.name &&
+                        selectedInfo.environment.name &&
                             <EnvironmentInfoDialog
                                 open={infoOpened}
                                 onClose={() => setInfoOpened(false)}
-                                name={selectedInfo.name}
+                                name={selectedInfo.environment.name}
                                 url={selectedInfo.url}
                             />
                     }
