@@ -58,5 +58,8 @@
       "api/security/*",
       "api/settingsManager"
     ]
+  },
+  "scripts": {
+    "test": "jest --config jest.config.js"
   }
 }
