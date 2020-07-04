@@ -106,9 +106,6 @@ const Welcome = () => {
     }
 
     const { fullName } = security.user;
-    
-    /*const scopes = getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget");
-    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;    */
 
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
