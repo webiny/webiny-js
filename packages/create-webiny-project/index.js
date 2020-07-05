@@ -206,7 +206,9 @@ async function install({ root, dependencies }) {
     try {
         await execa(command, args);
     } catch (err) {
-        throw new Error("Unable to install core dependencies for create-webiny-project.", err);
+        throw new Error(
+            "Unable to install core dependencies for create-webiny-project: " + err.message
+        );
     }
 }
 
@@ -222,11 +224,11 @@ async function run({ root, appName, template, tag, log }) {
         const tasks = new Listr([
             {
                 title: `Install template package`,
-                task: async ctx => {
+                task: async () => {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
-                        throw new Error("Failed to install template package", err, ctx);
+                        throw new Error(`Failed to install template package: ${err.message}`);
                     }
                 }
             }
