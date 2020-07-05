@@ -65,6 +65,7 @@ yargs.command(
             describe:
                 "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory.",
             alias: "l",
+            default: "",
             type: "string",
             demandOption: false
         });
