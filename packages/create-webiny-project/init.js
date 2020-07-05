@@ -19,7 +19,7 @@ const writeJsonFile = require("write-json-file");
 const { getPackageVersion } = require("./utils");
 const rimraf = require("rimraf");
 
-let basePath = path.join("./", "cwp-logs.txt");
+let basePath = "cwp-logs.txt";
 
 module.exports = async function({ root, appName, templateName, tag, log }) {
     const appPackage = require(path.join(root, "package.json"));
@@ -211,7 +211,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                     };
                     let logStream;
                     if (log) {
-                        if (log.startsWith(".") || log.startsWitch("file:")) {
+                        if (log.startsWith(".") || log.startsWith("file:")) {
                             basePath = log;
                         }
                         logStream = fs.createWriteStream(basePath, {
@@ -245,11 +245,11 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
     ]);
 
     await tasks.run().catch(async err => {
-        if (log.startsWith(".") || log.startsWitch("file:")) {
+        if (log.startsWith(".") || log.startsWith("file:")) {
             basePath = log;
         }
 
-        fs.appendFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
+        fs.appendFileSync(basePath, JSON.stringify(err, null, 2) + os.EOL);
 
         await sendEvent({
             event: "create-webiny-project-error",

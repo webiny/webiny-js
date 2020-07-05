@@ -238,11 +238,11 @@ async function run({ root, appName, template, tag, log }) {
         ]);
 
         await tasks.run().catch(async err => {
-            let basePath = path.join("./", "cwp-logs.txt");
-            if (log.startsWith(".") || log.startsWitch("file:")) {
+            let basePath = "cwp-logs.txt";
+            if (log.startsWith(".") || log.startsWith("file:")) {
                 basePath = log;
             }
-            fs.writeFileSync(path.join(basePath), JSON.stringify(err, null, 2) + os.EOL);
+            fs.writeFileSync(basePath, JSON.stringify(err, null, 2) + os.EOL);
             console.log("\nCleaning up project...");
             rimraf.sync(root);
             console.log("Project cleaned!");
