@@ -8,8 +8,8 @@ const writeJsonFile = require("write-json-file");
 const { v4: uuidv4 } = require("uuid");
 const execa = require("execa");
 
-const s3BucketName = (projectId, appName) => {
-    return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-files`;
+const s3BucketName = (projectId, appName, env) => {
+    return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-${env}`;
 };
 
 module.exports = async ({ appName, root }) => {
@@ -34,18 +34,25 @@ module.exports = async ({ appName, root }) => {
         .split("-")
         .shift();
 
-    const jwtSecret = crypto
-        .randomBytes(128)
-        .toString("base64")
-        .slice(0, 60);
+    const jwtSecret = () =>
+        crypto
+            .randomBytes(128)
+            .toString("base64")
+            .slice(0, 60);
 
-    apiEnv.default["JWT_SECRET"] = jwtSecret;
-    apiEnv.default["S3_BUCKET"] = s3BucketName(projectId, appName);
+    apiEnv.local["JWT_SECRET"] = jwtSecret();
+    apiEnv.dev["JWT_SECRET"] = jwtSecret();
+    apiEnv.prod["JWT_SECRET"] = jwtSecret();
+    apiEnv.local["S3_BUCKET"] = s3BucketName(projectId, appName, "local");
+    apiEnv.dev["S3_BUCKET"] = s3BucketName(projectId, appName, "dev");
+    apiEnv.prod["S3_BUCKET"] = s3BucketName(projectId, appName, "prod");
     await writeJsonFile(apiEnvJson, apiEnv);
 
     const baseEnvPath = path.join(root, ".env.json");
     const baseEnv = await loadJsonFile(baseEnvPath);
-    baseEnv.default["MONGODB_NAME"] = appName;
+    baseEnv.local["MONGODB_NAME"] = `${appName}-local`;
+    baseEnv.dev["MONGODB_NAME"] = `${appName}-dev`;
+    baseEnv.prod["MONGODB_NAME"] = `${appName}-prod`;
     await writeJsonFile(baseEnvPath, baseEnv);
 
     let webinyRoot = fs.readFileSync(path.join(root, "webiny.root.js"), "utf-8");
