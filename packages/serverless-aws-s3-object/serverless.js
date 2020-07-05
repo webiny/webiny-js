@@ -30,7 +30,21 @@ class ServerlessAwsS3Object extends Component {
     }
 
     async remove() {
+        if (!this.state.object || !this.state.object.key) {
+            return;
+        }
+
         const s3 = new S3({ region: this.state.region });
+
+        // Check that bucket exists
+        try {
+            await s3.headBucket({ Bucket: this.state.bucket }).promise();
+        } catch (e) {
+            // If bucket doesn't exist, it was most likely deleted.
+            this.state = {};
+            await this.save();
+            return;
+        }
 
         this.context.instance.debug(
             "Removing object %o from %o",
