@@ -219,8 +219,11 @@ async function run({ root, appName, template, tag, log }) {
 
         if (template.startsWith(".") || template.startsWith("file:")) {
             templateName = "file:" + path.relative(appName, template.replace("file:", ""));
+            dependencies.push(templateName);
+        } else {
+            dependencies.push(`${templateName}@${tag}`);
         }
-        dependencies.push(`${templateName}@${tag}`);
+
         const tasks = new Listr([
             {
                 title: `Install template package`,
