@@ -8,6 +8,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { LIST_ENVIRONMENT_ALIASES } from "./views/EnvironmentAliases/graphql";
 import { toLower } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 export type NewContentModelDialogProps = {
     open: boolean;
@@ -27,10 +28,6 @@ const style = {
     apiUrl: css({
         display: "flex",
         alignItems: "center"
-    }),
-    alias: css({
-        fontSize: "1.25rem",
-        fontWeight: "bold"
     }),
     aliasTitle: css({
         minWidth: "200px"
@@ -71,7 +68,9 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                 <div>
                     <div>
                         <div className={style.apiUrl}>
-                            <Typography use={"subtitle1"} className={style.api}>GraphQL API:</Typography>
+                            <Tooltip className={style.api} content={<span>This link allows you to access content created by different application across Webiny like Page Builder or Form Builder.</span>}>
+                                <Typography use={"headline6"} >GraphQL API:</Typography>
+                            </Tooltip>
                             <a
                                 href={process.env.REACT_APP_GRAPHQL_API_URL}
                                 rel="noopener noreferrer"
@@ -84,11 +83,14 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                                 onCopy={() => showSnackbar("Successfully copied!")}
                             />
                         </div>
+                        <Typography use={"headline6"} style={{fontSize: "1.4rem"}}>
+                            Headless CMS - {name}
+                        </Typography>
                         {
                             totalAliases.filter((elem) => elem.environment.name === name).map((elem) => {
                                 return(
                                     <div key={elem.id} className={style.aliasContainer}>
-                                        <Typography use={"headline6"} className={style.alias}>
+                                        <Typography use={"headline6"}>
                                             Alias: {elem.name}
                                         </Typography>
                                         <div className={style.apiUrl}>
