@@ -31,12 +31,6 @@ export const createReadResolvers: CreateReadResolvers = ({
     const environment = context.cms.getEnvironment().slug;
     const scope = `cms:${apiType}:${environment}:${model.modelId}`;
 
-    // TODO [Andrei] [later]: test scopes
-    console.log("scope = ");
-    console.log("");
-    console.log("");
-    console.log(scope);
-
     return {
         Query: {
             [`get${typeName}`]: hasScope(scope)(resolveGet({ model })),
