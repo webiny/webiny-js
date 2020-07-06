@@ -12,9 +12,10 @@ const environment2accessToken = createBase =>
 
 export default {
     name: "authentication-access-token",
-    type: "authentication-disabled",
+    type: "authentication",
     authenticate: async context => {
         // return false;
+        console.log("Running AT authentication...");
         const createBase = () =>
             pipe(
                 withFields({
@@ -49,7 +50,7 @@ export default {
         console.log(accessToken);
 
         const token = await CmsAccessToken.findOne({
-            // TODO [Andrei] [help pls] Fix "Cannot read property 'CmsEnvironment' of undefined", here:36
+            // TODO [Andrei] [help pls] [apparently fixed] Fix "Cannot read property 'CmsEnvironment' of undefined", here:36
             query: { token: accessToken }
         });
         console.log(2);
