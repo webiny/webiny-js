@@ -19,6 +19,7 @@ const buttonStyle = css({
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
     name: "admin-welcome-screen-widget-form-builder",
+    scopes: ["forms:form:crud"],
     widget: {
         cta: (
             <Link to="/forms" className={linkStyle}>
@@ -28,6 +29,5 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
         description: "Create forms using a drag and drop interface and track conversions.",
         title: "Form Builder"
     }
-};
-
+}
 export default plugin;

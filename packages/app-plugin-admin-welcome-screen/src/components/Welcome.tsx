@@ -21,6 +21,9 @@ import TwitterIcon from "../icons/twitter-logo.svg";
 import TextbookIcon from "../icons/textbook.svg";
 import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
+import { SecureView } from "@webiny/app-security/components";
+
+import { hasScopes } from "@webiny/app-security"; 
 
 const linkStyle = css({
     textDecoration: "none",
@@ -104,6 +107,10 @@ const Welcome = () => {
 
     const { fullName } = security.user;
 
+    const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
+        "admin-welcome-screen-widget"
+    ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+
     return (
         <Grid>
             <Cell span={12}>
@@ -113,9 +120,16 @@ const Welcome = () => {
                         <ContentTheme>
                             <Cell span={12}>
                                 <Typography use={"headline6"}>
-                                    <p className={pGetStartedStyle}>
-                                        To get started - pick one of the actions below:
-                                    </p>
+                                    {canSeeAnyWidget && 
+                                        <p className={pGetStartedStyle}>
+                                            To get started - pick one of the actions below:
+                                        </p>
+                                    }
+                                    {!canSeeAnyWidget && 
+                                        <p className={pGetStartedStyle}>
+                                            Please contact administrator for permission to use the site's actions.
+                                        </p>
+                                    }
                                     <br />
                                 </Typography>
                             </Cell>
@@ -124,23 +138,25 @@ const Welcome = () => {
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
                                     return (
-                                        <Widget key={pl.name}>
-                                            <Elevation z={2} style={{ padding: 10 }}>
-                                                <Typography use={"headline6"}>
-                                                    <p className={widgetTitleStyle}>
-                                                        {pl.widget.title}
-                                                    </p>
-                                                </Typography>
-                                                <Typography use={"body1"}>
-                                                    <p className={widgetDescriptionStyle}>
-                                                        {pl.widget.description}
-                                                    </p>
-                                                </Typography>
-                                                <div className={widgetButtonStyle}>
-                                                    {pl.widget.cta}
-                                                </div>
-                                            </Elevation>
-                                        </Widget>
+                                        <SecureView scopes={pl.scopes}>
+                                            <Widget key={pl.name}>
+                                                <Elevation z={2} style={{ padding: 10 }}>
+                                                    <Typography use={"headline6"}>
+                                                        <p className={widgetTitleStyle}>
+                                                            {pl.widget.title}
+                                                        </p>
+                                                    </Typography>
+                                                    <Typography use={"body1"}>
+                                                        <p className={widgetDescriptionStyle}>
+                                                            {pl.widget.description}
+                                                        </p>
+                                                    </Typography>
+                                                    <div className={widgetButtonStyle}>
+                                                        {pl.widget.cta}
+                                                    </div>
+                                                </Elevation>
+                                            </Widget>
+                                        </SecureView>
                                     );
                                 })}
                             </div>
