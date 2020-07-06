@@ -10,25 +10,15 @@ const environment2accessToken = createBase =>
         }))
     )(createBase());
 
+const getAuthorizationToken = context => {
+    const { headers } = context.event;
+    return headers.authorization || headers.Authorization;
+};
+
 export default {
     name: "authentication-access-token",
     type: "authentication",
     authenticate: async context => {
-        // return false;
-        console.log("Running AT authentication...");
-        const createBase = () =>
-            pipe(
-                withFields({
-                    id: context.commodo.fields.id()
-                }),
-                withStorage({ driver: context.commodo.driver })
-            )();
-        const CmsAccessToken = createAccessToken(createBase); //CmsAccessTokenFactory({ createBase, context });
-        const CmsEnvironment2AccessToken = environment2accessToken(createBase);
-
-        console.log("WRROOOOOM, AUTHENTICATING...");
-        console.log(context);
-        console.log(context.models);
         if (!context.event) {
             return;
         }
@@ -37,24 +27,25 @@ export default {
             return;
         }
 
-        if (process.env.NODE_ENV === "test") {
-            // Skip authentication when running tests
-            return;
+        const createBase = () =>
+            pipe(
+                withFields({
+                    id: context.commodo.fields.id()
+                }),
+                withStorage({ driver: context.commodo.driver })
+            )();
+
+        const CmsAccessToken = createAccessToken(createBase);
+        const CmsEnvironment2AccessToken = environment2accessToken(createBase);
+
+        const accessToken = getAuthorizationToken(context);
+        if (!accessToken) {
+            return false;
         }
 
-        console.log(1);
-        const accessToken =
-            context.event.headers["authorization"] || context.event.headers["Authorization"];
-        // const { CmsAccessToken } = context.models;
-        console.log("Authorizing...");
-        console.log(accessToken);
-
         const token = await CmsAccessToken.findOne({
-            // TODO [Andrei] [help pls] [apparently fixed] Fix "Cannot read property 'CmsEnvironment' of undefined", here:36
             query: { token: accessToken }
         });
-        console.log(2);
-        console.log(token);
 
         if (!token) {
             return false;
