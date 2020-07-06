@@ -1,6 +1,6 @@
-import LambdaClient from "aws-sdk/clients/lambda";
 import { Context } from "@webiny/graphql/types";
 import { SecurityOptions } from "../../types";
+import { AccessToken } from "./AccessToken";
 
 export default (options: SecurityOptions) => async (context: Context) => {
     if (context.user) {
@@ -15,16 +15,11 @@ export default (options: SecurityOptions) => async (context: Context) => {
         return;
     }
 
-    const token = authorization;
-    const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-    const user = JSON.parse(
-        (
-            await Lambda.invoke({
-                FunctionName: options.validateAccessTokenFunction,
-                Payload: JSON.stringify({ PAT: token })
-            }).promise()
-        ).Payload as string
-    );
+    const token = new AccessToken({
+        token: authorization,
+        validateAccessTokenFunction: options.validateAccessTokenFunction
+    });
+    const user = await token.getUser();
 
     context.token = token;
     context.user = user;
