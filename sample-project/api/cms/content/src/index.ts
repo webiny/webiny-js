@@ -9,13 +9,6 @@ import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 export const handler = createHandler(
     dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
-    securityServicePlugins({
-        token: {
-            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
-            secret: process.env.JWT_TOKEN_SECRET
-        },
-        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
-    }),
     i18nServicePlugins({
         localesFunction: process.env.I18N_LOCALES_FUNCTION
     }),
@@ -25,6 +18,13 @@ export const handler = createHandler(
             introspection: process.env.GRAPHQL_INTROSPECTION,
             playground: process.env.GRAPHQL_PLAYGROUND
         }
+    }),
+    securityServicePlugins({
+        token: {
+            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
+            secret: process.env.JWT_TOKEN_SECRET
+        },
+        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
     }),
     dataManagerPlugins({ dataManagerFunction: process.env.CMS_DATA_MANAGER_FUNCTION })
 );
