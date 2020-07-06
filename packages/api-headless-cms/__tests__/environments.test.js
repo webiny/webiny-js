@@ -12,6 +12,7 @@ const CREATE_ENVIRONMENT = /* GraphQL */ `
                         id
                     }
                     contentModels {
+                        id
                         modelId
                     }
                 }
@@ -82,8 +83,16 @@ describe("Environments test", () => {
         await getCollection("CmsContentModel").insertOne({
             id: modelId,
             environment: initialEnvironment.id,
+            modelId: "test-model-id",
             name: "Test Model"
         });
+
+        console.log("Models inserted: ");
+        console.log(
+            await getCollection("CmsContentModel")
+                .find({})
+                .toArray()
+        );
     });
 
     it("should create a new environment", async () => {
@@ -116,13 +125,18 @@ describe("Environments test", () => {
             }
         });
 
+        if (body.error) {
+            throw body.error;
+        }
+
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
         expect(body.data.cms.createEnvironment.data.createdFrom.id).toBeTruthy();
 
+        console.log(body.data.cms.createEnvironment.data.contentModels);
         expect(body.data.cms.createEnvironment.data.contentModels).toBeTruthy();
 
         // TODO [Andrei] [js]: make sure this test passes after contentModels is fixed
-        // expect.skip(body.data.cms.listEnvironments.data.contentModels).toEqual(1);
+        // expect(body.data.cms.createEnvironment.data.contentModels.length).toEqual(1);
     });
 
     it("should not create two environments with the same slug", async () => {

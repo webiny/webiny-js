@@ -24,6 +24,7 @@ export default {
         }
 
         type CmsContentModel {
+            id: ID
             modelId: String
         }
 

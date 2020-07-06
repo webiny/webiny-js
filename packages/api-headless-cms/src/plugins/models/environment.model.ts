@@ -7,66 +7,19 @@ import {
     ref,
     withName,
     withHooks,
-    setOnce,
-    withStaticProps
+    setOnce
 } from "@webiny/commodo";
 import withChangedOnFields from "./withChangedOnFields";
 import { CmsContext } from "../../types";
-import shortid from "shortid";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
-import { cloneDeep } from "lodash";
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
-    const modifyQueryArgs = (args = {}, environment) => {
-        const returnArgs = cloneDeep<any>(args);
-        if (returnArgs.query) {
-            returnArgs.query = {
-                $and: [{ environment: environment.id }, returnArgs.query]
-            };
-        } else {
-            returnArgs.query = { environment: environment.id };
-        }
-
-        return returnArgs;
-    };
-
-    // const createBaseContentModel = ({ context }) => () => {
-    //     const environment = context.cms.getEnvironment();
-    //     return
-    //     pipe(
-    //         withFields({
-    //             id: context.commodo.fields.id(),
-    //             environment: setOnce()(context.commodo.fields.id())
-    //         }),
-    //         withStaticProps(({ find, count, findOne }) => ({
-    //                 find(args) {
-    //                     return find.call(this, modifyQueryArgs(args, environment));
-    //                 },
-    //             })
-    //         // withStorage({ driver }),
-    //         // withUser(context),
-    //         // withSoftDelete(),
-    //         // withCrudLogs()
-    //     )();
-    // }
-
-    // const environment =
-    //     (context.cms && context.cms.getEnvironment && context.cms.getEnvironment()) || process.env.TEST_ENV_ID;
-    // const CmsContentModel = pipe(
-    //     withFields({
-    //         id: context.commodo.fields.id(),
-    //         environment: setOnce()(context.commodo.fields.id())
-    //     }),
-    //     withStaticProps(({ find, count, findOne }) => ({
-    //         find(args) {
-    //             return find.call(this, modifyQueryArgs(args, environment));
-    //         }
-    //     })),
-    //     withName(`CmsContentModel`),
-    //     withFields(() => ({
-    //         name: string()
-    //     }))
-    // )();
+    const CmsContentModel = pipe(
+        withName(`CmsContentModel`),
+        withFields({
+            // id: context.commodo.fields.id(),
+            modelId: string()
+        })
+    )(createBase());
 
     const CmsEnvironment = pipe(
         withName("CmsEnvironment"),
@@ -93,18 +46,16 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 });
             },
             get contentModels() {
-                try {
-                    // TODO [Andrei] [help pls]: fix the garbage CmsContentModel... (contentmodel.model.ts)
-                    // console.log(CmsContentModel);
-                    // console.log(CmsContentModel.find({}));
+                // TODO [Andrei]: after fixing .find({}), remove these comments
 
-                    // return CmsContentModel.find({});
-                    return [{ modelId: "model-id-1" }, { modelId: "model-id-two" }];
-                    // return CmsContentModel.find({ environment: this.id });
-                } catch (e) {
-                    console.log(e);
-                    throw new Error(e);
-                }
+                return CmsContentModel.find({}).then(contentModels => {
+                    console.log(`Found ${contentModels.length} content models...`);
+                    console.log(
+                        contentModels.map(model => ({ id: model.id, modelId: model.modelId }))
+                    );
+
+                    return contentModels;
+                });
             }
         }),
         withHooks({
@@ -124,16 +75,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     }
                     return;
                 }
-
-                // // ... otherwise, assign a unique slug automatically.
-                // this.slug = toSlug(this.name);
-                // const existingGroup = await CmsEnvironment.findOne({ query: { slug: this.slug } });
-                // if (!existingGroup) {
-                //     return;
-                // }
-                //
-                // this.getField("slug").state.set = false;
-                // this.slug = `${this.slug}-${shortid.generate()}`;
             },
             async afterCreate() {
                 const sourceEnvironment = await this.createdFrom;
