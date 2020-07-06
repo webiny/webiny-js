@@ -28,10 +28,10 @@ export default ({ createBase, context }) => {
         const envs = await CmsEnvironment.find({});
         const scopes = [];
 
-        for (let env of envs) {
+        for (const env of envs) {
             const contentModels = env.contentModels;
-            for (let apiType of ["read", "preview"]) {
-                for (let contentModel of contentModels) {
+            for (const apiType of ["read", "preview"]) {
+                for (const contentModel of contentModels) {
                     const modelId = contentModel.modelId;
                     const currentScope = `cms:${apiType}:${env.slug}:${modelId}`;
 
@@ -67,7 +67,7 @@ export default ({ createBase, context }) => {
                         return;
                     }
                     const availableScopes = await getAvailableScopes();
-                    for (let scope of scopes) {
+                    for (const scope of scopes) {
                         if (!availableScopes.includes(scope)) {
                             throw new Error(
                                 `Scope ${scope} is invalid! Use one of the existing scopes: ${availableScopes}`
