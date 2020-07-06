@@ -7,7 +7,6 @@ import {
     ref,
     withName,
     skipOnPopulate,
-    withProps
 } from "@webiny/commodo";
 import crypto from "crypto";
 
