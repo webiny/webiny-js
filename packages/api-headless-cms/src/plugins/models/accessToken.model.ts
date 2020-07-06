@@ -18,9 +18,14 @@ const generateToken = (tokenLength = 48) =>
         .slice(0, tokenLength);
 
 export default ({ createBase, context }) => {
-    const { CmsEnvironment } = context.models;
-
     const getAvailableScopes = async () => {
+        // if (!context.models.CmsEnvironment) {
+        //     // TODO [Andrei] is this the right approach? when you deploy the api, it doesn't work unless we return here. Maybe it has something to do with "cold starts"
+        //     //   UPDATE: it seems to work now. I will test it some more later
+        //     return;
+        // }
+
+        const { CmsEnvironment } = context.models;
         const envs = await CmsEnvironment.find({});
         const scopes = [];
 
