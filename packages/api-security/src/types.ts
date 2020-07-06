@@ -11,7 +11,7 @@ export type SecurityOptions = {
 
 export type SecurityPlugin = Plugin & {
     type: "authentication";
-    authenticate(context: any): Promise<void>;
+    authenticate(context: any): void;
 };
 
 export type AuthorizationScopePlugin = Plugin & {
