@@ -58,13 +58,13 @@ export default () => {
                 environmentAlias = await context.models.CmsEnvironmentAlias.findOne({
                     query: {slug: context.cms.environment}
                 });
-                if(environmentAlias) {
+                if (environmentAlias) {
                     environment = await environmentAlias.environment;
                 }
             }
         }
 
-        if(!environment) {
+        if (!environment) {
             throw Error(
                 "Could not load environment, please check if the passed environment alias slug or environment ID is correct."
             );
