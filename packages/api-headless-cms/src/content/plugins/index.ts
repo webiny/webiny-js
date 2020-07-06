@@ -24,7 +24,7 @@ export default (
     {
         name: "context-cms-context",
         type: "context",
-        apply(context) {
+        preApply(context) {
             context.cms = context.cms || {};
             context.cms.type = options.type || "read";
             context.cms.environment = options.environment;

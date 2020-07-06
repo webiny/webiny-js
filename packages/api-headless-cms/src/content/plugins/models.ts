@@ -13,7 +13,7 @@ import { createEnvironmentBase as createEnvironmentBaseFactory } from "./utils/c
 import { CmsContext, ContextBeforeContentModelsPlugin } from "@webiny/api-headless-cms/types";
 
 export default () => {
-    async function apply(context: CmsContext) {
+    async function preApply(context: CmsContext) {
         const driver = context.commodo && context.commodo.driver;
 
         if (!driver) {
@@ -70,7 +70,9 @@ export default () => {
         context.cms.environment = environment.slug;
         context.cms.getEnvironment = () => environment;
         context.cms.getEnvironmentAlias = () => environmentAlias;
+    }
 
+    async function apply(context: CmsContext) {
         const createEnvironmentBase = createEnvironmentBaseFactory({
             context,
             addEnvironmentField: true
@@ -123,6 +125,9 @@ export default () => {
             type: "context",
             apply(context) {
                 return apply(context);
+            },
+            preApply(context) {
+                return preApply(context);
             }
         } as ContextPlugin<CmsContext>
     ];
