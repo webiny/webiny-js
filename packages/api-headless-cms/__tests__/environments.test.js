@@ -87,6 +87,7 @@ describe("Environments test", () => {
             name: "Test Model"
         });
 
+        // TODO [Andrei]: after fixing .find({}), clean this test: remove all comments
         console.log("Models inserted: ");
         console.log(
             await getCollection("CmsContentModel")
