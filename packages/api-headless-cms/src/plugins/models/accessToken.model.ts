@@ -64,15 +64,6 @@ export default ({ createBase, context }) => {
             scopes: string({
                 list: true,
                 validation: async scopes => {
-                    /* TODO [Andrei-maybe]: perhaps we should fix the error results so they're more clear on failure:
-                    * async functions return "null" data
-                    * non-async functions return VALIDATION_FAILED_INVALID_FIELDS:
-
-                    Error: Failed: "{
-                          \"code\": \"VALIDATION_FAILED_INVALID_FIELDS\",
-                          \"message\": \"Validation failed.\"
-                    }"
-                    * */
                     if (!scopes) {
                         return;
                     }
