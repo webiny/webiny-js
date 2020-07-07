@@ -9,7 +9,8 @@ import entity from "./models/entity.model";
  * when creating custom GraphQL resolvers. Note that you DON'T have to use Commodo if you don't like
  * it or it just doesn't fit your needs. Feel free to rely on a native database client or any other tool.
  *
- * @see https://docs.webiny.com/docs/api-development/introduction
+ * @see https://docs.webiny.com/docs/api-development/commodo/introduction
+ * @see https://github.com/webiny/commodo/tree/master
  */
 export default () => ({
     name: "context-models",
