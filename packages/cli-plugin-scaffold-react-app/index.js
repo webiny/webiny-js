@@ -107,7 +107,6 @@ module.exports = [
                 }
 
                 // Inject resource into closest resources.js //
-                // TODO [Andrei] - make this work
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
