@@ -22,7 +22,7 @@ const MailchimpApi = function({ apiKey }) {
         return this.request({ path, body, method: "post" });
     };
 
-    this.request = ({ path, method, body }: {[key: string]: any}) => {
+    this.request = ({ path, method, body }: { [key: string]: any }) => {
         // eslint-disable-next-line
         const [, dataCenter] = this.apiKey.split("-");
         return got(`https://${dataCenter}.api.mailchimp.com/3.0` + path, {
