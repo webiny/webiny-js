@@ -4,7 +4,7 @@ import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
-import myPlugins from "../src/plugins"; // TODO: nooo
+import myPlugins from "../src/plugins";
 
 export default ({ database } = {}) => {
     if (!database) {
