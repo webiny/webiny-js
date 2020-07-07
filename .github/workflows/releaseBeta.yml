@@ -28,11 +28,11 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Check dependencies
-        run: yarn adio
-
       - name: Check code formatting
         run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
 
       - name: Build packages
         run: yarn build
