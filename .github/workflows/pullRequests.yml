@@ -16,6 +16,15 @@ jobs:
 
       - uses: webiny/action-conventional-commits@v1.0.2
 
+  check-formatting:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check formatting
+        run: npx prettier --check "packages/**/src/*.{js,ts}"
+
   build-test:
     name: Build and test
     runs-on: ubuntu-latest

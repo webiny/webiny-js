@@ -10,6 +10,15 @@ env:
   NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
+  check-formatting:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check formatting
+        run: npx prettier --check "packages/**/src/*.{js,ts}"
+
   build-test-release:
     name: Build, test and release ("beta" tag)
     runs-on: ubuntu-latest
