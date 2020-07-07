@@ -2,7 +2,7 @@ name: Pull Request Actions
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -24,7 +24,7 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '12'
+          node-version: "12"
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
