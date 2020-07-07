@@ -1,9 +1,10 @@
 import { AuthorizationScopePlugin } from "../types";
 
 const userAccessIncludesScope = ({ context, scope }) => {
-    const access = context.user && context.user.access;
+    const access = context.security.user && context.security.user.access;
 
     if (access) {
+
         if (access.fullAccess || access.scopes.includes(scope)) {
             return true;
         }
@@ -13,7 +14,7 @@ const userAccessIncludesScope = ({ context, scope }) => {
 };
 
 const jwtPatAuthorization = {
-    name: "authorization-hasScope-jwt-or-pat",
+    name: "authorization-has-scope-context-security-user",
     type: "authorization",
     hasScope: async ({ context, scope }) => {
         return userAccessIncludesScope({ context, scope });

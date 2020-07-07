@@ -1,19 +1,27 @@
 import { withStorage, withFields, string, withName, pipe } from "@webiny/commodo";
 
-const createAccessToken = createBase => pipe(withName("CmsAccessToken"))(createBase());
-
-const environment2accessToken = createBase =>
-    pipe(
-        withName("CmsEnvironment2AccessToken"),
-        withFields(() => ({
-            environment: string()
-        }))
-    )(createBase());
-
 const getAuthorizationToken = context => {
     const { headers } = context.event;
     return headers.authorization || headers.Authorization;
 };
+
+const createBase = context =>
+    pipe(
+        withFields({
+            id: context.commodo.fields.id()
+        }),
+        withStorage({ driver: context.commodo.driver })
+    )();
+
+const createModels = context => ({
+    CmsAccessToken: pipe(withName("CmsAccessToken"))(createBase(context)),
+    CmsEnvironment2AccessToken: pipe(
+        withName("CmsEnvironment2AccessToken"),
+        withFields(() => ({
+            environment: string()
+        }))
+    )(createBase(context))
+});
 
 export default {
     name: "authentication-access-token",
@@ -27,16 +35,7 @@ export default {
             return;
         }
 
-        const createBase = () =>
-            pipe(
-                withFields({
-                    id: context.commodo.fields.id()
-                }),
-                withStorage({ driver: context.commodo.driver })
-            )();
-
-        const CmsAccessToken = createAccessToken(createBase);
-        const CmsEnvironment2AccessToken = environment2accessToken(createBase);
+        const { CmsAccessToken, CmsEnvironment2AccessToken } = createModels(context);
 
         const accessToken = getAuthorizationToken(context);
         if (!accessToken) {
@@ -59,7 +58,7 @@ export default {
             return false;
         }
 
-        context.token = token;
+        context.security.user = token;
 
         return true;
     }

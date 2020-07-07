@@ -9,26 +9,32 @@ export default (options: SecurityOptions) => [
         type: "context",
         name: "context-security",
         preApply: async context => {
-            if (!context.event /*&& !process.env.TESTING_AUTHENTICATION*/) {
-                console.log("Skipping authentication...");
+            if (!context.event) {
                 return;
             }
 
-            context.security = options;
-            context.token = null;
-            context.user = null;
-            context.getUser = () => context.user;
+            context.security = {
+                options,
+                token: null,
+                user: null
+        };
 
-            if (options.public === true) {
+            if (context.security.options.public === true) {
                 return;
             }
 
             const securityPlugins = context.plugins.byType<SecurityPlugin>("authentication");
+
+            // Some of these plugins will hopefully assign a user into the "context.security.user".
+            // Once that happens, just break out of the loop.
             for (let i = 0; i < securityPlugins.length; i++) {
                 await securityPlugins[i].authenticate(context);
+                if (context.security.user) {
+                    break;
+                }
             }
 
-            if (!context.token) {
+            if (!context.security.user) {
                 throw Error("Not authenticated!");
             }
         }

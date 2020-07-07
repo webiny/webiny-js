@@ -7,10 +7,10 @@ export default context => baseFn => {
     return flow(
         withProps({
             getUser() {
-                return context.user;
+                return context.security.user;
             },
             getUserId() {
-                return context.user ? context.user.id : null;
+                return context.security.user ? context.security.user.id : null;
             }
         }),
         withFields({

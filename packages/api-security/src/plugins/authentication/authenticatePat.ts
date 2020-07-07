@@ -3,10 +3,6 @@ import { SecurityOptions } from "../../types";
 import { AccessToken } from "./AccessToken";
 
 export default (options: SecurityOptions) => async (context: Context) => {
-    if (context.user) {
-        return;
-    }
-
     const { event } = context;
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";
@@ -21,6 +17,6 @@ export default (options: SecurityOptions) => async (context: Context) => {
     });
     const user = await token.getUser();
 
-    context.token = token;
-    context.user = user;
+    context.security.token = token.token;
+    context.security.user = user;
 };

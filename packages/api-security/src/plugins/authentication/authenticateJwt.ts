@@ -20,8 +20,8 @@ export default async (context: Context) => {
             user = (await jwt.decode(token)).data;
 
             // Assign token and user to context to be forwarded to ApolloServer
-            context.token = token;
-            context.user = user;
+            context.security.token = token;
+            context.security.user = user;
         }
     }
 };
