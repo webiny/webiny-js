@@ -10,9 +10,7 @@ export default ({ createBase, context }) =>
             async beforeDelete() {
                 const { PbPage } = context.models;
                 if (await PbPage.findOne()) {
-                    throw new Error(
-                        "Cannot delete category because some pages are linked to it."
-                    );
+                    throw new Error("Cannot delete category because some pages are linked to it.");
                 }
             }
         }),

@@ -16,7 +16,7 @@ const getAcceptLanguageHeader = event => {
     return null;
 };
 
-const plugin: ContextPlugin<APIContext & I18NContext> ={
+const plugin: ContextPlugin<APIContext & I18NContext> = {
     type: "context",
     name: "context-i18n",
     apply: async context => {
@@ -27,7 +27,6 @@ const plugin: ContextPlugin<APIContext & I18NContext> ={
         }
 
         const { event } = context;
-
         const self = {
             __i18n: {
                 acceptLanguage: null,
