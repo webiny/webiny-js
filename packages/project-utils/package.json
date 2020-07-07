@@ -22,7 +22,7 @@
     "@babel/preset-typescript": "^7.9.0",
     "@hot-loader/react-dom": "^16.13.0",
     "@svgr/webpack": "4.3.3",
-    "@types/webpack-env": "^1.15.2",
+    "@types/webpack-env": "1.15.2",
     "@webiny/app": "^4.3.0",
     "@webiny/cli": "^4.3.0",
     "@webiny/handler": "^4.3.0",
