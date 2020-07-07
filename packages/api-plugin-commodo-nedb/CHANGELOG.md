@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* move "@commodo/fields-storage-nedb" to regular dependencies ([edf8cde](https://github.com/webiny/webiny-js/commit/edf8cde88f538837d3dd866d342cf543d03453b4))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/api-plugin-commodo-nedb

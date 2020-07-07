@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **react-router:** strip same origin from links for proper preloading ([8f68bbc](https://github.com/webiny/webiny-js/commit/8f68bbc6a49fe1a10875205634965c1be29dcf73))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/react-router
