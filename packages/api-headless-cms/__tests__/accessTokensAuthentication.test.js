@@ -7,7 +7,8 @@ import {
     createEnvironment,
     createAccessToken
 } from "@webiny/api-headless-cms/testing";
-// import { createToken } from "@webiny/api-security/testing"; // TODO: @andrei make this
+
+import { createUser } from "@webiny/api-security/testing";
 
 const LIST_PRODUCTS = /* GraphQL */ `
     query ListProducts {
@@ -20,11 +21,9 @@ const LIST_PRODUCTS = /* GraphQL */ `
     }
 `;
 
-// TODO: we're in a test environment and so read/preview token validation will be disabled.
-// Need to add plugin configuration so that we can toggle security on/off.
 describe("Access Tokens Authentication Test", () => {
     const database = new Database();
-    const { environment: environmentManage } = useContentHandler({ database });
+    const { environment: environmentManage } = useContentHandler({ database, initial });
     const { environment: environmentRead } = useContentHandler({ database, type: "read" });
     const { invoke } = useGqlHandler({ database });
 
@@ -48,13 +47,12 @@ describe("Access Tokens Authentication Test", () => {
             }
         });
 
-        console.log(body);
         expect(body.errors[0].message).toBe("Access token is invalid!");
 
         [body] = await environmentRead(initial.environment.id).invoke({
             headers: {
                 foo: "bar",
-                authorization: accessToken.token
+                authorization: initial.accessToken.token
             },
             body: {
                 query: LIST_PRODUCTS

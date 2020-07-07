@@ -133,11 +133,9 @@ describe("Environments test", () => {
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
         expect(body.data.cms.createEnvironment.data.createdFrom.id).toBeTruthy();
 
-        console.log(body.data.cms.createEnvironment.data.contentModels);
         expect(body.data.cms.createEnvironment.data.contentModels).toBeTruthy();
 
-        // TODO [Andrei] [js]: make sure this test passes after contentModels is fixed
-        // expect(body.data.cms.createEnvironment.data.contentModels.length).toEqual(1);
+        expect(body.data.cms.createEnvironment.data.contentModels.length).toEqual(1);
     });
 
     it("should not create two environments with the same slug", async () => {
