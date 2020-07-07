@@ -25,7 +25,6 @@
     "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
     "semver": "^7.3.2",
-    "update-notifier": "^3.0.1",
     "uuid": "^3.3.3",
     "write-json-file": "^4.2.0",
     "yargs": "^14.0.0"
