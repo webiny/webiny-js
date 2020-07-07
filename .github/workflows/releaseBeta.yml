@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Check formatting
-        run: yarn prettier --check "packages/**/src/*.{js,ts}"
+        run: yarn prettier --check "packages/**/src/**/*.{js,ts}"
 
   build-test-release:
     name: Build, test and release ("beta" tag)
