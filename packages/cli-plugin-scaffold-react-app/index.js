@@ -100,7 +100,21 @@ module.exports = [
                     tsconfig.extends = baseTsConfigPath;
                     fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
                 } else if (appType === appTypes.admin) {
-                    // TODO [Andrei] Make admin template work
+                    // TODO [Andrei] [Question] Is this good usage of the "app-template-admin" package?
+                    /*
+                        import React from "react";
+                        import adminAppTemplate from "@webiny/app-template-admin";
+                        import "./App.scss";
+
+                        export default adminAppTemplate({
+                        cognito: {
+                            region: process.env.REACT_APP_USER_POOL_REGION,
+                            userPoolId: process.env.REACT_APP_USER_POOL_ID,
+                            userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
+                        }
+                        });
+
+                     */
                 } else {
                     // if (appType === appTypes.site) {
                     // TODO [Andrei] Make site template work
