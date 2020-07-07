@@ -9,28 +9,8 @@ const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const pluralize = require("pluralize");
 const Case = require("case");
-
-// "replace-in-path" module (publish as a standalone NPM package).
-// Make sure to add the "preserve-case" feature (same as WebStorm has it)
-const globby = require("globby");
-const replaceInPath = (path, replacement) => {
-    const paths = globby.sync(path);
-
-    const replacements = Array.isArray(replacement) ? replacement : [replacement];
-
-    for (let i = 0; i < paths.length; i++) {
-        const currentPath = paths[i];
-        let file = fs.readFileSync(currentPath, "utf8");
-
-        for (let j = 0; j < replacements.length; j++) {
-            const currentReplacement = replacements[j];
-            const findRegex = new RegExp(currentReplacement.find, "g");
-            file = file.replace(findRegex, currentReplacement.replaceWith);
-        }
-
-        fs.writeFileSync(currentPath, file);
-    }
-};
+const { replaceInPath } = require("replace-in-path");
+const execa = require("execa");
 
 module.exports = [
     {
@@ -44,7 +24,7 @@ module.exports = [
                         name: "location",
                         message: "Enter package location (including package name)",
                         default: "api/books",
-                        validate: location => {
+                        validate: (location) => {
                             if (location === "") {
                                 return "Please enter a package location";
                             }
@@ -66,9 +46,9 @@ module.exports = [
                     },
                     {
                         name: "initialEntityName",
-                        message: "Enter the name of the initial model",
+                        message: "Enter name of the initial data model",
                         default: "Book",
-                        validate: name => {
+                        validate: (name) => {
                             if (!name.match(/[a-zA-Z]*/)) {
                                 return "A valid entity name must consist of letters only.";
                             }
@@ -121,7 +101,7 @@ module.exports = [
                 // Copy template files
                 await ncp(sourceFolder, location);
 
-                // Replace generic Entity with received "input.initialEntityName" argument.
+                // Replace generic "Entity" with received "input.initialEntityName" argument.
                 const entity = {
                     plural: pluralize(Case.camel(initialEntityName)),
                     singular: pluralize.singular(Case.camel(initialEntityName))
@@ -148,6 +128,10 @@ module.exports = [
                     {
                         find: "__tests__/graphql/entities.js",
                         replaceWith: `__tests__/graphql/${entity.plural}.js`
+                    },
+                    {
+                        find: "example.tsconfig.json",
+                        replaceWith: "tsconfig.json"
                     }
                 ];
 
@@ -204,6 +188,16 @@ module.exports = [
                 const formattedCode = prettier.format(code, { ...prettierConfig, parser: "babel" });
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
+
+                // Once everything is done, run `yarn` so the new packages are automatically installed.
+                try {
+                    await execa("yarn");
+                } catch (err) {
+                    throw new Error(
+                        `Unable to install dependencies. Try running "yarn" in project root manually.`,
+                        err
+                    );
+                }
             }
         }
     }
