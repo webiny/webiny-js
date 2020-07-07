@@ -24,3 +24,9 @@ declare module "*.svg" {
     const src: string;
     export default src;
 }
+
+declare namespace NodeJS {
+    interface Module {
+        path: any;
+    }
+}
