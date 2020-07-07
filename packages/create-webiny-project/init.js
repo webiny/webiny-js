@@ -75,7 +75,7 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 if (appPackage.scripts) {
                     Object.assign(appPackage.scripts, projectDeps.scripts);
                 } else {
-                    appPackage.scripts = Object.assign({}, projectDeps.workspaces);
+                    appPackage.scripts = Object.assign({}, projectDeps.scripts);
                 }
 
                 fs.writeFileSync(
