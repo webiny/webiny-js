@@ -1,3 +1,4 @@
+// We use these fields in every query / mutation below.
 const ERROR_FIELDS = /* GraphQL */ `
     {
         code
@@ -6,6 +7,7 @@ const ERROR_FIELDS = /* GraphQL */ `
     }
 `;
 
+// A basic create "Entity" mutation.
 export const CREATE_ENTITY = /* GraphQL */ `
     mutation CreateEntity($data: EntityInput!) {
         entities {
@@ -13,6 +15,8 @@ export const CREATE_ENTITY = /* GraphQL */ `
                 data {
                     id
                     title
+                    description
+                    isNice
                 }
                 error ${ERROR_FIELDS}
             }
@@ -20,6 +24,7 @@ export const CREATE_ENTITY = /* GraphQL */ `
     }
 `;
 
+// A basic list "Entities" query.
 export const LIST_ENTITIES = /* GraphQL */ `
     query ListEntities(
         $where: EntityListWhere
@@ -33,7 +38,11 @@ export const LIST_ENTITIES = /* GraphQL */ `
                 data {
                     id
                     title
+                    description
+                    isNice
                 }
+                error ${ERROR_FIELDS}
+
             }
         }
     }

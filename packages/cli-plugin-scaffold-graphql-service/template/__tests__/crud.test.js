@@ -3,6 +3,9 @@ import { CREATE_ENTITY, LIST_ENTITIES } from "./graphql/entities";
 
 /**
  * This is a simple test that asserts basic CRUD operations work as expected.
+ * Feel free to update this test according to changes you made in the actual code.
+ *
+ * @see https://docs.webiny.com/docs/api-development/introduction
  */
 describe("CRUD Test", () => {
     const { invoke } = useGqlHandler();
@@ -13,7 +16,7 @@ describe("CRUD Test", () => {
             body: {
                 query: CREATE_ENTITY,
                 variables: {
-                    data: { title: "Entity 1" }
+                    data: { title: "Entity 1", description: "This is my 1st entity.", isNice: false }
                 }
             }
         });
@@ -22,7 +25,7 @@ describe("CRUD Test", () => {
             body: {
                 query: CREATE_ENTITY,
                 variables: {
-                    data: { title: "Entity 2" }
+                    data: { title: "Entity 2", description: "This is my 2nd entity." }
                 }
             }
         });
@@ -31,7 +34,7 @@ describe("CRUD Test", () => {
             body: {
                 query: CREATE_ENTITY,
                 variables: {
-                    data: { title: "Entity 3" }
+                    data: { title: "Entity 3", isNice: true }
                 }
             }
         });
@@ -48,10 +51,73 @@ describe("CRUD Test", () => {
                 entities: {
                     listEntities: {
                         data: [
-                            { id: entity3.data.entities.createEntity.data.id, title: "Entity 3" },
-                            { id: entity2.data.entities.createEntity.data.id, title: "Entity 2" },
-                            { id: entity1.data.entities.createEntity.data.id, title: "Entity 1" }
-                        ]
+                            {
+                                id: entity3.data.entities.createEntity.data.id,
+                                title: "Entity 3",
+                                description: null,
+                                isNice: true
+                            },
+                            {
+                                id: entity2.data.entities.createEntity.data.id,
+                                title: "Entity 2",
+                                description: "This is my 2nd entity.",
+                                isNice: true
+                            },
+                            {
+                                id: entity1.data.entities.createEntity.data.id,
+                                title: "Entity 1",
+                                description: "This is my 1st entity.",
+                                isNice: false
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should throw a validation error if title is invalid", async () => {
+        // The title field is missing, the error should be thrown from the GraphQL and the resolver won't be executedd.
+        let [body] = await invoke({
+            body: {
+                query: CREATE_ENTITY,
+                variables: {
+                    data: { description: "This is my 1st entity.", isNice: false }
+                }
+            }
+        });
+
+        let [error] = body.errors;
+        expect(error.message).toBe(
+            'Variable "$data" got invalid value { description: "This is my 1st entity.", isNice: false }; Field title of required type String! was not provided.'
+        );
+
+        // Even though the title is provided, it is still too short (because of the validation
+        // set on the "Entity" Commodo model).
+        [body] = await invoke({
+            body: {
+                query: CREATE_ENTITY,
+                variables: {
+                    data: { title: "Aa", description: "This is my 1st entity.", isNice: false }
+                }
+            }
+        });
+
+        expect(body).toEqual({
+            data: {
+                entities: {
+                    createEntity: {
+                        data: null,
+                        error: {
+                            code: "VALIDATION_FAILED_INVALID_FIELDS",
+                            message: "Validation failed.",
+                            data: {
+                                invalidFields: {
+                                    title: "Value requires at least 3 characters."
+                                }
+                            }
+                        }
                     }
                 }
             }
