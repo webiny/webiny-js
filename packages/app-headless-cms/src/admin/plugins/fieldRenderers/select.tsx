@@ -23,7 +23,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const valuesItem = field.predefinedValues.values.values.find(
                 item => item.locale === locale
             );
-            
+
             const options = valuesItem && Array.isArray(valuesItem.value) ? valuesItem.value : [];
 
             return (

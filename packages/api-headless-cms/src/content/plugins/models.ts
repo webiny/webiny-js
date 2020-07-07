@@ -51,12 +51,12 @@ export default () => {
         let environment = null;
         let environmentAlias = null;
 
-        if (context.cms.environment && typeof context.cms.environment === "string")  {
+        if (context.cms.environment && typeof context.cms.environment === "string") {
             if (context.models.CmsEnvironment.isId(context.cms.environment)) {
                 environment = await context.models.CmsEnvironment.findById(context.cms.environment);
             } else {
                 environmentAlias = await context.models.CmsEnvironmentAlias.findOne({
-                    query: {slug: context.cms.environment}
+                    query: { slug: context.cms.environment }
                 });
                 if (environmentAlias) {
                     environment = await environmentAlias.environment;

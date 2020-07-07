@@ -88,7 +88,7 @@ const MailchimpSettings = () => {
                                                                                     >
                                                                                         {t`here`}
                                                                                     </a>{" "}
-                                                                                  {t`for more information about Mailchimp API keys.`}
+                                                                                    {t`for more information about Mailchimp API keys.`}
                                                                                 </>
                                                                             }
                                                                         />
