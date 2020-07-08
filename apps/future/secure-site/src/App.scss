@@ -1,0 +1,24 @@
+@import "~@webiny/ui/src/styles.scss";
+@import "~@webiny/app-page-builder-theme/src/styles.scss";
+@import "~@webiny/app-plugin-security-cognito-theme/src/site/styles.scss";
+
+// user bar styles
+.webiny-user-bar-demo {
+  width: 100%;
+  top: 55px;
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  height: 25px;
+  font-size: 0.8rem;
+  padding: 5px 50px 5px 40px;
+  box-sizing: border-box;
+  background: var(--webiny-theme-color-primary);
+  color: var(--webiny-theme-color-on-primary);
+  span {
+    color: var(--webiny-theme-color-on-primary);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

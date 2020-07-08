@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig",
+  "references": [
+    { "path": "../../../packages/api-i18n" },
+    { "path": "../../../packages/api-plugin-commodo-mongodb" },
+    { "path": "../../../packages/api-headless-cms" },
+    { "path": "../../../packages/graphql" },
+    { "path": "../../../packages/handler" }
+  ]
+}

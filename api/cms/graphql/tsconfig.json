@@ -1,0 +1,11 @@
+{
+  "extends": "../../../tsconfig",
+  "references": [
+    { "path": "../../../packages/api-plugin-commodo-db-proxy" },
+    { "path": "../../../packages/api-headless-cms" },
+    { "path": "../../../packages/api-security" },
+    { "path": "../../../packages/api-settings-manager" },
+    { "path": "../../../packages/handler" },
+    { "path": "../../../packages/handler-apollo-server" }
+  ]
+}
