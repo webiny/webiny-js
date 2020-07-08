@@ -13,9 +13,13 @@ module.exports = {
             .promise()
             .then((result, err) => {
                 if (err) {
-                    console.log(err);
+                    console.err(`The following error occured: ${err}.`);
+                    console.log(`Please to refer to the following link for setting up credentials:
+                    Please to refer to the following link for setting up aws credentials:
+                    https://docs.webiny.com/docs/guides/aws-credentials/
+                    `);
                 } else {
-                    console.log("PROMISE RESULT::::::");
+                    console.log("Your AWS data is set!");
                     console.log(result);
                 }
             });
