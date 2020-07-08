@@ -77,48 +77,34 @@ module.exports = [
                     )
                     .replace(/\\/g, "/");
 
-                if (appType === appTypes.custom) {
-                    // Then we also copy the template folder
-                    const sourceFolder = path.join(__dirname, "template-custom-app");
+                const appTypeToTemplateFolder = {
+                    [appTypes.custom]: "template-custom",
+                    [appTypes.admin]: "template-admin",
+                    [appTypes.site]: "template-site"
+                };
+                const templateFolder = appTypeToTemplateFolder[appType];
 
-                    if (fs.existsSync(location)) {
-                        throw new Error(`Package ${packageName} already exists!`);
-                    }
+                // Then we also copy the template folder
+                const sourceFolder = path.join(__dirname, templateFolder);
 
-                    await fs.mkdirSync(location, { recursive: true });
-                    await ncp(sourceFolder, location);
-
-                    // Update the package's name
-                    const packageJsonPath = path.resolve(location, "package.json");
-                    let packageJson = fs.readFileSync(packageJsonPath, "utf8");
-                    packageJson = packageJson.replace("[PACKAGE_NAME]", packageName);
-                    fs.writeFileSync(packageJsonPath, packageJson);
-                    // Update tsconfig "extends" path
-
-                    const tsConfigPath = path.join(fullLocation, "tsconfig.json");
-                    const tsconfig = require(tsConfigPath);
-                    tsconfig.extends = baseTsConfigPath;
-                    fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
-                } else if (appType === appTypes.admin) {
-                    // TODO [Andrei] [Question] Is this good usage of the "app-template-admin" package?
-                    /*
-                        import React from "react";
-                        import adminAppTemplate from "@webiny/app-template-admin";
-                        import "./App.scss";
-
-                        export default adminAppTemplate({
-                        cognito: {
-                            region: process.env.REACT_APP_USER_POOL_REGION,
-                            userPoolId: process.env.REACT_APP_USER_POOL_ID,
-                            userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID
-                        }
-                        });
-
-                     */
-                } else {
-                    // if (appType === appTypes.site) {
-                    // TODO [Andrei] Make site template work
+                if (fs.existsSync(location)) {
+                    throw new Error(`Package ${packageName} already exists!`);
                 }
+
+                await fs.mkdirSync(location, { recursive: true });
+                await ncp(sourceFolder, location);
+
+                // Update the package's name
+                const packageJsonPath = path.resolve(location, "package.json");
+                let packageJson = fs.readFileSync(packageJsonPath, "utf8");
+                packageJson = packageJson.replace("[PACKAGE_NAME]", packageName);
+                fs.writeFileSync(packageJsonPath, packageJson);
+                // Update tsconfig "extends" path
+
+                const tsConfigPath = path.join(fullLocation, "tsconfig.json");
+                const tsconfig = require(tsConfigPath);
+                tsconfig.extends = baseTsConfigPath;
+                fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 // Inject resource into closest resources.js //
                 const { transform } = require("@babel/core");
