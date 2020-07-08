@@ -1,6 +1,8 @@
+export const environmentId = "e1e1e1e1e1e1e1e1e1e1e1e1";
+
 export default ({ database }) =>
     database.collection("CmsEnvironment").insert({
-        id: "e1e1e1e1e1e1e1e1e1e1e1e1",
+        id: environmentId,
         name: "Initial Environment",
         slug: "initial-environment",
         description: "This is the initial environment.",

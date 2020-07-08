@@ -20,11 +20,18 @@
     "@webiny/serverless-function": "latest"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-typescript": "^7.10.4",
     "@types/node": "^12.12.22",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
+    "babel-plugin-lodash": "^3.3.4",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-import-resolver-babel-module": "^5.1.0",
@@ -33,7 +40,10 @@
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^26.1.0",
+    "merge": "^1.2.1",
+    "ts-jest": "^26.1.1"
   },
   "workspaces": {
     "packages": [
@@ -48,5 +58,8 @@
       "api/security/*",
       "api/settingsManager"
     ]
+  },
+  "scripts": {
+    "test": "jest --config jest.config.js"
   }
 }

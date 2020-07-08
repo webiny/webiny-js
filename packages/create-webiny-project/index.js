@@ -7,23 +7,27 @@ const Listr = require("listr");
 const os = require("os");
 const path = require("path");
 const yargs = require("yargs");
-const indent = require("indent-string");
+const indentString = require("indent-string");
 const validateProjectName = require("validate-npm-package-name");
 
-const originalLog = console.log;
-console.log = str => originalLog(indent(str, 2));
+// Add indentation to console.log output
+const log = console.log;
+console.log = (first = "", ...args) => {
+    if (typeof first === "string") {
+        log(indentString(first, 2), ...args);
+    } else {
+        log(first, ...args);
+    }
+};
 
 const packageJson = require("./package.json");
 const init = require("./init.js");
+const rimraf = require("rimraf");
 
 yargs
     .usage("Usage: $0 <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
-    .example("$0 my-project --template=full")
-    .example(
-        "$0 create-webiny-project --template=../path/to/template --tag=../path/to/webiny/files"
-    )
     .help()
     .alias("help", "h")
     .fail(function(msg, err) {
@@ -37,7 +41,7 @@ yargs
     });
 
 yargs.command(
-    "$0 <project-name>",
+    "$0 <project-name> [options]",
     "Name of application and template to use",
     yargs => {
         yargs.positional("project-name", {
@@ -58,11 +62,17 @@ yargs.command(
             demandOption: false
         });
         yargs.option("log", {
-            describe: "creates a log file for user to see of installation.",
+            describe:
+                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory.",
             alias: "l",
-            type: "boolean",
+            default: "",
+            type: "string",
             demandOption: false
         });
+        yargs.example("$0 <project-name>");
+        yargs.example("$0 <project-name> --template=cms");
+        yargs.example("$0 <project-name> --template=../path/to/template");
+        yargs.example("$0 <project-name> --log=./my-logs.txt");
     },
     argv => createApp(argv)
 ).argv;
@@ -196,7 +206,9 @@ async function install({ root, dependencies }) {
     try {
         await execa(command, args);
     } catch (err) {
-        throw new Error("Unable to install core dependencies for create-webiny-project.", err);
+        throw new Error(
+            "Unable to install core dependencies for create-webiny-project: " + err.message
+        );
     }
 }
 
@@ -207,8 +219,11 @@ async function run({ root, appName, template, tag, log }) {
 
         if (template.startsWith(".") || template.startsWith("file:")) {
             templateName = "file:" + path.relative(appName, template.replace("file:", ""));
+            dependencies.push(templateName);
+        } else {
+            dependencies.push(`${templateName}@${tag}`);
         }
-        dependencies.push(`${templateName}@${tag}`);
+
         const tasks = new Listr([
             {
                 title: `Install template package`,
@@ -216,13 +231,23 @@ async function run({ root, appName, template, tag, log }) {
                     try {
                         await install({ root, dependencies });
                     } catch (err) {
-                        throw new Error("Failed to install template package");
+                        throw new Error(`Failed to install template package: ${err.message}`);
                     }
                 }
             }
         ]);
 
-        await tasks.run();
+        await tasks.run().catch(async err => {
+            let basePath = "cwp-logs.txt";
+            if (log.startsWith(".") || log.startsWith("file:")) {
+                basePath = log;
+            }
+            fs.writeFileSync(basePath, JSON.stringify(err, null, 2) + os.EOL);
+            console.log("\nCleaning up project...");
+            rimraf.sync(root);
+            console.log("Project cleaned!");
+            process.exit(1);
+        });
 
         await init({ root, appName, templateName, tag, log });
     } catch (reason) {

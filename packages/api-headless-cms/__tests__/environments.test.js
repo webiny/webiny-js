@@ -1,5 +1,6 @@
-import mdbid from "mdbid";
-import { createUtils } from "./utils";
+import useGqlHandler from "./utils/useGqlHandler";
+import { createEnvironment, createEnvironmentAlias } from "@webiny/api-headless-cms/testing";
+import mocks from "./mocks/environments";
 
 const CREATE_ENVIRONMENT = /* GraphQL */ `
     mutation createEnvironment($data: CmsEnvironmentInput!) {
@@ -36,6 +37,11 @@ const GET_ENVIRONMENT = /* GraphQL */ `
                         id
                         name
                     }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
                     slug
                 }
             }
@@ -57,6 +63,11 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
                         id
                         name
                     }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
                     slug
                 }
             }
@@ -65,44 +76,21 @@ const LIST_ENVIRONMENTS = /* GraphQL */ `
 `;
 
 describe("Environments test", () => {
-    const { useDatabase, useApolloHandler } = createUtils();
-    const { invoke } = useApolloHandler();
-    const { getCollection } = useDatabase();
-    const initialEnvironment = { id: mdbid() };
-    const modelId = { id: mdbid() };
+    const { invoke, database } = useGqlHandler();
 
-    beforeAll(async () => {
-        await getCollection("CmsEnvironment").insertOne({
-            id: initialEnvironment.id,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null,
-            slug: "test slug"
-        });
-
-        await getCollection("CmsContentModel").insertOne({
-            id: modelId,
-            environment: initialEnvironment.id,
-            modelId: "test-model-id",
-            name: "Test Model"
-        });
-
-        // TODO [Andrei]: after fixing .find({}), clean this test: remove all comments
-        console.log("Models inserted: ");
-        console.log(
-            await getCollection("CmsContentModel")
-                .find({})
-                .toArray()
-        );
+    afterEach(async () => {
+        await database.collection("CmsEnvironment").remove({}, { multi: true });
+        await database.collection("CmsEnvironmentAlias").remove({}, { multi: true });
     });
 
     it("should create a new environment", async () => {
+        const initial = { environment: await createEnvironment({ database }) };
+
         let [body] = await invoke({
             body: {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
-                        slug: "666",
                         name: "new-environment-1"
                     }
                 }
@@ -119,90 +107,88 @@ describe("Environments test", () => {
                 variables: {
                     data: {
                         name: "new-environment-1",
-                        slug: "test-slug",
-                        createdFrom: initialEnvironment.id
+                        createdFrom: initial.environment.id
                     }
                 }
             }
         });
 
-        if (body.error) {
-            throw body.error;
-        }
+        // link `environment with alias`
+        await createEnvironmentAlias({
+            database,
+            environmentId: body.data.cms.createEnvironment.data.id
+        });
 
         expect(body.data.cms.createEnvironment.data.id).toBeTruthy();
-        expect(body.data.cms.createEnvironment.data.createdFrom.id).toBeTruthy();
-
-        expect(body.data.cms.createEnvironment.data.contentModels).toBeTruthy();
-
-        expect(body.data.cms.createEnvironment.data.contentModels.length).toEqual(1);
-    });
-
-    it("should not create two environments with the same slug", async () => {
-        const [body] = await invoke({
-            body: {
-                query: CREATE_ENVIRONMENT,
-                variables: {
-                    data: {
-                        name: "new-environment-1",
-                        slug: "test-slug",
-                        createdFrom: initialEnvironment.id
-                    }
-                }
-            }
-        });
-
-        console.log(body.data.cms.createEnvironment);
-        expect(body.data.cms.createEnvironment.error.message).toEqual(
-            expect.stringMatching(/already exists/)
-        );
+        expect(body.data.cms.createEnvironment.data.createdFrom.id).toBe(initial.environment.id);
     });
 
     it(`should utilize "where" filtering correctly`, async () => {
-        let [body] = await invoke({
-            body: {
-                query: GET_ENVIRONMENT,
-                variables: {
-                    where: {
-                        name: "Initial Environment"
-                    }
-                }
-            }
-        });
-
-        expect(body.data.cms.getEnvironment.data.id).toBeTruthy();
-        expect(body.data.cms.getEnvironment.data.slug).toBeTruthy();
-        expect(body.data.cms.getEnvironment.data.createdFrom).toBeNull();
-    });
-
-    it("should be able to list environments", async () => {
-        let [body] = await invoke({
-            body: {
-                query: LIST_ENVIRONMENTS
-            }
-        });
-
-        const initialListLength = body.data.cms.listEnvironments.data.length;
-
+        const initial = { environment: await createEnvironment({ database }) };
         await invoke({
             body: {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
                         name: "new-environment-1",
-                        slug: "some-slug",
-                        createdFrom: initialEnvironment.id
+                        createdFrom: initial.environment.id
                     }
                 }
             }
         });
 
-        [body] = await invoke({
+        let [body] = await invoke({
+            body: {
+                query: GET_ENVIRONMENT,
+                variables: {
+                    where: {
+                        name: "new-environment-1"
+                    }
+                }
+            }
+        });
+
+        expect(body).toEqual(
+            mocks.getEnvironments({ environmentId: body.data.cms.getEnvironment.data.id })
+        );
+    });
+
+    it("should be able to list environments with alias", async () => {
+        const initial = { environment: await createEnvironment({ database }) };
+
+        let environmentsList = await database.collection("CmsEnvironment").find();
+        expect(environmentsList.length).toBe(1);
+        const [createdEnvironmentBody] = await invoke({
+            body: {
+                query: CREATE_ENVIRONMENT,
+                variables: {
+                    data: {
+                        name: "new-environment-list-envs-test-1",
+                        createdFrom: initial.environment.id
+                    }
+                }
+            }
+        });
+
+        environmentsList = await database.collection("CmsEnvironment").find();
+        expect(environmentsList.length).toBe(2);
+
+        // link `environment with alias`
+        await createEnvironmentAlias({
+            database,
+            environmentId: createdEnvironmentBody.data.cms.createEnvironment.data.id
+        });
+
+        let [body] = await invoke({
             body: {
                 query: LIST_ENVIRONMENTS
             }
         });
 
-        expect(body.data.cms.listEnvironments.data.length).toBe(initialListLength + 1);
+        expect(body).toEqual(
+            mocks.listEnvironments({
+                environmentId: createdEnvironmentBody.data.cms.createEnvironment.data.id
+            })
+        );
     });
 });

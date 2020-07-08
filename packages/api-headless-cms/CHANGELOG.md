@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* correct query error message ([d4b1d57](https://github.com/webiny/webiny-js/commit/d4b1d57033129697c46654b8cf9d2f2b0edc1bb8))
+* extract plugin into a separate file ([fb6ebe0](https://github.com/webiny/webiny-js/commit/fb6ebe0da38cc61d2ac4be560274384641e60291))
+* remove unused import ([cbd8948](https://github.com/webiny/webiny-js/commit/cbd89481716e385434d5d0b900484974e260aa36))
+* throw a proper error message on invalid environment or API type ([3b24817](https://github.com/webiny/webiny-js/commit/3b24817c0545a9aa90931647637f7aeee5a6326b))
+* use titleFieldId in order to perform referenceIn checks ([c7b3b6c](https://github.com/webiny/webiny-js/commit/c7b3b6cb77adb67d0c06dd333b52db0a1591dd31))
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+
+### Bug Fixes
+
+* extract plugin into a separate file ([5e47f7b](https://github.com/webiny/webiny-js/commit/5e47f7b47ea6d60f8eb5ab1b496bb9c902e1d2b9))
+* remove unused import ([55ecd6f](https://github.com/webiny/webiny-js/commit/55ecd6f3bda00d6aff91159ffffa11785fae4767))
+* use titleFieldId in order to perform referenceIn checks ([629c844](https://github.com/webiny/webiny-js/commit/629c8443e3d8e21a6f0ba51b122d30c2b47c8326))
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* export mock IDs for direct usage in tests ([fc6882b](https://github.com/webiny/webiny-js/commit/fc6882b2e79d12b3fd13c8b50f097e961378ff9d))
+* make sure newly added ref fields cannot reference a model with no title field ([265644d](https://github.com/webiny/webiny-js/commit/265644d3d26b4ffeef62d172ef330a1519aa2d6f))
+
+
+### Features
+
+* **api-headless-cms:** add `CmsModelLockedFieldPlugin` plugin ([6b12797](https://github.com/webiny/webiny-js/commit/6b127979a4b624173424084844c989d57c7bdba2))
+* **api-headless-cms:** add `environmentAliases` ([257a6ef](https://github.com/webiny/webiny-js/commit/257a6ef7595a50f6df635ba2a0387561c952ec45))
+* **api-headless-cms:** add additional data to lockedFields ([ec935f8](https://github.com/webiny/webiny-js/commit/ec935f8b8f405f395f80438175e2ca834f144ccc))
+* **api-headless-cms:** add more fields to `LockedFields` model ([9834107](https://github.com/webiny/webiny-js/commit/98341075c882f00e3a2f00c679bb3bb685dc6354))
+* **api-headless-cms:** check `lockedField` invariant ([102d93b](https://github.com/webiny/webiny-js/commit/102d93b867684236f59b473637ebee119b7317ab))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

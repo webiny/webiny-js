@@ -6,6 +6,7 @@ import boolean from "./boolean";
 import dateTime from "./dateTime";
 import file from "./file";
 import radioButtons from "./radioButtons";
+import select from "./select";
 import checkboxes from "./checkboxes";
 import ref from "./ref";
 
@@ -19,5 +20,6 @@ export default [
     file,
     ref,
     radioButtons,
+    select,
     checkboxes
 ];

@@ -10,110 +10,130 @@ import {
     resolveUpdate
 } from "@webiny/commodo-graphql";
 
-const bookFetcher = ctx => ctx.models.Book;
+const entityFetcher = ctx => ctx.models.Entity;
 
+/**
+ * As the name itself suggests, the "graphql-schema" plugin enables us to define our service's GraphQL schema.
+ * Use the "schema" and "resolvers" properties to define GraphQL types and resolvers, respectively.
+ * Resolvers can be made from scratch, but to make it a bit easier, we rely on a couple of built-in generic
+ * resolvers, imported from the "@webiny/commodo-graphql" package.
+ *
+ * @see https://docs.webiny.com/docs/api-development/graphql
+ */
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-books",
+    name: "graphql-schema-entities",
     schema: {
         typeDefs: gql`
-            type BookDeleteResponse {
+            type EntityDeleteResponse {
                 data: Boolean
-                error: BookError
+                error: EntityError
             }
 
-            type BookCursors {
+            type EntityCursors {
                 next: String
                 previous: String
             }
 
-            type BookListMeta {
-                cursors: BookCursors
+            type EntityListMeta {
+                cursors: EntityCursors
                 hasNextPage: Boolean
                 hasPreviousPage: Boolean
                 totalCount: Int
             }
 
-            type BookError {
+            type EntityError {
                 code: String
                 message: String
                 data: JSON
             }
 
-            type Book {
+            type Entity {
                 id: ID
                 title: String
+                description: String
+                isNice: Boolean
                 createdOn: DateTime
             }
 
-            input BookInput {
+            input EntityInput {
                 id: ID
                 title: String!
+                description: String
+                isNice: Boolean
             }
 
-            input BookListWhere {
+            input EntityListWhere {
                 title: String
+                isNice: Boolean
             }
 
-            input BookListSort {
+            input EntityListSort {
                 title: Int
+                isNice: Boolean
                 createdOn: Int
             }
 
-            type BookResponse {
-                data: Book
-                error: BookError
+            type EntityResponse {
+                data: Entity
+                error: EntityError
             }
 
-            type BookListResponse {
-                data: [Book]
-                meta: BookListMeta
-                error: BookError
+            type EntityListResponse {
+                data: [Entity]
+                meta: EntityListMeta
+                error: EntityError
             }
 
-            type BookQuery {
-                getBook(id: ID): BookResponse
+            type EntityQuery {
+                getEntity(id: ID): EntityResponse
 
-                listBooks(
-                    where: BookListWhere
-                    sort: BookListSort
+                listEntities(
+                    where: EntityListWhere
+                    sort: EntityListSort
                     limit: Int
                     after: String
                     before: String
-                ): BookListResponse
+                ): EntityListResponse
             }
 
-            type BookMutation {
-                createBook(data: BookInput!): BookResponse
+            type EntityMutation {
+                createEntity(data: EntityInput!): EntityResponse
 
-                updateBook(id: ID!, data: BookInput!): BookResponse
+                updateEntity(id: ID!, data: EntityInput!): EntityResponse
 
-                deleteBook(id: ID!): BookDeleteResponse
+                deleteEntity(id: ID!): EntityDeleteResponse
             }
 
             extend type Query {
-                books: BookQuery
+                entities: EntityQuery
             }
 
             extend type Mutation {
-                books: BookMutation
+                entities: EntityMutation
             }
         `,
         resolvers: {
             Query: {
-                books: emptyResolver
+                // Needs to be here, otherwise the resolvers below cannot return any result.
+                entities: emptyResolver
             },
             Mutation: {
-                books: emptyResolver
+                // Needs to be here, otherwise the resolvers below cannot return any result.
+                entities: emptyResolver
             },
-            BookQuery: {
-                getBook: hasScope("books:crud")(resolveGet(bookFetcher)),
-                listBooks: hasScope("books:crud")(resolveList(bookFetcher))
+            EntityQuery: {
+                // With the generic resolvers, we also rely on the "hasScope" helper function from the
+                // "@webiny/api-security" package, in order to define the required security scopes (permissions).
+                getEntity: hasScope("entities:get")(resolveGet(entityFetcher)),
+                listEntities: hasScope("entities:list")(resolveList(entityFetcher))
             },
-            BookMutation: {
-                createBook: hasScope("books:crud")(resolveCreate(bookFetcher)),
-                updateBook: hasScope("books:crud")(resolveUpdate(bookFetcher)),
-                deleteBook: hasScope("books:crud")(resolveDelete(bookFetcher))
+            EntityMutation: {
+                // With the generic resolvers, we also rely on the "hasScope" helper function from the
+                // "@webiny/api-security" package, in order to define the required security scopes (permissions).
+                createEntity: hasScope("entities:create")(resolveCreate(entityFetcher)),
+                updateEntity: hasScope("entities:update")(resolveUpdate(entityFetcher)),
+                deleteEntity: hasScope("entities:delete")(resolveDelete(entityFetcher))
             }
         }
     }

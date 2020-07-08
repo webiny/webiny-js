@@ -17,7 +17,7 @@ export default {
             name: String
             description: String
             createdFrom: CmsEnvironment
-            environmentAlias: CmsEnvironmentAlias
+            environmentAliases: [CmsEnvironmentAlias]
             contentModels: [CmsContentModel]
             isProduction: Boolean
             slug: String

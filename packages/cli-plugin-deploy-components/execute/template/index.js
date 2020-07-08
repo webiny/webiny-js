@@ -1,8 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const uniqueId = require("uniqid");
-const { trackActivity, trackError } = require("@webiny/tracking");
-const { version } = require("../../package.json");
+const { sendEvent } = require("@webiny/tracking");
 const { Component } = require("@webiny/serverless-component");
 const buildResource = require("./buildResource");
 const { compose } = require("./compose");
@@ -65,15 +63,25 @@ class Template extends Component {
         return await this.deployAll({ ...inputs, template }, context);
     }
 
-    async deployAll(inputs = {}) {
+    async deployAll(inputs = {}, cliContext) {
         this.context.status("Deploying");
-        const activityId = uniqueId();
 
-        await trackActivity({
-            activityId,
-            type: `${inputs.stack}-deploy-start`,
-            cliVersion: version,
-            context: this.context
+        cliContext.onExit(async code => {
+            if (code === "SIGINT") {
+                await sendEvent({
+                    event: "stack-deploy-end",
+                    data: {
+                        stack: inputs.stack
+                    }
+                });
+            }
+        });
+
+        await sendEvent({
+            event: "stack-deploy-start",
+            data: {
+                stack: inputs.stack
+            }
         });
 
         try {
@@ -112,27 +120,27 @@ class Template extends Component {
             this.state.outputs = outputs;
             await this.save();
 
+            await sendEvent({
+                event: "stack-deploy-end",
+                data: {
+                    stack: inputs.stack
+                }
+            });
+
             await inputs.afterExecute({
                 output: this.state.outputs,
                 duration: (Date.now() - start) / 1000
             });
 
-            await trackActivity({
-                activityId,
-                type: `${inputs.stack}-deploy-end`,
-                cliVersion: version,
-                context: this.context
-            });
-
             return outputs;
         } catch (e) {
-            await trackError({
-                context: this.context,
-                activityId,
-                type: `${inputs.stack}_deploy`,
-                cliVersion: version,
-                errorMessage: e.message,
-                errorStack: e.stack
+            await sendEvent({
+                event: "stack-deploy-error",
+                data: {
+                    stack: inputs.stack,
+                    errorMessage: e.message,
+                    errorStack: e.stack
+                }
             });
 
             throw e;

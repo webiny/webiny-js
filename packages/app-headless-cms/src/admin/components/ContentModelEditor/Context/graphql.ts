@@ -49,9 +49,7 @@ export const GET_CONTENT_MODEL = gql`
                 description
                 modelId
                 titleFieldId
-                lockedFields {
-                    fieldId
-                }
+                lockedFields
                 fields {
                     ${FIELDS_FIELDS}
                 }

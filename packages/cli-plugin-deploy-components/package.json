@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-deploy-components",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,8 +14,8 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@serverless/core": "^1.1.2",
-    "@webiny/serverless-component": "^4.2.0",
-    "@webiny/tracking": "^4.2.0",
+    "@webiny/serverless-component": "^4.4.0",
+    "@webiny/tracking": "^4.4.0",
     "ansi-escapes": "^4.3.1",
     "chalk": "^4.0.0",
     "chokidar": "^3.4.0",
@@ -34,7 +34,6 @@
     "strip-ansi": "^6.0.0",
     "traverse": "^0.6.6",
     "typescript": "^3.8.3",
-    "uniqid": "^5.2.0",
     "write-json-file": "^4.3.0"
   },
   "license": "MIT",

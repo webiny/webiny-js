@@ -1,4 +1,3 @@
-import { I18NValue } from "@webiny/app-i18n/components";
 import { getPlugins } from "@webiny/plugins";
 import { cloneDeep, get } from "lodash";
 import React, { useEffect, useRef, useMemo } from "react";
@@ -22,6 +21,7 @@ import {
     FbFormLayoutPlugin
 } from "@webiny/app-form-builder/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 declare global {
     // eslint-disable-next-line
@@ -52,6 +52,8 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
+
+    const { getValue } = useI18N();
 
     if (!data.id) {
         return null;
@@ -101,9 +103,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                             }
 
                             if (isInvalid) {
-                                throw new Error(
-                                    I18NValue({ value: item.message }) || "Invalid value."
-                                );
+                                throw new Error(getValue(item.message) || "Invalid value.");
                             }
                         };
                     })

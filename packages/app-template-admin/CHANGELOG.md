@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-template-admin
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* **app-template-admin:** add missing TS references ([434c2ba](https://github.com/webiny/webiny-js/commit/434c2ba2246d1d6b3b3ff5309288587ab35fbb76))
+* **app-template-admin:** remove root route ([5179b3f](https://github.com/webiny/webiny-js/commit/5179b3f3e2f3ea55ff92252b90b25116e3195071))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-template-admin

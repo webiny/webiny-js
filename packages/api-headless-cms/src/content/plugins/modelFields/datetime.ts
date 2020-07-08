@@ -1,4 +1,7 @@
-import { CmsModelFieldToCommodoFieldPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsModelFieldToCommodoFieldPlugin,
+    CmsModelLockedFieldPlugin
+} from "@webiny/api-headless-cms/types";
 import { withFields, string } from "@webiny/commodo";
 import { parse } from "fecha";
 import { i18nField } from "./i18nFields";
@@ -127,4 +130,22 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
     }
 };
 
-export default plugin;
+const lockedFieldPlugin: CmsModelLockedFieldPlugin = {
+    name: "cms-model-locked-field-datetime",
+    type: "cms-model-locked-field",
+    fieldType: "datetime",
+    checkLockedField({ lockedField, field }) {
+        if (lockedField.formatType && lockedField.formatType !== field.settings.type) {
+            throw new Error(
+                `Cannot change "format" for the "${lockedField.fieldId}" field because it's already in use in created content.`
+            );
+        }
+    },
+    getLockedFieldData({ field }) {
+        return {
+            formatType: field.settings.type
+        };
+    }
+};
+
+export default [plugin, lockedFieldPlugin];

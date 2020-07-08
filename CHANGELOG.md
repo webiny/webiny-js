@@ -3,6 +3,225 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+
+### Bug Fixes
+
+* fix incorrect property ([7005f44](https://github.com/webiny/webiny-js/commit/7005f44857174df3291a1964f4fff3a866492ef5))
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+
+### Bug Fixes
+
+* update "scripts" section ([06788da](https://github.com/webiny/webiny-js/commit/06788da3717cc34c70f9371120cb1e9627daf9e9))
+* update dependency ([cbbf407](https://github.com/webiny/webiny-js/commit/cbbf407b75bd2f053c7c5d969f6a4038b3f2187b))
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* add "test" script ([25c327f](https://github.com/webiny/webiny-js/commit/25c327f5ebec180f64bd2da8cfb290887a472151))
+* add missing dependency ([d53b60e](https://github.com/webiny/webiny-js/commit/d53b60eb96ec8837cacc3db264f3dea65dd2da3f))
+* add missing dev dependencies ([b44caa6](https://github.com/webiny/webiny-js/commit/b44caa695ce5ec4ceea3dfcfa379d05cb6e8b646))
+* add missing file ([a00934e](https://github.com/webiny/webiny-js/commit/a00934e3b18bb2d83db3524cfd35b03c631e464e))
+* add new dependencies ([7107e36](https://github.com/webiny/webiny-js/commit/7107e361a3732b4609d32590563fef5e711f06b6))
+* add new dependencies ([119000d](https://github.com/webiny/webiny-js/commit/119000dc836e681f47154342e1cb0ce1808b99e9))
+* add role ([cb3408c](https://github.com/webiny/webiny-js/commit/cb3408cfdd7f8b7897550c1d7f04a6eb0b8c60e9))
+* correct query error message ([4c72139](https://github.com/webiny/webiny-js/commit/4c72139c30bc1929b5ea938a13ff4aa70e2ca68e))
+* correct query error message ([d4b1d57](https://github.com/webiny/webiny-js/commit/d4b1d57033129697c46654b8cf9d2f2b0edc1bb8))
+* created base to catch cateogories with linked pages ([e4c6617](https://github.com/webiny/webiny-js/commit/e4c661761104039de972cb762d71676d06e1f92a))
+* extract plugin into a separate file ([fb6ebe0](https://github.com/webiny/webiny-js/commit/fb6ebe0da38cc61d2ac4be560274384641e60291))
+* imported withHooks and attempting to find PbPage ([669fb0a](https://github.com/webiny/webiny-js/commit/669fb0a4f203c11df25a785c85ee116510edc064))
+* improve logging ([51ca36e](https://github.com/webiny/webiny-js/commit/51ca36e5b074b241fddc9a57f377a6116702f338))
+* improve template ([f95e063](https://github.com/webiny/webiny-js/commit/f95e06300ea56ba1bfa51e1be1153e0ce1d69e35))
+* move "@commodo/fields-storage-nedb" to regular dependencies ([edf8cde](https://github.com/webiny/webiny-js/commit/edf8cde88f538837d3dd866d342cf543d03453b4))
+* passed context into PbCategory of api page builder model ([52e48c6](https://github.com/webiny/webiny-js/commit/52e48c645c0077c2dcd8f96169322d2c2f8c8507))
+* passing in a fake context value to PbCategory model ([785ec43](https://github.com/webiny/webiny-js/commit/785ec4352090f132ecd60c8fbba9726ebf88b755))
+* remove unneeded jest-mongodb ([86bb40c](https://github.com/webiny/webiny-js/commit/86bb40c38c9d66073bca69f3be46769fe3a2e663))
+* remove unused import ([cbd8948](https://github.com/webiny/webiny-js/commit/cbd89481716e385434d5d0b900484974e260aa36))
+* removed comment ([bb2c9de](https://github.com/webiny/webiny-js/commit/bb2c9de128ceb72931cd7d2a50b0e169346d4f3c))
+* removed fake PbContext reference ([ded5adf](https://github.com/webiny/webiny-js/commit/ded5adf1b013993bddf6103fadb93d13bbb1d0d4))
+* update comments ([9921813](https://github.com/webiny/webiny-js/commit/992181316f553c58ff262ed0168960fc06d58ee6))
+* use "replace-in-path" lib ([ff459ad](https://github.com/webiny/webiny-js/commit/ff459adafebe9d28eb66ec6090a6ed12d008cd67))
+* **admin-welcome-screen:** hide links from unauthorized users. ([#1078](https://github.com/webiny/webiny-js/issues/1078)) ([d3a0546](https://github.com/webiny/webiny-js/commit/d3a0546de391cd31b006f06914dcdda895f39629))
+* **app-page-builder:** add missing query variable to use apollo cache ([abf97b2](https://github.com/webiny/webiny-js/commit/abf97b2e9433bf057b11d3dedfcb5ea4475ed6d0))
+* **app-page-builder:** replace `a` with `Link` component ([ea91d6b](https://github.com/webiny/webiny-js/commit/ea91d6b97abad4c4eb450863e7a5adccf8a20ef0))
+* **cli:** remove update-notifier ([600a396](https://github.com/webiny/webiny-js/commit/600a3963335b6893cb5a0e67de32675afd290140))
+* **cli-plugin-deploy-components:** send "stack-deploy-end" event on Ctrl+C ([3feb6e3](https://github.com/webiny/webiny-js/commit/3feb6e3c599d0f1ac58de103c32f3f5d6e62506d))
+* **create-webiny-project:** don't add version tag when using local template files ([13b6a31](https://github.com/webiny/webiny-js/commit/13b6a314a325697fb7a22c2e436029d1bd6cf76b))
+* **create-webiny-project:** include original error message in error being thrown ([4b5aca3](https://github.com/webiny/webiny-js/commit/4b5aca35d29cdecc1b77d1f85eaf426b420ac773))
+* **create-webiny-project:** remove typo ([bf82a16](https://github.com/webiny/webiny-js/commit/bf82a16714062147ffd891b4d490c84010a97b27))
+* **create-webiny-project:** set default value for log parameter ([319047f](https://github.com/webiny/webiny-js/commit/319047ff05cc052cc73528be10747e26fb5b6a58))
+* **create-webiny-project:** update usage of tracking package ([e972bf4](https://github.com/webiny/webiny-js/commit/e972bf4e301bfd9b91489c4d10a6bdc85547cc75))
+* **project-utils:** set anonymous user id during production build ([b6768bf](https://github.com/webiny/webiny-js/commit/b6768bf20cd48f3efd5040fc2e6532ac33985609))
+* **react-router:** strip same origin from links for proper preloading ([8f68bbc](https://github.com/webiny/webiny-js/commit/8f68bbc6a49fe1a10875205634965c1be29dcf73))
+* **serverless-aws-s3-object:** check if bucket still exists before attempting to delete a file ([042119e](https://github.com/webiny/webiny-js/commit/042119ea5f9cc9427b7239deaaa33015f79deb67))
+* **styles:** page preview background color and rich text color on dark theme ([#1052](https://github.com/webiny/webiny-js/issues/1052)) ([1f7c0de](https://github.com/webiny/webiny-js/commit/1f7c0de4eff56a04debe21f9654d17c51754e108))
+* **tracking:** replace posthog-node library with simple HTTP requests ([ffa453a](https://github.com/webiny/webiny-js/commit/ffa453a305ec2dbce49ee4872ea2744dab7539da))
+* throw a proper error message on invalid environment or API type ([3b24817](https://github.com/webiny/webiny-js/commit/3b24817c0545a9aa90931647637f7aeee5a6326b))
+* updated reference to context.models from beforeDelete ([cdbf398](https://github.com/webiny/webiny-js/commit/cdbf39848f67f4d4d21ee67baf36d96f05c2e003))
+* use titleFieldId in order to perform referenceIn checks ([c7b3b6c](https://github.com/webiny/webiny-js/commit/c7b3b6cb77adb67d0c06dd333b52db0a1591dd31))
+
+
+### Features
+
+* add a sample test to the template ([c92bae4](https://github.com/webiny/webiny-js/commit/c92bae495a9187ad07ad15b0e68d6ee9d54ffa9a))
+* allow defining the name of the initial model ([365b7ee](https://github.com/webiny/webiny-js/commit/365b7ee9ac49eed52e10a7cc8de8a100e33bba5c))
+* **cli:** add onExit callback ([5055d85](https://github.com/webiny/webiny-js/commit/5055d856e9b69efff3ffcd02f817d8b623d219d4))
+* **cwp-templates:** generate JWT_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+
+### Bug Fixes
+
+* extract plugin into a separate file ([5e47f7b](https://github.com/webiny/webiny-js/commit/5e47f7b47ea6d60f8eb5ab1b496bb9c902e1d2b9))
+* remove unused import ([55ecd6f](https://github.com/webiny/webiny-js/commit/55ecd6f3bda00d6aff91159ffffa11785fae4767))
+* use titleFieldId in order to perform referenceIn checks ([629c844](https://github.com/webiny/webiny-js/commit/629c8443e3d8e21a6f0ba51b122d30c2b47c8326))
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+
+### Bug Fixes
+
+* **app-page-builder:** replace `a` with `Link` component ([0a4a7e7](https://github.com/webiny/webiny-js/commit/0a4a7e7fb3d0644218a67dd8b2e42cb85c047219))
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+
+### Bug Fixes
+
+* **project-utils:** set anonymous user id during production build ([4cc4990](https://github.com/webiny/webiny-js/commit/4cc4990a11600d09374bcd1e28446e5d4fe511b9))
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** update usage of tracking package ([0abf65e](https://github.com/webiny/webiny-js/commit/0abf65e6ad1a8ac76d84343492f063425cf6e173))
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+
+### Bug Fixes
+
+* improve logging ([c9ab439](https://github.com/webiny/webiny-js/commit/c9ab439f3156fafc9aa549d771cea73a07de14fb))
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* export mock IDs for direct usage in tests ([fc6882b](https://github.com/webiny/webiny-js/commit/fc6882b2e79d12b3fd13c8b50f097e961378ff9d))
+* make sure newly added ref fields cannot reference a model with no title field ([265644d](https://github.com/webiny/webiny-js/commit/265644d3d26b4ffeef62d172ef330a1519aa2d6f))
+* **app-plugin-admin-welcome-screen:** override route-root to render at "/" path ([0137548](https://github.com/webiny/webiny-js/commit/01375484dbb11b71140769f1e33ccb9725c2b77f))
+* **app-template:** sort routes so * is always the last item ([4db91d7](https://github.com/webiny/webiny-js/commit/4db91d73d800573dc4acff58a7d493aa4266cb50))
+* **app-template-admin:** remove root route ([5179b3f](https://github.com/webiny/webiny-js/commit/5179b3f3e2f3ea55ff92252b90b25116e3195071))
+* **app-template-site:** remove root route ([c9a1fa3](https://github.com/webiny/webiny-js/commit/c9a1fa3504528e172f653d80468909b8a0920a99))
+* add @webiny/app to dependencies ([18ce699](https://github.com/webiny/webiny-js/commit/18ce69976e32e4e16368b7e9950be60c5cd02a13))
+* export menu and header logo separately ([9a265f8](https://github.com/webiny/webiny-js/commit/9a265f85384dc1a233f51ea5fd5bb15e9efea268))
+* hide settings menu items from unwarranted users ([#1066](https://github.com/webiny/webiny-js/issues/1066)) ([72c5fce](https://github.com/webiny/webiny-js/commit/72c5fce0bc72ce27c9e1a5bba3dba836db0c9e24))
+* increase concurrencyLimit to 50 ([9d3ca41](https://github.com/webiny/webiny-js/commit/9d3ca41a2bd7250b02c9a9ba0b02954618033788))
+* remove "AdminMenuContentSectionPlugin" type ([a69c1ac](https://github.com/webiny/webiny-js/commit/a69c1acbf150543a67686d6c4bc64ca489c4f04f))
+* replace "admin-header-logo" with "admin-menu-logo" ([454ef5c](https://github.com/webiny/webiny-js/commit/454ef5c3286916e3f1d0e59b74c5eefeaa1d1088))
+* replace "Content" section in the main menu with "Page Builder" and "Form Builder" ([856482b](https://github.com/webiny/webiny-js/commit/856482b858f5e7181031d51fcef7c425ecaff1f9))
+* **app-form-builder:** fix field validation message ([4e7449a](https://github.com/webiny/webiny-js/commit/4e7449a3ddb4172030798e5ea4667cc1167ea66e))
+* **app-headless-cms:** sync `modelId` list in `ref` field ([fd0a658](https://github.com/webiny/webiny-js/commit/fd0a658575482ed8a96f16b9e99b4e444627420d))
+* **app-template:** sort routes and handle catch-all route paths ([9b5841b](https://github.com/webiny/webiny-js/commit/9b5841b15c2b3103d13dd80ed09446a9a047039b))
+* **app-template:** use https URL for telemetry ([c065a03](https://github.com/webiny/webiny-js/commit/c065a0357f82300a91a3acd123daa111a0769dfe))
+* **app-template-admin:** add missing TS references ([434c2ba](https://github.com/webiny/webiny-js/commit/434c2ba2246d1d6b3b3ff5309288587ab35fbb76))
+* **cli-plugin-scaffold-graphql-service:** add lambda role to generated resource ([4e512c3](https://github.com/webiny/webiny-js/commit/4e512c325a6f16e28234e1f1c91e489af9707899))
+* **cli-plugin-scaffold-graphql-service:** update template code ([a14efed](https://github.com/webiny/webiny-js/commit/a14efed50c4ed1cbe9fdd3b01d41702c65efcf22))
+* **plugins:** assign autogenerated plugin name to the plugin object ([62a4812](https://github.com/webiny/webiny-js/commit/62a481236a9fa4ef313eb05d5149b8c31212b4de))
+* sort out dependencies ([cb1f43f](https://github.com/webiny/webiny-js/commit/cb1f43fb3b6a249f36d6adb893168452fcf19754))
+
+
+### Features
+
+* **api-headless-cms:** add `CmsModelLockedFieldPlugin` plugin ([6b12797](https://github.com/webiny/webiny-js/commit/6b127979a4b624173424084844c989d57c7bdba2))
+* **api-headless-cms:** add `environmentAliases` ([257a6ef](https://github.com/webiny/webiny-js/commit/257a6ef7595a50f6df635ba2a0387561c952ec45))
+* **api-headless-cms:** add additional data to lockedFields ([ec935f8](https://github.com/webiny/webiny-js/commit/ec935f8b8f405f395f80438175e2ca834f144ccc))
+* **api-headless-cms:** add more fields to `LockedFields` model ([9834107](https://github.com/webiny/webiny-js/commit/98341075c882f00e3a2f00c679bb3bb685dc6354))
+* **api-headless-cms:** check `lockedField` invariant ([102d93b](https://github.com/webiny/webiny-js/commit/102d93b867684236f59b473637ebee119b7317ab))
+* **app-headless-cms:** add `environmentAliases` ([6e23941](https://github.com/webiny/webiny-js/commit/6e2394117b9028ebdf989d68421846fd7d858c3f))
+* **app-headless-cms:** add `lockedField` to `renderSettings` params ([82ff658](https://github.com/webiny/webiny-js/commit/82ff6588060a12dfbada9e1fb8b5b6f58a264a58))
+* **app-headless-cms:** disable input if lockedField invariant ([46ef8dd](https://github.com/webiny/webiny-js/commit/46ef8ddf138f6e0b0470452a06e524c84d6e161e))
+* **app-page-builder:** add `configure domain` confirmation ([07fe0bf](https://github.com/webiny/webiny-js/commit/07fe0bf5af22e39c0149f4dd039d83c53882bb41))
+* **app-page-builder:** add `DialogContainer` ([b05759d](https://github.com/webiny/webiny-js/commit/b05759d9c19767c411614f9da597e6247861f376))
+* **app-page-builder:** add `useConfigureDomainDialog` hook ([7276266](https://github.com/webiny/webiny-js/commit/72762669aa83850d4ee901bdff098ab6236573f8))
+* **app-page-builder:** add `useSiteStatus` ([0e3030b](https://github.com/webiny/webiny-js/commit/0e3030bc32ecf60569a1f6d8f4e00049001f693d))
+* **app-page-builder:** add `useSiteStatus` hook ([5f48957](https://github.com/webiny/webiny-js/commit/5f48957a7d7cff57904b934187e345206ac678d7))
+* **app-page-builder:** remove `domain` input ([bcc41d0](https://github.com/webiny/webiny-js/commit/bcc41d0dbd54315d0014e98d15921cc56a711976))
+* add "AdminMenuLogoPlugin" ([45d4f21](https://github.com/webiny/webiny-js/commit/45d4f21c7d5bcc3b8a8c43a5272cc890caf4ce68))
+* add "select" field renderer ([#1077](https://github.com/webiny/webiny-js/issues/1077)) ([be8d08c](https://github.com/webiny/webiny-js/commit/be8d08c0ce506bf2b03efa95fd6ad0b3d1ee8eb4))
+* add "white" prop ([706a20b](https://github.com/webiny/webiny-js/commit/706a20bac0281575f57e05cc0a768703e989a8bf))
+* add t template string literal for i18n support ([ee95c3c](https://github.com/webiny/webiny-js/commit/ee95c3c180d5b424328420d534b5db268986127e))
+* i18n for the mailchimp app ([03d7913](https://github.com/webiny/webiny-js/commit/03d791396bf34b91540ddccfe7e3ec01368c921e))
+* i18n support for typeform app using t template literal ([c880db4](https://github.com/webiny/webiny-js/commit/c880db453e328f3b278aab3e5f18e574267656f2))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package webiny-js

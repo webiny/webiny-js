@@ -32,7 +32,7 @@ export default () => [
                     withCrudLogs()
                 )();
 
-            const PbCategory = pbCategory({ createBase });
+            const PbCategory = pbCategory({ createBase, context });
             const PbMenu = pbMenu({ createBase });
             const PbPageElement = pbPageElement({ createBase, context });
             const PbSettings = pbSettings({ createBase, context });

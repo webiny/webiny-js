@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
@@ -7,12 +7,14 @@ import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/asset
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem, Menu } from "@webiny/ui/Menu";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { css } from "emotion";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 
@@ -31,7 +33,9 @@ const PageOptionsMenu = props => {
         pageDetails: { page }
     } = props;
 
-    const { getPageUrl, getPagePreviewUrl } = usePageBuilderSettings();
+    const { getPageUrl, getPagePreviewUrl, getDomain } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
         title: "Delete page",
@@ -44,8 +48,19 @@ const PageOptionsMenu = props => {
         )
     });
 
+    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
+
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
+    const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
+
+    const handlePreviewClick = useCallback(() => {
+        if (isSiteRunning) {
+            window.open(url, target, "noopener");
+        } else {
+            showConfigureDomainDialog();
+        }
+    }, [url, isSiteRunning]);
 
     return (
         <Menu
@@ -58,7 +73,7 @@ const PageOptionsMenu = props => {
             }
         >
             {page.locked ? (
-                <MenuItem onClick={() => window.open(getPageUrl(page), target)}>
+                <MenuItem onClick={handlePreviewClick}>
                     <ListItemGraphic>
                         <Icon
                             data-testid="pb-page-details-header-page-options-menu-preview"
@@ -68,7 +83,7 @@ const PageOptionsMenu = props => {
                     View
                 </MenuItem>
             ) : (
-                <MenuItem onClick={() => window.open(getPagePreviewUrl(page), target)}>
+                <MenuItem onClick={handlePreviewClick}>
                     <ListItemGraphic>
                         <Icon
                             data-testid="pb-page-details-header-page-options-menu-preview"

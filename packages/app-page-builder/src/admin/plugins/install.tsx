@@ -55,6 +55,13 @@ const installationSteps = {
     5: t`Finalizing...`
 };
 
+const getCurrentDomain = () => {
+    const isLocalHost = window.location.origin.includes("localhost");
+    const localDomain = "http://localhost:3000";
+
+    return isLocalHost ? localDomain : window.location.origin;
+};
+
 const PBInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
@@ -92,7 +99,7 @@ const PBInstaller = ({ onInstalled }) => {
     );
 
     return (
-        <Form onSubmit={onSubmit} data={{ domain: window.location.origin }} submitOnEnter>
+        <Form onSubmit={onSubmit} data={{ domain: getCurrentDomain() }} submitOnEnter>
             {({ Bind, submit }) => (
                 <SimpleForm>
                     {loading && <CircularProgress label={installationSteps[installationStep]} />}
@@ -113,14 +120,6 @@ const PBInstaller = ({ onInstalled }) => {
                                     <Input
                                         label={t`Site Name`}
                                         description={`Name of your site, eg: "My Site"`}
-                                    />
-                                </Bind>
-                            </Cell>
-                            <Cell span={12}>
-                                <Bind name="domain" validators={validation.create("required,url")}>
-                                    <Input
-                                        label={t`Domain`}
-                                        placeholder={"https://www.mysite.com"}
                                     />
                                 </Bind>
                             </Cell>

@@ -5,6 +5,7 @@ import { Select } from "@webiny/ui/Select";
 import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+import { get } from "lodash";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -35,7 +36,13 @@ const plugin: CmsEditorFieldTypePlugin = {
                 }
             };
         },
-        renderSettings({ form: { Bind } }) {
+        renderSettings({ form: { Bind, data }, contentModel }) {
+            const lockedFields = get(contentModel, "lockedFields", []);
+            const fieldId = get(data, "fieldId", null);
+            const lockedField = lockedFields.find(
+                lockedField => lockedField.fieldId === fieldId
+            );
+
             return (
                 <Grid>
                     <Cell span={12}>
@@ -48,7 +55,11 @@ const plugin: CmsEditorFieldTypePlugin = {
                     </Cell>
                     <Cell span={12}>
                         <Bind name={"settings.type"}>
-                            <Select label={t`Format`} description={t`Cannot be changed later`}>
+                            <Select
+                                label={t`Format`}
+                                description={t`Cannot be changed later`}
+                                disabled={lockedField && lockedField.formatType}
+                            >
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>
                                 <option value={t`dateTimeWithTimezone`}>

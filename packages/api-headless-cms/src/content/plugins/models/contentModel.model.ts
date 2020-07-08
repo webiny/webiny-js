@@ -13,7 +13,6 @@ import {
     skipOnPopulate
 } from "@webiny/commodo";
 import createFieldsModel from "./ContentModel/createFieldsModel";
-import createLockedFieldsModel from "./ContentModel/createLockedFieldsModel";
 import camelCase from "lodash/camelCase";
 import pluralize from "pluralize";
 import { indexes } from "./indexesField";
@@ -24,7 +23,6 @@ const required = validation.create("required");
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
     const ContentModelFieldsModel = createFieldsModel(context);
-    const LockedFieldsModel = createLockedFieldsModel();
 
     const CmsContentModel = pipe(
         withName(`CmsContentModel`),
@@ -41,9 +39,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
 
             // Contains a list of all fields that were utilized by existing content entries. If a field is on the list,
             // it cannot be removed/edited anymore.
-            lockedFields: skipOnPopulate()(
-                fields({ list: true, instanceOf: LockedFieldsModel, value: [] })
-            ),
+            lockedFields: skipOnPopulate()(object({ list: true, value: [] })),
             fields: fields({
                 list: true,
                 value: [],
@@ -184,6 +180,25 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
                         );
                     }
+
+                    if (lockedField.type !== existingField.type) {
+                        throw new Error(
+                            `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`
+                        );
+                    }
+
+                    const cmsLockedFieldPlugins = context.plugins
+                        .byType("cms-model-locked-field")
+                        .filter(pl => pl.fieldType === lockedField.type);
+                    // Check `lockedField` invariant for specific field
+                    cmsLockedFieldPlugins.forEach(plugin => {
+                        if (typeof plugin.checkLockedField === "function") {
+                            plugin.checkLockedField({
+                                lockedField,
+                                field: existingField
+                            });
+                        }
+                    });
                 }
 
                 // Check if the indexes list contains all fields that actually exists.

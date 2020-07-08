@@ -1,4 +1,4 @@
-import { withFields, pipe, string, withProps, withHooks, fields } from "@webiny/commodo";
+import { withFields, pipe, string, withHooks, fields } from "@webiny/commodo";
 
 const RefFieldListItemModel = withFields({
     modelId: string({ validation: "required" }),
@@ -35,13 +35,14 @@ export default () => {
                         }
                     },
                     async beforeSave() {
-                        // If content model is referenced in "ref" fields of other models, prevent removing all fields.
-                        // This is because the model will be removed from the GraphQL schema and make it invalid.
-                        if (!this.totalFields) {
+                        // If content model is referenced in "ref" fields of other models, prevent removing the title field.
+                        // This ensures we have at least one field on the model, and also that the search components
+                        // in the actually work, because they are relying on this field in order to perform searches.
+                        if (!this.titleFieldId) {
                             for (let i = 0; i < this.referencedIn.length; i++) {
                                 const item = this.referencedIn[i];
                                 throw new Error(
-                                    `Cannot remove all fields because the content model because it's referenced in the "${item.modelId}" model ("${item.fieldId}" field).`
+                                    `Cannot save model "${this.modelId}" model because it doesn't have a title field defined and it's being referenced in the "${item.modelId}" model ("${item.fieldId}" field).`
                                 );
                             }
                         }

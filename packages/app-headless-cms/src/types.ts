@@ -27,6 +27,7 @@ export type CmsEditorFieldTypePlugin = Plugin & {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
+            contentModel: CmsEditorContentModel;
         }) => React.ReactNode;
         renderPredefinedValues?: (params: {
             form: FormChildrenFunctionParams;

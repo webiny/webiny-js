@@ -9,8 +9,7 @@ const { setEnvironmentFromState } = require("@webiny/cli-plugin-deploy-component
 
 const map = {
     REACT_APP_GRAPHQL_API_URL: "${cdn.url}/graphql",
-    REACT_APP_API_URL: "${cdn.url}",
-    REACT_APP_FILES_PROXY: "${cdn.url}"
+    REACT_APP_API_URL: "${cdn.url}"
 };
 
 module.exports = {

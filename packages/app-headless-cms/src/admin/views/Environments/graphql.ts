@@ -34,7 +34,7 @@ export const LIST_ENVIRONMENTS = gql`
                     name
                     isProduction
                     createdOn
-                    environmentAlias {
+                    environmentAliases {
                         id
                         name
                     }

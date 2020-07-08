@@ -37,7 +37,7 @@ const providers = providerList
         return item.domain !== "";
     });
 
-export const findProvider = (url: string): {[key: string]: any} | null => {
+export const findProvider = (url: string): { [key: string]: any } | null => {
     const candidates = providers.filter(provider => {
         const { schemes, domain }: any = provider;
         if (!schemes.length) {
@@ -52,7 +52,10 @@ export const findProvider = (url: string): {[key: string]: any} | null => {
     return candidates.length > 0 ? candidates[0] : null;
 };
 
-export const fetchEmbed = async (params: {[key: string]: any}, provider: {[key: string]: any}) => {
+export const fetchEmbed = async (
+    params: { [key: string]: any },
+    provider: { [key: string]: any }
+) => {
     const link =
         `${provider.url}?format=json&` +
         Object.keys(params)

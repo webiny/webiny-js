@@ -3,6 +3,110 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **admin-welcome-screen:** hide links from unauthorized users. ([#1078](https://github.com/webiny/webiny-js/issues/1078)) ([d3a0546](https://github.com/webiny/webiny-js/commit/d3a0546de391cd31b006f06914dcdda895f39629))
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-form-builder
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* replace "Content" section in the main menu with "Page Builder" and "Form Builder" ([856482b](https://github.com/webiny/webiny-js/commit/856482b858f5e7181031d51fcef7c425ecaff1f9))
+* **app-form-builder:** fix field validation message ([4e7449a](https://github.com/webiny/webiny-js/commit/4e7449a3ddb4172030798e5ea4667cc1167ea66e))
+* hide settings menu items from unwarranted users ([#1066](https://github.com/webiny/webiny-js/issues/1066)) ([72c5fce](https://github.com/webiny/webiny-js/commit/72c5fce0bc72ce27c9e1a5bba3dba836db0c9e24))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-form-builder

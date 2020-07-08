@@ -7,15 +7,23 @@ export type LinkProps = RouterLinkProps;
 function Link({ children, ...props }: LinkProps) {
     const { onLink } = useContext(RouterContext);
 
-    useEffect(() => {
-        onLink(props.to as string);
-    }, [props.to]);
+    let { to } = props;
 
-    const isInternal = typeof props.to === "string" ? props.to.startsWith("/") : true;
+    if (process.env.REACT_APP_ENV === "browser") {
+        if (typeof to === "string" && to.startsWith(window.location.origin)) {
+            to = to.replace(window.location.origin, "");
+        }
+    }
+
+    useEffect(() => {
+        onLink(to as string);
+    }, [to]);
+
+    const isInternal = typeof to === "string" ? to.startsWith("/") : true;
     const LinkComponent = isInternal ? RouterLink : "a";
     const componentProps = {
         ...props,
-        [isInternal ? "to" : "href"]: props.to
+        [isInternal ? "to" : "href"]: to
     };
 
     return <LinkComponent {...componentProps}>{children}</LinkComponent>;

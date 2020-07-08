@@ -6,7 +6,7 @@ import Welcome from "./components/Welcome";
 
 export default () => [
     {
-        name: "route-welcome",
+        name: "route-root",
         type: "route",
         route: (
             <Route

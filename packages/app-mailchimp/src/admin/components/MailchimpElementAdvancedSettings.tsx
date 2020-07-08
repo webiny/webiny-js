@@ -18,6 +18,8 @@ import MailchimpElement from "./MailchimpElement";
 import settingsGql from "./graphql";
 import { validation } from "@webiny/validation";
 import { PbPageElementMailchimpComponentPlugin } from "../../types";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-mailchimp/admin");
 
 const formPreview = css({
     padding: 25,
@@ -69,7 +71,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
         if (error) {
             showSnackbar(error.message);
         } else {
-            showSnackbar("Settings updated successfully.");
+            showSnackbar(t`Settings updated successfully.`);
             settingsLists.refetch();
         }
     });
@@ -107,7 +109,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                                         options={options}
                                                         value={value}
                                                         onChange={onChange}
-                                                        label={"Mailchimp list"}
+                                                        label={t`Mailchimp list`}
                                                         {...rest}
                                                     />
                                                 );
@@ -143,8 +145,8 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                                         onChange={onChange}
                                                         textProp="title"
                                                         valueProp="name"
-                                                        label="Mailchimp component"
-                                                        description="Select a component that renders the signup form."
+                                                        label={t`Mailchimp component`}
+                                                        description={t`Select a component that renders the signup form.`}
                                                         {...rest}
                                                     />
                                                 );
@@ -153,7 +155,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                     </Cell>
                                     <Cell span={12} className={formPreview}>
                                         <span>
-                                            <Typography use={"overline"}>Form preview</Typography>
+                                            <Typography use={"overline"}>{t`Form preview`}</Typography>
                                         </span>
                                         <Bind name={"settings"}>
                                             {({ value }) => (
@@ -171,13 +173,13 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                     {!apiKey ? (
                                         <>
                                             <Cell span={12}>
-                                                Before continuing, please enter a{" "}
+                                                {t`Before continuing, please enter a `}
                                                 <a
                                                     target={"_blank"}
                                                     rel="noopener noreferrer"
                                                     href="https://mailchimp.com/help/about-api-keys/"
                                                 >
-                                                    Mailchimp API key
+                                                    {t`Mailchimp API key`}
                                                 </a>
                                                 .
                                             </Cell>
@@ -207,7 +209,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                                                 className={saveApiKeyButtonWrapper}
                                                             >
                                                                 <ButtonPrimary onClick={submit}>
-                                                                    Save API key
+                                                                    {t`Save API key`}
                                                                 </ButtonPrimary>
                                                             </Cell>
                                                         </>
@@ -218,7 +220,7 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                     ) : (
                                         <>
                                             <Cell span={12}>
-                                                Before continuing, please{" "}
+                                                {t`Before continuing, please`}{" "}
                                                 <a
                                                     className={enableMailchimpLink}
                                                     onClick={() =>
@@ -227,9 +229,9 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                                         })
                                                     }
                                                 >
-                                                    enable
+                                                    {t`enable`}
                                                 </a>{" "}
-                                                the Mailchimp integration.
+                                                {t`the Mailchimp integration.`}
                                             </Cell>
                                         </>
                                     )}

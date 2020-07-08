@@ -13,7 +13,6 @@ export const chipIconWrapper = css({
     }
 });
 
-
 export const disabledChips = css({
     opacity: 0.75,
     pointerEvents: "none"

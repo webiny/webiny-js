@@ -27,9 +27,9 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
-export type AdminHeaderLogoPlugin = Plugin & {
-    name: "admin-header-logo";
-    type: "admin-header-logo";
+export type AdminMenuLogoPlugin = Plugin & {
+    name: "admin-menu-logo";
+    type: "admin-menu-logo";
     render(): React.ReactElement;
 };
 
@@ -61,11 +61,6 @@ export type AdminMenuPlugin = Plugin & {
         Item: typeof Item;
     }): React.ReactNode;
     order?: number;
-};
-
-export type AdminMenuContentSectionPlugin = Plugin & {
-    type: "admin-menu-content-section";
-    render(props: { Section: typeof Section; Item: typeof Item }): React.ReactNode;
 };
 
 /**

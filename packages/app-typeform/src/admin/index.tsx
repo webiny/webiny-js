@@ -13,6 +13,8 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-typeform/admin");
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -73,7 +75,7 @@ export default () => [
         elementType: "typeform",
         render({ Bind }) {
             return (
-                <Tab icon={<CodeIcon />} label="Typeform">
+                <Tab icon={<CodeIcon />} label={t`Typeform`}>
                     <Grid>
                         <Cell span={12}>
                             <Bind
@@ -81,8 +83,8 @@ export default () => [
                                 validators={validation.create("required,url")}
                             >
                                 <Input
-                                    label={"Typeform URL"}
-                                    description={"Enter a Typeform URL"}
+                                    label={t`Typeform URL`}
+                                    description={t`Enter a Typeform URL`}
                                 />
                             </Bind>
                         </Cell>

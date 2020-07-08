@@ -1,5 +1,5 @@
 import textFieldPlugin from "./../text";
-import {FbBuilderFieldPlugin} from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
 const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",
