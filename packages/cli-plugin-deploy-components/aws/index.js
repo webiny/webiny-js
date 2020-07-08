@@ -11,9 +11,13 @@ module.exports = {
         const stsResults = await sts
             .getCallerIdentity({})
             .promise()
-            .then(result => {
-                console.log("PROMISE RESULT::::::");
-                console.log(result);
+            .then((result, err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("PROMISE RESULT::::::");
+                    console.log(result);
+                }
             });
     }
 };
