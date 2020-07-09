@@ -14,28 +14,18 @@ import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
 import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
-import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
+import ApiInformationDialog from "@webiny/app-admin/components/ApiInformationDialog";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
-
-import get from "lodash.get";
 
 const style = {
     environmentContainer: css({
         color: "var(--mdc-theme-text-secondary-on-background)"
     }),
     infoContainer: css({
-        alignSelf: "center",
+        alignSelf: "center"
     })
-};
-
-const getCurrentEnvironmentFromLocalStorage = () => {
-    try {
-        return JSON.parse(get(window, "localStorage.cms_environment"));
-    } catch {
-        return null;
-    }
 };
 
 const Navigation = () => {
@@ -43,8 +33,6 @@ const Navigation = () => {
     const [infoOpened, setInfoOpened] = useState(false);
 
     useEffect(initSections, []);
-    const currentEnvironment =  getCurrentEnvironmentFromLocalStorage();
-
     const logo = useMemo(() => {
         const logoPlugin = getPlugin<AdminMenuLogoPlugin>("admin-menu-logo");
         if (logoPlugin) {
@@ -78,7 +66,8 @@ const Navigation = () => {
             <DrawerContent className={navContent}>{menus}</DrawerContent>
             <MenuFooter>
                 <List nonInteractive>
-                    <div className={style.infoContainer}
+                    <div
+                        className={style.infoContainer}
                         onClick={e => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -87,7 +76,7 @@ const Navigation = () => {
                     >
                         <ListItem ripple={false}>
                             <ListItemGraphic>
-                                <Icon icon={<InfoIcon />}/>
+                                <Icon icon={<InfoIcon />} />
                             </ListItemGraphic>
                             {t`API information`}
                         </ListItem>
@@ -141,15 +130,8 @@ const Navigation = () => {
                         </div>
                     </ListItem>
                 </List>
-                {
-                    currentEnvironment &&
-                        <EnvironmentInfoDialog
-                            open={infoOpened}
-                            onClose={() => setInfoOpened(false)}
-                            name={currentEnvironment.name || t`N\A`}
-                            type="api"
-                        />
-                }
+
+                <ApiInformationDialog open={infoOpened} onClose={() => setInfoOpened(false)} />
             </MenuFooter>
         </Drawer>
     );
