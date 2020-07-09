@@ -8,8 +8,6 @@ import { ApiInformationDialogPlugin } from "@webiny/app-admin/types";
 export type NewContentModelDialogProps = {
     open: boolean;
     onClose: () => void;
-    name: string;
-    type: string;
 };
 
 const t = i18n.ns("app-admin/navigation");
