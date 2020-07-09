@@ -11,7 +11,7 @@ module.exports = {
         } catch (err) {
             console.log("Looks like your AWS credentials are not configured correctly!");
             console.log(
-                "Please to refer to the following link for setting them up: https://docs.webiny.com/docs/guides/aws-credentials/"
+                "Check the AWS credentials documentation: https://docs.webiny.com/docs/guides/aws-credentials/"
             );
             process.exit(1);
         }
