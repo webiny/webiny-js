@@ -24,7 +24,7 @@ module.exports = [
                         name: "location",
                         message: "Enter package location (including package name)",
                         default: "api/books",
-                        validate: (location) => {
+                        validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
                             }
@@ -48,7 +48,7 @@ module.exports = [
                         name: "initialEntityName",
                         message: "Enter name of the initial data model",
                         default: "Book",
-                        validate: (name) => {
+                        validate: name => {
                             if (!name.match(/[a-zA-Z]*/)) {
                                 return "A valid entity name must consist of letters only.";
                             }

@@ -16,7 +16,11 @@ describe("CRUD Test", () => {
             body: {
                 query: CREATE_ENTITY,
                 variables: {
-                    data: { title: "Entity 1", description: "This is my 1st entity.", isNice: false }
+                    data: {
+                        title: "Entity 1",
+                        description: "This is my 1st entity.",
+                        isNice: false
+                    }
                 }
             }
         });
