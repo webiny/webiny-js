@@ -71,6 +71,13 @@ module.exports = async function({ root, appName, templateName, tag, log }) {
                 } else {
                     appPackage.workspaces = Object.assign({}, projectDeps.workspaces);
                 }
+
+                if (appPackage.scripts) {
+                    Object.assign(appPackage.scripts, projectDeps.scripts);
+                } else {
+                    appPackage.scripts = Object.assign({}, projectDeps.scripts);
+                }
+
                 fs.writeFileSync(
                     path.join(root, "package.json"),
                     JSON.stringify(appPackage, null, 2) + os.EOL

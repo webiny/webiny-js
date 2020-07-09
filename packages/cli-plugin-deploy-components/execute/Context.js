@@ -10,7 +10,7 @@ const randomId = () =>
         .substring(6);
 
 class Context {
-    constructor(config) {
+    constructor(config, context) {
         this.logger = config.logger;
         this.stackName = config.stackName;
         this.stateRoot = config.stateRoot;
@@ -23,9 +23,8 @@ class Context {
         this.projectName = config.projectName;
 
         // Control + C
-        process.on("SIGINT", async () => {
+        context.onExit(() => {
             this._status.stop("cancel");
-            process.exit(1);
         });
 
         this._status = new Status();

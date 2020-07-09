@@ -31,7 +31,7 @@ const getPackages = pattern => {
 };
 
 const WEBINY_PACKAGES = getPackages("/packages/");
-const SAMPLE_PROJECT_PACKAGES = getPackages("/sample-project/");
+const SAMPLE_PACKAGES = [...getPackages("/api/"), ...getPackages("/apps/")];
 
 const PREVIEW = argv.preview;
 
@@ -53,8 +53,8 @@ const PREVIEW = argv.preview;
         console.log("===================================");
     }
 
-    for (let i = 0; i < SAMPLE_PROJECT_PACKAGES.length; i++) {
-        const { packageJsonPath, packageJson } = SAMPLE_PROJECT_PACKAGES[i];
+    for (let i = 0; i < SAMPLE_PACKAGES.length; i++) {
+        const { packageJsonPath, packageJson } = SAMPLE_PACKAGES[i];
 
         if (!mustProcessPackage(packageJson)) {
             continue;

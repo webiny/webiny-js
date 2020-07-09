@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-plugin-commodo-nedb",
-	"version": "4.3.0",
+	"version": "4.4.0",
 	"main": "index.js",
 	"license": "MIT",
 	"repository": {
@@ -14,14 +14,14 @@
 		"Adrian Smijulj <adrian@webiny.com>"
 	],
 	"dependencies": {
-		"@babel/runtime": "^7.5.5"
+		"@babel/runtime": "^7.5.5",
+		"@commodo/fields-storage-nedb": "^2.0.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",
 		"@babel/core": "^7.5.5",
 		"@babel/preset-env": "^7.5.5",
-		"@commodo/fields-storage-nedb": "^2.0.0-next.16",
-		"@webiny/graphql": "^4.3.0"
+		"@webiny/graphql": "^4.4.0"
 	},
 	"publishConfig": {
 		"access": "public",

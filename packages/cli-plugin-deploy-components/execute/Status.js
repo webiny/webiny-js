@@ -40,8 +40,6 @@ class Status {
 
     stop(reason) {
         if (!this.isRunning()) {
-            console.log();
-            process.exit(0);
             return;
         }
 
@@ -64,12 +62,6 @@ class Status {
         console.log(os.EOL);
         process.stdout.write(ansiEscapes.cursorLeft);
         process.stdout.write(ansiEscapes.cursorShow);
-
-        if (reason === "error") {
-            process.exit(1);
-        } else {
-            process.exit(0);
-        }
     }
 
     async render(status) {

@@ -63,8 +63,19 @@ class Template extends Component {
         return await this.deployAll({ ...inputs, template }, context);
     }
 
-    async deployAll(inputs = {}) {
+    async deployAll(inputs = {}, cliContext) {
         this.context.status("Deploying");
+
+        cliContext.onExit(async code => {
+            if (code === "SIGINT") {
+                await sendEvent({
+                    event: "stack-deploy-end",
+                    data: {
+                        stack: inputs.stack
+                    }
+                });
+            }
+        });
 
         await sendEvent({
             event: "stack-deploy-start",

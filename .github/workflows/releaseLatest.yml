@@ -21,7 +21,7 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '12'
+          node-version: "12"
 
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc

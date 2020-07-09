@@ -28,7 +28,7 @@ module.exports.execute = async (inputs, method, context) => {
         stackName: `${context.projectName}_${stack}`,
         env,
         debug
-    });
+    }, context);
     componentContext.projectName = context.projectName;
     await componentContext.init();
 
