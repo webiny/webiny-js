@@ -6,7 +6,9 @@ import { ReactComponent as InformationIcon } from "../../icons/info.svg";
 import { css } from "emotion";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
-import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
+import ApiUrlsDialog from "@webiny/app-headless-cms/admin/components/ApiUrlsDialog";
+
+
 import {
     DataList,
     List,
@@ -71,7 +73,7 @@ const EnvironmentAliasesDataList = () => {
                 <List data-testid="default-data-list">
                     {
                         selectedInfo.name &&
-                            <EnvironmentInfoDialog
+                            <ApiUrlsDialog
                                 open={infoOpened}
                                 onClose={() => setInfoOpened(false)}
                                 name={selectedInfo.name}

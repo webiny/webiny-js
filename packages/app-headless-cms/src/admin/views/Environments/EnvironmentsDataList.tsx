@@ -16,9 +16,9 @@ import {
 import { ReactComponent as InformationIcon } from "../../icons/info.svg";
 import { Link } from "@webiny/react-router";
 import { ConfirmationDialogWithInput } from "./ConfirmationDialogWithInput";
-import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import ApiUrlsDialog from "@webiny/app-headless-cms/admin/components/ApiUrlsDialog";
 
 const t = i18n.ns("app-headless-cms/admin/environments/data-list");
 
@@ -92,7 +92,7 @@ const EnvironmentsDataList = () => {
                     <List data-testid="default-data-list">
                         {
                             selectedInfo.name &&
-                                <EnvironmentInfoDialog
+                                <ApiUrlsDialog
                                     open={infoOpened}
                                     onClose={() => setInfoOpened(false)}
                                     name={selectedInfo.name}
