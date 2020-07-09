@@ -28,10 +28,15 @@ module.exports = function({ types: t, template: tpl }, { resourceTemplate, resou
                                 t.identifier("path"),
                                 tpl.expression(pathValue, { placeholderPattern: false })()
                             ),
-                            t.objectProperty(t.identifier("method"), tpl.expression(`any`)()),
+                            t.objectProperty(
+                                t.identifier("method"),
+                                tpl.expression(`"ANY"`, { placeholderPattern: false })()
+                            ),
                             t.objectProperty(
                                 t.identifier("function"),
-                                tpl.expression(`"$\{${resourceName}}"`)()
+                                tpl.expression(`"$\{${resourceName}}"`, {
+                                    placeholderPattern: false
+                                })()
                             )
                         ])
                     );
