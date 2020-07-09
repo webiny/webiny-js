@@ -21,29 +21,28 @@ module.exports = [
             name: "React Application",
             questions: () => {
                 return [
-                    // TODO [Andrei] [At the end] uncomment the good code below
-                    // {
-                    //     name: "location",
-                    //     message: "Enter package location (including package name)",
-                    //     validate: location => {
-                    //         if (location === "") {
-                    //             return "Please enter a package location";
-                    //         }
-                    //
-                    //         if (fs.existsSync(path.resolve(location))) {
-                    //             return "The target location already exists";
-                    //         }
-                    //
-                    //         const rootResourcesPath = findUp.sync("resources.js", {
-                    //             cwd: path.resolve(location)
-                    //         });
-                    //         if (!rootResourcesPath) {
-                    //             return `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`;
-                    //         }
-                    //
-                    //         return true;
-                    //     }
-                    // },
+                    {
+                        name: "location",
+                        message: "Enter package location (including package name)",
+                        validate: location => {
+                            if (location === "") {
+                                return "Please enter a package location";
+                            }
+
+                            if (fs.existsSync(path.resolve(location))) {
+                                return "The target location already exists";
+                            }
+
+                            const rootResourcesPath = findUp.sync("resources.js", {
+                                cwd: path.resolve(location)
+                            });
+                            if (!rootResourcesPath) {
+                                return `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`;
+                            }
+
+                            return true;
+                        }
+                    },
                     {
                         name: "type",
                         message: "Select application template type:",
@@ -53,8 +52,7 @@ module.exports = [
                 ];
             },
             generate: async ({ input }) => {
-                const location = `./apps/boss-${new Date().getTime()}`; //input;
-                const { type: appType } = input;
+                const { type: appType, location } = input;
                 const fullLocation = path.resolve(location);
                 const rootResourcesPath = findUp.sync("resources.js", {
                     cwd: fullLocation

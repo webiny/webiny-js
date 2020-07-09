@@ -26,15 +26,12 @@ const scaffold = async ({ context }) => {
     }
 
     const choices = Object.values(scaffoldPlugins).map(pluginToChoice);
-    // TODO [Andrei] [At the end] uncomment the good code below
-    // const { selectedPluginName } = await inquirer.prompt({
-    //     type: "list",
-    //     name: "selectedPluginName",
-    //     message: "Pick a template to scaffold",
-    //     choices
-    // });
-
-    const selectedPluginName = "cli-plugin-scaffold-template-react-app";
+    const { selectedPluginName } = await inquirer.prompt({
+        type: "list",
+        name: "selectedPluginName",
+        message: "Pick a template to scaffold",
+        choices
+    });
 
     const { scaffold } = context.plugins.byName(selectedPluginName);
     const questions = scaffold.questions;
