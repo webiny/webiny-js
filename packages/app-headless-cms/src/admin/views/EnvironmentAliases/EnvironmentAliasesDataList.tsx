@@ -75,7 +75,7 @@ const EnvironmentAliasesDataList = () => {
                                 open={infoOpened}
                                 onClose={() => setInfoOpened(false)}
                                 name={selectedInfo.name}
-                                aliases={true}
+                                type="aliases"
                             />
                     }
                     {data.map(item => (

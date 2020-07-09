@@ -115,5 +115,5 @@ export type AdminInstallationPlugin = Plugin & {
 
 export type ApiInformationDialog = Plugin & {
     type: "admin-api-information-dialog";
-    render(props: { name: string; aliases: boolean }): React.ReactNode;
+    render(props: { name: string; type: string }): React.ReactNode;
 };

@@ -26,7 +26,7 @@ const style = {
 const plugin: ApiInformationDialog = {
     type: "admin-api-information-dialog",
     name: "admin-api-information-dialog-headless-cms",
-    render({ name, aliases }) {
+    render({ name, type }) {
         const { showSnackbar } = useSnackbar();
         const graphqlApiUrl = process.env.REACT_APP_API_URL;
         const [totalAliases, setTotalAliases] = useState([]);
@@ -42,14 +42,16 @@ const plugin: ApiInformationDialog = {
 
         return (
             <div>
-                {!aliases && <ReactGraphqlUrl />}
+                {type === "api" && <ReactGraphqlUrl />}
                 <Typography use={"headline6"} style={{fontSize: "1.4rem"}}>
                     Headless CMS - {name}
                 </Typography>
                 {
                     totalAliases.filter((elem) => {
-                        if (aliases) {
+                        if (type === "aliases") {
                             return elem.name === name;
+                        } else if (type === "environment"){
+                            return elem.environment.name === name;
                         } else {
                             return elem.environment.name === currentEnvironment.name;
                         }

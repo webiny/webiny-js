@@ -147,7 +147,7 @@ const Navigation = () => {
                             open={infoOpened}
                             onClose={() => setInfoOpened(false)}
                             name={currentEnvironment.name || t`N\A`}
-                            aliases={false}
+                            type="api"
                         />
                 }
             </MenuFooter>

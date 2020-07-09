@@ -9,7 +9,7 @@ export type NewContentModelDialogProps = {
     open: boolean;
     onClose: () => void;
     name: string;
-    aliases: boolean;
+    type: string;
 };
 
 const t = i18n.ns("app-admin/navigation");
@@ -27,7 +27,7 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
     open,
     onClose,
     name,
-    aliases
+    type
 }) => {
     const adminInfoPlugins = getPlugins<ApiInformationDialog>(
         "admin-api-information-dialog"
@@ -45,7 +45,7 @@ const EnvironmentInfoDialog: React.FC<NewContentModelDialogProps> = ({
                     adminInfoPlugins.map(pl => {
                         return (
                             <div key={pl.name}>
-                                {pl.render({ name, aliases })}
+                                {pl.render({ name, type })}
                             </div>
                         )
                     })
