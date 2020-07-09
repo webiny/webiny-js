@@ -19,8 +19,8 @@ const style = {
 const ReactGraphqlUrl = () => {
     const { showSnackbar } = useSnackbar();
 
-    return ([
-        <div className={style.apiUrl} key="graphql-api-container">
+    return (
+        <div className={style.apiUrl}>
             <Tooltip className={style.api} content={<span>This link allows you to access content created by different application across Webiny like Page Builder or Form Builder.</span>}>
                 <Typography use={"headline6"}>GraphQL API:</Typography>
             </Tooltip>
@@ -35,10 +35,8 @@ const ReactGraphqlUrl = () => {
                 value={process.env.REACT_APP_GRAPHQL_API_URL}
                 onCopy={() => showSnackbar("Successfully copied!")}
             />
-            
-        </div>,
-        <br key="graphql-break"></br>
-    ])
+        </div>
+    )
 };
 
 export default ReactGraphqlUrl;

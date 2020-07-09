@@ -42,7 +42,12 @@ const plugin: ApiInformationDialog = {
 
         return (
             <div>
-                {type === "api" && <ReactGraphqlUrl />}
+                {
+                    type === "api" && [
+                        <ReactGraphqlUrl key="graphql-api-url"/>,
+                        <br key="graphql-break"></br>
+                    ]
+                }
                 <Typography use={"headline6"} style={{fontSize: "1.4rem"}}>
                     Headless CMS - {name}
                 </Typography>
