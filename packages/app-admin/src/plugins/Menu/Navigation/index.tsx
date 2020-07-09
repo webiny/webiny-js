@@ -16,7 +16,6 @@ import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/git
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
 
-
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
@@ -148,6 +147,7 @@ const Navigation = () => {
                             open={infoOpened}
                             onClose={() => setInfoOpened(false)}
                             name={currentEnvironment.name || t`N\A`}
+                            aliases={false}
                         />
                 }
             </MenuFooter>

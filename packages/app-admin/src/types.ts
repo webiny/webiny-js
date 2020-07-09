@@ -112,3 +112,8 @@ export type AdminInstallationPlugin = Plugin & {
     secure: boolean;
     render({ onInstalled }): React.ReactNode;
 };
+
+export type ApiInformationDialog = Plugin & {
+    type: "admin-api-information-dialog";
+    render(props: { name: string; aliases: boolean }): React.ReactNode;
+};

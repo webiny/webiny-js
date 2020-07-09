@@ -6,7 +6,7 @@ import { ReactComponent as InformationIcon } from "../../icons/info.svg";
 import { css } from "emotion";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
-
+import EnvironmentInfoDialog from "@webiny/app-admin/components/EnvironmentInfoDialog";
 import {
     DataList,
     List,
@@ -17,7 +17,6 @@ import {
     ListActions
 } from "@webiny/ui/List";
 import { Link } from "@webiny/react-router";
-import EnvironmentInfoDialog from "../../components/EnvironmentInfoDialog";
 
 const t = i18n.ns("app-headless-cms/admin/environmentAliases/data-list");
 
@@ -42,14 +41,7 @@ const EnvironmentAliasesDataList = () => {
     const { actions, list } = useCrud();
     const [infoOpened, setInfoOpened] = useState(false);
     const [selectedInfo, setSelectedInfo] = useState({
-        environment: {
-            name: ""
-        },
-        url: {
-            manage: "",
-            preview: "",
-            read: ""
-        },
+        name: ""
     });
 
     return (
@@ -78,12 +70,12 @@ const EnvironmentAliasesDataList = () => {
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
                     {
-                        selectedInfo.environment.name &&
+                        selectedInfo.name &&
                             <EnvironmentInfoDialog
                                 open={infoOpened}
                                 onClose={() => setInfoOpened(false)}
-                                name={selectedInfo.environment.name}
-                                url={selectedInfo.url}
+                                name={selectedInfo.name}
+                                aliases={true}
                             />
                     }
                     {data.map(item => (
