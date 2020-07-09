@@ -113,7 +113,9 @@ module.exports = [
                 resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
 
                 const { code } = await transform(source, {
-                    plugins: [[__dirname + "/transform", { template: resourceTpl, resourceName }]]
+                    plugins: [
+                        [__dirname + "/transform", { resourceTemplate: resourceTpl, resourceName }]
+                    ]
                 });
 
                 // Format code with prettier
