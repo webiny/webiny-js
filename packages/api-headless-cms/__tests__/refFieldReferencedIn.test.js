@@ -6,6 +6,7 @@ describe("Ref Field - Referenced In Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};
 
+
     beforeAll(async () => {
         // Let's create a basic environment and a content model group.
         initial.environment = await createEnvironment({ database });

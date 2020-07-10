@@ -8,8 +8,6 @@ import {
     createAccessToken
 } from "@webiny/api-headless-cms/testing";
 
-import { createUser } from "@webiny/api-security/testing";
-
 const LIST_PRODUCTS = /* GraphQL */ `
     query ListProducts {
         listProducts {
@@ -23,7 +21,7 @@ const LIST_PRODUCTS = /* GraphQL */ `
 
 describe("Access Tokens Authentication Test", () => {
     const database = new Database();
-    const { environment: environmentManage } = useContentHandler({ database, initial });
+    const { environment: environmentManage } = useContentHandler({ database });
     const { environment: environmentRead } = useContentHandler({ database, type: "read" });
     const { invoke } = useGqlHandler({ database });
 
@@ -37,6 +35,7 @@ describe("Access Tokens Authentication Test", () => {
 
     it("should not allow access without a valid access token", async () => {
         const { createContentModel } = environmentManage(initial.environment.id);
+
         await createContentModel(
             mocks.productContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         );

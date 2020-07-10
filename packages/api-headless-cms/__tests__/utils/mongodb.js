@@ -27,13 +27,13 @@ export default (id, plugins, createUtils) => {
                 };
             }
         },
-        ...plugins,
         mongoDb({
             database: {
                 server: global.__MONGO_URI__,
                 name: global.__MONGO_DB_NAME__ + "_" + id
             },
             test: testCallbacks
-        })
+        }),
+        ...plugins
     ]);
 };
