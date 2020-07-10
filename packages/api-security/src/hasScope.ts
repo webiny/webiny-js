@@ -4,18 +4,14 @@ import SecurityError from "./SecurityError";
 export default (scope: string) => {
     return (resolver: GraphQLFieldResolver) => {
         return async (parent, args, context, info) => {
-            if (process.env.NODE_ENV === "test") {
-                return resolver(parent, args, context, info);
-            }
-
             const scopeAuthorizationPlugins = context.plugins.byType("authorization");
-            for (let plugin of scopeAuthorizationPlugins) {
+            for (const plugin of scopeAuthorizationPlugins) {
                 if (await plugin.hasScope({ context, scope })) {
                     return resolver(parent, args, context, info);
                 }
             }
 
-            return new SecurityError(); // The scopes couldn't be authorized with the given JWT / PAT / AT
+            return new SecurityError(`Not authorized (scope "${scope}" not found).`);
         };
     };
 };
