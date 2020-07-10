@@ -2,7 +2,8 @@ import { graphql } from "graphql";
 import plugins from "../template/src/plugins";
 import { createUtils } from "./utils";
 
-describe("Scaffold GraphQL service test", () => {
+// TODO: @adrian bring back these tests.
+describe.skip("Scaffold GraphQL service test", () => {
     const { useSchema } = createUtils([plugins()]);
     const bookTitle = "Book #1";
     const newBookTitle = "Book #1 [renamed]";

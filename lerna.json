@@ -2,7 +2,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "4.3.0",
+  "version": "4.4.0",
   "command": {
     "version": {
       "preid": "next",
@@ -12,7 +12,8 @@
         "**/__tests__/**",
         "**/*.md",
         "lerna.json",
-        "sample-project/**"
+        "api/**",
+        "apps/**"
       ],
       "allowBranch": [
         "master",

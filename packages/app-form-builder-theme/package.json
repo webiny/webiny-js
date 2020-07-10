@@ -1,13 +1,13 @@
 {
   "name": "@webiny/app-form-builder-theme",
-  "version": "4.3.0",
+  "version": "4.4.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app-form-builder": "^4.3.0",
-    "@webiny/app-i18n": "^4.3.0",
-    "@webiny/form": "^4.3.0",
-    "@webiny/validation": "^4.3.0"
+    "@webiny/app-form-builder": "^4.4.0",
+    "@webiny/app-i18n": "^4.4.0",
+    "@webiny/form": "^4.4.0",
+    "@webiny/validation": "^4.4.0"
   },
   "peerDependencies": {
     "react": "^16.8.6"

@@ -27,7 +27,6 @@ const t = i18n.ns("app-headless-cms/admin/components/editor/tabs/indexes");
 const style = {
     previewWrapper: css({
         padding: 40,
-        backgroundColor: "var(--webiny-theme-color-surface, #fff) !important",
         margin: 40,
         boxSizing: "border-box"
     }),

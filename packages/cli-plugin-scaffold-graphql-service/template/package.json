@@ -7,10 +7,14 @@
     "build": "webiny run build"
   },
   "dependencies": {
+    "@webiny/validation": "^4.3.0",
     "@webiny/handler": "^4.0.2",
     "@webiny/handler-apollo-server": "^4.0.2",
     "@webiny/api-plugin-commodo-db-proxy": "^4.0.2",
     "@webiny/api-security": "^4.0.2",
     "@webiny/project-utils": "^4.0.2"
+  },
+  "devDependencies": {
+    "@webiny/api-plugin-commodo-nedb": "^4.4.0-beta.0"
   }
 }

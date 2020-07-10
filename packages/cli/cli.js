@@ -38,10 +38,3 @@ createCommands(yargs, context);
 
 // Run
 yargs.argv;
-
-// Checks for updates
-if (!process.env.CI) {
-    const updateNotifier = require("update-notifier");
-    const pkg = require("./package.json");
-    updateNotifier({ pkg }).notify();
-}

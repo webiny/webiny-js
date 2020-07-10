@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* add "test" script ([25c327f](https://github.com/webiny/webiny-js/commit/25c327f5ebec180f64bd2da8cfb290887a472151))
+* add missing dev dependencies ([b44caa6](https://github.com/webiny/webiny-js/commit/b44caa695ce5ec4ceea3dfcfa379d05cb6e8b646))
+
+
+### Features
+
+* **cwp-templates:** generate JWT_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

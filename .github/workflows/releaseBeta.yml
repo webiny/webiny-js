@@ -2,7 +2,7 @@ name: Build (beta)
 
 on:
   push:
-    branches: [ release-** ]
+    branches: [release-**]
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -16,17 +16,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: '0'
+          fetch-depth: "0"
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '12'
+          node-version: "12"
 
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
+
+      - name: Check code formatting
+        run: yarn prettier:check
 
       - name: Check dependencies
         run: yarn adio

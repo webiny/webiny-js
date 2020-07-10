@@ -21,8 +21,9 @@ export default (): ReactRouterOnLinkPlugin => {
                 apolloClient.query({
                     query: GET_PUBLISHED_PAGE(),
                     variables: {
-                        url: link,
                         id: null,
+                        url: link,
+                        preview: false,
                         returnErrorPage: true,
                         returnNotFoundPage: true
                     }

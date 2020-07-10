@@ -20,15 +20,18 @@ module.exports.execute = async (inputs, method, context) => {
     }
 
     // Create component context
-    const componentContext = new Context({
-        logger: context,
-        projectName: context.projectName,
-        stateRoot: join(projectRoot, ".webiny", "state"),
-        stackStateRoot: join(projectRoot, ".webiny", "state", stack, env),
-        stackName: `${context.projectName}_${stack}`,
-        env,
-        debug
-    });
+    const componentContext = new Context(
+        {
+            logger: context,
+            projectName: context.projectName,
+            stateRoot: join(projectRoot, ".webiny", "state"),
+            stackStateRoot: join(projectRoot, ".webiny", "state", stack, env),
+            stackName: `${context.projectName}_${stack}`,
+            env,
+            debug
+        },
+        context
+    );
     componentContext.projectName = context.projectName;
     await componentContext.init();
 

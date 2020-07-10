@@ -1,5 +1,5 @@
 import { get } from "lodash";
-import  { FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 export default (formData: FbFormModel) => {
     return (
