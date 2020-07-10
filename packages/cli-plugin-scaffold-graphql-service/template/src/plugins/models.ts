@@ -39,7 +39,6 @@ export default () => ({
                 // @see https://github.com/webiny/commodo/tree/next/packages/fields-storage
                 withStorage({ driver }),
 
-                // Adds "createdBy", "updatedBy", and "deletedBy" fields, which are automatically populated.
                 withUser(context),
 
                 // Instead of physically deleting entries from a database, this introduces the "deleted" flag,
