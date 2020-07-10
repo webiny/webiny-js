@@ -62,7 +62,7 @@ export const createDataModel = (
             async toStorage() {
                 // When storing data to DB, we restructure data:
                 // - all user-defined fields are stored in the `fields` object
-                // - all other fields are moved to the root of the object (environment, locale, createdOn, createdBy, etc.)
+                // - all other fields are moved to the root of the object (environment, locale, createdOn etc.)
                 const toStorageData = await toStorage.call(this, { skipDifferenceCheck: true });
                 const fieldIds = contentModel.fields.map(item => item.fieldId);
 

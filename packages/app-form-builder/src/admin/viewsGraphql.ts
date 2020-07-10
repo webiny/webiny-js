@@ -14,10 +14,6 @@ const BASE_FORM_FIELDS = `
     published
     status
     savedOn
-    createdBy {
-        firstName
-        lastName
-    }
 `;
 
 export const LIST_FORMS = gql`

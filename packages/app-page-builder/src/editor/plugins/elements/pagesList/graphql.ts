@@ -34,10 +34,6 @@ export const loadPages = gql`
                             }
                         }
                     }
-                    createdBy {
-                        firstName
-                        lastName
-                    }
                     category {
                         id
                         name

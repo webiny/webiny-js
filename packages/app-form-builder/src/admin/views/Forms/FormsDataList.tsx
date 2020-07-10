@@ -127,21 +127,11 @@ const FormsDataList = (props: FormsDataListProps) => {
                                 }}
                             >
                                 {form.name}
-                                {form.createdBy && (
-                                    <ListItemTextSecondary>
-                                        {form.createdBy.firstName && (
-                                            <>
-                                                {t`Created by: {user}.`({
-                                                    user: form.createdBy.firstName
-                                                })}{" "}
-                                            </>
-                                        )}
-
-                                        {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={form.savedOn} />
-                                        })}
-                                    </ListItemTextSecondary>
-                                )}
+                                <ListItemTextSecondary>
+                                    {t`Last modified: {time}.`({
+                                        time: <TimeAgo datetime={form.savedOn} />
+                                    })}
+                                </ListItemTextSecondary>
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>

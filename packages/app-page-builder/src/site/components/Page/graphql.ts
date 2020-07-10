@@ -19,10 +19,6 @@ export const GET_PUBLISHED_PAGE = () => {
                         publishedOn
                         snippet
                         content
-                        createdBy {
-                            firstName
-                            lastName
-                        }
                         settings {
                             _empty
                             ${pageSettingsFields}

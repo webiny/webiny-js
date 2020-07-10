@@ -45,10 +45,6 @@ export const LIST_PAGES = gql`
                         id
                         name
                     }
-                    createdBy {
-                        firstName
-                        lastName
-                    }
                 }
                 meta {
                     cursors {
