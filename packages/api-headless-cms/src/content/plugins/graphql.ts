@@ -38,9 +38,9 @@ const getMutations = type => {
 const getMutationResolvers = type => {
     if (type === "manage") {
         return {
-            createContentModel: resolveCreate(contentModelFetcher),
-            updateContentModel: resolveUpdate(contentModelFetcher),
-            deleteContentModel: resolveDelete(contentModelFetcher)
+            createContentModel: hasScope("cms:content-model:create")(resolveCreate(contentModelFetcher)),
+            updateContentModel: hasScope("cms:content-model:update")(resolveUpdate(contentModelFetcher)),
+            deleteContentModel: hasScope("cms:content-model:delete")(resolveDelete(contentModelFetcher))
         };
     }
 
@@ -51,8 +51,8 @@ const getMutationResolvers = type => {
 
 const getQueryResolvers = () => {
     return {
-        getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:content-model:crud")(resolveList(contentModelFetcher))
+        getContentModel: hasScope("cms:content-model:get")(resolveGet(contentModelFetcher)),
+        listContentModels: hasScope("cms:content-model:list")(resolveList(contentModelFetcher))
     };
 };
 
