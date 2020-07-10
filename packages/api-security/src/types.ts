@@ -1,22 +1,19 @@
 import { Context, Plugin } from "@webiny/graphql/types";
 
-export type SecurityOptions = {
-    public?: boolean;
-    token: {
-        expiresIn: string;
-        secret: string;
-    };
-    validateAccessTokenFunction: string;
-};
+export interface SecurityIdentity {
+    id: string;
+    email?: string;
+    displayName: string;
+}
 
-export type SecurityPlugin = Plugin & {
+export type SecurityAuthenticationPlugin = Plugin & {
     type: "authentication";
-    authenticate(context: any): void;
+    authenticate(context: any): SecurityIdentity | Promise<SecurityIdentity>;
 };
 
-export type AuthorizationScopePlugin = Plugin & {
+export type SecurityAuthorizationPlugin = Plugin & {
     type: "authorization";
-    hasScope(context: any): Promise<boolean>;
+    hasScope(context: any): boolean | Promise<boolean>;
 };
 
 export type JWTPayload = { [key: string]: any };
