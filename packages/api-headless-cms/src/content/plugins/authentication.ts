@@ -1,4 +1,5 @@
 import { withStorage, withFields, string, withName, pipe } from "@webiny/commodo";
+import { SecurityIdentity } from "@webiny/api-security/utils";
 
 const getAuthorizationToken = context => {
     const { headers } = context.event;
@@ -32,7 +33,8 @@ export default {
         }
 
         if (context.event.isMetaQuery) {
-            return;
+            // Allow "getMeta" query.
+            return new SecurityIdentity();
         }
 
         const { CmsAccessToken, CmsEnvironment2AccessToken } = createModels(context);
