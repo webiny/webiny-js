@@ -11,16 +11,26 @@ import {
     UPDATE_ENVIRONMENT_ALIAS,
     DELETE_ENVIRONMENT_ALIAS
 } from "./graphql";
+import { LIST_ENVIRONMENTS } from "@webiny/app-headless-cms/admin/views/Environments/graphql";
+import { updateCacheAfterCreate } from "./environmentAliasesUtils";
 
 function EnvironmentAliases() {
     return (
         <CrudProvider
             delete={{
-                mutation: DELETE_ENVIRONMENT_ALIAS
+                mutation: DELETE_ENVIRONMENT_ALIAS,
+                options: {
+                    refetchQueries: [
+                        { query: LIST_ENVIRONMENTS, variables: { sort: { savedOn: -1 } } }
+                    ]
+                }
             }}
             read={READ_ENVIRONMENT_ALIAS}
             create={{
-                mutation: CREATE_ENVIRONMENT_ALIAS
+                mutation: CREATE_ENVIRONMENT_ALIAS,
+                options: {
+                    update: updateCacheAfterCreate
+                }
             }}
             update={{
                 mutation: UPDATE_ENVIRONMENT_ALIAS
