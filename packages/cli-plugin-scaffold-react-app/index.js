@@ -97,11 +97,44 @@ module.exports = [
                 let packageJson = fs.readFileSync(packageJsonPath, "utf8");
                 packageJson = packageJson.replace("[PACKAGE_NAME]", packageName);
                 fs.writeFileSync(packageJsonPath, packageJson);
-                // Update tsconfig "extends" path
 
+                // Update PUBLIC_URL in .env.json with the correct resource name
+                const envJsonPath = path.resolve(location, ".env.json");
+                let envJson = fs.readFileSync(envJsonPath, "utf8");
+                envJson = envJson.replace("[RESOURCE_NAME]", resourceName);
+                fs.writeFileSync(envJsonPath, envJson);
+
+                // Compute "exclude" and "reference" paths if possible
+                const webinyProjectPath = path.dirname(baseTsConfigPath);
+                let excludeField, referencesField;
+                if ([appTypes.admin, appTypes.site].includes(appType)) {
+                    let appTemplatePackage; // "app-template-admin" or "app-template-site"
+                    if (appType === appTypes.admin) {
+                        appTemplatePackage = "app-template-admin";
+                    } else if (appType === appTypes.site) {
+                        appTemplatePackage = "app-template-site";
+                    }
+
+                    const excludePath = path
+                        .join(webinyProjectPath, `packages/${appTemplatePackage}`)
+                        .replace(/\\/g, "/");
+                    const referencesPath = path
+                        .join(
+                            webinyProjectPath,
+                            `packages/${appTemplatePackage}/tsconfig.build.json`
+                        )
+                        .replace(/\\/g, "/");
+
+                    excludeField = [excludePath];
+                    referencesField = [{ path: referencesPath }];
+                }
+
+                // Update tsconfig "extends", "exclude" and "references" paths
                 const tsConfigPath = path.join(fullLocation, "tsconfig.json");
                 const tsconfig = require(tsConfigPath);
                 tsconfig.extends = baseTsConfigPath;
+                tsconfig.exclude = excludeField || tsconfig.exclude;
+                tsconfig.references = referencesField || tsconfig.references;
                 fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 // Inject resource into closest resources.js //
