@@ -27,7 +27,4 @@ declare module "*.svg" {
 
 // Hot fix - check https://github.com/DefinitelyTyped/DefinitelyTyped/issues/45927 for a fix.
 declare namespace NodeJS {
-    interface Module {
-        path: any;
-    }
 }

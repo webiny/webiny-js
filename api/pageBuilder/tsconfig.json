@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../../packages/api-plugin-commodo-db-proxy" },
+    { "path": "../../packages/api-security" },
+    { "path": "../../packages/api-settings-manager" },
+    { "path": "../../packages/api-page-builder" },
+    { "path": "../../packages/api-plugin-page-builder-resolvers-mongodb" },
+    { "path": "../../packages/api-mailchimp" },
+    { "path": "../../packages/api-cookie-policy" },
+    { "path": "../../packages/api-google-tag-manager" },
+    { "path": "../../packages/handler" },
+    { "path": "../../packages/handler-apollo-server" }
+  ]
+}

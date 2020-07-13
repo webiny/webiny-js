@@ -13,16 +13,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                 context
             })
         })(model);
-    },
-    searchModel({ model, field, validation }) {
-        // Searching multiple-value fields is not supported.
-        if (field.multipleValues) {
-            return;
-        }
-
-        return withFields({
-            [field.fieldId]: object({ validation })
-        })(model);
     }
 };
 

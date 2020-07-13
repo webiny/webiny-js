@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* created base to catch cateogories with linked pages ([e4c6617](https://github.com/webiny/webiny-js/commit/e4c661761104039de972cb762d71676d06e1f92a))
+* imported withHooks and attempting to find PbPage ([669fb0a](https://github.com/webiny/webiny-js/commit/669fb0a4f203c11df25a785c85ee116510edc064))
+* passed context into PbCategory of api page builder model ([52e48c6](https://github.com/webiny/webiny-js/commit/52e48c645c0077c2dcd8f96169322d2c2f8c8507))
+* passing in a fake context value to PbCategory model ([785ec43](https://github.com/webiny/webiny-js/commit/785ec4352090f132ecd60c8fbba9726ebf88b755))
+* removed comment ([bb2c9de](https://github.com/webiny/webiny-js/commit/bb2c9de128ceb72931cd7d2a50b0e169346d4f3c))
+* removed fake PbContext reference ([ded5adf](https://github.com/webiny/webiny-js/commit/ded5adf1b013993bddf6103fadb93d13bbb1d0d4))
+* updated reference to context.models from beforeDelete ([cdbf398](https://github.com/webiny/webiny-js/commit/cdbf39848f67f4d4d21ee67baf36d96f05c2e003))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/api-page-builder

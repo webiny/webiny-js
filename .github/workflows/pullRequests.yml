@@ -2,18 +2,38 @@ name: Pull Request Actions
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
+  # Unlike in the "Build (beta)" workflow, if some of these fail, we want the rest of the jobs
+  # to continue running so that we can also find out if there are any errors in the actual code.
+  initial-checks:
+    name: Initial checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "12"
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
   validate-commits:
     name: Validate commit messages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: webiny/action-conventional-commits@v1.0.2
 
   build-test:
@@ -24,13 +44,10 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: '12'
+          node-version: "12"
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
-
-      - name: Check dependencies
-        run: yarn adio
 
       - name: Build packages
         run: yarn build

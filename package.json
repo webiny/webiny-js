@@ -3,16 +3,16 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "sample-project/apps/*",
-      "sample-project/api/apolloGateway",
-      "sample-project/api/settingsManager",
-      "sample-project/api/databaseProxy",
-      "sample-project/api/files/*",
-      "sample-project/api/formBuilder",
-      "sample-project/api/cms/*",
-      "sample-project/api/i18n/*",
-      "sample-project/api/pageBuilder",
-      "sample-project/api/security/*"
+      "apps/*",
+      "api/apolloGateway",
+      "api/settingsManager",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/formBuilder",
+      "api/cms/*",
+      "api/i18n/*",
+      "api/pageBuilder",
+      "api/security/*"
     ],
     "nohoist": [
       "**/inquirer/**",
@@ -137,6 +137,7 @@
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier --config .prettierrc.js --write",
+    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",

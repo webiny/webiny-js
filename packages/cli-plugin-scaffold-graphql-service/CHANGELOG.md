@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+
+### Bug Fixes
+
+* update dependency ([cbbf407](https://github.com/webiny/webiny-js/commit/cbbf407b75bd2f053c7c5d969f6a4038b3f2187b))
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* add missing dependency ([d53b60e](https://github.com/webiny/webiny-js/commit/d53b60eb96ec8837cacc3db264f3dea65dd2da3f))
+* add missing file ([a00934e](https://github.com/webiny/webiny-js/commit/a00934e3b18bb2d83db3524cfd35b03c631e464e))
+* add new dependencies ([7107e36](https://github.com/webiny/webiny-js/commit/7107e361a3732b4609d32590563fef5e711f06b6))
+* add new dependencies ([119000d](https://github.com/webiny/webiny-js/commit/119000dc836e681f47154342e1cb0ce1808b99e9))
+* improve template ([f95e063](https://github.com/webiny/webiny-js/commit/f95e06300ea56ba1bfa51e1be1153e0ce1d69e35))
+* remove unneeded jest-mongodb ([86bb40c](https://github.com/webiny/webiny-js/commit/86bb40c38c9d66073bca69f3be46769fe3a2e663))
+* update comments ([9921813](https://github.com/webiny/webiny-js/commit/992181316f553c58ff262ed0168960fc06d58ee6))
+* use "replace-in-path" lib ([ff459ad](https://github.com/webiny/webiny-js/commit/ff459adafebe9d28eb66ec6090a6ed12d008cd67))
+
+
+### Features
+
+* add a sample test to the template ([c92bae4](https://github.com/webiny/webiny-js/commit/c92bae495a9187ad07ad15b0e68d6ee9d54ffa9a))
+* allow defining the name of the initial model ([365b7ee](https://github.com/webiny/webiny-js/commit/365b7ee9ac49eed52e10a7cc8de8a100e33bba5c))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

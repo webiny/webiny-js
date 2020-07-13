@@ -146,6 +146,6 @@
     "./packages/serverless-component",
     "./packages/serverless-function",
     "**resources.js",
-    "./sample-project/webiny.root.js"
+    "./webiny.root.js"
   ]
 }

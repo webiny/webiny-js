@@ -27,7 +27,6 @@ const plugin: ContextPlugin<APIContext & I18NContext> = {
         }
 
         const { event } = context;
-
         const self = {
             __i18n: {
                 acceptLanguage: null,

@@ -16,8 +16,8 @@ The will set up the necessary environment config files and build packages to gen
 
 This task is possible by `Lerna`, we will explain below the importance of using `Lerna`.
 
-* You need to update the DB connection string, edit your `sample-project/.env.json` file.
-  Configure your MongoDB connection data in `sample-project/.env.json`. 
+* You need to update the DB connection string, edit your `env.json` file.
+  Configure your MongoDB connection data in `env.json`. 
   See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
 
 <!-- 
@@ -81,30 +81,16 @@ This is the reason we use yarn because its workspace management makes working wi
 
 Check out our [project structure](https://docs.webiny.com/docs/deep-dive/project-structure) and content here.
 
-When you navigate to `packages` you will see around 70 packages. We also have the `sample-project` folder. This is the project which the user will get when creating a new webiny project. The `sample-project` is the project we simulate users project, we will use it as a sandbox.
+When you navigate to `packages` you will see around 70 packages.
 
 - Deploy your API by running 
-`npx webiny deploy api --env=local` from the `sample-project` folder.
-
-:::note NOTES: 
-Webiny should run from the root of the Webiny project. Since `sample-project` folder is a sandbox, this is the place to run your webiny commands from.
-
-Run `npx webiny --help` to see the available commands in our CLI
-:::
+`yarn webiny deploy api --env=local` from the repository root folder.
 
 - Once deployed, it will update your React apps `.env.json` files with the necessary variables.
 
 Now we have headless cms configured, which has its entry point, the one thing we care about is the main GraphQL API. It can take from 3 - 15 minutes to be available. 
 
-:::note NOTES:
-Within our repository, you should use npx to run Webiny CLI. 
-
-For example, ```npx webiny deploy api --env=local``` 
-
-Why? Because `npx` will resolve the CLI binary to the node_modules in the root of your repository.
-:::
-
-- Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`.
+- Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`.
 
 - React apps are regular `create-react-app` apps, modified, but all the CRA rules apply.
 

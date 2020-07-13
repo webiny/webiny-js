@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+
+### Bug Fixes
+
+* fix incorrect property ([7005f44](https://github.com/webiny/webiny-js/commit/7005f44857174df3291a1964f4fff3a866492ef5))
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+
+### Bug Fixes
+
+* update "scripts" section ([06788da](https://github.com/webiny/webiny-js/commit/06788da3717cc34c70f9371120cb1e9627daf9e9))
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** don't add version tag when using local template files ([13b6a31](https://github.com/webiny/webiny-js/commit/13b6a314a325697fb7a22c2e436029d1bd6cf76b))
+* **create-webiny-project:** include original error message in error being thrown ([4b5aca3](https://github.com/webiny/webiny-js/commit/4b5aca35d29cdecc1b77d1f85eaf426b420ac773))
+* **create-webiny-project:** remove typo ([bf82a16](https://github.com/webiny/webiny-js/commit/bf82a16714062147ffd891b4d490c84010a97b27))
+* **create-webiny-project:** set default value for log parameter ([319047f](https://github.com/webiny/webiny-js/commit/319047ff05cc052cc73528be10747e26fb5b6a58))
+* **create-webiny-project:** update usage of tracking package ([e972bf4](https://github.com/webiny/webiny-js/commit/e972bf4e301bfd9b91489c4d10a6bdc85547cc75))
+* improve logging ([51ca36e](https://github.com/webiny/webiny-js/commit/51ca36e5b074b241fddc9a57f377a6116702f338))
+
+
+
+
+
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
 **Note:** Version bump only for package create-webiny-project

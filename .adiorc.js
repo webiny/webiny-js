@@ -39,14 +39,14 @@ module.exports = {
     ignoreDirs: ["node_modules/", "dist/", "build/"],
     packages: [
         "packages/*",
-        "sample-project/api/apolloGateway",
-        "sample-project/api/settingsManager",
-        "sample-project/api/databaseProxy",
-        "sample-project/api/files/*",
-        "sample-project/api/formBuilder",
-        "sample-project/api/cms/*",
-        "sample-project/api/i18n/*",
-        "sample-project/api/pageBuilder",
-        "sample-project/api/security/*"
+        "api/apolloGateway",
+        "api/settingsManager",
+        "api/databaseProxy",
+        "api/files/*",
+        "api/formBuilder",
+        "api/cms/*",
+        "api/i18n/*",
+        "api/pageBuilder",
+        "api/security/*"
     ]
 };
