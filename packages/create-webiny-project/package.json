@@ -1,6 +1,6 @@
 {
   "name": "create-webiny-project",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "description": "local build tool to create webiny project with specific template",
   "main": "index.js",
   "scripts": {
@@ -17,9 +17,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/tracking": "^4.2.0",
+    "@webiny/tracking": "^4.4.0",
     "chalk": "^4.0.0",
-    "envinfo": "^7.5.0",
     "execa": "^4.0.0",
     "fast-glob": "^3.2.2",
     "find-up": "^4.1.0",
@@ -32,7 +31,6 @@
     "p-retry": "^4.2.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.2",
-    "uniqid": "^5.2.0",
     "uuid": "^8.1.0",
     "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0",

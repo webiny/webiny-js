@@ -1,9 +1,0 @@
-{
-  "extends": "../../../tsconfig",
-  "include": ["src"],
-  "exclude": ["../../../packages/app-template-admin", "../../../packages/app-headless-cms"],
-  "references": [
-    { "path": "../../../packages/app-template-admin/tsconfig.build.json" },
-    { "path": "../../../packages/app-headless-cms/tsconfig.build.json" }
-  ]
-}

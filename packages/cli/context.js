@@ -41,6 +41,26 @@ class Context {
 
         this.projectName = this.config.projectName;
         this.plugins = new PluginsContainer();
+        this.onExitCallbacks = [];
+
+        let onExitProcessed = false;
+        process.on("SIGINT", async () => {
+            if (onExitProcessed) {
+                return;
+            }
+
+            onExitProcessed = true;
+
+            for (let i = 0; i < this.onExitCallbacks.length; i++) {
+                await this.onExitCallbacks[i]("SIGINT");
+            }
+
+            process.exit(1);
+        });
+    }
+
+    onExit(callback) {
+        this.onExitCallbacks.push(callback);
     }
 
     loadUserPlugins() {

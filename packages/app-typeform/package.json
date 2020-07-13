@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "4.2.0",
+  "version": "4.4.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,11 +11,11 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app": "^4.1.0",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app-page-builder": "^4.2.0",
-    "@webiny/ui": "^4.2.0",
-    "@webiny/validation": "^4.2.0",
+    "@webiny/app": "^4.4.0",
+    "@webiny/app-page-builder": "^4.4.0",
+    "@webiny/ui": "^4.4.0",
+    "@webiny/validation": "^4.4.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import React from "react";
 import { css } from "emotion";
+import { Link } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 
@@ -32,7 +33,7 @@ export const ConfigureDomainMessage = ({ domain }) => {
             )}
             <br />
             {t`or update the domain by going into the`}{" "}
-            <a href={"/settings/page-builder/general"}>{t`page builder settings.`}</a>
+            <Link to={"/settings/page-builder/general"}>{t`page builder settings.`}</Link>
         </span>
     );
 };

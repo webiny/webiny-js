@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **admin-welcome-screen:** hide links from unauthorized users. ([#1078](https://github.com/webiny/webiny-js/issues/1078)) ([d3a0546](https://github.com/webiny/webiny-js/commit/d3a0546de391cd31b006f06914dcdda895f39629))
+* **app-page-builder:** add missing query variable to use apollo cache ([abf97b2](https://github.com/webiny/webiny-js/commit/abf97b2e9433bf057b11d3dedfcb5ea4475ed6d0))
+* **app-page-builder:** replace `a` with `Link` component ([ea91d6b](https://github.com/webiny/webiny-js/commit/ea91d6b97abad4c4eb450863e7a5adccf8a20ef0))
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+
+### Bug Fixes
+
+* **app-page-builder:** replace `a` with `Link` component ([0a4a7e7](https://github.com/webiny/webiny-js/commit/0a4a7e7fb3d0644218a67dd8b2e42cb85c047219))
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-page-builder
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* hide settings menu items from unwarranted users ([#1066](https://github.com/webiny/webiny-js/issues/1066)) ([72c5fce](https://github.com/webiny/webiny-js/commit/72c5fce0bc72ce27c9e1a5bba3dba836db0c9e24))
+* replace "Content" section in the main menu with "Page Builder" and "Form Builder" ([856482b](https://github.com/webiny/webiny-js/commit/856482b858f5e7181031d51fcef7c425ecaff1f9))
+
+
+### Features
+
+* **app-page-builder:** add `configure domain` confirmation ([07fe0bf](https://github.com/webiny/webiny-js/commit/07fe0bf5af22e39c0149f4dd039d83c53882bb41))
+* **app-page-builder:** add `DialogContainer` ([b05759d](https://github.com/webiny/webiny-js/commit/b05759d9c19767c411614f9da597e6247861f376))
+* **app-page-builder:** add `useConfigureDomainDialog` hook ([7276266](https://github.com/webiny/webiny-js/commit/72762669aa83850d4ee901bdff098ab6236573f8))
+* **app-page-builder:** add `useSiteStatus` ([0e3030b](https://github.com/webiny/webiny-js/commit/0e3030bc32ecf60569a1f6d8f4e00049001f693d))
+* **app-page-builder:** add `useSiteStatus` hook ([5f48957](https://github.com/webiny/webiny-js/commit/5f48957a7d7cff57904b934187e345206ac678d7))
+* **app-page-builder:** remove `domain` input ([bcc41d0](https://github.com/webiny/webiny-js/commit/bcc41d0dbd54315d0014e98d15921cc56a711976))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-page-builder

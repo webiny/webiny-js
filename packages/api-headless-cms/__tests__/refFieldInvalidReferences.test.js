@@ -13,34 +13,64 @@ describe("Ref Field - Invalid References In Test", () => {
     });
 
     it(`should not allow selection of a ref model that doesn't have a title field`, async () => {
-        const { createContentModel } = environment(initial.environment.id);
+        const { createContentModel, updateContentModel } = environment(initial.environment.id);
 
-        await createContentModel({
-            data: refMocks.bookContentModel({ contentModelGroupId: initial.contentModelGroup.id })
-        });
+        await createContentModel(
+            refMocks.bookContentModel({ contentModelGroupId: initial.contentModelGroup.id })
+        );
 
         let error;
         try {
-            await createContentModel({
-                data: refMocks.authorContentModel({
+            await createContentModel(
+                refMocks.authorContentModel({
                     contentModelGroupId: initial.contentModelGroup.id
                 })
-            });
+            );
         } catch (e) {
             error = e;
         }
 
         expect(error.message).toBe(
-            `Cannot save content model because the ref field "favoriteBook" references a content model (book) that has no title field assigned.`
+            `Cannot save content model because the ref field "favoriteBook" references a content model "book" that has no title field assigned.`
         );
 
         error = null;
         try {
-            await createContentModel({
-                data: refMocks.authorWithoutBookRefFields({
+            await createContentModel(
+                refMocks.authorWithoutBookRefFields({
                     contentModelGroupId: initial.contentModelGroup.id
                 })
-            });
+            );
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error).toBe(null);
+
+        // The following is basically the same test, but CRUD operations are done in the same order as in the UI.
+        // So, first we create a model, then we update it with fields.
+        const modelA = await createContentModel(
+            refMocks.modelA({ contentModelGroupId: initial.contentModelGroup.id })
+        );
+
+        const modelB = await createContentModel(
+            refMocks.modelBCreate({ contentModelGroupId: initial.contentModelGroup.id })
+        );
+
+        error = null;
+        try {
+            await updateContentModel(refMocks.modelBUpdate({ modelId: modelB.id }));
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe(
+            `Cannot save content model because the ref field "a" references a content model "a" that has no title field assigned.`
+        );
+
+        error = null;
+        try {
+            await updateContentModel(refMocks.modelAUpdate({ modelId: modelA.id }));
         } catch (e) {
             error = e;
         }

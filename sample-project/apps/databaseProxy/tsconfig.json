@@ -1,7 +1,0 @@
-{
-  "extends": "../../../tsconfig",
-  "references": [
-    { "path": "../../../packages/handler" },
-    { "path": "../../../packages/api-plugin-commodo-db-proxy" }
-  ]
-}

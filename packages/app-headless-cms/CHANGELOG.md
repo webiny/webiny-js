@@ -3,6 +3,119 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **admin-welcome-screen:** hide links from unauthorized users. ([#1078](https://github.com/webiny/webiny-js/issues/1078)) ([d3a0546](https://github.com/webiny/webiny-js/commit/d3a0546de391cd31b006f06914dcdda895f39629))
+* **styles:** page preview background color and rich text color on dark theme ([#1052](https://github.com/webiny/webiny-js/issues/1052)) ([1f7c0de](https://github.com/webiny/webiny-js/commit/1f7c0de4eff56a04debe21f9654d17c51754e108))
+
+
+
+
+
+# [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
+
+
+### Bug Fixes
+
+* resolve merge conflict ([b1deb18](https://github.com/webiny/webiny-js/commit/b1deb182dc7520cbaa3e9bb68a5c2030abecbbca))
+* **app-headless-cms:** sync `modelId` list in `ref` field ([fd0a658](https://github.com/webiny/webiny-js/commit/fd0a658575482ed8a96f16b9e99b4e444627420d))
+* hide settings menu items from unwarranted users ([#1066](https://github.com/webiny/webiny-js/issues/1066)) ([72c5fce](https://github.com/webiny/webiny-js/commit/72c5fce0bc72ce27c9e1a5bba3dba836db0c9e24))
+
+
+### Features
+
+* **app-headless-cms:** add `environmentAliases` ([6e23941](https://github.com/webiny/webiny-js/commit/6e2394117b9028ebdf989d68421846fd7d858c3f))
+* add "select" field renderer ([#1077](https://github.com/webiny/webiny-js/issues/1077)) ([be8d08c](https://github.com/webiny/webiny-js/commit/be8d08c0ce506bf2b03efa95fd6ad0b3d1ee8eb4))
+* **app-headless-cms:** add `lockedField` to `renderSettings` params ([82ff658](https://github.com/webiny/webiny-js/commit/82ff6588060a12dfbada9e1fb8b5b6f58a264a58))
+* **app-headless-cms:** disable input if lockedField invariant ([46ef8dd](https://github.com/webiny/webiny-js/commit/46ef8ddf138f6e0b0470452a06e524c84d6e161e))
+
+
+
+
+
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

@@ -50,6 +50,7 @@ export default () => {
         // Before continuing with the rest of the models, we must load the environment and assign it to the context.
         let environment = null;
         let environmentAlias = null;
+
         if (context.cms.environment && typeof context.cms.environment === "string") {
             if (context.models.CmsEnvironment.isId(context.cms.environment)) {
                 environment = await context.models.CmsEnvironment.findById(context.cms.environment);
@@ -57,7 +58,9 @@ export default () => {
                 environmentAlias = await context.models.CmsEnvironmentAlias.findOne({
                     query: { slug: context.cms.environment }
                 });
-                environment = await environmentAlias.environment;
+                if (environmentAlias) {
+                    environment = await environmentAlias.environment;
+                }
             }
         }
 

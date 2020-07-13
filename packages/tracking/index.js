@@ -1,18 +1,8 @@
 const os = require("os");
 const path = require("path");
 const readJson = require("load-json-file");
-const PostHog = require("posthog-node");
-
-let client;
-const getClient = () => {
-    if (!client) {
-        client = new PostHog("ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4", {
-            host: "http://posth-publi-14rhok399qeha-1644056996.us-east-1.elb.amazonaws.com"
-        });
-    }
-
-    return client;
-};
+const FormData = require("form-data");
+const fetch = require("node-fetch");
 
 let config;
 const getConfig = async () => {
@@ -30,9 +20,11 @@ const getConfig = async () => {
     return config;
 };
 
-module.exports.sendEvent = async ({ event, userId, data }) => {
+const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
+const API_URL = "https://t.webiny.com";
+
+module.exports.sendEvent = async ({ event, data }) => {
     const config = await getConfig();
-    const client = getClient();
 
     data = data || {};
     if (!data.version) {
@@ -40,12 +32,22 @@ module.exports.sendEvent = async ({ event, userId, data }) => {
     }
 
     const payload = {
-        distinctId: userId || config.id,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        api_key: API_KEY,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        distinct_id: config.id,
         event,
-        properties: data
+        properties: data,
+        timestamp: new Date().toISOString()
     };
 
-    return new Promise(resolve => {
-        client.capture(payload, resolve);
+    const formData = new FormData();
+    formData.append("data", Buffer.from(JSON.stringify(payload)).toString("base64"));
+
+    return fetch(API_URL + "/capture/", {
+        method: "POST",
+        body: formData
+    }).catch(() => {
+        // Ignore errors
     });
 };

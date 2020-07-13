@@ -11,7 +11,7 @@ import {
     withProps,
     onSet
 } from "@webiny/commodo";
-import toSlug from '../../utils/toSlug';
+import toSlug from "../../utils/toSlug";
 
 export default ({ createBase, context }) => {
     const CmsEnvironmentAlias = pipe(

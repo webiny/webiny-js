@@ -15,6 +15,10 @@ $webiny-pb-theme-text-primary: rgb(10, 10, 10) !default;
 $webiny-pb-theme-text-secondary: #616161 !default;
 $webiny-pb-theme-color-border: #e8ebee !default;
 
+// dark theme
+$webiny-theme-dark-surface: #242424 !default;
+$webiny-theme-dark-text-primary-on-background: rgba(255, 255, 255, 0.87) !default;
+
 // media queries
 $webiny-pb-theme-mobile-width: 480px;
 $webiny-pb-theme-tablet-width: 768px;
@@ -38,4 +42,9 @@ body{
   --webiny-theme-color-text-secondary: #{$webiny-pb-theme-text-secondary};
   --webiny-theme-color-border: #{$webiny-pb-theme-color-border};
   --webiny-theme-border-radius: #{$webiny-pb-theme-border-radius};
+}
+
+body.dark-theme {
+  --webiny-theme-color-text-primary: #{$webiny-theme-dark-text-primary-on-background};
+  --webiny-theme-color-surface: #{$webiny-theme-dark-surface};
 }
