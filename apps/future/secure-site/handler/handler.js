@@ -55,9 +55,7 @@ module.exports.handler = async event => {
     try {
         const buffer = await new Promise((resolve, reject) => {
             fs.readFile(filePath, (err, data) => {
-                if (err) {
-                    return reject(err);
-                }
+                if (err) return reject(err);
                 resolve(data);
             });
         });
