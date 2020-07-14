@@ -7,10 +7,6 @@ export default () => [
         type: "context",
         name: "context-security",
         preApply: async context => {
-            if (!context.event) {
-                return;
-            }
-
             context.security = {
                 identity: null,
                 getIdentity() {
@@ -29,8 +25,6 @@ export default () => [
                     return;
                 }
             }
-
-            throw Error("Not authenticated.");
         }
     } as ContextPlugin,
     // We want to provide the default "authorization" plugin, which just checks scopes in the "SecurityIdentity" instance.
