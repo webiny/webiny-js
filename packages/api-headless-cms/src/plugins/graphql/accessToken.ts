@@ -61,21 +61,19 @@ export default {
 
         extend type CmsMutation {
             createAccessToken(data: CmsAccessTokenCreateInput!): CmsAccessTokenResponse
-
             updateAccessToken(id: ID!, data: CmsAccessTokenUpdateInput!): CmsAccessTokenResponse
-
             deleteAccessToken(id: ID!): CmsDeleteResponse
         }
     `,
     resolvers: {
         CmsQuery: {
-            getAccessToken: hasScope("cms:access-token:crud")(resolveGet(AccessTokenFetcher)),
-            listAccessTokens: hasScope("cms:access-token:crud")(resolveList(AccessTokenFetcher))
+            getAccessToken: hasScope("cms:access-token:get")(resolveGet(AccessTokenFetcher)),
+            listAccessTokens: hasScope("cms:access-token:list")(resolveList(AccessTokenFetcher))
         },
         CmsMutation: {
-            createAccessToken: hasScope("cms:access-token:crud")(resolveCreate(AccessTokenFetcher)),
-            updateAccessToken: hasScope("cms:access-token:crud")(resolveUpdate(AccessTokenFetcher)),
-            deleteAccessToken: hasScope("cms:access-token:crud")(resolveDelete(AccessTokenFetcher))
+            createAccessToken: hasScope("cms:access-token:create")(resolveCreate(AccessTokenFetcher)),
+            updateAccessToken: hasScope("cms:access-token:update")(resolveUpdate(AccessTokenFetcher)),
+            deleteAccessToken: hasScope("cms:access-token:delete")(resolveDelete(AccessTokenFetcher))
         }
     }
 };
