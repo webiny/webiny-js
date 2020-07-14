@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** do not update root tsconfig.json during project creation ([a6c68a5](https://github.com/webiny/webiny-js/commit/a6c68a5cfb17f83eb663b9e083e1adf88cc7265a))
+
+
+
+
+
 # [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
 
 

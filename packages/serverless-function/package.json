@@ -1,11 +1,11 @@
 {
   "name": "@webiny/serverless-function",
-  "version": "4.5.0-beta.3",
+  "version": "4.5.0-beta.4",
   "main": "serverless.js",
   "license": "MIT",
   "dependencies": {
-    "@webiny/serverless-aws-lambda": "^4.5.0-beta.3",
-    "@webiny/serverless-component": "^4.5.0-beta.3",
+    "@webiny/serverless-aws-lambda": "^4.5.0-beta.4",
+    "@webiny/serverless-component": "^4.5.0-beta.4",
     "execa": "^2.0.3"
   },
   "publishConfig": {
