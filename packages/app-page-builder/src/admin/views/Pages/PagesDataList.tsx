@@ -64,12 +64,6 @@ const PagesDataList: React.FC<PagesDataListProps> = props => {
                             >
                                 {page.title}
                                 <ListTextOverline>{page.category.name}</ListTextOverline>
-                                {page.createdBy && (
-                                    <ListItemTextSecondary>
-                                        Created by: {page.createdBy.firstName || "N/A"}. Last
-                                        modified: <TimeAgo datetime={page.savedOn} />.
-                                    </ListItemTextSecondary>
-                                )}
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>

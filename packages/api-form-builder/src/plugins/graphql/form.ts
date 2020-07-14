@@ -31,8 +31,6 @@ export default {
         
         type Form {
             id: ID
-            createdBy: FormsUser
-            updatedBy: FormsUser
             savedOn: DateTime
             createdOn: DateTime
             deletedOn: DateTime

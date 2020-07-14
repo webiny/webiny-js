@@ -31,8 +31,6 @@ export default {
 
         type PbPage {
             id: ID
-            createdBy: SecurityUser
-            updatedBy: SecurityUser
             savedOn: DateTime
             publishedOn: DateTime
             category: PbCategory
@@ -250,14 +248,6 @@ export default {
         },
     `,
     resolvers: {
-        PbPage: {
-            createdBy(page) {
-                return { __typename: "SecurityUser", id: page.createdBy };
-            },
-            updatedBy(page) {
-                return { __typename: "SecurityUser", id: page.updatedBy };
-            }
-        },
         PbElement: {
             preview({ preview }) {
                 return preview ? { __typename: "File", id: preview } : null;
