@@ -220,7 +220,7 @@ module.exports = () => ({
                         {
                             Action: "lambda:InvokeFunction",
                             Principal: "s3.amazonaws.com",
-                            StatementId: "s3invoke",
+                            StatementId: process.env.S3_BUCKET,
                             SourceArn: `arn:aws:s3:::${process.env.S3_BUCKET}`
                         }
                     ],
