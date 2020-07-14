@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([15214da](https://github.com/webiny/webiny-js/commit/15214da467cb30c46a0a0f759786e79d7714cb6f))
+
+
+
+
+
 # [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
 
 **Note:** Version bump only for package create-webiny-project
