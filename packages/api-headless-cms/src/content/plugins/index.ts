@@ -10,15 +10,11 @@ import authenticationPlugin from "./authentication";
 import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
 
 type HeadlessPluginsOptions = {
-    type: string;
-    environment: string;
     dataManagerFunction?: string;
 };
 
 export default (
     options: HeadlessPluginsOptions = {
-        type: null,
-        environment: null,
         dataManagerFunction: null
     }
 ) => [
@@ -26,24 +22,30 @@ export default (
         name: "context-cms-context",
         type: "context",
         preApply(context) {
+            // We register plugins according to the received path params (schema type and environment).
+            const [event] = context.args;
+
+            const { key = "" } = event.pathParameters || {};
+            const [type = event.type, environment = event.environment] = key.split("/");
+
             context.cms = context.cms || {};
-            context.cms.type = options.type || "read";
-            context.cms.environment = options.environment;
+            context.cms.type = type || "read";
+            context.cms.environment = environment;
             context.cms.dataManagerFunction = options.dataManagerFunction;
 
-            context.cms.READ = options.type === "read";
-            context.cms.PREVIEW = options.type === "preview";
-            context.cms.MANAGE = options.type === "manage";
+            context.cms.READ = type === "read";
+            context.cms.PREVIEW = type === "preview";
+            context.cms.MANAGE = type === "manage";
 
             if (!context.cms.MANAGE) {
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
     } as ContextPlugin,
+    graphql(),
     checkRefFieldsBeforeSave(),
     addRefFieldHooks(),
     models(),
-    graphql(options),
     modelFields,
     graphqlFields,
     authenticationPlugin,

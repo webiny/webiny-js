@@ -10,7 +10,7 @@ import { hasScope } from "@webiny/api-security";
 const contentModelGroupFetcher = ctx => ctx.models.CmsContentModelGroup;
 
 export default {
-    getTypeDefs(type) {
+    getTypeDefs(context) {
         let output = /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID
@@ -24,7 +24,7 @@ export default {
             }
         `;
 
-        if (type === "manage") {
+        if (context.cms.type === "manage") {
             output += /* GraphQL */ `
                 input CmsContentModelGroupInput {
                     name: String
@@ -105,12 +105,5 @@ export default {
                 )
             }
         };
-    },
-    getSecurity(type) {
-        if (type !== "manage") {
-            return {};
-        }
-
-        return {};
     }
 };

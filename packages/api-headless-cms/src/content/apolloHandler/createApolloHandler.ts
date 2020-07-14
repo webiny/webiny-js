@@ -34,11 +34,9 @@ export default async function createApolloHandler({
         throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
     }
 
-    const { schema } = await createSchemaPlugin.create({
-        plugins: context.plugins
-    });
+    const { schema } = await createSchemaPlugin.create(context);
 
-    const apollo = new ApolloServer({
+    const apolloServer = new ApolloServer({
         // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
         introspection: boolean(server.introspection),
         // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
@@ -46,13 +44,10 @@ export default async function createApolloHandler({
         debug: boolean(process.env.DEBUG),
         ...server,
         schema,
-        context: async ({ event }) => ({
-            event,
-            plugins: context.plugins
-        })
+        context: ({ context }) => context
     });
 
-    const apolloHandler = apollo.createHandler({
+    const apolloHandler = apolloServer.createHandler({
         cors: {
             origin: "*",
             methods: "GET,HEAD,POST",
@@ -79,7 +74,7 @@ export default async function createApolloHandler({
                         `
                     })
                 },
-                {}
+                context
             );
 
             const body = JSON.parse(response.body);

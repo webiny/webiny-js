@@ -19,8 +19,8 @@ import meta from "./graphql/meta";
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
-const getMutations = type => {
-    if (type === "manage") {
+const getMutations = context => {
+    if (context.cms.type === "manage") {
         return `
             createContentModel(data: CmsContentModelInput!): CmsContentModelResponse
             updateContentModel(
@@ -35,12 +35,18 @@ const getMutations = type => {
     return "_empty: String";
 };
 
-const getMutationResolvers = type => {
-    if (type === "manage") {
+const getMutationResolvers = context => {
+    if (context.cms.type === "manage") {
         return {
-            createContentModel: hasScope("cms:content-model:create")(resolveCreate(contentModelFetcher)),
-            updateContentModel: hasScope("cms:content-model:update")(resolveUpdate(contentModelFetcher)),
-            deleteContentModel: hasScope("cms:content-model:delete")(resolveDelete(contentModelFetcher))
+            createContentModel: hasScope("cms:content-model:create")(
+                resolveCreate(contentModelFetcher)
+            ),
+            updateContentModel: hasScope("cms:content-model:update")(
+                resolveUpdate(contentModelFetcher)
+            ),
+            deleteContentModel: hasScope("cms:content-model:delete")(
+                resolveDelete(contentModelFetcher)
+            )
         };
     }
 
@@ -56,14 +62,14 @@ const getQueryResolvers = () => {
     };
 };
 
-export default ({ type }) => [
+export default () => [
     {
         name: "graphql-schema-headless",
         type: "graphql-schema",
         prepare({ context }) {
             return generateSchemaPlugins({ context });
         },
-        schema: {
+        schema: context => ({
             typeDefs: gql`
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
@@ -78,7 +84,7 @@ export default ({ type }) => [
                     operator: String
                 }
 
-                ${contentModelGroup.getTypeDefs(type)}
+                ${contentModelGroup.getTypeDefs(context)}
                 ${meta.typeDefs}
 
                 type SecurityUser {
@@ -109,7 +115,7 @@ export default ({ type }) => [
                     data: Boolean
                     error: CmsError
                 }
-                
+
                 type CmsContentModel {
                     id: ID
                     name: String
@@ -164,12 +170,12 @@ export default ({ type }) => [
                     enabled: Boolean
                     values: CmsAnyList
                 }
-                
+
                 input PredefinedValuesInput {
                     enabled: Boolean
                     values: CmsAnyListInput
                 }
-                
+
                 type CmsContentModelField {
                     _id: ID
                     label: CmsString
@@ -230,18 +236,17 @@ export default ({ type }) => [
                 }
 
                 extend type Mutation {
-                    ${getMutations(type)}
+                    ${getMutations(context)}
                 }
             `,
             resolvers: merge(
                 {
                     Query: getQueryResolvers(),
-                    Mutation: getMutationResolvers(type)
+                    Mutation: getMutationResolvers(context)
                 },
-                contentModelGroup.getResolvers(type),
+                contentModelGroup.getResolvers(context),
                 meta.resolvers
             )
-        },
-        security: merge({}, contentModelGroup.getResolvers(type))
+        })
     } as GraphQLSchemaPlugin<CmsContext>
 ];

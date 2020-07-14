@@ -11,23 +11,7 @@ import apolloHandler from "./apolloHandler";
 import headlessPlugins from "./plugins";
 
 export default (options: HandlerApolloServerOptions) => [
-    {
-        type: "handler",
-        name: "handler-setup-headless-plugins",
-        async handle({ args, context }, next) {
-            // We register plugins according to the received path params (schema type and environment).
-            const [event] = args;
-            const { key = "" } = event.pathParameters || {};
-            const [type = null, environment = null] = key.split("/");
-            context.plugins.register(
-                await headlessPlugins({
-                    type,
-                    environment
-                })
-            );
-            return next();
-        }
-    },
+    headlessPlugins(),
     createHandlerApolloServer(options),
     createSchema,
     apolloHandler
