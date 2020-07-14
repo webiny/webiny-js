@@ -300,6 +300,7 @@ module.exports = () => ({
                     code: "./i18n/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
+                    timeout: 30,
                     env: apolloServiceEnv
                 }
             }
