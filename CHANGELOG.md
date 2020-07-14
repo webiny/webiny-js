@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+
+### Bug Fixes
+
+* correct package versions ([6a78910](https://github.com/webiny/webiny-js/commit/6a78910a7bb4e2aa719154c278e377780a7f0258))
+* correct package versions ([47edbd5](https://github.com/webiny/webiny-js/commit/47edbd5f9124a5786c6555c5cc34623bea28430b))
+
+
+
+
+
 # [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
 
 
