@@ -15,15 +15,20 @@ export const handler = createHandler(
     }),
     dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
-    securityPlugins({
-        token: {
-            expiresIn: process.env.JWT_TOKEN_EXPIRES_IN,
-            secret: process.env.JWT_TOKEN_SECRET
-        },
-        validateAccessTokenFunction: process.env.VALIDATE_ACCESS_TOKEN_FUNCTION
+    securityAuthenticationPlugins(), // context da
+    securityAuthJwtPlugins({ // ovdje je has-scope plugin + authN
+        secret: JWT_TOKEN_SIGN_SECRET
+    }),
+    securityAuthPatPlugins({ // ovdje je has-scope plugin + authN
+        secret: JWT_TOKEN_SIGN_SECRET
+    }),
+    securityAuthAccessTokensPlugins({ // ovdje je has-scope plugin + authN
+        secret: JWT_TOKEN_SIGN_SECRET
     }),
     cognitoPlugins({
         region: process.env.COGNITO_REGION,
         userPoolId: process.env.COGNITO_USER_POOL_ID
     })
 );
+
+
