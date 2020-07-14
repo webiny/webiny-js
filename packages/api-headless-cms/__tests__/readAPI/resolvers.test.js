@@ -418,43 +418,4 @@ describe("READ - Resolvers", () => {
             ]
         });
     });
-
-    test(`list entries (contains, not_contains, in, not_in)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($where: CategoryListWhereInput) {
-                listCategories(where: $where) {
-                    data {
-                        title
-                    }
-                    error {
-                        message
-                    }
-                }
-            }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data: data1 } = await graphql(schema, query, {}, context, {
-            where: { slug_contains: "category" }
-        });
-        expect(data1.listCategories.data.length).toBe(2);
-
-        const { data: data2 } = await graphql(schema, query, {}, context, {
-            where: { slug_not_contains: "category" }
-        });
-
-        expect(data2.listCategories.data.length).toBe(1);
-
-        const { data: data3 } = await graphql(schema, query, {}, context, {
-            where: { slug_in: ["b-category-en"] }
-        });
-        expect(data3.listCategories.data.length).toBe(1);
-
-        const { data: data4 } = await graphql(schema, query, {}, context, {
-            where: { slug_not_in: ["a-category-en", "b-category-en"] }
-        });
-        expect(data4.listCategories.data.length).toBe(1);
-        expect(data4.listCategories.data[0].title).toBe("Hardware EN");
-    });
 });
