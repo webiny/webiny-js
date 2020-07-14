@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-template-site
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/app-template-site

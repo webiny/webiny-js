@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add `refetchQueries` to delete operation ([fd5718c](https://github.com/webiny/webiny-js/commit/fd5718ca2b10679cec453e4c1bb8a9c89901e6f9))
+* **app-headless-cms:** add missing `key` prop ([829fc03](https://github.com/webiny/webiny-js/commit/829fc038c8360a2ecf0c5f4246bba806228c42c2))
+* create ApiUrlsDialog component ([3a6f8d0](https://github.com/webiny/webiny-js/commit/3a6f8d03563557dabcc4d7f030c0fc6164ca4e83))
+* create HeadlessCmsApiUrls component ([cdad245](https://github.com/webiny/webiny-js/commit/cdad245d53816356c70badeaa31680effecd32b2))
+* remove @apollo/react-hooks ([bcca08f](https://github.com/webiny/webiny-js/commit/bcca08f19ccdf54a7bfb93104bccf1908268bbb4))
+* use `HeadlessCmsApiUrls` component ([d7edc0a](https://github.com/webiny/webiny-js/commit/d7edc0a62b5c0bcddd2ef056f2989b8f16a78dd4))
+* **headless:** add dependency for apollo hooks ([2283f95](https://github.com/webiny/webiny-js/commit/2283f950b03d843dba23e1bcd0ab6576141db195))
+* **headless:** add tooltip and label for headless api links ([8689fc2](https://github.com/webiny/webiny-js/commit/8689fc261c0c5b7c919dbc31a65d765dd2af5f8e))
+* **headless:** fix load of environment api for aliases ([6512d07](https://github.com/webiny/webiny-js/commit/6512d07d9f9b9b867be0cbaf26429fd1a0942744))
+
+
+### Features
+
+* **app-headless-cms:** add `environmentAliases` ([a217870](https://github.com/webiny/webiny-js/commit/a217870e784d45bce25d5049ec264892ae0d85f3))
+* **headless:** add all environment aliases to info and styling ([c24f4c3](https://github.com/webiny/webiny-js/commit/c24f4c31b8dfdc6e94f1aa9cb915f7d2864f7a48))
+* **headless:** add info icon and style environment information dialog ([7feb620](https://github.com/webiny/webiny-js/commit/7feb62006cd424473b07e1784a3b4de5db6ef2cb))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
