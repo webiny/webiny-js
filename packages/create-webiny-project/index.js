@@ -310,7 +310,6 @@ async function createApp({ projectName, template, tag, log }) {
                             json.dependencies[name] = `^` + latestVersion;
                         }
                     });
-                    console.log(jsonPath, json);
                     await writeJsonFile(jsonPath, json);
                 }
             }
@@ -361,36 +360,36 @@ async function createApp({ projectName, template, tag, log }) {
                     throw new Error("Unable to resolve packages: " + err.message);
                 }
             }
+        },
+        {
+            title: "Install dependencies",
+            task: async context => {
+                try {
+                    const options = {
+                        cwd: root,
+                        maxBuffer: "500_000_000"
+                    };
+                    let logStream;
+                    if (log) {
+                        logStream = fs.createWriteStream(context.logPath);
+                        const runner = execa("yarn", [], options);
+                        runner.stdout.pipe(logStream);
+                        runner.stderr.pipe(logStream);
+                        await runner;
+                    } else {
+                        await execa("yarn", [], options);
+                    }
+                } catch (err) {
+                    throw new Error("Unable to install the necessary packages: " + err.message);
+                }
+            }
+        },
+        {
+            title: "Run template-specific actions",
+            task: async context => {
+                await require(context.templatePath)({ appName, root });
+            }
         }
-        // {
-        //     title: "Install dependencies",
-        //     task: async context => {
-        //         try {
-        //             const options = {
-        //                 cwd: root,
-        //                 maxBuffer: "500_000_000"
-        //             };
-        //             let logStream;
-        //             if (log) {
-        //                 logStream = fs.createWriteStream(context.logPath);
-        //                 const runner = execa("yarn", [], options);
-        //                 runner.stdout.pipe(logStream);
-        //                 runner.stderr.pipe(logStream);
-        //                 await runner;
-        //             } else {
-        //                 await execa("yarn", [], options);
-        //             }
-        //         } catch (err) {
-        //             throw new Error("Unable to install the necessary packages: " + err.message);
-        //         }
-        //     }
-        // },
-        // {
-        //     title: "Run template-specific actions",
-        //     task: async context => {
-        //         await require(context.templatePath)({ appName, root });
-        //     }
-        // }
     ]);
 
     let logPath = "cwp-logs.txt";
