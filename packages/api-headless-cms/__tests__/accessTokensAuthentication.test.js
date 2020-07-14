@@ -1,5 +1,4 @@
 import useContentHandler from "./utils/useContentHandler";
-import useGqlHandler from "./utils/useGqlHandler";
 import mocks from "./mocks/accessTokensAuthentication";
 import { Database } from "@commodo/fields-storage-nedb";
 import {
@@ -15,6 +14,9 @@ const LIST_PRODUCTS = /* GraphQL */ `
                 id
                 title
             }
+            error {
+                message
+            }
         }
     }
 `;
@@ -23,7 +25,6 @@ describe("Access Tokens Authentication Test", () => {
     const database = new Database();
     const { environment: environmentManage } = useContentHandler({ database });
     const { environment: environmentRead } = useContentHandler({ database, type: "read" });
-    const { invoke } = useGqlHandler({ database });
 
     const initial = {};
     beforeAll(async () => {
@@ -41,17 +42,8 @@ describe("Access Tokens Authentication Test", () => {
         );
 
         let [body] = await environmentRead(initial.environment.id).invoke({
-            body: {
-                query: LIST_PRODUCTS
-            }
-        });
-
-        expect(body.errors[0].message).toBe("Access token is invalid!");
-
-        [body] = await environmentRead(initial.environment.id).invoke({
             headers: {
-                foo: "bar",
-                authorization: initial.accessToken.token
+                Authorization: "---"
             },
             body: {
                 query: LIST_PRODUCTS
@@ -59,7 +51,21 @@ describe("Access Tokens Authentication Test", () => {
         });
 
         expect(body.errors[0].message).toBe(
-            "Your Token cannot access environment Initial Environment"
+            `Not authorized (scope "cms:read:initial-environment:product" not found).`
         );
+
+        [body] = await environmentRead(initial.environment.id).invoke({
+            headers: {
+                authorization: initial.accessToken.token
+            },
+            body: {
+                query: LIST_PRODUCTS
+            }
+        });
+
+        expect(body.data.listProducts).toEqual({
+            data: [],
+            error: null
+        });
     });
 });

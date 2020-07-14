@@ -9,6 +9,9 @@ import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/test
 import securityAuthenticationPlugins from "@webiny/api-security/plugins/authentication";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 
+const createDataManagerHandler = plugins => createHandler(plugins, dataManager());
+import dataManager from "../../src/dataManager/handler";
+
 export default ({ database } = {}) => {
     if (!database) {
         database = new Database();

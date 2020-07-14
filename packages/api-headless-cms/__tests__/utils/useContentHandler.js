@@ -73,14 +73,11 @@ const useContentHandler = ({ database, type = "manage" } = {}) => {
                     }
 
                     // Set "full-access" JWT token into the "Authorization" header.
-                    args.headers.Authorization = createJwtToken();
-
-                    if (options.invoke && options.invoke.args) {
-                        if (typeof options.invoke.args === "function") {
-                            options.invoke.args(args);
-                        } else {
-                            Object.assign(args, options.invoke.args);
-                        }
+                    if (
+                        typeof args.headers.Authorization === "undefined" &&
+                        typeof args.headers.authorization === "undefined"
+                    ) {
+                        args.headers.Authorization = createJwtToken();
                     }
 
                     return invoke(args);

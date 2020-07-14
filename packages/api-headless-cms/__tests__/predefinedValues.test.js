@@ -1,35 +1,22 @@
-import mdbid from "mdbid";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/predefinedValues";
 
 describe("Predefined Values Test", () => {
     const { database, environment } = useContentHandler();
-    const ids = { environment: mdbid(), contentModelGroup: mdbid() };
+    const initial = {};
 
     beforeAll(async () => {
         // Let's create a basic environment and a content model group.
-        await database.collection("CmsEnvironment").insert({
-            id: ids.environment,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
-
-        await database.collection("CmsContentModelGroup").insert({
-            id: ids.contentModelGroup,
-            name: "Ungrouped",
-            slug: "ungrouped",
-            description: "A generic content model group",
-            icon: "fas/star",
-            environment: ids.environment
-        });
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
     it("should be able to enable predefined values and populate entries", async () => {
-        const { content, createContentModel } = environment(ids.environment);
+        const { content, createContentModel } = environment(initial.environment.id);
 
         const contentModel = await createContentModel(
-            mocks.contentModel({ contentModelGroupId: ids.contentModelGroup })
+            mocks.contentModel({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
         expect(contentModel.fields).toEqual(mocks.createdContentModelFields);
