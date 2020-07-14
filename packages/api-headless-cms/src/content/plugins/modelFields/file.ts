@@ -62,16 +62,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                 context
             })
         })(model);
-    },
-    searchModel({ model, field, context }) {
-        // Searching multiple-value fields is not supported.
-        if (field.multipleValues) {
-            return;
-        }
-
-        withFields({
-            [field.fieldId]: getFileField({ field, validation: false, context })
-        })(model);
     }
 };
 

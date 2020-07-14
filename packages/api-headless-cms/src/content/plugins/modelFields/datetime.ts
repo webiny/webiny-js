@@ -117,16 +117,6 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                 context
             })
         })(model);
-    },
-    searchModel({ model, field }) {
-        // Searching multiple-value fields is not supported.
-        if (field.multipleValues) {
-            return;
-        }
-
-        withFields({
-            [field.fieldId]: getDateField({ field, validation: false })
-        })(model);
     }
 };
 
