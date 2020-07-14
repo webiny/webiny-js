@@ -271,8 +271,6 @@ async function createApp({ projectName, template, tag, log }) {
 
                 for (let i = 0; i < workspaces.length; i++) {
                     const jsonPath = path.join(root, workspaces[i]);
-
-                    const relativeJsonPath = jsonPath;
                     const json = await loadJsonFile(jsonPath);
                     const keys = Object.keys(json.dependencies).filter(k =>
                         k.startsWith("@webiny")
@@ -289,7 +287,7 @@ async function createApp({ projectName, template, tag, log }) {
                         .replace(/\\/g, "/");
 
                     // We don't want to modify tsconfig file in the root of the project
-                    if (relativeJsonPath !== "package.json") {
+                    if (workspaces[i] !== "package.json") {
                         const tsConfigPath = path.join(currentDir, "tsconfig.json");
                         const tsconfig = require(tsConfigPath);
                         tsconfig.extends = baseTsConfigPath;
