@@ -19,6 +19,7 @@ const plugins = [
     {
         type: "route",
         name: "route-settings-website",
+        scopes: ROLE_PB_SETTINGS,
         route: (
             <Route
                 path="/settings/page-builder/website"

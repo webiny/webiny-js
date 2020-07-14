@@ -12,6 +12,7 @@ export default [
     {
         type: "admin-menu",
         name: "menu-headless-cms",
+        scopes: ROLE_CMS_SETTINGS,
         render({ Menu, Section, Item }) {
             return (
                 <SecureView
@@ -48,6 +49,7 @@ export default [
     {
         type: "admin-menu-settings",
         name: "menu-settings-cms-environments",
+        scopes: ROLE_CMS_SETTINGS,
         render({ Section, Item }) {
             return (
                 <SecureView scopes={ROLE_CMS_SETTINGS}>

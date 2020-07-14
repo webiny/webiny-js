@@ -16,6 +16,7 @@ const plugins = [
     {
         type: "route",
         name: "route-settings-form-builder",
+        scopes: ROLE_FORMS_SETTINGS,
         route: (
             <Route
                 path="/settings/form-builder/recaptcha"
@@ -33,6 +34,7 @@ const plugins = [
     {
         type: "admin-menu-settings",
         name: "menu-settings-form-builder",
+        scopes: ROLE_FORMS_SETTINGS,
         render({ Item, Section }) {
             return (
                 <SecureView scopes={ROLE_FORMS_SETTINGS}>

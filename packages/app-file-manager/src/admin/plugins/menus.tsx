@@ -16,6 +16,7 @@ export default [
     {
         type: "route",
         name: "route-file-manager-settings-general",
+        scopes: ROLE_FM_SETTINGS,
         route: (
             <Route
                 path="/settings/file-manager/general"
