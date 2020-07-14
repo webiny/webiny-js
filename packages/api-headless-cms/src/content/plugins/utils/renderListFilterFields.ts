@@ -7,7 +7,7 @@ interface RenderListFilterFields {
 }
 
 export const renderListFilterFields: RenderListFilterFields = ({
-    model,
+    model
 }) => {
     const uniqueIndexFields = model.getUniqueIndexFields();
 
