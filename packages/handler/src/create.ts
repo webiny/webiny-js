@@ -5,7 +5,8 @@ import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
     const context = {
-        plugins: new PluginsContainer(plugins)
+        plugins: new PluginsContainer(plugins),
+        args
     };
 
     try {
