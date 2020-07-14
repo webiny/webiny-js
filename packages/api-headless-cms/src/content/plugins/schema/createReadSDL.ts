@@ -33,8 +33,6 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         "${model.description}"
         type ${rTypeName} {
             id: ID
-            createdBy: SecurityUser
-            updatedBy: SecurityUser
             createdOn: DateTime
             updatedOn: DateTime
             savedOn: DateTime

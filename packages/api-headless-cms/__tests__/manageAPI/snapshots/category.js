@@ -2,8 +2,6 @@ export default /* GraphQL */ `
     "Product category"
     type Category {
         id: ID
-        createdBy: SecurityUser
-        updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
