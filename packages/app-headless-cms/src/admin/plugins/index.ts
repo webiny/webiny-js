@@ -13,6 +13,7 @@ import contentModelEditorPlugins from "./../editor/plugins";
 import appTemplateRenderer from "./appTemplatePlugins";
 import welcomeScreenWidget from "./welcomeScreenWidget";
 import scopesList from "./scopesList";
+import ApiInformationDialog from "./apiInformationDialog";
 
 export default () => [
     install,
@@ -33,5 +34,6 @@ export default () => [
     appTemplateRenderer,
 
     welcomeScreenWidget,
-    scopesList
+    scopesList,
+    ApiInformationDialog
 ];

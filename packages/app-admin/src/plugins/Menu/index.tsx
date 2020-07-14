@@ -1,13 +1,17 @@
 import React from "react";
 import Hamburger from "./Hamburger";
-import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
+import gqlApiInformation from "./gqlApiInformation";
+import { AdminHeaderLeftPlugin, ApiInformationDialogPlugin } from "@webiny/app-admin/types";
 
-const plugin: AdminHeaderLeftPlugin = {
-    name: "admin-header-main-menu-icon",
-    type: "admin-header-left",
-    render() {
-        return <Hamburger />;
-    }
-};
+const plugin = [
+    {
+        name: "admin-header-main-menu-icon",
+        type: "admin-header-left",
+        render() {
+            return <Hamburger />;
+        }
+    } as AdminHeaderLeftPlugin,
+    gqlApiInformation as ApiInformationDialogPlugin
+];
 
 export default plugin;

@@ -7,7 +7,7 @@ const writeJson = require("write-json-file");
 const uuid = require("uuid/v4");
 const execa = require("execa");
 
-const PROJECT_FOLDER = "sample-project";
+const PROJECT_FOLDER = ".";
 
 (async () => {
     console.log(`✍️  Writing environment config files...`);
@@ -15,17 +15,17 @@ const PROJECT_FOLDER = "sample-project";
     const rootEnvJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
     const rootExampleEnvJsonPath = path.resolve(PROJECT_FOLDER, "example.env.json");
     if (fs.existsSync(rootEnvJsonPath)) {
-        console.log(`⚠️  ${green("sample-project/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green(".env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(rootExampleEnvJsonPath, rootEnvJsonPath);
-        console.log(`✅️ ${green("sample-project/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green(".env.json")} was created successfully!`);
     }
 
     // Create API .env.json
     const envJsonPath = path.resolve(PROJECT_FOLDER, "api", ".env.json");
     const exampleEnvJsonPath = path.resolve(PROJECT_FOLDER, "api", "example.env.json");
     if (fs.existsSync(envJsonPath)) {
-        console.log(`⚠️  ${green("sample-project/api/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("api/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleEnvJsonPath, envJsonPath);
 
@@ -40,7 +40,7 @@ const PROJECT_FOLDER = "sample-project";
             .shift()}`;
         envJson.default.JWT_SECRET = jwtSecret;
         await writeJson(envJsonPath, envJson);
-        console.log(`✅️ ${green("sample-project/api/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("api/.env.json")} was created successfully!`);
     }
 
     // Create `admin` .env.json
@@ -52,24 +52,20 @@ const PROJECT_FOLDER = "sample-project";
         "example.env.json"
     );
     if (fs.existsSync(adminEnvJsonPath)) {
-        console.log(
-            `⚠️  ${green("sample-project/apps/admin/.env.json")} already exists, skipping.`
-        );
+        console.log(`⚠️  ${green("apps/admin/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
-        console.log(
-            `✅️ ${green("sample-project/apps/admin/.env.json")} was created successfully!`
-        );
+        console.log(`✅️ ${green("apps/admin/.env.json")} was created successfully!`);
     }
 
     // Create `site` .env.json
     const siteEnvJsonPath = path.resolve(PROJECT_FOLDER, "apps", "site", ".env.json");
     const exampleSiteEnvJsonPath = path.resolve(PROJECT_FOLDER, "apps", "site", "example.env.json");
     if (fs.existsSync(siteEnvJsonPath)) {
-        console.log(`⚠️  ${green("sample-project/apps/site/.env.json")} already exists, skipping.`);
+        console.log(`⚠️  ${green("apps/site/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleSiteEnvJsonPath, siteEnvJsonPath);
-        console.log(`✅️ ${green("sample-project/apps/site/.env.json")} was created successfully!`);
+        console.log(`✅️ ${green("apps/site/.env.json")} was created successfully!`);
     }
 
     // Build all repo packages
@@ -86,7 +82,7 @@ const PROJECT_FOLDER = "sample-project";
     console.log(`\n🏁 Your repo is almost ready!`);
     console.log(
         `Update ${green(
-            "sample-project/.env.json"
+            ".env.json"
         )} with your MongoDB connection string and you're ready to develop!\n`
     );
 })();

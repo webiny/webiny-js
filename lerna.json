@@ -12,7 +12,8 @@
         "**/__tests__/**",
         "**/*.md",
         "lerna.json",
-        "sample-project/**"
+        "api/**",
+        "apps/**"
       ],
       "allowBranch": [
         "master",

@@ -78,7 +78,7 @@ Webiny is designed to be a cloud-first platform, meaning it can not be run compl
 To deploy anything to the cloud provider, you create infrastructure stacks. A `stack` is a set of cloud resources that will be created for you when you run the deploy process. Webiny supports creation of unlimited number of stacks. By default, our project is setup to have the `api` stack (in the `api` folder), and the `apps` stack (in the `apps` folder). Folder names do not carry any meaning to the system, so they can be named anything.
 
 A stack is defined using a `resources.js` file. This file is only important as long as you use our default deployment mechanism.
-To see an example of a stack, open `<webiny-js>/sample-project/api/resources.js`.
+To see an example of a stack, open `<webiny-js>/api/resources.js`.
 
 ### Deployment
 
@@ -97,21 +97,3 @@ Ideally, services/apps should only be deployed using atomic cloud resources to m
 When a stack is deployed, it has to store the state of the cloud resources. State files are stored in `<webiny-js>/.webiny/state` folder. Each stack has its own subfolder, and inside you'll find all of your deployed environments and their corresponding state files.
 
 Inside the state folder you'll also find a file called `_.json` which contains an ID which is unique for your copy of the project. This ID is prepended to all cloud resources for uniqueness but also for ease of management in your cloud provider console.
-
-#### Hooks
-
-Although stacks can be standalone, they can also depend on other stacks. In Webiny, the stacks themselves may seem standalone but React apps depend on API URLs and other data from the `api` stack. This data needs to be available when `webpack` starts bundling the related app. To provide data to a React app, we utilise environment variables, which are stored in `.env.json` in each app. Once the `api` stack is deployed, we somehow need to grab its state, and inject the values we need into our app's `.env.json`.
-
-To overcome this problem, we introduced a system of `hooks`.
-
-`api` stack has a file called `webiny.config.js`, which defines which hooks we need to process after stack deployment is completed. If you look at that file, you'll see something like this:
-
-```js
-module.exports = {
-  hooks: ["../apps/admin", "../apps/site"]
-};
-```
-
-This means that we want to process hooks defined in each of these directories. What our deployment process does is, it tries to load `webiny.config.js` file in each of these folders, and executes the `hooks.stateChanged` callback (if it exists) and passes the environment being deployed, and the complete stack state.
-
-The hook implementation is up to the developer, but we provide the default implementation in our `@webiny/project-utils` package and you can see how it's being used in `<webiny-js>/sample-project/apps/admin/webiny.config.js`.

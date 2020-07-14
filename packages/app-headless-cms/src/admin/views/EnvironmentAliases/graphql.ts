@@ -34,6 +34,11 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
                     name
                     slug
                     createdOn
+                    url {
+                        manage
+                        read
+                        preview
+                    }
                     environment {
                         id
                         name
