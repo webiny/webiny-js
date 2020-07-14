@@ -15,6 +15,6 @@
     "@webiny/project-utils": "^4.0.2"
   },
   "devDependencies": {
-    "@webiny/api-plugin-commodo-nedb": "^4.4.0-beta.0"
+    "@webiny/api-plugin-commodo-nedb": "^4.4.0"
   }
 }
