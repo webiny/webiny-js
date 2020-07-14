@@ -1,10 +1,7 @@
-import authenticateJwt from "./authentication/authenticateJwt";
-import authenticatePat from "./authentication/authenticatePat";
-import { SecurityOptions, SecurityPlugin } from "../types";
+import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/graphql/types";
-import authorizationPlugins from "./authorization";
 
-export default (options: SecurityOptions) => [
+export default (options: any) => [
     {
         type: "context",
         name: "context-security",
@@ -23,7 +20,9 @@ export default (options: SecurityOptions) => [
                 return;
             }
 
-            const securityPlugins = context.plugins.byType<SecurityPlugin>("authentication");
+            const securityPlugins = context.plugins.byType<SecurityAuthenticationPlugin>(
+                "authentication"
+            );
 
             // Some of these plugins will hopefully assign a user into the "context.security.user".
             // Once that happens, just break out of the loop.
@@ -38,16 +37,5 @@ export default (options: SecurityOptions) => [
                 throw Error("Not authenticated!");
             }
         }
-    } as ContextPlugin,
-    {
-        type: "authentication",
-        name: "authentication-jwt",
-        authenticate: authenticateJwt
-    } as SecurityPlugin,
-    {
-        type: "authentication",
-        name: "authentication-pat",
-        authenticate: authenticatePat(options)
-    } as SecurityPlugin,
-    authorizationPlugins
+    } as ContextPlugin
 ];

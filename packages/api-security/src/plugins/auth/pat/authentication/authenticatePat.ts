@@ -1,8 +1,11 @@
 import { Context } from "@webiny/graphql/types";
-import { SecurityOptions } from "../../types";
 import { AccessToken } from "./AccessToken";
 
-export default (options: SecurityOptions) => async (context: Context) => {
+export type AuthenticatePatOptions = {
+    validateAccessTokenFunction: string;
+};
+
+export default (options: AuthenticatePatOptions) => async (context: Context) => {
     const { event } = context;
     const { headers = {} } = event;
     const authorization = headers["Authorization"] || headers["authorization"] || "";

@@ -1,6 +1,5 @@
 import { JwtToken } from "./jwtToken";
 import { Context } from "@webiny/graphql/types";
-import { JwtAuthOptions } from "@webiny/api-security/plugins/auth/jwt";
 import { SecurityIdentity } from "@webiny/api-security/utils";
 
 const isJwt = token => token.split(".").length === 3; // All JWTs are split into 3 parts by two periods

@@ -1,4 +1,4 @@
-import { AuthorizationScopePlugin } from "../types";
+import { SecurityAuthorizationPlugin } from "@webiny/api-security/types";
 
 const userAccessIncludesScope = ({ context, scope }) => {
     const access = context.security.user && context.security.user.access;
@@ -19,6 +19,6 @@ const jwtPatAuthorization = {
     hasScope: async ({ context, scope }) => {
         return userAccessIncludesScope({ context, scope });
     }
-} as AuthorizationScopePlugin;
+} as SecurityAuthorizationPlugin;
 
 export default [jwtPatAuthorization];

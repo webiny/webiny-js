@@ -11,11 +11,15 @@ import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBefor
 
 type HeadlessPluginsOptions = {
     dataManagerFunction?: string;
+    type?: string;
+    environment?: string;
 };
 
 export default (
     options: HeadlessPluginsOptions = {
-        dataManagerFunction: null
+        dataManagerFunction: null,
+        type: null,
+        environment: null
     }
 ) => [
     {
@@ -26,7 +30,10 @@ export default (
             const [event] = context.args;
 
             const { key = "" } = event.pathParameters || {};
-            const [type = event.type, environment = event.environment] = key.split("/");
+            const [
+                type = options.type || event.type,
+                environment = options.environment || event.environment
+            ] = key.split("/");
 
             context.cms = context.cms || {};
             context.cms.type = type || "read";
