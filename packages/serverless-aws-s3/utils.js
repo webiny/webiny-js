@@ -13,11 +13,8 @@ const { green } = require("chalk");
 
 const PRETRY_ARGS = { retries: 3 };
 
-const getClients = (credentials, region) => {
-    const params = {
-        region,
-        credentials
-    };
+const getClients = region => {
+    const params = { region };
 
     // we need two S3 clients because creating/deleting buckets
     // is not available with the acceleration feature.
