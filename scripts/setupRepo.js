@@ -52,14 +52,10 @@ const PROJECT_FOLDER = ".";
         "example.env.json"
     );
     if (fs.existsSync(adminEnvJsonPath)) {
-        console.log(
-            `⚠️  ${green("apps/admin/.env.json")} already exists, skipping.`
-        );
+        console.log(`⚠️  ${green("apps/admin/.env.json")} already exists, skipping.`);
     } else {
         fs.copyFileSync(exampleAdminEnvJsonPath, adminEnvJsonPath);
-        console.log(
-            `✅️ ${green("apps/admin/.env.json")} was created successfully!`
-        );
+        console.log(`✅️ ${green("apps/admin/.env.json")} was created successfully!`);
     }
 
     // Create `site` .env.json

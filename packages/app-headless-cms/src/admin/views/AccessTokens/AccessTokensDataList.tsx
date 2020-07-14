@@ -18,6 +18,7 @@ import { Link } from "@webiny/react-router";
 
 const t = i18n.ns("app-headless-cms/admin/environmentAliases/data-list");
 
+
 const EnvironmentAliasesDataList = () => {
     const { actions, list } = useCrud();
 

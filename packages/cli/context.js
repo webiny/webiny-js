@@ -50,7 +50,7 @@ class Context {
             }
 
             onExitProcessed = true;
-            
+
             for (let i = 0; i < this.onExitCallbacks.length; i++) {
                 await this.onExitCallbacks[i]("SIGINT");
             }

@@ -193,8 +193,8 @@ const clearBucket = async (s3, bucketName) => {
         const items = data.Contents;
         const promises = [];
 
-        for (var i = 0; i < items.length; i += 1) {
-            var deleteParams = { Bucket: bucketName, Key: items[i].Key };
+        for (let i = 0; i < items.length; i += 1) {
+            const deleteParams = { Bucket: bucketName, Key: items[i].Key };
             const delObj = s3.deleteObject(deleteParams).promise();
             promises.push(delObj);
         }
