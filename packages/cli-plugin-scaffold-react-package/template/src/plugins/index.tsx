@@ -1,9 +1,8 @@
 import React from "react";
 
 export default {
-    // TODO [Andrei] should I also update the plugin's name automatically based on the package's name?
-    name: "sample-react-app-[PACKAGE_NAME]",
-    type: "sample-react-app",
+    name: "my-component-name",
+    type: "my-component-type",
     render() {
         return (<h1>
             This is a sample React App
