@@ -2,8 +2,6 @@ export default /* GraphQL */ `
     "Products being sold in our webshop"
     type Product {
         id: ID
-        createdBy: SecurityUser
-        updatedBy: SecurityUser
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
