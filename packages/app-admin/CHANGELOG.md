@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* create "admin-api-information-dialog-graphql" plugin ([654a62f](https://github.com/webiny/webiny-js/commit/654a62f9e8c6041dc920b8c931da2b85aeebf0f8))
+* remove "AdminMenuContentSectionPlugin" type ([ad29ab1](https://github.com/webiny/webiny-js/commit/ad29ab1176a051635adef22888545b596390c267))
+* remove properties ([3ebd4e7](https://github.com/webiny/webiny-js/commit/3ebd4e772671e18d3016286c963353a24b4ecbe8))
+* rename ApiInformationDialog to ApiInformationDialogPlugin ([3ec898a](https://github.com/webiny/webiny-js/commit/3ec898a403a5503f9a13ff47adbcd927425cac0f))
+* simplify "ApiInformationDialog" component ([8d989df](https://github.com/webiny/webiny-js/commit/8d989dfc7e2c85695429bed02b1ef10c328af8ab))
+* simplify ApiInformationDialog component ([757d906](https://github.com/webiny/webiny-js/commit/757d906b076084cb94c01ed6661fef77e021d165))
+* **headless:** add tooltip and label for headless api links ([8689fc2](https://github.com/webiny/webiny-js/commit/8689fc261c0c5b7c919dbc31a65d765dd2af5f8e))
+* **headless:** fix load of environment api for aliases ([6512d07](https://github.com/webiny/webiny-js/commit/6512d07d9f9b9b867be0cbaf26429fd1a0942744))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/app-admin

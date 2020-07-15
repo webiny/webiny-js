@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* export mock IDs for direct usage in tests ([4e0c451](https://github.com/webiny/webiny-js/commit/4e0c4518eff4a3145872afae01e2cbe9708873fb))
+* make sure newly added ref fields cannot reference a model with no title field ([752753b](https://github.com/webiny/webiny-js/commit/752753b8580d8cfeb4e1b3f436831a6cd7a232ee))
+* remerging from master branch, fixed handler error ([2786e6e](https://github.com/webiny/webiny-js/commit/2786e6e6a2e2e51fefcf754d6a03b7287eff48b0))
+* removed searchModel from headless cms model fields text ([de1b0b6](https://github.com/webiny/webiny-js/commit/de1b0b6d98dfbee14323818f034c87f47ee04e75))
+
+
+### Features
+
+* **api-headless-cms:** add `environmentAliases` ([e39cc12](https://github.com/webiny/webiny-js/commit/e39cc125dfe05b32660d2eea60cda378e2af77cd))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
