@@ -70,10 +70,6 @@ module.exports = [
                     )
                     .replace(/\\/g, "/");
 
-                console.log(baseTsConfigPath);
-                console.log(baseTsConfigBuildPath);
-                console.log(baseTsConfigBuildPath);
-
                 // Copy template files
                 await ncp(sourceFolder, location);
 
