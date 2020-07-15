@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-const { red, green, blue, bold, cyan } = require("chalk");
-const envinfo = require("envinfo");
+const { red, green, blue } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -9,6 +8,18 @@ const path = require("path");
 const yargs = require("yargs");
 const indentString = require("indent-string");
 const validateProjectName = require("validate-npm-package-name");
+const fg = require("fast-glob");
+const findUp = require("find-up");
+const loadJsonFile = require("load-json-file");
+const { sendEvent } = require("@webiny/tracking");
+const writeJsonFile = require("write-json-file");
+const rimraf = require("rimraf");
+const packageJson = require("./package.json");
+const { getPackageVersion } = require("./utils");
+
+process.on("unhandledRejection", err => {
+    throw err;
+});
 
 // Add indentation to console.log output
 const log = console.log;
@@ -19,10 +30,6 @@ console.log = (first = "", ...args) => {
         log(first, ...args);
     }
 };
-
-const packageJson = require("./package.json");
-const init = require("./init.js");
-const rimraf = require("rimraf");
 
 yargs
     .usage("Usage: $0 <project-name> [options]")
@@ -77,8 +84,6 @@ yargs.command(
     argv => createApp(argv)
 ).argv;
 
-yargs.command("info", "Print environment debug information", {}, () => informationHandler()).argv;
-
 function checkAppName(appName) {
     const validationResult = validateProjectName(appName);
     if (!validationResult.validForNewPackages) {
@@ -104,7 +109,7 @@ async function createApp({ projectName, template, tag, log }) {
         throw Error("You must provide a name for the project to use.");
     }
 
-    const root = path.resolve(projectName);
+    const root = path.resolve(projectName).replace(/\\/g, "/");
     const appName = path.basename(root);
 
     if (fs.existsSync(root)) {
@@ -141,124 +146,319 @@ async function createApp({ projectName, template, tag, log }) {
 
     console.log(`Creating project at ${blue(root)}:`);
 
+    await sendEvent({ event: "create-webiny-project-start" });
+
     const tasks = new Listr([
         {
             title: "Pre-template setup",
             task: () => {
-                return new Listr([
-                    {
-                        title: "Check project name for valid npm nomenclature",
-                        task: () => {
-                            checkAppName(appName);
-                            fs.ensureDirSync(projectName);
-                        }
-                    },
-                    {
-                        title: `Creating your Webiny app in ${green(root)}.`,
-                        task: () => {
-                            const packageJson = {
-                                name: appName,
-                                version: "0.1.0",
-                                private: true
-                            };
-                            fs.writeFileSync(
-                                path.join(root, "package.json"),
-                                JSON.stringify(packageJson, null, 2) + os.EOL
-                            );
-                        }
-                    }
-                ]);
+                checkAppName(appName);
+                fs.ensureDirSync(projectName);
+
+                const packageJson = {
+                    name: appName,
+                    version: "0.1.0",
+                    private: true
+                };
+
+                fs.writeFileSync(
+                    path.join(root, "package.json"),
+                    JSON.stringify(packageJson, null, 2) + os.EOL
+                );
             }
-        }
-    ]);
+        },
+        {
+            title: `Install template package`,
+            task: async context => {
+                const dependencies = [];
+                let templateName = `@webiny/cwp-template-${template}`;
 
-    tasks.run();
+                if (template.startsWith(".") || template.startsWith("file:")) {
+                    templateName = "file:" + path.relative(appName, template.replace("file:", ""));
+                    dependencies.push(templateName);
+                } else {
+                    dependencies.push(`${templateName}@${tag}`);
+                }
 
-    run({ root, appName, template, tag, log });
-}
+                context.templateName = templateName;
 
-function informationHandler() {
-    console.log(bold("\nEnvironment Info:"));
-    console.log(`\n  current version of ${packageJson.name}: ${packageJson.version}`);
-    console.log(`  running from ${__dirname}`);
-    return envinfo
-        .run(
-            {
-                System: ["OS", "CPU"],
-                Binaries: ["Node", "npm", "Yarn"],
-                Browsers: ["Chrome", "Edge", "Internet Explorer", "Firefox", "Safari"],
-                npmGlobalPackages: ["create-webiny-project"]
-            },
-            {
-                duplicates: true,
-                showNotFound: true
+                const command = "yarn";
+                const args = ["add", "--exact"];
+                [].push.apply(args, dependencies);
+                args.push("--cwd");
+                args.push(root);
+                await execa(command, args);
             }
-        )
-        .then(console.log);
-}
+        },
+        {
+            title: "Create project folders",
+            task: context => {
+                let templateName = context.templateName;
+                if (templateName.startsWith("file:")) {
+                    templateName = templateName.replace("file:", "");
+                }
 
-async function install({ root, dependencies }) {
-    const command = "yarn";
-    const args = ["add", "--exact"];
-    [].push.apply(args, dependencies);
-    args.push("--cwd");
-    args.push(root);
-    try {
-        await execa(command, args);
-    } catch (err) {
-        throw new Error(
-            "Unable to install core dependencies for create-webiny-project: " + err.message
-        );
-    }
-}
+                const templatePath = path.dirname(
+                    require.resolve(path.join(templateName, "package.json"), {
+                        paths: [root]
+                    })
+                );
 
-async function run({ root, appName, template, tag, log }) {
-    const dependencies = [];
-    try {
-        let templateName = `@webiny/cwp-template-${template}`;
+                context.templatePath = templatePath;
 
-        if (template.startsWith(".") || template.startsWith("file:")) {
-            templateName = "file:" + path.relative(appName, template.replace("file:", ""));
-            dependencies.push(templateName);
-        } else {
-            dependencies.push(`${templateName}@${tag}`);
-        }
-
-        const tasks = new Listr([
-            {
-                title: `Install template package`,
-                task: async () => {
-                    try {
-                        await install({ root, dependencies });
-                    } catch (err) {
-                        throw new Error(`Failed to install template package: ${err.message}`);
-                    }
+                const templateDir = path.join(templatePath, "template");
+                if (fs.existsSync(templateDir)) {
+                    fs.copySync(templateDir, root);
+                } else {
+                    throw new Error(`Could not resolve template: ${green(templateDir)}`);
                 }
             }
-        ]);
+        },
+        {
+            title: "Set up project dependencies",
+            task: () => {
+                const appPackage = require(path.join(root, "package.json"));
+                const projectDeps = require(path.join(root, "dependencies.json"));
 
-        await tasks.run().catch(async err => {
-            let basePath = "cwp-logs.txt";
-            if (log.startsWith(".") || log.startsWith("file:")) {
-                basePath = log;
+                Object.assign(appPackage.dependencies, projectDeps.dependencies);
+
+                if (appPackage.devDependencies) {
+                    Object.assign(appPackage.devDependencies, projectDeps.devDependencies);
+                } else {
+                    appPackage.devDependencies = Object.assign({}, projectDeps.devDependencies);
+                }
+
+                if (appPackage.workspaces) {
+                    Object.assign(appPackage.workspaces, projectDeps.workspaces);
+                } else {
+                    appPackage.workspaces = Object.assign({}, projectDeps.workspaces);
+                }
+
+                if (appPackage.scripts) {
+                    Object.assign(appPackage.scripts, projectDeps.scripts);
+                } else {
+                    appPackage.scripts = Object.assign({}, projectDeps.scripts);
+                }
+
+                fs.writeFileSync(
+                    path.join(root, "package.json"),
+                    JSON.stringify(appPackage, null, 2) + os.EOL
+                );
+                fs.unlinkSync(path.join(root, "dependencies.json"));
             }
-            fs.writeFileSync(basePath, JSON.stringify(err, null, 2) + os.EOL);
-            console.log("\nCleaning up project...");
-            rimraf.sync(root);
-            console.log("Project cleaned!");
-            process.exit(1);
+        },
+        {
+            title: `Initialize git`,
+            task: (ctx, task) => {
+                try {
+                    execa.sync("git", ["--version"]);
+                    execa.sync("git", ["init"], { cwd: root });
+                    fs.writeFileSync(path.join(root, ".gitignore"), "node_modules/");
+                } catch (err) {
+                    task.skip("Git repo not initialized", err);
+                }
+            }
+        },
+        {
+            title: "Get proper package versions",
+            task: async () => {
+                // Set proper @webiny package versions
+                const workspaces = await fg(["**/package.json"], {
+                    ignore: ["**/dist/**", "**/node_modules/**", root],
+                    cwd: root
+                });
+                const latestVersion = await getPackageVersion("@webiny/cli", tag);
+
+                for (let i = 0; i < workspaces.length; i++) {
+                    const jsonPath = path.join(root, workspaces[i]);
+
+                    const relativeJsonPath = jsonPath;
+                    const json = await loadJsonFile(jsonPath);
+                    const keys = Object.keys(json.dependencies).filter(k =>
+                        k.startsWith("@webiny")
+                    );
+                    const currentDir = jsonPath.match(/(.*)[\/\\]/)[1] || "";
+
+                    const baseTsConfigPath = path
+                        .relative(
+                            currentDir,
+                            findUp.sync("tsconfig.json", {
+                                cwd: root
+                            })
+                        )
+                        .replace(/\\/g, "/");
+
+                    // We don't want to modify tsconfig file in the root of the project
+                    if (relativeJsonPath !== "package.json") {
+                        const tsConfigPath = path.join(currentDir, "tsconfig.json");
+                        const tsconfig = require(tsConfigPath);
+                        tsconfig.extends = baseTsConfigPath;
+                        fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                    }
+
+                    keys.forEach(name => {
+                        if (tag.startsWith(".")) {
+                            // This means `tag` points to the location of all @webiny packages
+                            json.dependencies[name] =
+                                "link:" +
+                                path.relative(
+                                    path.dirname(jsonPath),
+                                    path.join(process.cwd(), tag, name)
+                                );
+                        } else {
+                            // Use version of @webiny/cli package (we have fixed package versioning)
+                            json.dependencies[name] = `^` + latestVersion;
+                        }
+                    });
+                    console.log(jsonPath, json);
+                    await writeJsonFile(jsonPath, json);
+                }
+            }
+        },
+        {
+            title: "Resolve packages",
+            task: async () => {
+                // Add package resolutions if `tag` is pointing to a local folder.
+
+                // Why? This is very useful when you're testing packages that are not yet published to `npm`.
+                // Just run `create-webiny-project my-project --tag=./local/webiny/project/node_modules` and the whole project
+                // will be set up to use your local packages via symlinks, so you can develop and test immediately.
+                try {
+                    if (tag.startsWith(".")) {
+                        const webinyPackages = await fg(["@webiny/*"], {
+                            cwd: path.join(process.cwd(), tag),
+                            onlyDirectories: true
+                        });
+
+                        if (webinyPackages.length) {
+                            const rootPkg = path.join(root, "package.json");
+                            const rootPkgJson = await loadJsonFile(rootPkg);
+                            if (!rootPkgJson.resolutions) {
+                                rootPkgJson.resolutions = {};
+                            }
+
+                            webinyPackages
+                                .filter(name => {
+                                    // Do not include private packages
+                                    const pkgJson = require(path.join(
+                                        process.cwd(),
+                                        tag,
+                                        name,
+                                        "package.json"
+                                    ));
+                                    return !pkgJson.private;
+                                })
+                                .forEach(name => {
+                                    rootPkgJson.dependencies[name] = rootPkgJson.resolutions[name] =
+                                        "link:" +
+                                        path.relative(root, path.join(process.cwd(), tag, name));
+                                });
+
+                            await writeJsonFile(rootPkg, rootPkgJson);
+                        }
+                    }
+                } catch (err) {
+                    throw new Error("Unable to resolve packages: " + err.message);
+                }
+            }
+        }
+        // {
+        //     title: "Install dependencies",
+        //     task: async context => {
+        //         try {
+        //             const options = {
+        //                 cwd: root,
+        //                 maxBuffer: "500_000_000"
+        //             };
+        //             let logStream;
+        //             if (log) {
+        //                 logStream = fs.createWriteStream(context.logPath);
+        //                 const runner = execa("yarn", [], options);
+        //                 runner.stdout.pipe(logStream);
+        //                 runner.stderr.pipe(logStream);
+        //                 await runner;
+        //             } else {
+        //                 await execa("yarn", [], options);
+        //             }
+        //         } catch (err) {
+        //             throw new Error("Unable to install the necessary packages: " + err.message);
+        //         }
+        //     }
+        // },
+        // {
+        //     title: "Run template-specific actions",
+        //     task: async context => {
+        //         await require(context.templatePath)({ appName, root });
+        //     }
+        // }
+    ]);
+
+    let logPath = "cwp-logs.txt";
+    if (log.length > 0) {
+        logPath = log;
+    }
+    const context = { logPath };
+    await tasks.run(context).catch(async err => {
+        await sendEvent({
+            event: "create-webiny-project-error",
+            data: {
+                errorMessage: err.message,
+                errorStack: err.stack
+            }
         });
 
-        await init({ root, appName, templateName, tag, log });
-    } catch (reason) {
-        console.log("\nAborting installation.");
-        if (reason.command) {
-            console.log(`  ${cyan(reason.command)} has failed.`);
-        } else {
-            console.log(red("Unexpected error. Please report it as a bug:"));
-            console.log(reason);
-        }
-        console.log("\nDone.");
+        console.log(
+            [
+                "",
+                "ERROR OUTPUT:",
+                "----------------------------------------",
+                err.message,
+                "----------------------------------------",
+                "",
+                "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
+                "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
+                ""
+            ]
+                .map(line => indentString(line, 2))
+                .join("\n")
+        );
+
+        console.log(`\nWriting log to ${blue(path.resolve(logPath))}...`);
+        fs.writeFileSync(path.resolve(logPath), err.toString());
+        console.log("Cleaning up project...");
+        rimraf.sync(root);
+        console.log("Project cleaned!");
         process.exit(1);
-    }
+    });
+
+    await sendEvent({ event: "create-webiny-project-end" });
+
+    console.log(
+        [
+            "",
+            `Your new Webiny project ${blue(appName)} is ready!`,
+            `Finish the configuration by following these steps:`,
+            "",
+            `1.  ${blue("cd")} ${appName}`,
+            `2.  Update the ${blue("MONGODB_SERVER")} variable in the ${blue(
+                `${appName}/.env.json`
+            )} file with your database connection string.`,
+            `3.  ${blue("yarn webiny deploy")} api --env=local`,
+            `4.  ${blue("cd")} apps/admin`,
+            `5.  ${blue("yarn start")}`,
+            "",
+            `To see all the available CLI commands run ${blue("webiny --help")} in your ${blue(
+                appName
+            )} directory.`,
+            "",
+            "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
+            "",
+            "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction",
+            "Like the project? Star us on Github! https://github.com/webiny/webiny-js",
+            "",
+            "Need help? Join our Slack community! https://www.webiny.com/slack",
+            "",
+            "🚀 Happy coding!"
+        ].join("\n")
+    );
 }

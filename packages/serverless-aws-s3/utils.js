@@ -13,11 +13,8 @@ const { green } = require("chalk");
 
 const PRETRY_ARGS = { retries: 3 };
 
-const getClients = (credentials, region) => {
-    const params = {
-        region,
-        credentials
-    };
+const getClients = region => {
+    const params = { region };
 
     // we need two S3 clients because creating/deleting buckets
     // is not available with the acceleration feature.
@@ -193,8 +190,8 @@ const clearBucket = async (s3, bucketName) => {
         const items = data.Contents;
         const promises = [];
 
-        for (var i = 0; i < items.length; i += 1) {
-            var deleteParams = { Bucket: bucketName, Key: items[i].Key };
+        for (let i = 0; i < items.length; i += 1) {
+            const deleteParams = { Bucket: bucketName, Key: items[i].Key };
             const delObj = s3.deleteObject(deleteParams).promise();
             promises.push(delObj);
         }

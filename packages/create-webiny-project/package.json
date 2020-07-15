@@ -19,7 +19,6 @@
   "dependencies": {
     "@webiny/tracking": "^4.4.0",
     "chalk": "^4.0.0",
-    "envinfo": "^7.5.0",
     "execa": "^4.0.0",
     "fast-glob": "^3.2.2",
     "find-up": "^4.1.0",

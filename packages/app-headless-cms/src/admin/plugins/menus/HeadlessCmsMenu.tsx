@@ -25,10 +25,6 @@ const style = {
             paddingBottom: 2
         }
     }),
-    icon: css({
-        width: 16,
-        height: 16
-    }),
     environmentLi: css({
         color: "var(--mdc-theme-text-secondary-on-background)"
     }),
@@ -38,7 +34,6 @@ const style = {
     }),
     environmentLiLabel: css({
         marginLeft: 2,
-        width: 110,
         whiteSpace: "nowrap",
         overflow: "hidden",
         textOverflow: "ellipsis"

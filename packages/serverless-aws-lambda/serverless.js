@@ -225,10 +225,7 @@ class AwsLambda extends Component {
 
         const { name, region } = this.state;
 
-        const lambda = new AwsSdkLambda({
-            region,
-            credentials: this.context.instance.credentials.aws
-        });
+        const lambda = new AwsSdkLambda({ region });
 
         this.context.instance.debug(`Removing lambda %o from the %o region.`, name, region);
         await deleteLambda({ lambda, name });

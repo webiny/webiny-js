@@ -16,7 +16,6 @@ const defaults = {
     region: "us-east-1"
 };
 
-
 class AwsS3 extends Component {
     async default(inputs = {}) {
         const config = mergeDeepRight(defaults, inputs);
@@ -25,7 +24,7 @@ class AwsS3 extends Component {
 
         this.context.instance.debug(`Deploying bucket %o in region %o`, config.name, config.region);
 
-        const clients = getClients(this.context.instance.credentials.aws, config.region);
+        const clients = getClients(config.region);
         await ensureBucket(clients.regular, config.name, this.context.instance.debug);
 
         if (config.accelerated) {
@@ -58,10 +57,6 @@ class AwsS3 extends Component {
                 config.name,
                 config.notificationConfiguration
             );
-        }
-
-        if (config.upload) {
-            await this.upload({ bucket: config.name, region: config.region, files: config.upload });
         }
 
         this.state.name = config.name;

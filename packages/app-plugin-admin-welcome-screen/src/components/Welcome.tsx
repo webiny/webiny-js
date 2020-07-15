@@ -98,6 +98,21 @@ const Widget = styled("div")({
     marginBottom: "2rem"
 });
 
+const WelcomeScreenWidgetsWrapper = styled("div")({
+    display: "flex",
+    "@media (max-width: 479px)": {
+        flexDirection: "column"
+    }
+});
+
+const cellClass = css({
+    "@media (max-width: 479px)": {
+        "& .webiny-data-list": {
+            margin: "0"
+        }
+    }
+});
+
 const Welcome = () => {
     const security = useSecurity();
 
@@ -113,7 +128,7 @@ const Welcome = () => {
 
     return (
         <Grid>
-            <Cell span={12}>
+            <Cell span={12} className={cellClass}>
                 <SimpleForm>
                     <SimpleFormHeader title={`Hi ${fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
@@ -134,7 +149,7 @@ const Welcome = () => {
                                     <br />
                                 </Typography>
                             </Cell>
-                            <div style={{ display: "flex" }}>
+                            <WelcomeScreenWidgetsWrapper>
                                 {getPlugins<AdminWelcomeScreenWidgetPlugin>(
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
@@ -160,7 +175,7 @@ const Welcome = () => {
                                         </SecureView>
                                     );
                                 })}
-                            </div>
+                            </WelcomeScreenWidgetsWrapper>
                         </ContentTheme>
                     </SimpleFormContent>
                     <SimpleFormFooter>
@@ -199,7 +214,11 @@ const Welcome = () => {
                                 <Link to="https://docs.webiny.com/" className={linkStyle}>
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
-                                            <img className={imageStyle} src={TextbookIcon} />
+                                            <img
+                                                className={imageStyle}
+                                                src={TextbookIcon}
+                                                alt={""}
+                                            />
                                             <p className={footerLinkTextStyle}>Documentation</p>
                                         </div>
                                     </Typography>
@@ -216,7 +235,7 @@ const Welcome = () => {
                                 >
                                     <Typography use={"headline5"}>
                                         <span className={footerContainerStyle}>
-                                            <img className={imageStyle} src={LaptopIcon} />
+                                            <img className={imageStyle} src={LaptopIcon} alt={""} />
                                             <p className={footerLinkTextStyle}>Code examples</p>
                                         </span>
                                     </Typography>
@@ -227,25 +246,41 @@ const Welcome = () => {
                                     to="https://github.com/webiny/webiny-js"
                                     className={linkStyle}
                                 >
-                                    <img className={imageStyle} src={GithubIcon} />
+                                    <img
+                                        className={imageStyle}
+                                        src={GithubIcon}
+                                        alt={"Github logo"}
+                                    />
                                     <p>Github</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
                                 <Link to="https://www.webiny.com/slack/" className={linkStyle}>
-                                    <img className={imageStyle} src={SlackIcon} />
+                                    <img
+                                        className={imageStyle}
+                                        src={SlackIcon}
+                                        alt={"Slack logo"}
+                                    />
                                     <p>Slack</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
                                 <Link to="https://blog.webiny.com" className={linkStyle}>
-                                    <img className={imageStyle} src={MediumIcon} />
+                                    <img
+                                        className={imageStyle}
+                                        src={MediumIcon}
+                                        alt={"Medium logo"}
+                                    />
                                     <p>Medium</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
                                 <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
-                                    <img className={imageStyle} src={TwitterIcon} />
+                                    <img
+                                        className={imageStyle}
+                                        src={TwitterIcon}
+                                        alt={"Twitter logo"}
+                                    />
                                     <p>Twitter</p>
                                 </Link>
                             </Cell>
