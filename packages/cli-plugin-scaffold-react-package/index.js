@@ -90,21 +90,18 @@ module.exports = [
                     .replace(/\\/g, "/");
 
                 // Update .babelrc.js
-                // TODO [Andrei] [tested, seems ok] automatically find ".babel.react" & update this require (test this pls)
                 const babelrcPath = path.resolve(location, ".babelrc.js");
                 let babelrc = fs.readFileSync(babelrcPath, "utf8");
                 babelrc = babelrc.replace("[.BABEL.REACT_PATH]", babelReactJsPath);
                 fs.writeFileSync(babelrcPath, babelrc);
 
                 // Update tsconfig "extends" path
-                // TODO [Andrei] [tested, seems ok] is this ok? (test this pls)
                 const tsConfigPath = path.join(fullLocation, "tsconfig.json");
                 const tsconfig = require(tsConfigPath);
                 tsconfig.extends = baseTsConfigPath;
                 fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 // Update tsconfig.build "extends" path
-                // TODO [Andrei] [tested, seems ok] automatically find "tsconfig.build.json" and update it (test this pls)
                 const tsconfigBuildPath = path.join(fullLocation, "tsconfig.build.json");
                 const tsconfigBuild = require(tsconfigBuildPath);
                 tsconfigBuild.extends = baseTsConfigBuildPath;
