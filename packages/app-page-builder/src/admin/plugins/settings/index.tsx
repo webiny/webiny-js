@@ -18,8 +18,7 @@ const ROLE_PB_SETTINGS = ["pb:settings"];
 const plugins = [
     {
         type: "route",
-        name: "route-settings-website",
-        scopes: ROLE_PB_SETTINGS,
+        name: "route-settings-website",  
         route: (
             <Route
                 path="/settings/page-builder/website"
@@ -54,6 +53,7 @@ const plugins = [
     {
         type: "admin-menu-settings",
         name: "menu-settings-page-builder",
+        scopes: ROLE_PB_SETTINGS,
         render({ Section, Item }) {
             return (
                 <SecureView scopes={ROLE_PB_SETTINGS}>

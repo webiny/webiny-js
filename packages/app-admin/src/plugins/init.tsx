@@ -4,6 +4,7 @@ import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ReactComponent as SettingsIcon } from "@webiny/app-admin/assets/icons/round-settings-24px.svg";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
+import { hasScopes } from "@webiny/app-security"; 
 
 const t = i18n.namespace("app-admin/menus");
 
@@ -13,10 +14,22 @@ const plugin: WebinyInitPlugin = {
     init() {
         // Settings
         // Apps / integrations can register settings plugins and add menu items like the following.
+        
+        /*const canSeeAnyScope = getPlugins<AdminMenuSettingsPlugin>(
+            "admin-menu-settings"
+        ).some(pl => {
+            hasScopes(pl[0].scopes, { forceBoolean: true }));
+        }*/
+    
         const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
-        console.log("settingsPlugins");
+
+        const canSeeAnyScope = settingsPlugins.some(pl => {
+            hasScopes(pl.scopes, { forceBoolean: true })
+        });
+
+        console.log("canSeeAnyScope");
+        console.log(canSeeAnyScope);
         console.log(settingsPlugins);
-        console.log(settingsPlugins.length);
 
         registerPlugins({
             name: "menu-settings",

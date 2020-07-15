@@ -16,7 +16,6 @@ export default [
     {
         type: "route",
         name: "route-file-manager-settings-general",
-        scopes: ROLE_FM_SETTINGS,
         route: (
             <Route
                 path="/settings/file-manager/general"
@@ -34,6 +33,7 @@ export default [
     {
         type: "admin-menu-settings",
         name: "menu-file-manager-settings",
+        scopes: ROLE_FM_SETTINGS,
         render({ Section, Item }) {
             return (
                 <SecureView scopes={ROLE_FM_SETTINGS}>
