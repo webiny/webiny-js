@@ -143,5 +143,9 @@ describe("Multiple Values Test", () => {
         } catch (e) {
             error = e;
         }
+
+        expect(error.message).toBe(
+            `Cannot create an index with a field with "multipleValues" set to true`
+        );
     });
 });
