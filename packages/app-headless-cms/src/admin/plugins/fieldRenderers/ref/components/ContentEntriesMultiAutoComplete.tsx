@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
 import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
-import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 import { useI18NHelpers } from "./refInputUtils";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
@@ -15,6 +15,7 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
     const value = bind.value.map(item => {
         return get(item, "id", item);
     });
+    const { getValue } = useI18N();
     const [search, setSearch] = useState("");
 
     const { getAutoCompleteOptionsFromList } = useI18NHelpers();
@@ -115,17 +116,20 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
         });
     }
 
+    const label = getValue(field.label, locale);
+    const helpText = getValue(field.helpText, locale);
+
     return (
         <MultiAutoComplete
             {...bind}
             loading={loading}
             value={valueForAutoComplete}
             options={search ? options : defaultOptions}
-            label={<I18NValue value={field.label} />}
+            label={label}
             onInput={debounce(search => setSearch(search), 250)}
             description={
                 <>
-                    <I18NValue value={field.helpText} />
+                    {helpText}
                     {unpublishedEntriesInfo}
                 </>
             }
