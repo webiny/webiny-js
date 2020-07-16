@@ -1,10 +1,10 @@
-import pluralize from "pluralize";
 import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolvers/resolveGet";
 import { resolveList } from "../utils/resolvers/resolveList";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateReadResolvers {
     (params: {
@@ -18,16 +18,13 @@ export interface CreateReadResolvers {
 export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
-    let pluralizedTypeName = pluralize(typeName);
-    if (typeName.length === 1) {
-        pluralizedTypeName = `${typeName}s`;
-    }
+
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralizedTypeName}`]: resolveList({ model })
+            [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];

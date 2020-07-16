@@ -1,4 +1,3 @@
-import pluralize from "pluralize";
 import { CmsFieldTypePlugins, CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
@@ -6,6 +5,7 @@ import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageSDL {
     (params: {
@@ -18,10 +18,6 @@ export interface CreateManageSDL {
 export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
-    let pluralizedTypeName = pluralize(typeName);
-    if (typeName.length === 1) {
-        pluralizedTypeName = `${typeName}s`;
-    }
 
     const listFilterFieldsRender = renderListFilterFields({
         model,
@@ -110,7 +106,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         extend type Query {
             get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
 
-            list${pluralizedTypeName}(
+            list${pluralizedTypeName(typeName)}(
                 where: ${mTypeName}ListWhereInput
                 sort: [${mTypeName}ListSorter]
                 limit: Int

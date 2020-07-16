@@ -1,4 +1,3 @@
-import pluralize from "pluralize";
 import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
@@ -10,6 +9,7 @@ import { resolveDelete } from "../utils/resolvers/manage/resolveDelete";
 import { resolvePublish } from "../utils/resolvers/manage/resolvePublish";
 import { resolveUnpublish } from "../utils/resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "../utils/resolvers/manage/resolveCreateFrom";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageResolvers {
     (params: {
@@ -27,15 +27,11 @@ export const createManageResolvers: CreateManageResolvers = ({
 }) => {
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
-    let pluralizedTypeName = pluralize(typeName);
-    if (typeName.length === 1) {
-        pluralizedTypeName = `${typeName}s`;
-    }
 
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralizedTypeName}`]: resolveList({ model })
+            [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         Mutation: {
             [`create${typeName}`]: resolveCreate({ model }),
