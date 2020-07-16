@@ -1,7 +1,7 @@
 {
   "name": "@webiny/cli-plugin-scaffold-react-package",
   "version": "4.4.0",
-  "description": "Generate Webiny GraphQL service",
+  "description": "Generate a React package similar to our 'app-' packages",
   "main": "index.js",
   "repository": {
     "type": "git",
