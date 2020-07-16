@@ -8,7 +8,7 @@ const Time = props => {
             {...props}
             field={{
                 ...props.field,
-                label: props.label
+                label: props.label || props.field.label
             }}
             type={"time"}
             step={5}

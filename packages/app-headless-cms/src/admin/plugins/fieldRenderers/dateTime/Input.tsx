@@ -1,8 +1,8 @@
 import * as React from "react";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 type TrailingIconType = {
     icon: React.ReactNode;
@@ -15,9 +15,16 @@ type Props = {
     bind: BindComponentRenderProp;
     field: CmsEditorField;
     trailingIcon?: TrailingIconType;
+    locale?: string;
 };
 
 const Input = (props: Props) => {
+    const { getValue } = useI18N();
+
+    const label = getValue(props.field.label, props.locale);
+    const placeholderText = getValue(props.field.placeholderText, props.locale);
+    const helpText = getValue(props.field.helpText, props.locale);
+
     return (
         <UiInput
             {...props}
@@ -28,9 +35,9 @@ const Input = (props: Props) => {
                 }
                 return props.bind.onChange(value);
             }}
-            label={I18NValue({ value: props.field.label })}
-            placeholder={I18NValue({ value: props.field.placeholderText })}
-            description={I18NValue({ value: props.field.helpText })}
+            label={label}
+            placeholder={placeholderText}
+            description={helpText}
             type={props.type}
             trailingIcon={props.trailingIcon}
         />

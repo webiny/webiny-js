@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { Input } from "@webiny/ui/Input";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";
 import Time from "./Time";
+import Input from "./Input";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 import get from "lodash/get";
@@ -25,7 +25,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             );
         },
         render(props) {
-            const field = props.field;
+            const { field, locale } = props;
 
             return (
                 <DynamicListMultipleValues {...props}>
@@ -41,6 +41,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     field={field}
                                     bind={bind.index}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
@@ -50,6 +51,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     field={field}
                                     bind={bind.index}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
@@ -60,16 +62,21 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     bind={bind.index}
                                     label={t`Value {number}`({ number: index + 1 })}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
 
                         return (
                             <Input
-                                {...bind.index}
+                                bind={{
+                                    ...bind.index,
+                                    label: t`Value {number}`({ number: index + 1 })
+                                }}
+                                field={field}
                                 type={field.settings.type}
-                                label={t`Value {number}`({ number: index + 1 })}
                                 trailingIcon={trailingIcon}
+                                locale={locale}
                             />
                         );
                     }}
