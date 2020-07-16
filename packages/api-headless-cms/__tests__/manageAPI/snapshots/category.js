@@ -112,6 +112,7 @@ export default /* GraphQL */ `
 
     extend type Query {
         getCategory(where: CategoryGetWhereInput!): CategoryResponse
+
         listCategories(
             where: CategoryListWhereInput
             sort: [CategoryListSorter]
