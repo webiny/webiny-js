@@ -4,8 +4,6 @@ export default {
     name: "my-component-name",
     type: "my-component-type",
     render() {
-        return (<h1>
-            This is a sample React App
-        </h1>);
+        return <h1>This is a sample React App</h1>;
     }
 };
