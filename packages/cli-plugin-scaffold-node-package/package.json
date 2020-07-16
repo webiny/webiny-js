@@ -1,0 +1,36 @@
+{
+  "name": "@webiny/cli-plugin-scaffold-node-package",
+  "version": "4.4.0",
+  "description": "Generate a NodeJs package similar to our 'api-' packages",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-scaffold-graphql-service"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webiny/webiny-js/issues"
+  },
+  "homepage": "https://github.com/webiny/webiny-js#readme",
+  "dependencies": {
+    "find-up": "^4.1.0",
+    "lodash.kebabcase": "^4.1.1",
+    "ncp": "^2.0.0"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template",
+      "node_modules",
+      "__tests__"
+    ]
+  }
+}
