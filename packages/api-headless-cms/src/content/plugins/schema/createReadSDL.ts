@@ -17,7 +17,10 @@ export interface CreateManageSDL {
 export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
-
+    let pluralizedTypeName = pluralize(typeName);
+    if (typeName.length === 1) {
+        pluralizedTypeName = `${typeName}s`;
+    }
     const listFilterFieldsRender = renderListFilterFields({
         model,
         type: "read",
@@ -72,7 +75,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         extend type Query {
             get${typeName}(locale: String, where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
 
-            list${pluralize(typeName)}(
+            list${pluralizedTypeName}(
                 locale: String
                 where: ${rTypeName}ListWhereInput
                 sort: [${rTypeName}ListSorter]

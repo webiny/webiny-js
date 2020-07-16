@@ -18,13 +18,16 @@ export interface CreateReadResolvers {
 export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
-
+    let pluralizedTypeName = pluralize(typeName);
+    if (typeName.length === 1) {
+        pluralizedTypeName = `${typeName}s`;
+    }
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralize(typeName)}`]: resolveList({ model })
+            [`list${pluralizedTypeName}`]: resolveList({ model })
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];

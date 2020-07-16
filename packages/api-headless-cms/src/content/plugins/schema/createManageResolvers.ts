@@ -27,11 +27,15 @@ export const createManageResolvers: CreateManageResolvers = ({
 }) => {
     const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
+    let pluralizedTypeName = pluralize(typeName);
+    if (typeName.length === 1) {
+        pluralizedTypeName = `${typeName}s`;
+    }
 
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
-            [`list${pluralize(typeName)}`]: resolveList({ model })
+            [`list${pluralizedTypeName}`]: resolveList({ model })
         },
         Mutation: {
             [`create${typeName}`]: resolveCreate({ model }),
