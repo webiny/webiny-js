@@ -3,14 +3,7 @@ const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
-const camelCase = require("lodash.camelcase");
 const kebabCase = require("lodash.kebabcase");
-const readJson = require("load-json-file");
-const writeJson = require("write-json-file");
-const pluralize = require("pluralize");
-const Case = require("case");
-const { replaceInPath } = require("replace-in-path");
-const execa = require("execa");
 
 module.exports = [
     {
