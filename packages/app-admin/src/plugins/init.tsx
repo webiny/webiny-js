@@ -14,17 +14,18 @@ const plugin: WebinyInitPlugin = {
     init() {
         // Settings
         // Apps / integrations can register settings plugins and add menu items like the following.
+        const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
+
         registerPlugins({
             name: "menu-settings",
             type: "admin-menu",
             order: 100,
-            render({ Menu, Section, Item }) {
-                const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
-                const canSeeAnyScope = settingsPlugins.some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+            render({ Menu, Section, Item }) {    
+                const canSeeAnySettings = settingsPlugins.some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
                 console.log("canSeeAnyScope");
-                console.log(canSeeAnyScope);
+                console.log(canSeeAnySettings);
                 console.log(settingsPlugins);
-                if (canSeeAnyScope) {
+                if (canSeeAnySettings) {
                     return (
                         <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
                             {settingsPlugins.map(plugin => (
