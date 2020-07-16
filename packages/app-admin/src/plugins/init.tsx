@@ -14,31 +14,31 @@ const plugin: WebinyInitPlugin = {
     init() {
         // Settings
         // Apps / integrations can register settings plugins and add menu items like the following.
-        
-        const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
-
-        const canSeeAnyScope = getPlugins<AdminMenuSettingsPlugin>(
-            "admin-menu-settings"
-        ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
-
-        console.log("canSeeAnyScope");
-        console.log(canSeeAnyScope);
-        console.log(settingsPlugins);
-
         registerPlugins({
             name: "menu-settings",
             type: "admin-menu",
             order: 100,
             render({ Menu, Section, Item }) {
-                return (
-                    <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
-                        {settingsPlugins.map(plugin => (
-                            <React.Fragment key={plugin.name}>
-                                {plugin.render({ Section, Item })}
-                            </React.Fragment>
-                        ))}
-                    </Menu>
-                );
+                const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
+                const canSeeAnyScope = settingsPlugins.some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+                console.log("canSeeAnyScope");
+                console.log(canSeeAnyScope);
+                console.log(settingsPlugins);
+                if (canSeeAnyScope) {
+                    return (
+                        <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
+                            {settingsPlugins.map(plugin => (
+                                <React.Fragment key={plugin.name}>
+                                    {plugin.render({ Section, Item })}
+                                </React.Fragment>
+                            ))}
+                        </Menu>
+                    );
+                } else {
+                    return (
+                        <h1>Welcome to Webiny!</h1>
+                    )
+                }
             }
         });
     }
