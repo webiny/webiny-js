@@ -109,9 +109,6 @@ export const UPDATE_CONTENT_MODEL = /* GraphQL */ `
                 name
                 titleFieldId
                 lockedFields
-                indexes {
-                    fields
-                }
                 fields {
                     ${FIELDS_FIELDS}
                 }
