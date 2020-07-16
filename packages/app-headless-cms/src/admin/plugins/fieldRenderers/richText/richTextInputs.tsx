@@ -6,6 +6,7 @@ import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEd
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import get from "lodash/get";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -24,15 +25,20 @@ const plugin: CmsEditorFieldRendererPlugin = {
             );
         },
         render(props) {
-            const { field } = props;
+            const { field, locale } = props;
+            const { getValue } = useI18N();
+
+            const placeholderText = getValue(field.placeholderText, locale);
+            const helpText = getValue(field.helpText, locale);
+
             return (
                 <DynamicListMultipleValues {...props}>
                     {({ bind, index }) => (
                         <I18NRichTextEditor
                             {...bind.index}
                             label={I18NValue({ value: `Value ${index + 1}` })}
-                            placeholder={I18NValue({ value: field.placeholderText })}
-                            description={I18NValue({ value: field.helpText })}
+                            placeholder={placeholderText}
+                            description={helpText}
                             trailingIcon={
                                 index > 0 && {
                                     icon: <DeleteIcon />,
