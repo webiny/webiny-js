@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import get from "lodash/get";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -23,16 +23,17 @@ const plugin: CmsEditorFieldRendererPlugin = {
             const valuesItem = field.predefinedValues.values.values.find(
                 item => item.locale === locale
             );
-            
+
             const options = valuesItem && Array.isArray(valuesItem.value) ? valuesItem.value : [];
+
+            const { getValue } = useI18N();
+
+            const label = getValue(field.label, locale);
+            const helpText = getValue(field.helpText, locale);
 
             return (
                 <Bind>
-                    <Select
-                        label={I18NValue({ value: field.label })}
-                        description={I18NValue({ value: field.helpText })}
-                        options={options}
-                    />
+                    <Select label={label} description={helpText} options={options} />
                 </Bind>
             );
         }
