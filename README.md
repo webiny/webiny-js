@@ -294,6 +294,20 @@ Thanks goes to these wonderful people:
                         <sub><b>Anshuman Bhardwaj</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/TommyJackson85">
+                        <img src="https://avatars3.githubusercontent.com/u/22279028?v=4" width="100px;" alt="Teejay85"/>
+                        <br />
+                        <sub><b>Teejay85</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/jarretmoses">
+                        <img src="https://avatars3.githubusercontent.com/u/4745679?v=4" width="100px;" alt="Jarret Moses"/>
+                        <br />
+                        <sub><b>Jarret Moses</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
