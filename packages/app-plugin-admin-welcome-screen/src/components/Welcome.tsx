@@ -125,8 +125,7 @@ const Welcome = () => {
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
     ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
-    console.log("checking WIDGETS AGAIN::::")
-    console.log(getPlugins<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget"));
+
     return (
         <Grid>
             <Cell span={12} className={cellClass}>
