@@ -18,8 +18,6 @@ const t = i18n.ns("app-page-builder/admin/menus");
 
 const ROLE_PB_SETTINGS = ["pb:settings"];
 const PERMITTED = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
-console.log("checking PB Settings permission from APP PAGE BUILDER SETTINGS file:::::::")
-console.log(PERMITTED);
 const plugins = [
     {
         type: "route",
@@ -59,8 +57,13 @@ const plugins = [
         type: "admin-menu-settings",
         name: "menu-settings-page-builder",
         scopes: ROLE_PB_SETTINGS,
-        permitted: hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true }),
+        permitted: false,
         render({ Section, Item }) {
+       
+            this.permitted = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
+            
+            console.log("checking PB Settings permission from APP PAGE BUILDER SETTINGS file:::::::");
+            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_PB_SETTINGS}>
                     <Section label={t`Page Builder`}>
