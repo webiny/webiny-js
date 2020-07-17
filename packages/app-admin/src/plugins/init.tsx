@@ -4,7 +4,8 @@ import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ReactComponent as SettingsIcon } from "@webiny/app-admin/assets/icons/round-settings-24px.svg";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
-import { hasScopes } from "@webiny/app-security"; 
+
+import { hasScopes } from "@webiny/app-security"; // remove later
 
 const t = i18n.namespace("app-admin/menus");
 
@@ -14,14 +15,19 @@ const plugin: WebinyInitPlugin = {
     init() {
         // Settings
         // Apps / integrations can register settings plugins and add menu items like the following.
-        const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
 
         registerPlugins({
             name: "menu-settings",
             type: "admin-menu",
             order: 100,
             render({ Menu, Section, Item }) {    
+                const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
+                
+                //replace pl.scopes with pl.permitted to check a boolean value instead
                 const canSeeAnySettings = settingsPlugins.some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+                
+                console.log("checking PB Settings permission from init file:::::::")
+                console.log(hasScopes(["pb:settings"], { forceBoolean: true }));
                 console.log("canSeeAnyScope");
                 console.log(canSeeAnySettings);
                 console.log(settingsPlugins);
