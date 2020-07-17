@@ -215,6 +215,17 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             if (!this.fields.find(item => item.fieldId === field)) {
                                 break indexesFor;
                             }
+
+                            // If the fieldId is found, and it has multipleValues set to "true" it should return an error
+                            if (
+                                this.fields.find(
+                                    item => item.fieldId === field && item.multipleValues
+                                )
+                            ) {
+                                throw new Error(
+                                    `Cannot create a new index with the "${field}" field included because the field accepts multiple values.`
+                                );
+                            }
                         }
                     }
                     updatedIndexes.push(index);

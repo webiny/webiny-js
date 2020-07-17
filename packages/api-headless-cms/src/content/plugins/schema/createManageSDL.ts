@@ -38,8 +38,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .join("\n")}
         type ${mTypeName} {
             id: ID
-            createdBy: SecurityUser
-            updatedBy: SecurityUser
             createdOn: DateTime
             updatedOn: DateTime
             savedOn: DateTime
