@@ -121,31 +121,4 @@ describe("Multiple Values Test", () => {
             `Cannot change "multipleValues" for the "tags" field because it's already in use in created content.`
         );
     });
-
-    it(`should not be able to set "multipleValues" as index`, async () => {
-        const { createContentModel, updateContentModel, content } = environment(ids.environment);
-
-        let error;
-        const productContentModel = await createContentModel(
-            mocks.blogWithTagsSetToMultipleValue({ contentModelGroupId: ids.contentModelGroup })
-        );
-
-        let newSome;
-        try {
-            newSome = await updateContentModel({
-                id: productContentModel.id,
-                data: {
-                    indexes: {
-                        fields: ["tags"]
-                    }
-                }
-            });
-        } catch (e) {
-            error = e;
-        }
-
-        expect(error.message).toBe(
-            `Cannot create an index with a field with "multipleValues" set to true`
-        );
-    });
 });
