@@ -126,7 +126,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
                 return new Promise(async (resolve, reject) => {
                     try {
                         const settings = await PbSettings.load();
-                        resolve(settings.data.domain + this.url);
+                        resolve(settings.data.domain.replace(/\/+$/g, "") + this.url);
                     } catch (e) {
                         reject(e);
                     }

@@ -8,7 +8,8 @@ import {
     fields,
     withFields,
     setOnce,
-    boolean
+    boolean,
+    onSet
 } from "@webiny/commodo";
 
 const SETTINGS_KEY = "page-builder";
@@ -107,7 +108,7 @@ export default ({ createBase, context }) => {
                     }),
                     installation: fields({ instanceOf: InstallationFields, value: {} }),
                     name: string(),
-                    domain: string(),
+                    domain: onSet(value => value.replace(/\/+$/g, ""))(string()),
                     favicon: id(),
                     logo: id(),
                     social: fields({
