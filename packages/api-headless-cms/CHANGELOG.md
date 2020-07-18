@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
+* **headless:** remove createdBy and updateBy for api of headless cms ([#1131](https://github.com/webiny/webiny-js/issues/1131)) ([d306838](https://github.com/webiny/webiny-js/commit/d3068382e01cdf8fd9954e9f943c6142c3ce417a))
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
