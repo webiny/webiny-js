@@ -6,9 +6,9 @@ import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import Helmet from "react-helmet";
 import { RoutePlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
-
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/menus");
+import { hasScopes } from "@webiny/app-security"; 
 
 const ROLE_FORMS_SETTINGS = ["forms:settings"];
 
@@ -16,7 +16,6 @@ const plugins = [
     {
         type: "route",
         name: "route-settings-form-builder",
-        scopes: ROLE_FORMS_SETTINGS,
         route: (
             <Route
                 path="/settings/form-builder/recaptcha"
@@ -34,8 +33,10 @@ const plugins = [
     {
         type: "admin-menu-settings",
         name: "menu-settings-form-builder",
-        scopes: ROLE_FORMS_SETTINGS,
         render({ Item, Section }) {
+            this.permitted = hasScopes(ROLE_FORMS_SETTINGS, { forceBoolean: true });
+            console.log("checking PB Settings permission from APP FORMS BUILDER SETTINGS file:::::::");
+            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_FORMS_SETTINGS}>
                     <Section label={t`Form Builder`}>

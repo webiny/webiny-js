@@ -3,10 +3,8 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import PageBuilderSettings from "./components/PageBuilderSettings";
 import GeneralSettings from "./components/generalSettings/GeneralSettings";
-
 import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import { hasScopes } from "@webiny/app-security"; 
-
 import { i18n } from "@webiny/app/i18n";
 import { getPlugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
@@ -17,7 +15,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 const t = i18n.ns("app-page-builder/admin/menus");
 
 const ROLE_PB_SETTINGS = ["pb:settings"];
-const PERMITTED = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
+
 const plugins = [
     {
         type: "route",
@@ -56,12 +54,8 @@ const plugins = [
     {
         type: "admin-menu-settings",
         name: "menu-settings-page-builder",
-        scopes: ROLE_PB_SETTINGS,
-        permitted: false,
-        render({ Section, Item }) {
-       
+        render({ Section, Item }) {  
             this.permitted = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
-            
             console.log("checking PB Settings permission from APP PAGE BUILDER SETTINGS file:::::::");
             console.log(this.permitted);
             return (

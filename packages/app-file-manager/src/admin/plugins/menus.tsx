@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import FileManagerSettings from "../views/FileManagerSettings";
 import { SecureRoute, SecureView } from "@webiny/app-security/components";
+import { hasScopes } from "@webiny/app-security"; 
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
@@ -33,8 +34,10 @@ export default [
     {
         type: "admin-menu-settings",
         name: "menu-file-manager-settings",
-        scopes: ROLE_FM_SETTINGS,
         render({ Section, Item }) {
+            this.permitted = hasScopes(ROLE_FM_SETTINGS, { forceBoolean: true });
+            console.log("checking PB Settings permission from MENU FILE MANAGER file:::::::");
+            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_FM_SETTINGS}>
                     <Section label={t`File Manager`}>

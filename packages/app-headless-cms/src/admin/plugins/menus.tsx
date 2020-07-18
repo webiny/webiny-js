@@ -1,6 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { SecureView } from "@webiny/app-security/components";
+import { hasScopes } from "@webiny/app-security"; 
 import { AdminMenuPlugin, AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
 import ContentModelMenuItems from "./menus/ContentModelMenuItems";
@@ -12,7 +13,6 @@ export default [
     {
         type: "admin-menu",
         name: "menu-headless-cms",
-        scopes: ROLE_CMS_SETTINGS,
         render({ Menu, Section, Item }) {
             return (
                 <SecureView
@@ -49,8 +49,10 @@ export default [
     {
         type: "admin-menu-settings",
         name: "menu-settings-cms-environments",
-        scopes: ROLE_CMS_SETTINGS,
         render({ Section, Item }) {
+            this.permitted = hasScopes(ROLE_CMS_SETTINGS, { forceBoolean: true });
+            console.log("checking PB Settings permission from APP HEADLESS CMS file:::::::");
+            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_CMS_SETTINGS}>
                     <Section label={t`Headless CMS`}>

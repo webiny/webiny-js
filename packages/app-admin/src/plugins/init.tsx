@@ -4,7 +4,6 @@ import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { ReactComponent as SettingsIcon } from "@webiny/app-admin/assets/icons/round-settings-24px.svg";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
-
 import { hasScopes } from "@webiny/app-security"; // remove later
 
 const t = i18n.namespace("app-admin/menus");
@@ -23,28 +22,31 @@ const plugin: WebinyInitPlugin = {
             render({ Menu, Section, Item }) {    
                 const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
                 
-                //replace pl.scopes with pl.permitted to check a boolean value instead
-                const canSeeAnySettings = settingsPlugins.some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+                //retrieves permitted key and value for settingsPlugins and receives data for display
+                const renderedSettingsPlugins = settingsPlugins.map(pl => {
+                    return {
+                        name: pl.name,
+                        rendered: pl.render({ Section, Item })
+                    }
+                });
                 
-                console.log("checking PB Settings permission from init file:::::::")
-                console.log(hasScopes(["pb:settings"], { forceBoolean: true }));
-                console.log("canSeeAnyScope");
+                //set to true, if atleast one settings plugins are permitted for the user
+                const canSeeAnySettings = settingsPlugins.some(pl => pl.permitted == true, { forceBoolean: true });
+                console.log("canSeeAnySettings::::::");
                 console.log(canSeeAnySettings);
-                console.log(settingsPlugins);
                 if (canSeeAnySettings) {
                     return (
                         <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
-                            {settingsPlugins.map(plugin => (
+                            {renderedSettingsPlugins.map(plugin => (
                                 <React.Fragment key={plugin.name}>
-                                    {plugin.render({ Section, Item })}
+                                    {plugin.rendered}
                                 </React.Fragment>
                             ))}
                         </Menu>
                     );
                 } else {
-                    return (
-                        <h1>Welcome to Webiny!</h1>
-                    )
+                    //returning blank for now, incase other tabs are available in side nav
+                    return;
                 }
             }
         });
