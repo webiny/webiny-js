@@ -143,4 +143,31 @@ describe("Data Manager Client", () => {
         await category.save();
         expect(spy.callCount).toBe(0);
     });
+
+    it(`should call "deleteRevisionIndexes" when content model entry is deleted`, async () => {
+        const spy = sandbox.spy(context.cms.dataManager, "deleteRevisionIndexes");
+
+        const category = new context.models.category();
+        category.populate({
+            title: {
+                values: [
+                    { locale: locales.en.id, value: "Test EN" },
+                    { locale: locales.de.id, value: "Test DE" }
+                ]
+            },
+            slug: {
+                values: [
+                    { locale: locales.en.id, value: "test-en" },
+                    { locale: locales.de.id, value: "test-de" }
+                ]
+            }
+        });
+
+        await category.save();
+        await category.delete();
+
+        sandbox.restore();
+
+        expect(spy.callCount).toBe(1);
+    });
 });

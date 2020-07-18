@@ -1,4 +1,5 @@
 import { generateRevisionIndexes } from "../../src/dataManager/handler/generateRevisionIndexes";
+import { deleteRevisionIndexes } from "../../src/dataManager/handler/deleteRevisionIndexes";
 import { generateContentModelIndexes } from "../../src/dataManager/handler/generateContentModelIndexes";
 import { deleteEnvironmentData } from "../../src/dataManager/handler/deleteEnvironmentData";
 import { copyEnvironment } from "../../src/dataManager/handler/copyEnvironment";
@@ -10,6 +11,14 @@ export class DataManagerClient {
 
     async generateRevisionIndexes({ revision }) {
         await generateRevisionIndexes({
+            context: this.context,
+            revision: revision.id,
+            contentModel: revision.contentModel.modelId
+        });
+    }
+
+    async deleteRevisionIndexes({ revision }) {
+        await deleteRevisionIndexes({
             context: this.context,
             revision: revision.id,
             contentModel: revision.contentModel.modelId
