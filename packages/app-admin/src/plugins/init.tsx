@@ -31,8 +31,7 @@ const plugin: WebinyInitPlugin = {
                 
                 //set to true, if atleast one settings plugins are permitted for the user
                 const canSeeAnySettings = settingsPlugins.some(pl => pl.permitted == true, { forceBoolean: true });
-                console.log("canSeeAnySettings::::::");
-                console.log(canSeeAnySettings);
+   
                 if (canSeeAnySettings) {
                     return (
                         <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>

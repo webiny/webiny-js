@@ -36,8 +36,6 @@ export default [
         name: "menu-file-manager-settings",
         render({ Section, Item }) {
             this.permitted = hasScopes(ROLE_FM_SETTINGS, { forceBoolean: true });
-            console.log("checking PB Settings permission from MENU FILE MANAGER file:::::::");
-            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_FM_SETTINGS}>
                     <Section label={t`File Manager`}>

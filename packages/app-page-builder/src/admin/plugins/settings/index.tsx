@@ -19,7 +19,7 @@ const ROLE_PB_SETTINGS = ["pb:settings"];
 const plugins = [
     {
         type: "route",
-        name: "route-settings-website",  
+        name: "route-settings-website",
         route: (
             <Route
                 path="/settings/page-builder/website"
@@ -56,8 +56,6 @@ const plugins = [
         name: "menu-settings-page-builder",
         render({ Section, Item }) {  
             this.permitted = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
-            console.log("checking PB Settings permission from APP PAGE BUILDER SETTINGS file:::::::");
-            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_PB_SETTINGS}>
                     <Section label={t`Page Builder`}>

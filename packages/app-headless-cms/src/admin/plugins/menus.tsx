@@ -51,8 +51,6 @@ export default [
         name: "menu-settings-cms-environments",
         render({ Section, Item }) {
             this.permitted = hasScopes(ROLE_CMS_SETTINGS, { forceBoolean: true });
-            console.log("checking PB Settings permission from APP HEADLESS CMS file:::::::");
-            console.log(this.permitted);
             return (
                 <SecureView scopes={ROLE_CMS_SETTINGS}>
                     <Section label={t`Headless CMS`}>
