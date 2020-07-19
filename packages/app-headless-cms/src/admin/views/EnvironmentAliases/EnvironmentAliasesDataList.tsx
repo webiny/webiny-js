@@ -8,7 +8,6 @@ import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
 import ApiUrlsDialog from "@webiny/app-headless-cms/admin/components/ApiUrlsDialog";
 
-
 import {
     DataList,
     List,

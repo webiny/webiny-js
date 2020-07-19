@@ -5,11 +5,17 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { CopyButton } from "@webiny/ui/Button";
 import { css } from "emotion";
+import { ReactComponent as InformationIcon } from "../../assets/icons/info.svg";
 
 const style = {
     apiUrl: css({
         display: "flex",
         alignItems: "center"
+    }),
+    icon: css({
+        width: 16,
+        height: 16,
+        marginLeft: "6px"
     }),
     api: css({
         fontWeight: "bold",
@@ -26,17 +32,19 @@ const plugin: ApiInformationDialogPlugin = {
         return (
             <>
                 <div className={style.apiUrl}>
-                    <Tooltip
-                        className={style.api}
-                        content={
-                            <span>
-                                This link allows you to access content created by different
-                                application across Webiny like Page Builder or Form Builder.
-                            </span>
-                        }
-                    >
-                        <Typography use={"headline6"}>GraphQL API:</Typography>
-                    </Tooltip>
+                    <div className={style.api}>
+                        <Typography use={"headline6"} >GraphQL API:</Typography>
+                        <Tooltip
+                            content={
+                                <span>
+                                    This link allows you to access content created by different
+                                    application across Webiny like Page Builder or Form Builder.
+                                </span>
+                            }
+                        >
+                            <InformationIcon className={style.icon}/>
+                        </Tooltip>                        
+                    </div>
                     <a
                         href={process.env.REACT_APP_GRAPHQL_API_URL}
                         rel="noopener noreferrer"
