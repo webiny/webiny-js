@@ -30,10 +30,15 @@ export default (
             const [event] = context.args;
 
             const { key = "" } = event.pathParameters || {};
-            const [
-                type = options.type || event.type,
-                environment = options.environment || event.environment
-            ] = key.split("/");
+            let [type, environment] = key.split("/");
+
+            if (!type) {
+                type = options.type || event.type;
+            }
+
+            if (!environment) {
+                environment = options.environment || event.environment;
+            }
 
             context.cms = context.cms || {};
             context.cms.type = type || "read";
