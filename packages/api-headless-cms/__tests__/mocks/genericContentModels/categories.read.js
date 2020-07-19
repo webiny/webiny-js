@@ -1,6 +1,20 @@
 import { locales } from "@webiny/api-i18n/testing";
 
-export default [
+export default async () => {
+    const categories = await content("category");
+    initial.categories = [];
+    for (let i = 0; i < categoriesMock.length; i++) {
+        let categoriesMockElement = categoriesMock[i];
+        const category = await categories.create({ data: categoriesMockElement });
+        // Publish first three only.
+        if (i < 3) {
+            await categories.publish({ revision: category.id });
+        }
+        initial.categories.push(category);
+    }
+}
+
+const DATA =  [
     {
         title: {
             values: [

@@ -1,4 +1,3 @@
-import { graphql } from "graphql";
 import useContentHandler from "./../utils/useContentHandler";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import { Database } from "@commodo/fields-storage-nedb";
