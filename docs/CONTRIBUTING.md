@@ -54,7 +54,7 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 - `handler-*` are utility packages to create serverless function handlers
 - `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
 
-`sample-project` folder is the place that simulates a project structure of a project created using `create-webiny-project`. This is your development sandbox.
+`api` and `apps` folders in root of project directory are there to simulates a project created using `create-webiny-project`. This is your development sandbox.
 
 ## Prerequisites
 
@@ -86,17 +86,17 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
    yarn
    ```
 
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
+3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `.env.json` file.
 
-4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
+4. Configure your MongoDB connection data in `.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
 
-5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
+5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the project root directory. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
-> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `sample-project` folder is a `sandbox`, this is the place to run your `webiny` commands from.
+> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `api` and `apps` folders are a `sandbox` present in the project root directory, this is the place to run your `webiny` commands from.
 
 > IMPORTANT: Within our repository, you should use `npx` to run Webiny CLI, for example: `npx webiny deploy api --env=local`. Why? Because `npx` will correctly resolve the CLI binary to the node_modules in the root of your repository.
 
-6. Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+6. Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
 
 7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
@@ -120,7 +120,7 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 Once you have a working API and app deployed to the cloud, make sure to open the `cypress.json` in the project root, and configure all of the variables.
 
-Most of the needed values can be found in the `.env.json` files in your `sample-project/apps` folders (e.g. `sample-project/apps/admin/.env.json`).
+Most of the needed values can be found in the `.env.json` files in your `apps` folders (e.g. `apps/admin/.env.json`).
 
 Tests that are testing different sections of the Admin app also require the `DEFAULT_ADMIN_USER_USERNAME` and `DEFAULT_ADMIN_USER_PASSWORD` values, which represent the credentials of the default full-access admin account (set in the Admin app, in the initial installation process).
 
