@@ -1,8 +1,8 @@
 import useContentHandler from "./../utils/useContentHandler";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import { Database } from "@commodo/fields-storage-nedb";
-import contentModels from "./../mocks/genericContentModels/genericContentModels";
-import categoriesMock from "./../mocks/genericContentModels/categories.read";
+import contentModels from "./../mocks/genericContentModels/contentModels";
+import createCategories from "./../mocks/genericContentModels/categories.read";
 
 describe("READ - Resolvers", () => {
     const database = new Database();
@@ -21,18 +21,8 @@ describe("READ - Resolvers", () => {
 
         await createContentModel({ data: categoryModel });
 
-        const categories = await content("category");
+        initial.categories = await createCategories({ content });
 
-        initial.categories = [];
-        for (let i = 0; i < categoriesMock.length; i++) {
-            let categoriesMockElement = categoriesMock[i];
-            const category = await categories.create({ data: categoriesMockElement });
-            // Publish first three only.
-            if (i < 3) {
-                await categories.publish({ revision: category.id });
-            }
-            initial.categories.push(category);
-        }
     });
 
     test(`get entry by ID`, async () => {
