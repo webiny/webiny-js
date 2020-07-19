@@ -13,7 +13,7 @@ This guide is for anyone who wants to contribute to the Webiny project.
 ### Workflow
 
 - create an issue branch
-- commit your changes (please follow our [commit message format](#commit-message-format) rules)
+- commit your changes (please follow our [commit message format](#commit-messages) rules)
 - open a PR
 - try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
 - you can add as many commits as you wish to your PR
