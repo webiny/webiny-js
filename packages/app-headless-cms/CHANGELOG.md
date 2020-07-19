@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+
+### Bug Fixes
+
+* remove "createdBy" ([e9e4728](https://github.com/webiny/webiny-js/commit/e9e47285f60af5570f7402eadd040cb3f485c61e))
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
