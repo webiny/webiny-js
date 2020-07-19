@@ -36,7 +36,7 @@ const useContentHandler = ({ database, type = "manage" } = {}) => {
         neDb({ database }),
         i18n,
         mockLocalesPlugins(),
-        headlessCmsHandler(),
+        headlessCmsHandler({ server: { introspection: true } }),
         securityAuthenticationPlugins(),
         securityAuthJwtPlugins({
             secret: JWT_TOKEN_SIGN_SECRET

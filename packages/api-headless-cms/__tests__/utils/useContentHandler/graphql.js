@@ -121,6 +121,7 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
             data {
                 id
                 name
+                modelId
                 titleFieldId
                 lockedFields
                 fields {
