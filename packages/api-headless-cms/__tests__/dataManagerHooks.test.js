@@ -40,7 +40,7 @@ describe("Data Manager Hooks", () => {
         let hookExecuted = null;
         const { invoke } = useDataManagerHandler([
             {
-                type: "cms-data-manager-hook",
+                type: "cms-data-manager-entry-hook",
                 hook(payload) {
                     hookExecuted = payload;
                 }
@@ -76,7 +76,7 @@ describe("Data Manager Hooks", () => {
         let hookExecuted = null;
         const { invoke } = useDataManagerHandler([
             {
-                type: "cms-data-manager-hook",
+                type: "cms-data-manager-entry-hook",
                 hook(payload) {
                     hookExecuted = payload;
                 }
@@ -111,7 +111,7 @@ describe("Data Manager Hooks", () => {
     it(`should ignore errors in hook plugins`, async () => {
         const { invoke } = useDataManagerHandler([
             {
-                type: "cms-data-manager-hook",
+                type: "cms-data-manager-entry-hook",
                 hook() {
                     throw Error("Broken hook!");
                 }

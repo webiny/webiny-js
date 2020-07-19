@@ -7,16 +7,16 @@ export type Action =
     | "deleteRevisionIndexes"
     | "generateContentModelIndexes";
 
-export type CmsDataManagerHookType = "entry-update" | "entry-delete";
+export type CmsDataManagerEntryHookType = "entry-update" | "entry-delete";
 
-interface CmsDataManagerHookParams {
-    type: CmsDataManagerHookType;
+interface CmsDataManagerEntryHookParams {
+    type: CmsDataManagerEntryHookType;
     environment: string;
     contentModel: string;
-    entry: { [key: string]: any };
+    entry: { id: string; published: boolean; latestVersion: boolean };
 }
 
-export type CmsDataManagerHookPlugin = Plugin & {
-    type: "cms-data-manager-hook";
-    hook(params: CmsDataManagerHookParams, context: HandlerContext): Promise<void>;
+export type CmsDataManagerEntryHookPlugin = Plugin & {
+    type: "cms-data-manager-entry-hook";
+    hook(params: CmsDataManagerEntryHookParams, context: HandlerContext): Promise<void>;
 };

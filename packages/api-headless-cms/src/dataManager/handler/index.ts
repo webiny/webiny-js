@@ -8,7 +8,7 @@ import { deleteRevisionIndexes } from "./deleteRevisionIndexes";
 import { deleteEnvironmentData } from "./deleteEnvironmentData";
 import { Action } from "../types";
 import { copyEnvironment } from "./copyEnvironment";
-import { CmsDataManagerHookPlugin } from "@webiny/api-headless-cms/dataManager/types";
+import { CmsDataManagerEntryHookPlugin } from "@webiny/api-headless-cms/dataManager/types";
 
 // Setup plugins for given environment
 async function setupEnvironment(context, environment) {
@@ -16,8 +16,11 @@ async function setupEnvironment(context, environment) {
     await applyContextPlugins(context);
 }
 
-const processHooks = async (payload, context: HandlerContext) => {
-    const plugins = context.plugins.byType<CmsDataManagerHookPlugin>("cms-data-manager-hook");
+const processEntryHooks = async (payload, context: HandlerContext) => {
+    const plugins = context.plugins.byType<CmsDataManagerEntryHookPlugin>(
+        "cms-data-manager-entry-hook"
+    );
+
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
         try {
@@ -59,7 +62,7 @@ export default () => [
 
                         result = await generateRevisionIndexes({ context, ...params });
 
-                        await processHooks(
+                        await processEntryHooks(
                             {
                                 type: "entry-update",
                                 environment,
@@ -81,7 +84,7 @@ export default () => [
 
                         result = await deleteRevisionIndexes({ context, ...params });
 
-                        await processHooks(
+                        await processEntryHooks(
                             {
                                 type: "entry-delete",
                                 environment,
