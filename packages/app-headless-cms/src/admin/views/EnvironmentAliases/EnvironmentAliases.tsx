@@ -21,7 +21,7 @@ function EnvironmentAliases() {
                 mutation: DELETE_ENVIRONMENT_ALIAS,
                 options: {
                     refetchQueries: [
-                        { query: LIST_ENVIRONMENTS, variables: { sort: { savedOn: -1 } } }
+                        { query: LIST_ENVIRONMENTS, variables: { sort: { savedOn: -1 } } },
                     ]
                 }
             }}
@@ -29,7 +29,10 @@ function EnvironmentAliases() {
             create={{
                 mutation: CREATE_ENVIRONMENT_ALIAS,
                 options: {
-                    update: updateCacheAfterCreate
+                    update: updateCacheAfterCreate,
+                    refetchQueries: [
+                        { query: LIST_ENVIRONMENT_ALIASES }
+                    ]
                 }
             }}
             update={{
