@@ -2,9 +2,18 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/pluralizeContentModel";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
+const LIST_P = /* GraphQL */ `
+    query {
+        listPs {
+            data {
+                id
+            }
+        }
+    }
+`;
+
 describe("Pluralize Content Model Test", () => {
     const { database, environment, invoke } = useContentHandler();
-
     const initial = {};
 
     beforeAll(async () => {
@@ -24,6 +33,11 @@ describe("Pluralize Content Model Test", () => {
 
         const createdP = await ps.create(mocks.createP);
 
-        const psList = await ps.list();
+        let [{ errors, data }] = await invoke({
+            pathParameters: {
+                key: "/read" + initial.environment.id
+            },
+            query: LIST_P
+        });
     });
 });
