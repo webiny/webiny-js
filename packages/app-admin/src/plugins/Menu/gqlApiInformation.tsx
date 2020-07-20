@@ -15,7 +15,9 @@ const style = {
     icon: css({
         width: 16,
         height: 16,
-        marginLeft: "6px"
+        marginLeft: "6px",
+        color: "var(--mdc-theme-text-secondary-on-background)",
+        fill: "currentColor",
     }),
     api: css({
         fontWeight: "bold",

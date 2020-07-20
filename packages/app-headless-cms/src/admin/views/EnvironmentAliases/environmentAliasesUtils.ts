@@ -25,18 +25,21 @@ export const updateCacheAfterCreate = (cache, updated) => {
 
     try {
         aliases = cloneDeep(cache.readQuery(environmentListAliasParams));
-        
+
         const slug = updatedData.slug;
-        aliases.cms.environmentAliases.data = [...aliases.cms.environmentAliases.data, {
-            ...updatedData,
-            createdOn: Date.now(),
-            url: {
-                manage: `/cms/manage/${slug}`,
-                preview: `/cms/preview/${slug}`,
-                read: `/cms/read/${slug}`,
-                __typename: "CmsEnvironmentAliasUrl"
-            },
-        }];
+        aliases.cms.environmentAliases.data = [
+            ...aliases.cms.environmentAliases.data,
+            {
+                ...updatedData,
+                createdOn: Date.now(),
+                url: {
+                    manage: `/cms/manage/${slug}`,
+                    preview: `/cms/preview/${slug}`,
+                    read: `/cms/read/${slug}`,
+                    __typename: "CmsEnvironmentAliasUrl"
+                }
+            }
+        ];
 
         cache.writeQuery({
             ...environmentListAliasParams,
