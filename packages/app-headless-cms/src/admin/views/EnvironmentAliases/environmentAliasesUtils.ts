@@ -21,33 +21,27 @@ export const updateCacheAfterCreate = (cache, updated) => {
     };
 
     let data: any;
-    let aliases: any;
+    const aliases = cloneDeep(cache.readQuery(environmentListAliasParams));
 
-    try {
-        aliases = cloneDeep(cache.readQuery(environmentListAliasParams));
-
-        const slug = updatedData.slug;
-        aliases.cms.environmentAliases.data = [
-            ...aliases.cms.environmentAliases.data,
-            {
-                ...updatedData,
-                createdOn: Date.now(),
-                url: {
-                    manage: `/cms/manage/${slug}`,
-                    preview: `/cms/preview/${slug}`,
-                    read: `/cms/read/${slug}`,
-                    __typename: "CmsEnvironmentAliasUrl"
-                }
+    const slug = updatedData.slug;
+    aliases.cms.environmentAliases.data = [
+        ...aliases.cms.environmentAliases.data,
+        {
+            ...updatedData,
+            createdOn: Date.now(),
+            url: {
+                manage: `/cms/manage/${slug}`,
+                preview: `/cms/preview/${slug}`,
+                read: `/cms/read/${slug}`,
+                __typename: "CmsEnvironmentAliasUrl"
             }
-        ];
+        }
+    ];
 
-        cache.writeQuery({
-            ...environmentListAliasParams,
-            data: aliases
-        });
-    } catch (err) {
-        console.log(err);
-    }
+    cache.writeQuery({
+        ...environmentListAliasParams,
+        data: aliases
+    });
 
     try {
         data = cloneDeep(cache.readQuery(gqlParams));

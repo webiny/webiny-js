@@ -35,7 +35,7 @@ const plugin: ApiInformationDialogPlugin = {
             <>
                 <div className={style.apiUrl}>
                     <div className={style.api}>
-                        <Typography use={"headline6"} >GraphQL API:</Typography>
+                        <Typography use={"headline6"} >GraphQL API</Typography>
                         <Tooltip
                             content={
                                 <span>
