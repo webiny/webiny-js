@@ -26,7 +26,6 @@ module.exports = [
                             if (path.relative(fullLocation, projectLocation).match(/[^.\\]/)) {
                                 return "The target location must be within the Webiny project's root";
                             }
-                            return "fuck";
 
                             if (fs.existsSync(path.resolve(location))) {
                                 return "The target location already exists";
