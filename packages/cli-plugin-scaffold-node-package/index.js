@@ -11,7 +11,7 @@ module.exports = [
         type: "cli-plugin-scaffold-template",
         scaffold: {
             name: "Node Package",
-            questions: () => {
+            questions: ({ context }) => {
                 return [
                     {
                         name: "location",
@@ -20,6 +20,13 @@ module.exports = [
                             if (location === "") {
                                 return "Please enter a package location";
                             }
+
+                            const fullLocation = path.resolve(location);
+                            const projectLocation = context.paths.projectRoot;
+                            if (path.relative(fullLocation, projectLocation).match(/[^.\\]/)) {
+                                return "The target location must be within the Webiny project's root";
+                            }
+                            return "fuck";
 
                             if (fs.existsSync(path.resolve(location))) {
                                 return "The target location already exists";
@@ -99,6 +106,9 @@ module.exports = [
                 const tsconfigBuild = require(tsconfigBuildPath);
                 tsconfigBuild.extends = baseTsConfigBuildPath;
                 fs.writeFileSync(tsconfigBuildPath, JSON.stringify(tsconfigBuild, null, 2));
+
+                // Run Yarn to link the new package to the monorepo
+                await execa("yarn");
             }
         }
     }
