@@ -29,10 +29,7 @@ function EnvironmentAliases() {
             create={{
                 mutation: CREATE_ENVIRONMENT_ALIAS,
                 options: {
-                    update: updateCacheAfterCreate,
-                    refetchQueries: [
-                        { query: LIST_ENVIRONMENT_ALIASES }
-                    ]
+                    update: updateCacheAfterCreate
                 }
             }}
             update={{
