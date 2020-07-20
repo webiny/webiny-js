@@ -1,19 +1,11 @@
-import { graphql } from "graphql";
-import filesPlugins from "../src/plugins";
-import { createUtils } from "./utils";
+import useGqlHandler from "./useGqlHandler";
 import mdbid from "mdbid";
 
-describe("files test", () => {
-    const { useDatabase, useSchema } = createUtils([filesPlugins()]);
+describe("CRUD Test", () => {
+    const { invoke, database } = useGqlHandler();
 
-    const db = useDatabase();
-
-    beforeEach(async () => {
-        try {
-            await db.getCollection("File").drop();
-        } catch (err) {
-            // if an error is caught, most likely the collection doesn't exist so there is nothing to drop
-        }
+    afterEach(async () => {
+        await database.collection("File").remove({}, { multi: true });
     });
 
     test("create file", async () => {
@@ -43,8 +35,7 @@ describe("files test", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const response = await graphql(schema, query, {}, context);
+        const [response] = await invoke({ body: { query } });
 
         expect(response).toMatchObject({
             data: {
@@ -60,7 +51,7 @@ describe("files test", () => {
     });
 
     test("list files", async () => {
-        await db.getCollection("File").insertMany([
+        await database.collection("File").insert([
             {
                 id: mdbid(),
                 key: "/files/filename1.png",
@@ -116,14 +107,9 @@ describe("files test", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context);
+        const [response] = await invoke({ body: { query } });
 
-        if (errors) {
-            throw Error(JSON.stringify(errors));
-        }
-
-        expect(data).toMatchObject({
+        expect(response.data).toMatchObject({
             files: {
                 listFiles: {
                     data: [
@@ -148,15 +134,16 @@ describe("files test", () => {
             }
         });
 
-        const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
-            after: data.files.listFiles.meta.cursors.next
+        const [response2] = await invoke({
+            body: {
+                query,
+                variables: {
+                    after: response.data.files.listFiles.meta.cursors.next
+                }
+            }
         });
 
-        if (errors2) {
-            throw Error(JSON.stringify(errors2));
-        }
-
-        expect(data2).toMatchObject({
+        expect(response2.data).toMatchObject({
             files: {
                 listFiles: {
                     data: [
@@ -184,7 +171,7 @@ describe("files test", () => {
 
     test("get file by ID", async () => {
         const id = mdbid();
-        await db.getCollection("File").insertMany([
+        await database.collection("File").insert([
             {
                 id,
                 key: "/files/filename1.png",
@@ -215,14 +202,14 @@ describe("files test", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, { id });
+        const [response] = await invoke({
+            body: {
+                query,
+                variables: { id }
+            }
+        });
 
-        if (errors) {
-            throw Error(JSON.stringify(errors));
-        }
-
-        expect(data).toMatchObject({
+        expect(response.data).toMatchObject({
             files: {
                 getFile: {
                     data: {
