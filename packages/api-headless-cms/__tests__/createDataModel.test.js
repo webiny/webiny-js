@@ -21,7 +21,7 @@ describe(`createDataModel`, () => {
 
         // Setup context
         context = await useContext([], {
-            event: { headers: { "accept-language": "en-US" } }
+            args: [{ headers: { "accept-language": "en-US" } }]
         });
 
         const { contentModelInstances } = await setupContentModels(context);
