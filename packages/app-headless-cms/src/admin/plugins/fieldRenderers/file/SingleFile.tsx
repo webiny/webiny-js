@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { createRenderImagePreview, imageExtensions } from "./utils";
 import FileUpload from "./FileUpload";
 import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { BindComponentRenderProp } from "@webiny/form";
 
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
@@ -11,7 +13,13 @@ const imagePreviewProps = {
     style: { width: "100%", height: 300, objectFit: "contain" }
 };
 
-const SingleFile = props => {
+type SingleFileProps = {
+    bind: BindComponentRenderProp;
+    field: CmsEditorField;
+    description?: string;
+};
+
+const SingleFile = (props: SingleFileProps) => {
     const [previewURL, setPreviewURL] = useState(null);
     const [isImage, setIsImage] = useState(true);
     // Update `previewURL`
@@ -57,6 +65,7 @@ const SingleFile = props => {
             value={getValue()}
             imagePreviewProps={imagePreviewProps}
             placeholder={t`Select a file"`}
+            description={props.description}
             renderImagePreview={
                 !isImage && createRenderImagePreview({ value: props.bind.value, imagePreviewProps })
             }

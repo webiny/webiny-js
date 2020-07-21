@@ -29,10 +29,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Label>{label}</Label>
                         <Bind>
                             {bind => (
-                                <SingleFile
-                                    field={field}
-                                    bind={{ ...bind, description: helpText }}
-                                />
+                                <SingleFile field={field} bind={bind} description={helpText} />
                             )}
                         </Bind>
                     </Cell>
