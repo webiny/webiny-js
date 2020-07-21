@@ -9,6 +9,7 @@ const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 import get from "lodash/get";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
+import { appendTextToLabel } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/dateTime/utils";
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -58,7 +59,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         if (field.settings.type === "time") {
                             return (
                                 <Time
-                                    field={field}
+                                    field={{
+                                        ...props.field,
+                                        label: appendTextToLabel(
+                                            props.field.label,
+                                            t` Value {number}`({ number: index + 1 })
+                                        )
+                                    }}
                                     bind={bind.index}
                                     label={t`Value {number}`({ number: index + 1 })}
                                     trailingIcon={trailingIcon}
@@ -69,11 +76,14 @@ const plugin: CmsEditorFieldRendererPlugin = {
 
                         return (
                             <Input
-                                bind={{
-                                    ...bind.index,
-                                    label: t`Value {number}`({ number: index + 1 })
+                                bind={bind.index}
+                                field={{
+                                    ...props.field,
+                                    label: appendTextToLabel(
+                                        props.field.label,
+                                        t` Value {number}`({ number: index + 1 })
+                                    )
                                 }}
-                                field={field}
                                 type={field.settings.type}
                                 trailingIcon={trailingIcon}
                                 locale={locale}
