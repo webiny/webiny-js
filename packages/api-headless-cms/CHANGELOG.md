@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update hook plugin name to be entry specific ([9394b36](https://github.com/webiny/webiny-js/commit/9394b36b6b12b09f9be78ba49dda82efbbded393))
+
+
+### Features
+
+* **api-headless-cms:** add support for data manager hooks ([61101ff](https://github.com/webiny/webiny-js/commit/61101ffcef4116f9b88d7064fca0126640f5bab1))
+
+
+
+
+
 ## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

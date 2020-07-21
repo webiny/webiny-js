@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update hook plugin name to be entry specific ([9394b36](https://github.com/webiny/webiny-js/commit/9394b36b6b12b09f9be78ba49dda82efbbded393))
+* **api-page-builder:** always remove trailing slash from domain in settings ([59af6bd](https://github.com/webiny/webiny-js/commit/59af6bdfd502da0afd37b91523adab1f6055d9ac))
+* **app-headless-cms:** add `description` props to SingleFile ([085df03](https://github.com/webiny/webiny-js/commit/085df03762128021984b767ea2342380bc561856))
+* **app-headless-cms:** add localized value via `useI18N` ([5ecf00c](https://github.com/webiny/webiny-js/commit/5ecf00c4d67902a94b998e29c4c2743e2ea74bf2))
+* **app-headless-cms:** disable `add index` button ([bfd1665](https://github.com/webiny/webiny-js/commit/bfd1665271c1d197bda4b30fb2466e50764a2b24))
+* **app-headless-cms:** fix `field` and `bind` props ([36c314e](https://github.com/webiny/webiny-js/commit/36c314e8cc7ff90e506fb622fec54e37ed3fc768))
+* **app-headless-cms:** update `checkboxes` field renderer ([9360b54](https://github.com/webiny/webiny-js/commit/9360b5439c3aad7a8208b128028fecb24a72ca18))
+* **app-headless-cms:** update `datetime` field ([7de5bb0](https://github.com/webiny/webiny-js/commit/7de5bb0398ee0ae66001f40330f852ff9e6e6168))
+* **app-headless-cms:** update `radio-buttons` renderer ([9d6e1ac](https://github.com/webiny/webiny-js/commit/9d6e1ac766755e37062bdf100be2d360a6bc10ef))
+* **app-headless-cms:** update `select-box` renderer ([f56376a](https://github.com/webiny/webiny-js/commit/f56376a81d848d4341876f76cc318c6e4c090bfc))
+* **app-page-builder:** remove trailing slashes from domain in settings form ([3c47281](https://github.com/webiny/webiny-js/commit/3c472818652a459da054413c34034a92b769f76a))
+* changed plugin name, error message and brought back try and catch ([5a7af7f](https://github.com/webiny/webiny-js/commit/5a7af7fb2339838ea6c376bdea0d7a2497214416))
+* checking results and error reports ([aedb6e8](https://github.com/webiny/webiny-js/commit/aedb6e8ae232480c10710dabb0c68cf3aefb30fb))
+* created rough template for aws credentials validator  plugin ([726ab1a](https://github.com/webiny/webiny-js/commit/726ab1a12d3131c9144632c1eac7666d4bba7bce))
+* deleting hot fix comment and namespace statement ([7f6a655](https://github.com/webiny/webiny-js/commit/7f6a6550c67b162211f740dcd459490312999f6c))
+* fixed console.log ([8442c12](https://github.com/webiny/webiny-js/commit/8442c125ac5a9475161e11b85222c9f72241311a))
+* impoting sts from aws and trying to call getCallerIdentity ([49e27b9](https://github.com/webiny/webiny-js/commit/49e27b9d9b956c7cad16340fcb3487f69a9a25ac))
+* removed interface Module from namespace NodeJS ([f6de445](https://github.com/webiny/webiny-js/commit/f6de4455ea8444022ab9ee9178c5df0443830c98))
+* replaced try and catch with promise and then to receive sts results ([f6a5ef0](https://github.com/webiny/webiny-js/commit/f6a5ef0416c35e3fbbd8f96d04c46a50304bec6e))
+* setting error message with like to webiny aws set up page ([9acca4c](https://github.com/webiny/webiny-js/commit/9acca4c8bcf9130e4d6da985e383840d62c4fca6))
+* updated console message ([74c4a41](https://github.com/webiny/webiny-js/commit/74c4a41dd7473813dfbe00afbd2b02302021e61c))
+* updated console message, removed comment and deleted aws.js file ([9bb00d8](https://github.com/webiny/webiny-js/commit/9bb00d89ed24ba65253ca6fd1ebb0df63b08f250))
+
+
+### Features
+
+* **api-headless-cms:** add support for data manager hooks ([61101ff](https://github.com/webiny/webiny-js/commit/61101ffcef4116f9b88d7064fca0126640f5bab1))
+* **publish:** lock 3rd party package dependencies before publishing to npm ([ef05267](https://github.com/webiny/webiny-js/commit/ef05267860611b66b2cf972a77655ef87b988ea0))
+
+
+
+
+
 ## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
 
 **Note:** Version bump only for package webiny-js
