@@ -124,13 +124,17 @@ export default () => {
 
     return [
         {
-            name: "context-cms-models",
+            name: "context-cms-models-pre-apply",
+            type: "context",
+            apply(context) {
+                return preApply(context);
+            }
+        } as ContextPlugin<CmsContext>,
+        {
+            name: "context-cms-models-apply",
             type: "context",
             apply(context) {
                 return apply(context);
-            },
-            preApply(context) {
-                return preApply(context);
             }
         } as ContextPlugin<CmsContext>
     ];

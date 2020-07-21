@@ -25,7 +25,7 @@ export default (
     {
         name: "context-cms-context",
         type: "context",
-        preApply(context) {
+        apply(context) {
             // These default values are here only because of the existing tests. In some of those, GraphQL queries
             // are directly executed against schema, and not via a regular Apollo Handler invocation. In those cases,
             // the "context.args" is missing, so that's why we added additional levels of checks to be 100% certain.

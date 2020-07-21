@@ -5,7 +5,7 @@ export default (options: any) => [
     {
         type: "context",
         name: "context-security",
-        preApply: async context => {
+        apply: async context => {
             if (!context.event) {
                 return;
             }

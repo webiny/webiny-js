@@ -6,7 +6,7 @@ export default () => [
     {
         type: "context",
         name: "context-security",
-        preApply: async context => {
+        apply: async context => {
             context.security = {
                 identity: null,
                 getIdentity() {
