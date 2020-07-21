@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
+    "execa": "^4.0.3",
     "find-up": "^4.1.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0"

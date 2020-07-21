@@ -4,6 +4,7 @@ const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
 const kebabCase = require("lodash.kebabcase");
+const execa = require("execa");
 
 module.exports = [
     {
@@ -11,7 +12,7 @@ module.exports = [
         type: "cli-plugin-scaffold-template",
         scaffold: {
             name: "React Package",
-            questions: () => {
+            questions: ({ context }) => {
                 return [
                     {
                         name: "location",
@@ -19,6 +20,12 @@ module.exports = [
                         validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
+                            }
+
+                            const fullLocation = path.resolve(location);
+                            const projectLocation = context.paths.projectRoot;
+                            if (path.relative(fullLocation, projectLocation).match(/[^.\\]/)) {
+                                return "The target location must be within the Webiny project's root";
                             }
 
                             if (fs.existsSync(path.resolve(location))) {
@@ -99,6 +106,17 @@ module.exports = [
                 const tsconfigBuild = require(tsconfigBuildPath);
                 tsconfigBuild.extends = baseTsConfigBuildPath;
                 fs.writeFileSync(tsconfigBuildPath, JSON.stringify(tsconfigBuild, null, 2));
+
+                // Once everything is done, run `yarn` so the new packages are automatically installed.
+                await execa("yarn");
+                try {
+                    await execa("yarn");
+                } catch (err) {
+                    throw new Error(
+                        `Unable to install dependencies. Try running "yarn" in project root manually.`,
+                        err
+                    );
+                }
             }
         }
     }
