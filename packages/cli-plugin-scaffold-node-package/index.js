@@ -4,6 +4,7 @@ const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
 const kebabCase = require("lodash.kebabcase");
+const execa = require("execa");
 
 module.exports = [
     {
