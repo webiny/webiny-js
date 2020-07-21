@@ -69,6 +69,14 @@ module.exports = [
                         })
                     )
                     .replace(/\\/g, "/");
+                const baseJestConfigPath = path
+                    .relative(
+                        fullLocation,
+                        findUp.sync("jest.config.base.js", {
+                            cwd: fullLocation
+                        })
+                    )
+                    .replace(/\\/g, "/");
 
                 // Copy template files
                 await ncp(sourceFolder, location);
@@ -106,6 +114,12 @@ module.exports = [
                 const tsconfigBuild = require(tsconfigBuildPath);
                 tsconfigBuild.extends = baseTsConfigBuildPath;
                 fs.writeFileSync(tsconfigBuildPath, JSON.stringify(tsconfigBuild, null, 2));
+
+                // Update "jest.config.base" require path
+                const jestConfigPath = path.join(fullLocation, "jest.config.js");
+                let jestConfig = fs.readFileSync(jestConfigPath).toString();
+                jestConfig = jestConfig.replace("[JEST_CONFIG_BASE_PATH]", baseJestConfigPath);
+                fs.writeFileSync(jestConfigPath, jestConfig);
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 try {
