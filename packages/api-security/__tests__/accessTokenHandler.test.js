@@ -1,25 +1,22 @@
-import accessTokenLambdaPlugins from "../src/validateAccessToken";
-import { createUtils } from "./utils";
 import { mockedUser, mockedToken } from "./mocks";
+import useValidatePatHandler from "./useValidatePatHandler";
 
 describe("Personal Access Tokens [Lambda Handler] test suite", () => {
-    const { useDatabase, useHandler } = createUtils([accessTokenLambdaPlugins()]);
-    const db = useDatabase();
+    const { invoke, database } = useValidatePatHandler();
 
     beforeAll(async () => {
-        await db.getCollection("SecurityUser").insertOne(mockedUser);
-        await db.getCollection("SecurityPersonalAccessToken").insertOne({
+        await database.collection("SecurityUser").insert(mockedUser);
+        await database.collection("SecurityPersonalAccessToken").insert({
             ...mockedToken,
             user: mockedUser.id
         });
     });
 
-    test("Should validate PAT", async () => {
-        const validateAccessTokenHandler = useHandler();
-        const event = { PAT: mockedToken.token };
-        const context = {};
+    it("should validate PAT", async () => {
+        const user = await invoke({
+            pat: mockedToken.token
+        });
 
-        const user = await validateAccessTokenHandler(event, context);
         expect(user).toBeTruthy();
         expect(user.id).toBe(mockedUser.id);
         expect(user.type).toBe("user");
