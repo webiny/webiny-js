@@ -1,26 +1,27 @@
 import React, { useState } from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import MultipleFile from "./MultipleFile";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-function CmsEditorFieldRenderer({ field, getBind, Label }) {
+function CmsEditorFieldRenderer({ field, getBind, Label, locale }) {
     const [previewURLs, setPreviewURLs] = useState({});
 
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
+
+    const { getValue } = useI18N();
+    const label = getValue(field.label, locale);
 
     return (
         <Bind>
             {({ appendValues, value, appendValue }) => (
                 <Grid>
                     <Cell span={12}>
-                        <Label>
-                            <I18NValue value={field.label} />
-                        </Label>
+                        <Label>{label}</Label>
                     </Cell>
                     <Cell span={3}>
                         <FirstFieldBind>
@@ -84,8 +85,15 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "file" && field.multipleValues;
         },
-        render({ field, getBind, Label }) {
-            return <CmsEditorFieldRenderer field={field} getBind={getBind} Label={Label} />;
+        render({ field, getBind, Label, locale }) {
+            return (
+                <CmsEditorFieldRenderer
+                    field={field}
+                    getBind={getBind}
+                    Label={Label}
+                    locale={locale}
+                />
+            );
         }
     }
 };

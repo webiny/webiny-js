@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { Input } from "@webiny/ui/Input";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";
 import Time from "./Time";
+import Input from "./Input";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 import get from "lodash/get";
@@ -22,23 +22,38 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ field, getBind, locale }) {
             const Bind = getBind();
 
             return (
                 <Bind>
                     {bind => {
                         if (field.settings.type === "dateTimeWithoutTimezone") {
-                            return <DateTimeWithoutTimezone field={field} bind={bind} />;
+                            return (
+                                <DateTimeWithoutTimezone
+                                    field={field}
+                                    bind={bind}
+                                    locale={locale}
+                                />
+                            );
                         }
                         if (field.settings.type === "dateTimeWithTimezone") {
-                            return <DateTimeWithTimezone field={field} bind={bind} />;
+                            return (
+                                <DateTimeWithTimezone field={field} bind={bind} locale={locale} />
+                            );
                         }
                         if (field.settings.type === "time") {
-                            return <Time field={field} bind={bind} />;
+                            return <Time field={field} bind={bind} locale={locale} />;
                         }
 
-                        return <Input {...bind} type={field.settings.type} />;
+                        return (
+                            <Input
+                                bind={bind}
+                                field={field}
+                                locale={locale}
+                                type={field.settings.type}
+                            />
+                        );
                     }}
                 </Bind>
             );

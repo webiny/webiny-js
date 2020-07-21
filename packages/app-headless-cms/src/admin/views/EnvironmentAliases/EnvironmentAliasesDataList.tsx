@@ -68,15 +68,14 @@ const EnvironmentAliasesDataList = () => {
         >
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
-                    {
-                        selectedInfo.name &&
-                            <ApiUrlsDialog
-                                open={infoOpened}
-                                onClose={() => setInfoOpened(false)}
-                                name={selectedInfo.name}
-                                type="aliases"
-                            />
-                    }
+                    {selectedInfo.name && (
+                        <ApiUrlsDialog
+                            open={infoOpened}
+                            onClose={() => setInfoOpened(false)}
+                            name={selectedInfo.name}
+                            type="aliases"
+                        />
+                    )}
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>

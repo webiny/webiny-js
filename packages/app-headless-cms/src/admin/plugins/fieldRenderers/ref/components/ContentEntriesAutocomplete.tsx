@@ -4,7 +4,6 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
@@ -92,16 +91,19 @@ function ContentEntriesAutocomplete({ bind, field, locale }) {
             }
         );
 
+    const label = getValue(field.label, locale);
+    const helpText = getValue(field.helpText, locale);
+
     return (
         <AutoComplete
             {...bind}
             loading={loading}
             value={{ id, name }}
             options={search ? options : defaultOptions}
-            label={<I18NValue value={field.label} />}
+            label={label}
             description={
                 <>
-                    <I18NValue value={field.helpText} />
+                    {helpText}
                     {unpublishedEntryInfo}
                 </>
             }

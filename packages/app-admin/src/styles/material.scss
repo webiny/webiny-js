@@ -15,7 +15,7 @@ $mdc-typography-font-family: $webiny-theme-typography-font-family;
 @import "~material-components-web/material-components-web.scss";
 @import "material-theme-assignments.scss";
 
-body{
+body {
   background-color: $mdc-theme-background;
   min-height: 100vh;
 
@@ -49,7 +49,7 @@ body.dark-theme {
   $mdc-theme-text-primary-on-background: $webiny-theme-dark-text-primary-on-background;
   $mdc-theme-text-hint-on-dark: $webiny-theme-dark-text-hint-on-dark;
 
-  @include mdc-theme-prop('on-primary', $webiny-theme-dark-text-primary-on-background);
+  @include mdc-theme-prop("on-primary", $webiny-theme-dark-text-primary-on-background);
 
   background-color: $mdc-theme-background;
 

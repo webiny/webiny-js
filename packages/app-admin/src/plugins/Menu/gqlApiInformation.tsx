@@ -59,7 +59,7 @@ const plugin: ApiInformationDialogPlugin = {
                         onCopy={() => showSnackbar("Successfully copied!")}
                     />
                 </div>
-                <br key="graphql-break"/>
+                <br key="graphql-break" />
             </>
         );
     }

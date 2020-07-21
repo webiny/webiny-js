@@ -13,8 +13,7 @@ import {
     skipOnPopulate,
     setOnce,
     string,
-    date,
-    getName
+    date
 } from "@webiny/commodo";
 
 import {
@@ -28,20 +27,6 @@ import { createValidation } from "./createValidation";
 import pick from "lodash/pick";
 import omit from "lodash/omit";
 import upperFirst from "lodash/upperFirst";
-
-async function deleteRevisionIndexes(revision, context) {
-    const { CmsContentEntrySearch } = context.models;
-    const query = {
-        model: revision.meta.model,
-        revision: revision.id,
-        environment: revision.meta.environment
-    };
-
-    await context.commodo.driver.delete({
-        name: getName(CmsContentEntrySearch),
-        options: { query }
-    });
-}
 
 export const createDataModel = (
     createBase: Function,
@@ -141,7 +126,9 @@ export const createDataModel = (
                                 revision: this
                             });
                         } else if (mustDeleteIndexes) {
-                            await deleteRevisionIndexes(this, context);
+                            await context.cms.dataManager.deleteRevisionIndexes({
+                                revision: this
+                            });
                         }
                     });
                 }
@@ -280,7 +267,9 @@ export const createDataModel = (
             },
             async afterDelete() {
                 // Delete indexes for this revision
-                await deleteRevisionIndexes(this, context);
+                await context.cms.dataManager.deleteRevisionIndexes({
+                    revision: this
+                });
 
                 // If the deleted page is the parent page - delete its revisions.
                 if (this.id === this.meta.parent) {

@@ -39,9 +39,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         renderSettings({ form: { Bind, data }, contentModel }) {
             const lockedFields = get(contentModel, "lockedFields", []);
             const fieldId = get(data, "fieldId", null);
-            const lockedField = lockedFields.find(
-                lockedField => lockedField.fieldId === fieldId
-            );
+            const lockedField = lockedFields.find(lockedField => lockedField.fieldId === fieldId);
 
             return (
                 <Grid>

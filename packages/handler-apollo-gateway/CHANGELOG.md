@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/handler-apollo-gateway
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/handler-apollo-gateway
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package @webiny/handler-apollo-gateway

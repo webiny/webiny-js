@@ -37,8 +37,10 @@ type ColorPickerConnectProps = {
     defaultValue?: string;
 };
 
-export default connect<any, any, any>((state, { value, valueKey, defaultValue }: ColorPickerConnectProps) => {
-    return {
-        value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
-    };
-})(React.memo(ColorPicker));
+export default connect<any, any, any>(
+    (state, { value, valueKey, defaultValue }: ColorPickerConnectProps) => {
+        return {
+            value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
+        };
+    }
+)(React.memo(ColorPicker));

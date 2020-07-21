@@ -59,7 +59,6 @@ const ImageSettings = ({ element, updateElement }) => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(ImageSettings);
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(ImageSettings);

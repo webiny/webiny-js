@@ -71,9 +71,7 @@ const RequireNewPassword: React.FC<RequireNewPasswordChildrenProps> = ({
 
                             <Grid>
                                 <Cell span={12} className={alignRight}>
-                                    <ButtonPrimary onClick={submit}>
-                                        {"Set password"}
-                                    </ButtonPrimary>
+                                    <ButtonPrimary onClick={submit}>{"Set password"}</ButtonPrimary>
                                 </Cell>
                             </Grid>
                         </InnerContent>

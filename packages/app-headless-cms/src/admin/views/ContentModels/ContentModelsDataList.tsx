@@ -126,21 +126,11 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                         <ListItem key={contentModel.id} className={listItemMinHeight}>
                             <ListItemText>
                                 {contentModel.name}
-                                {contentModel.createdBy && (
-                                    <ListItemTextSecondary>
-                                        {contentModel.createdBy.firstName && (
-                                            <>
-                                                {t`Created by: {user}.`({
-                                                    user: contentModel.createdBy.firstName
-                                                })}{" "}
-                                            </>
-                                        )}
-
-                                        {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={contentModel.savedOn} />
-                                        })}
-                                    </ListItemTextSecondary>
-                                )}
+                                <ListItemTextSecondary>
+                                    {t`Last modified: {time}.`({
+                                        time: <TimeAgo datetime={contentModel.savedOn} />
+                                    })}
+                                </ListItemTextSecondary>
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <ListActions>

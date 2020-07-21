@@ -14,7 +14,7 @@ type Props = CarouselProps & {
 
     // render method for the central navigation
     renderBottomNav?: CarouselRenderControl | null;
-}
+};
 
 class Carousel extends React.Component<Props> {
     static defaultProps = {

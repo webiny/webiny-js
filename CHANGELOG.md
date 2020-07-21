@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+
+### Bug Fixes
+
+* remove "createdBy" ([e9e4728](https://github.com/webiny/webiny-js/commit/e9e47285f60af5570f7402eadd040cb3f485c61e))
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
+* remove unnecessary "apollo-server-lambda" dev dependency ([cad9eeb](https://github.com/webiny/webiny-js/commit/cad9eeb25ad6397e373d6cc3fbc4cb9a64a39c21))
+* remove unneeded quotes ([cf196a5](https://github.com/webiny/webiny-js/commit/cf196a52cef9bc47f97147beb02b951482389133))
+* use S3 bucket as StatementId in "api" stack ([46feeb6](https://github.com/webiny/webiny-js/commit/46feeb67b8c33c08b8fde31dafce0fa7fe120d26))
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([1ec7803](https://github.com/webiny/webiny-js/commit/1ec7803c78d5f3a1f701836f56a897f2d2169d0b))
+* **headless:** remove createdBy and updateBy for api of headless cms ([#1131](https://github.com/webiny/webiny-js/issues/1131)) ([d306838](https://github.com/webiny/webiny-js/commit/d3068382e01cdf8fd9954e9f943c6142c3ce417a))
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package webiny-js
