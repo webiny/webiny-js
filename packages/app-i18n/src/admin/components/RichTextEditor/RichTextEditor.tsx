@@ -25,12 +25,12 @@ const EditorContent = styled("div")({
     resize: "vertical",
     padding: "0px 8px",
     /*
-    * Increases the height of Slate editor's "content editable" area,
-    * so that when a user clicks on it, it's always focused properly.
-    * https://github.com/webiny/webiny-js/issues/1013
-    * */
+     * Increases the height of Slate editor's "content editable" area,
+     * so that when a user clicks on it, it's always focused properly.
+     * https://github.com/webiny/webiny-js/issues/1013
+     * */
     "& > div": {
-        height: "90%",
+        height: "90%"
     },
 
     "> div > div": {

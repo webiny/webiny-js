@@ -103,7 +103,7 @@ export const I18NInput = ({
 
         // Filter out redundant empty values.
         newValue.values = newValue.values.filter(item => !!item.value);
-        typeof onChange === 'function' &&  onChange(newValue);
+        typeof onChange === "function" && onChange(newValue);
     };
 
     const translateMenuItem = useMemo(() => {

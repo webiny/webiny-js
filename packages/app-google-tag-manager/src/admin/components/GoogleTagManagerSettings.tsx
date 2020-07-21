@@ -20,7 +20,6 @@ import {
 
 const t = i18n.ns("app-google-tag-manager/admin");
 
-
 const GoogleTagManagerSettings = () => {
     const { showSnackbar } = useSnackbar();
     return (
@@ -69,9 +68,7 @@ const GoogleTagManagerSettings = () => {
                                                                     <Bind name={"code"}>
                                                                         <Input
                                                                             label="Container ID"
-                                                                            description={
-                                                                                t`Formatted as "GTM-XXXXXX".`
-                                                                            }
+                                                                            description={t`Formatted as "GTM-XXXXXX".`}
                                                                         />
                                                                     </Bind>
                                                                 </Cell>

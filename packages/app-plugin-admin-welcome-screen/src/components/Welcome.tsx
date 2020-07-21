@@ -23,7 +23,7 @@ import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
 import { SecureView } from "@webiny/app-security/components";
 
-import { hasScopes } from "@webiny/app-security"; 
+import { hasScopes } from "@webiny/app-security";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -135,16 +135,17 @@ const Welcome = () => {
                         <ContentTheme>
                             <Cell span={12}>
                                 <Typography use={"headline6"}>
-                                    {canSeeAnyWidget && 
+                                    {canSeeAnyWidget && (
                                         <p className={pGetStartedStyle}>
                                             To get started - pick one of the actions below:
                                         </p>
-                                    }
-                                    {!canSeeAnyWidget && 
+                                    )}
+                                    {!canSeeAnyWidget && (
                                         <p className={pGetStartedStyle}>
-                                            Please contact administrator for permission to use the site's actions.
+                                            Please contact administrator for permission to use the
+                                            site's actions.
                                         </p>
-                                    }
+                                    )}
                                     <br />
                                 </Typography>
                             </Cell>

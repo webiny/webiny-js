@@ -1,6 +1,6 @@
 import { FbFormTriggerHandlerPlugin } from "@webiny/app-form-builder/types";
 
-export default ({
+export default {
     type: "form-trigger-handler",
     name: "form-trigger-handler-redirect",
     trigger: {
@@ -11,4 +11,4 @@ export default ({
             }
         }
     }
-} as FbFormTriggerHandlerPlugin);
+} as FbFormTriggerHandlerPlugin;

@@ -90,28 +90,32 @@ const EnvironmentsDataList = () => {
             {({ data, isSelected, select }) => {
                 return (
                     <List data-testid="default-data-list">
-                        {
-                            selectedInfo.name &&
-                                <ApiUrlsDialog
-                                    open={infoOpened}
-                                    onClose={() => setInfoOpened(false)}
-                                    name={selectedInfo.name}
-                                    type="environment"
-                                />
-                        }
+                        {selectedInfo.name && (
+                            <ApiUrlsDialog
+                                open={infoOpened}
+                                onClose={() => setInfoOpened(false)}
+                                name={selectedInfo.name}
+                                type="environment"
+                            />
+                        )}
                         {data.map(item => (
                             <ListItem key={item.id} selected={isSelected(item)}>
                                 <ListItemText onClick={() => select(item)}>
                                     <div className={style.environmentText}>
                                         {item.name}{" "}
-                                        <Typography use={"caption"} className={style.informationLabel}>
-                                            <div onClick={e => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setInfoOpened(true);
-                                                setSelectedInfo(item);
-                                            }}>
-                                                <InformationIcon className={style.icon}/>
+                                        <Typography
+                                            use={"caption"}
+                                            className={style.informationLabel}
+                                        >
+                                            <div
+                                                onClick={e => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setInfoOpened(true);
+                                                    setSelectedInfo(item);
+                                                }}
+                                            >
+                                                <InformationIcon className={style.icon} />
                                             </div>
                                         </Typography>
                                     </div>

@@ -107,9 +107,9 @@ export default () => {
                 }
 
                 // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                const imagePlugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
-                    pl => pl.elementType === source.type
-                );
+                const imagePlugin = getPlugins<PbEditorPageElementPlugin>(
+                    "pb-editor-page-element"
+                ).find(pl => pl.elementType === source.type);
 
                 if (!imagePlugin) {
                     return;

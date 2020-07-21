@@ -85,10 +85,7 @@ const Revision = (props: RevisionProps) => {
                 </ListItemTextSecondary>
             </ListItemText>
             <ListItemMeta>
-                <Menu
-                    handle={<IconButton icon={<MoreVerticalIcon />} />}
-                    className={revisionsMenu}
-                >
+                <Menu handle={<IconButton icon={<MoreVerticalIcon />} />} className={revisionsMenu}>
                     <MenuItem onClick={createRevision}>
                         <ListItemGraphic>
                             <Icon icon={<AddIcon />} />
