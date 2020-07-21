@@ -8,6 +8,10 @@ export default async (context, pat) => {
         query: { token: pat }
     });
 
+    if (!token) {
+        return null;
+    }
+
     const user = await token.user;
     if (!user) {
         return null;
