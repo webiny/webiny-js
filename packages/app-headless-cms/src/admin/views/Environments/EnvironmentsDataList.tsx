@@ -102,13 +102,15 @@ const EnvironmentsDataList = () => {
                                     <div className={style.environmentText}>
                                         {item.name}{" "}
                                         <Typography use={"caption"}>
-                                            <div onClick={e => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setInfoOpened(true);
-                                                setSelectedInfo(item);
-                                            }}>
-                                                <InformationIcon className={style.icon}/>
+                                            <div
+                                                onClick={e => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setInfoOpened(true);
+                                                    setSelectedInfo(item);
+                                                }}
+                                            >
+                                                <InformationIcon className={style.icon} />
                                             </div>
                                         </Typography>
                                     </div>

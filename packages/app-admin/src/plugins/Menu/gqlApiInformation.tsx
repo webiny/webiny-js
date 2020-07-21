@@ -17,7 +17,7 @@ const style = {
         height: 16,
         marginLeft: "6px",
         color: "var(--mdc-theme-text-secondary-on-background)",
-        fill: "currentColor",
+        fill: "currentColor"
     }),
     api: css({
         fontWeight: "bold",
@@ -35,7 +35,7 @@ const plugin: ApiInformationDialogPlugin = {
             <>
                 <div className={style.apiUrl}>
                     <div className={style.api}>
-                        <Typography use={"headline6"} >GraphQL API</Typography>
+                        <Typography use={"headline6"}>GraphQL API</Typography>
                         <Tooltip
                             content={
                                 <span>
@@ -44,8 +44,8 @@ const plugin: ApiInformationDialogPlugin = {
                                 </span>
                             }
                         >
-                            <InformationIcon className={style.icon}/>
-                        </Tooltip>                        
+                            <InformationIcon className={style.icon} />
+                        </Tooltip>
                     </div>
                     <a
                         href={process.env.REACT_APP_GRAPHQL_API_URL}
