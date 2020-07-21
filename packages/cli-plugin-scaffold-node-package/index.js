@@ -107,8 +107,15 @@ module.exports = [
                 tsconfigBuild.extends = baseTsConfigBuildPath;
                 fs.writeFileSync(tsconfigBuildPath, JSON.stringify(tsconfigBuild, null, 2));
 
-                // Run Yarn to link the new package to the monorepo
-                await execa("yarn");
+                // Once everything is done, run `yarn` so the new packages are automatically installed.
+                try {
+                    await execa("yarn");
+                } catch (err) {
+                    throw new Error(
+                        `Unable to install dependencies. Try running "yarn" in project root manually.`,
+                        err
+                    );
+                }
             }
         }
     }
