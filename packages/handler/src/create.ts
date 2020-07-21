@@ -10,9 +10,11 @@ export default (...plugins) => async (...args) => {
     };
 
     try {
-        const contextPlugins = context.plugins.byType<HandlerContextPlugin>("handler-context");
+        const contextPlugins = context.plugins.byType<HandlerContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
-            contextPlugins[i].apply({ context, args });
+            if (contextPlugins[i].apply) {
+                await contextPlugins[i].apply(context);
+            }
         }
 
         const handlers = context.plugins.byType<HandlerPlugin>("handler");
