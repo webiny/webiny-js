@@ -87,7 +87,6 @@ export default function File(props: Props) {
                 <div className={"infoIcon"}>
                     <RemoveIcon onClick={onRemove} />
                 </div>
-                <h1>THIS IS THE FILE TSX</h1>
                 <div className={"filePreview"}>
                     <div className="clickableArea" onClick={onSelect} />
                     <Image

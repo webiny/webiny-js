@@ -54,7 +54,6 @@ const ImagesListImagesSettings = props => {
                                                         items={value}
                                                         sortId={i}
                                                     >
-                                                        SURE THING!!
                                                         <File
                                                             file={item}
                                                             onRemove={() =>
@@ -72,7 +71,7 @@ const ImagesListImagesSettings = props => {
                                         </ul>
                                         <div className={style.addImagesButton}>
                                             <ButtonPrimary onClick={showFileManager}>
-                                                Add images
+                                                Add images...
                                             </ButtonPrimary>
                                         </div>
                                     </>
