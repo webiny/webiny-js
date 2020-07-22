@@ -13,7 +13,7 @@ const LIST_P = /* GraphQL */ `
 `;
 
 describe("Pluralize Content Model Test", () => {
-    const { database, environment, invoke } = useContentHandler();
+    const { database, environment } = useContentHandler();
     const initial = {};
 
     beforeAll(async () => {
@@ -23,7 +23,7 @@ describe("Pluralize Content Model Test", () => {
     });
 
     it("should be able to create a content model with a single capitalized letter and not have the pluralized version be capitalized", async () => {
-        const { content, createContentModel } = environment(initial.environment.id);
+        const { content, createContentModel, invoke } = environment(initial.environment.id);
 
         const contentModel = await createContentModel(
             mocks.contentModel({ contentModelGroupId: initial.contentModelGroup.id })
@@ -33,11 +33,12 @@ describe("Pluralize Content Model Test", () => {
 
         const createdP = await ps.create(mocks.createP);
 
-        let [{ errors, data }] = await invoke({
-            pathParameters: {
-                key: "/read" + initial.environment.id
-            },
-            query: LIST_P
+        let [{ data }] = await invoke({
+            body: {
+                query: LIST_P
+            }
         });
+
+        expect(data.listPs.data.id).toEqual(mocks.createP.id);
     });
 });
