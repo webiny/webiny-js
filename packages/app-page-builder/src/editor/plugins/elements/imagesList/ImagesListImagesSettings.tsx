@@ -27,6 +27,7 @@ const SortableItem = sortable(Item);
 
 const ImagesListImagesSettings = props => {
     const { Bind, form } = props;
+    console.log("location of ADD IMAGES button");
     return (
         <React.Fragment>
             <Grid>
@@ -69,10 +70,9 @@ const ImagesListImagesSettings = props => {
                                                     </SortableItem>
                                                 ))}
                                         </ul>
-                                        <h1>BUG MAN</h1>
                                         <div className={style.addImagesButton}>
                                             <ButtonPrimary onClick={showFileManager}>
-                                                Add images...
+                                                Add images
                                             </ButtonPrimary>
                                         </div>
                                     </>
