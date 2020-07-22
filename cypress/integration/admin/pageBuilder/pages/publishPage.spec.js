@@ -60,7 +60,8 @@ context("Pages Creation", () => {
         });
 
         // Let's wait a bit for the CDN cache to be flushed.
-        cy.wait(30000);
+        // TODO: should use "reloadUntil" command here.
+        cy.wait(45000);
 
         cy.findByTestId("pb-page-details").within(() => {
             cy.findByTestId("pb-page-details-header-page-options-menu").click();
