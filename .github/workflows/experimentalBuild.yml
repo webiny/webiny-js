@@ -25,7 +25,7 @@ jobs:
         run: yarn adio
 
       - name: Build packages
-        run: yarn build:experimental
+        run: yarn build
 
       - name: Run tests
         run: yarn test
