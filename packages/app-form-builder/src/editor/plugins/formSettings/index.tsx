@@ -7,7 +7,7 @@ import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg"
 import { ReactComponent as TermsOfServiceIcon } from "./icons/round-receipt-24px.svg";
 import { ReactComponent as ReCaptchaIcon } from "./icons/round-vpn_lock-24px.svg";
 
-export default ([
+export default [
     {
         name: "form-editor-form-settings-general",
         type: "form-editor-form-settings",
@@ -38,4 +38,4 @@ export default ([
             return <ReCaptchaSettings {...props} />;
         }
     }
-] as Array<FormSettingsPluginType>);
+] as Array<FormSettingsPluginType>;

@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { i18n } from "@webiny/app/i18n";
 import get from "lodash/get";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -28,12 +28,14 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 options = Array.isArray(valuesItem.value) ? valuesItem.value : [];
             }
 
+            const { getValue } = useI18N();
+
+            const label = getValue(field.label, locale);
+            const helpText = getValue(field.helpText, locale);
+
             return (
                 <Bind>
-                    <CheckboxGroup
-                        label={I18NValue({ value: field.label })}
-                        description={I18NValue({ value: field.helpText })}
-                    >
+                    <CheckboxGroup label={label} description={helpText}>
                         {({ onChange, getValue }) => (
                             <React.Fragment>
                                 {options.map((option, index) => (

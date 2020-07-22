@@ -22,7 +22,6 @@ const Background = ({ element, deactivateElement, highlightElement }) => {
     );
 };
 
-export default connect<any, any, any>(
-    null,
-    { deactivateElement, highlightElement }
-)(withActiveElement()(Background));
+export default connect<any, any, any>(null, { deactivateElement, highlightElement })(
+    withActiveElement()(Background)
+);

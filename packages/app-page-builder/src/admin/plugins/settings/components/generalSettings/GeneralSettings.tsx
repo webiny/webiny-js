@@ -35,16 +35,21 @@ const GeneralSettings = () => {
 
                             if (updatedSettings) {
                                 cache.writeQuery({
-                                     query: DOMAIN_QUERY,
-                                     data: set(dataFromCache, "pageBuilder.getSettings.data", updatedSettings)
+                                    query: DOMAIN_QUERY,
+                                    data: set(
+                                        dataFromCache,
+                                        "pageBuilder.getSettings.data",
+                                        updatedSettings
+                                    )
                                 });
                             }
                         }}
                     >
-                        {(update, {loading: mutationInProgress}) => (
+                        {(update, { loading: mutationInProgress }) => (
                             <Form
                                 data={settings}
                                 onSubmit={async data => {
+                                    data.domain = data.domain.replace(/\/+$/g, "");
                                     await update({
                                         variables: {
                                             data

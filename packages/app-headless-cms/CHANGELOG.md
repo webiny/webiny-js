@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add `description` props to SingleFile ([085df03](https://github.com/webiny/webiny-js/commit/085df03762128021984b767ea2342380bc561856))
+* **app-headless-cms:** add localized value via `useI18N` ([5ecf00c](https://github.com/webiny/webiny-js/commit/5ecf00c4d67902a94b998e29c4c2743e2ea74bf2))
+* **app-headless-cms:** disable `add index` button ([bfd1665](https://github.com/webiny/webiny-js/commit/bfd1665271c1d197bda4b30fb2466e50764a2b24))
+* **app-headless-cms:** fix `field` and `bind` props ([36c314e](https://github.com/webiny/webiny-js/commit/36c314e8cc7ff90e506fb622fec54e37ed3fc768))
+* **app-headless-cms:** update `checkboxes` field renderer ([9360b54](https://github.com/webiny/webiny-js/commit/9360b5439c3aad7a8208b128028fecb24a72ca18))
+* **app-headless-cms:** update `datetime` field ([7de5bb0](https://github.com/webiny/webiny-js/commit/7de5bb0398ee0ae66001f40330f852ff9e6e6168))
+* **app-headless-cms:** update `radio-buttons` renderer ([9d6e1ac](https://github.com/webiny/webiny-js/commit/9d6e1ac766755e37062bdf100be2d360a6bc10ef))
+* **app-headless-cms:** update `select-box` renderer ([f56376a](https://github.com/webiny/webiny-js/commit/f56376a81d848d4341876f76cc318c6e4c090bfc))
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+
+### Bug Fixes
+
+* remove "createdBy" ([e9e4728](https://github.com/webiny/webiny-js/commit/e9e47285f60af5570f7402eadd040cb3f485c61e))
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

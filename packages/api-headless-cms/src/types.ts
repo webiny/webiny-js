@@ -5,6 +5,7 @@ import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/t
 
 export interface CmsDataManager {
     generateRevisionIndexes({ revision }): Promise<void>;
+    deleteRevisionIndexes({ revision }): Promise<void>;
     generateContentModelIndexes({ contentModel }): Promise<void>;
     deleteEnvironment({ environment }): Promise<void>;
     copyEnvironment({ copyFrom, copyTo }): Promise<void>;

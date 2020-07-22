@@ -58,6 +58,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             >
                 {({ Bind, submit, data: formData }) => {
                     const selectedFields = get(formData, "fields", []);
+
+                    const nothingSelected = selectedFields.length === 0;
                     const justIdSelected =
                         selectedFields.length === 1 && selectedFields[0] === "id";
 
@@ -152,7 +154,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
                             </DialogContent>
                             <DialogActions>
                                 <ButtonDefault
-                                    disabled={justIdSelected || isExisting}
+                                    disabled={nothingSelected || justIdSelected || isExisting}
                                     onClick={submit}
                                 >
                                     + {t`Add index`}

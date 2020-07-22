@@ -20,9 +20,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
-import {
-    PbEditorPageSettingsPlugin
-} from "@webiny/app-page-builder/types";
+import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const PageSettings = props => {
     const plugins = getPlugins<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
@@ -118,7 +116,7 @@ const PageSettingsContent = ({
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ page: omit(getPage(state), ["content"]) }),
-    { deactivatePlugin, updateRevision }
-)(PageSettings);
+export default connect<any, any, any>(state => ({ page: omit(getPage(state), ["content"]) }), {
+    deactivatePlugin,
+    updateRevision
+})(PageSettings);
