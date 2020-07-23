@@ -109,14 +109,6 @@ module.exports = [
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
-                try {
-                    await execa("yarn");
-                } catch (err) {
-                    throw new Error(
-                        `Unable to install dependencies. Try running "yarn" in project root manually.`,
-                        err
-                    );
-                }
             }
         }
     }
