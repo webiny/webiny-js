@@ -122,14 +122,7 @@ module.exports = [
                 fs.writeFileSync(jestConfigPath, jestConfig);
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
-                try {
-                    await execa("yarn");
-                } catch (err) {
-                    throw new Error(
-                        `Unable to install dependencies. Try running "yarn" in project root manually.`,
-                        err
-                    );
-                }
+                await execa("yarn");
             }
         }
     }
