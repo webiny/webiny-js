@@ -20,9 +20,6 @@
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0"
   },
-  "devDependencies": {
-    "@shelf/jest-mongodb": "^1.1.5"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "."
