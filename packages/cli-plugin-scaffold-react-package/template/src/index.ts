@@ -1,3 +1,3 @@
-import plugins from "./plugins.tsx";
-
-export default () => [plugins];
+export default () => {
+    // TODO: implement your package
+};
