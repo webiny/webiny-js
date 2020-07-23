@@ -11,11 +11,11 @@
     "env-cmd": "^10.1.0"
   },
   "scripts": {
-    "build:dev": "env-cmd -r --silent .env.json -e default webiny run build --env=dev --stack=api",
-    "build:prod": "env-cmd -r --silent .env.json -e default webiny run build --env=prod --stack=api",
-    "build:ssr:dev": "env-cmd -r --silent .env.json -e default webiny run build-ssr --env=dev --stack=api",
-    "build:ssr:prod": "env-cmd -r --silent .env.json -e default webiny run build-ssr --env=prod --stack=api",
-    "start": "env-cmd -r --silent .env.json -e default webiny run start --env=local --stack=api"
+    "build:dev": "env-cmd -r .env.json --silent -e default webiny run build --env=dev --stack=api",
+    "build:prod": "env-cmd -r .env.json --silent -e default webiny run build --env=prod --stack=api",
+    "build:ssr:dev": "env-cmd -r .env.json --silent -e default webiny run build-ssr --env=dev --stack=api",
+    "build:ssr:prod": "env-cmd -r .env.json --silent -e default webiny run build-ssr --env=prod --stack=api",
+    "start": "env-cmd -r .env.json --silent -e default webiny run start --env=local --stack=api"
   },
   "browserslist": {
     "development": [
