@@ -9,7 +9,7 @@ env:
 
 jobs:
   build-test-release:
-    name: Build, test and release ("latest" tag)
+    name: Build & test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -21,11 +21,14 @@ jobs:
       - name: Install dependencies
         run: yarn --frozen-lockfile
 
-      - name: Check dependencies
-        run: yarn adio
+      - name: Setup .env.json files
+        run: yarn setup-env-files:ci
 
       - name: Build packages
         run: yarn build
 
-      - name: Run tests
-        run: yarn test
+      - name: Deploy API stack
+        run: yarn webiny deploy api --env production
+
+      - name: Deploy Apps stack
+        run: yarn webiny deploy apps --env production
