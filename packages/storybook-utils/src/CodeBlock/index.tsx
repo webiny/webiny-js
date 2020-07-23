@@ -71,7 +71,7 @@ class CodeBlock extends React.Component<Props, State> {
 
                 <Highlight language={this.props.lang || "html"}>
                     {prettier
-                        .format(source, { parser: "babylon", plugins: [babylon] })
+                        .format(source as string, { parser: "babylon", plugins: [babylon] })
                         .replace(">;", ">")}
                 </Highlight>
             </React.Fragment>
