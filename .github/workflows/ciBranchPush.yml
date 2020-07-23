@@ -31,7 +31,7 @@ jobs:
         run: yarn build
 
       - name: Deploy API stack
-        run: yarn webiny deploy api --env production
+        run: yarn webiny deploy api --env prod
 
       - name: Deploy Apps stack
-        run: yarn webiny deploy apps --env production
+        run: yarn webiny deploy apps --env prod
