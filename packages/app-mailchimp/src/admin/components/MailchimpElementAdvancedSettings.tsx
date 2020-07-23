@@ -155,7 +155,9 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                     </Cell>
                                     <Cell span={12} className={formPreview}>
                                         <span>
-                                            <Typography use={"overline"}>{t`Form preview`}</Typography>
+                                            <Typography
+                                                use={"overline"}
+                                            >{t`Form preview`}</Typography>
                                         </span>
                                         <Bind name={"settings"}>
                                             {({ value }) => (
