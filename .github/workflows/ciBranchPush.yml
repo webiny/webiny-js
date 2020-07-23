@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: "12"
+          node-version: 12
 
       - name: Install dependencies
         run: yarn --frozen-lockfile
