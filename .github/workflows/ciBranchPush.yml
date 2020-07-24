@@ -35,3 +35,12 @@ jobs:
 
       - name: Deploy Apps stack
         run: yarn webiny deploy apps --env prod
+
+      - name: Setup Cypress config
+        run: yarn setup-cypress
+
+      - name: Run Admin Installation Test
+        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+
+      - name: Run Admin Installation Test
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
