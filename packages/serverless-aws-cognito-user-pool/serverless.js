@@ -24,13 +24,13 @@ class ServerlessAwsCognito extends Component {
             tags = {},
             appClients = [],
             allowSignup = false,
-            Schema
+            schema
         } = inputs;
         const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
-        const UsernameAttributes = inputs.UsernameAttributes ? inputs.UsernameAttributes : ["email"]
-        if(Schema){
-            if(Array.isArray(Schema)){
-                schemaConfig = [...Schema]
+        const usernameAttributes = inputs.usernameAttributes ? inputs.usernameAttributes : ["email"]
+        if(schema){
+            if(Array.isArray(schema)){
+                schemaConfig = [...schema]
             }else{
                 throw Error(`Schema attributes needs to be passed in array.`);
             }
@@ -154,7 +154,7 @@ class ServerlessAwsCognito extends Component {
                     AdvancedSecurityMode: "OFF" /* required */
                 },
                 UserPoolTags: Object.assign({}, tags),
-                UsernameAttributes: [...UsernameAttributes],
+                UsernameAttributes: [...usernameAttributes],
                 VerificationMessageTemplate: {
                     DefaultEmailOption: "CONFIRM_WITH_CODE"
                 }
