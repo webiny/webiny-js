@@ -19,7 +19,7 @@ const PROJECT_FOLDER = ".";
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
     // TODO: parametrize this.
-    const ENV = "dev";
+    const ENV = "prod";
     const apiStatePath = path.resolve(
         PROJECT_FOLDER,
         path.join(".webiny", "state", "api", ENV, "Webiny.json")
