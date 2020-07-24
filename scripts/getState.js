@@ -2,7 +2,7 @@ const PROJECT_FOLDER = ".";
 const loadJson = require("load-json-file");
 const path = require("path");
 
-module.exports = (stack, env = "dev") => {
+module.exports = (stack, env = "prod") => {
     const statePath = path.resolve(
         PROJECT_FOLDER,
         path.join(".webiny", "state", stack, env, "Webiny.json")
