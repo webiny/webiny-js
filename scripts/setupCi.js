@@ -15,4 +15,6 @@ const PROJECT_FOLDER = ".";
     await writeJson(envJsonPath, envJson);
 
     console.log(`✅️ Applied changes needed for running Webiny in CI.`);
+
+    require("./setupCypress");
 })();
