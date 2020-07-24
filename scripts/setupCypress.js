@@ -3,6 +3,7 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const fs = require("fs");
 const { green } = require("chalk");
+const getState = require("./getState");
 
 const PROJECT_FOLDER = ".";
 
@@ -18,19 +19,8 @@ const PROJECT_FOLDER = ".";
 
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
-    // TODO: parametrize this.
-    const ENV = "prod";
-    const apiStatePath = path.resolve(
-        PROJECT_FOLDER,
-        path.join(".webiny", "state", "api", ENV, "Webiny.json")
-    );
-    const apiStateFile = await loadJson.sync(apiStatePath);
-
-    const appsStatePath = path.resolve(
-        PROJECT_FOLDER,
-        path.join(".webiny", "state", "apps", ENV, "Webiny.json")
-    );
-    const appsStateFile = await loadJson.sync(appsStatePath);
+    const apiStateFile = getState("api");
+    const appsStateFile = getState("apps");
 
     cypressConfig.baseUrl = appsStateFile.outputs.cdn.url;
     cypressConfig.env.SITE_URL = appsStateFile.outputs.cdn.url;
