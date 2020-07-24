@@ -39,8 +39,8 @@ jobs:
       - name: Setup Cypress config
         run: yarn setup-cypress
 
-      - name: Run Admin Installation Test
+      - name: Cypress - run Admin app installation test
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-      - name: Run Admin Installation Test
+      - name: Cypress - run the rest of Admin app tests
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
