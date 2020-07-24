@@ -142,7 +142,7 @@
     "setup-repo": "node scripts/setupRepo",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-cypress": "node scripts/setupCypress",
-    "setup-env-files:ci": "node scripts/setupCiEnvFiles",
+    "setup-ci": "node scripts/setupCiEnvFiles",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
