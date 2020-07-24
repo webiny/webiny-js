@@ -39,6 +39,9 @@ jobs:
       - name: Setup Cypress config
         run: yarn setup-cypress
 
+      - name: Wait for the site to be deployed...
+        run: node scripts/waitToDeploy
+
       - name: Cypress - run Admin app installation test
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
