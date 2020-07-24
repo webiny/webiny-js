@@ -11,7 +11,7 @@
     "API_URL": "https://API_CDN_ID.cloudfront.net",
     "GRAPHQL_API_URL": "https://API_CDN_ID.cloudfront.net/graphql",
     "AUTHORIZATION_TOKEN_KEY": "webiny-token",
-    "AWS_COGNITO_USER_POOL_ID": "eu-central-1_xxxxxxxxx",
+    "AWS_COGNITO_USER_POOL_ID": "xxxxxxxxxxxxxxxxxxxxxx",
     "AWS_COGNITO_CLIENT_ID": "xxxxxxxxxxxxxxxxxxxxxxxxx",
     "DEFAULT_ADMIN_USER_USERNAME": "admin@webiny.com",
     "DEFAULT_ADMIN_USER_PASSWORD": "12345678",
