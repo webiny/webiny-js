@@ -36,4 +36,7 @@ const PROJECT_FOLDER = ".";
     console.log(
         `✅️ Created cypress.json config file! To open Cypress, just run "cypress open" in your terminal.`
     );
+
+    console.log("ℹ️ Created config:");
+    console.log(JSON.stringify(cypressConfig, null, 4));
 })();
