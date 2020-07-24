@@ -141,7 +141,7 @@
     "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
     "setup-env-files": "node scripts/setupEnvFiles",
-    "setup-env-files:ci": "node scripts/setupCiEnvFiles",
+    "setup-env-files:ci": "node scripts/setupEnvFilesCi",
     "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
