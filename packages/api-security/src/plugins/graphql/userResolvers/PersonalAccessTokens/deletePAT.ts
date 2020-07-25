@@ -1,23 +1,26 @@
 import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security/utils";
+
 export default async (root, args, context) => {
-    if (!context.user) {
+    const identity = context.security.getIdentity();
+    if (!identity) {
         return new NotFoundResponse("Current user not found!");
     }
 
     const { SecurityPersonalAccessToken } = context.models;
-    const currentUserId = context.user.id;
+    const currentUserId = identity.id;
 
     try {
         const pat = await SecurityPersonalAccessToken.findById(args.id);
         if (!pat) {
             return new NotFoundResponse("Personal Access Token not found!");
         }
+
         const patUser = await pat.user;
         if (patUser.id !== currentUserId) {
-            const { fullAccess, scopes } = context.user.access;
-            const canDeleteToken =
-                fullAccess || scopes.find(scope => scope === "security:user:crud");
+            // TODO: Won't work because on all solutions, fix this.
+            const canDeleteToken = hasScope("security:user:crud", identity.scopes);
             if (!canDeleteToken) {
                 return new ErrorResponse({
                     message:

@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
+import { hasScope } from "@webiny/api-security/utils";
 
 const generateToken = (tokenLength = 48) =>
     crypto
@@ -9,39 +10,37 @@ const generateToken = (tokenLength = 48) =>
         .slice(0, tokenLength);
 
 export default async (root, args, context) => {
-    if (!context.user) {
+    const identity = context.security.getIdentity();
+    if (!identity) {
         return new NotFoundResponse("Current user not found!");
     }
 
-    const PersonalAccessToken = context.models.SecurityPersonalAccessToken;
-    const User = context.models.SecurityUser;
+    const { SecurityPersonalAccessToken, SecurityUser } = context.models;
 
-    const currentUserId = context.user.id;
     const otherUserId = args.userId;
-
-    const canAssignUser =
-        context.user.access.fullAccess ||
-        context.user.access.scopes.find(scope => scope === "security:user:crud");
 
     try {
         let tokenUserId;
         if (!otherUserId) {
-            tokenUserId = currentUserId;
+            tokenUserId = identity.id;
         } else {
+            // TODO: Won't work because on all solutions, fix this.
+            const canAssignUser = hasScope("security:user:crud", identity.scopes);
             if (!canAssignUser) {
                 return new ErrorResponse({
                     message:
                         "Current user is not admin! You must be an admin in order to update other users."
                 });
             }
-            if (!(await User.findById(otherUserId))) {
+
+            if (!(await SecurityUser.findById(otherUserId))) {
                 return new NotFoundResponse("User to be updated not found!");
             }
             tokenUserId = otherUserId;
         }
 
         const token = generateToken();
-        const pat = new PersonalAccessToken();
+        const pat = new SecurityPersonalAccessToken();
         await pat
             .populate({
                 user: tokenUserId,

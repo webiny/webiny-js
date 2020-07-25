@@ -1,13 +1,13 @@
 import { Response, NotFoundResponse } from "@webiny/commodo-graphql";
 
 export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
-    const { user } = context;
+    const identity = context.security.getIdentity();
 
-    if (user) {
+    if (identity) {
         const { SecurityUser } = context.models;
-        const instance = await SecurityUser.findById(user.id);
+        const instance = await SecurityUser.findById(identity.id);
         if (!instance) {
-            return new NotFoundResponse(`User with ID ${user.id} was not found!`);
+            return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
         }
 
         return new Response(instance);
