@@ -22,7 +22,7 @@ const PROJECT_FOLDER = ".";
     const apiStateFile = getState("api");
     const appsStateFile = getState("apps");
 
-    cypressConfig.baseUrl = appsStateFile.outputs.cdn.url;
+    cypressConfig.baseUrl = appsStateFile.outputs.cdn.url + "/admin";
     cypressConfig.env.SITE_URL = appsStateFile.outputs.cdn.url;
     cypressConfig.env.ADMIN_URL = appsStateFile.outputs.cdn.url + "/admin";
     cypressConfig.env.API_URL = apiStateFile.outputs.cdn.url;
