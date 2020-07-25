@@ -1,15 +1,13 @@
 import models from "./models";
 import graphql from "./graphql";
-// import security from "./security";
-// import { SecurityOptions } from "../types";
+import securityAuthenticationPlugins from "@webiny/api-security/plugins/authentication";
+import securityAuthJwtPlugins, { JwtAuthOptions } from "@webiny/api-security/plugins/auth/jwt";
+import securityAuthPatPlugins from "@webiny/api-security/plugins/auth/pat";
 
-export default options => [
+export default (options: JwtAuthOptions) => [
     models(),
-    graphql
-    // security(options),
-    // securityAuthenticationPlugins(), // context da
-    // securityAuthJwtPlugins({
-    // //ovdje je has-scope plugin + authN
-    //    secret: JWT_TOKEN_SIGN_SECRET
-    // })
+    graphql,
+    securityAuthenticationPlugins(),
+    securityAuthJwtPlugins(options),
+    securityAuthPatPlugins()
 ];
