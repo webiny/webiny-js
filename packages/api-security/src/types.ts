@@ -1,14 +1,13 @@
 import { Context, Plugin } from "@webiny/graphql/types";
 
-export interface SecurityIdentity {
+export type SecurityIdentity = {
     id: string;
-    email?: string;
     displayName: string;
-}
+} & { [key: string]: any };
 
 export type SecurityAuthenticationPlugin = Plugin & {
     type: "authentication";
-    authenticate(context: any): SecurityIdentity | Promise<SecurityIdentity>;
+    authenticate(context: any): Promise<null> | Promise<SecurityIdentity>;
 };
 
 export type SecurityAuthorizationPlugin = Plugin & {
