@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import SecurityError from "./SecurityError";
+import { ErrorResponse } from "@webiny/commodo-graphql";
 
 export default (scope: string) => {
     return (resolver: GraphQLFieldResolver) => {
@@ -11,7 +11,9 @@ export default (scope: string) => {
                 }
             }
 
-            return new SecurityError(`Not authorized (scope "${scope}" not found).`);
+            return new ErrorResponse({
+                message: `Not authorized (scope "${scope}" not found).`
+            });
         };
     };
 };
