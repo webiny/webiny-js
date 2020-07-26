@@ -25,9 +25,9 @@ class Item extends React.Component {
     }
 }
 
-const closeDialog = useCallback(() => {
+/*const closeDialog = useCallback(() => {
     deactivatePlugin({ name: "pb-editor-page-element-settings-advanced" });
-}, []);
+}, []);*/
 
 const SortableItem = sortable(Item);
 
@@ -76,7 +76,7 @@ const ImagesListImagesSettings = props => {
                                                 ))}
                                         </ul>
                                         <div className={style.addImagesButton}>
-                                            <ButtonPrimary onClick={showFileManager.then(closeDialog())}>
+                                            <ButtonPrimary onClick={showFileManager}>
                                                 Add images...
                                             </ButtonPrimary>
                                         </div>
