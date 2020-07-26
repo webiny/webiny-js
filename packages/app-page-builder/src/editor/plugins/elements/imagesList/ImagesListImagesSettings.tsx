@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect }  from "react";
-
+import * as React from "react";
 import { css } from "emotion";
 import { sortable } from "react-sortable";
 import { FileManager } from "@webiny/app-admin/components";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
 import File from "./File";
 
 const style = {
@@ -25,15 +23,10 @@ class Item extends React.Component {
     }
 }
 
-/*const closeDialog = useCallback(() => {
-    deactivatePlugin({ name: "pb-editor-page-element-settings-advanced" });
-}, []);*/
-
 const SortableItem = sortable(Item);
 
 const ImagesListImagesSettings = props => {
     const { Bind, form } = props;
-    console.log("location of ADD IMAGES button");
     return (
         <React.Fragment>
             <Grid>

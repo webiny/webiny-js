@@ -66,7 +66,7 @@ const AdvancedSettings = props => {
     useEffect(() => {
         open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
     });
-    console.log("Location of form dialog:::::")
+    
     return (
         <Dialog
             open={open}
