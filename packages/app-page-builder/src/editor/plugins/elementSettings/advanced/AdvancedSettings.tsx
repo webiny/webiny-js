@@ -66,7 +66,7 @@ const AdvancedSettings = props => {
     useEffect(() => {
         open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
     });
-    
+
     return (
         <Dialog
             open={open}
