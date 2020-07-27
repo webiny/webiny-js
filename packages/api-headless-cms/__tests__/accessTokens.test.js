@@ -16,7 +16,6 @@ describe("Environments test", () => {
     });
 
     it("should create an Access Token", async () => {
-        const aa = 123;
         let [{ data }] = await invoke({
             body: {
                 query: CREATE_ACCESS_TOKEN,
