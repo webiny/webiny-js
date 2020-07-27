@@ -49,16 +49,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                 });
             },
             get contentModels() {
-                // TODO [Andrei]: after fixing .find({}), remove these comments
-
-                return CmsContentModel.find({}).then(contentModels => {
-                    console.log(`Found ${contentModels.length} content models...`);
-                    console.log(
-                        contentModels.map(model => ({ id: model.id, modelId: model.modelId }))
-                    );
-
-                    return contentModels;
-                });
+                return CmsContentModel.find();
             }
         }),
         withHooks({
