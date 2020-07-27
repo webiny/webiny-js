@@ -31,8 +31,14 @@ jobs:
         run: yarn build
 
       - uses: doitadrian/action-post-run@1.0.0
+        id: webiny-remove-apps
         with:
-          command: yarn webiny remove apps --env prod && yarn webiny remove api --env prod
+          command: yarn webiny remove apps --env prod
+
+      - uses: doitadrian/action-post-run@1.0.0
+          id: webiny-remove-api
+          with:
+            command: yarn webiny remove api --env prod
 
       - name: Deploy API stack
         run: yarn webiny deploy api --env prod
