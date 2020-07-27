@@ -1,4 +1,4 @@
-import { SecurityIdentity } from "@webiny/api-security/utils";
+import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 
 const getAuthorizationToken = context => {
     const [event] = context.args;
@@ -25,11 +25,11 @@ export default {
             return;
         }
 
-        return new SecurityIdentity({
+        return {
             id: token.id,
             displayName: token.name,
             email: "",
             scopes: token.scopes
-        });
+        };
     }
-};
+} as SecurityAuthenticationPlugin;
