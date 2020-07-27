@@ -8,6 +8,7 @@ import useContentHandler from "./useContentHandler";
 import useContext from "./useContext";
 import useSchema from "./useSchema";
 import applyMongoDb from "./mongodb";
+import useDataManagerHandler from "./useDataManagerHandler";
 
 export const createUtils = (plugins = []) => {
     const utilsId = Date.now();
@@ -19,6 +20,7 @@ export const createUtils = (plugins = []) => {
             useApolloHandler: useApolloHandler(plugins),
             useContentHandler: useContentHandler(plugins),
             useContext: useContext(plugins),
+            useDataManagerHandler: useDataManagerHandler(plugins),
             useSchema: useSchema(plugins)
         })
     );
