@@ -85,7 +85,7 @@ type Props = {
 export default React.memo(
     function File(props: Props) {
         const { file, selected, onSelect, children, showFileDetails } = props;
-
+        console.log(file);
         return (
             <div className={styles}>
                 <div className={"body"}>
@@ -105,7 +105,8 @@ export default React.memo(
                     </LazyLoad>
                 </div>
                 <div className={"label"} onClick={onSelect}>
-                    {file.name}
+                    FILE NAME: {file.name}
+                    
                 </div>
             </div>
         );

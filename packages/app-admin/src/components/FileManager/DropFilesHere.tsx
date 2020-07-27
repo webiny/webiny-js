@@ -51,6 +51,8 @@ export type DropFilesHereProps = {
 };
 
 export default function DropFilesHere({ onDrop, onDragLeave, empty, onClick }: DropFilesHereProps) {
+    console.log("DropFilesHere:::::");
+    console.log(onDrop);
     return (
         <div
             className={classNames(styles, { empty })}
