@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/content";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
-import securityAuthenticationPlugins from "@webiny/api-security/plugins/authentication";
+import securityAuthPlugins from "@webiny/api-security/plugins/auth";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 import i18n from "@webiny/api-i18n/plugins/i18n";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
@@ -37,7 +37,7 @@ const useContentHandler = ({ database, type = "manage" } = {}) => {
         i18n,
         mockLocalesPlugins(),
         headlessCmsHandler({ server: { introspection: true } }),
-        securityAuthenticationPlugins(),
+        securityAuthPlugins(),
         securityAuthJwtPlugins({
             secret: JWT_TOKEN_SIGN_SECRET
         }),

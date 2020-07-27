@@ -6,7 +6,7 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
-import securityAuthenticationPlugins from "@webiny/api-security/plugins/authentication";
+import securityAuthPlugins from "@webiny/api-security/plugins/auth";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 
 export default ({ database } = {}) => {
@@ -19,7 +19,7 @@ export default ({ database } = {}) => {
             neDb({ database }),
             apolloServerPlugins(),
             headlessCmsPlugins(),
-            securityAuthenticationPlugins(),
+            securityAuthPlugins(),
             securityAuthJwtPlugins({
                 secret: JWT_TOKEN_SIGN_SECRET
             }),

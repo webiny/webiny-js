@@ -4,7 +4,7 @@ import { Database } from "@commodo/fields-storage-nedb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-files/plugins";
 import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
-import securityAuthenticationPlugins from "@webiny/api-security/plugins/authentication";
+import securityAuthPlugins from "@webiny/api-security/plugins/auth";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
 
@@ -17,7 +17,7 @@ export default ({ database } = {}) => {
     const handler = createHandler(
         neDb({ database }),
         apolloServerPlugins(),
-        securityAuthenticationPlugins(),
+        securityAuthPlugins(),
         securityAuthJwtPlugins({
             secret: JWT_TOKEN_SIGN_SECRET
         }),
