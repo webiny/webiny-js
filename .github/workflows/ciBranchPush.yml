@@ -31,7 +31,6 @@ jobs:
         run: yarn build
 
       - uses: doitadrian/action-post-run@1.0.0
-        id: Remove cloud resources
         with:
           command: yarn webiny remove apps --env prod && yarn webiny remove api --env prod
 
