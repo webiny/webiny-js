@@ -22,6 +22,10 @@ class ServerlessFunction extends Component {
             }
         }
 
+        if (!inputs.timeout) {
+            inputs.timeout = 30;
+        }
+
         const lambda = await this.load("@webiny/serverless-aws-lambda");
         const output = await lambda(inputs);
 
