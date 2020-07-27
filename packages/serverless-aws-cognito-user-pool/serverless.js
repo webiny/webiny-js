@@ -17,16 +17,24 @@ class ServerlessAwsCognito extends Component {
             this.context.instance.debug("Input was not changed, no action required.");
             return this.state.output;
         }
-
+        let schemaConfig = []
         const {
             region = "us-east-1",
             name,
             tags = {},
             appClients = [],
-            allowSignup = false
+            allowSignup = false,
+            schema
         } = inputs;
         const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
-
+        const usernameAttributes = inputs.usernameAttributes ? inputs.usernameAttributes : ["email"]
+        if(schema){
+            if(Array.isArray(schema)){
+                schemaConfig = [...schema]
+            }else{
+                throw Error(`Schema attributes needs to be passed in array.`);
+            }
+        }
         const cognito = new Cognito({ region });
         this.state.output = this.state.output || { appClients: [] };
 
@@ -139,13 +147,14 @@ class ServerlessAwsCognito extends Component {
                         Mutable: true,
                         Name: "given_name",
                         Required: true
-                    }
+                    },
+                    ...schemaConfig
                 ],
                 UserPoolAddOns: {
                     AdvancedSecurityMode: "OFF" /* required */
                 },
                 UserPoolTags: Object.assign({}, tags),
-                UsernameAttributes: ["email"],
+                UsernameAttributes: [...usernameAttributes],
                 VerificationMessageTemplate: {
                     DefaultEmailOption: "CONFIRM_WITH_CODE"
                 }
