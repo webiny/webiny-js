@@ -80,10 +80,11 @@ type Props = {
 
 export default function File(props: Props) {
     const { file, onSelect, onRemove } = props;
-
+    console.log("the image list file::::::::::::::::::::");
     return (
         <div className={styles}>
             <div className={"body"}>
+                <h1>CHEKCING FILE DISPLAY</h1>
                 <div className={"infoIcon"}>
                     <RemoveIcon onClick={onRemove} />
                 </div>
