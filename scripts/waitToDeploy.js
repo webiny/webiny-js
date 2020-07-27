@@ -1,9 +1,9 @@
 const got = require("got");
 const getState = require("./getState");
 
-const wait = () => {
+const wait = (timeout = 10000) => {
     return new Promise(resolve => {
-        setTimeout(resolve, 10000);
+        setTimeout(resolve, timeout);
     });
 };
 
@@ -38,7 +38,7 @@ const ping = async () => {
     }
 
     // Success, let's still wait a bit, just in case.
-    await wait();
+    await wait(30000);
     console.log("✅ Site deployed and ready!");
     process.exit(0);
 };
