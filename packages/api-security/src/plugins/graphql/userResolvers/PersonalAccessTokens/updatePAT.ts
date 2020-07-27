@@ -1,6 +1,5 @@
 import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security/utils";
 
 export default async (root, args, context) => {
     const identity = context.security.getIdentity();
@@ -20,7 +19,7 @@ export default async (root, args, context) => {
         const patUser = await pat.user;
         if (patUser.id !== currentUserId) {
             // TODO: Won't work because on all solutions, fix this.
-            const canUpdateToken = hasScope("security:user:crud", identity.scopes);
+            const canUpdateToken = context.security.hasScope("security:user:crud");
             if (!canUpdateToken) {
                 throw new Error(
                     "Cannot get user's personal access token's value - insufficient permissions."

@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { NotFoundResponse } from "@webiny/graphql";
 import { ErrorResponse } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security/utils";
 
 const generateToken = (tokenLength = 48) =>
     crypto
@@ -24,8 +23,7 @@ export default async (root, args, context) => {
         if (!otherUserId) {
             tokenUserId = identity.id;
         } else {
-            // TODO: Won't work because on all solutions, fix this.
-            const canAssignUser = hasScope("security:user:crud", identity.scopes);
+            const canAssignUser = context.security.hasScope("security:user:crud");
             if (!canAssignUser) {
                 return new ErrorResponse({
                     message:
