@@ -4,8 +4,13 @@ const writeJson = require("write-json-file");
 const fs = require("fs");
 const { green } = require("chalk");
 const getState = require("./getState");
+const { argv } = require("yargs");
 
 const PROJECT_FOLDER = ".";
+
+const params = {
+    env: argv.env || "prod"
+};
 
 (async () => {
     const cypressExampleConfigPath = path.resolve(PROJECT_FOLDER, "example.cypress.json");
@@ -19,8 +24,8 @@ const PROJECT_FOLDER = ".";
 
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
-    const apiStateFile = getState("api");
-    const appsStateFile = getState("apps");
+    const apiStateFile = getState("api", params.env);
+    const appsStateFile = getState("apps", params.env);
 
     cypressConfig.baseUrl = appsStateFile.outputs.cdn.url + "/admin";
     cypressConfig.env.SITE_URL = appsStateFile.outputs.cdn.url;
