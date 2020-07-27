@@ -9,15 +9,21 @@ const { argv } = require("yargs");
 const PROJECT_FOLDER = ".";
 
 const params = {
-    env: argv.env || "prod"
+    env: argv.env || "prod",
+    force: argv.force || false
 };
 
 (async () => {
     const cypressExampleConfigPath = path.resolve(PROJECT_FOLDER, "example.cypress.json");
     const cypressConfigPath = path.resolve(PROJECT_FOLDER, "cypress.json");
     if (fs.existsSync(cypressConfigPath)) {
-        console.log(`⚠️  ${green("cypress.json")} already exists, skipping.`);
-        return;
+        if (params.force) {
+            fs.unlinkSync(cypressConfigPath);
+            fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
+        } else {
+            console.log(`⚠️  ${green("cypress.json")} already exists, skipping.`);
+            process.exit(0);
+        }
     } else {
         fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
     }
