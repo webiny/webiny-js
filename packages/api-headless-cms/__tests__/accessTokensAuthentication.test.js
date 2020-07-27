@@ -50,7 +50,7 @@ describe("Access Tokens Authentication Test", () => {
             }
         });
 
-        expect(body.errors[0].message).toBe(
+        expect(body.data.listProducts.error.message).toBe(
             `Not authorized (scope "cms:read:initial-environment:product" not found).`
         );
 
