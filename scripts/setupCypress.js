@@ -13,6 +13,11 @@ const params = {
     force: argv.force || false
 };
 
+/**
+ * Prepares cypress.json config by reading values from state files and populating necessary variables.
+ * Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
+ * Pass "--force" if you want to allow overwriting existing cypress.json config file.
+ */
 (async () => {
     const cypressExampleConfigPath = path.resolve(PROJECT_FOLDER, "example.cypress.json");
     const cypressConfigPath = path.resolve(PROJECT_FOLDER, "cypress.json");
