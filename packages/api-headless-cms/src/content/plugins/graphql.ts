@@ -127,7 +127,6 @@ export default () => [
                     layout: [[String]]
                     createdOn: DateTime
                     savedOn: DateTime
-                    createdBy: SecurityUser
                     titleFieldId: String
                     fields: [CmsContentModelField]
                     totalFields: Int

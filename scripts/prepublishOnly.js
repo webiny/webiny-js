@@ -1,6 +1,8 @@
 const path = require("path");
 const get = require("lodash.get");
 const fs = require("fs-extra");
+const loadJson = require("load-json-file");
+const writeJson = require("write-json-file");
 
 (async () => {
     // Copy package.json files
@@ -27,19 +29,37 @@ const fs = require("fs-extra");
                 continue;
             }
 
-            const targetDirectory = get(pkg, "publishConfig.directory");
-            if (targetDirectory === ".") {
+            const distDirectoryName = get(pkg, "publishConfig.directory");
+            const distDirectory = path.resolve(packages[i], distDirectoryName);
+
+            const distPackageJson = path.join(distDirectory, "package.json");
+
+            // Copy package.json only if dist directory is different from package root
+            if (distDirectoryName !== ".") {
+                if (fs.existsSync(distPackageJson)) {
+                    await fs.unlink(distPackageJson);
+                }
+
+                await fs.copyFile(packageJson, distPackageJson);
+            }
+
+            // Lock dependency versions
+            const lockPackageJson = await loadJson(distPackageJson);
+            if (!lockPackageJson.dependencies) {
                 continue;
             }
 
-            const target = path.resolve(packages[i], targetDirectory);
+            Object.keys(lockPackageJson.dependencies)
+                .filter(key => !key.startsWith("@webiny"))
+                .forEach(key => {
+                    const pkgJsonPath = require.resolve(`${key}/package.json`, {
+                        paths: [distDirectory]
+                    });
+                    const { version } = require(pkgJsonPath);
+                    lockPackageJson.dependencies[key] = version;
+                });
 
-            const distPackageJson = path.join(target, "package.json");
-            if (fs.existsSync(distPackageJson)) {
-                await fs.unlink(distPackageJson);
-            }
-
-            await fs.copyFile(packageJson, path.join(target, "package.json"));
+            await writeJson(distPackageJson, lockPackageJson);
         } catch (err) {
             console.log(`Failed ${packages[i].name}: ${err.message}`);
             throw err;

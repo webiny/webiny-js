@@ -3,6 +3,106 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** do not update root tsconfig.json during project creation ([a6c68a5](https://github.com/webiny/webiny-js/commit/a6c68a5cfb17f83eb663b9e083e1adf88cc7265a))
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** uncomment setup steps and remove debug logging ([0c590fd](https://github.com/webiny/webiny-js/commit/0c590fd81cadce843d66feff4eead15b246c34aa))
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([15214da](https://github.com/webiny/webiny-js/commit/15214da467cb30c46a0a0f759786e79d7714cb6f))
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** improve CWP code structure and logging ([aeff646](https://github.com/webiny/webiny-js/commit/aeff6467a2186e1df7ea3778f7370eb8806b3cf7))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package create-webiny-project

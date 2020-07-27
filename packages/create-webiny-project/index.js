@@ -109,7 +109,7 @@ async function createApp({ projectName, template, tag, log }) {
         throw Error("You must provide a name for the project to use.");
     }
 
-    const root = path.resolve(projectName);
+    const root = path.resolve(projectName).replace(/\\/g, "/");
     const appName = path.basename(root);
 
     if (fs.existsSync(root)) {
@@ -244,7 +244,7 @@ async function createApp({ projectName, template, tag, log }) {
                     path.join(root, "package.json"),
                     JSON.stringify(appPackage, null, 2) + os.EOL
                 );
-                execa.sync("rm", [path.join(root, "dependencies.json")]);
+                fs.unlinkSync(path.join(root, "dependencies.json"));
             }
         },
         {
@@ -263,56 +263,53 @@ async function createApp({ projectName, template, tag, log }) {
             title: "Get proper package versions",
             task: async () => {
                 // Set proper @webiny package versions
-                const workspaces = await fg(["**!/package.json"], {
+                const workspaces = await fg(["**/package.json"], {
                     ignore: ["**/dist/**", "**/node_modules/**", root],
                     cwd: root
                 });
                 const latestVersion = await getPackageVersion("@webiny/cli", tag);
 
-                await Promise.all(
-                    workspaces.map(async jsonPath => {
-                        const relativeJsonPath = jsonPath;
-                        jsonPath = path.join(root, jsonPath);
-                        const json = await loadJsonFile(jsonPath);
-                        const keys = Object.keys(json.dependencies).filter(k =>
-                            k.startsWith("@webiny")
-                        );
-                        const currentDir = jsonPath.match(/(.*)[\/\\]/)[1] || "";
+                for (let i = 0; i < workspaces.length; i++) {
+                    const jsonPath = path.join(root, workspaces[i]);
+                    const json = await loadJsonFile(jsonPath);
+                    const keys = Object.keys(json.dependencies).filter(k =>
+                        k.startsWith("@webiny")
+                    );
+                    const currentDir = jsonPath.match(/(.*)[\/\\]/)[1] || "";
 
-                        const baseTsConfigPath = path
-                            .relative(
-                                currentDir,
-                                findUp.sync("tsconfig.json", {
-                                    cwd: root
-                                })
-                            )
-                            .replace(/\\/g, "/");
+                    const baseTsConfigPath = path
+                        .relative(
+                            currentDir,
+                            findUp.sync("tsconfig.json", {
+                                cwd: root
+                            })
+                        )
+                        .replace(/\\/g, "/");
 
-                        // We don't want to modify tsconfig file in the root of the project
-                        if (relativeJsonPath !== "package.json") {
-                            const tsConfigPath = path.join(currentDir, "tsconfig.json");
-                            const tsconfig = require(tsConfigPath);
-                            tsconfig.extends = baseTsConfigPath;
-                            fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                    // We don't want to modify tsconfig file in the root of the project
+                    if (workspaces[i] !== "package.json") {
+                        const tsConfigPath = path.join(currentDir, "tsconfig.json");
+                        const tsconfig = require(tsConfigPath);
+                        tsconfig.extends = baseTsConfigPath;
+                        fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+                    }
+
+                    keys.forEach(name => {
+                        if (tag.startsWith(".")) {
+                            // This means `tag` points to the location of all @webiny packages
+                            json.dependencies[name] =
+                                "link:" +
+                                path.relative(
+                                    path.dirname(jsonPath),
+                                    path.join(process.cwd(), tag, name)
+                                );
+                        } else {
+                            // Use version of @webiny/cli package (we have fixed package versioning)
+                            json.dependencies[name] = `^` + latestVersion;
                         }
-
-                        keys.forEach(name => {
-                            if (tag.startsWith(".")) {
-                                // This means `tag` points to the location of all @webiny packages
-                                json.dependencies[name] =
-                                    "link:" +
-                                    path.relative(
-                                        path.dirname(jsonPath),
-                                        path.join(process.cwd(), tag, name)
-                                    );
-                            } else {
-                                // Use version of @webiny/cli package (we have fixed package versioning)
-                                json.dependencies[name] = `^` + latestVersion;
-                            }
-                        });
-                        await writeJsonFile(jsonPath, json);
-                    })
-                );
+                    });
+                    await writeJsonFile(jsonPath, json);
+                }
             }
         },
         {
@@ -325,7 +322,7 @@ async function createApp({ projectName, template, tag, log }) {
                 // will be set up to use your local packages via symlinks, so you can develop and test immediately.
                 try {
                     if (tag.startsWith(".")) {
-                        const webinyPackages = await fg(["@webiny/!*"], {
+                        const webinyPackages = await fg(["@webiny/*"], {
                             cwd: path.join(process.cwd(), tag),
                             onlyDirectories: true
                         });

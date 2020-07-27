@@ -137,7 +137,7 @@
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier --config .prettierrc.js --write",
-    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts}\" --check --config .prettierrc.js",
+    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",

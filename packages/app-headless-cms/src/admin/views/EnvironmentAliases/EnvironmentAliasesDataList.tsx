@@ -8,7 +8,6 @@ import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { Typography } from "@webiny/ui/Typography";
 import ApiUrlsDialog from "@webiny/app-headless-cms/admin/components/ApiUrlsDialog";
 
-
 import {
     DataList,
     List,
@@ -23,15 +22,13 @@ import { Link } from "@webiny/react-router";
 const t = i18n.ns("app-headless-cms/admin/environmentAliases/data-list");
 
 const style = {
-    informationLabel: css({
-        color: "var(--mdc-theme-primary)"
-    }),
     icon: css({
-        color: "rgba(255, 255, 255, 0.54)",
+        color: "var(--mdc-theme-text-secondary-on-background)",
         width: 16,
         height: 16,
-        marginTop: "4px",
-        marginLeft: "10px"
+        marginTop: "5px",
+        marginLeft: "10px",
+        fill: "currentColor"
     }),
     environmentText: css({
         display: "flex",
@@ -71,28 +68,29 @@ const EnvironmentAliasesDataList = () => {
         >
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
-                    {
-                        selectedInfo.name &&
-                            <ApiUrlsDialog
-                                open={infoOpened}
-                                onClose={() => setInfoOpened(false)}
-                                name={selectedInfo.name}
-                                type="aliases"
-                            />
-                    }
+                    {selectedInfo.name && (
+                        <ApiUrlsDialog
+                            open={infoOpened}
+                            onClose={() => setInfoOpened(false)}
+                            name={selectedInfo.name}
+                            type="aliases"
+                        />
+                    )}
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
                                 <div className={style.environmentText}>
                                     {item.name}{" "}
-                                    <Typography use={"caption"} className={style.informationLabel}>
-                                        <div onClick={e => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setInfoOpened(true);
-                                            setSelectedInfo(item);
-                                        }}>
-                                            <InformationIcon className={style.icon}/>
+                                    <Typography use={"caption"}>
+                                        <div
+                                            onClick={e => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setInfoOpened(true);
+                                                setSelectedInfo(item);
+                                            }}
+                                        >
+                                            <InformationIcon className={style.icon} />
                                         </div>
                                     </Typography>
                                 </div>

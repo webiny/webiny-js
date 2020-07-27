@@ -8,9 +8,7 @@ export default {
     name: "pb-editor-page-element-settings-margin",
     type: "pb-editor-page-element-settings",
     renderAction() {
-        return (
-            <Action tooltip={"Margin"} plugin={this.name} icon={<MarginIcon />} />
-        );
+        return <Action tooltip={"Margin"} plugin={this.name} icon={<MarginIcon />} />;
     },
     renderMenu() {
         return <Settings title="Margin" styleAttribute="margin" />;

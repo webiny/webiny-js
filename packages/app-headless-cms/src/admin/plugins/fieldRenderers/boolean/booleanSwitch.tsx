@@ -1,9 +1,8 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { Switch } from "@webiny/ui/Switch";
 import get from "lodash/get";
-
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/boolean");
 
@@ -21,18 +20,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind }) {
+        render({ field, getBind, locale }) {
             const Bind = getBind();
+            const { getValue } = useI18N();
+
+            const label = getValue(field.label, locale);
+            const helpText = getValue(field.helpText, locale);
 
             return (
                 <Bind>
-                    {bindProps => (
-                        <Switch
-                            {...bindProps}
-                            label={I18NValue({ value: field.label })}
-                            description={I18NValue({ value: field.helpText })}
-                        />
-                    )}
+                    {bindProps => <Switch {...bindProps} label={label} description={helpText} />}
                 </Bind>
             );
         }

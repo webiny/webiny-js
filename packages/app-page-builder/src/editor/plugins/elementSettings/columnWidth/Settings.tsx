@@ -12,7 +12,7 @@ import { Form } from "@webiny/form";
 
 import { updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import {PbShallowElement} from "@webiny/app-page-builder/types";
+import { PbShallowElement } from "@webiny/app-page-builder/types";
 
 const validateWidth = value => {
     if (!value) {
@@ -79,7 +79,6 @@ class Settings extends React.Component<SettingsProps> {
     }
 }
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(Settings);
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(Settings);

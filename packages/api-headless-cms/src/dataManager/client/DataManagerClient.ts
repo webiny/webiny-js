@@ -35,6 +35,15 @@ export class DataManagerClient implements CmsDataManager {
         });
     }
 
+    async deleteRevisionIndexes({ revision }: any) {
+        await this.invokeDataManager({
+            environment: this.context.cms.getEnvironment().id,
+            action: "deleteRevisionIndexes",
+            contentModel: revision.contentModel.modelId,
+            revision: revision.id
+        });
+    }
+
     async generateContentModelIndexes({ contentModel }: { contentModel: CmsContentModel }) {
         return await this.invokeDataManager({
             environment: this.context.cms.getEnvironment().id,

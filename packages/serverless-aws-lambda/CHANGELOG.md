@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/serverless-aws-lambda
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* **serverless-aws-lambda:** remove credentials from client instantiation ([43528da](https://github.com/webiny/webiny-js/commit/43528da21691319d5d73be4b855a3e38b260668c))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/serverless-aws-lambda

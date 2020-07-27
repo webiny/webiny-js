@@ -29,5 +29,5 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
         description: "Create forms using a drag and drop interface and track conversions.",
         title: "Form Builder"
     }
-}
+};
 export default plugin;
