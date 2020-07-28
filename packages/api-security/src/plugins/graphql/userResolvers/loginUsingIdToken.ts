@@ -12,12 +12,12 @@ const invalidCredentials = new ErrorResponse({
 
 const generateJWT = async (user, context: Context) => {
     const expiresOn = new Date();
-    expiresOn.setSeconds(expiresOn.getSeconds() + parseInt(context.security.token.expiresIn));
+    expiresOn.setSeconds(expiresOn.getSeconds() + parseInt(context.security.jwt.expiresIn));
 
     // Convert to seconds to represent "number of seconds since the epoch"
     const seconds = Math.floor(expiresOn.getTime() / 1000);
 
-    const jwt = new JwtToken({ secret: context.security.token.secret });
+    const jwt = new JwtToken({ secret: context.security.jwt.secret });
     const access = await user.access;
 
     let payload: JWTPayload = {
