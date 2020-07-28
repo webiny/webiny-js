@@ -59,14 +59,15 @@ context("Pages Creation", () => {
             cy.findByText(/Confirm/i).click();
         });
 
-        // Let's wait a bit for the CDN cache to be flushed.
-        // TODO: should use "reloadUntil" command here.
-        cy.wait(45000);
-
         cy.findByTestId("pb-page-details").within(() => {
             cy.findByTestId("pb-page-details-header-page-options-menu").click();
         });
         cy.findByTestId("pb-page-details-header-page-options-menu-preview").click();
+
+        cy.reloadUntil(() => {
+            const [title] = Cypress.$('title');
+            return title.innerText.includes(pageTitle2);
+        });
 
         cy.title().should("contain", pageTitle2);
     });
