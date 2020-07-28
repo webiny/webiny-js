@@ -5,14 +5,9 @@ export type SecurityIdentity = {
     displayName: string;
 } & { [key: string]: any };
 
-export type SecurityAuthenticationPlugin = Plugin & {
-    type: "authentication";
+export type SecurityPlugin = Plugin & {
+    type: "security";
     authenticate(context: any): Promise<null> | Promise<SecurityIdentity>;
-};
-
-export type SecurityAuthorizationPlugin = Plugin & {
-    type: "authorization";
-    hasScope(context: any): boolean | Promise<boolean>;
 };
 
 export type JWTPayload = { [key: string]: any };
