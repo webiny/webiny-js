@@ -10,9 +10,7 @@ export default context => baseFn => {
                 return context.security && context.security.getIdentity();
             },
             getUserId() {
-                return context.security && context.security.getIdentity()
-                    ? context.security.getIdentity().id
-                    : null;
+                return this.getUser() && this.getUser().id;
             }
         }),
         withFields({

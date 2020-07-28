@@ -1,12 +1,9 @@
 import { JwtToken } from "./jwtToken";
 import { Context } from "@webiny/graphql/types";
-import { hasScope } from "@webiny/api-security/utils";
+import { SecurityIdentity } from "@webiny/api-security";
 
 const isJwt = token => token.split(".").length === 3; // All JWTs are split into 3 parts by two periods
-import {
-    SecurityAuthenticationPlugin,
-    SecurityAuthorizationPlugin
-} from "@webiny/api-security/types";
+import { SecurityPlugin } from "@webiny/api-security/types";
 
 export type JwtAuthOptions = {
     secret: string;
@@ -21,7 +18,7 @@ export default (options: JwtAuthOptions) => [
         }
     },
     {
-        type: "authentication",
+        type: "security",
         name: "authentication-jwt",
         async authenticate(context: Context) {
             const [event] = context.args;
@@ -39,26 +36,14 @@ export default (options: JwtAuthOptions) => [
                     const jwt = new JwtToken({ secret: options.secret });
                     user = (await jwt.decode(token)).data;
 
-                    return {
+                    return new SecurityIdentity({
                         id: user.id,
                         email: user.email,
                         displayName: user.displayName,
                         scopes: user.scopes
-                    };
+                    });
                 }
             }
         }
-    } as SecurityAuthenticationPlugin,
-    {
-        type: "authorization",
-        name: "authorization-identity-default-scopes",
-        hasScope: ({ context, scope }) => {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                return;
-            }
-
-            return Array.isArray(identity.scopes) && hasScope(scope, identity.scopes);
-        }
-    } as SecurityAuthorizationPlugin
+    } as SecurityPlugin
 ];

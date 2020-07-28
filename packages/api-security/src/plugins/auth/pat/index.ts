@@ -1,10 +1,7 @@
 import LambdaClient from "aws-sdk/clients/lambda";
 import { Context } from "@webiny/graphql/types";
-import { hasScope } from "@webiny/api-security/utils";
-import {
-    SecurityAuthenticationPlugin,
-    SecurityAuthorizationPlugin
-} from "@webiny/api-security/types";
+import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityPlugin } from "@webiny/api-security/types";
 
 type PatAuthOptions = {
     validateAccessTokenFunction?: string;
@@ -12,7 +9,7 @@ type PatAuthOptions = {
 
 export default (options: PatAuthOptions = {}) => [
     {
-        type: "authentication",
+        type: "security",
         async authenticate(context: Context) {
             const [event] = context.args;
             const { headers = {} } = event;
@@ -40,12 +37,12 @@ export default (options: PatAuthOptions = {}) => [
                 }
 
                 const access = await user.access;
-                return {
+                return new SecurityIdentity({
                     id: user.id,
                     email: user.email,
                     displayName: user.fullName,
                     scopes: access.scopes
-                };
+                });
             }
 
             try {
@@ -69,17 +66,5 @@ export default (options: PatAuthOptions = {}) => [
                 return null;
             }
         }
-    } as SecurityAuthenticationPlugin,
-    {
-        type: "authorization",
-        name: "authorization-identity-default-scopes",
-        hasScope: ({ context, scope }) => {
-            const identity = context.security.getIdentity();
-            if (!identity) {
-                return;
-            }
-
-            return Array.isArray(identity.scopes) && hasScope(scope, identity.scopes);
-        }
-    } as SecurityAuthorizationPlugin
+    } as SecurityPlugin
 ];
