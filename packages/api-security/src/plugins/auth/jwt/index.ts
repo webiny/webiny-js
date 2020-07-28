@@ -14,6 +14,12 @@ export type JwtAuthOptions = {
 
 export default (options: JwtAuthOptions) => [
     {
+        type: "context",
+        apply(context) {
+            context.security.jwt = options;
+        }
+    },
+    {
         type: "authentication",
         name: "authentication-jwt",
         async authenticate(context: Context) {
