@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* **headless:** add style for material icon ([6fcc7ea](https://github.com/webiny/webiny-js/commit/6fcc7eabeb24cf2a77e8925f268e714d76285a14))
+* **headless:** change tooltip to focus on icon instead of text ([2455748](https://github.com/webiny/webiny-js/commit/2455748d6713c5bc3f701a3b2b99a42c2d645b68))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package @webiny/app-admin

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* **storybook-utils:** enforce string when executing prettier format ([58addbe](https://github.com/webiny/webiny-js/commit/58addbe9098e2be6c8da1376bba197c2ced6248e))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package @webiny/storybook-utils

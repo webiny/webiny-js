@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* `commit messages` link ([a019b25](https://github.com/webiny/webiny-js/commit/a019b2581d9f230b6e162b945d22336d2ec8a7f9))
+* add "--silent" when using env-cmd ([eaa9d15](https://github.com/webiny/webiny-js/commit/eaa9d15ce4adc6570b4b49e1c9223da1eaadb9d1))
+* contributing doc ([8d47145](https://github.com/webiny/webiny-js/commit/8d4714534c51848bd53366eefdb979d657167861))
+* copy message ([dfea698](https://github.com/webiny/webiny-js/commit/dfea6981517955a5ba7e6bf6554a95ccba4de265))
+* move "--silent" flag after the filename ([0e790ab](https://github.com/webiny/webiny-js/commit/0e790abffaa1a2eb1a317620b6d4a97f0e0358a9))
+* prepend empty object when doing merge.recursive ([9f677b3](https://github.com/webiny/webiny-js/commit/9f677b323409b9ce5933fbdb04d8f0adf58881e9))
+* **headless:** add new environment alias in apollo cache ([461468a](https://github.com/webiny/webiny-js/commit/461468a92ff952c1fa3bb901e586e5aa30b5281b))
+* **headless:** add refetch for environment aliases ([29adbf6](https://github.com/webiny/webiny-js/commit/29adbf63a6f795d1d0eadaf35fb365ed745c80a9))
+* **headless:** add style for material icon ([6fcc7ea](https://github.com/webiny/webiny-js/commit/6fcc7eabeb24cf2a77e8925f268e714d76285a14))
+* **headless:** change tooltip to focus on icon instead of text ([2455748](https://github.com/webiny/webiny-js/commit/2455748d6713c5bc3f701a3b2b99a42c2d645b68))
+* **storybook-utils:** enforce string when executing prettier format ([58addbe](https://github.com/webiny/webiny-js/commit/58addbe9098e2be6c8da1376bba197c2ced6248e))
+
+
+### Features
+
+* **serverless-cognito-user-pool:** add support for username attributes and schema ([#1160](https://github.com/webiny/webiny-js/issues/1160)) ([fc9bebb](https://github.com/webiny/webiny-js/commit/fc9bebb2756106d1b0b9493189b9aec13994cf69))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package webiny-js
