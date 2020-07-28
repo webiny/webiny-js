@@ -18,7 +18,6 @@ export default async (root, args, context) => {
 
         const patUser = await pat.user;
         if (patUser.id !== currentUserId) {
-            // TODO: Won't work because on all solutions, fix this.
             const canUpdateToken = context.security.hasScope("security:user:crud");
             if (!canUpdateToken) {
                 throw new Error(
