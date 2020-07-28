@@ -10,6 +10,7 @@ import {
 
 export type JwtAuthOptions = {
     secret: string;
+    expiresIn?: string;
 };
 
 export default (options: JwtAuthOptions) => [
