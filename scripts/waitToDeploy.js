@@ -38,7 +38,7 @@ const ping = async () => {
     }
 
     // Success, let's still wait a bit, just in case.
-    await wait(30000);
+    await wait(60000);
     console.log("✅ Site deployed and ready!");
     process.exit(0);
 };
