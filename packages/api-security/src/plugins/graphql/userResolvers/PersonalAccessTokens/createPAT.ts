@@ -23,7 +23,7 @@ export default async (root, args, context) => {
         if (!otherUserId) {
             tokenUserId = identity.id;
         } else {
-            const canAssignUser = await identity.hasScope("security:user:crud");
+            const canAssignUser = await context.security.hasScope("security:user:crud");
             if (!canAssignUser) {
                 return new ErrorResponse({
                     message:

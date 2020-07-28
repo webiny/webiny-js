@@ -18,7 +18,7 @@ export default async (root, args, context) => {
 
         const patUser = await pat.user;
         if (patUser.id !== currentUserId) {
-            const canDeleteToken = await identity.hasScope("security:user:crud");
+            const canDeleteToken = await context.security.hasScope("security:user:crud");
             if (!canDeleteToken) {
                 return new ErrorResponse({
                     message:

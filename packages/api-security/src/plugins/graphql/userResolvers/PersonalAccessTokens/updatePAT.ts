@@ -18,7 +18,7 @@ export default async (root, args, context) => {
 
         const patUser = await pat.user;
         if (patUser.id !== currentUserId) {
-            const canUpdateToken = await identity.hasScope("security:user:crud");
+            const canUpdateToken = await context.security.hasScope("security:user:crud");
             if (!canUpdateToken) {
                 throw new Error(
                     "Cannot get user's personal access token's value - insufficient permissions."
