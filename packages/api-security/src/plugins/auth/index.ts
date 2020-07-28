@@ -11,10 +11,17 @@ export default () => [
                 identity: null,
                 getIdentity() {
                     return context.security.identity;
+                },
+                hasScope(scope: string) {
+                    if (!context.security.getIdentity()) {
+                        return false;
+                    }
+
+                    return context.security.getIdentity().hasScope(scope);
                 }
             };
 
-            const securityPlugins = context.plugins.byType<SecurityPlugin>("authentication");
+            const securityPlugins = context.plugins.byType<SecurityPlugin>("security");
 
             for (let i = 0; i < securityPlugins.length; i++) {
                 const identity = await securityPlugins[i].authenticate(context);
