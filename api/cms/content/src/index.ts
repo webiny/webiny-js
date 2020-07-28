@@ -7,6 +7,7 @@ import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import securityAuthPlugins from "@webiny/api-security/plugins/auth";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 import securityAuthPatPlugins from "@webiny/api-security/plugins/auth/pat";
+
 export const handler = createHandler(
     dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
