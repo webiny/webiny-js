@@ -8,10 +8,12 @@ if (!process.env.DEBUG.includes(WEBINY)) {
     process.env.DEBUG += `,${WEBINY}`;
 }
 
+const info = require("./info");
 const run = require("./run");
 
 module.exports.createCommands = (yargs, context) => {
     context.plugins.register(run);
+    context.plugins.register(info);
 
     context.loadUserPlugins();
 
