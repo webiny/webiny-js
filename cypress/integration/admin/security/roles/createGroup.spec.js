@@ -19,9 +19,9 @@ context("Groups Module", () => {
             .findByText("Save group")
             .click();
 
-        cy.wait(500)
-            .findByText("Record saved successfully.")
-            .should("exist");
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
 
         cy.findByLabelText("Slug")
             .should("disabled")
@@ -30,19 +30,21 @@ context("Groups Module", () => {
             .findByText("Save group")
             .click();
 
-        cy.wait(500)
-            .findByTestId("default-data-list")
-            .within(() => {
-                cy.get("div")
-                    .first()
-                    .within(() => {
-                        cy.findByText(`Test Group ${id}`)
-                            .should("exist")
-                            .findByText("This is a test test. Test test.")
-                            .should("exist");
-                        cy.get("button").click({ force: true });
-                    });
-            });
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
+
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(`Test Group ${id}`)
+                        .should("exist")
+                        .findByText("This is a test test. Test test.")
+                        .should("exist");
+                    cy.get("button").click({ force: true });
+                });
+        });
 
         cy.get('[role="alertdialog"] :visible').within(() => {
             cy.contains("Are you sure you want to continue?")
@@ -50,7 +52,7 @@ context("Groups Module", () => {
                 .within(() => cy.findByText("Confirm").click());
         });
 
-        cy.findByText("Record deleted successfully.").should("exist");
+        cy.findByText("Record deleted successfully.").should("exist").wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Test Group ${id}`).should("not.exist");
         });
@@ -67,8 +69,11 @@ context("Groups Module", () => {
             .findByLabelText("Description")
             .type("This is a test test.")
             .findByText("Save group")
-            .click()
-            .wait(1500);
+            .click();
+
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
 
         cy.findByTestId("new-record-button")
             .click()
