@@ -44,6 +44,7 @@ context("Pages Creation", () => {
 
         cy.findByTestId("pb-page-details")
             .within(() => {
+                cy.findAllByText(pageTitle1);
                 cy.findByTestId("pb-page-details-header-edit-revision").click();
             })
             .findByTestId("pb-editor-page-title")
@@ -65,7 +66,7 @@ context("Pages Creation", () => {
         cy.findByTestId("pb-page-details-header-page-options-menu-preview").click();
 
         cy.reloadUntil(() => {
-            const [title] = Cypress.$('title');
+            const [title] = Cypress.$("title");
             return title.innerText.includes(pageTitle2);
         });
 
