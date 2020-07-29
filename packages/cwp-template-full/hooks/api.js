@@ -26,12 +26,10 @@ module.exports = (opts = {}) => (
 
             const info = [];
             const stackEnvs = fs.readdirSync(`./.webiny/state/${stackName}`);
-            console.log(stackEnvs);
             for (const stackEnv of stackEnvs) {
                 const cdnJson = JSON.parse(
                     fs.readFileSync(`./.webiny/state/api/${stackEnv}/Webiny.cdn.json`).toString()
                 );
-                console.log(cdnJson);
                 const url = cdnJson.output.url;
 
                 info.push({ stack: stackName, env: stackEnv, url });
