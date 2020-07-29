@@ -29,7 +29,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "build:babel": "babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "build": "rimraf ./dist *.tsbuildinfo && yarn build:babel",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   }

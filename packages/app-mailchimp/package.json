@@ -46,7 +46,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "build:babel": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "build": "rimraf ./dist *.tsbuildinfo && yarn build:babel",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
