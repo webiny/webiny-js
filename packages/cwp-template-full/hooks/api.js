@@ -1,21 +1,54 @@
 const { green, blue } = require("chalk");
+const fs = require("fs");
 
-module.exports = (opts = {}) => ({
-    type: "hook-stack-after-deploy",
-    hook(params) {
-        const stackName = opts.stackName || "api";
+module.exports = (opts = {}) => (
+    {
+        type: "hook-stack-after-deploy",
+        hook(params) {
+            const stackName = opts.stackName || "api";
 
-        if (params.stack !== stackName) {
-            return;
+            if (params.stack !== stackName) {
+                return;
+            }
+
+            if (params.isFirstDeploy) {
+                printFirstDeploySummary(params);
+            } else {
+                printDeploySummary(params);
+            }
         }
+    },
+    {
+        name: "hook-stacks-info-api",
+        type: "hook-stacks-info",
+        hook() {
+            const stackName = opts.stackName || "api";
 
-        if (params.isFirstDeploy) {
-            printFirstDeploySummary(params);
-        } else {
-            printDeploySummary(params);
+            const info = [];
+            const stackEnvs = fs.readdirSync(`./.webiny/state/${stackName}`);
+            console.log(stackEnvs);
+            for (const stackEnv of stackEnvs) {
+                const cdnJson = JSON.parse(
+                    fs.readFileSync(`./.webiny/state/api/${stackEnv}/Webiny.cdn.json`).toString()
+                );
+                console.log(cdnJson);
+                const url = cdnJson.output.url;
+
+                info.push({ stack: stackName, env: stackEnv, url });
+            }
+            // TODO: do the same for "app" stacks in "./apps.js"
+            if (info.length) {
+                console.log(`  List of URLs for stack "${stackName}"`);
+                const prettyInfo = info
+                    .map(stackInfo => `${stackInfo.url} [env = "${stackInfo.env}"]`)
+                    .join("\n");
+                console.log(prettyInfo);
+            } else {
+                console.log(`There are no available URLs for stack ${stackName} yet.`);
+            }
         }
     }
-});
+);
 
 function printFirstDeploySummary({ state }) {
     const hasGraphQL = state.apolloGateway;
