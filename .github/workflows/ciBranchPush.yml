@@ -28,7 +28,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: yarn build
+        run: yarn build:babel
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -75,7 +75,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: yarn build
+        run: yarn build:babel
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -122,7 +122,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: yarn build
+        run: yarn build:babel
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -169,7 +169,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: yarn build
+        run: yarn build:babel
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -216,54 +216,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: yarn build
-
-      - uses: doitadrian/action-post-run@1.0.0
-        id: webiny-remove-apps
-        with:
-          command: yarn webiny remove apps --env prod
-
-      - uses: doitadrian/action-post-run@1.0.0
-        id: webiny-remove-api
-        with:
-          command: yarn webiny remove api --env prod
-
-      - name: Deploy API stack
-        run: yarn webiny deploy api --env prod
-
-      - name: Deploy Apps stack
-        run: yarn webiny deploy apps --env prod
-
-      - name: Setup Cypress config
-        run: yarn setup-cypress
-
-      - name: Wait for the site to be deployed...
-        run: node scripts/waitToDeploy
-
-      - name: Cypress - run Admin app installation test
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
-
-      - name: Cypress - run the rest of Admin app tests
-        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
-
-  build-test-release-6:
-    name: Build & test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: 12
-
-      - name: Install dependencies
-        run: yarn --frozen-lockfile
-
-      - name: Setup .env.json files
-        run: yarn setup-env-files:ci
-
-      - name: Build packages
-        run: yarn build
+        run: yarn build:babel
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
