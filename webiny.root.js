@@ -7,7 +7,8 @@ module.exports = {
             require("@webiny/cwp-template-full/hooks/apps")(),
             require("@webiny/cli-plugin-scaffold"),
             require("@webiny/cli-plugin-scaffold-graphql-service"),
-            require("@webiny/cli-plugin-scaffold-lambda")
+            require("@webiny/cli-plugin-scaffold-lambda"),
+            require("@webiny/cli-plugin-scaffold-app-graphql")
         ]
     }
 };
