@@ -116,7 +116,6 @@
   "scripts": {
     "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
     "build": "lerna run build --stream",
-    "build:experimental": "node scripts/build-packages",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
