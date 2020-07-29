@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
+
+
+### Bug Fixes
+
+* update `commodo` versions ([2a1f287](https://github.com/webiny/webiny-js/commit/2a1f287b6f933094250732e39aaf3861712f2f2f))
+
+
+
+
+
 # [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
 
 
