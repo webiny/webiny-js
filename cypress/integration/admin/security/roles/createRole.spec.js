@@ -80,6 +80,8 @@ context("Roles Module", () => {
             .click()
             .findByText("Record saved successfully.")
             .should("exist")
+            .get(".react-spinner-material")
+            .should("not.exist")
             .wait(500);
 
         cy.findByTestId("new-record-button")
