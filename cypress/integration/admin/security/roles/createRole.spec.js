@@ -86,7 +86,6 @@ context("Roles Module", () => {
             .click()
             .findByLabelText("Name")
             .type(`Test Role ${id}`)
-            .findByText("Save role")
             .findByLabelText("Slug")
             .type(`test-role-${id}`)
             .findByLabelText("Description")
