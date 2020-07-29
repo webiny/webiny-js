@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Features
+
+* **serverless-cognito-user-pool:** add support for username attributes and schema ([#1160](https://github.com/webiny/webiny-js/issues/1160)) ([fc9bebb](https://github.com/webiny/webiny-js/commit/fc9bebb2756106d1b0b9493189b9aec13994cf69))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package @webiny/serverless-aws-cognito-user-pool

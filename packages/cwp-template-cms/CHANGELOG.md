@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* add "--silent" when using env-cmd ([eaa9d15](https://github.com/webiny/webiny-js/commit/eaa9d15ce4adc6570b4b49e1c9223da1eaadb9d1))
+* move "--silent" flag after the filename ([0e790ab](https://github.com/webiny/webiny-js/commit/0e790abffaa1a2eb1a317620b6d4a97f0e0358a9))
+* prepend empty object when doing merge.recursive ([9f677b3](https://github.com/webiny/webiny-js/commit/9f677b323409b9ce5933fbdb04d8f0adf58881e9))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package @webiny/cwp-template-cms
