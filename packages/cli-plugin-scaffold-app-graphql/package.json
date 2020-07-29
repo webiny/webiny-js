@@ -19,7 +19,7 @@
     "find-up": "^4.1.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
-    "prettier": "^2.0.5",
+	"pluralize": "^8.0.0",
     "replace-in-path": "^1.0.2",
 	"fast-glob": "^3.2.4",
 	"util": "^0.10.3"
