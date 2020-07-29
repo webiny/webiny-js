@@ -39,6 +39,6 @@ describe("Pluralize Content Model Test", () => {
             }
         });
 
-        expect(data.listPs.data.id).toEqual(mocks.createP.id);
+        expect(data.listPs.data.id).toEqual(mocks.createdP.id);
     });
 });

@@ -72,7 +72,7 @@ export default {
             }
         }
     },
-    createdPList: productId => [
+    createdP: productId => [
         {
             id: productId,
             title: {
