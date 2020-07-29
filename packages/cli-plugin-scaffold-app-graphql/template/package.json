@@ -1,0 +1,22 @@
+{
+  "name": "app-graphql-[PACKAGE_NAME]",
+  "version": "1.0.0",
+  "description": "GraphQL React [PACKAGE_NAME] App",
+  "license": "MIT",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/app": "^4.6.0",
+    "@webiny/app-admin": "^4.6.0",
+    "@webiny/app-page-builder": "^4.6.0",
+    "@webiny/project-utils": "^4.0.2",
+    "@webiny/react-router": "^4.6.0",
+    "@webiny/ui": "^4.6.0",
+    "@webiny/form": "^4.6.0",
+	"@webiny/validation": "^4.6.0"
+  },
+  "devDependencies": {
+
+  }
+}
