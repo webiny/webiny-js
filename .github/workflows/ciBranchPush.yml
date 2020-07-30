@@ -28,7 +28,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: lerna run build:ci:cy --parallel --stream
+        run: yarn lerna run build:ci:cy --parallel --stream
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -75,7 +75,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: lerna run build:ci:cy --parallel --stream
+        run: yarn lerna run build:ci:cy --parallel --stream
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -122,7 +122,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: lerna run build:ci:cy --parallel --stream
+        run: yarn lerna run build:ci:cy --parallel --stream
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -169,7 +169,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: lerna run build:ci:cy --parallel --stream
+        run: yarn lerna run build:ci:cy --parallel --stream
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
@@ -216,7 +216,7 @@ jobs:
         run: yarn setup-env-files:ci
 
       - name: Build packages
-        run: lerna run build:ci:cy --parallel --stream
+        run: yarn lerna run build:ci:cy --parallel --stream
 
       - uses: doitadrian/action-post-run@1.0.0
         id: webiny-remove-apps
