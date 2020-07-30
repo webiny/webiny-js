@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable"],
+    "esModuleInterop": true,
+    "declaration": true,
+    "composite": false,
+    "noEmit": false,
+    "jsx": "preserve",
+    "emitDeclarationOnly": true,
+    "baseUrl": ".",
+    "paths": {},
+    "typeRoots": ["node_modules/@types", "./types"]
+  },
+  "exclude": [
+    "node_modules",
+    "**/__tests__/**",
+    "dist",
+    "**jest**",
+    "**resources.js"
+  ]
+}

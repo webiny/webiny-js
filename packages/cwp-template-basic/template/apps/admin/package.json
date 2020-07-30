@@ -1,0 +1,35 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@webiny/app-template-admin-full": "latest",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  },
+  "scripts": {
+    "start": "env-cmd -r .env.json --silent -e default webiny run start --env=local --stack=api",
+    "build:dev": "env-cmd -r .env.json --silent -e default webiny run build --env=dev --stack=api",
+    "build:prod": "env-cmd -r .env.json --silent -e default webiny run build --env=prod --stack=api"
+  },
+  "browserslist": {
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
+    ],
+    "production": [
+      ">0.25%",
+      "not op_mini all",
+      "ie 11"
+    ]
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  }
+}
