@@ -27,14 +27,17 @@ module.exports = (opts = {}) => (
             const info = [];
             const stackEnvs = fs.readdirSync(`./.webiny/state/${stackName}`);
             for (const stackEnv of stackEnvs) {
-                const cdnJson = JSON.parse(
-                    fs.readFileSync(`./.webiny/state/api/${stackEnv}/Webiny.cdn.json`).toString()
+                const webinyJson = JSON.parse(
+                    fs.readFileSync(`./.webiny/state/api/${stackEnv}/Webiny.json`).toString()
                 );
-                const url = cdnJson.output.url;
+                if (!webinyJson.outputs) {
+                    // This env wasn't deployed succesfully
+                    continue;
+                }
+                const url = webinyJson.outputs.cdn.url;
 
                 info.push({ stack: stackName, env: stackEnv, url });
             }
-            // TODO: do the same for "app" stacks in "./apps.js"
             if (info.length) {
                 console.log(`  List of URLs for stack "${stackName}"`);
                 const prettyInfo = info
