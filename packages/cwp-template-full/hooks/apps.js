@@ -39,9 +39,9 @@ module.exports = (opts = {}) => (
                 info.push({ stack: stackName, env: stackEnv, url });
             }
             if (info.length) {
-                console.log(`  List of URLs for stack "${stackName}"`);
+                console.log(`List of URLs for stack "${stackName}"`);
                 const prettyInfo = info
-                    .map(stackInfo => `${stackInfo.url} [env = "${stackInfo.env}"]`)
+                    .map(stackInfo => `  ${stackInfo.url} [env = "${stackInfo.env}"]`)
                     .join("\n");
                 console.log(prettyInfo);
             } else {

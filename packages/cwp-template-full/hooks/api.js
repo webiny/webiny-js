@@ -39,16 +39,17 @@ module.exports = (opts = {}) => (
                 info.push({ stack: stackName, env: stackEnv, url });
             }
             if (info.length) {
-                console.log(`  List of URLs for stack "${stackName}"`);
-                const prettyInfo = info
-                    .map(
-                        stackInfo =>
-                            `    Environment "${stackInfo.env}"\n` +
-                            `${stackInfo.url}/graphql\n` +
-                            `${stackInfo.url}/cms/read/production\n` +
-                            `${stackInfo.url}/cms/preview/production`
-                    )
-                    .join("\n");
+                console.log(`List of URLs for stack "${stackName}"`);
+                const prettyInfo =
+                    info
+                        .map(
+                            stackInfo =>
+                                `  Environment "${stackInfo.env}"\n` +
+                                `    ${stackInfo.url}/graphql\n` +
+                                `    ${stackInfo.url}/cms/read/production\n` +
+                                `    ${stackInfo.url}/cms/preview/production`
+                        )
+                        .join("\n\n") + "\n\n";
                 console.log(prettyInfo);
             } else {
                 console.log(`There are no available URLs for stack ${stackName} yet.`);
