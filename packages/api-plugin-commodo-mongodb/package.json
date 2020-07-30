@@ -1,37 +1,37 @@
 {
-  "name": "@webiny/api-plugin-commodo-mongodb",
-  "version": "4.6.0",
-  "main": "index.js",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "description": "Webiny API plugin that provides a Commodo driver for MongoDB.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@commodo/fields-storage-mongodb": "^2.0.0",
-    "mongodb": "^3.5.2"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@webiny/graphql": "^4.6.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build:babel": "babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "build": "rimraf ./dist *.tsbuildinfo && yarn build:babel",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  }
+	"name": "@webiny/api-plugin-commodo-mongodb",
+	"version": "4.6.0",
+	"main": "index.js",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"description": "Webiny API plugin that provides a Commodo driver for MongoDB.",
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>",
+		"Sven Al Hamad <sven@webiny.com>",
+		"Adrian Smijulj <adrian@webiny.com>"
+	],
+	"dependencies": {
+		"@babel/runtime": "^7.5.5",
+		"@commodo/fields-storage-mongodb": "^2.0.0",
+		"mongodb": "^3.5.2"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@webiny/graphql": "^4.6.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"build:ci:cy": "babel src -d dist --copy-files --extensions \".ts\" && cp package.json dist/",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	}
 }

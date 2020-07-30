@@ -35,8 +35,8 @@
     "react": "^16.8.6"
   },
   "scripts": {
-    "build:babel": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
-    "build": "rimraf ./dist *.tsbuildinfo && yarn build:babel",
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "build:ci:cy": "babel src -d dist --copy-files --extensions \".ts,.tsx\" && cp package.json dist/",
     "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
   },
   "publishConfig": {

@@ -1,34 +1,34 @@
 {
-  "name": "@webiny/commodo-fields-storage-db-proxy",
-  "version": "4.6.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/commodo.git"
-  },
-  "contributors": [
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "@commodo/fields": "^1.1.0",
-    "bson": "^4.0.2"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "keywords": [
-    "commodo",
-    "composeable",
-    "models",
-    "storage",
-    "mongodb"
-  ],
-  "scripts": {
-    "build:babel": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
-    "build": "rimraf ./dist *.tsbuildinfo && yarn build:babel",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  }
+	"name": "@webiny/commodo-fields-storage-db-proxy",
+	"version": "4.6.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/commodo.git"
+	},
+	"contributors": [
+		"Adrian Smijulj <adrian@webiny.com>"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"@commodo/fields": "^1.1.0",
+		"bson": "^4.0.2"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"keywords": [
+		"commodo",
+		"composeable",
+		"models",
+		"storage",
+		"mongodb"
+	],
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"build:ci:cy": "babel src -d dist --copy-files --extensions \".ts\" && cp package.json dist/",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	}
 }
