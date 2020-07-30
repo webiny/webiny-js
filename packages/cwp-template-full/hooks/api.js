@@ -41,7 +41,13 @@ module.exports = (opts = {}) => (
             if (info.length) {
                 console.log(`  List of URLs for stack "${stackName}"`);
                 const prettyInfo = info
-                    .map(stackInfo => `${stackInfo.url} [env = "${stackInfo.env}"]`)
+                    .map(
+                        stackInfo =>
+                            `    Environment "${stackInfo.env}"\n` +
+                            `${stackInfo.url}/graphql\n` +
+                            `${stackInfo.url}/cms/read/production\n` +
+                            `${stackInfo.url}/cms/preview/production`
+                    )
                     .join("\n");
                 console.log(prettyInfo);
             } else {
