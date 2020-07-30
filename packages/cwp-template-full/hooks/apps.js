@@ -40,9 +40,15 @@ module.exports = (opts = {}) => (
             }
             if (info.length) {
                 console.log(`List of URLs for stack "${stackName}"`);
-                const prettyInfo = info
-                    .map(stackInfo => `  ${stackInfo.url} [env = "${stackInfo.env}"]`)
-                    .join("\n");
+                const prettyInfo =
+                    info
+                        .map(
+                            stackInfo =>
+                                `  Environment "${stackInfo.env}"\n` +
+                                `    ${stackInfo.url}/ (site app)\n` +
+                                `    ${stackInfo.url}/admin`
+                        )
+                        .join("\n\n") + "\n\n";
                 console.log(prettyInfo);
             } else {
                 console.log(`There are no available URLs for stack ${stackName} yet.`);
