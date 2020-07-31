@@ -25,7 +25,6 @@ export default ({ database } = {}) => {
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await handler({
             httpMethod,
-            // Set "full-access" JWT token into the "Authorization" header.
             headers,
             body: JSON.stringify(body),
             ...rest
