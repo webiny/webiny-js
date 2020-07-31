@@ -9,7 +9,8 @@ export default (scope: string) => {
             }
 
             return new ErrorResponse({
-                message: `Not authorized (scope "${scope}" not found).`
+                message: `Not authorized (scope "${scope}" not found).`,
+                code: "SECURITY_NOT_AUTHORIZED"
             });
         };
     };
