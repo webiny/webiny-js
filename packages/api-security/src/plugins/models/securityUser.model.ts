@@ -68,6 +68,12 @@ export default ({ createBase, context }): any => {
             get gravatar() {
                 return "https://www.gravatar.com/avatar/" + md5(instance.email);
             },
+            get scopes() {
+                return new Promise(async resolve => {
+                    const access = await this.access;
+                    resolve(access.scopes);
+                });
+            },
             get access() {
                 if (this.__access) {
                     return this.__access;
