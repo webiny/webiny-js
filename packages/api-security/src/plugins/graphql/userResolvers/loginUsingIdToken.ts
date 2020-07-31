@@ -18,12 +18,13 @@ const generateJWT = async (user, context: Context) => {
     const seconds = Math.floor(expiresOn.getTime() / 1000);
 
     const jwt = new JwtToken({ secret: context.security.jwt.secret });
-    const access = await user.access;
 
     let payload: JWTPayload = {
         id: user.id,
+        email: user.email,
+        displayName: user.fullName,
+        scopes: await user.scopes,
         type: "user",
-        access
     };
 
     const authPlugin = context.plugins
