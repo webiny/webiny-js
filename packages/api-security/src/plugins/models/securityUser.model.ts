@@ -76,8 +76,7 @@ export default ({ createBase, context }): any => {
                 return new Promise(async resolve => {
                     const access = {
                         scopes: [],
-                        roles: [],
-                        fullAccess: false
+                        roles: []
                     };
 
                     const groups = await this.groups;
@@ -104,13 +103,8 @@ export default ({ createBase, context }): any => {
                         });
                     }
 
-                    // If full access, no need to send any scopes / roles.
-                    access.fullAccess = access.roles.includes("full-access");
-                    if (access.fullAccess) {
-                        access.scopes = [];
-                        access.roles = [];
-                    }
-
+                    access.scopes = access.scopes.sort();
+                    access.roles = access.roles.sort();
                     this.__access = access;
 
                     resolve(access);

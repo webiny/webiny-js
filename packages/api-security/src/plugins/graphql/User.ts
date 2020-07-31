@@ -52,7 +52,6 @@ export default {
         type SecurityUserAccess {
             scopes: [String]
             roles: [String]
-            fullAccess: Boolean
         }
 
         type SecurityUser @key(fields: "id") {

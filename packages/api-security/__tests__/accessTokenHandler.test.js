@@ -20,6 +20,6 @@ describe("Personal Access Tokens [Lambda Handler] test suite", () => {
         expect(user).toBeTruthy();
         expect(user.id).toBe(mockedUser.id);
         expect(user.type).toBe("user");
-        expect(user.access).toEqual({ scopes: [], roles: [], fullAccess: false });
+        expect(user.access).toEqual({ scopes: [], roles: [] });
     });
 });

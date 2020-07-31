@@ -16,7 +16,8 @@ class Identity {
     }
 
     hasFullAccess(): boolean {
-        return !!get(this.data, "access.fullAccess");
+        const scopes = get(this.data, "access.scopes") || [];
+        return scopes.includes("*");
     }
 
     getScopes(): Array<string> {

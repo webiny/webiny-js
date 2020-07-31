@@ -8,7 +8,6 @@ const userFields = /* GraphQL */ `
         access {
             scopes
             roles
-            fullAccess
         }
         avatar {
             src
