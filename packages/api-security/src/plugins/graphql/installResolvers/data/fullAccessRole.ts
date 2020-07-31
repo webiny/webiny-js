@@ -4,5 +4,5 @@ export default {
     system: true,
     description:
         "This role gives full access to all available resources. Be careful to whom you assign this role!",
-    scopes: []
+    scopes: ["*"]
 };
