@@ -52,7 +52,7 @@ jobs:
       - name: Setup Cypress config
         run: yarn setup-cypress
 
-      - name: Wait for the site to be deployed...
+      - name: Wait for the site to be deployed
         run: node scripts/waitToDeploy
 
       - name: Cypress - run Admin app installation test
@@ -102,7 +102,7 @@ jobs:
       - name: Setup Cypress config
         run: yarn setup-cypress
 
-      - name: Wait for the site to be deployed...
+      - name: Wait for the site to be deployed
         run: node scripts/waitToDeploy
 
       - name: Cypress - run Admin app installation test
@@ -152,7 +152,7 @@ jobs:
       - name: Setup Cypress config
         run: yarn setup-cypress
 
-      - name: Wait for the site to be deployed...
+      - name: Wait for the site to be deployed
         run: node scripts/waitToDeploy
 
       - name: Cypress - run Admin app installation test

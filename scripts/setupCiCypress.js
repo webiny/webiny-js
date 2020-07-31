@@ -10,7 +10,7 @@ const PROJECT_FOLDER = ".";
     const envJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
     const envJson = await loadJson.sync(envJsonPath);
     envJson.default.AWS_REGION = "eu-central-1";
-    envJson.default.MONGODB_NAME = "webiny-" + new Date().getTime();
+    envJson.default.MONGODB_NAME = "webiny-cy-test-" + new Date().getTime();
     envJson.default.MONGODB_SERVER = process.env.MONGODB_SERVER;
     await writeJson(envJsonPath, envJson);
 
