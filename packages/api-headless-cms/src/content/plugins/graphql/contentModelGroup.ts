@@ -79,8 +79,8 @@ export default {
         return output;
     },
 
-    getResolvers(type) {
-        if (type !== "manage") {
+    getResolvers(context) {
+        if (context.cms.type !== "manage") {
             return {};
         }
 
@@ -89,9 +89,7 @@ export default {
                 getContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveGet(contentModelGroupFetcher)
                 ),
-                listContentModelGroups: hasScope("cms:content-model-group:crud")(
-                    resolveList(contentModelGroupFetcher)
-                )
+                listContentModelGroups: resolveList(contentModelGroupFetcher)
             },
             Mutation: {
                 createContentModelGroup: hasScope("cms:content-model-group:crud")(
