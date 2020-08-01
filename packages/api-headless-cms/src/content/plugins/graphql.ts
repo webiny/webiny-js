@@ -55,13 +55,6 @@ const getMutationResolvers = context => {
     };
 };
 
-const getQueryResolvers = () => {
-    return {
-        getContentModel: hasScope("cms:content-model:get")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:content-model:list")(resolveList(contentModelFetcher))
-    };
-};
-
 export default () => [
     {
         name: "graphql-schema-headless",
@@ -240,7 +233,10 @@ export default () => [
             `,
             resolvers: merge(
                 {
-                    Query: getQueryResolvers(),
+                    Query: {
+                        getContentModel: hasScope("cms:content-model:get")(resolveGet(contentModelFetcher)),
+                        listContentModels: hasScope("cms:content-model:list")(resolveList(contentModelFetcher))
+                    },
                     Mutation: getMutationResolvers(context)
                 },
                 contentModelGroup.getResolvers(context),
