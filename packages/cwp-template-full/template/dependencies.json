@@ -61,6 +61,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "node ./scripts/linkPackages.js",
     "test": "jest --config jest.config.js"
   }
 }
