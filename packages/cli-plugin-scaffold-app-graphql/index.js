@@ -8,6 +8,7 @@ const pluralize = require("pluralize");
 const Case = require("case");
 const {replaceInPath} = require("replace-in-path");
 const fastGlob = require('fast-glob');
+const {green} = require("chalk");
 
 const appsPluginsLocation = "apps/admin/src/plugins";
 
@@ -23,7 +24,7 @@ const readApiPackageEntityName = (file) => {
 		})
 		.toString();
 	if(!fileContent) {
-		throw new Error(`Could not load any content from file ${file}`);
+		throw new Error(`Could not load any content from file ${file}.`);
 	}
 	
 	const nameMatched = fileContent.match(/withName\("([a-zA-Z]+)"\)/);
@@ -42,7 +43,7 @@ const findEntities = (location) => {
 			unique: true,
 		});
 	if(files.length === 0) {
-		throw new Error(`Could not find any entities with fast-glob pattern "${target}"`);
+		throw new Error(`Could not find any entities with fast-glob pattern "${target}".`);
 	}
 	return files.map(file => ({
 		fileName: path.basename(file),
@@ -73,7 +74,7 @@ module.exports = [
 								findEntities(apiLocation);
 							}
 							catch (ex) {
-								return `Could not find existing API entity in ${apiLocation}, error: ${ex.message}.`;
+								return `Could not find existing API entity in "${apiLocation}".`;
 							}
 							return true;
 						}
@@ -120,7 +121,7 @@ module.exports = [
 							
 							const locationFullPath = path.resolve(packageLocation);
 							if(fs.existsSync(locationFullPath)) {
-								return `The target location already exists: ${packageLocation}`;
+								return `The target location already exists "${packageLocation}".`;
 							}
 							
 							const rootResourcesPath = findUp.sync("resources.js", {
@@ -156,6 +157,9 @@ module.exports = [
 				const entityName = existingEntityName || newEntityName;
 				
 				const fullPackageLocation = path.resolve(createPackageLocation(packageLocation));
+				const applicationFilePath = findUp.sync('App.tsx', {
+					cwd: fullPackageLocation,
+				});
 				
 				const packageName = kebabCase(packageLocation);
 				
@@ -163,7 +167,7 @@ module.exports = [
 				const sourceFolder = path.join(__dirname, "template");
 				
 				if(fs.existsSync(fullPackageLocation)) {
-					throw new Error(`Destination folder ${fullPackageLocation} already exists!`);
+					throw new Error(`Destination folder ${fullPackageLocation} already exists.`);
 				}
 				
 				await fs.mkdirSync(fullPackageLocation, {recursive: true});
@@ -242,7 +246,11 @@ module.exports = [
 				tsconfig.extends = baseTsConfigPath;
 				fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 				
-				oraSpinner.info('You must register generated GraphQL app in your app factory "plugins" property');
+				const appPath = applicationFilePath || 'app tsx file';
+				
+				oraSpinner.info('You must register the generated plugins in order for them to appear in your app.');
+				oraSpinner.info(`Open your ${green(appPath)} and pass your new plugins to the app template via the "plugins" option.`);
+				oraSpinner.info('Learn more about Webiny app development at https://docs.webiny.com/docs/app-development/introduction.')
 			}
 		}
 	}
