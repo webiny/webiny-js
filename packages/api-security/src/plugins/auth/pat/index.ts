@@ -61,7 +61,7 @@ export default (options: PatAuthOptions = {}) => [
                     return null;
                 }
 
-                return userData;
+                return new SecurityIdentity(userData);
             } catch {
                 return null;
             }
