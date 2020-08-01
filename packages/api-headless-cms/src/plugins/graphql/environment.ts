@@ -26,6 +26,7 @@ export default {
         type CmsContentModel {
             id: ID
             modelId: String
+            name: String
         }
 
         input CmsEnvironmentInput {
