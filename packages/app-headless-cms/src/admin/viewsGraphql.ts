@@ -10,10 +10,6 @@ const BASE_CONTENT_MODEL_FIELDS = `
     id
     name
     savedOn
-    createdBy {
-        firstName
-        lastName
-    }
 `;
 
 // Fetches data needed for constructing content models list in the main menu.

@@ -11,9 +11,9 @@
     "env-cmd": "^10.1.0"
   },
   "scripts": {
-    "start": "env-cmd -r .env.json -e default webiny run start --env=local --stack=api",
-    "build:dev": "env-cmd -r .env.json -e default webiny run build --env=dev --stack=api",
-    "build:prod": "env-cmd -r .env.json -e default webiny run build --env=prod --stack=api"
+    "start": "env-cmd -r .env.json --silent -e default webiny run start --env=local --stack=api",
+    "build:dev": "env-cmd -r .env.json --silent -e default webiny run build --env=dev --stack=api",
+    "build:prod": "env-cmd -r .env.json --silent -e default webiny run build --env=prod --stack=api"
   },
   "browserslist": {
     "development": [

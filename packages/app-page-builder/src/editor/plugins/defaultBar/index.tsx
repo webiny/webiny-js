@@ -11,7 +11,9 @@ import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
 import {
-    PbEditorBarPlugin, PbEditorDefaultBarLeftPlugin, PbEditorDefaultBarRightPageOptionsPlugin,
+    PbEditorBarPlugin,
+    PbEditorDefaultBarLeftPlugin,
+    PbEditorDefaultBarRightPageOptionsPlugin,
     PbEditorDefaultBarRightPlugin
 } from "@webiny/app-page-builder/types";
 

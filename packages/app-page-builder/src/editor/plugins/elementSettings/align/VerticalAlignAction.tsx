@@ -40,7 +40,6 @@ const VerticalAlignAction = ({ element, updateElement, children }) => {
     return React.cloneElement(children, { onClick: alignElement, icon: icons[align] });
 };
 
-export default connect<any, any, any>(
-    state => ({ element: getActiveElement(state) }),
-    { updateElement }
-)(VerticalAlignAction);
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(VerticalAlignAction);

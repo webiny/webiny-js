@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
+
+
+### Bug Fixes
+
+* update `commodo` versions ([2a1f287](https://github.com/webiny/webiny-js/commit/2a1f287b6f933094250732e39aaf3861712f2f2f))
+
+
+
+
+
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* `commit messages` link ([a019b25](https://github.com/webiny/webiny-js/commit/a019b2581d9f230b6e162b945d22336d2ec8a7f9))
+* add "--silent" when using env-cmd ([eaa9d15](https://github.com/webiny/webiny-js/commit/eaa9d15ce4adc6570b4b49e1c9223da1eaadb9d1))
+* contributing doc ([8d47145](https://github.com/webiny/webiny-js/commit/8d4714534c51848bd53366eefdb979d657167861))
+* copy message ([dfea698](https://github.com/webiny/webiny-js/commit/dfea6981517955a5ba7e6bf6554a95ccba4de265))
+* move "--silent" flag after the filename ([0e790ab](https://github.com/webiny/webiny-js/commit/0e790abffaa1a2eb1a317620b6d4a97f0e0358a9))
+* prepend empty object when doing merge.recursive ([9f677b3](https://github.com/webiny/webiny-js/commit/9f677b323409b9ce5933fbdb04d8f0adf58881e9))
+* **headless:** add new environment alias in apollo cache ([461468a](https://github.com/webiny/webiny-js/commit/461468a92ff952c1fa3bb901e586e5aa30b5281b))
+* **headless:** add refetch for environment aliases ([29adbf6](https://github.com/webiny/webiny-js/commit/29adbf63a6f795d1d0eadaf35fb365ed745c80a9))
+* **headless:** add style for material icon ([6fcc7ea](https://github.com/webiny/webiny-js/commit/6fcc7eabeb24cf2a77e8925f268e714d76285a14))
+* **headless:** change tooltip to focus on icon instead of text ([2455748](https://github.com/webiny/webiny-js/commit/2455748d6713c5bc3f701a3b2b99a42c2d645b68))
+* **storybook-utils:** enforce string when executing prettier format ([58addbe](https://github.com/webiny/webiny-js/commit/58addbe9098e2be6c8da1376bba197c2ced6248e))
+
+
+### Features
+
+* **serverless-cognito-user-pool:** add support for username attributes and schema ([#1160](https://github.com/webiny/webiny-js/issues/1160)) ([fc9bebb](https://github.com/webiny/webiny-js/commit/fc9bebb2756106d1b0b9493189b9aec13994cf69))
+
+
+
+
+
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update hook plugin name to be entry specific ([9394b36](https://github.com/webiny/webiny-js/commit/9394b36b6b12b09f9be78ba49dda82efbbded393))
+* **api-page-builder:** always remove trailing slash from domain in settings ([59af6bd](https://github.com/webiny/webiny-js/commit/59af6bdfd502da0afd37b91523adab1f6055d9ac))
+* **app-headless-cms:** add `description` props to SingleFile ([085df03](https://github.com/webiny/webiny-js/commit/085df03762128021984b767ea2342380bc561856))
+* **app-headless-cms:** add localized value via `useI18N` ([5ecf00c](https://github.com/webiny/webiny-js/commit/5ecf00c4d67902a94b998e29c4c2743e2ea74bf2))
+* **app-headless-cms:** disable `add index` button ([bfd1665](https://github.com/webiny/webiny-js/commit/bfd1665271c1d197bda4b30fb2466e50764a2b24))
+* **app-headless-cms:** fix `field` and `bind` props ([36c314e](https://github.com/webiny/webiny-js/commit/36c314e8cc7ff90e506fb622fec54e37ed3fc768))
+* **app-headless-cms:** update `checkboxes` field renderer ([9360b54](https://github.com/webiny/webiny-js/commit/9360b5439c3aad7a8208b128028fecb24a72ca18))
+* **app-headless-cms:** update `datetime` field ([7de5bb0](https://github.com/webiny/webiny-js/commit/7de5bb0398ee0ae66001f40330f852ff9e6e6168))
+* **app-headless-cms:** update `radio-buttons` renderer ([9d6e1ac](https://github.com/webiny/webiny-js/commit/9d6e1ac766755e37062bdf100be2d360a6bc10ef))
+* **app-headless-cms:** update `select-box` renderer ([f56376a](https://github.com/webiny/webiny-js/commit/f56376a81d848d4341876f76cc318c6e4c090bfc))
+* **app-page-builder:** remove trailing slashes from domain in settings form ([3c47281](https://github.com/webiny/webiny-js/commit/3c472818652a459da054413c34034a92b769f76a))
+* changed plugin name, error message and brought back try and catch ([5a7af7f](https://github.com/webiny/webiny-js/commit/5a7af7fb2339838ea6c376bdea0d7a2497214416))
+* checking results and error reports ([aedb6e8](https://github.com/webiny/webiny-js/commit/aedb6e8ae232480c10710dabb0c68cf3aefb30fb))
+* created rough template for aws credentials validator  plugin ([726ab1a](https://github.com/webiny/webiny-js/commit/726ab1a12d3131c9144632c1eac7666d4bba7bce))
+* deleting hot fix comment and namespace statement ([7f6a655](https://github.com/webiny/webiny-js/commit/7f6a6550c67b162211f740dcd459490312999f6c))
+* fixed console.log ([8442c12](https://github.com/webiny/webiny-js/commit/8442c125ac5a9475161e11b85222c9f72241311a))
+* impoting sts from aws and trying to call getCallerIdentity ([49e27b9](https://github.com/webiny/webiny-js/commit/49e27b9d9b956c7cad16340fcb3487f69a9a25ac))
+* removed interface Module from namespace NodeJS ([f6de445](https://github.com/webiny/webiny-js/commit/f6de4455ea8444022ab9ee9178c5df0443830c98))
+* replaced try and catch with promise and then to receive sts results ([f6a5ef0](https://github.com/webiny/webiny-js/commit/f6a5ef0416c35e3fbbd8f96d04c46a50304bec6e))
+* setting error message with like to webiny aws set up page ([9acca4c](https://github.com/webiny/webiny-js/commit/9acca4c8bcf9130e4d6da985e383840d62c4fca6))
+* updated console message ([74c4a41](https://github.com/webiny/webiny-js/commit/74c4a41dd7473813dfbe00afbd2b02302021e61c))
+* updated console message, removed comment and deleted aws.js file ([9bb00d8](https://github.com/webiny/webiny-js/commit/9bb00d89ed24ba65253ca6fd1ebb0df63b08f250))
+
+
+### Features
+
+* **api-headless-cms:** add support for data manager hooks ([61101ff](https://github.com/webiny/webiny-js/commit/61101ffcef4116f9b88d7064fca0126640f5bab1))
+* **publish:** lock 3rd party package dependencies before publishing to npm ([ef05267](https://github.com/webiny/webiny-js/commit/ef05267860611b66b2cf972a77655ef87b988ea0))
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+
+### Bug Fixes
+
+* remove "createdBy" ([e9e4728](https://github.com/webiny/webiny-js/commit/e9e47285f60af5570f7402eadd040cb3f485c61e))
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
+* remove unnecessary "apollo-server-lambda" dev dependency ([cad9eeb](https://github.com/webiny/webiny-js/commit/cad9eeb25ad6397e373d6cc3fbc4cb9a64a39c21))
+* remove unneeded quotes ([cf196a5](https://github.com/webiny/webiny-js/commit/cf196a52cef9bc47f97147beb02b951482389133))
+* use S3 bucket as StatementId in "api" stack ([46feeb6](https://github.com/webiny/webiny-js/commit/46feeb67b8c33c08b8fde31dafce0fa7fe120d26))
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([1ec7803](https://github.com/webiny/webiny-js/commit/1ec7803c78d5f3a1f701836f56a897f2d2169d0b))
+* **headless:** remove createdBy and updateBy for api of headless cms ([#1131](https://github.com/webiny/webiny-js/issues/1131)) ([d306838](https://github.com/webiny/webiny-js/commit/d3068382e01cdf8fd9954e9f943c6142c3ce417a))
+
+
+
+
+
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
 **Note:** Version bump only for package webiny-js

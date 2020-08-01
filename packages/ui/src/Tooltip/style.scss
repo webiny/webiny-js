@@ -9,7 +9,7 @@
   max-width: 250px;
 }
 
-.rc-tooltip-arrow{
+.rc-tooltip-arrow {
   //display: none;
 }
 
@@ -37,7 +37,7 @@
   border-bottom-color: var(--mdc-theme-secondary);
 }
 
-.rc-tooltip-inner{
+.rc-tooltip-inner {
   min-height: auto;
   background-color: var(--mdc-theme-secondary);
   border: none;
@@ -57,22 +57,22 @@
   font-weight: 600;
 }
 
-.rc-tooltip.rc-tooltip-fade-enter{
+.rc-tooltip.rc-tooltip-fade-enter {
   display: block;
   opacity: 0;
 }
 
-.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-enter-active{
+.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-enter-active {
   opacity: 1;
   transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
   transition: opacity 0.2s;
 }
 
-.rc-tooltip.rc-tooltip-fade-leave{
+.rc-tooltip.rc-tooltip-fade-leave {
   opacity: 0;
 }
 
-.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-lave-active{
+.rc-tooltip.rc-tooltip-fade-enter.rc-tooltip-fade-lave-active {
   opacity: 0;
   transition-timing-function: cubic-bezier(0.18, 0.89, 0.32, 1.28);
   transition: opacity 0.2s;

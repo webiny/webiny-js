@@ -3,8 +3,8 @@ import dataManager from "../../src/dataManager/handler";
 
 const createDataManagerHandler = plugins => createHandler(plugins, dataManager());
 
-export default plugins => () => {
-    const handler = createDataManagerHandler(plugins);
+export default plugins => (extraPlugins = []) => {
+    const handler = createDataManagerHandler([...plugins, ...extraPlugins]);
     return {
         handler,
         invoke: async event => {

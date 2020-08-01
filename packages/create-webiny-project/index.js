@@ -304,6 +304,11 @@ async function createApp({ projectName, template, tag, log }) {
                                     path.join(process.cwd(), tag, name)
                                 );
                         } else {
+                            // Skip packages that are already set to use file: protocol
+                            if (json.dependencies[name].startsWith("file:")) {
+                                return;
+                            }
+                            
                             // Use version of @webiny/cli package (we have fixed package versioning)
                             json.dependencies[name] = `^` + latestVersion;
                         }

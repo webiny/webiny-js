@@ -118,7 +118,11 @@ describe("Data Manager Handler", () => {
         expect(count).toBe(16);
 
         // Restore indexes
-        categoryModel.indexes = [{ fields: ["title"] }, { fields: ["title", "slug"] }];
+        categoryModel.indexes = [
+            { fields: ["id"] },
+            { fields: ["title", "slug"] },
+            { fields: ["slug"] }
+        ];
         await categoryModel.save();
     });
 
@@ -132,7 +136,7 @@ describe("Data Manager Handler", () => {
         });
 
         let count = await collection("CmsContentEntrySearch").countDocuments();
-        expect(count).toBe(22);
+        expect(count).toBe(28);
 
         // Update exiting content model entry
         const category = categories[0].model;
@@ -168,6 +172,25 @@ describe("Data Manager Handler", () => {
         expect(entries.find(({ locale }) => locale === locales.en.id).v0).toBe("Headless EN");
         expect(entries.find(({ locale }) => locale === locales.de.id).v0).toBe("Headless DE");
         expect(entries.find(({ locale }) => locale === locales.it.id).v0).toBe("Headless IT");
+    });
+
+    it(`should delete index entries for a specific entry revision`, async () => {
+        // Generate initial search catalog
+        const { invoke } = useDataManagerHandler();
+        await invoke({
+            environment: "production",
+            action: "generateContentModelIndexes",
+            contentModel: "category"
+        });
+
+        let count = await collection("CmsContentEntrySearch").countDocuments();
+        expect(count).toBe(28);
+
+        // Delete content model entry (this should delete 9 entries from Search table)
+        await categories[0].model.delete();
+
+        count = await collection("CmsContentEntrySearch").countDocuments();
+        expect(count).toBe(19);
     });
 
     it(`should copy environment data`, async () => {
