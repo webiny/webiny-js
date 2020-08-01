@@ -15,7 +15,7 @@ const createPackageLocation = name => {
 	return `${appsPluginsLocation}/${name}`;
 };
 
-const readApiPackageModelName = (file) => {
+const readApiPackageEntityName = (file) => {
 	const fileContent = fs
 		.readFileSync(file, {
 			encoding: "utf-8",
@@ -29,25 +29,25 @@ const readApiPackageModelName = (file) => {
 	const nameMatched = fileContent.match(/withName\("([a-zA-Z]+)"\)/);
 	if(!nameMatched) {
 		throw new Error(
-			`Could not find withName() in ${file} which is needed to detect model name.`
+			`Could not find withName() in ${file} which is needed to detect entity name.`
 		);
 	}
 	return nameMatched[1];
 };
 
-const findDataModels = (location) => {
+const findEntities = (location) => {
 	const target = path.resolve(`${location}/**/*.model.ts`);
 	const files = fastGlob
 		.sync(target, {
 			unique: true,
 		});
 	if(files.length === 0) {
-		throw new Error(`Could not find any models with fast-glob pattern "${target}"`);
+		throw new Error(`Could not find any entities with fast-glob pattern "${target}"`);
 	}
 	return files.map(file => ({
 		fileName: path.basename(file),
 		filePath: file,
-		modelName: readApiPackageModelName(file),
+		entityName: readApiPackageEntityName(file),
 	}))
 };
 
@@ -67,44 +67,44 @@ module.exports = [
 								return true;
 							}
 							if(fs.existsSync(apiLocation) === false) {
-								return "There is no GraphQL API in given location";
+								return "There is no GraphQL API in given location.";
 							}
 							try {
-								findDataModels(apiLocation);
+								findEntities(apiLocation);
 							}
 							catch (ex) {
-								return `Could not find existing API model in ${apiLocation}, error: ${ex.message}`;
+								return `Could not find existing API entity in ${apiLocation}, error: ${ex.message}.`;
 							}
 							return true;
 						}
 					},
 					{
-						name: "existingDataModelName",
-						message: "Choose data model to use",
+						name: "existingEntityName",
+						message: "Choose entity to use",
 						type: "list",
 						when: ({apiLocation}) => {
 							return !!apiLocation;
 						},
 						choices: ({apiLocation}) => {
-							const names = findDataModels(apiLocation);
-							return names.map(({modelName}) => modelName);
+							const names = findEntities(apiLocation);
+							return names.map(({entityName}) => entityName);
 						},
 						validate: (name, {apiLocation}) => {
 							if(!name) {
-								return "Please enter a data model name";
+								return "Please enter a entity name.";
 							}
 							else if(!name.match(/^([a-z]+)$/i)) {
 								return "A valid entity name must consist of letters only.";
 							}
 							try {
-								const names = findDataModels(apiLocation).map(({modelName}) => modelName);
+								const names = findEntities(apiLocation).map(({entityName}) => entityName);
 								if(!names.includes(name)) {
 									throw new Error();
 								}
 								return true;
 							}
 							catch (ex) {
-								return `A data model with name "${name}" does not exist`;
+								return `A entity with name "${name}" does not exist.`;
 							}
 						}
 					},
@@ -114,7 +114,7 @@ module.exports = [
 						default: "books",
 						validate: name => {
 							if(!name) {
-								return "Please enter a package location";
+								return "Please enter a package location.";
 							}
 							const packageLocation = createPackageLocation(name);
 							
@@ -135,11 +135,11 @@ module.exports = [
 						}
 					},
 					{
-						name: "dataModelName",
-						message: "Enter name of the data model",
+						name: "newEntityName",
+						message: "Enter name of the entity",
 						default: "Book",
-						when: ({existingDataModelName}) => {
-							return !existingDataModelName;
+						when: ({existingEntityName}) => {
+							return !existingEntityName;
 						},
 						validate: (name) => {
 							if(!name.match(/^([a-z]+)$/i)) {
@@ -151,9 +151,9 @@ module.exports = [
 				];
 			},
 			generate: async ({input, oraSpinner}) => {
-				const {existingDataModelName, packageLocation, dataModelName} = input;
+				const {existingEntityName, packageLocation, newEntityName} = input;
 				
-				const modelName = existingDataModelName || dataModelName;
+				const entityName = existingEntityName || newEntityName;
 				
 				const fullPackageLocation = path.resolve(createPackageLocation(packageLocation));
 				
@@ -181,10 +181,10 @@ module.exports = [
 				// Copy template files
 				await ncp(sourceFolder, fullPackageLocation);
 				
-				// Replace generic "Entity" with received "input.existingDataModelName" or "input.dataModelName" argument.
+				// Replace generic "Entity" with received "input.existingEntityName" or "input.newEntityName" argument.
 				const entity = {
-					plural: pluralize(Case.camel(modelName)),
-					singular: pluralize.singular(Case.camel(modelName))
+					plural: pluralize(Case.camel(entityName)),
+					singular: pluralize.singular(Case.camel(entityName))
 				};
 				
 				const codeReplacements = [
