@@ -36,16 +36,25 @@ const params = {
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
     const apiStateFile = getState("api", params.env);
-    const appsStateFile = getState("apps", params.env);
-
-    cypressConfig.baseUrl = appsStateFile.outputs.cdn.url + "/admin";
-    cypressConfig.env.SITE_URL = appsStateFile.outputs.cdn.url;
-    cypressConfig.env.ADMIN_URL = appsStateFile.outputs.cdn.url + "/admin";
     cypressConfig.env.API_URL = apiStateFile.outputs.cdn.url;
     cypressConfig.env.GRAPHQL_API_URL = apiStateFile.outputs.cdn.url + "/graphql";
 
     cypressConfig.env.AWS_COGNITO_USER_POOL_ID = apiStateFile.outputs.cognito.userPool.Id;
     cypressConfig.env.AWS_COGNITO_CLIENT_ID = apiStateFile.outputs.cognito.appClients[0].ClientId;
+
+    // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
+    if (params.env === "local") {
+        const adminUrl = "http://localhost:3001";
+        const siteUrl = "http://localhost:3000";
+        cypressConfig.baseUrl = adminUrl + "/admin";
+        cypressConfig.env.SITE_URL = siteUrl;
+        cypressConfig.env.ADMIN_URL = adminUrl + "/admin";
+    } else {
+        const appsStateFile = getState("apps", params.env);
+        cypressConfig.baseUrl = appsStateFile.outputs.cdn.url + "/admin";
+        cypressConfig.env.SITE_URL = appsStateFile.outputs.cdn.url;
+        cypressConfig.env.ADMIN_URL = appsStateFile.outputs.cdn.url + "/admin";
+    }
 
     await writeJson(cypressConfigPath, cypressConfig);
 
