@@ -2,6 +2,10 @@
 
 In this article, we'll explain how Webiny works so you can confidently start contributing
 
+### Setup Project
+
+Currently in development.
+
 ### Webiny Local Setup
 
 First things first, we will fork and clone [webiny-js repo](https://github.com/webiny/webiny-js). 

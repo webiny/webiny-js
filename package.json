@@ -139,6 +139,7 @@
     "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier --config .prettierrc.js --write",
     "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
+    "setup-project": "node packages/setup-project",
     "setup-repo": "node scripts/setupRepo",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
