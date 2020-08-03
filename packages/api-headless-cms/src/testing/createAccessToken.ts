@@ -4,5 +4,5 @@ export default ({ database }) =>
         name: "Default Access Token",
         description: "This is the initial environment.",
         token: "some-random-token",
-        scopes: ['*']
+        scopes: ["*"]
     });

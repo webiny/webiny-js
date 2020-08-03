@@ -1,8 +1,5 @@
 import gql from "graphql-tag";
-import { i18n } from "@webiny/app/i18n";
 import { SecurityScopesListPlugin } from "@webiny/app-security/types";
-
-const t = i18n.ns("app-page-builder/admin/scopesList");
 
 const GET_ENVIRONMENTS = gql`
     {
@@ -13,6 +10,7 @@ const GET_ENVIRONMENTS = gql`
                     name
                     slug
                     contentModels {
+                        name
                         modelId
                     }
                 }
@@ -24,17 +22,17 @@ const GET_ENVIRONMENTS = gql`
 const generateScopes = envs => {
     const scopes = [];
 
-    for (let env of envs) {
+    for (const env of envs) {
         const contentModels = env.contentModels;
-        for (let apiType of ["read", "preview"]) {
-            for (let contentModel of contentModels) {
+        for (const apiType of ["read", "preview"]) {
+            for (const contentModel of contentModels) {
                 const modelId = contentModel.modelId;
                 const currentScope = `cms:${apiType}:${env.slug}:${modelId}`;
 
                 scopes.push({
                     scope: currentScope,
-                    title: `CMS ${modelId}`,
-                    description: `Allows CRUD operations on Model "${modelId}" of environment ${env.slug}`
+                    title: `${contentModel.name} (${modelId})`,
+                    description: `Allows CRUD operations on model "${modelId}" of environment ${env.slug}`
                 });
             }
         }
@@ -50,16 +48,8 @@ export default [
         scopes: async ({ apolloClient }) => {
             const envsResponse = await apolloClient.query({ query: GET_ENVIRONMENTS });
             const envs = envsResponse.data.cms.listEnvironments.data;
-            const scopes = generateScopes(envs);
-
-            return scopes;
-            return [
-                {
-                    scope: "cms:test:scope:one",
-                    title: t`test title`,
-                    description: t`test description`
-                }
-            ];
+            console.log('env.contentModels', envs)
+            return generateScopes(envs);
         }
     } as SecurityScopesListPlugin
 ];

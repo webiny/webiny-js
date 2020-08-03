@@ -24,7 +24,7 @@ const generateJWT = async (user, context: Context) => {
         email: user.email,
         displayName: user.fullName,
         scopes: await user.scopes,
-        type: "user",
+        type: "user"
     };
 
     const authPlugin = context.plugins

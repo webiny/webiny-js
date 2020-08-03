@@ -28,7 +28,7 @@ export class JwtToken {
     decode(token: string): Promise<{ [key: string]: any }> {
         return new Promise((resolve, reject) => {
             jwt.verify(token, this.config.secret, (err, data) => {
-                 if (err) {
+                if (err) {
                     reject(
                         new JwtTokenError(
                             err.message,

@@ -5,7 +5,7 @@ const plugin: CmsFindFilterOperator = {
     type: "cms-find-filter-operator",
     operator: "contains",
     createCondition({ value }) {
-        return new RegExp(`${value}.*`, 'i');
+        return new RegExp(`${value}.*`, "i");
     }
 };
 
