@@ -12,7 +12,7 @@ async function getDatabase(name) {
     }
 
     const client = await MongoClient.connect(
-        "mongodb+srv://adrian:YDzr8E1bWDAHC7aF@adriantest-kvgdz.mongodb.net/test?retryWrites=true&w=majority",
+        process.env.MONGODB_SERVER,
         {
             useNewUrlParser: true,
             useUnifiedTopology: true
