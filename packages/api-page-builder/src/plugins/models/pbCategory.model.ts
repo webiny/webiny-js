@@ -9,7 +9,7 @@ export default ({ createBase, context }) =>
         withHooks({
             async beforeDelete() {
                 const { PbPage } = context.models;
-                if (await PbPage.findOne()) {
+                if (await PbPage.findOne({ query: { category: this.id } })) {
                     throw new Error("Cannot delete category because some pages are linked to it.");
                 }
             }

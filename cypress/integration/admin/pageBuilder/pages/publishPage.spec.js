@@ -44,6 +44,7 @@ context("Pages Creation", () => {
 
         cy.findByTestId("pb-page-details")
             .within(() => {
+                cy.findAllByText(pageTitle1);
                 cy.findByTestId("pb-page-details-header-edit-revision").click();
             })
             .findByTestId("pb-editor-page-title")
@@ -59,13 +60,15 @@ context("Pages Creation", () => {
             cy.findByText(/Confirm/i).click();
         });
 
-        // Let's wait a bit for the CDN cache to be flushed.
-        cy.wait(30000);
-
         cy.findByTestId("pb-page-details").within(() => {
             cy.findByTestId("pb-page-details-header-page-options-menu").click();
         });
         cy.findByTestId("pb-page-details-header-page-options-menu-preview").click();
+
+        cy.reloadUntil(() => {
+            const [title] = Cypress.$("title");
+            return title.innerText.includes(pageTitle2);
+        });
 
         cy.title().should("contain", pageTitle2);
     });

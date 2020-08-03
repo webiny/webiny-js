@@ -19,9 +19,9 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click();
 
-        cy.wait(500)
-            .findByText("Record saved successfully.")
-            .should("exist");
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
 
         cy.findByLabelText("Slug")
             .should("disabled")
@@ -30,19 +30,21 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click();
 
-        cy.wait(500)
-            .findByTestId("default-data-list")
-            .within(() => {
-                cy.get("div")
-                    .first()
-                    .within(() => {
-                        cy.findByText(`Cool Menu ${id}`)
-                            .should("exist")
-                            .findByText("This is a cool test. Test test.")
-                            .should("exist");
-                        cy.get("button").click({ force: true });
-                    });
-            });
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
+
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(`Cool Menu ${id}`)
+                        .should("exist")
+                        .findByText("This is a cool test. Test test.")
+                        .should("exist");
+                    cy.get("button").click({ force: true });
+                });
+        });
 
         cy.get('[role="alertdialog"] :visible').within(() => {
             cy.contains("Are you sure you want to continue?")
@@ -50,7 +52,7 @@ context("Menus Module", () => {
                 .within(() => cy.findByText("Confirm").click());
         });
 
-        cy.findByText("Record deleted successfully.").should("exist");
+        cy.findByText("Record deleted successfully.").should("exist").wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Cool Menu ${id}`).should("not.exist");
         });
@@ -66,7 +68,11 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click();
 
-        cy.wait(1000);
+        cy.findByText("Record saved successfully.")
+            .should("exist")
+            .get(".react-spinner-material")
+            .should("not.exist")
+            .wait(500);
 
         cy.findByTestId("new-record-button")
             .click()

@@ -33,6 +33,7 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^1.4.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@commitlint/cli": "^8.3.5",
@@ -139,6 +140,9 @@
     "prettier": "prettier --config .prettierrc.js --write",
     "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
+    "setup-env-files": "node scripts/setupEnvFiles",
+    "setup-ci-cypress": "node scripts/setupCiCypress",
+    "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
