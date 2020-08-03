@@ -48,7 +48,7 @@ export default [
         scopes: async ({ apolloClient }) => {
             const envsResponse = await apolloClient.query({ query: GET_ENVIRONMENTS });
             const envs = envsResponse.data.cms.listEnvironments.data;
-            console.log('env.contentModels', envs)
+            console.log("env.contentModels", envs);
             return generateScopes(envs);
         }
     } as SecurityScopesListPlugin

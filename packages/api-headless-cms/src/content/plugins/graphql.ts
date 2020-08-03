@@ -234,8 +234,12 @@ export default () => [
             resolvers: merge(
                 {
                     Query: {
-                        getContentModel: hasScope("cms:content-model:get")(resolveGet(contentModelFetcher)),
-                        listContentModels: hasScope("cms:content-model:list")(resolveList(contentModelFetcher))
+                        getContentModel: hasScope("cms:content-model:get")(
+                            resolveGet(contentModelFetcher)
+                        ),
+                        listContentModels: hasScope("cms:content-model:list")(
+                            resolveList(contentModelFetcher)
+                        )
                     },
                     Mutation: getMutationResolvers(context)
                 },
