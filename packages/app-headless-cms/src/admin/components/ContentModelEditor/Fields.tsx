@@ -46,7 +46,12 @@ const Field = ({ onFieldDragStart, fieldType: { type, label, icon, description }
     return (
         <Draggable beginDrag={{ ui: "field", type }}>
             {({ drag }) => (
-                <div ref={drag} style={{ marginBottom: 10 }} data-testid={`cms-editor-fields-field-${type}`} onDragStart={onFieldDragStart}>
+                <div
+                    ref={drag}
+                    style={{ marginBottom: 10 }}
+                    data-testid={`cms-editor-fields-field-${type}`}
+                    onDragStart={onFieldDragStart}
+                >
                     <FieldContainer>
                         <FieldHandle>
                             <Icon icon={icon} />

@@ -138,7 +138,12 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
     }
 
     return (
-        <Dialog preventOutsideDismiss open={!!current} onClose={onClose} data-testid={"cms-editor-edit-fields-dialog"}>
+        <Dialog
+            preventOutsideDismiss
+            open={!!current}
+            onClose={onClose}
+            data-testid={"cms-editor-edit-fields-dialog"}
+        >
             <DialogTitle>{headerTitle}</DialogTitle>
             {render}
         </Dialog>
