@@ -46,9 +46,9 @@ const params = {
     if (params.env === "local") {
         const adminUrl = "http://localhost:3001";
         const siteUrl = "http://localhost:3000";
-        cypressConfig.baseUrl = adminUrl + "/admin";
         cypressConfig.env.SITE_URL = siteUrl;
-        cypressConfig.env.ADMIN_URL = adminUrl + "/admin";
+        cypressConfig.baseUrl = adminUrl;
+        cypressConfig.env.ADMIN_URL = adminUrl;
     } else {
         const appsStateFile = getState("apps", params.env);
         cypressConfig.baseUrl = appsStateFile.outputs.cdn.url + "/admin";
