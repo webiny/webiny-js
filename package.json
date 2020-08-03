@@ -33,6 +33,7 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^1.4.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@commitlint/cli": "^8.3.5",
