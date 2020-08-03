@@ -25,10 +25,10 @@ async function getDatabase(name) {
 const PROJECT_FOLDER = ".";
 
 (async () => {
-    const envJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
-    const envJson = await loadJson.sync(envJsonPath);
-
     if (argv.postRun) {
+        const envJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
+        const envJson = await loadJson.sync(envJsonPath);
+
         const db = await getDatabase(envJson.default.MONGODB_NAME);
         await db.dropDatabase();
         console.log(`✅️ Dropped "${envJson.default.MONGODB_NAME}" MongoDB database.`);
@@ -36,6 +36,9 @@ const PROJECT_FOLDER = ".";
     }
 
     require("./setupEnvFiles");
+
+    const envJsonPath = path.resolve(PROJECT_FOLDER, ".env.json");
+    const envJson = await loadJson.sync(envJsonPath);
 
     envJson.default.AWS_REGION = "eu-central-1";
     envJson.default.MONGODB_NAME = "webiny-cy-e2e-test-" + uniqid();
