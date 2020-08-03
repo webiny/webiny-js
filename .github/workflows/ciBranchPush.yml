@@ -30,17 +30,17 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
         id: destroy-mongodb-database
         with:
           command: yarn setup-ci-cypress --post-run
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-apps
         with:
           command: yarn webiny remove apps --env prod
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-api
         with:
           command: yarn webiny remove api --env prod
@@ -85,12 +85,17 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
+        id: destroy-mongodb-database
+        with:
+          command: yarn setup-ci-cypress --post-run
+
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-apps
         with:
           command: yarn webiny remove apps --env prod
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-api
         with:
           command: yarn webiny remove api --env prod
@@ -135,12 +140,17 @@ jobs:
       - name: Build packages
         run: yarn build
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
+        id: destroy-mongodb-database
+        with:
+          command: yarn setup-ci-cypress --post-run
+
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-apps
         with:
           command: yarn webiny remove apps --env prod
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@1.0.0
         id: webiny-remove-api
         with:
           command: yarn webiny remove api --env prod
