@@ -3,6 +3,7 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const { argv } = require("yargs");
 const { MongoClient } = require("mongodb");
+const uniqid = require("uniqid");
 
 let db;
 async function getDatabase(name) {
@@ -14,7 +15,7 @@ async function getDatabase(name) {
         "mongodb+srv://adrian:YDzr8E1bWDAHC7aF@adriantest-kvgdz.mongodb.net/test?retryWrites=true&w=majority",
         {
             useNewUrlParser: true,
-            useUnifiedTopology: true,
+            useUnifiedTopology: true
         }
     );
 
@@ -37,7 +38,7 @@ const PROJECT_FOLDER = ".";
     require("./setupEnvFiles");
 
     envJson.default.AWS_REGION = "eu-central-1";
-    envJson.default.MONGODB_NAME = "webiny-cy-test-" + new Date().getTime();
+    envJson.default.MONGODB_NAME = "webiny-cy-e2e-test-" + uniqid();
     envJson.default.MONGODB_SERVER = process.env.MONGODB_SERVER;
     await writeJson(envJsonPath, envJson);
 
