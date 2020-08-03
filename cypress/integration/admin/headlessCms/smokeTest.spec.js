@@ -55,6 +55,7 @@ context("Headless CMS - Smoke Test", () => {
             .within(() => {
                 cy.findByLabelText("Label").type("Book");
                 cy.findByLabelText("Content Model").type(newModel1.substr(0, 10));
+                cy.wait(1000);
                 cy.findByText(newModel1).click();
                 cy.findByText("Save").click();
             });
@@ -134,6 +135,7 @@ context("Headless CMS - Smoke Test", () => {
             .within(() => {
                 cy.findByLabelText("Label").type("Book");
                 cy.findByLabelText("Content Model").type(newModel1.substr(0, 10));
+                cy.wait(1000);
                 cy.findByText(newModel1).click();
                 cy.findByText("Save").click();
             });
@@ -196,6 +198,7 @@ context("Headless CMS - Smoke Test", () => {
             cy.findByLabelText("Nickname").type(`${newModel2}-1`);
             cy.findByLabelText("Book")
                 .type(`${newModel1.substr(0, 10)}`)
+                .wait(1000)
                 .findByText(`${newModel1}-1`)
                 .click()
                 .findByText(/save & publish/i)
