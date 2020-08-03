@@ -59,7 +59,7 @@ jobs:
       - name: Run tests
         run: yarn test
 
-  built-e2e-test-1:
+  build-e2e-test-1:
     name: Build & E2E test (attempt \#1)
     runs-on: ubuntu-latest
     steps:
@@ -111,7 +111,7 @@ jobs:
       - name: Cypress - run the rest of Admin app tests
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
-  built-e2e-test-2:
+  build-e2e-test-2:
     name: Build & E2E test (attempt \#2)
     runs-on: ubuntu-latest
     steps:
@@ -163,7 +163,7 @@ jobs:
       - name: Cypress - run the rest of Admin app tests
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
-  built-e2e-test-3:
+  build-e2e-test-3:
     name: Build & E2E test (attempt \#3)
     runs-on: ubuntu-latest
     steps:
