@@ -35,7 +35,7 @@ jobs:
         run: yarn test
 
   build-e2e-test-1:
-    name: Build & E2E test (attempt \#1)
+    name: Build & E2E test (attempt 1)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -87,7 +87,7 @@ jobs:
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
   build-e2e-test-2:
-    name: Build & E2E test (attempt \#2)
+    name: Build & E2E test (attempt 2)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -139,7 +139,7 @@ jobs:
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
   build-e2e-test-3:
-    name: Build & E2E test (attempt \#3)
+    name: Build & E2E test (attempt 3)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
