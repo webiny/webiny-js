@@ -1,9 +1,9 @@
 {
-  "name": "@webiny/cwp-template-basic",
+  "name": "@webiny/cwp-template-admin",
   "version": "4.7.0",
   "repository": {
     "type": "git",
-    "directory": "packages/cwp-template-basic"
+    "directory": "packages/cwp-template-admin"
   },
   "publishConfig": {
     "access": "public",
