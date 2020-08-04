@@ -16,11 +16,19 @@ module.exports = async ({ appName, root }) => {
     const { name, version } = require("./package.json");
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
-        fs.moveSync(
-            path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
-            path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
-            { overwrite: true }
-        );
+        if (filesToCopy[i].keepOriginal) {
+            fs.moveSync(
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
+                { overwrite: true }
+            );
+        } else {
+            fs.moveSync(
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
+                path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
+                { overwrite: true }
+            );
+        }
     }
 
     //Commit .gitignore
