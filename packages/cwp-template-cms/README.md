@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./static/webiny-logo.svg" width="250">
+  <img src="../../static/webiny-logo.svg" width="250">
   <br><br>
   <strong>The Easiest Way to Adopt Serverless</strong>
 </p>
@@ -44,7 +44,5 @@ After you have successfully created the admin app, you need to follow the below 
 Now you have your project deployed and ready.
 To run the project simply go into **apps/admin** and run **yarn start**.
 This will start your app at localhost:3001.
-To run the site simply go into **apps/site** and run **yarn start**.
-This will start your site at localhost:3000.
 
 Have fun 🚀.

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./static/webiny-logo.svg" width="250">
+  <img src="../../static/webiny-logo.svg" width="250">
   <br><br>
   <strong>The Easiest Way to Adopt Serverless</strong>
 </p>
