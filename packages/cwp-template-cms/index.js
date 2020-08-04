@@ -12,7 +12,7 @@ const s3BucketName = (projectId, appName, env) => {
 };
 
 String.prototype.toCamelCase = function() {
-    return this.replace(/^([A-Z])|[\s-_](\w)/g, function(match, p1, p2) {
+    return this.replace(/^([A-Z])|[\s-_.](\w)/g, function(match, p1, p2) {
         if (p2) {
             return p2.toUpperCase();
         }
