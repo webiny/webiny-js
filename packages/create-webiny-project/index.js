@@ -110,7 +110,7 @@ async function createApp({ projectName, template, tag, log }) {
     }
 
     const root = path.resolve(projectName).replace(/\\/g, "/");
-    const appName = path.basename(root);
+    const appName = path.basename(root).replace(/[^a-zA-Z0-9-_]/g, "-");
 
     if (fs.existsSync(root)) {
         console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
@@ -308,7 +308,7 @@ async function createApp({ projectName, template, tag, log }) {
                             if (json.dependencies[name].startsWith("file:")) {
                                 return;
                             }
-                            
+
                             // Use version of @webiny/cli package (we have fixed package versioning)
                             json.dependencies[name] = `^` + latestVersion;
                         }
