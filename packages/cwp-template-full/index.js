@@ -12,7 +12,17 @@ const s3BucketName = (projectId, appName, env) => {
     return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-${env}`;
 };
 
+String.prototype.toCamelCase = function() {
+    return this.replace(/^([A-Z])|[\s-_](\w)/g, function(match, p1, p2) {
+        if (p2) {
+            return p2.toUpperCase();
+        }
+        return p1.toLowerCase();
+    });
+};
+
 module.exports = async ({ appName, root }) => {
+    const appNam = appName.toCamelCase();
     const { name, version } = require("./package.json");
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
@@ -43,16 +53,16 @@ module.exports = async ({ appName, root }) => {
     apiEnv.local["JWT_SECRET"] = jwtSecret();
     apiEnv.dev["JWT_SECRET"] = jwtSecret();
     apiEnv.prod["JWT_SECRET"] = jwtSecret();
-    apiEnv.local["S3_BUCKET"] = s3BucketName(projectId, appName, "local");
-    apiEnv.dev["S3_BUCKET"] = s3BucketName(projectId, appName, "dev");
-    apiEnv.prod["S3_BUCKET"] = s3BucketName(projectId, appName, "prod");
+    apiEnv.local["S3_BUCKET"] = s3BucketName(projectId, appNam, "local");
+    apiEnv.dev["S3_BUCKET"] = s3BucketName(projectId, appNam, "dev");
+    apiEnv.prod["S3_BUCKET"] = s3BucketName(projectId, appNam, "prod");
     await writeJsonFile(apiEnvJson, apiEnv);
 
     const baseEnvPath = path.join(root, ".env.json");
     const baseEnv = await loadJsonFile(baseEnvPath);
-    baseEnv.local["MONGODB_NAME"] = `${appName}-local`;
-    baseEnv.dev["MONGODB_NAME"] = `${appName}-dev`;
-    baseEnv.prod["MONGODB_NAME"] = `${appName}-prod`;
+    baseEnv.local["MONGODB_NAME"] = `${appNam}-local`;
+    baseEnv.dev["MONGODB_NAME"] = `${appNam}-dev`;
+    baseEnv.prod["MONGODB_NAME"] = `${appNam}-prod`;
     await writeJsonFile(baseEnvPath, baseEnv);
 
     let webinyRoot = fs.readFileSync(path.join(root, "webiny.root.js"), "utf-8");
