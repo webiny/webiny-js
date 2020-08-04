@@ -10,7 +10,7 @@ const topBar = css({
 
 export default function Bar() {
     return (
-        <TopAppBar className={topBar} fixed>
+        <TopAppBar className={topBar} fixed data-testid={"cms-editor-top-bar"}>
             <TopAppBarSection style={{ width: "50%" }} alignEnd>
                 {renderPlugins("content-model-editor-default-bar-left")}
             </TopAppBarSection>

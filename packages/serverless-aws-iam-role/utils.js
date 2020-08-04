@@ -15,6 +15,10 @@ const addRolePolicy = async ({ iam, name, policy }) => {
             })
             .promise();
     }
+
+    return new Promise(resolve => {
+        setTimeout(resolve, 15000);
+    });
 };
 
 const removeRolePolicy = async ({ iam, name, policy }) => {

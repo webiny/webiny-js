@@ -1,4 +1,4 @@
-const MAX_RETRIES = 10;
+const MAX_RETRIES = 60;
 const WAIT_BETWEEN_RETRIES = 3000;
 
 const sleep = () =>

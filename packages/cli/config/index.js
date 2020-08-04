@@ -25,7 +25,7 @@ const verifyConfig = () => {
 };
 
 const getId = () => {
-    return config.id;
+    return `${process.env.WEBINY_TRACKING_PREFIX || ""}${config.id}`;
 };
 
 module.exports = { verifyConfig, getId };

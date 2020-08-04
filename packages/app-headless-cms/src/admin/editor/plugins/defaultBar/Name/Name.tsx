@@ -74,7 +74,7 @@ export const Name = () => {
                 placement={"bottom"}
                 content={<span>{t`rename`}</span>}
             >
-                <FormName data-testid="fb-editor-form-title" onClick={startEditing}>
+                <FormName data-testid="cms-editor-model-title" onClick={startEditing}>
                     {state.data.name}
                 </FormName>
             </Tooltip>

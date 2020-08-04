@@ -6,7 +6,7 @@ context("Page Builder Settings", () => {
     it("should invalidate CDN cache once the settings have changed", () => {
         const id = uniqid();
 
-        cy.visit("/settings/general")
+        cy.visit("/settings/page-builder/general")
             .findByLabelText(/website name/i)
             .clear()
             .type(`New-site-name-${id}`)
@@ -28,7 +28,7 @@ context("Page Builder Settings", () => {
         const twitter = `https://twitter.com/${id}`;
         const instagram = `https://instagram.com/${id}`;
 
-        cy.visit("/settings/general")
+        cy.visit("/settings/page-builder/general")
             .findByLabelText(/facebook/i)
             .clear()
             .type(facebook)
