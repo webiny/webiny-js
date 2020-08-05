@@ -105,7 +105,7 @@ export default React.memo(
                     </LazyLoad>
                 </div>
                 <div className={"label"} onClick={onSelect}>
-                    {file.name} 
+                    {file.name}
                 </div>
             </div>
         );

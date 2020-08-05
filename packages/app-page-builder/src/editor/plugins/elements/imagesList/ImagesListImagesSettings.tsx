@@ -15,6 +15,8 @@ const style = {
 
 class Item extends React.Component {
     render() {
+        console.log("ITEM props");
+        console.log(this.props);
         return (
             <li style={style.liItem} {...this.props}>
                 {this.props.children}
