@@ -62,7 +62,6 @@ export default () => {
                 };
             },
             render({ element }) {
-                console.log("RENDERING IMAGE LIST:::::::::::::")
                 return <ImagesList data={element.data} />;
             }
         } as PbEditorPageElementPlugin,
