@@ -7,7 +7,7 @@ const ImagesList = ({ data }) => {
     const { theme } = usePageBuilder();
     const { component, images } = data;
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
-        "pb-editor-page-element-images-list-component"
+        "pb-page-element-images-list-component"
     );
     console.log("WHERE `Selected image gallery component not found!` IS RENDERED!!:::::::::");
     const imageList = components.find(cmp => cmp.componentName === component);

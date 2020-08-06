@@ -79,7 +79,6 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     const renderDraggable = useCallback(
         (element, plugin) => {
             const { elementType } = plugin;
-
             return (
                 <Draggable
                     key={plugin.name}
@@ -204,6 +203,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
 export default connect<any, any, any>(
     state => {
         const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
+        console.log("CONNECT::::::::")
         return {
             params: getParams ? getParams(state) : null
         };
