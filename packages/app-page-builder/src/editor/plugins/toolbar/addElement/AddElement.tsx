@@ -79,7 +79,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     const renderDraggable = useCallback(
         (element, plugin) => {
             const { elementType } = plugin;
-            
+
             return (
                 <Draggable
                     key={plugin.name}
