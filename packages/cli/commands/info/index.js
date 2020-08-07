@@ -5,10 +5,10 @@ module.exports = {
         yargs.command(
             "info",
             `Lists all relevant URLs for your deployed stacks/environments`,
-            () => {
+            async () => {
                 const infoPlugins = context.plugins.byType("hook-stacks-info");
                 for (const infoPlugin of infoPlugins) {
-                    infoPlugin.hook();
+                    await infoPlugin.hook();
                 }
             }
         );
