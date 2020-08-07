@@ -1,7 +1,17 @@
-const { green, blue } = require("chalk");
+const { green, blue, cyan, gray } = require("chalk");
 const fs = require("fs");
 const path = require("path");
 const readJson = require("load-json-file");
+const indentString = require("indent-string");
+
+const getTitle = (environmentsCount = 0) => {
+    let title = "Stack: apps";
+    if (environmentsCount) {
+        title += ` (${environmentsCount} environment`;
+        title += environmentsCount > 1 ? `s)` : `)`;
+    }
+    return cyan(title);
+};
 
 module.exports = (opts = {}) => (
     {
@@ -23,39 +33,45 @@ module.exports = (opts = {}) => (
     {
         name: "hook-stacks-info-api",
         type: "hook-stacks-info",
-        async hook() {
+        async hook({ last }) {
             const stackName = opts.stackName || "api";
             const stackFolder = `./.webiny/state/${stackName}`;
 
-            if (!fs.existsSync(stackFolder)) {
-                return;
-            }
-
-            const info = [];
-            const stackEnvs = fs.readdirSync(stackFolder);
-            for (const stackEnv of stackEnvs) {
-                const webinyJson = await readJson(path.join(stackFolder, stackEnv, "Webiny.json"));
-                if (webinyJson.outputs) {
-                    const url = webinyJson.outputs.cdn.url;
-                    info.push({ stack: stackName, env: stackEnv, url });
+            try {
+                if (!fs.existsSync(stackFolder)) {
+                    console.log(getTitle());
+                    console.log("Nothing to show (stack not deployed).");
+                    return;
                 }
-            }
 
-            if (info.length) {
-                console.log(`List of URLs for stack "${stackName}"`);
-                const prettyInfo =
-                    info
-                        .map(
-                            stackInfo =>
-                                `  Environment "${stackInfo.env}"\n` +
-                                `    ${stackInfo.url}/graphql\n` +
-                                `    ${stackInfo.url}/cms/read/production\n` +
-                                `    ${stackInfo.url}/cms/preview/production`
-                        )
-                        .join("\n\n") + "\n\n";
-                console.log(prettyInfo);
-            } else {
-                console.log(`There are no available URLs for stack ${stackName} yet.`);
+                const stackEnvs = fs.readdirSync(stackFolder);
+                if (!stackEnvs.length) {
+                    console.log(getTitle());
+                    console.log("Nothing to show (stack not deployed).");
+                    return;
+                }
+
+                console.log(getTitle(stackEnvs.length));
+                for (let i = 0; i < stackEnvs.length; i++) {
+                    const stackEnv = stackEnvs[i];
+
+                    const webinyJson = await readJson(
+                        path.join(stackFolder, stackEnv, "Webiny.json")
+                    );
+
+                    if (webinyJson.outputs) {
+                        console.log(gray(`${stackEnv}`));
+                        printDeploySummary({ state: webinyJson.outputs, indent: 2 });
+                    }
+
+                    const last = i === stackEnvs.length - 1;
+                    if (!last) {
+                        console.log();
+                    }
+                }
+            } finally {
+                // Add space between this plugin and the next one that's about to be called.
+                !last && console.log();
             }
         }
     }
@@ -97,7 +113,7 @@ function printFirstDeploySummary({ state }) {
     }
 }
 
-function printDeploySummary({ state }) {
+function printDeploySummary({ state, indent = 0 }) {
     const hasGraphQL = state.apolloGateway;
     const hasCMS = state.cmsContent;
     if (state.cdn && state.apolloGateway) {
@@ -111,6 +127,7 @@ function printDeploySummary({ state }) {
                     `   - Content Preview API: ${green(state.cdn.url + "/cms/preview/production")}`
             ]
                 .filter(l => l !== false)
+                .map(item => indentString(item, indent))
                 .join("\n")
         );
     }
