@@ -141,13 +141,13 @@ are making assertions related to the server side rendering (SSR) and CDN cache i
 
 The only problem with this approach is that, if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a local development server (use `--env` local when running `yarn setup-cypress`). This way you'll be able to iterate much faster.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--env local` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediatelly visible in the browser.
 
 #### Where are tests located?
 
-All of the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial tests that goes through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
+All of the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial test that clicks through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
 
-Try to follow the same structure if you're about to add a new test. Also make sure to check other tests before creating one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make the tests look a bit nicer).
+Try to follow the same structure if you're about to add a new test. Also, make sure to check other tests before creating a new one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make them more clear).
 
 #### How to test `site` app in the cloud?
 
