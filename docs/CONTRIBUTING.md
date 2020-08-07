@@ -162,13 +162,13 @@ That's why we've created a custom `reloadUntil` Cypress command. The following c
 ```js
 .visit(Cypress.env("SITE_URL"))
 .reloadUntil(() => {
-    // We wait until the document contains the newly added menu.
+    // The document must contain a specific element. We reload the page while this is not the case.
     return Cypress.$(`:contains(${id})`).length;
 })
 ```
 
-The `reloadUntil` command will just reload the page until the condition is met. After that, the following assertions will start to get executed.
+The `reloadUntil` command will just reload the page until a condition is met. After that, the following assertions will start to get executed.
 
-The page will be refreshed every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
+The page will be reloaded every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
 
 There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
