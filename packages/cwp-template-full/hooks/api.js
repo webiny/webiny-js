@@ -23,6 +23,11 @@ module.exports = (opts = {}) => (
         type: "hook-stacks-info",
         hook() {
             const stackName = opts.stackName || "api";
+            const stackFolder = `./.webiny/state/${stackName}`;
+
+            if (!fs.existsSync(stackFolder)) {
+                return;
+            }
 
             const info = [];
             const stackEnvs = fs.readdirSync(`./.webiny/state/${stackName}`);
@@ -30,13 +35,11 @@ module.exports = (opts = {}) => (
                 const webinyJson = JSON.parse(
                     fs.readFileSync(`./.webiny/state/api/${stackEnv}/Webiny.json`).toString()
                 );
-                if (!webinyJson.outputs) {
-                    // This env wasn't deployed succesfully
-                    continue;
-                }
-                const url = webinyJson.outputs.cdn.url;
 
-                info.push({ stack: stackName, env: stackEnv, url });
+                if (webinyJson.outputs) {
+                    const url = webinyJson.outputs.cdn.url;
+                    info.push({ stack: stackName, env: stackEnv, url });
+                }
             }
             if (info.length) {
                 console.log(`List of URLs for stack "${stackName}"`);
