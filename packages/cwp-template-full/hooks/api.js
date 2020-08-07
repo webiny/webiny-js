@@ -5,7 +5,7 @@ const readJson = require("load-json-file");
 const indentString = require("indent-string");
 
 const getTitle = (environmentsCount = 0) => {
-    let title = "Stack: apps";
+    let title = "Stack: api";
     if (environmentsCount) {
         title += ` (${environmentsCount} environment`;
         title += environmentsCount > 1 ? `s)` : `)`;
