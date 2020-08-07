@@ -119,7 +119,7 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 Once you have a working API and app deployed to the cloud, run `yarn setup-cypress --env {env}`. 
  
-This will create a copy of `example.cypress.json` and pull all necessary values from the deplyoment state files you have locally. If you open the config file once the command is run, you should have valid values in it (e.g. `SITE_URL` and `API_URL` should have valid URLs assigned).
+This will create a copy of `example.cypress.json` and pull all of the necessary values from the deployment state files you have locally. So, if you open the config file once the command is run, you should have valid values in it (e.g. `SITE_URL` and `API_URL` should have valid URLs assigned).
  
 The `yarn setup-cypress` can take the following args:
 
@@ -128,7 +128,7 @@ Pass "--env" to specify from which environment in the ".webiny" folder you want 
 Pass "--force" if you want to allow overwriting existing cypress.json config file.
 ```
 
-Finally, by default, `prod` environment is used, but you can set it to `local` if you want to run test against locally hosted apps.
+Finally, by default, `prod` environment is used, but you can set it to `local` if you want to run test against locally hosted apps (read the following sections to learn more about running tests against locally hosted apps).
 
 #### Opening the Cypress app
 
@@ -139,15 +139,15 @@ Once you've configured all of the variables, you can run the following command i
 In general, Cypress tests should be ran against a project deployed into the cloud, mainly because of the existing tests that
 are making assertions related to the server side rendering (SSR) and CDN cache invalidations, which is not active in local development.
 
-The only problem with this approach is that if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
+The only problem with this approach is that, if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-But, if your test doesn't involve assertions related to SSR and CDN cache invalidation, while creating the test, you can actually run it against a local development server (set `SITE_URL` variable to e.g. "http://localhost:3001"). This way you'll be able to see your changes in the browser much faster, and get back to your test faster as well.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a local development server (use `--env` local when running `yarn setup-cypress`). This way you'll be able to iterate much faster.
 
 #### Where are tests located?
 
-All of the tests can be found in the `cypress/integration` folder (in the project root). In there, you will find just a single `admin` folder, because at the moment we only have tests for the Admin app and various modules introduced by other Webiny apps (Page Builder, Form Builder, Security, ...).
+All of the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial tests that goes through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
 
-Follow the same structure if you're about to add a new test. Also make sure to check other tests before creating one.
+Try to follow the same structure if you're about to add a new test. Also make sure to check other tests before creating one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make the tests look a bit nicer).
 
 #### How to test `site` app in the cloud?
 
@@ -157,15 +157,18 @@ The problem occurs when you make changes in the Admin, and you want to test that
 
 The initial "quick" solution was to just use `.wait(30000)` commands in order to wait for the CDN cache to be invalidated. But as you might've noticed, this isn't very effective, since in some cases CDN could be invalidate way before 30 seconds. On the other hand, sometimes 30 seconds wasn't long enough, and the tests would continue making assertions on the old page content, which would result in a failed test.
 
-That's why we've created a custom `visitAndReloadOnceInvalidated` Cypress command. The following code shows a usage example:
+That's why we've created a custom `reloadUntil` Cypress command. The following code shows a usage example:
 
 ```js
-cy.findByText("Save something")
-  .click()
-  .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"))
-  .continueTestingAsUsual();
+.visit(Cypress.env("SITE_URL"))
+.reloadUntil(() => {
+    // We wait until the document contains the newly added menu.
+    return Cypress.$(`:contains(${id})`).length;
+})
 ```
 
-The `visitAndReloadOnceInvalidated` command will immediately visit the URL you're trying to test and will continuously refresh the page until the change was detected, after which the next assertions will start to get executed.
+The `reloadUntil` command will just reload the page until the condition is met. After that, the following assertions will start to get executed.
 
-The page will be refreshed every ~3 seconds for 10 times. If there are no changes after that, the command will throw an error, and the test will fail.
+The page will be refreshed every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
+
+There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
