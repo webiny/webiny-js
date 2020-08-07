@@ -117,9 +117,18 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 #### Configuration
 
-Once you have a working API and app deployed to the cloud, make sure to open the `cypress.json` in the project root, and configure all of the variables.
+Once you have a working API and app deployed to the cloud, run `yarn setup-cypress --env {env}`. 
+ 
+This will create a copy of `example.cypress.json` and pull all necessary values from the deplyoment state files you have locally. If you open the config file once the command is run, you should have valid values in it (e.g. `SITE_URL` and `API_URL` should have valid URLs assigned).
+ 
+The `yarn setup-cypress` can take the following args:
 
-Tests that are testing different sections of the Admin app also require the `DEFAULT_ADMIN_USER_USERNAME` and `DEFAULT_ADMIN_USER_PASSWORD` values, which represent the credentials of the default full-access admin account (set in the Admin app, in the initial installation process).
+```
+Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
+Pass "--force" if you want to allow overwriting existing cypress.json config file.
+```
+
+Finally, by default, `prod` environment is used, but you can set it to `local` if you want to run test against locally hosted apps.
 
 #### Opening the Cypress app
 
