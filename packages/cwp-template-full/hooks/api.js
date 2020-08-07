@@ -40,6 +40,7 @@ module.exports = (opts = {}) => (
                     info.push({ stack: stackName, env: stackEnv, url });
                 }
             }
+
             if (info.length) {
                 console.log(`List of URLs for stack "${stackName}"`);
                 const prettyInfo =
