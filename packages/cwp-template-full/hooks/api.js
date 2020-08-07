@@ -13,7 +13,7 @@ const getTitle = (environmentsCount = 0) => {
     return cyan(title);
 };
 
-module.exports = (opts = {}) => (
+module.exports = (opts = {}) => [
     {
         type: "hook-stack-after-deploy",
         hook(params) {
@@ -75,7 +75,7 @@ module.exports = (opts = {}) => (
             }
         }
     }
-);
+];
 
 function printFirstDeploySummary({ state }) {
     const hasGraphQL = state.apolloGateway;
