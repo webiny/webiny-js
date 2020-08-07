@@ -1,5 +1,6 @@
 const { green, blue } = require("chalk");
 const fs = require("fs");
+const path = require("path");
 const readJson = require("load-json-file");
 
 module.exports = (opts = {}) => (
@@ -31,10 +32,9 @@ module.exports = (opts = {}) => (
             }
 
             const info = [];
-            const stackEnvs = fs.readdirSync(`./.webiny/state/${stackName}`);
+            const stackEnvs = fs.readdirSync(stackFolder);
             for (const stackEnv of stackEnvs) {
-                const webinyJson = await readJson(`./.webiny/state/api/${stackEnv}/Webiny.json`);
-
+                const webinyJson = await readJson(path.join(stackFolder, stackEnv, "Webiny.json"));
                 if (webinyJson.outputs) {
                     const url = webinyJson.outputs.cdn.url;
                     info.push({ stack: stackName, env: stackEnv, url });
