@@ -16,7 +16,17 @@ module.exports = async ({ appName, root }) => {
     const { name, version } = require("./package.json");
     const filesToCopy = require("./filesToCopy");
     for (let i = 0; i < filesToCopy.length; i++) {
-        if (filesToCopy[i].keepOriginal) {
+        const { dir, oldFile, newFile, keepOriginal } = filesToCopy[i];
+        const oldFilePath = path.join(root, dir, oldFile);
+        const newFilePath = path.join(root, dir, newFile);
+
+        if (keepOriginal) {
+            fs.copyFileSync(oldFilePath, newFilePath);
+        } else {
+            fs.moveSync(oldFilePath, newFilePath, { overwrite: true });
+        }
+        f;
+        /*if (filesToCopy[i].keepOriginal) {
             fs.moveSync(
                 path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
                 path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
@@ -28,7 +38,7 @@ module.exports = async ({ appName, root }) => {
                 path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
                 { overwrite: true }
             );
-        }
+        }*/
     }
 
     //Commit .gitignore
