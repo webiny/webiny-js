@@ -61,8 +61,6 @@ module.exports.linkPackages = async ({ whitelist } = defaults) => {
             return acc;
         }, []);
     
-    console.log(packages);
-
     const lernaJson = path.resolve("lerna.json");
     const lerna = fs.existsSync(lernaJson) ? require(lernaJson) : null;
 
