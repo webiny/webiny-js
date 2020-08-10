@@ -1,1 +1,1 @@
-module.exports = require("../../.babel.node");
+module.exports = require("../../.babel.react");
