@@ -19,7 +19,7 @@ module.exports = async ({ appName, root }) => {
         const { dir, oldFile, newFile, keepOriginal } = filesToCopy[i];
         const oldFilePath = path.join(root, dir, oldFile);
         const newFilePath = path.join(root, dir, newFile);
-        console.log("old and new");
+        console.log("old and new full");
         console.log(oldFilePath);
         console.log(newFilePath);
         if (keepOriginal) {
