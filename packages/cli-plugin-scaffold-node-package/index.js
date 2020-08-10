@@ -61,6 +61,7 @@ module.exports = [
                         })
                     )
                     .replace(/\\/g, "/");
+
                 const baseTsConfigBuildPath = path
                     .relative(
                         fullLocation,
@@ -69,6 +70,7 @@ module.exports = [
                         })
                     )
                     .replace(/\\/g, "/");
+
                 const baseJestConfigPath = path
                     .relative(
                         fullLocation,
