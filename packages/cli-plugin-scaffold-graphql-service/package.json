@@ -28,9 +28,6 @@
     "replace-in-path": "^1.0.2",
     "write-json-file": "^4.3.0"
   },
-  "devDependencies": {
-    "@shelf/jest-mongodb": "^1.1.5"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "."
