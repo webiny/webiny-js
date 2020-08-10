@@ -123,6 +123,19 @@ module.exports = [
                 jestConfig = jestConfig.replace("[JEST_CONFIG_BASE_PATH]", baseJestConfigPath);
                 fs.writeFileSync(jestConfigPath, jestConfig);
 
+                replaceInPath(path.join(fullLocation, "src/index.ts"), [
+                    { find: "PACKAGE_NAME_CAMEL_CASED", replaceWith: Case.camel(packageName) },
+                    { find: "PACKAGE_NAME", replaceWith: Case.kebab(packageName) }
+                ]);
+
+                // Update root package.json - update "workspaces.packages" section.
+                const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+                const rootPackageJson = await readJson(rootPackageJsonPath);
+                if (!rootPackageJson.workspaces.packages.includes(location)) {
+                    rootPackageJson.workspaces.packages.push(location);
+                    await writeJson(rootPackageJsonPath, rootPackageJson);
+                }
+
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 await execa("yarn");
             }
