@@ -17,11 +17,11 @@
   "dependencies": {
     "execa": "^4.0.3",
     "find-up": "^4.1.0",
-    "lodash.kebabcase": "^4.1.1",
-    "ncp": "^2.0.0"
-  },
-  "devDependencies": {
-    "@shelf/jest-mongodb": "^1.1.5"
+    "replace-in-path": "^1.0.2",
+    "case": "^1.6.3",
+    "ncp": "^2.0.0",
+    "load-json-file": "^6.2.0",
+    "write-json-file": "^4.3.0"
   },
   "publishConfig": {
     "access": "public",
