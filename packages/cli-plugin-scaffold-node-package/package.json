@@ -1,7 +1,7 @@
 {
   "name": "@webiny/cli-plugin-scaffold-node-package",
   "version": "4.4.0",
-  "description": "Generate a NodeJs package similar to our 'api-' packages",
+  "description": "Quickly create a simple general-purpose package.",
   "main": "index.js",
   "repository": {
     "type": "git",
