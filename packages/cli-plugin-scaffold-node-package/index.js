@@ -3,8 +3,11 @@ const path = require("path");
 const util = require("util");
 const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
-const kebabCase = require("lodash.kebabcase");
 const execa = require("execa");
+const { replaceInPath } = require("replace-in-path");
+const Case = require("case");
+const readJson = require("load-json-file");
+const writeJson = require("write-json-file");
 
 module.exports = [
     {
@@ -16,7 +19,8 @@ module.exports = [
                 return [
                     {
                         name: "location",
-                        message: "Enter package location (including package name)",
+                        message: "Enter package location",
+                        default: "packages/my-utils",
                         validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
@@ -24,7 +28,7 @@ module.exports = [
 
                             const fullLocation = path.resolve(location);
                             const projectLocation = context.paths.projectRoot;
-                            if (path.relative(fullLocation, projectLocation).match(/[^.\\]/)) {
+                            if (!fullLocation.startsWith(projectLocation)) {
                                 return "The target location must be within the Webiny project's root";
                             }
 
@@ -34,14 +38,30 @@ module.exports = [
 
                             return true;
                         }
+                    },
+                    {
+                        name: "packageName",
+                        message: "Enter package name",
+                        default: ({ location }) => {
+                            const parts = location.split("/");
+                            return Case.kebab(parts[parts.length - 1]);
+                        }
                     }
                 ];
             },
             generate: async ({ input }) => {
-                const { location } = input;
-                const fullLocation = path.resolve(location);
+                let { location, packageName } = input;
+                location = location.split("/");
+                location[location.length - 1] = Case.kebab(location[location.length - 1]);
+                location = path.join(...location);
+                packageName = Case.kebab(packageName);
 
-                const packageName = kebabCase(location);
+                const fullLocation = path.resolve(location);
+                const projectRootPath = path.dirname(
+                    findUp.sync("webiny.root.js", {
+                        cwd: fullLocation
+                    })
+                );
 
                 // Then we also copy the template folder
                 const sourceFolder = path.join(__dirname, "template");
@@ -137,7 +157,13 @@ module.exports = [
                 }
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
-                await execa("yarn");
+                try {
+                    await execa("yarn");
+                } catch (err) {
+                    throw new Error(
+                        `Unable to install dependencies. Try running "yarn" in project root manually.`
+                    );
+                }
             }
         }
     }
