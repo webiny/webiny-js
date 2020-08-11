@@ -126,7 +126,7 @@ module.exports = [
                 console.log(indentString(`1. Open ${green(applicationFilePath)} file.`, 2));
                 console.log(
                     indentString(
-                        `2. Pass the generated plugins to the app template via the ${green(
+                        `2. Import and pass the generated plugins to the app template via the ${green(
                             "plugins"
                         )} array.`,
                         2
