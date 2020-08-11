@@ -4,7 +4,7 @@ import { ReactComponent as Icon } from "@webiny/app-page-builder/admin/assets/ro
 
 const plugin: AdminMenuPlugin = {
     type: "admin-menu",
-    name: "admin-menu-graphql-entities",
+    name: "admin-menu-entities",
     render({ Menu, Item }) {
         return (
             <Menu name="menu-entities" label={"Entities"} icon={<Icon />}>
