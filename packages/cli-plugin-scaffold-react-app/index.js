@@ -24,6 +24,7 @@ module.exports = [
                     {
                         name: "location",
                         message: "Enter package location (including package name)",
+                        default: 'apps/my-app',
                         validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
