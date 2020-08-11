@@ -1,6 +1,6 @@
 import React from "react";
-import {i18n} from "@webiny/app/i18n";
-import {ConfirmationDialog} from "@webiny/ui/ConfirmationDialog";
+import { i18n } from "@webiny/app/i18n";
+import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import {
     DataList,
     ScrollList,
@@ -11,13 +11,13 @@ import {
     ListActions
 } from "@webiny/ui/List";
 
-import {DeleteIcon} from "@webiny/ui/List/DataList/icons";
-import {useCrud} from "@webiny/app-admin/hooks/useCrud";
+import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
 const t = i18n.ns("app-graphql-app-entity/data-list");
 
 const EntitiesDataList = () => {
-    const {actions, list} = useCrud();
+    const { actions, list } = useCrud();
     return (
         <DataList
             {...list}
@@ -25,23 +25,23 @@ const EntitiesDataList = () => {
             sorters={[
                 {
                     label: t`Newest to oldest`,
-                    sorters: {createdOn: -1}
+                    sorters: { createdOn: -1 }
                 },
                 {
                     label: t`Oldest to newest`,
-                    sorters: {createdOn: 1}
+                    sorters: { createdOn: 1 }
                 },
                 {
                     label: t`Name A-Z`,
-                    sorters: {title: 1}
+                    sorters: { title: 1 }
                 },
                 {
                     label: t`Name Z-A`,
-                    sorters: {title: -1}
+                    sorters: { title: -1 }
                 }
             ]}
         >
-            {({data, select, isSelected}) => (
+            {({ data, select, isSelected }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
@@ -53,7 +53,7 @@ const EntitiesDataList = () => {
                             <ListItemMeta>
                                 <ListActions>
                                     <ConfirmationDialog>
-                                        {({showConfirmation}) => (
+                                        {({ showConfirmation }) => (
                                             <DeleteIcon
                                                 onClick={() =>
                                                     showConfirmation(() => actions.delete(item))

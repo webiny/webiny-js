@@ -1,22 +1,22 @@
-import React, {Suspense, lazy} from 'react';
+import React, { Suspense, lazy } from "react";
 import Helmet from "react-helmet";
-import {Route} from "@webiny/react-router";
-import {RoutePlugin} from "@webiny/app/types";
-import {CircularProgress} from "@webiny/ui/Progress";
-import {AdminLayout} from "@webiny/app-admin/components/AdminLayout";
+import { Route } from "@webiny/react-router";
+import { RoutePlugin } from "@webiny/app/types";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 
-const Loader = ({children, ...props}) => (
-    <Suspense fallback={<CircularProgress/>}>{React.cloneElement(children, props)}</Suspense>
+const Loader = ({ children, ...props }) => (
+    <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const Entities = lazy(() => import('./views/Entities'));
+const Entities = lazy(() => import("./views/Entities"));
 
 const entitiesRoute: RoutePlugin = {
-    type: 'route',
-    name: 'route-admin-entities',
+    type: "route",
+    name: "route-admin-entities",
     route: (
         <Route
-            path={'/entities'}
+            path={"/entities"}
             exact
             render={() => (
                 <AdminLayout>
@@ -24,16 +24,14 @@ const entitiesRoute: RoutePlugin = {
                         <title>Entities</title>
                     </Helmet>
                     <Loader>
-                        <Entities/>
+                        <Entities />
                     </Loader>
                 </AdminLayout>
             )}
         />
-    ),
+    )
 };
 
-const routes: RoutePlugin[] = [
-    entitiesRoute,
-];
+const routes: RoutePlugin[] = [entitiesRoute];
 
 export default routes;

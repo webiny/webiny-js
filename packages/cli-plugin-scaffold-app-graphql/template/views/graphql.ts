@@ -1,8 +1,7 @@
 import gql from "graphql-tag";
 
-
 export const LIST_ENTITIES = gql`
-    query ListEntities (
+    query ListEntities(
         $sort: EntityListSort
         $sort: EntityListSort
         $where: EntityListWhere
@@ -11,7 +10,7 @@ export const LIST_ENTITIES = gql`
         $before: String
     ) {
         entities {
-            listEntities (
+            listEntities(
                 sort: $sort
                 where: $where
                 limit: $limit
@@ -32,7 +31,7 @@ export const LIST_ENTITIES = gql`
 
 export const CREATE_ENTITY = gql`
     mutation CreateEntity($input: EntityInput!) {
-        createEntity (input: $input) {
+        createEntity(input: $input) {
             data {
                 id
                 title
@@ -49,9 +48,8 @@ export const CREATE_ENTITY = gql`
     }
 `;
 
-
 export const READ_ENTITY = gql`
-    query GetEntity ($id: ID!) {
+    query GetEntity($id: ID!) {
         entities {
             entity: getEntity(id: $id) {
                 data {
@@ -67,7 +65,7 @@ export const READ_ENTITY = gql`
 `;
 
 export const DELETE_ENTITY = gql`
-    mutation DeleteEntity ($id: ID!) {
+    mutation DeleteEntity($id: ID!) {
         deleteEntity(id: $id) {
             data
             error {
@@ -80,7 +78,7 @@ export const DELETE_ENTITY = gql`
 `;
 
 export const UPDATE_ENTITY = gql`
-    mutation UpdateEntity ($id: ID!, $data: EntityInput!) {
+    mutation UpdateEntity($id: ID!, $data: EntityInput!) {
         updateEntity(id: $id, data: $data) {
             data {
                 id
