@@ -44,9 +44,17 @@ const scaffold = async ({ context }) => {
     try {
         await scaffold.generate({ input, context, oraSpinner });
         oraSpinner.succeed("Done!");
+
+        if (typeof scaffold.onSuccess === "function") {
+            await scaffold.onSuccess({ input, context, oraSpinner });
+        }
     } catch (e) {
         oraSpinner.stop();
-        console.log(e);
+        if (typeof scaffold.onError === "function") {
+            await scaffold.onError({ input, context, oraSpinner, error: e });
+        } else {
+            console.log(e);
+        }
         process.exit(1);
     }
 };
