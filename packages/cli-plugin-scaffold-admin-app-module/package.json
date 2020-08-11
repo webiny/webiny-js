@@ -1,12 +1,12 @@
 {
-  "name": "@webiny/cli-plugin-scaffold-app-graphql",
+  "name": "@webiny/cli-plugin-scaffold-admin-app-module",
   "version": "4.6.0",
   "description": "Generate Webiny GraphQL React App",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webiny/webiny-js.git",
-    "directory": "packages/cli-plugin-scaffold-app-graphql"
+    "directory": "packages/cli-plugin-scaffold-admin-app-module"
   },
   "author": "",
   "license": "MIT",
