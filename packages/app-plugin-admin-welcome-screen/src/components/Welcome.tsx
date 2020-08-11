@@ -154,7 +154,7 @@ const Welcome = () => {
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
                                     return (
-                                        <SecureView scopes={pl.scopes}>
+                                        <SecureView scopes={pl.scopes} key={pl.name}>
                                             <Widget key={pl.name}>
                                                 <Elevation z={2} style={{ padding: 10 }}>
                                                     <Typography use={"headline6"}>
