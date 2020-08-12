@@ -81,7 +81,7 @@
     "glob": "^7.1.3",
     "globby": "^8.0.1",
     "got": "^9.6.0",
-    "husky": "^4.2.3",
+    "husky": "^4.2.5",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
