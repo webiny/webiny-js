@@ -89,6 +89,7 @@ export default async ({ menu, context }: { [key: string]: any }) => {
                             const ids = Object.keys(context.distinctParents.data);
 
                             await listPublishedPages({
+                                limit: 200,
                                 args: { parent: ids },
                                 context
                             }).then(results => {
@@ -113,6 +114,7 @@ export default async ({ menu, context }: { [key: string]: any }) => {
                         const { category, sortBy, sortDir, tags } = item;
 
                         item.children = await listPublishedPages({
+                            limit: 200,
                             args: { tags, category, sort: { [sortBy]: parseInt(sortDir) } },
                             context
                         });
