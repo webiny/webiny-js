@@ -7,6 +7,7 @@
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
     "@webiny/cli-plugin-scaffold-lambda": "latest",
+    "@webiny/cli-plugin-scaffold-react-package": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/serverless-api-gateway": "latest",
     "@webiny/serverless-aws-api-gateway": "latest",
