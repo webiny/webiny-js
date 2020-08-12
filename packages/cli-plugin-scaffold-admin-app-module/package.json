@@ -1,0 +1,41 @@
+{
+  "name": "@webiny/cli-plugin-scaffold-admin-app-module",
+  "version": "4.6.0",
+  "description": "Generate Webiny GraphQL React App",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-plugin-scaffold-admin-app-module"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webiny/webiny-js/issues"
+  },
+  "homepage": "https://github.com/webiny/webiny-js#readme",
+  "dependencies": {
+    "case": "^1.6.3",
+	"chalk": "^4.1.0",
+    "find-up": "^4.1.0",
+    "ncp": "^2.0.0",
+    "indent-string": "^4.0.0",
+    "pluralize": "^8.0.0",
+    "replace-in-path": "^1.0.2",
+	"util": "^0.10.3"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template",
+      "node_modules",
+      "__tests__"
+    ]
+  }
+}
