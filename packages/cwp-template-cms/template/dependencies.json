@@ -9,6 +9,8 @@
     "@webiny/cli-plugin-scaffold-lambda": "latest",
     "@webiny/cli-plugin-scaffold-node-package": "latest",
     "@webiny/cli-plugin-scaffold-react-package": "latest",
+    "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
+    "@webiny/cli-plugin-scaffold-react-app": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/serverless-api-gateway": "latest",
     "@webiny/serverless-aws-api-gateway": "latest",
