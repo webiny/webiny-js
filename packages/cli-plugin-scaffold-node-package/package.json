@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-node-package",
-  "version": "4.8.0-beta.2",
+  "version": "4.8.0",
   "description": "Quickly create a simple general-purpose package.",
   "main": "index.js",
   "repository": {
