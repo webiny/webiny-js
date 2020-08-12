@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* **app-page-builder:** update images-list plugin type ([#1165](https://github.com/webiny/webiny-js/issues/1165)) ([b5bf3f2](https://github.com/webiny/webiny-js/commit/b5bf3f23570895016e4994490462142645199756))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/app-page-builder

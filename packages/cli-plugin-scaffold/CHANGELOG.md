@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Features
+
+* add support for `onSuccess` and `onError` callbacks ([0824d6c](https://github.com/webiny/webiny-js/commit/0824d6c9dfc8290b2c19cd576a2df49432268783))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold

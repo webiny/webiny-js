@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* add missing key ([d5cffa1](https://github.com/webiny/webiny-js/commit/d5cffa1bcd5b4d849aff481fb64c4501c79bc188))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/app-plugin-admin-welcome-screen

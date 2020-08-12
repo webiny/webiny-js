@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* add PagesListPage model ([e598377](https://github.com/webiny/webiny-js/commit/e598377a8f5784ab474cbefcd5de1a46a3a717a3))
+* correct query filter ([dc2a5e7](https://github.com/webiny/webiny-js/commit/dc2a5e759b10795942d67dd19a130f0937e45a94))
+* increase pages list limit to 200 ([af8f8cc](https://github.com/webiny/webiny-js/commit/af8f8ccbebf4cdb98b068d7302ba699877df6722))
+* load full data when getting a single page ([58dd5cc](https://github.com/webiny/webiny-js/commit/58dd5cc5fc34d6d917f71b8f853c6c626488739d))
+* use `PbPagesListPage` for simple listing of pages ([74a43a7](https://github.com/webiny/webiny-js/commit/74a43a78baa494a6ea758e9858b1d26e05d8d0da))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/api-page-builder

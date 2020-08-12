@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* allow async hook execution ([af783cf](https://github.com/webiny/webiny-js/commit/af783cf62e0b86e8df1ead270831c67ce636522e))
+
+
+### Features
+
+* add `first` and `last` flags ([f87caa4](https://github.com/webiny/webiny-js/commit/f87caa4421d12e2015fd12d1592103240d5b3f3e))
+* add ability to prefix the Webiny tracking ID ([f9d400c](https://github.com/webiny/webiny-js/commit/f9d400c989eb0ddf2943ce0d3352788a1b033c88))
+* **cli:** add "info" command ([76c6970](https://github.com/webiny/webiny-js/commit/76c69709056f18549a326763d42c54def90dc5f1))
+* **cli:** add "info" command's plugin ([e0d00ac](https://github.com/webiny/webiny-js/commit/e0d00acec7b54396cfc77a109a069ffb2f61331a))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/cli

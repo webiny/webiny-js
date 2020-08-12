@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* **headless:** abstract function and add comment for reason ([46f80ff](https://github.com/webiny/webiny-js/commit/46f80ffdc988d5762b868ab8673132e8d260a156))
+* **headless:** add alternative to pluralize if id is one character ([d19c7a7](https://github.com/webiny/webiny-js/commit/d19c7a7fcee919dbd754927dc39941e372969119))
+* **headless:** remove file changes from other pr ([7dd3329](https://github.com/webiny/webiny-js/commit/7dd33291424029b4075f8cbc9525c4b1011d5578))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

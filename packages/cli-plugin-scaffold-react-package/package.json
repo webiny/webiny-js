@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-react-package",
-  "version": "4.4.0",
+  "version": "4.8.0-beta.0",
   "description": "Generate a React package similar to our 'app-' packages",
   "main": "index.js",
   "repository": {
@@ -15,12 +15,12 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
+    "case": "^1.6.3",
     "execa": "^4.0.3",
     "find-up": "^4.1.0",
+    "load-json-file": "^6.2.0",
     "ncp": "^2.0.0",
     "replace-in-path": "^1.0.2",
-    "case": "^1.6.3",
-    "load-json-file": "^6.2.0",
     "write-json-file": "^4.3.0"
   },
   "publishConfig": {
