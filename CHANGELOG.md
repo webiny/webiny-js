@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.0...v4.8.0-beta.1) (2020-08-12)
+
+
+### Bug Fixes
+
+* add missing `scaffold-*` dependencies ([c9eb4dc](https://github.com/webiny/webiny-js/commit/c9eb4dc9509e1c6b40fb1e3d34c893e769940090))
+
+
+
+
+
 # [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
 
 
