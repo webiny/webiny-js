@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
+
+
+### Bug Fixes
+
+* add missing array ([77de092](https://github.com/webiny/webiny-js/commit/77de0925fa3a29cddbee9ebb3309e150941a6680))
+* change `apps` to `api` ([837f9e2](https://github.com/webiny/webiny-js/commit/837f9e215831c7c711bd7ab1cd76bf6fd8f2d35f))
+* check if stack folder exists before moving on ([f0816a0](https://github.com/webiny/webiny-js/commit/f0816a0dba93346b77ba41ffc8e883e97333b1f5))
+* prettify environments output ([994147a](https://github.com/webiny/webiny-js/commit/994147a8070624d34e53ac14efd54bcbe71ac15a))
+* remove `timeout: 30` since the default value is already `30` ([66a24fa](https://github.com/webiny/webiny-js/commit/66a24fafd894010a79397d8579ec3cbd01bd19fb))
+* require `cli-plugin-scaffold-admin-app-module` ([b41a2a8](https://github.com/webiny/webiny-js/commit/b41a2a847c7c0d330a2f7f3dbec78c4a449a89c4))
+* update dependencies ([42a49f9](https://github.com/webiny/webiny-js/commit/42a49f956afed4e960f417aad56370ba072468d9))
+* use `readJson` lib ([37947d5](https://github.com/webiny/webiny-js/commit/37947d56247ee3c3534dbe2d059fa68da7d7fc94))
+* use path.join to construct file paths ([b21c756](https://github.com/webiny/webiny-js/commit/b21c756e5a66fcfa2e79e0da324c276733310df2))
+* **cwp-templates:** add a postinstall script to properly link monorepo packages ([ba1f28d](https://github.com/webiny/webiny-js/commit/ba1f28d9508f224bdc1af31e5b3b36e64af2256f))
+* **cwp-templates:** lock typescript version and restore composite flag ([f595859](https://github.com/webiny/webiny-js/commit/f595859be9bbecb78f9172a0d8894d8a69ae5d50))
+* **cwp-templates:** remove TS references from tsconfig.json ([0320880](https://github.com/webiny/webiny-js/commit/03208801ea5eee7f45ec3a2221d61ddc06830423))
+
+
+### Features
+
+* **cli:** add "hook-stacks-info-apps" plugin ([b4f570b](https://github.com/webiny/webiny-js/commit/b4f570bdd517be934a19f6187b2e030786a4ed94))
+* **cli:** better console.log() indenting ([69a1297](https://github.com/webiny/webiny-js/commit/69a12979506f725e3a920833d99e4f7e2e8b9365))
+* **cli:** print all API URLs ([64ad9a0](https://github.com/webiny/webiny-js/commit/64ad9a0466ee81206e53f75821229c2771ce4a29))
+* **cli:** print both "apps" stacks' urls ([f76f7a5](https://github.com/webiny/webiny-js/commit/f76f7a5d9836d579ededbafaa90c5b5a3ce9c231))
+* **cwp-template-full:** add "hook-stacks-info-api" plugin ([a8c49a3](https://github.com/webiny/webiny-js/commit/a8c49a3b55778313b9c1ce1f9629488f2815a8df))
+* **scaffolding:** add 'custom app' react scaffolding plugin ([8e6a505](https://github.com/webiny/webiny-js/commit/8e6a50517c0e51c57b62787c2990f0ce0d28b3b5))
+
+
+
+
+
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

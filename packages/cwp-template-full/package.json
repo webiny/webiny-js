@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cwp-template-full",
-  "version": "4.7.0",
+  "version": "4.8.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
     "chalk": "^4.0.0",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
+    "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
     "uuid": "^7.0.3",
-    "write-json-file": "^4.3.0",
-    "indent-string": "^4.0.0"
+    "write-json-file": "^4.3.0"
   },
   "adio": {
     "ignoreDirs": [
