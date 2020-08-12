@@ -77,6 +77,7 @@ export const EditTab: CmsEditorContentTab = () => {
                                 <Icon icon={<HandleIcon />} />
                             </div>
                             <Horizontal
+                                data-testid={`cms-editor-row-droppable-top-${index}`}
                                 onDrop={item => handleDropField(item, { row: index, index: null })}
                             />
                             {/* Row start - includes field drop zones and fields */}
@@ -142,6 +143,7 @@ export const EditTab: CmsEditorContentTab = () => {
                             {/* Row end */}
                             {index === fields.length - 1 && (
                                 <Horizontal
+                                    data-testid={`cms-editor-row-droppable-bottom-${index}`}
                                     last
                                     onDrop={item =>
                                         handleDropField(item, {

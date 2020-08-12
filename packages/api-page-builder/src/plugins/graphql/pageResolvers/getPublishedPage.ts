@@ -3,6 +3,7 @@ import { listPublishedPages } from "./listPublishedPages";
 import get from "lodash.get";
 
 const createNotFoundResponse = async ({ returnFallbackPage, context, page, message }) => {
+    const { PbPage } = context.models;
     const response = new NotFoundResponse(message);
     if (returnFallbackPage === true) {
         const { PbSettings } = context.models;
@@ -12,7 +13,11 @@ const createNotFoundResponse = async ({ returnFallbackPage, context, page, messa
             return response;
         }
 
-        const [foundPage] = await listPublishedPages({ context, args: { parent, limit: 1 } });
+        const [foundPage] = await listPublishedPages({
+            pageModel: PbPage,
+            context,
+            args: { parent, limit: 1 }
+        });
         response.data = foundPage;
     }
 
@@ -20,7 +25,7 @@ const createNotFoundResponse = async ({ returnFallbackPage, context, page, messa
 };
 
 export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
-    const { PbSettings } = context.models;
+    const { PbSettings, PbPage } = context.models;
     const settings = await PbSettings.load();
     if (!settings.data.installation.completed) {
         // We don't need to load the error page here, since PB is not installed at all, so it doesn't exist.
@@ -38,7 +43,11 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
         // 1. If "parent" of "id" were passed, get the page based on those.
         //    Note that the "preview" mode is only available for the "id" filter.
         if (args.parent || args.id) {
-            const [page] = await listPublishedPages({ context, args: { ...args, perPage: 1 } });
+            const [page] = await listPublishedPages({
+                pageModel: PbPage,
+                context,
+                args: { ...args, perPage: 1 }
+            });
             if (page) {
                 return new Response(page);
             }
@@ -57,7 +66,11 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             const settings = await PbSettings.load();
             const parent = get(settings, `data.pages.home`);
 
-            const [page] = await listPublishedPages({ context, args: { parent, limit: 1 } });
+            const [page] = await listPublishedPages({
+                pageModel: PbPage,
+                context,
+                args: { parent, limit: 1 }
+            });
             if (page) {
                 return new Response(page);
             }
@@ -71,7 +84,11 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
         }
 
         // 3. Otherwise, just try to load the page via passed "url".
-        const [page] = await listPublishedPages({ context, args: { ...args, limit: 1 } });
+        const [page] = await listPublishedPages({
+            pageModel: PbPage,
+            context,
+            args: { ...args, limit: 1 }
+        });
         if (page) {
             return new Response(page);
         }

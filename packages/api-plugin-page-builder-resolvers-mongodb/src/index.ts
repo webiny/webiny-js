@@ -36,21 +36,7 @@ export default () => [
             // TODO: in "content" field. We will only store an immutable file "key", which is enough for us to
             // TODO: construct the whole path to the file (we'll only load URL prefix via GRAPHQL)
             try {
-                if (!context.files) {
-                    context.files = {
-                        settings: await driver.getClient().runOperation({
-                            collection: "Settings",
-                            operation: [
-                                "findOne",
-                                {
-                                    key: "file-manager",
-                                    deleted: { $ne: true }
-                                }
-                            ]
-                        })
-                    };
-                }
-
+                const filesSettings = await context.settingsManager.getSettings("file-manager");
                 const result = await driver.getClient().runOperation({
                     collection: "File",
                     operation: ["findOne", { id, deleted: { $ne: true } }]
@@ -62,7 +48,7 @@ export default () => [
 
                 return {
                     id: result.id,
-                    src: get(context, "files.settings.data.srcPrefix") + result.key
+                    src: get(filesSettings, "srcPrefix") + result.key
                 };
             } catch (e) {
                 return null;

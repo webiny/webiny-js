@@ -1,10 +1,10 @@
-import pluralize from "pluralize";
 import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageSDL {
     (params: {
@@ -70,7 +70,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         extend type Query {
             get${typeName}(locale: String, where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
 
-            list${pluralize(typeName)}(
+            list${pluralizedTypeName(typeName)}(
                 locale: String
                 where: ${rTypeName}ListWhereInput
                 sort: [${rTypeName}ListSorter]

@@ -7,9 +7,10 @@
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
     "@webiny/cli-plugin-scaffold-lambda": "latest",
+    "@webiny/cli-plugin-scaffold-node-package": "latest",
+    "@webiny/cli-plugin-scaffold-react-package": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/serverless-api-gateway": "latest",
-    "@webiny/serverless-app": "latest",
     "@webiny/serverless-aws-api-gateway": "latest",
     "@webiny/serverless-aws-cloudfront": "latest",
     "@webiny/serverless-aws-cognito-user-pool": "latest",
@@ -43,6 +44,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^26.1.0",
     "merge": "^1.2.1",
+    "typescript": "3.7.4",
     "ts-jest": "^26.1.1"
   },
   "workspaces": {
@@ -60,6 +62,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "node ./scripts/linkPackages.js",
     "test": "jest --config jest.config.js"
   }
 }

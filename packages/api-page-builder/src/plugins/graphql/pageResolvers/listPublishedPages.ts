@@ -2,8 +2,10 @@ import { ListResponse, requiresTotalCount } from "@webiny/graphql";
 import { GraphQLResolveInfo } from "graphql";
 
 export const listPublishedPages = async params => {
-    const { context, args, info = null } = params;
-    const { PbCategory, PbPage } = context.models;
+    const { pageModel, context, args, info = null } = params;
+    const { PbCategory, PbPagesListPage } = context.models;
+
+    const PbPageModel = pageModel || PbPagesListPage;
 
     const {
         search,
@@ -73,7 +75,7 @@ export const listPublishedPages = async params => {
         }
     }
 
-    return PbPage.find({
+    return PbPageModel.find({
         query: { $and: baseFilters },
         sort,
         limit,

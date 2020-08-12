@@ -48,7 +48,9 @@ const HeadlessCmsApiUrls = function({ name = null, type = null }) {
                     } else if (type === "environment") {
                         return get(elem, "environment.name") === name;
                     } else {
-                        return get(elem, "environment.name") === currentEnvironment.name;
+                        // Rarely (but still annoying), "currentEnvironment" would be undefined,
+                        // that's why we are fetching the currentEnvironment via `lodash.get` here.
+                        return get(elem, "environment.name") === get(currentEnvironment, "name");
                     }
                 })
                 .map(elem => {

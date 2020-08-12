@@ -17,11 +17,10 @@ context("Roles Module", () => {
             .findByLabelText("Description")
             .type("This is a test test.")
             .findByText("Save role")
-            .click();
-
-        cy.wait(500)
+            .click()
             .findByText("Record saved successfully.")
-            .should("exist");
+            .should("exist")
+            .wait(500);
 
         cy.findByLabelText("Slug")
             .should("disabled")
@@ -38,21 +37,23 @@ context("Roles Module", () => {
             .findByText("Unpublish form revisions")
             .click();
 
-        cy.findByText("Save role").click();
+        cy.findByText("Save role")
+            .click()
+            .findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
 
-        cy.wait(500)
-            .findByTestId("default-data-list")
-            .within(() => {
-                cy.get("div")
-                    .first()
-                    .within(() => {
-                        cy.findByText(`Test Role ${id}`)
-                            .should("exist")
-                            .findByText("This is a test test. Test test.")
-                            .should("exist");
-                        cy.get("button").click({ force: true });
-                    });
-            });
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(`Test Role ${id}`)
+                        .should("exist")
+                        .findByText("This is a test test. Test test.")
+                        .should("exist");
+                    cy.get("button").click({ force: true });
+                });
+        });
 
         cy.get('[role="alertdialog"] :visible').within(() => {
             cy.contains("Are you sure you want to continue?")
@@ -71,20 +72,22 @@ context("Roles Module", () => {
         cy.visit("/roles")
             .findByLabelText("Name")
             .type(`Test Role ${id}`)
-            .findByText("Save role")
             .findByLabelText("Slug")
             .type(`test-role-${id}`)
             .findByLabelText("Description")
             .type("This is a test test.")
             .findByText("Save role")
             .click()
-            .wait(1500);
+            .findByText("Record saved successfully.")
+            .should("exist")
+            .get(".react-spinner-material")
+            .should("not.exist")
+            .wait(500);
 
         cy.findByTestId("new-record-button")
             .click()
             .findByLabelText("Name")
             .type(`Test Role ${id}`)
-            .findByText("Save role")
             .findByLabelText("Slug")
             .type(`test-role-${id}`)
             .findByLabelText("Description")
@@ -98,6 +101,7 @@ context("Roles Module", () => {
                 cy.findByText(`Role with slug "test-role-${id}" already exists.`).should("exist");
             });
     });
+
 
     it("should save scopes correctly", () => {
         const id = uniqid();
@@ -117,10 +121,12 @@ context("Roles Module", () => {
             .findByText("Unpublish form revisions")
             .click()
             .findByText("Save role")
-            .click();
+            .click()
+            .findByText("Record saved successfully.")
+            .should("exist")
+            .wait(500);
 
-        cy.wait(2500)
-            .reload()
+        cy.reload()
             .findByTestId("default-form")
             .within(() => {
                 cy.findByText("forms:form:revision:publish")

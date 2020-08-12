@@ -26,8 +26,7 @@ module.exports = ({ cli }) => {
                         description: "Webiny Admin",
                         code: "./admin/build",
                         handler: "handler.handler",
-                        memory: 128,
-                        timeout: 30
+                        memory: 128
                     }
                 }
             },
