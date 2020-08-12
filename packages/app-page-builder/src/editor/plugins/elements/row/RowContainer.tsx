@@ -1,4 +1,4 @@
-import React, {useRef, useCallback, useState, RefObject} from "react";
+import React, { useRef, useCallback, useState, RefObject } from "react";
 import { css } from "emotion";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";

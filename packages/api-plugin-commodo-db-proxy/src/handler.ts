@@ -20,9 +20,9 @@ export default ({ logCollection, database, server, name }: DatabaseProxyOptions)
         const client = await MongoClient.connect(server, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            connectTimeoutMS: 10000,
-            socketTimeoutMS: 10000,
-            serverSelectionTimeoutMS: 10000
+            connectTimeoutMS: 25000,
+            socketTimeoutMS: 25000,
+            serverSelectionTimeoutMS: 25000
         });
 
         return client.db(name);

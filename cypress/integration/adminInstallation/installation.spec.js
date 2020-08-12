@@ -66,7 +66,7 @@ context("Admin Installation", () => {
             .type(Cypress.env("SITE_NAME"))
             .findByTestId("install-pb-button")
             .click()
-            .wait(25000); // Wait for the Page Builder instllation to finish.
+            .wait(25000); // Wait for the Page Builder installation to finish.
 
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
         cy.wait(5000);
@@ -74,8 +74,8 @@ context("Admin Installation", () => {
         // 6. Installation complete, click the button and check if the pages list was shown to the user.
         cy.findByTestId("open-webiny-cms-admin-button")
             .click()
-            .wait(2000)
-            .findByText(/Select a page on the left side/i)
+            .wait(4000)
+            .findByText(/Learn more about Webiny/i)
             .should("exist");
     });
 });

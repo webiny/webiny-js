@@ -1,5 +1,5 @@
 import React from "react";
-import {PbRenderSlateEditorPlugin} from "@webiny/app-page-builder/types";
+import { PbRenderSlateEditorPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbRenderSlateEditorPlugin => {
     return {

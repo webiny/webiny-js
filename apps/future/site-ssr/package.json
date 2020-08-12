@@ -5,7 +5,7 @@
     "@webiny/project-utils": "^1.0.1"
   },
   "scripts": {
-    "build:dev": "env-cmd -r .env.json -e default,dev webiny run build",
-    "build:prod": "env-cmd -r .env.json -e default,prod webiny run build"
+    "build:dev": "env-cmd -r .env.json --silent -e default,dev webiny run build",
+    "build:prod": "env-cmd -r .env.json --silent -e default,prod webiny run build"
   }
 }

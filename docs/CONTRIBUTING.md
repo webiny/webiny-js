@@ -13,7 +13,7 @@ This guide is for anyone who wants to contribute to the Webiny project.
 ### Workflow
 
 - create an issue branch
-- commit your changes (please follow our [commit message format](#commit-message-format) rules)
+- commit your changes (please follow our [commit message format](#commit-messages) rules)
 - open a PR
 - try to keep your PRs small in scope (try to only work on 1 issue in a single PR)
 - you can add as many commits as you wish to your PR
@@ -54,7 +54,8 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 - `handler-*` are utility packages to create serverless function handlers
 - `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
 
-`sample-project` folder is the place that simulates a project structure of a project created using `create-webiny-project`. This is your development sandbox.
+In the root of the project, you'll find the `api` and `apps` folders. These are the [stacks](https://docs.webiny.com/docs/deep-dive/stacks/) we use as our sandbox for development of Webiny packages.
+The setup of the repo is identical to the one created by `create-webiny-project`.
 
 ## Prerequisites
 
@@ -86,17 +87,15 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
    yarn
    ```
 
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `sample-project/.env.json` file.
+3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `.env.json` file.
 
-4. Configure your MongoDB connection data in `sample-project/.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
+4. Configure your MongoDB connection data in `.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
 
-5. Deploy you API to use with local React apps by running `npx webiny deploy api --env=local` from the `sample-project` folder. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
+5. Deploy you API to use with local React apps by running `yarn webiny deploy api --env=local` from the project root directory. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
 
-> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `sample-project` folder is a `sandbox`, this is the place to run your `webiny` commands from.
+> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `api` and `apps` folders are a `sandbox` present in the project root directory, this is the place to run your `webiny` commands from.
 
-> IMPORTANT: Within our repository, you should use `npx` to run Webiny CLI, for example: `npx webiny deploy api --env=local`. Why? Because `npx` will correctly resolve the CLI binary to the node_modules in the root of your repository.
-
-6. Begin working on React apps by navigating to `sample-project/apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+6. Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
 
 7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
@@ -118,11 +117,18 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 #### Configuration
 
-Once you have a working API and app deployed to the cloud, make sure to open the `cypress.json` in the project root, and configure all of the variables.
+Once you have a working API and app deployed to the cloud, run `yarn setup-cypress --env {env}`. 
+ 
+This will create a copy of `example.cypress.json` and pull all of the necessary values from the deployment state files you have locally. So, if you open the config file once the command is run, you should have valid values in it (e.g. `SITE_URL` and `API_URL` should have valid URLs assigned).
+ 
+The `yarn setup-cypress` can take the following args:
 
-Most of the needed values can be found in the `.env.json` files in your `sample-project/apps` folders (e.g. `sample-project/apps/admin/.env.json`).
+```
+Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
+Pass "--force" if you want to allow overwriting existing cypress.json config file.
+```
 
-Tests that are testing different sections of the Admin app also require the `DEFAULT_ADMIN_USER_USERNAME` and `DEFAULT_ADMIN_USER_PASSWORD` values, which represent the credentials of the default full-access admin account (set in the Admin app, in the initial installation process).
+Finally, by default, `prod` environment is used, but you can set it to `local` if you want to run test against locally hosted apps (read the following sections to learn more about running tests against locally hosted apps).
 
 #### Opening the Cypress app
 
@@ -133,15 +139,15 @@ Once you've configured all of the variables, you can run the following command i
 In general, Cypress tests should be ran against a project deployed into the cloud, mainly because of the existing tests that
 are making assertions related to the server side rendering (SSR) and CDN cache invalidations, which is not active in local development.
 
-The only problem with this approach is that if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
+The only problem with this approach is that, if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-But, if your test doesn't involve assertions related to SSR and CDN cache invalidation, while creating the test, you can actually run it against a local development server (set `SITE_URL` variable to e.g. "http://localhost:3001"). This way you'll be able to see your changes in the browser much faster, and get back to your test faster as well.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--env local` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediatelly visible in the browser.
 
 #### Where are tests located?
 
-All of the tests can be found in the `cypress/integration` folder (in the project root). In there, you will find just a single `admin` folder, because at the moment we only have tests for the Admin app and various modules introduced by other Webiny apps (Page Builder, Form Builder, Security, ...).
+All of the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial test that clicks through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
 
-Follow the same structure if you're about to add a new test. Also make sure to check other tests before creating one.
+Try to follow the same structure if you're about to add a new test. Also, make sure to check other tests before creating a new one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make them more clear).
 
 #### How to test `site` app in the cloud?
 
@@ -151,15 +157,24 @@ The problem occurs when you make changes in the Admin, and you want to test that
 
 The initial "quick" solution was to just use `.wait(30000)` commands in order to wait for the CDN cache to be invalidated. But as you might've noticed, this isn't very effective, since in some cases CDN could be invalidate way before 30 seconds. On the other hand, sometimes 30 seconds wasn't long enough, and the tests would continue making assertions on the old page content, which would result in a failed test.
 
-That's why we've created a custom `visitAndReloadOnceInvalidated` Cypress command. The following code shows a usage example:
+That's why we've created a custom `reloadUntil` Cypress command. The following code shows a usage example:
 
 ```js
-cy.findByText("Save something")
-  .click()
-  .visitAndReloadOnceInvalidated(Cypress.env("SITE_URL"))
-  .continueTestingAsUsual();
+.visit(Cypress.env("SITE_URL"))
+.reloadUntil(() => {
+    // The document must contain a specific element. We reload the page while this is not the case.
+    return Cypress.$(`:contains(${id})`).length;
+})
 ```
 
-The `visitAndReloadOnceInvalidated` command will immediately visit the URL you're trying to test and will continuously refresh the page until the change was detected, after which the next assertions will start to get executed.
+The `reloadUntil` command will just reload the page until a condition is met. After that, the following assertions will start to get executed.
 
-The page will be refreshed every ~3 seconds for 10 times. If there are no changes after that, the command will throw an error, and the test will fail.
+The page will be reloaded every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
+
+There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
+
+#### CI errors
+
+As you may have noticed, we're running the same suite for three times (the `Build & E2E` jobs in the screenshot below). This is because the Cypress tests are still in experimental / testing mode. In other words, they are not 100% stable - sometimes some random errors occur, which aren't actually errors that we should be concerned with. We will try to resolve this instability along the way, but just have in mind that we only need to be concerned if all three jobs fail. If at least one succeedes, that means we're OK.
+
+![image](https://user-images.githubusercontent.com/5121148/89633328-f9c61a80-d8a3-11ea-9bae-a7dcae9fc60a.png)

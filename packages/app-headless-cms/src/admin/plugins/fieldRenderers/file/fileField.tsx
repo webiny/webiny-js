@@ -1,9 +1,9 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import SingleFile from "./SingleFile";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 const plugin: CmsEditorFieldRendererPlugin = {
@@ -16,16 +16,22 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "file" && !field.multipleValues;
         },
-        render({ field, getBind, Label }) {
+        render({ field, getBind, Label, locale }) {
             const Bind = getBind();
+            const { getValue } = useI18N();
+
+            const label = getValue(field.label, locale);
+            const helpText = getValue(field.helpText, locale);
 
             return (
                 <Grid>
                     <Cell span={12}>
-                        <Label>
-                            <I18NValue value={field.label} />
-                        </Label>
-                        <Bind>{bind => <SingleFile field={field} bind={bind} />}</Bind>
+                        <Label>{label}</Label>
+                        <Bind>
+                            {bind => (
+                                <SingleFile field={field} bind={bind} description={helpText} />
+                            )}
+                        </Bind>
                     </Cell>
                 </Grid>
             );

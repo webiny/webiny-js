@@ -11,12 +11,12 @@ import {
     UNPUBLISH_REVISION
 } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import {FbFormModel} from "@webiny/app-form-builder/types";
+import { FbFormModel } from "@webiny/app-form-builder/types";
 
 export type UseRevisionProps = {
     revision: FbFormModel;
     form: FbFormModel;
-}
+};
 
 export const useRevision = ({ revision, form }: UseRevisionProps) => {
     const { history } = useRouter();

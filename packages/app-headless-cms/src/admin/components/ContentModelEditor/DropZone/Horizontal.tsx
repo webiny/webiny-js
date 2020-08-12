@@ -55,12 +55,13 @@ type HorizontalProps = {
     isVisible?: any;
 };
 
-const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
+const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
     return (
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
                 <div
                     ref={drop}
+                    data-testid={rest["data-testid"]}
                     style={{
                         height: "25px",
                         width: "100%",

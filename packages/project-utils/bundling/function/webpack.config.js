@@ -49,7 +49,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             rules: [
                 {
                     test: /\.(js|ts)$/,
-                    loader: "babel-loader",
+                    loader: require.resolve("babel-loader"),
                     exclude: /node_modules/,
                     options: babelOptions
                 }

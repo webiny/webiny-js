@@ -126,26 +126,17 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                         <ListItem key={contentModel.id} className={listItemMinHeight}>
                             <ListItemText>
                                 {contentModel.name}
-                                {contentModel.createdBy && (
-                                    <ListItemTextSecondary>
-                                        {contentModel.createdBy.firstName && (
-                                            <>
-                                                {t`Created by: {user}.`({
-                                                    user: contentModel.createdBy.firstName
-                                                })}{" "}
-                                            </>
-                                        )}
-
-                                        {t`Last modified: {time}.`({
-                                            time: <TimeAgo datetime={contentModel.savedOn} />
-                                        })}
-                                    </ListItemTextSecondary>
-                                )}
+                                <ListItemTextSecondary>
+                                    {t`Last modified: {time}.`({
+                                        time: <TimeAgo datetime={contentModel.savedOn} />
+                                    })}
+                                </ListItemTextSecondary>
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <ListActions>
                                     <Tooltip content={t`View content`} placement={"top"}>
                                         <IconButton
+                                            data-testid={"cms-view-content-model-button"}
                                             icon={
                                                 <ViewListIcon className={viewEntriesIconStyles} />
                                             }
@@ -154,7 +145,10 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
                                         />
                                     </Tooltip>
                                     <Tooltip content={t`Edit content model`} placement={"top"}>
-                                        <EditIcon onClick={editRecord(contentModel)} />
+                                        <EditIcon
+                                            onClick={editRecord(contentModel)}
+                                            data-testid={"cms-edit-content-model-button"}
+                                        />
                                     </Tooltip>
                                     <ConfirmationDialog>
                                         {({ showConfirmation }) => (

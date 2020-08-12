@@ -1,4 +1,3 @@
-import pluralize from "pluralize";
 import { CmsFieldTypePlugins, CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
@@ -6,6 +5,7 @@ import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
 import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageSDL {
     (params: {
@@ -38,8 +38,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .join("\n")}
         type ${mTypeName} {
             id: ID
-            createdBy: SecurityUser
-            updatedBy: SecurityUser
             createdOn: DateTime
             updatedOn: DateTime
             savedOn: DateTime
@@ -106,7 +104,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         extend type Query {
             get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
 
-            list${pluralize(typeName)}(
+            list${pluralizedTypeName(typeName)}(
                 where: ${mTypeName}ListWhereInput
                 sort: [${mTypeName}ListSorter]
                 limit: Int

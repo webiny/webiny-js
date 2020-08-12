@@ -3,6 +3,129 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* changed plugin name, error message and brought back try and catch ([5a7af7f](https://github.com/webiny/webiny-js/commit/5a7af7fb2339838ea6c376bdea0d7a2497214416))
+* checking results and error reports ([aedb6e8](https://github.com/webiny/webiny-js/commit/aedb6e8ae232480c10710dabb0c68cf3aefb30fb))
+* created rough template for aws credentials validator  plugin ([726ab1a](https://github.com/webiny/webiny-js/commit/726ab1a12d3131c9144632c1eac7666d4bba7bce))
+* impoting sts from aws and trying to call getCallerIdentity ([49e27b9](https://github.com/webiny/webiny-js/commit/49e27b9d9b956c7cad16340fcb3487f69a9a25ac))
+* pulled recent upstream master branch, fixed handler.js bug ([7c054da](https://github.com/webiny/webiny-js/commit/7c054da14afcdeb2c2c7ee3547b5df0a8a0e81d7))
+* replaced try and catch with promise and then to receive sts results ([f6a5ef0](https://github.com/webiny/webiny-js/commit/f6a5ef0416c35e3fbbd8f96d04c46a50304bec6e))
+* setting error message with like to webiny aws set up page ([9acca4c](https://github.com/webiny/webiny-js/commit/9acca4c8bcf9130e4d6da985e383840d62c4fca6))
+* updated console message ([74c4a41](https://github.com/webiny/webiny-js/commit/74c4a41dd7473813dfbe00afbd2b02302021e61c))
+* updated console message, removed comment and deleted aws.js file ([9bb00d8](https://github.com/webiny/webiny-js/commit/9bb00d89ed24ba65253ca6fd1ebb0df63b08f250))
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-components
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-components

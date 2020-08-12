@@ -40,7 +40,11 @@ export default function Center({ onDrop, children }: Props) {
     return (
         <Droppable onDrop={onDrop}>
             {({ isOver, drop }) => (
-                <div ref={drop} style={{ width: "100%", height: "100%" }}>
+                <div
+                    ref={drop}
+                    style={{ width: "100%", height: "100%" }}
+                    data-testid={"cms-editor-first-field-area"}
+                >
                     <Container isOver={isOver}>
                         <Add isOver={isOver}>{children}</Add>
                     </Container>

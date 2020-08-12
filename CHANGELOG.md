@@ -3,6 +3,239 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
+
+
+### Bug Fixes
+
+* update `commodo` versions ([2a1f287](https://github.com/webiny/webiny-js/commit/2a1f287b6f933094250732e39aaf3861712f2f2f))
+
+
+
+
+
+# [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+
+### Bug Fixes
+
+* `commit messages` link ([a019b25](https://github.com/webiny/webiny-js/commit/a019b2581d9f230b6e162b945d22336d2ec8a7f9))
+* add "--silent" when using env-cmd ([eaa9d15](https://github.com/webiny/webiny-js/commit/eaa9d15ce4adc6570b4b49e1c9223da1eaadb9d1))
+* contributing doc ([8d47145](https://github.com/webiny/webiny-js/commit/8d4714534c51848bd53366eefdb979d657167861))
+* copy message ([dfea698](https://github.com/webiny/webiny-js/commit/dfea6981517955a5ba7e6bf6554a95ccba4de265))
+* move "--silent" flag after the filename ([0e790ab](https://github.com/webiny/webiny-js/commit/0e790abffaa1a2eb1a317620b6d4a97f0e0358a9))
+* prepend empty object when doing merge.recursive ([9f677b3](https://github.com/webiny/webiny-js/commit/9f677b323409b9ce5933fbdb04d8f0adf58881e9))
+* **headless:** add new environment alias in apollo cache ([461468a](https://github.com/webiny/webiny-js/commit/461468a92ff952c1fa3bb901e586e5aa30b5281b))
+* **headless:** add refetch for environment aliases ([29adbf6](https://github.com/webiny/webiny-js/commit/29adbf63a6f795d1d0eadaf35fb365ed745c80a9))
+* **headless:** add style for material icon ([6fcc7ea](https://github.com/webiny/webiny-js/commit/6fcc7eabeb24cf2a77e8925f268e714d76285a14))
+* **headless:** change tooltip to focus on icon instead of text ([2455748](https://github.com/webiny/webiny-js/commit/2455748d6713c5bc3f701a3b2b99a42c2d645b68))
+* **storybook-utils:** enforce string when executing prettier format ([58addbe](https://github.com/webiny/webiny-js/commit/58addbe9098e2be6c8da1376bba197c2ced6248e))
+
+
+### Features
+
+* **serverless-cognito-user-pool:** add support for username attributes and schema ([#1160](https://github.com/webiny/webiny-js/issues/1160)) ([fc9bebb](https://github.com/webiny/webiny-js/commit/fc9bebb2756106d1b0b9493189b9aec13994cf69))
+
+
+
+
+
+# [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** update hook plugin name to be entry specific ([9394b36](https://github.com/webiny/webiny-js/commit/9394b36b6b12b09f9be78ba49dda82efbbded393))
+* **api-page-builder:** always remove trailing slash from domain in settings ([59af6bd](https://github.com/webiny/webiny-js/commit/59af6bdfd502da0afd37b91523adab1f6055d9ac))
+* **app-headless-cms:** add `description` props to SingleFile ([085df03](https://github.com/webiny/webiny-js/commit/085df03762128021984b767ea2342380bc561856))
+* **app-headless-cms:** add localized value via `useI18N` ([5ecf00c](https://github.com/webiny/webiny-js/commit/5ecf00c4d67902a94b998e29c4c2743e2ea74bf2))
+* **app-headless-cms:** disable `add index` button ([bfd1665](https://github.com/webiny/webiny-js/commit/bfd1665271c1d197bda4b30fb2466e50764a2b24))
+* **app-headless-cms:** fix `field` and `bind` props ([36c314e](https://github.com/webiny/webiny-js/commit/36c314e8cc7ff90e506fb622fec54e37ed3fc768))
+* **app-headless-cms:** update `checkboxes` field renderer ([9360b54](https://github.com/webiny/webiny-js/commit/9360b5439c3aad7a8208b128028fecb24a72ca18))
+* **app-headless-cms:** update `datetime` field ([7de5bb0](https://github.com/webiny/webiny-js/commit/7de5bb0398ee0ae66001f40330f852ff9e6e6168))
+* **app-headless-cms:** update `radio-buttons` renderer ([9d6e1ac](https://github.com/webiny/webiny-js/commit/9d6e1ac766755e37062bdf100be2d360a6bc10ef))
+* **app-headless-cms:** update `select-box` renderer ([f56376a](https://github.com/webiny/webiny-js/commit/f56376a81d848d4341876f76cc318c6e4c090bfc))
+* **app-page-builder:** remove trailing slashes from domain in settings form ([3c47281](https://github.com/webiny/webiny-js/commit/3c472818652a459da054413c34034a92b769f76a))
+* changed plugin name, error message and brought back try and catch ([5a7af7f](https://github.com/webiny/webiny-js/commit/5a7af7fb2339838ea6c376bdea0d7a2497214416))
+* checking results and error reports ([aedb6e8](https://github.com/webiny/webiny-js/commit/aedb6e8ae232480c10710dabb0c68cf3aefb30fb))
+* created rough template for aws credentials validator  plugin ([726ab1a](https://github.com/webiny/webiny-js/commit/726ab1a12d3131c9144632c1eac7666d4bba7bce))
+* deleting hot fix comment and namespace statement ([7f6a655](https://github.com/webiny/webiny-js/commit/7f6a6550c67b162211f740dcd459490312999f6c))
+* fixed console.log ([8442c12](https://github.com/webiny/webiny-js/commit/8442c125ac5a9475161e11b85222c9f72241311a))
+* impoting sts from aws and trying to call getCallerIdentity ([49e27b9](https://github.com/webiny/webiny-js/commit/49e27b9d9b956c7cad16340fcb3487f69a9a25ac))
+* removed interface Module from namespace NodeJS ([f6de445](https://github.com/webiny/webiny-js/commit/f6de4455ea8444022ab9ee9178c5df0443830c98))
+* replaced try and catch with promise and then to receive sts results ([f6a5ef0](https://github.com/webiny/webiny-js/commit/f6a5ef0416c35e3fbbd8f96d04c46a50304bec6e))
+* setting error message with like to webiny aws set up page ([9acca4c](https://github.com/webiny/webiny-js/commit/9acca4c8bcf9130e4d6da985e383840d62c4fca6))
+* updated console message ([74c4a41](https://github.com/webiny/webiny-js/commit/74c4a41dd7473813dfbe00afbd2b02302021e61c))
+* updated console message, removed comment and deleted aws.js file ([9bb00d8](https://github.com/webiny/webiny-js/commit/9bb00d89ed24ba65253ca6fd1ebb0df63b08f250))
+
+
+### Features
+
+* **api-headless-cms:** add support for data manager hooks ([61101ff](https://github.com/webiny/webiny-js/commit/61101ffcef4116f9b88d7064fca0126640f5bab1))
+* **publish:** lock 3rd party package dependencies before publishing to npm ([ef05267](https://github.com/webiny/webiny-js/commit/ef05267860611b66b2cf972a77655ef87b988ea0))
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+
+### Bug Fixes
+
+* remove "createdBy" ([e9e4728](https://github.com/webiny/webiny-js/commit/e9e47285f60af5570f7402eadd040cb3f485c61e))
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
+* remove unnecessary "apollo-server-lambda" dev dependency ([cad9eeb](https://github.com/webiny/webiny-js/commit/cad9eeb25ad6397e373d6cc3fbc4cb9a64a39c21))
+* remove unneeded quotes ([cf196a5](https://github.com/webiny/webiny-js/commit/cf196a52cef9bc47f97147beb02b951482389133))
+* use S3 bucket as StatementId in "api" stack ([46feeb6](https://github.com/webiny/webiny-js/commit/46feeb67b8c33c08b8fde31dafce0fa7fe120d26))
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([1ec7803](https://github.com/webiny/webiny-js/commit/1ec7803c78d5f3a1f701836f56a897f2d2169d0b))
+* **headless:** remove createdBy and updateBy for api of headless cms ([#1131](https://github.com/webiny/webiny-js/issues/1131)) ([d306838](https://github.com/webiny/webiny-js/commit/d3068382e01cdf8fd9954e9f943c6142c3ce417a))
+
+
+
+
+
+# [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** do not update root tsconfig.json during project creation ([a6c68a5](https://github.com/webiny/webiny-js/commit/a6c68a5cfb17f83eb663b9e083e1adf88cc7265a))
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** uncomment setup steps and remove debug logging ([0c590fd](https://github.com/webiny/webiny-js/commit/0c590fd81cadce843d66feff4eead15b246c34aa))
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+
+### Bug Fixes
+
+* **create-webiny-project:** remove rogue exclamation mark from glob pattern ([15214da](https://github.com/webiny/webiny-js/commit/15214da467cb30c46a0a0f759786e79d7714cb6f))
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+
+### Bug Fixes
+
+* correct package versions ([6a78910](https://github.com/webiny/webiny-js/commit/6a78910a7bb4e2aa719154c278e377780a7f0258))
+* correct package versions ([47edbd5](https://github.com/webiny/webiny-js/commit/47edbd5f9124a5786c6555c5cc34623bea28430b))
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+
+### Bug Fixes
+
+* increase "i18nGraphQL" function timeout ([9cfe86c](https://github.com/webiny/webiny-js/commit/9cfe86c565430da62c881cdfe5830fb5913d9b8e))
+* **app-headless-cms:** add `refetchQueries` to delete operation ([fd5718c](https://github.com/webiny/webiny-js/commit/fd5718ca2b10679cec453e4c1bb8a9c89901e6f9))
+* **app-headless-cms:** add missing `key` prop ([829fc03](https://github.com/webiny/webiny-js/commit/829fc038c8360a2ecf0c5f4246bba806228c42c2))
+* **app-plugin-admin-welcome-screen:** fix styles on mobile ([8a86c11](https://github.com/webiny/webiny-js/commit/8a86c113b3e37fa5ea131107d4fe6aac49fc837d))
+* **create-webiny-project:** improve CWP code structure and logging ([aeff646](https://github.com/webiny/webiny-js/commit/aeff6467a2186e1df7ea3778f7370eb8806b3cf7))
+* **cwp-templates:** use bucket name as StatementId instead of a hardcoded value ([e16f271](https://github.com/webiny/webiny-js/commit/e16f271e8a9179a08434c393f5503f11d3917526))
+* **serverless-aws-lambda:** remove credentials from client instantiation ([43528da](https://github.com/webiny/webiny-js/commit/43528da21691319d5d73be4b855a3e38b260668c))
+* **serverless-aws-s3:** remove credentials from client instantiation ([fc87f37](https://github.com/webiny/webiny-js/commit/fc87f378f4ecfc343de5e6a2feaef634006a5091))
+* create "admin-api-information-dialog-graphql" plugin ([654a62f](https://github.com/webiny/webiny-js/commit/654a62f9e8c6041dc920b8c931da2b85aeebf0f8))
+* create ApiUrlsDialog component ([3a6f8d0](https://github.com/webiny/webiny-js/commit/3a6f8d03563557dabcc4d7f030c0fc6164ca4e83))
+* create HeadlessCmsApiUrls component ([cdad245](https://github.com/webiny/webiny-js/commit/cdad245d53816356c70badeaa31680effecd32b2))
+* export mock IDs for direct usage in tests ([4e0c451](https://github.com/webiny/webiny-js/commit/4e0c4518eff4a3145872afae01e2cbe9708873fb))
+* make sure newly added ref fields cannot reference a model with no title field ([752753b](https://github.com/webiny/webiny-js/commit/752753b8580d8cfeb4e1b3f436831a6cd7a232ee))
+* remerging from master branch, fixed handler error ([2786e6e](https://github.com/webiny/webiny-js/commit/2786e6e6a2e2e51fefcf754d6a03b7287eff48b0))
+* remove "AdminMenuContentSectionPlugin" type ([ad29ab1](https://github.com/webiny/webiny-js/commit/ad29ab1176a051635adef22888545b596390c267))
+* remove @apollo/react-hooks ([bcca08f](https://github.com/webiny/webiny-js/commit/bcca08f19ccdf54a7bfb93104bccf1908268bbb4))
+* remove properties ([3ebd4e7](https://github.com/webiny/webiny-js/commit/3ebd4e772671e18d3016286c963353a24b4ecbe8))
+* removed searchModel from headless cms model fields text ([de1b0b6](https://github.com/webiny/webiny-js/commit/de1b0b6d98dfbee14323818f034c87f47ee04e75))
+* rename ApiInformationDialog to ApiInformationDialogPlugin ([3ec898a](https://github.com/webiny/webiny-js/commit/3ec898a403a5503f9a13ff47adbcd927425cac0f))
+* replace "Content" section in the main menu with "Page Builder" and "Form Builder" ([066b6b3](https://github.com/webiny/webiny-js/commit/066b6b3835b0c6e7113d242edcccdddfa6b03855))
+* simplify "ApiInformationDialog" component ([8d989df](https://github.com/webiny/webiny-js/commit/8d989dfc7e2c85695429bed02b1ef10c328af8ab))
+* simplify ApiInformationDialog component ([757d906](https://github.com/webiny/webiny-js/commit/757d906b076084cb94c01ed6661fef77e021d165))
+* use `HeadlessCmsApiUrls` component ([d7edc0a](https://github.com/webiny/webiny-js/commit/d7edc0a62b5c0bcddd2ef056f2989b8f16a78dd4))
+* **app-plugin-admin-welcome-screen:** override route-root to render at "/" path ([c776109](https://github.com/webiny/webiny-js/commit/c776109f74e31e9b1db09146792e1dc61c07a31d))
+* **app-template:** sort routes so * is always the last item ([7e46209](https://github.com/webiny/webiny-js/commit/7e462093e0cabe48764f74668148400e8285796c))
+* **app-template-admin:** remove root route ([1373dcc](https://github.com/webiny/webiny-js/commit/1373dccf76708b9822fafb0ad46210ee84665adc))
+* **app-template-site:** remove root route ([a6f2396](https://github.com/webiny/webiny-js/commit/a6f23964e5c2282eb2ea15d9a95cbd1d9e85a52c))
+* **headless:** add dependency for apollo hooks ([2283f95](https://github.com/webiny/webiny-js/commit/2283f950b03d843dba23e1bcd0ab6576141db195))
+* **headless:** add tooltip and label for headless api links ([8689fc2](https://github.com/webiny/webiny-js/commit/8689fc261c0c5b7c919dbc31a65d765dd2af5f8e))
+* **headless:** fix load of environment api for aliases ([6512d07](https://github.com/webiny/webiny-js/commit/6512d07d9f9b9b867be0cbaf26429fd1a0942744))
+
+
+### Features
+
+* **api-headless-cms:** add `environmentAliases` ([e39cc12](https://github.com/webiny/webiny-js/commit/e39cc125dfe05b32660d2eea60cda378e2af77cd))
+* **app-headless-cms:** add `environmentAliases` ([a217870](https://github.com/webiny/webiny-js/commit/a217870e784d45bce25d5049ec264892ae0d85f3))
+* **app-page-builder:** add `configure domain` confirmation ([03b438b](https://github.com/webiny/webiny-js/commit/03b438be42412bdf2e55ebd234db4d23535aa4b5))
+* **app-page-builder:** add `DialogContainer` ([00e2cee](https://github.com/webiny/webiny-js/commit/00e2cee90a2e3a9315760a195af76c8b7c509109))
+* **app-page-builder:** add `useConfigureDomainDialog` hook ([d740954](https://github.com/webiny/webiny-js/commit/d740954f3cf6e25a1cce0a4408e315600f30bbf9))
+* **app-page-builder:** add `useSiteStatus` ([6043926](https://github.com/webiny/webiny-js/commit/6043926b103416fe890d1b769e0cc8a55aad23c9))
+* **app-page-builder:** add `useSiteStatus` hook ([e9b98f4](https://github.com/webiny/webiny-js/commit/e9b98f4ae8cd23240b869b23f06df5892d8208da))
+* **app-page-builder:** remove `domain` input ([485a05c](https://github.com/webiny/webiny-js/commit/485a05c2f1f93c4d9c455428c863de028b9b3b73))
+* **headless:** add all environment aliases to info and styling ([c24f4c3](https://github.com/webiny/webiny-js/commit/c24f4c31b8dfdc6e94f1aa9cb915f7d2864f7a48))
+* **headless:** add info icon and style environment information dialog ([7feb620](https://github.com/webiny/webiny-js/commit/7feb62006cd424473b07e1784a3b4de5db6ef2cb))
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package webiny-js

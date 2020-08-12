@@ -50,7 +50,6 @@ module.exports = () => ({
                     code: "./apolloGateway/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: { ...apolloServiceEnv, ...apolloGatewayServices }
                 }
             }
@@ -70,7 +69,6 @@ module.exports = () => ({
                     concurrencyLimit: 50,
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: {
                         MONGODB_SERVER: process.env.MONGODB_SERVER,
                         MONGODB_NAME: process.env.MONGODB_NAME
@@ -129,7 +127,6 @@ module.exports = () => ({
                     code: "./security/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: apolloServiceEnv
                 }
             }
@@ -148,7 +145,6 @@ module.exports = () => ({
                     code: "./security/validateAccessToken/build",
                     handler: "handler.handler",
                     memory: 256,
-                    timeout: 30,
                     env: {
                         DB_PROXY_FUNCTION: "${databaseProxy.arn}",
                         DEBUG: process.env.DEBUG
@@ -194,7 +190,6 @@ module.exports = () => ({
                     code: "./files/transform/build",
                     handler: "handler.handler",
                     memory: 1600,
-                    timeout: 30,
                     layers: [getLayerArn("webiny-v4-sharp", process.env.AWS_REGION)],
                     env: {
                         S3_BUCKET: process.env.S3_BUCKET
@@ -222,7 +217,7 @@ module.exports = () => ({
                         {
                             Action: "lambda:InvokeFunction",
                             Principal: "s3.amazonaws.com",
-                            StatementId: "s3invoke",
+                            StatementId: process.env.S3_BUCKET,
                             SourceArn: `arn:aws:s3:::${process.env.S3_BUCKET}`
                         }
                     ],
@@ -298,7 +293,6 @@ module.exports = () => ({
                     code: "./i18n/graphql/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: apolloServiceEnv
                 }
             }
@@ -317,7 +311,6 @@ module.exports = () => ({
                     code: "./i18n/locales/build",
                     handler: "handler.handler",
                     memory: 256,
-                    timeout: 30,
                     env: {
                         DB_PROXY_FUNCTION: "${databaseProxy.arn}",
                         DEBUG: process.env.DEBUG
@@ -355,7 +348,6 @@ module.exports = () => ({
                     code: "./pageBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: {
                         ...apolloServiceEnv,
                         INSTALLATION_S3_BUCKET: process.env.S3_BUCKET,
@@ -379,7 +371,6 @@ module.exports = () => ({
                     code: "./formBuilder/build",
                     handler: "handler.handler",
                     memory: 512,
-                    timeout: 30,
                     env: {
                         ...apolloServiceEnv,
                         I18N_LOCALES_FUNCTION: "${i18nLocales.name}"

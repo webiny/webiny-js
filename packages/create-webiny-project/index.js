@@ -271,8 +271,6 @@ async function createApp({ projectName, template, tag, log }) {
 
                 for (let i = 0; i < workspaces.length; i++) {
                     const jsonPath = path.join(root, workspaces[i]);
-
-                    const relativeJsonPath = jsonPath;
                     const json = await loadJsonFile(jsonPath);
                     const keys = Object.keys(json.dependencies).filter(k =>
                         k.startsWith("@webiny")
@@ -289,7 +287,7 @@ async function createApp({ projectName, template, tag, log }) {
                         .replace(/\\/g, "/");
 
                     // We don't want to modify tsconfig file in the root of the project
-                    if (relativeJsonPath !== "package.json") {
+                    if (workspaces[i] !== "package.json") {
                         const tsConfigPath = path.join(currentDir, "tsconfig.json");
                         const tsconfig = require(tsConfigPath);
                         tsconfig.extends = baseTsConfigPath;
@@ -306,11 +304,15 @@ async function createApp({ projectName, template, tag, log }) {
                                     path.join(process.cwd(), tag, name)
                                 );
                         } else {
+                            // Skip packages that are already set to use file: protocol
+                            if (json.dependencies[name].startsWith("file:")) {
+                                return;
+                            }
+                            
                             // Use version of @webiny/cli package (we have fixed package versioning)
                             json.dependencies[name] = `^` + latestVersion;
                         }
                     });
-                    console.log(jsonPath, json);
                     await writeJsonFile(jsonPath, json);
                 }
             }
@@ -361,36 +363,36 @@ async function createApp({ projectName, template, tag, log }) {
                     throw new Error("Unable to resolve packages: " + err.message);
                 }
             }
+        },
+        {
+            title: "Install dependencies",
+            task: async context => {
+                try {
+                    const options = {
+                        cwd: root,
+                        maxBuffer: "500_000_000"
+                    };
+                    let logStream;
+                    if (log) {
+                        logStream = fs.createWriteStream(context.logPath);
+                        const runner = execa("yarn", [], options);
+                        runner.stdout.pipe(logStream);
+                        runner.stderr.pipe(logStream);
+                        await runner;
+                    } else {
+                        await execa("yarn", [], options);
+                    }
+                } catch (err) {
+                    throw new Error("Unable to install the necessary packages: " + err.message);
+                }
+            }
+        },
+        {
+            title: "Run template-specific actions",
+            task: async context => {
+                await require(context.templatePath)({ appName, root });
+            }
         }
-        // {
-        //     title: "Install dependencies",
-        //     task: async context => {
-        //         try {
-        //             const options = {
-        //                 cwd: root,
-        //                 maxBuffer: "500_000_000"
-        //             };
-        //             let logStream;
-        //             if (log) {
-        //                 logStream = fs.createWriteStream(context.logPath);
-        //                 const runner = execa("yarn", [], options);
-        //                 runner.stdout.pipe(logStream);
-        //                 runner.stderr.pipe(logStream);
-        //                 await runner;
-        //             } else {
-        //                 await execa("yarn", [], options);
-        //             }
-        //         } catch (err) {
-        //             throw new Error("Unable to install the necessary packages: " + err.message);
-        //         }
-        //     }
-        // },
-        // {
-        //     title: "Run template-specific actions",
-        //     task: async context => {
-        //         await require(context.templatePath)({ appName, root });
-        //     }
-        // }
     ]);
 
     let logPath = "cwp-logs.txt";

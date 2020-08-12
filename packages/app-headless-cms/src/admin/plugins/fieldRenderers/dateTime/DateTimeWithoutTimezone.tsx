@@ -46,6 +46,7 @@ const DateTimeWithoutTimezone = props => {
                         label: appendTextToLabel(props.field.label, " date")
                     }}
                     type={"date"}
+                    locale={props.locale}
                 />
             </Cell>
             <Cell span={cellSize}>
@@ -64,6 +65,7 @@ const DateTimeWithoutTimezone = props => {
                     }}
                     type={"time"}
                     step={5}
+                    locale={props.locale}
                 />
             </Cell>
             <RemoveFieldButton trailingIcon={props.trailingIcon} />

@@ -1,14 +1,15 @@
 import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { Input } from "@webiny/ui/Input";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";
 import Time from "./Time";
+import Input from "./Input";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/date-time");
 import get from "lodash/get";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
+import { appendTextToLabel } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/dateTime/utils";
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -25,7 +26,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             );
         },
         render(props) {
-            const field = props.field;
+            const { field, locale } = props;
 
             return (
                 <DynamicListMultipleValues {...props}>
@@ -41,6 +42,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     field={field}
                                     bind={bind.index}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
@@ -50,26 +52,41 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     field={field}
                                     bind={bind.index}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
                         if (field.settings.type === "time") {
                             return (
                                 <Time
-                                    field={field}
+                                    field={{
+                                        ...props.field,
+                                        label: appendTextToLabel(
+                                            props.field.label,
+                                            t` Value {number}`({ number: index + 1 })
+                                        )
+                                    }}
                                     bind={bind.index}
                                     label={t`Value {number}`({ number: index + 1 })}
                                     trailingIcon={trailingIcon}
+                                    locale={locale}
                                 />
                             );
                         }
 
                         return (
                             <Input
-                                {...bind.index}
+                                bind={bind.index}
+                                field={{
+                                    ...props.field,
+                                    label: appendTextToLabel(
+                                        props.field.label,
+                                        t` Value {number}`({ number: index + 1 })
+                                    )
+                                }}
                                 type={field.settings.type}
-                                label={t`Value {number}`({ number: index + 1 })}
                                 trailingIcon={trailingIcon}
+                                locale={locale}
                             />
                         );
                     }}
