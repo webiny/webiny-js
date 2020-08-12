@@ -5,6 +5,7 @@ import pbCategory from "./models/pbCategory.model";
 import pbPageElement from "./models/pbPageElement.model";
 import pbMenu from "./models/pbMenu.model";
 import pbPage from "./models/pbPage.model";
+import pbPagesListPage from "./models/pbPagesListPage.model";
 import pbSettings from "./models/pbSettings.model";
 import got from "got";
 
@@ -37,6 +38,7 @@ export default () => [
             const PbPageElement = pbPageElement({ createBase, context });
             const PbSettings = pbSettings({ createBase, context });
             const PbPage = pbPage({ createBase, context, PbCategory, PbSettings });
+            const PbPagesListPage = pbPagesListPage({ createBase, PbCategory, PbSettings });
 
             context.models = {
                 PbCategory,
@@ -44,6 +46,7 @@ export default () => [
                 PbMenu,
                 PbSettings,
                 PbPage,
+                PbPagesListPage,
                 createBase
             };
         }
