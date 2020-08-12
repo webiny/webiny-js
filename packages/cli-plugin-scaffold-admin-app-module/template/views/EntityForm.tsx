@@ -6,7 +6,7 @@ import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-import { Checkbox } from "@webiny/ui/Checkbox";
+import { Switch } from "@webiny/ui/Switch";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -27,35 +27,28 @@ const EntityForm = () => {
                     <SimpleFormHeader title={data.title || "Untitled"} />
                     <SimpleFormContent>
                         <Grid>
-                            <Cell span={6}>
+                            <Cell span={12}>
                                 <Bind name="title" validators={validation.create("required")}>
-                                    <Input
-                                        label={"Title"}
-                                        description={"This is the title of the Entity model."}
-                                    />
+                                    <Input label={"Title"} />
                                 </Bind>
                             </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={6}>
+                            <Cell span={12}>
                                 <Bind
                                     name="description"
                                     validators={validation.create("maxLength:500")}
                                 >
                                     <Input
                                         label={"Description"}
-                                        description={"This is the description of the Entity model."}
+                                        description={"Provide a short description here."}
                                         rows={4}
                                     />
                                 </Bind>
                             </Cell>
-                        </Grid>
-                        <Grid>
-                            <Cell span={6}>
+                            <Cell span={12}>
                                 <Bind name="isNice">
-                                    <Checkbox
-                                        label={"Is this Entity nice?"}
-                                        description={"Please select if Entity is really nice :)"}
+                                    <Switch
+                                        label={"A nice entry"}
+                                        description={"Check if the entry is considered to be nice."}
                                     />
                                 </Bind>
                             </Cell>
