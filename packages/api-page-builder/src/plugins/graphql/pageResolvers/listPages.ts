@@ -1,7 +1,7 @@
 import { ListResponse, requiresTotalCount } from "@webiny/graphql";
 
 export const listPages = async ({ context, args, info }) => {
-    const { PbPage } = context.models;
+    const { PbPagesListPage } = context.models;
     const { limit = 10, after, before, sort = null, parent = null } = args;
 
     const query: any = {
@@ -21,7 +21,7 @@ export const listPages = async ({ context, args, info }) => {
         };
     }
 
-    return await PbPage.find({
+    return await PbPagesListPage.find({
         sort,
         limit,
         after,
