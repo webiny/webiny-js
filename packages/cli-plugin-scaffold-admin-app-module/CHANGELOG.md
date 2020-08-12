@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.1...v4.8.0-beta.2) (2020-08-12)
+
+
+### Bug Fixes
+
+* polish the form ([b7c9512](https://github.com/webiny/webiny-js/commit/b7c9512471ec1f7b17a5c315379adb402d802d29))
+
+
+
+
+
 # [4.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.0...v4.8.0-beta.1) (2020-08-12)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
