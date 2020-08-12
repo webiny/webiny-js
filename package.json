@@ -33,6 +33,7 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^1.4.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@commitlint/cli": "^8.3.5",
@@ -80,7 +81,7 @@
     "glob": "^7.1.3",
     "globby": "^8.0.1",
     "got": "^9.6.0",
-    "husky": "^4.2.3",
+    "husky": "^4.2.5",
     "inquirer": "^7.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "inquirer-checkbox-plus-prompt": "^1.0.1",
@@ -137,8 +138,11 @@
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier --config .prettierrc.js --write",
-    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts}\" --check --config .prettierrc.js",
+    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
+    "setup-env-files": "node scripts/setupEnvFiles",
+    "setup-ci-cypress": "node scripts/setupCiCypress",
+    "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"

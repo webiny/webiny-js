@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.7.0](https://github.com/webiny/commodo/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.7.0-beta.1](https://github.com/webiny/commodo/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
+
+
+### Bug Fixes
+
+* update `commodo` versions ([2a1f287](https://github.com/webiny/commodo/commit/2a1f287b6f933094250732e39aaf3861712f2f2f))
+
+
+
+
+
+# [4.7.0-beta.0](https://github.com/webiny/commodo/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.6.0](https://github.com/webiny/commodo/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.6.0-beta.0](https://github.com/webiny/commodo/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [4.5.1](https://github.com/webiny/commodo/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [4.5.1-beta.1](https://github.com/webiny/commodo/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+## [4.5.1-beta.0](https://github.com/webiny/commodo/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0](https://github.com/webiny/commodo/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0-beta.4](https://github.com/webiny/commodo/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0-beta.3](https://github.com/webiny/commodo/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0-beta.2](https://github.com/webiny/commodo/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0-beta.1](https://github.com/webiny/commodo/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
+# [4.5.0-beta.0](https://github.com/webiny/commodo/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
+
+**Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy
+
+
+
+
+
 # [4.4.0](https://github.com/webiny/commodo/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
 **Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy

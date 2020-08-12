@@ -32,10 +32,7 @@ const SetNewPassword = ({ setPassword, error, loading, authProps }) => {
                             </Bind>
                         </Row>
                         <Row>
-                            <Bind
-                                name="password"
-                                validators={validation.create("required")}
-                            >
+                            <Bind name="password" validators={validation.create("required")}>
                                 <Input
                                     autoComplete={false}
                                     type={"password"}
@@ -60,9 +57,7 @@ const SetNewPassword = ({ setPassword, error, loading, authProps }) => {
                             </Bind>
                         </Row>
                         <Row alignRight>
-                            <ButtonPrimary onClick={submit}>
-                                {"Set new password"}
-                            </ButtonPrimary>
+                            <ButtonPrimary onClick={submit}>{"Set new password"}</ButtonPrimary>
                         </Row>
                         <Row alignCenter>
                             Want to sign in? {/* eslint-disable-next-line */}

@@ -5,7 +5,7 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^0.1.0",
-    "@webiny/api-plugin-commodo-db-proxy": "^2.0.4"
+    "@webiny/handler": "^4.0.0-beta.0",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.0"
   }
 }

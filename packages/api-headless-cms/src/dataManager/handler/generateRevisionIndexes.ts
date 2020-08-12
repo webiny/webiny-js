@@ -24,7 +24,6 @@ export const generateRevisionIndexes = async ({ context, contentModel, revision 
         $or: [{ published: true }, { latestVersion: true }]
     };
 
-    // We set `limit` to 101 to know if there is more data to fetch
     const entry = await driver.findOne({
         name: "CmsContentEntry",
         options: { query, fields: indexFields }
@@ -32,5 +31,5 @@ export const generateRevisionIndexes = async ({ context, contentModel, revision 
 
     await createRevisionIndexes({ model, entry, context });
 
-    return true;
+    return entry;
 };

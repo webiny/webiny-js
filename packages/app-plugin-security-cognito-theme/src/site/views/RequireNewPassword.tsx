@@ -35,9 +35,7 @@ const RequireNewPassword = ({ confirm, requiredAttributes }) => {
                     ))}
 
                     <Row alignRight>
-                        <ButtonPrimary onClick={submit}>
-                            {"Set password"}
-                        </ButtonPrimary>
+                        <ButtonPrimary onClick={submit}>{"Set password"}</ButtonPrimary>
                     </Row>
                 </Content>
             )}

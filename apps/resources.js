@@ -28,7 +28,6 @@ module.exports = ({ cli }) => {
                         concurrencyLimit: 50,
                         handler: "handler.handler",
                         memory: 512,
-                        timeout: 30,
                         env: {
                             MONGODB_SERVER: process.env.MONGODB_SERVER,
                             MONGODB_NAME: process.env.MONGODB_NAME
@@ -48,7 +47,6 @@ module.exports = ({ cli }) => {
                         description: "Webiny Site",
                         region: process.env.AWS_REGION,
                         memory: 128,
-                        timeout: 30,
                         code: "./site/build",
                         handler: "handler.handler",
                         env: {
@@ -89,8 +87,7 @@ module.exports = ({ cli }) => {
                         description: "Webiny Admin",
                         code: "./admin/build",
                         handler: "handler.handler",
-                        memory: 128,
-                        timeout: 30
+                        memory: 128
                     }
                 }
             },

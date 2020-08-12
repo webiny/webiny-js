@@ -32,14 +32,12 @@ const Wrapper = styled("div")({
 });
 
 const style = {
-    informationLabel: css({
-        color: "var(--mdc-theme-primary)"
-    }),
     icon: css({
-        color: "rgba(255, 255, 255, 0.54)",
+        color: "var(--mdc-theme-text-secondary-on-background)",
+        fill: "currentColor",
         width: 16,
         height: 16,
-        marginTop: "4px",
+        marginTop: "5px",
         marginLeft: "10px"
     }),
     environmentText: css({
@@ -90,28 +88,29 @@ const EnvironmentsDataList = () => {
             {({ data, isSelected, select }) => {
                 return (
                     <List data-testid="default-data-list">
-                        {
-                            selectedInfo.name &&
-                                <ApiUrlsDialog
-                                    open={infoOpened}
-                                    onClose={() => setInfoOpened(false)}
-                                    name={selectedInfo.name}
-                                    type="environment"
-                                />
-                        }
+                        {selectedInfo.name && (
+                            <ApiUrlsDialog
+                                open={infoOpened}
+                                onClose={() => setInfoOpened(false)}
+                                name={selectedInfo.name}
+                                type="environment"
+                            />
+                        )}
                         {data.map(item => (
                             <ListItem key={item.id} selected={isSelected(item)}>
                                 <ListItemText onClick={() => select(item)}>
                                     <div className={style.environmentText}>
                                         {item.name}{" "}
-                                        <Typography use={"caption"} className={style.informationLabel}>
-                                            <div onClick={e => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setInfoOpened(true);
-                                                setSelectedInfo(item);
-                                            }}>
-                                                <InformationIcon className={style.icon}/>
+                                        <Typography use={"caption"}>
+                                            <div
+                                                onClick={e => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setInfoOpened(true);
+                                                    setSelectedInfo(item);
+                                                }}
+                                            >
+                                                <InformationIcon className={style.icon} />
                                             </div>
                                         </Typography>
                                     </div>

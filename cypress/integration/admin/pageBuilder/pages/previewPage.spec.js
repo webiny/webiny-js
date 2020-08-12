@@ -27,6 +27,7 @@ context("Pages Previewing", () => {
         cy.title().should("contain", pageTitle1);
 
         cy.go("back")
+            .wait(1000)
             .findByTestId("pb-editor-page-title")
             .click()
             .get(`input[value="${pageTitle1}"]`)
