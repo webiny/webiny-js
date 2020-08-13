@@ -23,8 +23,6 @@ import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
 import { SecureView } from "@webiny/app-security/components";
 
-import { hasScopes } from "@webiny/app-security";
-
 const linkStyle = css({
     textDecoration: "none",
     "&:hover": {
@@ -114,23 +112,21 @@ const cellClass = css({
 });
 
 const Welcome = () => {
-    const security = useSecurity();
+    const { identity } = useSecurity();
 
-    if (!security || !security.user) {
+    if (!identity) {
         return null;
     }
 
-    const { fullName } = security.user;
-
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
-    ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+    ).some(pl => identity.hasPermission(pl.scopes));
 
     return (
         <Grid>
             <Cell span={12} className={cellClass}>
                 <SimpleForm>
-                    <SimpleFormHeader title={`Hi ${fullName.split(" ")[0]}!`} />
+                    <SimpleFormHeader title={`Hi ${identity.firstName}!`} />
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>
@@ -154,8 +150,8 @@ const Welcome = () => {
                                     "admin-welcome-screen-widget"
                                 ).map(pl => {
                                     return (
-                                        <SecureView scopes={pl.scopes}>
-                                            <Widget key={pl.name}>
+                                        <SecureView key={pl.name} scopes={pl.scopes}>
+                                            <Widget>
                                                 <Elevation z={2} style={{ padding: 10 }}>
                                                     <Typography use={"headline6"}>
                                                         <p className={widgetTitleStyle}>

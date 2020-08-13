@@ -4,7 +4,7 @@ import { SecurityIdentity } from "@webiny/api-security";
 const getAuthorizationToken = context => {
     const [event] = context.args;
     const { headers = {} } = event;
-    return headers.authorization || headers.Authorization;
+    return (headers.authorization || headers.Authorization).replace(/bearer\s/i, "");
 };
 
 export default {
@@ -28,8 +28,8 @@ export default {
 
         return new SecurityIdentity({
             id: token.id,
-            displayName: token.name,
-            scopes: token.scopes
+            login: accessToken,
+            type: "cms-access-token"
         });
     }
 } as SecurityPlugin;

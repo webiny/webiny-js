@@ -1,25 +1,25 @@
 import * as React from "react";
-import { hasScopes } from "@webiny/app-security";
-import { getPlugin } from "@webiny/plugins";
-import { ResourcesType } from "../identity";
-import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
+import { useSecurity } from "..";
 
 export default ({
     children,
-    scopes
+    scopes,
+    permissions
 }: {
     children: any;
-    scopes?: ResourcesType;
+    scopes?: string[];
+    permissions?: string[];
 }): React.ReactElement => {
-    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
+    if (!permissions && scopes) {
+        permissions = scopes;
+    }
 
-    if (checkedScopes) {
+    const { identity } = useSecurity();
+    const hasPermission = permissions ? identity.hasPermission(permissions) : true;
+
+    if (hasPermission) {
         return children;
     }
 
-    const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
-    if (!plugin) {
-        return <span>You are not authorized to view this route.</span>;
-    }
-    return plugin.render();
+    return null;
 };

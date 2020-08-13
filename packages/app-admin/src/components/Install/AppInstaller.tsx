@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { Elevation } from "@webiny/ui/Elevation";
+import { plugins } from "@webiny/plugins";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
-import { Elevation } from "@webiny/ui/Elevation";
 
 export const Wrapper = styled("section")({
     display: "flex",
@@ -47,9 +49,21 @@ export const InnerContent = styled("div")({
     position: "relative"
 });
 
-export const AppInstaller = ({ children, security }) => {
+export const AppInstaller = ({ children }) => {
     const [finished, setFinished] = useState(false);
+    const { identity } = useSecurity();
     const { loading, installers, installer, showNextInstaller, showLogin, onUser } = useInstaller();
+
+    useEffect(() => {
+        if (identity) {
+            onUser();
+        }
+    }, [identity]);
+
+    const renderSecurity = useCallback(content => {
+        const plugin = plugins.byType("app-admin-installer-security").pop();
+        return plugin.render(content);
+    }, []);
 
     const renderLayout = (content, secure = false) => {
         return (
@@ -63,7 +77,7 @@ export const AppInstaller = ({ children, security }) => {
                 </LeftPanel>
                 <RightPanel span={10}>
                     {!showLogin && !secure && content}
-                    {(showLogin || secure) && React.cloneElement(security, { onUser }, content)}
+                    {(showLogin || secure) && renderSecurity(content)}
                 </RightPanel>
             </SplitView>
         );
@@ -86,7 +100,7 @@ export const AppInstaller = ({ children, security }) => {
 
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
-        return React.cloneElement(security, null, children);
+        return children;
     }
 
     if (installer) {

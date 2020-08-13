@@ -24,10 +24,10 @@ class SignIn extends React.Component<SignInProps> {
         loading: false
     };
 
-    checkContact = user => {
+    checkContact = (user) => {
         const { changeState } = this.props;
 
-        Auth.verifiedContact(user).then(data => {
+        Auth.verifiedContact(user).then((data) => {
             if (data.verified) {
                 changeState("signedIn", user);
             } else {
@@ -36,13 +36,13 @@ class SignIn extends React.Component<SignInProps> {
         });
     };
 
-    signIn = input => {
+    signIn = (input) => {
         this.setState({ loading: true });
         const { username, password } = input;
         const { changeState } = this.props;
 
         Auth.signIn(username.toLowerCase(), password)
-            .then(user => {
+            .then((user) => {
                 this.setState({ loading: false });
                 debug("User %O", user);
                 if (
@@ -61,7 +61,7 @@ class SignIn extends React.Component<SignInProps> {
                     this.checkContact(user);
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 this.setState({ loading: false });
                 if (err.code === "UserNotConfirmedException") {
                     debug("the user is not confirmed");

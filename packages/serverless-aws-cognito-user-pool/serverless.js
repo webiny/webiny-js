@@ -13,26 +13,78 @@ const defaultPasswordPolicy = {
 
 class ServerlessAwsCognito extends Component {
     async default({ force = false, ...inputs } = {}) {
-        if (isEqual(this.state.inputs, inputs) && !force) {
-            this.context.instance.debug("Input was not changed, no action required.");
-            return this.state.output;
-        }
-
+        // if (isEqual(this.state.inputs, inputs) && !force) {
+        //     this.context.instance.debug("Input was not changed, no action required.");
+        //     return this.state.output;
+        // }
+        let schemaConfig = [];
         const {
             region = "us-east-1",
             name,
             tags = {},
             appClients = [],
-            allowSignup = false
+            allowSignup = false,
+            schema,
+            lambdaConfig = {}
         } = inputs;
+
         const passwordPolicy = Object.assign({}, defaultPasswordPolicy, inputs.passwordPolicy);
+
+        const usernameAttributes = inputs.usernameAttributes
+            ? inputs.usernameAttributes
+            : ["email"];
+        if (schema) {
+            if (Array.isArray(schema)) {
+                schemaConfig = [...schema];
+            } else {
+                throw Error(`Schema attributes needs to be passed in array.`);
+            }
+        }
+
+        const getConfig = () => {
+            return {
+                AdminCreateUserConfig: {
+                    AllowAdminCreateUserOnly: !allowSignup
+                },
+                AutoVerifiedAttributes: ["email"],
+                EmailConfiguration: {
+                    EmailSendingAccount: "COGNITO_DEFAULT"
+                },
+                MfaConfiguration: "OFF",
+                Policies: {
+                    PasswordPolicy: {
+                        MinimumLength: passwordPolicy.minimumLength,
+                        RequireLowercase: passwordPolicy.requireLowercase,
+                        RequireNumbers: passwordPolicy.requireNumbers,
+                        RequireSymbols: passwordPolicy.requireSymbols,
+                        RequireUppercase: passwordPolicy.requireUppercase,
+                        TemporaryPasswordValidityDays: passwordPolicy.temporaryPasswordValidityDays
+                    }
+                },
+                UserPoolAddOns: {
+                    AdvancedSecurityMode: "OFF" /* required */
+                },
+                UserPoolTags: Object.assign({}, tags),
+                VerificationMessageTemplate: {
+                    DefaultEmailOption: "CONFIRM_WITH_CODE"
+                },
+                LambdaConfig: lambdaConfig
+            };
+        };
 
         const cognito = new Cognito({ region });
         this.state.output = this.state.output || { appClients: [] };
 
         if (this.state.output.userPool) {
-            // At this point we do not update user pool since we don't support
-            // configuration parameters that can be updated.
+            // Update user pool
+            await cognito
+                .updateUserPool({
+                    UserPoolId: this.state.output.userPool.Id,
+                    ...getConfig()
+                })
+                .promise();
+
+            this.state.output.userPool.LambdaConfig = lambdaConfig;
 
             // Update app clients
             const count = Math.max(appClients.length, this.state.output.appClients.length);
@@ -100,24 +152,6 @@ class ServerlessAwsCognito extends Component {
 
             const params = {
                 PoolName: this.context.instance.getResourceName(name),
-                AdminCreateUserConfig: {
-                    AllowAdminCreateUserOnly: !allowSignup
-                },
-                AutoVerifiedAttributes: ["email"],
-                EmailConfiguration: {
-                    EmailSendingAccount: "COGNITO_DEFAULT"
-                },
-                MfaConfiguration: "OFF",
-                Policies: {
-                    PasswordPolicy: {
-                        MinimumLength: passwordPolicy.minimumLength,
-                        RequireLowercase: passwordPolicy.requireLowercase,
-                        RequireNumbers: passwordPolicy.requireNumbers,
-                        RequireSymbols: passwordPolicy.requireSymbols,
-                        RequireUppercase: passwordPolicy.requireUppercase,
-                        TemporaryPasswordValidityDays: passwordPolicy.temporaryPasswordValidityDays
-                    }
-                },
                 Schema: [
                     {
                         AttributeDataType: "String",
@@ -139,16 +173,11 @@ class ServerlessAwsCognito extends Component {
                         Mutable: true,
                         Name: "given_name",
                         Required: true
-                    }
+                    },
+                    ...schemaConfig
                 ],
-                UserPoolAddOns: {
-                    AdvancedSecurityMode: "OFF" /* required */
-                },
-                UserPoolTags: Object.assign({}, tags),
-                UsernameAttributes: ["email"],
-                VerificationMessageTemplate: {
-                    DefaultEmailOption: "CONFIRM_WITH_CODE"
-                }
+                UsernameAttributes: [...usernameAttributes],
+                ...getConfig()
             };
 
             const { UserPool } = await cognito.createUserPool(params).promise();

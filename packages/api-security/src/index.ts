@@ -1,3 +1,3 @@
-export { default as withUser } from "./withUser";
-export { default as hasScope } from "./hasScope";
-export { default as SecurityIdentity } from "./SecurityIdentity";
+export { withUser } from "./authenticator/withUser";
+export { hasScope, hasPermission } from "./hasPermission";
+export { SecurityIdentity } from "./authenticator/SecurityIdentity";

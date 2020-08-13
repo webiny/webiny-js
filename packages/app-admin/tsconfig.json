@@ -4,6 +4,7 @@
   "references": [
     { "path": "../ui" },
     { "path": "../app" },
+    { "path": "../app-security" },
     { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../form" }

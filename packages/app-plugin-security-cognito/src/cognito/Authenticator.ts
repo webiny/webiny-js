@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useReducer, useEffect } from "react";
 import Auth from "@aws-amplify/auth";
 import { withApollo, WithApolloClient } from "react-apollo";
-import localStorage from "store";
-import observe from "store/plugins/observe";
-import debug from "./debug";
 import { AlertType } from "@webiny/ui/Alert";
-localStorage.addPlugin(observe);
+import { useSecurity } from "@webiny/app-security";
+import { LOGIN } from "./graphql";
+import minimatch from "minimatch";
+
+export const hasPermission = (requiredPermission, permissionsList) => {
+    if (!Array.isArray(permissionsList)) {
+        return false;
+    }
+
+    for (let i = 0; i < permissionsList.length; i++) {
+        const permissionsListScope = permissionsList[i];
+        if (minimatch(requiredPermission, permissionsListScope)) {
+            return true;
+        }
+    }
+
+    return false;
+};
 
 export type AuthState =
     | "signIn"
@@ -41,82 +55,96 @@ export type AuthProps = {
 export type AuthenticatorChildrenFunction = (params: AuthProps) => React.ReactElement;
 
 export type AuthenticatorProps = WithApolloClient<{
-    onIdToken(idToken: string): void;
     children: AuthenticatorChildrenFunction;
 }>;
 
-type AuthenticatorState = {
-    authState: AuthState;
-    authData: AuthData;
-    checkingUser?: boolean;
-    message?: AuthMessage;
-};
+const AuthenticatorClass: React.FC<AuthenticatorProps> = (props) => {
+    const security = useSecurity();
 
-class AuthenticatorClass extends React.Component<AuthenticatorProps, AuthenticatorState> {
-    state: AuthenticatorState = {
+    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
-        authData: null
-    };
+        authData: null,
+        message: null,
+        checkingUser: false
+    });
 
-    async componentDidMount() {
+    const checkUrl = async () => {
         const query = new URLSearchParams(window.location.search);
         const queryData: any = {};
         query.forEach((value, key) => (queryData[key] = value));
         const { state, ...params } = queryData;
 
         if (state) {
-            await this.onChangeState(state, params);
+            await onChangeState(state, params);
             return;
         }
-        return this.checkUser();
-    }
+        return checkUser();
+    };
 
-    checkUser = async () => {
-        this.setState({ checkingUser: true });
+    useEffect(() => {
+        checkUrl();
+    }, []);
+
+    const checkUser = async () => {
+        setState({ checkingUser: true });
         try {
             const cognitoUser = await Auth.currentSession();
             if (!cognitoUser) {
-                await this.onChangeState("signIn");
-                this.setState({ checkingUser: false });
+                await onChangeState("signIn");
+                setState({ checkingUser: false });
+            } else {
+                await onChangeState("signedIn");
+                setState({ checkingUser: false });
             }
         } catch (e) {
-            debug("Error %s", e);
-            this.setState({ checkingUser: false });
+            setState({ checkingUser: false });
         }
     };
 
-    onChangeState = async (state, data = null, message: AuthMessage = null) => {
-        this.setState({ message });
+    const onChangeState = async (state, data = null, message: AuthMessage = null) => {
+        setState({ message });
 
-        debug("Requested state change %s %O", state, data);
-        if (state === this.state.authState) {
+        if (state === state.authState) {
             return;
         }
 
         // Cognito states call this state with user data.
-        if (state === "signedIn" && data) {
+        if (state === "signedIn") {
             const user = await Auth.currentSession();
-            return this.props.onIdToken(user.getIdToken().getJwtToken());
+            const { data } = await props.client.mutate({
+                mutation: LOGIN,
+                context: {
+                    headers: {
+                        Authorization: `Bearer ${user.getIdToken().getJwtToken()}`
+                    }
+                }
+            });
+            security.setIdentity({
+                ...data.login,
+                logout() {
+                    Auth.signOut();
+                },
+                hasPermission(permission) {
+                    const permissions = Array.isArray(permission) ? permission : [permission];
+                    return !permissions
+                        .map((v) => hasPermission(v, this.permissions))
+                        .some((v) => v === false);
+                }
+            });
         }
 
-        if (state === "signedOut") {
-            state = "signIn";
-        }
-
-        this.setState({ authState: state, authData: data });
+        setState({ authState: state, authData: data });
     };
 
-    render() {
-        const { authState, authData, checkingUser, message } = this.state;
+    const { authState, authData, checkingUser, message } = state;
 
-        return this.props.children({
-            authState,
-            authData,
-            changeState: this.onChangeState,
-            checkingUser,
-            message
-        });
-    }
-}
+    return props.children({
+        authState,
+        authData,
+        changeState: onChangeState,
+        checkingUser,
+        message
+    });
+};
 
 export const Authenticator = withApollo<AuthenticatorProps>(AuthenticatorClass);

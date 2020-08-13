@@ -2,19 +2,12 @@ import * as React from "react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 
-export type SecurityProviderHook = {
-    getIdToken(): Promise<string | null>;
-    renderAuthentication(params?: { viewProps: {} }): React.ReactElement;
-    logout(): Promise<void>;
+export type SecurityPlugin = Plugin & {
+    type: "security";
+    render(params: any): React.ReactNode;
 };
 
-export type SecurityAuthenticationProviderPlugin = Plugin & {
-    securityProviderHook(params: { onIdToken: (idToken: string) => void }): SecurityProviderHook;
-};
-
-export type SecureRouteErrorPlugin = Plugin & {
-    render(): React.ReactElement;
-};
+// TODO: REVIEW AND MOVE
 
 export type SecurityViewProps = {
     Bind: BindComponent;
