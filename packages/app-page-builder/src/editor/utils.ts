@@ -2,11 +2,12 @@ import shortid from "shortid";
 import invariant from "invariant";
 import { set } from "dot-prop-immutable";
 import { isPlainObject, omit } from "lodash";
-import { getPlugin, getPlugins } from "@webiny/plugins";
+import { getPlugin, getPlugins, plugins } from "@webiny/plugins";
 import {
-    PbElement,
+    PbEditorBlockPlugin,
     PbEditorPageElementPlugin,
-    PbEditorBlockPlugin
+    PbEditorPageElementSettingsPlugin,
+    PbElement
 } from "@webiny/app-page-builder/types";
 
 export const updateChildPaths = (element: PbElement) => {
@@ -107,4 +108,20 @@ export const cloneElement = (element: PbElement) => {
     clone.elements = clone.elements.map(el => cloneElement(el));
 
     return clone;
+};
+
+export const userSettingsPlugins = (elementType: string) => {
+    return plugins
+        .byType<PbEditorPageElementSettingsPlugin>("pb-editor-page-element-settings")
+        .filter(pl => {
+            if (typeof pl.elements === "boolean") {
+                return pl.elements === true;
+            }
+            if (Array.isArray(pl.elements)) {
+                return pl.elements.includes(elementType);
+            }
+
+            return false;
+        })
+        .map(pl => pl.name);
 };
