@@ -1,4 +1,5 @@
-const MAX_RETRIES = 60;
+// This will ensure the page is tested for 10 minutes, until the test can be considered as failed.
+const MAX_RETRIES = 200;
 const WAIT_BETWEEN_RETRIES = 3000;
 
 const sleep = () =>
