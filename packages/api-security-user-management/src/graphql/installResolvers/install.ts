@@ -1,9 +1,8 @@
 import { ErrorResponse, Response } from "@webiny/graphql";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError } from "@webiny/commodo-graphql";
-import { omit } from "lodash";
 import * as data from "./data";
-import { Context, GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
 
 const ensureFullAccessRole = async (context) => {

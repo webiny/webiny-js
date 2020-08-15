@@ -1,21 +1,28 @@
 import * as React from "react";
 import { useSecurity } from "..";
 
+let warned = false;
+
 export default ({
     children,
     scopes,
-    permissions
+    permission
 }: {
     children: any;
     scopes?: string[];
-    permissions?: string[];
+    permission?: string;
 }): React.ReactElement => {
-    if (!permissions && scopes) {
-        permissions = scopes;
+    if (!permission && scopes) {
+        !warned &&
+            console.warn(
+                `DEPRECATION WARNING: <SecureRoute> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
+            );
+        warned = true;
+        permission = scopes[0];
     }
 
     const { identity } = useSecurity();
-    const hasPermission = permissions ? identity.hasPermission(permissions) : true;
+    const hasPermission = permission ? identity.getPermission(permission) : true;
 
     if (hasPermission) {
         return children;

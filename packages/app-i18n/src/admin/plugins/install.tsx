@@ -100,10 +100,10 @@ const I18NInstaller = ({ onInstalled }) => {
 };
 
 export default {
-    name: "installation-i18n",
+    name: "admin-installation-i18n",
     type: "admin-installation",
     title: "I18N app",
-    dependencies: ["installation-security"],
+    dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

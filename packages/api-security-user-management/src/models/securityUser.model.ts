@@ -17,8 +17,8 @@ export default ({ createBase, context }): any => {
     const SecurityUser: any = pipe(
         withName("SecurityUser"),
         withHooks(),
-        withFields((instance) => ({
-            email: onSet((value) => {
+        withFields(instance => ({
+            email: onSet(value => {
                 if (value === instance.email) {
                     return value;
                 }
@@ -60,7 +60,7 @@ export default ({ createBase, context }): any => {
                 })
             )
         })),
-        withProps((instance) => ({
+        withProps(instance => ({
             __permissions: null,
             get fullName() {
                 return `${instance.firstName} ${instance.lastName}`.trim();
@@ -73,11 +73,11 @@ export default ({ createBase, context }): any => {
                     return this.__permissions;
                 }
 
-                return new Promise(async (resolve) => {
-                    const permissions = [];
+                return new Promise(async resolve => {
+                    const allPermissions = [];
                     const loadedRoles = [];
 
-                    const roles = [...await this.roles];
+                    const roles = [...(await this.roles)];
                     const groups = await this.groups;
                     // Get roles via `groups` relation
                     for (let i = 0; i < groups.length; i++) {
@@ -89,18 +89,18 @@ export default ({ createBase, context }): any => {
 
                     // Get permissions from roles
                     for (let j = 0; j < roles.length; j++) {
-                        const { slug } = roles[j];
+                        const { slug, permissions } = roles[j];
                         if (!loadedRoles.includes(slug)) {
                             loadedRoles.push(slug);
                         }
 
-                        permissions.forEach((perm) => {
-                            const permIndex = permissions.findIndex((p) => p.name === perm.name);
+                        permissions.forEach(perm => {
+                            const permIndex = allPermissions.findIndex(p => p.name === perm.name);
 
                             if (permIndex === -1) {
-                                permissions.push(perm);
+                                allPermissions.push(perm);
                             } else {
-                                permissions[permIndex] = merge.recursive(
+                                allPermissions[permIndex] = merge.recursive(
                                     false,
                                     permissions[permIndex],
                                     perm
@@ -109,7 +109,7 @@ export default ({ createBase, context }): any => {
                         });
                     }
 
-                    this.__permissions = permissions;
+                    this.__permissions = allPermissions;
 
                     resolve(this.__permissions);
                 });

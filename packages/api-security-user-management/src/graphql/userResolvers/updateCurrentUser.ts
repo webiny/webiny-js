@@ -7,7 +7,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
     const { security, plugins } = context;
 
-    const currentUser = await SecurityUser.findById(security.getIdentity().id);
+    const currentUser = await SecurityUser.findOne({ query: { id: security.getIdentity().id } });
     if (currentUser) {
         try {
             currentUser.populate(args.data);

@@ -3,23 +3,8 @@ import Auth from "@aws-amplify/auth";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { AlertType } from "@webiny/ui/Alert";
 import { useSecurity } from "@webiny/app-security";
-import { LOGIN } from "./graphql";
-import minimatch from "minimatch";
-
-export const hasPermission = (requiredPermission, permissionsList) => {
-    if (!Array.isArray(permissionsList)) {
-        return false;
-    }
-
-    for (let i = 0; i < permissionsList.length; i++) {
-        const permissionsListScope = permissionsList[i];
-        if (minimatch(requiredPermission, permissionsListScope)) {
-            return true;
-        }
-    }
-
-    return false;
-};
+import { LOGIN } from "@webiny/app-security-user-management/graphql";
+import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 
 export type AuthState =
     | "signIn"
@@ -58,8 +43,8 @@ export type AuthenticatorProps = WithApolloClient<{
     children: AuthenticatorChildrenFunction;
 }>;
 
-const AuthenticatorClass: React.FC<AuthenticatorProps> = (props) => {
-    const security = useSecurity();
+const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
+    const { setIdentity } = useSecurity();
 
     const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
@@ -110,27 +95,20 @@ const AuthenticatorClass: React.FC<AuthenticatorProps> = (props) => {
 
         // Cognito states call this state with user data.
         if (state === "signedIn") {
-            const user = await Auth.currentSession();
-            const { data } = await props.client.mutate({
-                mutation: LOGIN,
-                context: {
-                    headers: {
-                        Authorization: `Bearer ${user.getIdToken().getJwtToken()}`
+            setState({ checkingUser: true });
+            const { data } = await props.client.mutate({ mutation: LOGIN });
+
+            setIdentity(
+                new SecurityIdentity({
+                    ...data.security.login.data,
+                    logout() {
+                        Auth.signOut();
+                        setIdentity(null);
+                        setState({ authState: "signIn" });
                     }
-                }
-            });
-            security.setIdentity({
-                ...data.login,
-                logout() {
-                    Auth.signOut();
-                },
-                hasPermission(permission) {
-                    const permissions = Array.isArray(permission) ? permission : [permission];
-                    return !permissions
-                        .map((v) => hasPermission(v, this.permissions))
-                        .some((v) => v === false);
-                }
-            });
+                })
+            );
+            setState({ checkingUser: false });
         }
 
         setState({ authState: state, authData: data });
@@ -147,4 +125,4 @@ const AuthenticatorClass: React.FC<AuthenticatorProps> = (props) => {
     });
 };
 
-export const Authenticator = withApollo<AuthenticatorProps>(AuthenticatorClass);
+export const Authenticator = withApollo<AuthenticatorProps>(AuthenticatorComponent);

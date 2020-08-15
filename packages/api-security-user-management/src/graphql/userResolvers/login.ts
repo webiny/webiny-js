@@ -32,7 +32,7 @@ export default (getModel: GetModelType): GraphQLFieldResolver => async (root, ar
         "security-user-management"
     );
 
-    if (typeof authPlugin.onlogin === "function") {
+    if (typeof authPlugin.onLogin === "function") {
         await authPlugin.onLogin({ user, firstLogin }, context);
     }
 

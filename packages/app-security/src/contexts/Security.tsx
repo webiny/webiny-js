@@ -1,26 +1,7 @@
 import React, { useState, useMemo } from "react";
+import { SecurityIdentity } from "../SecurityIdentity";
 
 export const SecurityContext = React.createContext(null);
-
-export type SecurityIdentityData = {
-    id: string;
-    login: string;
-    hasPermission?(permission: string | string[]): boolean;
-    [key: string]: any;
-};
-
-export class SecurityIdentity {
-    id: string;
-    login?: string;
-    [key: string]: any;
-    constructor(data: SecurityIdentityData) {
-        Object.assign(this, data);
-    }
-
-    hasPermission?(permission: string | string[]): boolean {
-        throw Error(`SecurityIdentity must implement a "hasPermission" function!`);
-    }
-}
 
 export type SecurityContextValue = {
     identity: SecurityIdentity | null;
@@ -29,6 +10,9 @@ export type SecurityContextValue = {
 
 export const SecurityProvider = props => {
     const [identity, setIdentity] = useState(null);
+
+    // @ts-ignore
+    window.SecurityIdentity = identity;
 
     const value = useMemo(
         () => ({

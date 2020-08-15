@@ -10,7 +10,7 @@ import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
 import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 
-const userFetcher = (ctx) => ctx.models.SecurityUser;
+const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -45,13 +45,14 @@ export default {
 
         type SecurityIdentity {
             id: ID
+            login: String
+            permissions: [JSON]
             email: String
             firstName: String
             lastName: String
             fullName: String
             avatar: File
             gravatar: String
-            permissions: JSON
         }
 
         type SecurityUser @key(fields: "id") {
@@ -65,6 +66,7 @@ export default {
             enabled: Boolean
             groups: [SecurityGroup]
             roles: [SecurityRole]
+            permissions: [JSON]
             personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
         }
@@ -167,7 +169,7 @@ export default {
     `,
     resolvers: {
         PersonalAccessToken: {
-            token: (pat) => {
+            token: pat => {
                 return pat.token.substr(-4);
             }
         },
@@ -180,12 +182,17 @@ export default {
             }
         },
         SecurityIdentity: {
+            login: (_, args, context) => {
+                return context.security.getIdentity().login;
+            },
             async avatar(_, args, context) {
                 const { SecurityUser } = context.models;
-                const user = await SecurityUser.findById(context.security.getIdentity().id);
+                const identityId = context.security.getIdentity().id;
+                const user = await SecurityUser.findOne({ query: { id: identityId } });
                 return user.avatar ? { __typename: "File", id: user.avatar } : null;
             },
             permissions: (_, args, context) => {
+                console.log(`SecurityIdentity "permissions"`);
                 return context.security.getPermissions();
             }
         },

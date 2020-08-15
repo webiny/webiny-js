@@ -3,20 +3,21 @@ import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n";
+import { Alert } from "@webiny/ui/Alert";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Checkbox } from "@webiny/ui/Checkbox";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityViewInstallationFormPlugin } from "@webiny/app-security/types";
+import { UserManagementInstallationFormPlugin } from "@webiny/app-security-user-management/types";
 
 const t = i18n.ns("app-security/admin/installation");
 
@@ -49,13 +50,9 @@ const INSTALL = gql`
 `;
 
 const Install = ({ onInstalled }) => {
-    const auth = getPlugin<SecurityViewInstallationFormPlugin>("security-view-install-form");
-
-    if (!auth) {
-        throw Error(
-            `You must register a "security-view-install-form" plugin to render installation form!`
-        );
-    }
+    const uiPlugins = plugins.byType<UserManagementInstallationFormPlugin>(
+        "user-management-installation-form"
+    );
 
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
@@ -64,15 +61,6 @@ const Install = ({ onInstalled }) => {
     const onSubmit = useCallback(async ({ subscribed, ...form }) => {
         setLoading(true);
         setError(null);
-        if (typeof auth.onSubmit === "function") {
-            try {
-                await auth.onSubmit({ data: form });
-            } catch (err) {
-                setLoading(false);
-                setError(err);
-                return;
-            }
-        }
 
         const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
         setLoading(false);
@@ -112,37 +100,37 @@ const Install = ({ onInstalled }) => {
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={"Install Security"} />
                     <SimpleFormContent>
-                        {React.createElement(auth.view, {
-                            Bind,
-                            data,
-                            error,
-                            fields: {
-                                firstName: (
-                                    <Bind
-                                        name="firstName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`First Name`} />
-                                    </Bind>
-                                ),
-                                lastName: (
-                                    <Bind
-                                        name="lastName"
-                                        validators={validation.create("required")}
-                                    >
-                                        <Input label={t`Last Name`} />
-                                    </Bind>
-                                ),
-                                email: (
-                                    <Bind
-                                        name="email"
-                                        validators={validation.create("required,email")}
-                                    >
-                                        <Input label={t`E-mail`} />
-                                    </Bind>
-                                )
-                            }
-                        })}
+                        <Grid>
+                            {error && (
+                                <Cell span={12}>
+                                    <Alert title={"Something went wrong"} type={"danger"}>
+                                        {error.message}
+                                    </Alert>
+                                </Cell>
+                            )}
+                            <Cell span={12}>Let&apos;s create your admin user:</Cell>
+                            <Cell span={12}>
+                                <Bind name="firstName" validators={validation.create("required")}>
+                                    <Input label={t`First Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="lastName" validators={validation.create("required")}>
+                                    <Input label={t`Last Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name="email" validators={validation.create("required,email")}>
+                                    <Input label={t`E-mail`} />
+                                </Bind>
+                            </Cell>
+                            {uiPlugins.map(pl => (
+                                <React.Fragment key={pl.name}>
+                                    {pl.render({ Bind, data })}
+                                </React.Fragment>
+                            ))}
+                        </Grid>
+
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="subscribed">
@@ -172,10 +160,10 @@ const Install = ({ onInstalled }) => {
 
 export default [
     {
-        name: "installation-security",
+        name: "admin-installation-security",
         type: "admin-installation",
         secure: false,
-        title: "User Management",
+        title: "Security",
         async isInstalled({ client }) {
             const { data } = await client.query({ query: IS_INSTALLED });
             return data.security.isInstalled.data;

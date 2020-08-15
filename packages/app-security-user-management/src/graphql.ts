@@ -5,16 +5,16 @@ export const LOGIN = gql`
         security {
             login {
                 data {
+                    # identity specific fields
                     id
-                    email
-                    firstName
-                    lastName
+                    login
+                    permissions
+                    # user-management specific fields
                     fullName
                     avatar {
+                        id
                         src
                     }
-                    gravatar
-                    permissions
                 }
                 error {
                     code

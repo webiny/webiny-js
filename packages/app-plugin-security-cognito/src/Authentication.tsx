@@ -33,7 +33,7 @@ const Authentication = ({ children }) => {
                         <SetNewPasswordState {...authProps}>
                             <SetNewPassword />
                         </SetNewPasswordState>
-                        <SignedInState>
+                        <SignedInState {...authProps}>
                             {children}
                         </SignedInState>
                     </>

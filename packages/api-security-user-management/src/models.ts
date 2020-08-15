@@ -1,5 +1,13 @@
 import { flow } from "lodash";
-import { withStorage, withCrudLogs, withSoftDelete, withFields, string } from "@webiny/commodo";
+import {
+    withStorage,
+    withCrudLogs,
+    withSoftDelete,
+    withFields,
+    withProps,
+    withStaticProps,
+    string
+} from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
 import securityGroup from "./models/securityGroup.model";
 import securityGroups2Models from "./models/securityGroups2Models.model";
@@ -28,7 +36,17 @@ export default () => ({
                 withStorage({ driver }),
                 withUser(context),
                 withSoftDelete(),
-                withCrudLogs()
+                withCrudLogs(),
+                withProps({
+                    isId() {
+                        return true;
+                    }
+                }),
+                withStaticProps({
+                    isId() {
+                        return true;
+                    }
+                })
             )();
 
         context.models = context.models || {};

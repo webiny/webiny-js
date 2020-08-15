@@ -18,9 +18,9 @@ import { Alert } from "@webiny/ui/Alert";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-security/admin/roles/data-list");
-import TokenList from "./PersonalAccessTokens/TokenList";
+import TokenList from "../PersonalAccessTokens/TokenList";
 
-import { CREATE_PAT } from "./AccountGraphql";
+import { CREATE_PAT } from "./graphql";
 import { validation } from "@webiny/validation";
 
 const Header = styled("div")({

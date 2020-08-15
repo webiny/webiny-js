@@ -7,11 +7,7 @@ import { RoutePlugin } from "@webiny/app/types";
 import { Roles } from "../views/Roles";
 import { Users } from "../views/Users";
 import { Groups } from "../views/Groups";
-import Account from "../views/Account";
-
-const ROLE_SECURITY_ROLES = ["security:role:crud"];
-const ROLE_SECURITY_GROUPS = ["security:group:crud"];
-const ROLE_SECURITY_USERS = ["security:user:crud"];
+import { Account } from "../views/Account";
 
 const plugins: RoutePlugin[] = [
     {
@@ -22,7 +18,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/roles"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_SECURITY_ROLES}>
+                    <SecureRoute permission={"security.role.crud"}>
                         <AdminLayout>
                             <Helmet title={"Security - Roles"} />
                             <Roles />
@@ -40,7 +36,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/groups"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_SECURITY_GROUPS}>
+                    <SecureRoute permission={"security.group.crud"}>
                         <AdminLayout>
                             <Helmet title={"Security - Groups"} />
                             <Groups />
@@ -58,7 +54,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/users"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_SECURITY_USERS}>
+                    <SecureRoute permission={"security.user.crud"}>
                         <AdminLayout>
                             <Helmet title={"Security - Users"} />
                             <Users />

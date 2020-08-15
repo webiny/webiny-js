@@ -33,6 +33,7 @@ export default () => [
         name: "handler-access-manager",
         async handle({ args, context }) {
             const [{ action, ...data }] = args;
+            console.log(`event`, args[0]);
 
             try {
                 if (action !== "getPermissions") {

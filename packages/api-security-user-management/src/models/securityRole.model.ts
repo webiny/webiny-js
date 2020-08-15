@@ -1,5 +1,9 @@
 import { flow } from "lodash";
-import { withHooks, withName, string, boolean, withFields } from "@webiny/commodo";
+import { withHooks, withName, string, boolean, withFields, createField } from "@webiny/commodo";
+
+export const any = (options = {}) => {
+    return createField({ ...options, type: "any" });
+};
 
 export default ({ createBase }) => {
     const SecurityRole: any = flow(
@@ -9,7 +13,7 @@ export default ({ createBase }) => {
             slug: string(),
             description: string(),
             system: boolean(),
-            scopes: string({ list: true })
+            permissions: any({ list: true })
         }),
         withHooks({
             async beforeCreate() {

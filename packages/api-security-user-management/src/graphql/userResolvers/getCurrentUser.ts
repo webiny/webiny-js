@@ -6,7 +6,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
     if (identity) {
         const { SecurityUser } = context.models;
-        const user = await SecurityUser.findById(identity.id);
+        const user = await SecurityUser.findOne({ query: { id: identity.id } });
         if (!user) {
             return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
         }
