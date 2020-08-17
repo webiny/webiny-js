@@ -30,6 +30,11 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
+const listWrapperClass = css({
+    height: 462,
+    overflow: "auto"
+});
+
 const FullName = ({ submission }) => {
     const {
         data: { firstName, lastName, email }
@@ -139,7 +144,7 @@ const FormSubmissionsList = props => {
                     ]}
                 >
                     {({ data = [] }) => (
-                        <List>
+                        <List className={listWrapperClass}>
                             {data.map(submission => (
                                 <ListItem key={submission.id}>
                                     <ListSelectBox>
