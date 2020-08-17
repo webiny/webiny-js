@@ -149,6 +149,11 @@ export type ContextBeforeContentModelsPlugin<T = Context> = Plugin & {
     apply?: (context: T) => void | Promise<void>;
 };
 
+export type ContextAfterContentModelsPlugin<T = Context> = Plugin & {
+    type: "context-after-content-models";
+    apply?: (context: T) => void | Promise<void>;
+};
+
 export type CmsModelFieldDefinition = {
     fields: string;
     typeDefs?: string;

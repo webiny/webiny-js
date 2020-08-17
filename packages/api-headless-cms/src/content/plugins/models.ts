@@ -10,7 +10,11 @@ import contentModelGroup from "./models/contentModelGroup.model";
 import contentEntrySearch from "./models/contentEntrySearch.model";
 import { createDataModel } from "./utils/createDataModel";
 import { createEnvironmentBase as createEnvironmentBaseFactory } from "./utils/createEnvironmentBase";
-import { CmsContext, ContextBeforeContentModelsPlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext,
+    ContextBeforeContentModelsPlugin,
+    ContextAfterContentModelsPlugin
+} from "@webiny/api-headless-cms/types";
 
 export default () => {
     async function apply(context: CmsContext) {
@@ -118,6 +122,14 @@ export default () => {
         Object.assign(context.models, createdContentModels);
 
         context.models.contentModels = createdContentModels;
+
+        const afterContentModelsPlugins = context.plugins.byType<ContextAfterContentModelsPlugin>(
+            "context-after-content-models"
+        );
+
+        for (let i = 0; i < afterContentModelsPlugins.length; i++) {
+            await afterContentModelsPlugins[i].apply(context);
+        }
     }
 
     return [
