@@ -9,6 +9,7 @@ import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandl
 import Menu from "./components/Menu";
 import { ReactComponent as NavigateBeforeIcon } from "@webiny/app-page-builder/editor/assets/icons/navigate_before.svg";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { userSettingsPlugins } from "@webiny/app-page-builder/editor/utils";
 
 const divider = "pb-editor-page-element-settings-divider";
 
@@ -17,7 +18,9 @@ const getElementActions = plugin => {
         return [];
     }
 
-    const actions = plugin.settings.map(pl => {
+    const pluginSettings = [...userSettingsPlugins(plugin.elementType), ...plugin.settings];
+
+    const actions = pluginSettings.map(pl => {
         if (typeof pl === "string") {
             return { plugin: getPlugin(pl || divider), options: {} };
         }
@@ -29,11 +32,24 @@ const getElementActions = plugin => {
         return null;
     });
 
-    return [
+    const elementActions = [
         ...actions,
-        { plugin: getPlugin("pb-editor-page-element-settings-advanced") },
-        { plugin: getPlugin("pb-editor-page-element-settings-save") }
-    ].filter(pl => pl);
+        { plugin: getPlugin("pb-editor-page-element-settings-advanced"), options: {} },
+        { plugin: getPlugin("pb-editor-page-element-settings-save"), options: {} }
+    ];
+
+    return (
+        elementActions
+            // Eliminate empty plugins
+            .filter(pl => {
+                return pl && pl.plugin;
+            })
+            // Eliminate duplicate plugins
+            .filter(
+                (pl, index, array) =>
+                    array.findIndex(item => item.plugin.name === pl.plugin.name) === index
+            )
+    );
 };
 
 const ElementSettingsBar = ({ elementType, deactivateElement }) => {
