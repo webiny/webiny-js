@@ -16,7 +16,6 @@ import fileManagerPlugins from "@webiny/app-file-manager/admin";
 
 export default (options: AdminAppOptions) => {
     const plugins = [
-        ...(options.plugins || []),
         pageBuilderPlugins(),
         pageBuilderTheme(),
         formBuilderPlugins(),
@@ -27,7 +26,8 @@ export default (options: AdminAppOptions) => {
         typeformPlugins(),
         mailchimpPlugins(),
         headlessCmsPlugins(),
-        fileManagerPlugins()
+        fileManagerPlugins(),
+        ...(options.plugins || [])
     ];
 
     return adminAppTemplate({ ...options, plugins });

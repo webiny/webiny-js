@@ -424,6 +424,7 @@ export type PbEditorPageElementSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-settings";
     renderAction(params: { options?: any }): ReactElement;
     renderMenu?: (params: { options?: any }) => ReactElement;
+    elements?: boolean | string[];
 };
 
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
