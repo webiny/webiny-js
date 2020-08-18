@@ -11,6 +11,8 @@ const pluralize = require("pluralize");
 const Case = require("case");
 const { replaceInPath } = require("replace-in-path");
 const execa = require("execa");
+const { green } = require("chalk");
+const indentString = require("indent-string");
 
 module.exports = [
     {
@@ -58,7 +60,7 @@ module.exports = [
                     }
                 ];
             },
-            generate: async ({ input }) => {
+            generate: async ({ input, wait, oraSpinner }) => {
                 const { location, initialEntityName } = input;
                 const fullLocation = path.resolve(location);
                 const rootResourcesPath = findUp.sync("resources.js", {
@@ -85,6 +87,9 @@ module.exports = [
                 if (fs.existsSync(location)) {
                     throw new Error(`Destination folder ${location} already exists!`);
                 }
+
+                oraSpinner.start(`Creating service files in ${green(fullLocation)}...`);
+                await wait();
 
                 await fs.mkdirSync(location, { recursive: true });
 
@@ -144,12 +149,25 @@ module.exports = [
                 }
 
                 // Update root package.json - update "workspaces.packages" section.
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Service files created in ${green(fullLocation)}.`
+                });
+
+                oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
+                await wait();
+
                 const rootPackageJsonPath = path.join(projectRootPath, "package.json");
                 const rootPackageJson = await readJson(rootPackageJsonPath);
                 if (!rootPackageJson.workspaces.packages.includes(input.location)) {
                     rootPackageJson.workspaces.packages.push(input.location);
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
+
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                });
 
                 // Update the package's name
                 const packageJsonPath = path.resolve(location, "package.json");
@@ -163,6 +181,11 @@ module.exports = [
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
                 resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
 
+                oraSpinner.start(
+                    `Adding ${green(resourceName)} resource in ${green(rootResourcesPath)}...`
+                );
+                await wait();
+
                 const { code } = await transform(source, {
                     plugins: [
                         [
@@ -174,6 +197,11 @@ module.exports = [
                             }
                         ]
                     ]
+                });
+
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Resource ${green(resourceName)} added in ${green(rootResourcesPath)}.`
                 });
 
                 // Update tsconfig "extends" path
@@ -191,13 +219,58 @@ module.exports = [
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 try {
+                    oraSpinner.start(`Installing dependencies...`);
                     await execa("yarn");
+                    oraSpinner.stopAndPersist({
+                        symbol: green("✔"),
+                        text: "Dependencies installed."
+                    });
                 } catch (err) {
                     throw new Error(
                         `Unable to install dependencies. Try running "yarn" in project root manually.`,
                         err
                     );
                 }
+            },
+            onSuccess({ input }) {
+                const { location } = input;
+                const fullLocation = path.resolve(location);
+                const pluginsLocation = path.join(fullLocation, "/src/plugins");
+                const projectRootPath = path.dirname(
+                    findUp.sync("webiny.root.js", {
+                        cwd: fullLocation
+                    })
+                );
+                const rootResourcesPath = path.dirname(
+                    findUp.sync("resources.js", {
+                        cwd: fullLocation
+                    })
+                );
+
+                const deployCommandStackPath = rootResourcesPath
+                    .replace(projectRootPath, "")
+                    .replace("/", "");
+
+                console.log(`The next steps:`);
+                console.log(indentString(`1. Edit existing and create new plugins in ${green(pluginsLocation)}.`, 2));
+                console.log(
+                    indentString(
+                        `2. From project root, run ${green(
+                            "yarn test"
+                        )} to ensure that the service works.`,
+                        2
+                    )
+                );
+                console.log(
+                    indentString(
+                        `3. Finally, deploy your new API stack by running ${green(
+                            `webiny deploy ${deployCommandStackPath} --env local`
+                        )}.`,
+                        2
+                    )
+                );
+                console.log(`Learn more about API development at https://docs.webiny.com/docs/api-development/introduction`);
+
             }
         }
     }
