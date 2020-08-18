@@ -148,12 +148,12 @@ module.exports = [
                     );
                 }
 
-                // Update root package.json - update "workspaces.packages" section.
                 oraSpinner.stopAndPersist({
                     symbol: green("✔"),
                     text: `Service files created in ${green(fullLocation)}.`
                 });
 
+                // Update root package.json - update "workspaces.packages" section.
                 oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
                 await wait();
 
@@ -263,7 +263,9 @@ module.exports = [
                 );
                 console.log(
                     indentString(
-                        `3. Finally, deploy your new API stack by running ${green(
+                        `3. Finally, deploy the ${green(
+                            deployCommandStackPath
+                        )} stack by running ${green(
                             `webiny deploy ${deployCommandStackPath} --env local`
                         )}.`,
                         2
