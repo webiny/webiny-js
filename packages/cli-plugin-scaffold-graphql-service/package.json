@@ -26,7 +26,9 @@
     "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
     "replace-in-path": "^1.0.2",
-    "write-json-file": "^4.3.0"
+    "write-json-file": "^4.3.0",
+    "chalk": "^2.4.2",
+    "indent-string": "^4.0.0"
   },
   "publishConfig": {
     "access": "public",
