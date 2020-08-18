@@ -5,6 +5,8 @@ const ncp = util.promisify(require("ncp").ncp);
 const findUp = require("find-up");
 const camelCase = require("lodash.camelcase");
 const kebabCase = require("lodash.kebabcase");
+const { green } = require("chalk");
+const indentString = require("indent-string");
 
 const appTypes = {
     custom: "Custom App",
@@ -18,13 +20,13 @@ module.exports = [
         name: "cli-plugin-scaffold-template-react-app",
         type: "cli-plugin-scaffold-template",
         scaffold: {
-            name: "React Application",
+            name: "React App",
             questions: () => {
                 return [
                     {
                         name: "location",
                         message: "Enter package location (including package name)",
-                        default: 'apps/my-app',
+                        default: "apps/my-app",
                         validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
@@ -46,13 +48,13 @@ module.exports = [
                     },
                     {
                         name: "type",
-                        message: "Select application template type:",
+                        message: "Select app template type:",
                         type: "list",
                         choices: appTypesArray
                     }
                 ];
             },
-            generate: async ({ input }) => {
+            generate: async ({ input, wait, oraSpinner }) => {
                 const { type: appType, location } = input;
                 const fullLocation = path.resolve(location);
                 const rootResourcesPath = findUp.sync("resources.js", {
@@ -89,6 +91,9 @@ module.exports = [
                 if (fs.existsSync(location)) {
                     throw new Error(`Package ${packageName} already exists!`);
                 }
+
+                oraSpinner.start(`Creating React app files in ${green(fullLocation)}...`);
+                await wait();
 
                 await fs.mkdirSync(location, { recursive: true });
                 await ncp(sourceFolder, location);
@@ -138,7 +143,17 @@ module.exports = [
                 tsconfig.references = referencesField || tsconfig.references;
                 fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
-                // Inject resource into closest resources.js //
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `React app files created in ${green(fullLocation)}.`
+                });
+
+                // Inject resource into closest resources.js
+                oraSpinner.start(
+                    `Adding ${green(resourceName)} resource in ${green(rootResourcesPath)}...`
+                );
+                await wait();
+
                 const { transform } = require("@babel/core");
                 const source = fs.readFileSync(rootResourcesPath, "utf8");
                 let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
@@ -150,12 +165,65 @@ module.exports = [
                     ]
                 });
 
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Resource ${green(resourceName)} added in ${green(rootResourcesPath)}.`
+                });
+
                 // Format code with prettier
                 const prettier = require("prettier");
                 const prettierConfig = await prettier.resolveConfig(rootResourcesPath);
                 const formattedCode = prettier.format(code, { ...prettierConfig, parser: "babel" });
 
                 fs.writeFileSync(rootResourcesPath, formattedCode);
+            },
+            onSuccess({ input }) {
+                const { location } = input;
+                const fullLocation = path.resolve(location);
+                const appTsxLocation = path.join(fullLocation, "/src/App.tsx");
+                const projectRootPath = path.dirname(
+                    findUp.sync("webiny.root.js", {
+                        cwd: fullLocation
+                    })
+                );
+                const rootResourcesPath = path.dirname(
+                    findUp.sync("resources.js", {
+                        cwd: fullLocation
+                    })
+                );
+
+                const deployCommandStackPath = rootResourcesPath
+                    .replace(projectRootPath, "")
+                    .replace("/", "");
+
+                console.log(`The next steps:`);
+                console.log(
+                    indentString(
+                        `1. The ${green(
+                            appTsxLocation
+                        )} is your app's entry point, start coding from there.`,
+                        2
+                    )
+                );
+                console.log(
+                    indentString(
+                        `2. Run ${green(`yarn start`)} in ${green(
+                            fullLocation
+                        )} to start local development.`,
+                        2
+                    )
+                );
+                console.log(
+                    indentString(
+                        `3. Once ready, deploy your new React app by running ${green(
+                            `webiny deploy ${deployCommandStackPath} --env dev`
+                        )}.`,
+                        2
+                    )
+                );
+                console.log(
+                    "Learn more about app development at https://docs.webiny.com/docs/app-development/introduction."
+                );
             }
         }
     }
