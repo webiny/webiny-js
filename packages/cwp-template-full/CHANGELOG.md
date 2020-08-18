@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.8.0...v4.9.0-beta.0) (2020-08-18)
+
+
+### Bug Fixes
+
+* set `concurrencyLimit` to `0` ([740ab1e](https://github.com/webiny/webiny-js/commit/740ab1e49ff65e9b3b06f5f739bb9a2412fc526d))
+
+
+
+
+
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.8.0...v4.9.0-beta.0) (2020-08-18)
+
+
+### Bug Fixes
+
+* correct dependencies ([a773ea0](https://github.com/webiny/webiny-js/commit/a773ea026d916d0b92f74058e92c5409d0c80061))
+* set `concurrencyLimit` to `0` ([740ab1e](https://github.com/webiny/webiny-js/commit/740ab1e49ff65e9b3b06f5f739bb9a2412fc526d))
+* **app-template-admin-full:** apply user plugins after the template plugins ([#1178](https://github.com/webiny/webiny-js/issues/1178)) ([ec76ff1](https://github.com/webiny/webiny-js/commit/ec76ff1ee63ff4ca2cac5619b6de127519939b66))
+* **cli-plugin-scaffold-admin-app-module:** improve messaging ([c7f43ba](https://github.com/webiny/webiny-js/commit/c7f43bac1bd78aa598a68e1af374fa84da84e3b8))
+* **cli-plugin-scaffold-graphql-service:** improve messaging ([58e80c6](https://github.com/webiny/webiny-js/commit/58e80c6bf7680778911aae0fb965af2209d93dce))
+* **cli-plugin-scaffold-lambda:** improve messaging ([2fb1c68](https://github.com/webiny/webiny-js/commit/2fb1c6827fad5cc2a4360bd72ceaef19aaa75488))
+* **cli-plugin-scaffold-node-package:** improve messaging ([6c23ab6](https://github.com/webiny/webiny-js/commit/6c23ab67908b93e595cae42d6e127fe4d4dcff2b))
+* **cli-plugin-scaffold-react-app:** improve messaging ([ec69ad7](https://github.com/webiny/webiny-js/commit/ec69ad71166b72db746cdf87bfb79f74ba33e796))
+* **cli-plugin-scaffold-react-package:** improve messaging ([dff0597](https://github.com/webiny/webiny-js/commit/dff0597d7a8841577de94c8789713529afa1cf29))
+* add missing dependencies ([705a036](https://github.com/webiny/webiny-js/commit/705a03685ae76e286c718d0323fc32d8278766e1))
+* enable `getContentModels` and `listContentModels` in the READ/PREVIEW API ([6c57c76](https://github.com/webiny/webiny-js/commit/6c57c763511923b5a482b1decdb97da0db85028d))
+* simplify file tags form ([5ac70cd](https://github.com/webiny/webiny-js/commit/5ac70cd38a34c16d78498521711e882393de0bc0))
+* simplify file tags form ([4b2d1ef](https://github.com/webiny/webiny-js/commit/4b2d1ef189d1810eebf9984fe983e8ffc186662b))
+
+
+### Features
+
+* improve messaging ([0d2b629](https://github.com/webiny/webiny-js/commit/0d2b62924b175d81e858b0d18565f6f06b4abed0))
+* introduce `wait` helper function ([3ed941b](https://github.com/webiny/webiny-js/commit/3ed941b0b8f3e96a3670de327a7c250bf45dc829))
+* **app-page-builder:** add support for two-way element settings linking ([afcde15](https://github.com/webiny/webiny-js/commit/afcde1526ce5529026468d9fc2995397773548be))
+* add `context-after-content-models` plugin ([a859fe1](https://github.com/webiny/webiny-js/commit/a859fe1bd46a4c79edb8e50d53a27658c3bdd8d6))
+
+
+
+
+
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
 **Note:** Version bump only for package webiny-js

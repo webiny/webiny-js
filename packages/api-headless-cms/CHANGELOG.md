@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.8.0...v4.9.0-beta.0) (2020-08-18)
+
+
+### Bug Fixes
+
+* enable `getContentModels` and `listContentModels` in the READ/PREVIEW API ([6c57c76](https://github.com/webiny/webiny-js/commit/6c57c763511923b5a482b1decdb97da0db85028d))
+
+
+### Features
+
+* add `context-after-content-models` plugin ([a859fe1](https://github.com/webiny/webiny-js/commit/a859fe1bd46a4c79edb8e50d53a27658c3bdd8d6))
+
+
+
+
+
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

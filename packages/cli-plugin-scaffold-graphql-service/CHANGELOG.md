@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.8.0...v4.9.0-beta.0) (2020-08-18)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** improve messaging ([58e80c6](https://github.com/webiny/webiny-js/commit/58e80c6bf7680778911aae0fb965af2209d93dce))
+* add missing dependencies ([705a036](https://github.com/webiny/webiny-js/commit/705a03685ae76e286c718d0323fc32d8278766e1))
+
+
+### Features
+
+* improve messaging ([0d2b629](https://github.com/webiny/webiny-js/commit/0d2b62924b175d81e858b0d18565f6f06b4abed0))
+
+
+
+
+
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

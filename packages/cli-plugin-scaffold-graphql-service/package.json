@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-graphql-service",
-  "version": "4.8.0",
+  "version": "4.9.0-beta.0",
   "description": "Generate Webiny GraphQL service",
   "main": "index.js",
   "repository": {
@@ -17,8 +17,10 @@
   "dependencies": {
     "@babel/core": "^7.9.6",
     "case": "^1.6.3",
+    "chalk": "^2.4.2",
     "execa": "^4.0.2",
     "find-up": "^4.1.0",
+    "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
@@ -26,9 +28,7 @@
     "pluralize": "^8.0.0",
     "prettier": "^2.0.5",
     "replace-in-path": "^1.0.2",
-    "write-json-file": "^4.3.0",
-    "chalk": "^2.4.2",
-    "indent-string": "^4.0.0"
+    "write-json-file": "^4.3.0"
   },
   "publishConfig": {
     "access": "public",
