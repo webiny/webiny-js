@@ -21,7 +21,9 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "chalk": "^2.4.2",
+    "indent-string": "^4.0.0"
   },
   "publishConfig": {
     "access": "public",
