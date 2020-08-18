@@ -25,7 +25,7 @@ module.exports = ({ cli }) => {
                         region: process.env.AWS_REGION,
                         description: "Handles interaction with MongoDB",
                         code: "./databaseProxy/build",
-                        concurrencyLimit: 50,
+                        concurrencyLimit: 0, // No concurrency limit.
                         handler: "handler.handler",
                         memory: 512,
                         env: {
