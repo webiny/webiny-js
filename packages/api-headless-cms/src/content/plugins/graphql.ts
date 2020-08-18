@@ -49,10 +49,24 @@ const getMutationResolvers = type => {
     };
 };
 
-const getQueryResolvers = () => {
+/**
+ * This is a hack that we introduced because the actual fix is in another branch, which is not soon-to-be-merged.
+ * So, we apply scopes-check in the manage API, as usual. For the READ/PREVIEW, we don't apply any checks because
+ * the auth check is already done in the "context-cms-validate-access-token" plugin, which only runs in these two
+ * types of APIs (so, the check isn't executed in the MANAGE API).
+ * @param type
+ */
+const getQueryResolvers = type => {
+    if (type === "manage") {
+        return {
+            getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
+            listContentModels: hasScope("cms:content-model:crud")(resolveList(contentModelFetcher))
+        };
+    }
+
     return {
-        getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
-        listContentModels: hasScope("cms:content-model:crud")(resolveList(contentModelFetcher))
+        getContentModel: resolveGet(contentModelFetcher),
+        listContentModels: resolveList(contentModelFetcher)
     };
 };
 
@@ -234,7 +248,7 @@ export default ({ type }) => [
             `,
             resolvers: merge(
                 {
-                    Query: getQueryResolvers(),
+                    Query: getQueryResolvers(type),
                     Mutation: getMutationResolvers(type)
                 },
                 contentModelGroup.getResolvers(type),
