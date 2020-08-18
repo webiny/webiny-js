@@ -13,6 +13,12 @@ const pluginToChoice = plugin => ({
     value: plugin.name
 });
 
+const wait = (ms = 1000) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+};
+
 const scaffold = async ({ context }) => {
     const inquirer = require("inquirer");
     const ora = require("ora");
@@ -42,16 +48,16 @@ const scaffold = async ({ context }) => {
     const oraSpinner = ora().start(`Generating template...\n`);
 
     try {
-        await scaffold.generate({ input, context, oraSpinner });
+        await scaffold.generate({ input, context, wait, oraSpinner });
         oraSpinner.succeed("Done!");
 
         if (typeof scaffold.onSuccess === "function") {
-            await scaffold.onSuccess({ input, context, oraSpinner });
+            await scaffold.onSuccess({ input, context, wait, oraSpinner });
         }
     } catch (e) {
         oraSpinner.stop();
         if (typeof scaffold.onError === "function") {
-            await scaffold.onError({ input, context, oraSpinner, error: e });
+            await scaffold.onError({ input, context, wait, oraSpinner, error: e });
         } else {
             console.log(e);
         }

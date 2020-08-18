@@ -8,6 +8,7 @@ const { replaceInPath } = require("replace-in-path");
 const Case = require("case");
 const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const { green } = require("chalk");
 
 module.exports = [
     {
@@ -49,7 +50,7 @@ module.exports = [
                     }
                 ];
             },
-            generate: async ({ input }) => {
+            generate: async ({ input, oraSpinner, wait }) => {
                 let { location, packageName } = input;
                 location = location.split("/");
                 location[location.length - 1] = Case.kebab(location[location.length - 1]);
@@ -69,6 +70,9 @@ module.exports = [
                 if (fs.existsSync(location)) {
                     throw new Error(`Destination folder ${location} already exists!`);
                 }
+
+                oraSpinner.start(`Creating React package files in ${green(fullLocation)}...`);
+                await wait();
 
                 await fs.mkdirSync(location, { recursive: true });
 
@@ -132,7 +136,16 @@ module.exports = [
                     replaceWith: Case.kebab(packageName)
                 });
 
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `React package files created in ${green(fullLocation)}.`
+                });
+
+
                 // Update root package.json - update "workspaces.packages" section.
+                oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
+                await wait();
+
                 const rootPackageJsonPath = path.join(projectRootPath, "package.json");
                 const rootPackageJson = await readJson(rootPackageJsonPath);
                 if (!rootPackageJson.workspaces.packages.includes(location)) {
@@ -140,9 +153,19 @@ module.exports = [
                     await writeJson(rootPackageJsonPath, rootPackageJson);
                 }
 
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                });
+
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
                 try {
+                    oraSpinner.start(`Installing dependencies...`);
                     await execa("yarn");
+                    oraSpinner.stopAndPersist({
+                        symbol: green("✔"),
+                        text: "Dependencies installed."
+                    });
                 } catch (err) {
                     throw new Error(
                         `Unable to install dependencies. Try running "yarn" in project root manually.`
