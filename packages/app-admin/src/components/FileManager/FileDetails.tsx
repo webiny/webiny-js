@@ -187,7 +187,7 @@ export default function FileDetails(props) {
                             </li>
                             <li>
                                 <li-title>{t`Tags:`}</li-title>
-                                <Tags {...props} />
+                                <Tags key={props.file.id} {...props} />
                             </li>
                             <li>
                                 <li-title>{t`Created:`}</li-title>
