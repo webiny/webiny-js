@@ -48,7 +48,7 @@ module.exports = [
                     }
                 ];
             },
-            generate: async ({ input }) => {
+            generate: async ({ input, wait, oraSpinner }) => {
                 const { existingEntityName, moduleLocation, newEntityName } = input;
 
                 const entityName = existingEntityName || newEntityName;
@@ -61,6 +61,9 @@ module.exports = [
                 if (fs.existsSync(fullModuleLocation)) {
                     throw new Error(`Destination folder ${fullModuleLocation} already exists.`);
                 }
+
+                oraSpinner.start(`Creating new Admin app module files in ${green(fullModuleLocation)}...`);
+                await wait();
 
                 await fs.mkdirSync(fullModuleLocation, { recursive: true });
 
@@ -111,6 +114,11 @@ module.exports = [
                         path.join(fullModuleLocation, fileNameReplacement.replaceWith)
                     );
                 }
+
+                oraSpinner.stopAndPersist({
+                    symbol: green("✔"),
+                    text: `Admin app module files created in ${green(fullModuleLocation)}.`
+                });
             },
             onSuccess({ input }) {
                 const { moduleLocation } = input;
