@@ -13,9 +13,9 @@ import RequireNewPassword from "./views/RequireNewPassword";
 import ForgotPassword from "./views/ForgotPassword";
 import SetNewPassword from "./views/SetNewPassword";
 
-const Authentication = ({ children }) => {
+const Authentication = ({ children, getIdentityData }) => {
     return (
-        <Authenticator>
+        <Authenticator getIdentityData={getIdentityData}>
             {({ checkingUser, ...authProps }) =>
                 checkingUser ? (
                     <CircularProgress />
@@ -33,9 +33,7 @@ const Authentication = ({ children }) => {
                         <SetNewPasswordState {...authProps}>
                             <SetNewPassword />
                         </SetNewPasswordState>
-                        <SignedInState {...authProps}>
-                            {children}
-                        </SignedInState>
+                        <SignedInState {...authProps}>{children}</SignedInState>
                     </>
                 )
             }

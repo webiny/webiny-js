@@ -1,7 +1,7 @@
 import minimatch from "minimatch";
 import { ContextPlugin } from "@webiny/graphql/types";
 import { SecurityIdentity } from "./SecurityIdentity";
-import { SecurityPlugin } from "../types";
+import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
 
 export default () => [
     {
@@ -19,41 +19,33 @@ export default () => [
                 },
                 async getPermission(permission) {
                     const perms = await context.security.getPermissions();
-                    const exactMatch = perms.find((p) => p.name === permission);
+                    const exactMatch = perms.find(p => p.name === permission);
                     if (exactMatch) {
                         return exactMatch;
                     }
 
                     // Try matching using patterns
-                    if (perms.find((p) => minimatch(permission, p.name))) {
+                    if (perms.find(p => minimatch(permission, p.name))) {
                         return { name: permission };
                     }
 
                     return null;
                 },
                 async getPermissions() {
-                    const identity = context.security.getIdentity();
-                    if (!identity) {
-                        return [];
-                    }
+                    const authorizationPlugin = context.plugins
+                        .byType<SecurityAuthorizationPlugin>("security-authorization")
+                        .pop();
 
-                    if (typeof identity.getPermissions !== "function") {
-                        throw Error(
-                            [
-                                "Security configuration is incomplete!",
-                                `You must either override the "context.security.getPermissions" function, or provide a "getPermissions()" function for your SecurityIdentity instance.`
-                            ].join("\n")
-                        );
-                    }
-
-                    return await context.security.getIdentity().getPermissions();
+                    return await authorizationPlugin.getPermissions(context);
                 }
             });
 
-            const securityPlugins = context.plugins.byType<SecurityPlugin>("security");
+            const authenticationPlugins = context.plugins.byType<SecurityAuthenticationPlugin>(
+                "security-authentication"
+            );
 
-            for (let i = 0; i < securityPlugins.length; i++) {
-                const identity = await securityPlugins[i].authenticate(context);
+            for (let i = 0; i < authenticationPlugins.length; i++) {
+                const identity = await authenticationPlugins[i].authenticate(context);
                 if (identity instanceof SecurityIdentity) {
                     context.security.identity = identity;
                     return;

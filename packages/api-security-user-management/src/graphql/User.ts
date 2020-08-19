@@ -192,7 +192,6 @@ export default {
                 return user.avatar ? { __typename: "File", id: user.avatar } : null;
             },
             permissions: (_, args, context) => {
-                console.log(`SecurityIdentity "permissions"`);
                 return context.security.getPermissions();
             }
         },

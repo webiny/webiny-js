@@ -3,8 +3,8 @@ import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createAuthLink } from "@webiny/app-security/components";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
+import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
 
 export const createApolloClient = () => {
@@ -22,7 +22,7 @@ export const createApolloClient = () => {
                 }
             }),
             createOmitTypenameLink(),
-            createAuthLink(),
+            ...plugins.byType("apollo-link").map(pl => pl.createLink()),
             new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
         ]),
         cache: new InMemoryCache({

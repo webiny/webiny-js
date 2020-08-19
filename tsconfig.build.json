@@ -34,6 +34,8 @@
       "@webiny/api-settings-manager/*": ["./packages/api-settings-manager/src/*"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
+      "@webiny/api-security-permissions-manager/*": ["./packages/api-security-permissions-manager/src/*"],
+      "@webiny/api-security-permissions-manager": ["./packages/api-security-permissions-manager/src"],
       "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
       "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
       "@webiny/app/*": ["./packages/app/src/*"],

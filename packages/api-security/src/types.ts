@@ -1,20 +1,23 @@
-import { Plugin } from "@webiny/graphql/types";
+import { Plugin, Context } from "@webiny/graphql/types";
 
 export type SecurityIdentity = {
     id: string;
     login: string;
     type: string;
-    hasPermission(permission: any): Promise<void>;
     [key: string]: any;
 };
 
-export type SecurityPlugin = Plugin & {
-    type: "security";
+export type SecurityAuthenticationPlugin = Plugin & {
+    type: "security-authentication";
     authenticate(context: any): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export type AccessManagerMiddlewarePlugin = Plugin & {
-    type: "access-manager-middleware";
-    hasPermission(params: { identity: string; type: string; permission: any }): Promise<boolean>;
-    getPermissions(params: { identity: string; type: string }): Promise<boolean>;
+export type SecurityPermission = {
+    name: string;
+    [key: string]: any;
+};
+
+export type SecurityAuthorizationPlugin = Plugin & {
+    type: "security-authorization";
+    getPermissions(context: Context): Promise<SecurityPermission[]>;
 };

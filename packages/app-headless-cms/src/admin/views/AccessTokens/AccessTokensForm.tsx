@@ -8,7 +8,6 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
-import { ScopesMultiAutoComplete } from "@webiny/app-security/admin/components";
 
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
@@ -62,9 +61,10 @@ function EnvironmentAliasesForm() {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="scopes">
+                                TODO: add permissions UI (or role selector)
+                                {/*<Bind name="scopes">
                                     <ScopesMultiAutoComplete filter={filterReadScope} />
-                                </Bind>
+                                </Bind>*/}
                             </Cell>
                             <Cell span={12}>
                                 <div>

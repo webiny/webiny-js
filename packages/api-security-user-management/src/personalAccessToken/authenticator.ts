@@ -1,7 +1,7 @@
 import LambdaClient from "aws-sdk/clients/lambda";
 import { Context } from "@webiny/graphql/types";
 import { SecurityIdentity } from "@webiny/api-security";
-import { SecurityPlugin } from "@webiny/api-security/types";
+import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 
 type PatAuthOptions = {
     validateAccessTokenFunction?: string;
@@ -9,7 +9,7 @@ type PatAuthOptions = {
 
 export default (options: PatAuthOptions = {}) => [
     {
-        type: "security",
+        type: "security-authentication",
         async authenticate(context: Context) {
             const [event] = context.args;
             const { headers = {} } = event;
@@ -68,5 +68,5 @@ export default (options: PatAuthOptions = {}) => [
                 return null;
             }
         }
-    } as SecurityPlugin
+    } as SecurityAuthenticationPlugin
 ];

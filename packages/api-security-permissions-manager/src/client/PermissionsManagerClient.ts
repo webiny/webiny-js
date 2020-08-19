@@ -1,30 +1,30 @@
 import LambdaClient from "aws-sdk/clients/lambda";
 import { Context } from "@webiny/graphql/types";
 
-interface AccessManagerOperation {
+interface PermissionManagerOperation {
     action: string;
-    identity: string;
+    identity: string | null;
     type: string;
 }
 
-export class AccessManagerClient {
-    accessManagerFunction: string;
+export class PermissionsManagerClient {
+    functionName: string;
     lambda: LambdaClient;
     context: Context;
 
     constructor({ functionName }, context) {
-        this.accessManagerFunction = functionName;
+        this.functionName = functionName;
         this.context = context;
     }
 
-    private async invoke(operation: AccessManagerOperation) {
+    private async invoke(operation: PermissionManagerOperation) {
         if (!this.lambda) {
             this.lambda = new LambdaClient({ region: process.env.AWS_REGION });
         }
 
         const { Payload } = await this.lambda
             .invoke({
-                FunctionName: this.accessManagerFunction,
+                FunctionName: this.functionName,
                 Payload: JSON.stringify(operation)
             })
             .promise();
@@ -41,14 +41,10 @@ export class AccessManagerClient {
     async getPermissions() {
         const identity = this.context.security.getIdentity();
 
-        if (!identity) {
-            return [];
-        }
-
         return await this.invoke({
             action: "getPermissions",
-            identity: identity.id,
-            type: identity.type
+            identity: identity ? identity.id : null,
+            type: identity ? identity.type : "anonymous"
         });
     }
 }

@@ -4,7 +4,7 @@ import request from "request-promise";
 import util from "util";
 import { Context } from "@webiny/graphql/types";
 import { SecurityIdentity } from "@webiny/api-security";
-import { SecurityPlugin } from "@webiny/api-security/types";
+import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 
 const verify = util.promisify(jwt.verify);
 
@@ -14,11 +14,16 @@ const isJwt = token => token.split(".").length === 3;
 type CognitoAuthOptions = {
     region: string;
     userPoolId: string;
+    identityType: string;
+    getIdentity?(
+        params: { identityType: string; token: { [key: string]: any } },
+        context: Context
+    ): SecurityIdentity;
 };
 
-export default (options: CognitoAuthOptions) => {
+export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOptions) => {
     let jwksCache = null;
-    const url = `https://cognito-idp.${options.region}.amazonaws.com/${options.userPoolId}/.well-known/jwks.json`;
+    const url = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
 
     const getJWKs = async () => {
         if (!jwksCache) {
@@ -31,8 +36,7 @@ export default (options: CognitoAuthOptions) => {
 
     return [
         {
-            type: "security",
-            name: "authentication-cognito-idtoken",
+            type: "security-authentication",
             async authenticate(context: Context) {
                 const [event] = context.args;
                 const { headers = {} } = event;
@@ -44,30 +48,36 @@ export default (options: CognitoAuthOptions) => {
 
                 idToken = idToken.replace(/bearer\s/i, "");
 
-                if (isJwt(idToken)) {
-                    if (idToken !== "" && event.httpMethod === "POST") {
-                        const jwks = await getJWKs();
-                        const { header } = jwt.decode(idToken, { complete: true });
-                        const jwk = jwks.find(key => key.kid === header.kid);
+                if (isJwt(idToken) && event.httpMethod === "POST") {
+                    const jwks = await getJWKs();
+                    const { header } = jwt.decode(idToken, { complete: true });
+                    const jwk = jwks.find(key => key.kid === header.kid);
 
-                        const token = await verify(idToken, jwkToPem(jwk));
-                        if (token.token_use !== "id") {
-                            const error = new Error("idToken is invalid!");
-                            throw Object.assign(error, {
-                                code: "SECURITY_COGNITO_INVALID_TOKEN"
-                            });
-                        }
+                    if (!jwk) {
+                        return;
+                    }
 
-                        return new SecurityIdentity({
-                            id: token.sub,
-                            login: token.email,
-                            type: "cognito-user",
-                            firstName: token.given_name,
-                            lastName: token.family_name
+                    const token = await verify(idToken, jwkToPem(jwk));
+                    if (token.token_use !== "id") {
+                        const error = new Error("idToken is invalid!");
+                        throw Object.assign(error, {
+                            code: "SECURITY_COGNITO_INVALID_TOKEN"
                         });
                     }
+
+                    if (typeof getIdentity === "function") {
+                        return getIdentity({ identityType, token }, context);
+                    }
+
+                    return new SecurityIdentity({
+                        id: token.sub,
+                        login: token.email,
+                        type: identityType,
+                        firstName: token.given_name,
+                        lastName: token.family_name
+                    });
                 }
             }
-        } as SecurityPlugin
+        } as SecurityAuthenticationPlugin
     ];
 };

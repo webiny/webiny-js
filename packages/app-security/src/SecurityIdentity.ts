@@ -6,7 +6,7 @@ export type SecurityIdentityData = {
     id: string;
     login: string;
     permissions: SecurityPermission[];
-    logout(): Promise<void>;
+    logout(): void;
     [key: string]: any;
     getPermission?(permission: string): SecurityPermission;
 };

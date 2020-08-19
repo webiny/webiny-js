@@ -1,9 +1,9 @@
 import React, { useReducer, useEffect } from "react";
 import Auth from "@aws-amplify/auth";
+import { ApolloClient } from "apollo-client";
 import { withApollo, WithApolloClient } from "react-apollo";
 import { AlertType } from "@webiny/ui/Alert";
 import { useSecurity } from "@webiny/app-security";
-import { LOGIN } from "@webiny/app-security-user-management/graphql";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 
 export type AuthState =
@@ -40,6 +40,10 @@ export type AuthProps = {
 export type AuthenticatorChildrenFunction = (params: AuthProps) => React.ReactElement;
 
 export type AuthenticatorProps = WithApolloClient<{
+    getIdentityData(params: {
+        client: ApolloClient<any>;
+        payload: { [key: string]: any };
+    }): Promise<{ [key: string]: any }>;
     children: AuthenticatorChildrenFunction;
 }>;
 
@@ -96,11 +100,19 @@ const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
         // Cognito states call this state with user data.
         if (state === "signedIn") {
             setState({ checkingUser: true });
-            const { data } = await props.client.mutate({ mutation: LOGIN });
+            const user = await Auth.currentSession();
+
+            const { id, login, permissions, ...data } = await props.getIdentityData({
+                client: props.client,
+                payload: user.getIdToken().payload
+            });
 
             setIdentity(
                 new SecurityIdentity({
-                    ...data.security.login.data,
+                    id,
+                    login,
+                    permissions,
+                    ...data,
                     logout() {
                         Auth.signOut();
                         setIdentity(null);

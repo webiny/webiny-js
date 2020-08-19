@@ -1,26 +1,20 @@
 {
-  "name": "@webiny/api-security-user-management",
+  "name": "@webiny/api-security-permissions-manager",
   "version": "4.6.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Security authentication plugin for AWS Cognito",
+  "description": "A plugin-based Lambda handler to load identity permissions.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
   "dependencies": {
     "@webiny/api-security": "^4.6.0",
-    "@webiny/commodo": "^4.6.0",
-    "@webiny/commodo-graphql": "^4.6.0",
     "@webiny/graphql": "^4.6.0",
-    "@webiny/validation": "^4.6.0",
-    "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.20",
-    "md5": "^2.3.0",
-    "merge": "^1.2.1"
+    "@webiny/handler": "^4.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

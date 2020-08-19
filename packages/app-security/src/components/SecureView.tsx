@@ -10,7 +10,7 @@ export default ({
 }: {
     children: any;
     scopes?: string[];
-    permission: string;
+    permission?: string;
 }): React.ReactElement => {
     if (!permission && scopes) {
         !warned &&

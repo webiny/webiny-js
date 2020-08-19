@@ -1,13 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "../handler",
-    "../graphql",
-    "../api-security"
-  ],
+  "exclude": ["node_modules", "dist", "../handler", "../graphql", "../api-security"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

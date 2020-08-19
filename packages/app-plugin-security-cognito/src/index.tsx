@@ -1,11 +1,25 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
 import { setContext } from "apollo-link-context";
-
 import Authentication from "./Authentication";
+import { ApolloClient } from "apollo-client";
 
-export default config => {
-    Auth.configure(config);
+export type CognitoOptions = {
+    region: string;
+    userPoolId: string;
+    userPoolWebClientId: string;
+    getIdentityData(params: {
+        client: ApolloClient<any>;
+        payload: { [key: string]: any };
+    }): Promise<{ [key: string]: any }>;
+};
+
+export default ({ getIdentityData, ...amplify }: CognitoOptions) => {
+    Auth.configure(amplify);
+
+    const authentication = children => {
+        return <Authentication getIdentityData={getIdentityData}>{children}</Authentication>;
+    };
 
     return [
         {
@@ -30,15 +44,11 @@ export default config => {
         },
         {
             type: "app-template-renderer",
-            render(children) {
-                return <Authentication>{children}</Authentication>;
-            }
+            render: authentication
         },
         {
             type: "app-installer-security",
-            render(children) {
-                return <Authentication>{children}</Authentication>;
-            }
+            render: authentication
         }
     ];
 };

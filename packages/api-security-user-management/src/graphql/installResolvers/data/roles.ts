@@ -1,5 +1,12 @@
 export default [
     {
+        name: "Anonymous",
+        description: "Controls what anonymous requests can access.",
+        slug: "anonymous",
+        permissions: [],
+        system: true
+    },
+    {
         name: "Security - Roles",
         description: "Allows management of roles.",
         slug: "security-roles",

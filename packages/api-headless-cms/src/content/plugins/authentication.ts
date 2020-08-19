@@ -1,4 +1,4 @@
-import { SecurityPlugin } from "@webiny/api-security/types";
+import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { SecurityIdentity } from "@webiny/api-security";
 
 const getAuthorizationToken = context => {
@@ -9,7 +9,7 @@ const getAuthorizationToken = context => {
 
 export default {
     name: "security-access-token",
-    type: "security",
+    type: "security-authentication",
     authenticate: async context => {
         const { CmsAccessToken } = context.models;
 
@@ -32,4 +32,4 @@ export default {
             type: "cms-access-token"
         });
     }
-} as SecurityPlugin;
+} as SecurityAuthenticationPlugin;
