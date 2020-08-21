@@ -57,7 +57,7 @@ jobs:
         run: yarn lerna publish from-package --dist-tag beta --yes
 
   build-e2e-test:
-    name: Build & E2E test (attempt 1)
+    name: Build and E2E test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
