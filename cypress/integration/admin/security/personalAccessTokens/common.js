@@ -1,7 +1,7 @@
-import mdbid from "mdbid";
+import uniqid from "uniqid";
 
 export const testPAT = ({ patComponentRoute, runAfterVisitingRoute }) => {
-    const tokenName = `Test token ${mdbid()}`;
+    const tokenName = `Test token ${uniqid()}`;
     const updatedTokenName = tokenName + " Updated";
     let initialTokensCount;
 
