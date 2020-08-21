@@ -58,7 +58,7 @@
     "commitizen": "^2.10.1",
     "contreebutors": "^1.1.3",
     "cross-env": "^5.2.0",
-    "cypress": "^4.4.0",
+    "cypress": "^5.0.0",
     "cz-customizable": "^5.2.0",
     "empty": "^0.10.1",
     "env-ci": "2.0.1",
