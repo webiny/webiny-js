@@ -21,13 +21,13 @@ module.exports = [
         dir: "api",
         oldFile: "example.env.json",
         newFile: ".env.json",
-        keepOriginal: false
+        keepOriginal: true
     },
     {
         dir: "apps/admin",
         oldFile: "example.env.json",
         newFile: ".env.json",
-        keepOriginal: false
+        keepOriginal: true
     },
     {
         dir: "",
