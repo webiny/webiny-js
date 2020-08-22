@@ -18,9 +18,6 @@ module.exports = async ({ appName, root }) => {
         const { dir, oldFile, newFile, keepOriginal } = filesToCopy[i];
         const oldFilePath = path.join(root, dir, oldFile);
         const newFilePath = path.join(root, dir, newFile);
-        console.log("old and new cms");
-        console.log(oldFilePath);
-        console.log(newFilePath);
         if (keepOriginal) {
             fs.copyFileSync(oldFilePath, newFilePath);
         } else {
