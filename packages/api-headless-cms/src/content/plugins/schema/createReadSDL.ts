@@ -30,7 +30,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
     const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
 
     return `
-        "${model.description}"
+        """${model.description}"""
         type ${rTypeName} {
             id: ID
             createdOn: DateTime
