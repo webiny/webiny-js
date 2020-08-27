@@ -1,5 +1,5 @@
 //used to run a quick project setup for developers
-//cwp-template-full/packages/setup-project/index.js
+//cwp-template-cms/packages/setup-project/index.js
 const fs = require("fs");
 const path = require("path");
 const { green } = require("chalk");
