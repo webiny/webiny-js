@@ -449,8 +449,9 @@ async function createApp({ projectName, template, tag, log }) {
             `4.  ${blue("cd")} apps/admin`,
             `5.  ${blue("yarn start")}`,
             "",
-            `OPTIONAL: for a quick project setup run ${blue("yarn setup-project")}.
-            You may customise this script in the folder ${blue("packages/setup-project")}`,
+            `OPTIONAL: for a quick project setup run ${blue(
+                "yarn setup-project"
+            )}. You may customise this script in the folder ${blue("packages/setup-project")}`,
             `To see all the available CLI commands run ${blue("webiny --help")} in your ${blue(
                 appName
             )} directory.`,
