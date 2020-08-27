@@ -197,6 +197,6 @@
     }
   },
   "resolutions": {
-    "pretty-format": "^25.5.0"
+    "pretty-format": "25.5.0"
   }
 }
