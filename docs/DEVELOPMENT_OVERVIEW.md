@@ -2,10 +2,6 @@
 
 In this article, we'll explain how Webiny works so you can confidently start contributing
 
-### Setup Project
-
-Currently in development.
-
 ### Webiny Local Setup
 
 First things first, we will fork and clone [webiny-js repo](https://github.com/webiny/webiny-js). 
@@ -145,3 +141,25 @@ We use `publishConfig` to set up config values and use them at publish-time. Whe
     "directory": "dist"
 },
 ```
+
+### Create a Webiny Project from the Webiny repository
+
+We can also generate a new Webiny project based off of the repository, which is good quick setup for developers.
+
+After doing local setup of the Webiny repository open a terminal just outside the root directory of the repository.
+
+In the terminal run one of the create-webiny-project commands.
+
+- For CMS, run `node ./webiny/webiny-js/packages/create-webiny-project test-project --template=./webiny/webiny-js/packages/cwp-template-cms`
+
+- For a full project, run `node ./webiny/webiny-js/packages/create-webiny-project test-project --template=./webiny/webiny-js/packages/cwp-template-full` 
+
+Afterwards cd into the new `test-project` and perform the following steps.
+
+* run `yarn setup-project` to set up the necessary environment config files and build packages to generate dist folders and TS declarations. Prior to this step you have the option to reconfigure the files for your own needs.
+
+* Update the MONGODB_SERVER variable in the `test-project/.env.json` file with your database connection string.
+
+* run `yarn webiny deploy api --env=local` to deploy the project.
+
+* cd into `apps/admin` and run `yarn start`
