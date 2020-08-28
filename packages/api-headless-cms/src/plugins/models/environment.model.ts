@@ -1,14 +1,32 @@
 import { validation } from "@webiny/validation";
-import { pipe, withFields, withProps, string, ref, withName, withHooks } from "@webiny/commodo";
+import {
+    pipe,
+    withFields,
+    withProps,
+    string,
+    ref,
+    withName,
+    withHooks,
+    setOnce
+} from "@webiny/commodo";
 import withChangedOnFields from "./withChangedOnFields";
 import { CmsContext } from "../../types";
 
 export default ({ createBase, context }: { createBase: Function; context: CmsContext }) => {
-    return pipe(
+    const CmsContentModel = pipe(
+        withName(`CmsContentModel`),
+        withFields({
+            // id: context.commodo.fields.id(),
+            modelId: string()
+        })
+    )(createBase());
+
+    const CmsEnvironment = pipe(
         withName("CmsEnvironment"),
         withChangedOnFields(),
         withFields(() => ({
             name: string({ validation: validation.create("required,maxLength:100") }),
+            slug: setOnce()(string({ validation: validation.create("required") })),
             description: string({ validation: validation.create("maxLength:200") }),
             createdFrom: ref({
                 instanceOf: context.models.CmsEnvironment
@@ -29,6 +47,9 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                             environmentAlias && environmentAlias.isProduction === true
                     );
                 });
+            },
+            get contentModels() {
+                return CmsContentModel.find();
             }
         }),
         withHooks({
@@ -37,6 +58,16 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                     if (!(await this.createdFrom)) {
                         throw new Error('Base environment ("createdFrom" field) not set.');
                     }
+                }
+
+                if (this.slug) {
+                    const existingGroup = await CmsEnvironment.findOne({
+                        query: { slug: this.slug }
+                    });
+                    if (existingGroup) {
+                        throw Error(`Environment with slug "${this.slug}" already exists.`);
+                    }
+                    return;
                 }
             },
             async afterCreate() {
@@ -79,4 +110,6 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             }
         })
     )(createBase());
+
+    return CmsEnvironment;
 };

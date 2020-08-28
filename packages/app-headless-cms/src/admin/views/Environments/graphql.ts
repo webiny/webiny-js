@@ -8,6 +8,7 @@ const fields = `
         id
         name
     }
+    slug
 `;
 
 export const LIST_ENVIRONMENTS = gql`

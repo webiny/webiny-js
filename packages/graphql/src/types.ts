@@ -23,9 +23,7 @@ export type GraphQLSchemaPlugin<T = Context> = Plugin & {
 
 export type ContextPlugin<T = Context> = Plugin & {
     type: "context";
-    preApply?: (context: T) => void | Promise<void>;
     apply?: (context: T) => void | Promise<void>;
-    postApply?: (context: T) => void | Promise<void>;
 };
 
 export type GraphQLScalarPlugin = Plugin & {

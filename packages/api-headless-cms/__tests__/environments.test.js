@@ -2,70 +2,6 @@ import useGqlHandler from "./utils/useGqlHandler";
 import { createEnvironment, createEnvironmentAlias } from "@webiny/api-headless-cms/testing";
 import mocks from "./mocks/environments";
 
-const CREATE_ENVIRONMENT = /* GraphQL */ `
-    mutation createEnvironment($data: CmsEnvironmentInput!) {
-        cms {
-            createEnvironment(data: $data) {
-                data {
-                    id
-                    name
-                    createdFrom {
-                        id
-                    }
-                }
-                error {
-                    message
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const GET_ENVIRONMENT = /* GraphQL */ `
-    query getEnvironment($where: JSON) {
-        cms {
-            getEnvironment(where: $where) {
-                data {
-                    id
-                    name
-                    createdFrom {
-                        id
-                        name
-                    }
-                    environmentAliases {
-                        id
-                        name
-                        slug
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const LIST_ENVIRONMENTS = /* GraphQL */ `
-    query listEnvironments {
-        cms {
-            listEnvironments {
-                data {
-                    id
-                    name
-                    createdFrom {
-                        id
-                        name
-                    }
-                    environmentAliases {
-                        id
-                        name
-                        slug
-                    }
-                }
-            }
-        }
-    }
-`;
-
 describe("Environments test", () => {
     const { invoke, database } = useGqlHandler();
 
@@ -82,7 +18,8 @@ describe("Environments test", () => {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
-                        name: "new-environment-1"
+                        name: "New Environment 1",
+                        slug: "new-environment-1"
                     }
                 }
             }
@@ -97,7 +34,8 @@ describe("Environments test", () => {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
-                        name: "new-environment-1",
+                        name: "New Environment 1",
+                        slug: "new-environment-1",
                         createdFrom: initial.environment.id
                     }
                 }
@@ -121,7 +59,8 @@ describe("Environments test", () => {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
-                        name: "new-environment-1",
+                        name: "New Environment 1",
+                        slug: "new-environment-1",
                         createdFrom: initial.environment.id
                     }
                 }
@@ -133,7 +72,8 @@ describe("Environments test", () => {
                 query: GET_ENVIRONMENT,
                 variables: {
                     where: {
-                        name: "new-environment-1"
+                        name: "New Environment 1",
+                        slug: "new-environment-1"
                     }
                 }
             }
@@ -154,7 +94,8 @@ describe("Environments test", () => {
                 query: CREATE_ENVIRONMENT,
                 variables: {
                     data: {
-                        name: "new-environment-list-envs-test-1",
+                        name: "New Environment List Envs Test 1",
+                        slug: "new-environment-list-envs-test-1",
                         createdFrom: initial.environment.id
                     }
                 }
@@ -183,3 +124,76 @@ describe("Environments test", () => {
         );
     });
 });
+
+const CREATE_ENVIRONMENT = /* GraphQL */ `
+    mutation createEnvironment($data: CmsEnvironmentInput!) {
+        cms {
+            createEnvironment(data: $data) {
+                data {
+                    id
+                    name
+                    createdFrom {
+                        id
+                    }
+                    contentModels {
+                        id
+                        modelId
+                    }
+                }
+                error {
+                    message
+                    data
+                }
+            }
+        }
+    }
+`;
+
+const GET_ENVIRONMENT = /* GraphQL */ `
+    query getEnvironment($where: JSON) {
+        cms {
+            getEnvironment(where: $where) {
+                data {
+                    id
+                    name
+                    createdFrom {
+                        id
+                        name
+                    }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
+                    slug
+                }
+            }
+        }
+    }
+`;
+
+const LIST_ENVIRONMENTS = /* GraphQL */ `
+    query listEnvironments {
+        cms {
+            listEnvironments {
+                data {
+                    id
+                    name
+                    contentModels {
+                        modelId
+                    }
+                    createdFrom {
+                        id
+                        name
+                    }
+                    environmentAliases {
+                        id
+                        name
+                        slug
+                    }
+                    slug
+                }
+            }
+        }
+    }
+`;

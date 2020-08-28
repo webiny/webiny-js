@@ -6,89 +6,67 @@ import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
+import authenticationPlugin from "./authentication";
 import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
 
 type HeadlessPluginsOptions = {
-    type: string;
-    environment: string;
     dataManagerFunction?: string;
+    type?: string;
+    environment?: string;
 };
 
 export default (
     options: HeadlessPluginsOptions = {
+        dataManagerFunction: null,
         type: null,
-        environment: null,
-        dataManagerFunction: null
+        environment: null
     }
 ) => [
     {
         name: "context-cms-context",
         type: "context",
         apply(context) {
+            // These default values are here only because of the existing tests. In some of those, GraphQL queries
+            // are directly executed against schema, and not via a regular Apollo Handler invocation. In those cases,
+            // the "context.args" is missing, so that's why we added additional levels of checks to be 100% certain.
+            const args = context.args || [];
+            let [event] = args;
+            if (!event) {
+                event = {};
+            }
+
+            // We register plugins according to the received path params (schema type and environment).
+            const { key = "" } = event.pathParameters || {};
+            let [type, environment] = key.split("/");
+
+            if (!type) {
+                type = options.type || event.type;
+            }
+
+            if (!environment) {
+                environment = options.environment || event.environment;
+            }
+
             context.cms = context.cms || {};
-            context.cms.type = options.type || "read";
-            context.cms.environment = options.environment;
+            context.cms.type = type || "read";
+            context.cms.environment = environment;
             context.cms.dataManagerFunction = options.dataManagerFunction;
 
-            context.cms.READ = options.type === "read";
-            context.cms.PREVIEW = options.type === "preview";
-            context.cms.MANAGE = options.type === "manage";
+            context.cms.READ = type === "read";
+            context.cms.PREVIEW = type === "preview";
+            context.cms.MANAGE = type === "manage";
 
             if (!context.cms.MANAGE) {
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
     } as ContextPlugin,
+    graphql(),
     checkRefFieldsBeforeSave(),
     addRefFieldHooks(),
     models(),
-    {
-        name: "context-cms-validate-access-token",
-        type: "context",
-        async apply(context) {
-            if (!context.event) {
-                return;
-            }
-
-            if (context.event.isMetaQuery) {
-                return;
-            }
-
-            if (process.env.NODE_ENV === "test") {
-                // Skip authentication when running tests
-                return;
-            }
-
-            if (context.cms.READ || context.cms.PREVIEW) {
-                const accessToken =
-                    context.event.headers["authorization"] ||
-                    context.event.headers["Authorization"];
-                const { CmsAccessToken } = context.models;
-
-                const token = await CmsAccessToken.findOne({
-                    query: { token: accessToken }
-                });
-
-                if (!token) {
-                    throw new Error("Not authorized!");
-                }
-
-                const allowedEnvironments = await token.environments;
-                const currentEnvironment = context.cms.getEnvironment();
-                if (!allowedEnvironments.find(env => env.id === currentEnvironment.id)) {
-                    throw new Error(
-                        `You are not authorized to access "${currentEnvironment.name}" environment!`
-                    );
-                }
-            }
-
-            if (context.cms.MANAGE && !context.user) {
-                throw new Error("Not authorized!");
-            }
-        }
-    },
-    graphql(options),
     modelFields,
     graphqlFields,
+    authenticationPlugin,
     filterOperators()
 ];

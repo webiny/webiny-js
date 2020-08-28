@@ -138,7 +138,7 @@ const PBInstaller = ({ onInstalled }) => {
 };
 
 export default {
-    name: "installation-pb",
+    name: "admin-installation-pb",
     type: "admin-installation",
     title: "Page Builder app",
     dependencies: [],

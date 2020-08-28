@@ -8,7 +8,9 @@ const generatePackageVersionDefinitions = () => {
 
     return Object.keys(pkgJSON.dependencies || []).reduce((acc, item) => {
         if (item.startsWith("@webiny/")) {
-            const { version } = require(path.join(item, "package.json"));
+            const { version } = require(require.resolve(path.join(item, "package.json"), {
+                paths: [process.cwd()]
+            }));
             acc[`${constantCase(item)}_VERSION`] = JSON.stringify(version);
         }
         return acc;

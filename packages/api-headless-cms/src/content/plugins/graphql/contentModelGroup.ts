@@ -10,7 +10,7 @@ import { hasScope } from "@webiny/api-security";
 const contentModelGroupFetcher = ctx => ctx.models.CmsContentModelGroup;
 
 export default {
-    getTypeDefs(type) {
+    getTypeDefs(context) {
         let output = /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID
@@ -24,7 +24,7 @@ export default {
             }
         `;
 
-        if (type === "manage") {
+        if (context.cms.type === "manage") {
             output += /* GraphQL */ `
                 input CmsContentModelGroupInput {
                     name: String
@@ -79,8 +79,8 @@ export default {
         return output;
     },
 
-    getResolvers(type) {
-        if (type !== "manage") {
+    getResolvers(context) {
+        if (context.cms.type !== "manage") {
             return {};
         }
 
@@ -89,9 +89,7 @@ export default {
                 getContentModelGroup: hasScope("cms:content-model-group:crud")(
                     resolveGet(contentModelGroupFetcher)
                 ),
-                listContentModelGroups: hasScope("cms:content-model-group:crud")(
-                    resolveList(contentModelGroupFetcher)
-                )
+                listContentModelGroups: resolveList(contentModelGroupFetcher)
             },
             Mutation: {
                 createContentModelGroup: hasScope("cms:content-model-group:crud")(
@@ -105,12 +103,5 @@ export default {
                 )
             }
         };
-    },
-    getSecurity(type) {
-        if (type !== "manage") {
-            return {};
-        }
-
-        return {};
     }
 };

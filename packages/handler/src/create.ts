@@ -5,13 +5,16 @@ import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
     const context = {
-        plugins: new PluginsContainer(plugins)
+        plugins: new PluginsContainer(plugins),
+        args
     };
 
     try {
-        const contextPlugins = context.plugins.byType<HandlerContextPlugin>("handler-context");
+        const contextPlugins = context.plugins.byType<HandlerContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
-            contextPlugins[i].apply({ context, args });
+            if (contextPlugins[i].apply) {
+                await contextPlugins[i].apply(context);
+            }
         }
 
         const handlers = context.plugins.byType<HandlerPlugin>("handler");

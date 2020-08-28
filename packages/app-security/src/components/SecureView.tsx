@@ -1,19 +1,32 @@
 import * as React from "react";
-import { hasScopes } from "@webiny/app-security";
-import { ResourcesType } from "../identity";
+import { useSecurity } from "..";
+
+let warned = false;
 
 export default ({
     children,
-    scopes
+    scopes,
+    permission
 }: {
     children: any;
-    scopes?: ResourcesType;
+    scopes?: string[];
+    permission?: string;
 }): React.ReactElement => {
-    const checkedScopes = scopes ? hasScopes(scopes) : true;
-
-    if (typeof children === "function") {
-        return children({ scopes: checkedScopes });
+    if (!permission && scopes) {
+        !warned &&
+            console.warn(
+                `DEPRECATION WARNING: <SecureView> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
+            );
+        warned = true;
+        permission = scopes[0];
     }
 
-    return checkedScopes ? children : null;
+    const { identity } = useSecurity();
+    const hasPermission = permission ? identity.getPermission(permission) : true;
+
+    if (typeof children === "function") {
+        return children({ hasPermission });
+    }
+
+    return hasPermission ? children : null;
 };

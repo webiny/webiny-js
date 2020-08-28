@@ -3,6 +3,7 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const initialEnvironment = {
     name: "Production",
+    slug: "production",
     description: "This is the production environment"
 };
 
@@ -42,6 +43,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         // Create a production environment
         const cmsEnvironmentProduction = await cmsEnvironment.populate({
             name: initialEnvironment.name,
+            slug: initialEnvironment.slug,
             description: initialEnvironment.description
         });
         cmsEnvironmentProduction.initial = true;
@@ -75,7 +77,8 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
     } catch (e) {
         return new ErrorResponse({
             code: "CMS_INSTALLATION_ERROR",
-            message: e.message
+            message: e.message,
+            data: e.data
         });
     }
 };

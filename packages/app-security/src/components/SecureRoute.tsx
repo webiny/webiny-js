@@ -1,25 +1,32 @@
 import * as React from "react";
-import { hasScopes } from "@webiny/app-security";
-import { getPlugin } from "@webiny/plugins";
-import { ResourcesType } from "../identity";
-import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
+import { useSecurity } from "..";
+
+let warned = false;
 
 export default ({
     children,
-    scopes
+    scopes,
+    permission
 }: {
     children: any;
-    scopes?: ResourcesType;
+    scopes?: string[];
+    permission?: string;
 }): React.ReactElement => {
-    const checkedScopes = scopes ? hasScopes(scopes, { forceBoolean: true }) : true;
+    if (!permission && scopes) {
+        !warned &&
+            console.warn(
+                `DEPRECATION WARNING: <SecureRoute> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
+            );
+        warned = true;
+        permission = scopes[0];
+    }
 
-    if (checkedScopes) {
+    const { identity } = useSecurity();
+    const hasPermission = permission ? identity.getPermission(permission) : true;
+
+    if (hasPermission) {
         return children;
     }
 
-    const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
-    if (!plugin) {
-        return <span>You are not authorized to view this route.</span>;
-    }
-    return plugin.render();
+    return null;
 };

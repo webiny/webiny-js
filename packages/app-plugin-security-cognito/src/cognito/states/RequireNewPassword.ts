@@ -1,6 +1,5 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import debug from "../debug";
 import { AuthChangeState, AuthProps } from "../Authenticator";
 
 export type RequireNewPasswordChildrenProps = {
@@ -37,17 +36,15 @@ class RequireNewPassword extends React.Component<RequireNewPasswordProps> {
 
         try {
             const user = await Auth.completeNewPassword(authData, password, requiredAttributes);
-            debug("complete new password", user);
             if (user.challengeName === "SMS_MFA") {
                 changeState("confirmSignIn", user);
             } else if (user.challengeName === "MFA_SETUP") {
-                debug("TOTP setup", user.challengeParam);
                 changeState("TOTPSetup", user);
             } else {
                 this.checkContact(user);
             }
         } catch (err) {
-            debug(err);
+            console.log(err);
         }
     };
 

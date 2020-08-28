@@ -43,6 +43,14 @@ function EnvironmentsForm() {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
+                                <Bind
+                                    name="slug"
+                                    validators={validation.create("required,maxLength:100")}
+                                >
+                                    <Input disabled={data.id} label={t`Slug`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
                                 <Bind name="description">
                                     {props => (
                                         <Input

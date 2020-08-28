@@ -1,11 +1,13 @@
 import { createHandler } from "@webiny/handler";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
-import securityServicePlugins from "@webiny/api-security/plugins/service";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
+import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
+import securityAuthPlugins from "@webiny/api-security/plugins/auth";
+import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 
 export default ({ database } = {}) => {
     if (!database) {
@@ -16,13 +18,12 @@ export default ({ database } = {}) => {
         createHandler(
             neDb({ database }),
             apolloServerPlugins(),
-            securityServicePlugins({
-                token: {
-                    secret: "secret"
-                }
+            headlessCmsPlugins(),
+            securityAuthPlugins(),
+            securityAuthJwtPlugins({
+                secret: JWT_TOKEN_SIGN_SECRET
             }),
             settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
-            headlessCmsPlugins(),
             dataManagerPlugins()
         );
 
@@ -31,7 +32,8 @@ export default ({ database } = {}) => {
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await cmsHandler({
             httpMethod,
-            headers,
+            // Set "full-access" JWT token into the "Authorization" header.
+            headers: { Authorization: createJwtToken(), ...headers },
             body: JSON.stringify(body),
             ...rest
         });

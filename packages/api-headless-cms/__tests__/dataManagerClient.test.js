@@ -61,6 +61,7 @@ describe("Data Manager Client", () => {
     });
 
     it(`should not call "generateRevisionIndexes" if content entry index fields have not changed`, async () => {
+        const aaa = 123;
         const spy = sandbox.spy(context.cms.dataManager, "generateRevisionIndexes");
 
         const contentModel = await context.models.CmsContentModel.findOne({

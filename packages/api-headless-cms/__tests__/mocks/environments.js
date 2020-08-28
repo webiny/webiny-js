@@ -13,7 +13,8 @@ export default {
                         },
                         environmentAliases: [],
                         id: environmentId,
-                        name: "new-environment-1"
+                        name: "New Environment 1",
+                        slug: "new-environment-1"
                     }
                 }
             }
@@ -25,14 +26,18 @@ export default {
                 listEnvironments: {
                     data: [
                         {
+                            contentModels: [],
                             id: mockedEnvironmentId,
                             name: "Initial Environment",
+                            slug: "initial-environment",
                             createdFrom: null,
                             environmentAliases: []
                         },
                         {
+                            contentModels: [],
                             id: environmentId,
-                            name: "new-environment-list-envs-test-1",
+                            name: "New Environment List Envs Test 1",
+                            slug: "new-environment-list-envs-test-1",
                             createdFrom: {
                                 id: mockedEnvironmentId,
                                 name: "Initial Environment"

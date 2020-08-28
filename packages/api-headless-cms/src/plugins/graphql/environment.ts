@@ -18,12 +18,21 @@ export default {
             description: String
             createdFrom: CmsEnvironment
             environmentAliases: [CmsEnvironmentAlias]
+            contentModels: [CmsContentModel]
             isProduction: Boolean
+            slug: String
+        }
+
+        type CmsContentModel {
+            id: ID
+            modelId: String
+            name: String
         }
 
         input CmsEnvironmentInput {
             name: String
             description: String
+            slug: String
             createdFrom: ID
         }
 

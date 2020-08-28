@@ -17,7 +17,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 
 export default () => {
-    async function apply(context: CmsContext) {
+    async function preApply(context: CmsContext) {
         const driver = context.commodo && context.commodo.driver;
 
         if (!driver) {
@@ -77,7 +77,9 @@ export default () => {
         context.cms.environment = environment.slug;
         context.cms.getEnvironment = () => environment;
         context.cms.getEnvironmentAlias = () => environmentAlias;
+    }
 
+    async function apply(context: CmsContext) {
         const createEnvironmentBase = createEnvironmentBaseFactory({
             context,
             addEnvironmentField: true
@@ -134,7 +136,14 @@ export default () => {
 
     return [
         {
-            name: "context-cms-models",
+            name: "context-cms-models-pre-apply",
+            type: "context",
+            apply(context) {
+                return preApply(context);
+            }
+        } as ContextPlugin<CmsContext>,
+        {
+            name: "context-cms-models-apply",
             type: "context",
             apply(context) {
                 return apply(context);

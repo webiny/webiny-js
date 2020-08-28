@@ -1,46 +1,58 @@
 import mdbid from "mdbid";
-import { createUtils } from "./utils";
-import setupContentModels from "./setup/setupContentModels";
-import setupDefaultEnvironment from "./setup/setupDefaultEnvironment";
-import headlessPlugins from "../src/content/plugins";
-import createCategories from "./mocks/createCategories.manage";
-import { locales } from "./mocks/I18NLocales";
+import { Database } from "@commodo/fields-storage-nedb";
+import useContentHandler from "./utils/useContentHandler";
+import useDataManagerHandler from "./utils/useDataManager";
+import { locales } from "@webiny/api-i18n/testing";
+import {
+    createContentModelGroup,
+    createEnvironment,
+    createEnvironmentAlias
+} from "@webiny/api-headless-cms/testing";
+import contentModels from "./mocks/genericContentModels/contentModels";
+import createCategories from "./mocks/genericContentModels/categories.manage";
 
 describe("Data Manager Handler", () => {
-    const { useDatabase, useContext, useDataManagerHandler } = createUtils([
-        headlessPlugins({ type: "manage", environment: "production" })
-    ]);
+    const database = new Database();
+    const { environment: environmentManage } = useContentHandler({ database });
+    const dataManagerHandler = useDataManagerHandler({ database });
 
-    let environmentId;
-    let categories;
-    let models;
-    const db = useDatabase();
-    const collection = db.getCollection;
-
-    beforeAll(async () => {
-        environmentId = await setupDefaultEnvironment(db);
-        let context = await useContext();
-        await setupContentModels(context);
-    });
+    const initial = {
+        environment: null,
+        environmentAlias: null,
+        contentModelGroup: null,
+        categories: null
+    };
 
     beforeEach(async () => {
-        const context = await useContext();
-        models = {
-            CmsContentModel: context.models.CmsContentModel,
-            CmsContentModelGroup: context.models.CmsContentModelGroup,
-            Category: context.models.category
-        };
-        categories = await createCategories(context);
+        // Let's create a basic environment and a content model group.
+        initial.environment = await createEnvironment({ database });
+        initial.environmentAlias = await createEnvironmentAlias({
+            database,
+            environmentId: initial.environment.id
+        });
+        initial.contentModelGroup = await createContentModelGroup({ database });
+        initial.models = [];
+
+        const { createContentModel } = environmentManage(initial.environment.id);
+        const models = contentModels();
+        for (let i = 0; i < models.length; i++) {
+            let data = models[i];
+            initial.models.push(await createContentModel({ data }));
+        }
+
+        const { content } = environmentManage(initial.environment.id);
+        initial.categories = await createCategories({ content });
     });
 
     afterEach(async () => {
-        await collection("CmsContentEntry").deleteMany();
-        await collection("CmsContentEntrySearch").deleteMany();
+        await database.collection("CmsContentModel").remove({}, { multi: true });
+        await database.collection("CmsContentEntry").remove({}, { multi: true });
+        await database.collection("CmsContentEntrySearch").remove({}, { multi: true });
     });
 
     it(`should generate index entries for all entries of a content model`, async () => {
         // Invoke Index Generator
-        const { invoke } = useDataManagerHandler();
+        const { invoke } = dataManagerHandler;
         let [response] = await invoke({
             environment: "production",
             action: "generateContentModelIndexes",
@@ -49,19 +61,19 @@ describe("Data Manager Handler", () => {
 
         expect(response.error).toBe(undefined);
 
-        let count = await collection("CmsContentEntrySearch").countDocuments();
+        let count = await database.collection("CmsContentEntrySearch").count();
         expect(count).toBe(28);
 
-        let entries = await collection("CmsContentEntrySearch")
-            .find({ revision: categories[0].model.id, locale: locales.en.id })
-            .toSimpleArray();
+        let entries = await database
+            .collection("CmsContentEntrySearch")
+            .find({ revision: initial.categories[0].id, locale: locales.en.id });
 
         expect(entries.length).toBe(4);
 
         // Get content model to fetch model indexes
-        const categoryModel = await models.CmsContentModel.findOne({
-            query: { modelId: "category" }
-        });
+        const categoryModel = await database
+            .collection("CmsContentModel")
+            .findOne({ modelId: "category" });
 
         // Check if all indexes have proper values
         for (let i = 0; i < categoryModel.indexes.length; i++) {
@@ -71,102 +83,97 @@ describe("Data Manager Handler", () => {
             fields.forEach((field, index) => {
                 let value;
                 if (field === "id") {
-                    value = categories[0].model.id;
+                    value = initial.categories[0].id;
                 } else {
-                    value = categories[0].model[field].value(locales.en.code);
+                    // Let's get value for "locales.en.code", located on index "0".
+                    value = initial.categories[0][field].values[0].value;
                 }
                 expect(entry[`v${index}`]).toBe(value);
             });
         }
 
         // Entries only exist if there are values for the given locale. We should get only 1 record for IT locale.
-        entries = await collection("CmsContentEntrySearch")
-            .find({ revision: categories[0].model.id, locale: locales.it.id })
-            .toSimpleArray();
+        entries = await database
+            .collection("CmsContentEntrySearch")
+            .find({ revision: initial.categories[0].id, locale: locales.it.id });
 
         expect(entries.length).toBe(1);
     });
 
     it(`should regenerate indexes when indexes are changed`, async () => {
-        // Generate initial indexes
-        const { invoke } = useDataManagerHandler();
-        await invoke({
-            environment: "production",
-            action: "generateContentModelIndexes",
-            contentModel: "category"
+        const { updateContentModel } = environmentManage(initial.environment.id);
+        await updateContentModel({
+            id: initial.models[0].id,
+            data: {
+                indexes: [{ fields: ["slug"] }]
+            }
         });
 
-        const categoryModel = await models.CmsContentModel.findOne({
-            query: { modelId: "category" }
-        });
-
-        // Update content model indexes
-        categoryModel.indexes = [{ fields: ["slug"] }];
-        await categoryModel.save();
-
-        let count = await collection("CmsContentEntrySearch").countDocuments();
+        let count = await database.collection("CmsContentEntrySearch").count();
         expect(count).toBe(22);
 
         // Remove all indexes - this should only generate `fields=id` index for each locale.
         // Update: also, it will include indexes for the title-field! So, we made +7 increment here.
-        categoryModel.indexes = [];
-        await categoryModel.save();
+        await updateContentModel({
+            id: initial.models[0].id,
+            data: {
+                indexes: []
+            }
+        });
 
-        count = await collection("CmsContentEntrySearch").countDocuments();
+        count = await database.collection("CmsContentEntrySearch").count();
         // 3 locales * 3 entries = 9 index entries
         // Update: +7 title entries
         expect(count).toBe(16);
 
         // Restore indexes
-        categoryModel.indexes = [
-            { fields: ["id"] },
-            { fields: ["title", "slug"] },
-            { fields: ["slug"] }
-        ];
-        await categoryModel.save();
+        await updateContentModel({
+            id: initial.models[0].id,
+            data: {
+                indexes: [{ fields: ["title"] }, { fields: ["title", "slug"] }]
+            }
+        });
     });
 
     it(`should generate index entries for a specific entry revision`, async () => {
         // Generate initial search catalog
-        const { invoke } = useDataManagerHandler();
-        await invoke({
-            environment: "production",
-            action: "generateContentModelIndexes",
-            contentModel: "category"
-        });
+        const { invoke } = dataManagerHandler;
 
-        let count = await collection("CmsContentEntrySearch").countDocuments();
+        let count = await database.collection("CmsContentEntrySearch").count();
         expect(count).toBe(28);
 
         // Update exiting content model entry
-        const category = categories[0].model;
-        category.title = {
-            values: [
-                { locale: locales.en.id, value: "Headless EN" },
-                { locale: locales.de.id, value: "Headless DE" },
-                { locale: locales.it.id, value: "Headless IT" }
-            ]
-        };
-        await category.save();
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        await categories.update({
+            id: initial.categories[0].id,
+            data: {
+                title: {
+                    values: [
+                        { locale: locales.en.id, value: "Headless EN" },
+                        { locale: locales.de.id, value: "Headless DE" },
+                        { locale: locales.it.id, value: "Headless IT" }
+                    ]
+                }
+            }
+        });
 
         // Re-generate indexes for this revision
         await invoke({
             environment: "production",
             action: "generateRevisionIndexes",
             contentModel: "category",
-            revision: category.id
+            revision: initial.categories[0].id
         });
 
         const find = {
-            environment: categories[0].data.environment,
+            environment: initial.environment.id,
             model: "category",
-            revision: category.id,
+            revision: initial.categories[0].id,
             fields: "title"
         };
 
-        let entries = await collection("CmsContentEntrySearch")
-            .find(find)
-            .toSimpleArray();
+        let entries = await database.collection("CmsContentEntrySearch").find(find);
 
         expect(entries.length).toBe(3);
         expect(entries.find(({ locale }) => locale === locales.en.id).v0).toBe("Headless EN");
@@ -174,68 +181,45 @@ describe("Data Manager Handler", () => {
         expect(entries.find(({ locale }) => locale === locales.it.id).v0).toBe("Headless IT");
     });
 
-    it(`should delete index entries for a specific entry revision`, async () => {
-        // Generate initial search catalog
-        const { invoke } = useDataManagerHandler();
-        await invoke({
-            environment: "production",
-            action: "generateContentModelIndexes",
-            contentModel: "category"
-        });
-
-        let count = await collection("CmsContentEntrySearch").countDocuments();
-        expect(count).toBe(28);
-
-        // Delete content model entry (this should delete 9 entries from Search table)
-        await categories[0].model.delete();
-
-        count = await collection("CmsContentEntrySearch").countDocuments();
-        expect(count).toBe(19);
-    });
-
     it(`should copy environment data`, async () => {
         // Generate initial search catalog
-        const { invoke } = useDataManagerHandler();
-        await invoke({
-            environment: "production",
-            action: "generateContentModelIndexes",
-            contentModel: "category"
-        });
+        const { invoke } = dataManagerHandler;
 
         // Insert a new environment
         const newEnvId = mdbid();
-        await collection("CmsEnvironment").insertOne({
+
+        await database.collection("CmsEnvironment").insert({
             id: newEnvId,
             name: "Staging",
             slug: "staging"
         });
 
         // Count records for existing environment
-        let countQuery = { environment: environmentId, deleted: { $ne: true } };
-        const modelsCount = await collection("CmsContentModel").countDocuments(countQuery);
-        const modelGroupsCount = await collection("CmsContentModelGroup").countDocuments(
-            countQuery
-        );
-        const entriesCount = await collection("CmsContentEntry").countDocuments(countQuery);
-        const indexesCount = await collection("CmsContentEntrySearch").countDocuments({
-            environment: environmentId
+        let countQuery = { environment: initial.environment.id, deleted: { $ne: true } };
+        const modelsCount = await database.collection("CmsContentModel").count(countQuery);
+        const modelGroupsCount = await database
+            .collection("CmsContentModelGroup")
+            .count(countQuery);
+        const entriesCount = await database.collection("CmsContentEntry").count(countQuery);
+        const indexesCount = await database.collection("CmsContentEntrySearch").count({
+            environment: initial.environment.id
         });
 
         // Copy data
         await invoke({
             action: "copyEnvironment",
-            copyFrom: environmentId,
+            copyFrom: initial.environment.id,
             copyTo: newEnvId
         });
 
         // Count records for new environment
         countQuery = { environment: newEnvId, deleted: { $ne: true } };
-        const newModelsCount = await collection("CmsContentModel").countDocuments(countQuery);
-        const newModelGroupsCount = await collection("CmsContentModelGroup").countDocuments(
-            countQuery
-        );
-        const newEntriesCount = await collection("CmsContentEntry").countDocuments(countQuery);
-        const newIndexesCount = await collection("CmsContentEntrySearch").countDocuments({
+        const newModelsCount = await database.collection("CmsContentModel").count(countQuery);
+        const newModelGroupsCount = await database
+            .collection("CmsContentModelGroup")
+            .count(countQuery);
+        const newEntriesCount = await database.collection("CmsContentEntry").count(countQuery);
+        const newIndexesCount = await database.collection("CmsContentEntrySearch").count({
             environment: newEnvId
         });
 
@@ -247,22 +231,17 @@ describe("Data Manager Handler", () => {
 
     it(`should delete environment data`, async () => {
         // Generate initial search catalog
-        const { invoke } = useDataManagerHandler();
-        await invoke({
-            environment: "production",
-            action: "generateContentModelIndexes",
-            contentModel: "category"
-        });
+        const { invoke } = dataManagerHandler;
 
         // Insert a new environment
         const newEnvId = mdbid();
-        await collection("CmsEnvironment").insertOne({
+        await database.collection("CmsEnvironment").insert({
             id: newEnvId,
             name: "Staging",
             slug: "staging"
         });
 
-        await collection("CmsEnvironmentAlias").insertOne({
+        await database.collection("CmsEnvironmentAlias").insert({
             name: "Staging",
             slug: "staging",
             default: false,
@@ -272,7 +251,7 @@ describe("Data Manager Handler", () => {
         // Copy data
         await invoke({
             action: "copyEnvironment",
-            copyFrom: environmentId,
+            copyFrom: initial.environment.id,
             copyTo: newEnvId
         });
 
@@ -283,9 +262,9 @@ describe("Data Manager Handler", () => {
         });
 
         const countQuery = { environment: newEnvId };
-        expect(await collection("CmsContentModel").countDocuments(countQuery)).toBe(0);
-        expect(await collection("CmsContentModelGroup").countDocuments(countQuery)).toBe(0);
-        expect(await collection("CmsContentEntry").countDocuments(countQuery)).toBe(0);
-        expect(await collection("CmsContentEntrySearch").countDocuments(countQuery)).toBe(0);
+        expect(await database.collection("CmsContentModel").count(countQuery)).toBe(0);
+        expect(await database.collection("CmsContentModelGroup").count(countQuery)).toBe(0);
+        expect(await database.collection("CmsContentEntry").count(countQuery)).toBe(0);
+        expect(await database.collection("CmsContentEntrySearch").count(countQuery)).toBe(0);
     });
 });

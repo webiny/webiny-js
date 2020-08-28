@@ -81,10 +81,10 @@ const FMInstaller = ({ onInstalled }) => {
 };
 
 const plugin: AdminInstallationPlugin = {
-    name: "installation-fm",
+    name: "admin-installation-fm",
     type: "admin-installation",
     title: t`File Manager app`,
-    dependencies: ["installation-security"],
+    dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

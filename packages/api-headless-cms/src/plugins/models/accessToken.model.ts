@@ -9,8 +9,28 @@ const generateToken = (tokenLength = 48) =>
         .toString("hex")
         .slice(0, tokenLength);
 
-export default ({ createBase, context }) =>
-    pipe(
+export default ({ createBase, context }) => {
+    const getAvailableScopes = async () => {
+        const { CmsEnvironment } = context.models;
+        const envs = await CmsEnvironment.find({});
+        const scopes = [];
+
+        for (const env of envs) {
+            const contentModels = env.contentModels;
+            for (const apiType of ["read", "preview"]) {
+                for (const contentModel of contentModels) {
+                    const modelId = contentModel.modelId;
+                    const currentScope = `cms:${apiType}:${env.slug}:${modelId}`;
+
+                    scopes.push(currentScope);
+                }
+            }
+        }
+
+        return scopes;
+    };
+
+    return pipe(
         withName("CmsAccessToken"),
         withChangedOnFields(),
         withFields(() => ({
@@ -26,6 +46,23 @@ export default ({ createBase, context }) =>
                 list: true,
                 instanceOf: [context.models.CmsEnvironment, "accessToken"],
                 using: [context.models.CmsEnvironment2AccessToken, "environment"]
+            }),
+            scopes: string({
+                list: true,
+                validation: async scopes => {
+                    if (!scopes) {
+                        return;
+                    }
+                    const availableScopes = await getAvailableScopes();
+                    for (const scope of scopes) {
+                        if (!availableScopes.includes(scope)) {
+                            throw new Error(
+                                `Scope ${scope} is invalid! Use one of the existing scopes: ${availableScopes}`
+                            );
+                        }
+                    }
+                }
             })
         }))
     )(createBase());
+};

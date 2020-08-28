@@ -23,8 +23,6 @@ import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
 import { SecureView } from "@webiny/app-security/components";
 
-import { hasScopes } from "@webiny/app-security";
-
 const linkStyle = css({
     textDecoration: "none",
     "&:hover": {
@@ -114,23 +112,21 @@ const cellClass = css({
 });
 
 const Welcome = () => {
-    const security = useSecurity();
+    const { identity } = useSecurity();
 
-    if (!security || !security.user) {
+    if (!identity) {
         return null;
     }
 
-    const { fullName } = security.user;
-
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
-    ).some(pl => hasScopes(pl.scopes, { forceBoolean: true }));
+    ).some(pl => identity.hasPermission(pl.scopes));
 
     return (
         <Grid>
             <Cell span={12} className={cellClass}>
                 <SimpleForm>
-                    <SimpleFormHeader title={`Hi ${fullName.split(" ")[0]}!`} />
+                    <SimpleFormHeader title={`Hi ${identity.fullName.split(" ")[0]}!`} />
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>

@@ -135,4 +135,23 @@ describe("Data Manager Hooks", () => {
 
         expect(result.error).toBeUndefined();
     });
+
+    it(`should delete index entries for a specific entry revision`, async () => {
+        // Generate initial search catalog
+        const { invoke } = useDataManagerHandler();
+        await invoke({
+            environment: "production",
+            action: "generateContentModelIndexes",
+            contentModel: "category"
+        });
+
+        let count = await collection("CmsContentEntrySearch").countDocuments();
+        expect(count).toBe(28);
+
+        // Delete content model entry (this should delete 9 entries from Search table)
+        await categories[0].model.delete();
+
+        count = await collection("CmsContentEntrySearch").countDocuments();
+        expect(count).toBe(19);
+    });
 });

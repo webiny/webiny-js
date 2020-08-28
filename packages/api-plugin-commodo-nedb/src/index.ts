@@ -6,7 +6,7 @@ export default ({ database }) => {
         {
             name: "context-commodo",
             type: "context",
-            preApply(context) {
+            apply(context) {
                 if (!context.commodo) {
                     context.commodo = {};
                 }
