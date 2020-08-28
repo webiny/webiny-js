@@ -442,16 +442,18 @@ async function createApp({ projectName, template, tag, log }) {
             `Finish the configuration by following these steps:`,
             "",
             `1.  ${blue("cd")} ${appName}`,
-            `2.  Update the ${blue("MONGODB_SERVER")} variable in the ${blue(
+            `2. (OPTIONAL) for a quick project setup run ${blue(
+                "yarn setup-project"
+            )}. You may customise this script's procedures in the file ${blue(
+                "packages/setup-project/index.js"
+            )}`,
+            `3.  Update the ${blue("MONGODB_SERVER")} variable in the ${blue(
                 `${appName}/.env.json`
             )} file with your database connection string.`,
-            `3.  ${blue("yarn webiny deploy")} api --env=local`,
-            `4.  ${blue("cd")} apps/admin`,
-            `5.  ${blue("yarn start")}`,
+            `4.  ${blue("yarn webiny deploy")} api --env=local`,
+            `5.  ${blue("cd")} apps/admin`,
+            `6.  ${blue("yarn start")}`,
             "",
-            `OPTIONAL: for a quick project setup run ${blue(
-                "yarn setup-project"
-            )}. You may customise this script in the folder ${blue("packages/setup-project")}`,
             `To see all the available CLI commands run ${blue("webiny --help")} in your ${blue(
                 appName
             )} directory.`,
