@@ -34,7 +34,7 @@ const plugin: WebinyInitPlugin = {
 
                 //set to true, if atleast one settings plugins are permitted for the user
                 let canSeeAnySettings = renderedSettingsPlugins.some(pl => pl.data.props.permitted == true, { forceBoolean: true });
-   
+
                 if (canSeeAnySettings) {
 
                     //displays plugin data
