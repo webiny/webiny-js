@@ -35,9 +35,8 @@ const plugins = [
         type: "admin-menu-settings",
         name: "menu-settings-form-builder",
         render({ Item, Section }) {
-            this.permitted = hasScopes(ROLE_FORMS_SETTINGS, { forceBoolean: true });
             return (
-                <SecureView scopes={ROLE_FORMS_SETTINGS}>
+                <SecureView scopes={ROLE_FORMS_SETTINGS} permitted={hasScopes(ROLE_FORMS_SETTINGS, { forceBoolean: true })}>
                     <Section label={t`Form Builder`}>
                         <Item label={t`reCAPTCHA`} path={"/settings/form-builder/recaptcha"} />
                     </Section>

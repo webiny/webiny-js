@@ -35,9 +35,8 @@ export default [
         type: "admin-menu-settings",
         name: "menu-file-manager-settings",
         render({ Section, Item }) {
-            this.permitted = hasScopes(ROLE_FM_SETTINGS, { forceBoolean: true });
             return (
-                <SecureView scopes={ROLE_FM_SETTINGS}>
+                <SecureView scopes={ROLE_FM_SETTINGS} permitted={hasScopes(ROLE_FM_SETTINGS, { forceBoolean: true })}>
                     <Section label={t`File Manager`}>
                         <Item label={t`General`} path="/settings/file-manager/general" />
                     </Section>

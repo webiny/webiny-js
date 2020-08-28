@@ -50,9 +50,8 @@ export default [
         type: "admin-menu-settings",
         name: "menu-settings-cms-environments",
         render({ Section, Item }) {
-            this.permitted = hasScopes(ROLE_CMS_SETTINGS, { forceBoolean: true });
             return (
-                <SecureView scopes={ROLE_CMS_SETTINGS}>
+                <SecureView scopes={ROLE_CMS_SETTINGS} permitted={hasScopes(ROLE_CMS_SETTINGS, { forceBoolean: true })}>
                     <Section label={t`Headless CMS`}>
                         <Item label={t`Environments`} path={"/settings/cms/environments"} />
                         <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />

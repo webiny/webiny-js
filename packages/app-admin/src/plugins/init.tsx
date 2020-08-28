@@ -21,23 +21,28 @@ const plugin: WebinyInitPlugin = {
             render({ Menu, Section, Item }) {    
                 const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
                 
-                //retrieves permitted key and value for settingsPlugins and receives data for display
+                //renders the settings plugins to receive data for both display and permissions checks
                 const renderedSettingsPlugins = settingsPlugins.map(pl => {
                     return {
                         name: pl.name,
-                        rendered: pl.render({ Section, Item })
+                        data: pl.render({ Section, Item })
                     }
                 });
                 
+                console.log("renderedSettingsPlugins:::::::");
+                console.log(renderedSettingsPlugins);
+
                 //set to true, if atleast one settings plugins are permitted for the user
-                const canSeeAnySettings = settingsPlugins.some(pl => pl.permitted == true, { forceBoolean: true });
+                let canSeeAnySettings = renderedSettingsPlugins.some(pl => pl.data.props.permitted == true, { forceBoolean: true });
    
                 if (canSeeAnySettings) {
+
+                    //displays plugin data
                     return (
                         <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
-                            {renderedSettingsPlugins.map(plugin => (
+                            {settingsPlugins.map(plugin => (
                                 <React.Fragment key={plugin.name}>
-                                    {plugin.rendered}
+                                    {plugin.data}
                                 </React.Fragment>
                             ))}
                         </Menu>

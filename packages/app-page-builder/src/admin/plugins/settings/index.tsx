@@ -55,9 +55,8 @@ const plugins = [
         type: "admin-menu-settings",
         name: "menu-settings-page-builder",
         render({ Section, Item }) {  
-            this.permitted = hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true });
             return (
-                <SecureView scopes={ROLE_PB_SETTINGS}>
+                <SecureView scopes={ROLE_PB_SETTINGS} permitted={hasScopes(ROLE_PB_SETTINGS, { forceBoolean: true })}>
                     <Section label={t`Page Builder`}>
                         {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
                             plugin => (
