@@ -1,5 +1,7 @@
 export default /* GraphQL */ `
-    "Products being sold in our webshop"
+    """
+    Products being sold in our webshop
+    """
     type Product {
         id: ID
         createdOn: DateTime

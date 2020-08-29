@@ -1,5 +1,7 @@
 export default /* GraphQL */ `
-    "Product category"
+    """
+    Product category
+    """
     type Category {
         id: ID
         createdOn: DateTime

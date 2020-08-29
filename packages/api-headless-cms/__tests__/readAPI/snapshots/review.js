@@ -1,5 +1,7 @@
 export default /* GraphQL */ `
-    "Product review"
+    """
+    Product review
+    """
     type Review {
         id: ID
         createdOn: DateTime
