@@ -102,11 +102,25 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                     instanceOf,
                                     refNameField: "entry2ModelId",
                                     findRefArgs: () => {
+                                        const parent = instance.entry2ParentId;
+
+                                        // Backwards compatibility: if there's no parent set, that means we're dealing
+                                        // with an old record, and we'll just going to load data the old-fashioned way.
+                                        // Yes, that means the users will need to save their existing models in order
+                                        // for the new functionality to work.
+                                        if (!parent) {
+                                            return {
+                                                query: {
+                                                    id: instance.entry2ModelId
+                                                }
+                                            };
+                                        }
+
                                         // If we are in the MANAGE API, then we always need to load the latest revision.
                                         if (context.cms.MANAGE) {
                                             return {
                                                 query: {
-                                                    parent: instance.entry2ParentId,
+                                                    parent,
                                                     latestVersion: true
                                                 }
                                             };
@@ -114,7 +128,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                         // Otherwise, we need to load the published one.
                                         return {
                                             query: {
-                                                parent: instance.entry2ParentId,
+                                                parent,
                                                 published: true
                                             }
                                         };
