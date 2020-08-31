@@ -278,6 +278,7 @@ export const createCreateMutation = model => {
             data {
                 id
                 ${createFieldsList(model)}
+                savedOn
             }
             error ${ERROR_FIELD}
         }

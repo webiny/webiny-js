@@ -42,7 +42,7 @@ describe("Multiple Values Test", () => {
             data: mocks.createProduct
         });
 
-        expect(product).toEqual(mocks.createdProduct(product.id));
+        expect(product).toEqual(mocks.createdProduct(product));
     });
 
     it("should not allow setting a multiple-values field as the entry title", async () => {
