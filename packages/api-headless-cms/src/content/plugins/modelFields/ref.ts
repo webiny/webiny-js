@@ -90,16 +90,41 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                         // We create a custom CmsEntries2Entries model in runtime, on which we added locale filtering.
                         const CmsEntries2Entries = pipe(
                             withName("CmsEntries2Entries"),
-                            withFields(() => ({
+                            withFields(instance => ({
                                 locale: string(),
-                                entry1: ref({ instanceOf, refNameField: "entry1ModelId" }),
+                                entry1: ref({
+                                    instanceOf,
+                                    refNameField: "entry1ModelId"
+                                }),
                                 entry1ModelId: string(),
                                 entry1FieldId: string({ value: field.fieldId }),
-                                entry2: ref({ instanceOf, refNameField: "entry2ModelId" }),
-                                entry2ModelId: string({ value: modelId })
+                                entry2: ref({
+                                    instanceOf,
+                                    refNameField: "entry2ModelId",
+                                    findRefArgs: () => {
+                                        // If we are in the MANAGE API, then we always need to load the latest revision.
+                                        if (context.cms.MANAGE) {
+                                            return {
+                                                query: {
+                                                    parent: instance.entry2ParentId,
+                                                    latestVersion: true
+                                                }
+                                            };
+                                        }
+                                        // Otherwise, we need to load the published one.
+                                        return {
+                                            query: {
+                                                parent: instance.entry2ParentId,
+                                                published: true
+                                            }
+                                        };
+                                    }
+                                }),
+                                entry2ModelId: string({ value: modelId }),
+                                entry2ParentId: string()
                             })),
                             withHooks({
-                                beforeSave() {
+                                async beforeSave() {
                                     if (!valuesModel.locale) {
                                         throw Error(
                                             `Locale is missing for field ${field.fieldId}.`
@@ -107,6 +132,10 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                     }
 
                                     this.locale = valuesModel.locale;
+                                    const entry2 = await this.entry2;
+                                    if (entry2) {
+                                        this.entry2ParentId = entry2.meta.parent;
+                                    }
                                 }
                             }),
                             withStaticProps(({ find, count, findOne }) => ({
@@ -159,7 +188,16 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                             }),
                             onGet(async value => {
                                 if (field.multipleValues) {
-                                    return value;
+                                    const awaitedValue = await value;
+
+                                    // Why this? Simply because in the READ API, we only return published revisions,
+                                    // and if a user unpublishes a particular revision, the user will null instead
+                                    // of of just nothing. So for example, instead of [], users might get [null, {...}].
+                                    // This won't happen on the MANAGE API since there we always deal with latest
+                                    // revisions, and there is always a latest revision.
+                                    return Array.isArray(awaitedValue)
+                                        ? awaitedValue.filter(Boolean)
+                                        : awaitedValue;
                                 }
 
                                 const awaitedValue = await value;
