@@ -221,8 +221,9 @@ export default {
             ]
         }
     },
-    createdProduct: productId => ({
-        id: productId,
+    createdProduct: product => ({
+        id: product.id,
+        savedOn: product.savedOn,
         title: {
             values: [
                 {
