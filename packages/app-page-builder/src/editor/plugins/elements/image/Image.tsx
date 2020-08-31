@@ -3,6 +3,8 @@ import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementR
 import ImageContainer from "./ImageContainer";
 
 const Image = ({ element }) => {
+    console.log("editor element");
+    console.log(element);
     return (
         <ElementRoot
             element={element}

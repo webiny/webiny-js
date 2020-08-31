@@ -20,14 +20,19 @@ const Image = props => {
     if (!image || !image.file) {
         return null;
     }
-
-    const { width, height, title } = image;
+    console.log("render image");
+    const { file, width, height, title } = image;
+    
+    console.log(image);
+    console.log(file);
+    console.log(width);
+    console.log(height);
 
     const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
     if (!style.width) {
-        style.width = "100%";
+        style.width = "100%"; 
     } else {
         style.width += style.width.endsWith("px") ? "" : "px";
     }
