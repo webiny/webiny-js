@@ -48,7 +48,7 @@ const ContentDetails = ({ contentModel, dataList }) => {
         };
     }, [contentModel.modelId]);
 
-    const { data, loading: readQueryLoading } = useQuery(READ_CONTENT, {
+    const { data, loading: readQueryLoading, refetch: readQueryRefetch } = useQuery(READ_CONTENT, {
         variables: { id: contentId },
         skip: !contentId,
         onCompleted: data => {
@@ -63,9 +63,13 @@ const ContentDetails = ({ contentModel, dataList }) => {
 
     const getLocale = useCallback(() => locale, [locale]);
     const getLoading = useCallback(() => readQueryLoading || loading, [loading, readQueryLoading]);
+    const refetchContent = useCallback(async () => {
+        setLoading(true);
+        await readQueryRefetch();
+        setLoading(false);
+    }, [readQueryRefetch]);
 
     const content = get(data, "content.data") || {};
-
     const contentParent = get(content, "meta.parent");
     const revisionsList = useQuery(LIST_REVISIONS, {
         skip: !contentParent,
@@ -82,6 +86,7 @@ const ContentDetails = ({ contentModel, dataList }) => {
                     getLoading,
                     dataList,
                     content,
+                    refetchContent,
                     contentModel,
                     revisionsList,
                     state,
