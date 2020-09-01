@@ -10,6 +10,7 @@ const apolloServiceEnv = {
     JWT_TOKEN_EXPIRES_IN: "2592000",
     JWT_TOKEN_SECRET: process.env.JWT_SECRET,
     SETTINGS_MANAGER_FUNCTION: "${settingsManager.arn}",
+    PERMISSIONS_MANAGER_FUNCTION: "${securityPermissionsManager.arn}",
     VALIDATE_ACCESS_TOKEN_FUNCTION: "${securityValidateAccessToken.name}"
 };
 const apolloGatewayServices = {
@@ -66,7 +67,7 @@ module.exports = () => ({
                     region: process.env.AWS_REGION,
                     description: "Handles interaction with MongoDB",
                     code: "./databaseProxy/build",
-                    concurrencyLimit: 50,
+                    concurrencyLimit: 0, // No concurrency limit.
                     handler: "handler.handler",
                     memory: 512,
                     env: {
@@ -102,6 +103,29 @@ module.exports = () => ({
                     description: "Settings Manager",
                     region: process.env.AWS_REGION,
                     code: "./settingsManager/build",
+                    handler: "handler.handler",
+                    memory: 128,
+                    timeout: 20,
+                    env: {
+                        DB_PROXY_FUNCTION: "${databaseProxy.arn}",
+                        DEBUG: process.env.DEBUG
+                    }
+                }
+            }
+        },
+        securityPermissionsManager: {
+            watch: ["./security/permissionsManager/build"],
+            build: {
+                root: "./security/permissionsManager",
+                script: "yarn build"
+            },
+            deploy: {
+                component: "@webiny/serverless-function",
+                inputs: {
+                    role: "${lambdaRole.arn}",
+                    description: "Permissions Manager",
+                    region: process.env.AWS_REGION,
+                    code: "./security/permissionsManager/build",
                     handler: "handler.handler",
                     memory: 128,
                     timeout: 20,
