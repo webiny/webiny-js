@@ -53,8 +53,10 @@ const SaveAndPublishButton = ({
         title: t`Publish content`,
         message: (
             <p>{t`You are about to publish a new revision. Are you sure you want to continue?`}</p>
-        )
+        ),
+        dataTestId: "cms-confirm-save-and-publish"
     });
+
     return (
         <ButtonPrimary
             className={buttonStyles}

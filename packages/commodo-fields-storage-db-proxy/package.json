@@ -11,7 +11,7 @@
 	],
 	"license": "MIT",
 	"dependencies": {
-		"@commodo/fields": "^1.1.1",
+		"@commodo/fields": "^1.2.1",
 		"bson": "^4.0.2"
 	},
 	"publishConfig": {

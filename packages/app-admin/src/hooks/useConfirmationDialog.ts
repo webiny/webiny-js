@@ -2,7 +2,7 @@ import { useUi } from "@webiny/app/hooks/useUi";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/hooks/use-confirmation-dialog");
 
-const useConfirmationDialog = ({ title, message }) => {
+const useConfirmationDialog = ({ title, message, ...options }) => {
     const ui = useUi();
 
     return {
@@ -13,6 +13,7 @@ const useConfirmationDialog = ({ title, message }) => {
                     dialog: {
                         message,
                         options: {
+                            ...options,
                             title,
                             actions: {
                                 accept: {

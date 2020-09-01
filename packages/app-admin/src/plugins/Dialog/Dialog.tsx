@@ -6,7 +6,7 @@ import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from 
 export const DialogContainer: React.FC = () => {
     const ui = useUi();
     const message = get(ui, "dialog.message");
-    const { title, actions = { cancel: null, accept: { label: "OK" } } } = get(
+    const { dataTestId, title, actions = { cancel: null, accept: { label: "OK" } } } = get(
         ui,
         "dialog.options",
         {}
@@ -18,7 +18,7 @@ export const DialogContainer: React.FC = () => {
 
     return (
         <Dialog>
-            <Dialog open={!!message} onClose={hideDialog}>
+            <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId}>
                 {title && <DialogTitle>{title}</DialogTitle>}
                 <DialogContent>{message}</DialogContent>
                 <DialogActions>
