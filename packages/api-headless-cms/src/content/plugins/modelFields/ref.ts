@@ -101,7 +101,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                 entry2: ref({
                                     instanceOf,
                                     refNameField: "entry2ModelId",
-                                    findRefArgs: () => {
+                                    loadRef: ({ Model, id }) => {
                                         const parent = instance.entry2ParentId;
 
                                         // Backwards compatibility: if there's no parent set, that means we're dealing
@@ -109,29 +109,26 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                         // Yes, that means the users will need to save their existing models in order
                                         // for the new functionality to work.
                                         if (!parent) {
-                                            return {
-                                                query: {
-                                                    id: instance.entry2ModelId
-                                                }
-                                            };
+                                            return Model.findById(id);
                                         }
 
                                         // If we are in the MANAGE API, then we always need to load the latest revision.
                                         if (context.cms.MANAGE) {
-                                            return {
+                                            return Model.findOne({
                                                 query: {
                                                     parent,
                                                     latestVersion: true
                                                 }
-                                            };
+                                            });
                                         }
+
                                         // Otherwise, we need to load the published one.
-                                        return {
+                                        return Model.findOne({
                                             query: {
                                                 parent,
                                                 published: true
                                             }
-                                        };
+                                        });
                                     }
                                 }),
                                 entry2ModelId: string({ value: modelId }),
