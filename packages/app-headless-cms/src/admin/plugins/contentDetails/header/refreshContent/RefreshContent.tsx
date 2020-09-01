@@ -10,6 +10,7 @@ const buttonStyles = css({
 const RefreshContentButton = props => {
     return (
         <IconButton
+            data-testid={"cms-content-refresh-content-button"}
             className={buttonStyles}
             icon={<RefreshIcon />}
             onClick={() => props.refetchContent()}
