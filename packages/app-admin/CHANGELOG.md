@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+
+### Features
+
+* add support for data-testid attribute ([dacbed3](https://github.com/webiny/webiny-js/commit/dacbed32628ec76549b3b82bd061db716219fd21))
+* enable passing additional options ([6c6523e](https://github.com/webiny/webiny-js/commit/6c6523eae168589861f95bac41d196047f7a0241))
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/app-admin

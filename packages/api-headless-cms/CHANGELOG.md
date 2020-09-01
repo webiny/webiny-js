@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+
+### Bug Fixes
+
+* add backwards compatibility support ([5ec071d](https://github.com/webiny/webiny-js/commit/5ec071d8a1971552b9918a9dd37aa2fdd94d495a))
+* load latest / published revisions accordingly ([4968ab2](https://github.com/webiny/webiny-js/commit/4968ab2ed2c4f1dea82a11a705a1aa85081aee76))
+* use `loadRef` instead of old `findRefArgs` ([299fb02](https://github.com/webiny/webiny-js/commit/299fb02d44a9b0fe1c214d054018520fe9b2c2d9))
+* **api-headless-cms:** use triple quotes on content model description ([#1199](https://github.com/webiny/webiny-js/issues/1199)) ([45f3e47](https://github.com/webiny/webiny-js/commit/45f3e47c2a8a984ef401e8e736d95a11c4f0925e))
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0-beta.0](https://github.com/webiny/commodo/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+
+### Bug Fixes
+
+* update Commodo versions ([1e7a9e2](https://github.com/webiny/commodo/commit/1e7a9e2d6ac1f6744c83119b1886b2036541981c))
+* update Commodo versions ([086c0b2](https://github.com/webiny/commodo/commit/086c0b2cb51dcb6f7928ac8f86ba4535dddf9c13))
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/commodo/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/commodo-fields-storage-db-proxy

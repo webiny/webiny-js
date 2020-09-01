@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+
+### Bug Fixes
+
+* add backwards compatibility support ([5ec071d](https://github.com/webiny/webiny-js/commit/5ec071d8a1971552b9918a9dd37aa2fdd94d495a))
+* add backwards compatibility support ([d32b32b](https://github.com/webiny/webiny-js/commit/d32b32bbd689442d6d02583f61c0b4495bdb61db))
+* load latest / published revisions accordingly ([4968ab2](https://github.com/webiny/webiny-js/commit/4968ab2ed2c4f1dea82a11a705a1aa85081aee76))
+* load latest / published revisions accordingly ([1c407f5](https://github.com/webiny/webiny-js/commit/1c407f57a32c4fd44f54dd84c005d0d8f2924733))
+* update Commodo versions ([1e7a9e2](https://github.com/webiny/webiny-js/commit/1e7a9e2d6ac1f6744c83119b1886b2036541981c))
+* update Commodo versions ([086c0b2](https://github.com/webiny/webiny-js/commit/086c0b2cb51dcb6f7928ac8f86ba4535dddf9c13))
+* use `loadRef` instead of old `findRefArgs` ([299fb02](https://github.com/webiny/webiny-js/commit/299fb02d44a9b0fe1c214d054018520fe9b2c2d9))
+* **api-headless-cms:** use triple quotes on content model description ([#1199](https://github.com/webiny/webiny-js/issues/1199)) ([45f3e47](https://github.com/webiny/webiny-js/commit/45f3e47c2a8a984ef401e8e736d95a11c4f0925e))
+
+
+### Features
+
+* add `refetchContent` helper function ([5121c7e](https://github.com/webiny/webiny-js/commit/5121c7eb02bb3f374e291c25904c58974f6ff5cb))
+* add refresh content button ([a38b458](https://github.com/webiny/webiny-js/commit/a38b4586a2c1094afc0c024e8365ae33a1edc7ee))
+* add support for data-testid attribute ([dacbed3](https://github.com/webiny/webiny-js/commit/dacbed32628ec76549b3b82bd061db716219fd21))
+* enable passing additional options ([6c6523e](https://github.com/webiny/webiny-js/commit/6c6523eae168589861f95bac41d196047f7a0241))
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package webiny-js
