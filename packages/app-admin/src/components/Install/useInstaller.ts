@@ -56,8 +56,11 @@ export const useInstaller = () => {
     const getInstallers = useCallback((installers, graph, list = []) => {
         const leaf = graph.sinks()[0];
         if (leaf) {
-            console.log(installers, leaf);
             const installer = installers.find(inst => inst.plugin.name === leaf);
+            if (!installer) {
+                throw new Error(`Missing installer plugin "${leaf}"!`);
+            }
+
             graph.removeNode(leaf);
             if (!installer.installed) {
                 list.push(installer);
