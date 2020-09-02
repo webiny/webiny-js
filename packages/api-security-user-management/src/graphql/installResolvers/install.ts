@@ -5,7 +5,7 @@ import * as data from "./data";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
 
-const ensureFullAccessRole = async (context) => {
+const ensureFullAccessRole = async context => {
     const { SecurityRole } = context.models;
     let role = await SecurityRole.findOne({ query: { slug: "full-access" } });
     if (!role) {
@@ -15,19 +15,27 @@ const ensureFullAccessRole = async (context) => {
     return role;
 };
 
-const ensureFullAccessGroup = async (context) => {
-    const { SecurityGroup } = context.models;
+const ensureFullAccessGroup = async context => {
+    const { SecurityGroup, SecurityRole } = context.models;
     let group = await SecurityGroup.findOne({ query: { slug: "security-full-access" } });
     if (!group) {
+        // TODO: Remove this manual creation of "role" after commodo  update
+        const roles = [];
+        for (let i = 0; i < data.roles.length; i++) {
+            const roleData = data.roles[i];
+            const role = new SecurityRole();
+            await role.populate(roleData).save();
+            roles.push(role);
+        }
         group = new SecurityGroup();
-        await group.populate({ ...data.securityFullAccessGroup, roles: data.roles }).save();
+        await group.populate({ ...data.securityFullAccessGroup, roles: roles }).save();
     }
 };
 
 /**
  * We consider security to be installed if there are users in Webiny DB.
  */
-const isSecurityInstalled = async (context) => {
+const isSecurityInstalled = async context => {
     const { SecurityUser } = context.models;
 
     // Check if at least 1 user exists in the system

@@ -14,7 +14,6 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-import { ScopesMultiAutoComplete } from "../../components";
 
 const t = i18n.ns("app-security/admin/roles/form");
 
@@ -49,9 +48,15 @@ const RoleForm = () => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="scopes">
-                                    <ScopesMultiAutoComplete />
-                                </Bind>
+                                {data.permissions &&
+                                    data.permissions.map((permission, index) => (
+                                        <Bind name={`permissions.${index}.name`} key={index}>
+                                            <Input
+                                                label={t`Permissions [{index}]`({ index })}
+                                                description={permission.name}
+                                            />
+                                        </Bind>
+                                    ))}
                             </Cell>
                         </Grid>
                     </SimpleFormContent>

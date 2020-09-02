@@ -5,7 +5,7 @@ const fields = `
     name
     slug
     description
-    scopes
+    permissions
 `;
 
 export const LIST_ROLES: any = gql`

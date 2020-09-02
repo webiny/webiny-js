@@ -120,7 +120,7 @@ const Welcome = () => {
 
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
-    ).some(pl => identity.hasPermission(pl.scopes));
+    ).some(pl => identity.getPermission(pl.scopes[0] || ""));
 
     return (
         <Grid>
@@ -139,7 +139,7 @@ const Welcome = () => {
                                     {!canSeeAnyWidget && (
                                         <p className={pGetStartedStyle}>
                                             Please contact administrator for permission to use the
-                                            site's actions.
+                                            site&apso;s actions.
                                         </p>
                                     )}
                                     <br />
