@@ -1,3 +1,13 @@
 {
-  "extends": "../../tsconfig.json"
+  "extends": "../../tsconfig",
+  "references": [
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../app-page-builder" },
+    { "path": "../graphql" },
+    { "path": "../api-security" },
+    { "path": "../api-settings-manager" },
+    { "path": "../commodo" },
+    { "path": "../commodo-graphql" }
+  ]
 }

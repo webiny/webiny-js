@@ -3,6 +3,7 @@
   "include": ["src"],
   "exclude": ["../../packages/app-template-admin-full"],
   "references": [
-    { "path": "../../packages/app-template-admin-full/tsconfig.build.json" }
+    { "path": "../../packages/app-template-admin-full/tsconfig.build.json" },
+    { "path": "../../packages/app-plugin-page-builder-menu-element/tsconfig.build.json" }
   ]
 }
