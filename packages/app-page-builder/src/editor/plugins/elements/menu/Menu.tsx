@@ -12,6 +12,8 @@ const Menu = ({data}) => {
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
+    console.log("CHECKING MENU DATA::::::")
+    console.log(components);
     const menu = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
 

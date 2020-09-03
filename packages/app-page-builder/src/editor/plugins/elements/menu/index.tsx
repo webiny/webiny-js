@@ -64,6 +64,8 @@ export default () => {
                 };
             },
             render({ element }) {
+                console.log("CHECKING ELEMENT:::::")
+                console.log(element);
                 return <Menu data={element.data} />;
             }
         } as PbEditorPageElementPlugin,
