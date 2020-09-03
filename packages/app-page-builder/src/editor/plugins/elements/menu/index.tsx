@@ -6,8 +6,8 @@ import {
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
-import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
+//import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
+//import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as MenuIcon } from "./menu-icon.svg";
 import Menu from "./Menu";
 import MenuFilterSettings from "./MenuFilterSettings";
@@ -31,7 +31,7 @@ export default () => {
             elementType: "menu",
             toolbar: {
                 title: "Menu",
-                group: "pb-editor-element-group-basic",
+                group: "pb-editor-element-group-form",
                 preview() {
                     return (
                         <PreviewBox>
@@ -73,7 +73,7 @@ export default () => {
             elementType: "menu",
             render(props) {
                 return (
-                    <Tab icon={<FilterIcon />} label="Filter">
+                    <Tab icon={<MenuIcon />} label="Filter">
                         <MenuFilterSettings {...props} />
                     </Tab>
                 );
@@ -85,7 +85,7 @@ export default () => {
             elementType: "menu",
             render(props) {
                 return (
-                    <Tab icon={<DesignIcon />} label="Design">
+                    <Tab icon={<MenuIcon />} label="Design">
                         <MenuDesignSettings {...props} />
                     </Tab>
                 );
