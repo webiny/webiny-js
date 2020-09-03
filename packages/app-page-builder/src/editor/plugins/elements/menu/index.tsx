@@ -6,12 +6,12 @@ import {
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
-//import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-//import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
-//import { ReactComponent as MenuIcon } from "./menu-icon.svg";
+import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
+import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
+import { ReactComponent as MenuIcon } from "./menu-icon.svg";
 import Menu from "./Menu";
-//import PagesListFilterSettings from "./PagesListFilterSettings";
-//import PagesListDesignSettings from "./PagesListDesignSettings";
+import MenuFilterSettings from "./MenuFilterSettings";
+import MenuDesignSettings from "./MenuDesignSettings";
 import styled from "@emotion/styled";
 
 export default () => {
@@ -35,7 +35,7 @@ export default () => {
                 preview() {
                     return (
                         <PreviewBox>
-                            <Menu />
+                            <MenuIcon />
                         </PreviewBox>
                     );
                 }
@@ -70,7 +70,7 @@ export default () => {
         {
             name: "pb-editor-page-element-advanced-settings-menu-filter",
             type: "pb-editor-page-element-advanced-settings",
-            elementType: "pages-list",
+            elementType: "menu",
             render(props) {
                 return (
                     <Tab icon={<FilterIcon />} label="Filter">
@@ -82,11 +82,11 @@ export default () => {
         {
             name: "pb-editor-page-element-advanced-settings-pages-list-design",
             type: "pb-editor-page-element-advanced-settings",
-            elementType: "pages-list",
+            elementType: "menu",
             render(props) {
                 return (
                     <Tab icon={<DesignIcon />} label="Design">
-                        <PagesListDesignSettings {...props} />
+                        <MenuDesignSettings {...props} />
                     </Tab>
                 );
             }
