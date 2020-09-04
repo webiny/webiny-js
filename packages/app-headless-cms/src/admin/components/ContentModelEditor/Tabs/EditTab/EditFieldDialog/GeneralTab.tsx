@@ -38,6 +38,14 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         setValue("fieldId", camelCase(getValue(value)));
     }, []);
 
+    const fieldIdValidator = useCallback(fieldId => {
+        if (fieldId.trim().toLowerCase() !== "id") {
+            return true;
+        }
+
+        throw new Error(`Cannot use "id" as Field ID.`);
+    }, undefined);
+
     const uniqueFieldIdValidator = useCallback(fieldId => {
         const existingField = getField({ fieldId });
         if (!existingField) {
@@ -47,7 +55,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         if (existingField._id === field._id) {
             return true;
         }
-        throw new Error("Please enter a unique Field ID");
+        throw new Error("Please enter a unique Field ID.");
     }, undefined);
 
     let additionalSettings = null;
@@ -82,7 +90,11 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                 <Cell span={6}>
                     <Bind
                         name={"fieldId"}
-                        validators={[validation.create("required"), uniqueFieldIdValidator]}
+                        validators={[
+                            validation.create("required"),
+                            uniqueFieldIdValidator,
+                            fieldIdValidator
+                        ]}
                     >
                         <Input label={"Field ID"} disabled={!!field._id} />
                     </Bind>
