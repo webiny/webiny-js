@@ -38,6 +38,12 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
         setValue("fieldId", camelCase(getValue(value)));
     }, []);
 
+    const beforeChangeFieldId = useCallback((value, baseOnChange) => {
+        const newValue = value.trim();
+
+        baseOnChange(newValue);
+    }, []);
+
     const fieldIdValidator = useCallback(fieldId => {
         if (fieldId.trim().toLowerCase() !== "id") {
             return true;
@@ -95,6 +101,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                             uniqueFieldIdValidator,
                             fieldIdValidator
                         ]}
+                        beforeChange={beforeChangeFieldId}
                     >
                         <Input label={"Field ID"} disabled={!!field._id} />
                     </Bind>
