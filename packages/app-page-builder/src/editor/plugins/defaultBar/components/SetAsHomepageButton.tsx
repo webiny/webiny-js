@@ -8,7 +8,7 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 

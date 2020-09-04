@@ -1,5 +1,5 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";

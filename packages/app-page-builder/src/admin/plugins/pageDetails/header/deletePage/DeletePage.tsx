@@ -1,6 +1,6 @@
 import React from "react";
 import dot from "dot-prop-immutable";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "@webiny/react-router";
 import { get } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";

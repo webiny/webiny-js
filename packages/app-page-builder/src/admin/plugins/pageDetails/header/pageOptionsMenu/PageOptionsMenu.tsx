@@ -9,7 +9,7 @@ import { MenuItem, Menu } from "@webiny/ui/Menu";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { css } from "emotion";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";

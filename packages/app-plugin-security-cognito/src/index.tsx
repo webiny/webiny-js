@@ -1,8 +1,8 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import { setContext } from "apollo-link-context";
+import { setContext } from "@apollo/client/link/context";
 import Authentication from "./Authentication";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 import { LOGIN } from "@webiny/app-security-user-management/graphql";
 
 export type CognitoOptions = {

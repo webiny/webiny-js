@@ -1,5 +1,5 @@
 import React from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { IconButton } from "@webiny/ui/Button";

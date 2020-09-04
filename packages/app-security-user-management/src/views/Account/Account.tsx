@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import { omit } from "lodash";
 import { get } from "dot-prop-immutable";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";

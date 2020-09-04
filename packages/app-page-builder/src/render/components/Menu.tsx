@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import invariant from "invariant";

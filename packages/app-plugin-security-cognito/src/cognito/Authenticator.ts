@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import Auth from "@aws-amplify/auth";
-import { ApolloClient } from "apollo-client";
-import { withApollo, WithApolloClient } from "react-apollo";
+import { ApolloClient } from "@apollo/client";
+import { withApollo, WithApolloClient } from "@apollo/client/react/hoc";
 import { AlertType } from "@webiny/ui/Alert";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { DELETE_PAT, UPDATE_PAT } from "../Account/graphql";
 import {
     Dialog,

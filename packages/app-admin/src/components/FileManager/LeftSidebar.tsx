@@ -1,5 +1,5 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { LIST_TAGS } from "./graphql";
 import { get } from "lodash";
 import { css } from "emotion";

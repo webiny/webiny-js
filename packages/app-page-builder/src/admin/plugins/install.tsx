@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import gql from "graphql-tag";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";

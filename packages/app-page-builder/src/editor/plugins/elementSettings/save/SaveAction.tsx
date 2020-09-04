@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { cloneDeep } from "lodash";
 import dataURLtoBlob from "dataurl-to-blob";
 import { useHandler } from "@webiny/app/hooks/useHandler";

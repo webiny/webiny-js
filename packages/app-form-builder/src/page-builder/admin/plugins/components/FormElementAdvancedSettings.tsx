@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";

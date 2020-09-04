@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import query from "./graphql";
 import { PbAddonRenderPlugin } from "@webiny/app-page-builder/types";
 

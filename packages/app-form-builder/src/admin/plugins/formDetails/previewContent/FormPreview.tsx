@@ -2,7 +2,7 @@ import * as React from "react";
 import { css } from "emotion";
 import { Form } from "@webiny/app-form-builder/components/Form";
 import { DATA_FIELDS } from "@webiny/app-form-builder/components/Form/graphql";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { FbFormModel } from "@webiny/app-form-builder/types";

@@ -1,5 +1,5 @@
 import useCms from "./useCms";
-import { useMutation as apolloUseMutation } from "react-apollo";
+import { useMutation as apolloUseMutation } from "@apollo/client";
 
 const useMutation = function(mutation, options = {}) {
     const {

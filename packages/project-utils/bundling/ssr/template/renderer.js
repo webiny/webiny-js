@@ -5,12 +5,10 @@ import "regenerator-runtime/runtime";
 import React, { Fragment } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import Helmet from "react-helmet";
-import { getDataFromTree } from "@apollo/react-ssr";
-import { ApolloProvider } from "react-apollo";
-import ApolloClient from "apollo-client";
-import { ApolloLink } from "apollo-link";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { createHttpLink } from "apollo-link-http";
+import { getDataFromTree } from "@apollo/client/react/ssr";
+import { ApolloClient, ApolloLink, ApolloProvider } from "@apollo/client";
+import { InMemoryCache } from "@apollo/client/cache";
+import { createHttpLink } from "@apollo/client/link/http";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 import { StaticRouter } from "@webiny/react-router";
 /*{import-app-component}*/
@@ -29,8 +27,9 @@ const createClient = () => {
             })
         ]),
         cache: new InMemoryCache({
-            addTypename: true,
-            dataIdFromObject: obj => obj.id || null
+            addTypename: true
+            // TODO: We might need to modify this
+            // dataIdFromObject: obj => obj.__typename || null
         })
     });
 };

@@ -3,7 +3,7 @@ import { FbFormRenderComponentProps, FormSubmitResponseType } from "@webiny/app-
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
 import { get } from "lodash";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 
 type Args = {
     client: ApolloClient<any>;

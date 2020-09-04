@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "@webiny/react-router";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";

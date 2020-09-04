@@ -1,5 +1,5 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import get from "lodash.get";

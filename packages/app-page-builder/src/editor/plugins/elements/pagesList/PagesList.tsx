@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";

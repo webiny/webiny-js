@@ -1,7 +1,6 @@
-import ApolloClient from "apollo-client";
-import { ApolloLink } from "apollo-link";
-import { BatchHttpLink } from "apollo-link-batch-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient, ApolloLink } from "@apollo/client";
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
+import { InMemoryCache } from "@apollo/client/cache";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 
 export const createApolloClient = () => {
@@ -9,7 +8,8 @@ export const createApolloClient = () => {
 
     const cache = new InMemoryCache({
         addTypename: true,
-        dataIdFromObject: obj => obj.id || null
+        // TODO: We might need to change this one
+        // dataIdFromObject: obj => obj.__typename || null
     });
 
     if (isProduction && process.env.REACT_APP_ENV === "browser") {

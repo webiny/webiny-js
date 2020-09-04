@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import getPagePreviewUrlFunction from "./getPagePreviewUrl";

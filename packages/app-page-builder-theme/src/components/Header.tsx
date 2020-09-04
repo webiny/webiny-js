@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import get from "lodash.get";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { getHeaderData } from "./graphql";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";

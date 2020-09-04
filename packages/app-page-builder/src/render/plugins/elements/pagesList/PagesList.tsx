@@ -1,6 +1,6 @@
 import * as React from "react";
 import warning from "warning";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import { loadPages } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";

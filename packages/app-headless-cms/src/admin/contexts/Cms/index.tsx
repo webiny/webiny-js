@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import { LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS } from "./graphql";
 import get from "lodash.get";
 import set from "lodash.set";
+import cloneDeep from "lodash/cloneDeep";
 import createApolloClient from "./createApolloClient";
 
 export const CmsContext = React.createContext({});
@@ -26,6 +27,8 @@ export function CmsProvider(props) {
     const [apolloClient, setApolloClient] = useState();
 
     const environmentsQuery = useQuery(LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS, {
+        // TODO: We'll remove this one after fixing "cache structure"
+        fetchPolicy: "network-only",
         onCompleted: response => {
             const { data = [] } = get(response, "cms.listEnvironments", {});
 
@@ -47,7 +50,7 @@ export function CmsProvider(props) {
         }
     });
 
-    const environments = get(environmentsQuery, "data.cms.listEnvironments.data") || [];
+    const environments = cloneDeep(get(environmentsQuery, "data.cms.listEnvironments.data")) || [];
     environments.hash = environments.map(item => item.id).join("-");
 
     const selectEnvironment = useCallback(environment => {

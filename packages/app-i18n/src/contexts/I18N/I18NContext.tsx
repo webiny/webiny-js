@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery, QueryResult } from "react-apollo";
+import { useQuery, QueryResult } from "@apollo/client";
 import gql from "graphql-tag";
 import get from "lodash.get";
 

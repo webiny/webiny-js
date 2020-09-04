@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { getContent } from "@webiny/app-page-builder/editor/selectors";

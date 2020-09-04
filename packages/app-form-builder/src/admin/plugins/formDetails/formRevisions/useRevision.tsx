@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "@webiny/react-router";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { cloneDeep, get } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {

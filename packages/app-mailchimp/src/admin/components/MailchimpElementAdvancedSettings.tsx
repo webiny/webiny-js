@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useApolloClient } from "react-apollo";
-import { Query } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import { css } from "emotion";

@@ -9,7 +9,7 @@ import {
     Form,
     FormChildrenFunctionParamsSubmit
 } from "@webiny/form";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 import { DataListProps } from "@webiny/app/hooks/useDataList/useDataList";
 
 export type FbBuilderFieldValidator = {

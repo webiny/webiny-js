@@ -3,7 +3,7 @@ import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
 import { I18NStringValue, I18NListValue } from "@webiny/app-i18n/types";
 import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "@webiny/app-headless-cms/admin/components/ContentModelForm/ContentFormRender/components/Label";
 

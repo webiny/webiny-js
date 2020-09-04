@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 import { Menu, Item, Section } from "./plugins/Menu/Navigation/components";
 
 type RenderParams = {

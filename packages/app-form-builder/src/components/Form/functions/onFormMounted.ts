@@ -1,7 +1,7 @@
 import { get, set } from "lodash";
 import { FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
 import { SAVE_FORM_VIEW } from "./graphql";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient } from "@apollo/client";
 
 // TODO: `client` is not part of FbFormRenderComponentProps but is injected by `FormRender`
 

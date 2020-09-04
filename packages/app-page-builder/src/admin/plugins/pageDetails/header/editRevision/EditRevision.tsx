@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { useRouter } from "@webiny/react-router";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { CREATE_REVISION_FORM } from "@webiny/app-page-builder/admin/graphql/pages";

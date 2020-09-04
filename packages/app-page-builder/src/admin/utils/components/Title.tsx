@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import styled from "@emotion/styled";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { unregisterPlugin } from "@webiny/plugins";

@@ -4,7 +4,7 @@ import renderPlugins from "@webiny/app-page-builder/render/presets/default";
 import { RoutePlugin } from "@webiny/app/types";
 import { PbAddonRenderPlugin } from "@webiny/app-page-builder/types";
 import Helmet from "react-helmet";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { get } from "lodash";
 import linkPreloadPlugin from "./linkPreload";

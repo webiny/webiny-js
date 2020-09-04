@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import {
     Dialog,
     DialogTitle,

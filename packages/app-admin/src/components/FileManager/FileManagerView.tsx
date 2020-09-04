@@ -3,7 +3,7 @@ import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import File from "./File";
-import { useQuery, useMutation, useApolloClient, Query } from "react-apollo";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { FilesRules } from "react-butterfiles";
 import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";

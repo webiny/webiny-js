@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { Alert } from "@webiny/ui/Alert";
 import { Elevation } from "@webiny/ui/Elevation";

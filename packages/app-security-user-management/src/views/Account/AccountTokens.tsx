@@ -1,4 +1,4 @@
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { ButtonDefault, CopyButton } from "@webiny/ui/Button";
 import { Form } from "@webiny/form";
 import React, { useState } from "react";

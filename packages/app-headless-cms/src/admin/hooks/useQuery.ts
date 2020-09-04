@@ -1,5 +1,5 @@
 import useCms from "./useCms";
-import { useQuery as apolloUseQuery } from "react-apollo";
+import { useQuery as apolloUseQuery } from "@apollo/client";
 
 const useQuery = function(query, options = {}) {
     const {

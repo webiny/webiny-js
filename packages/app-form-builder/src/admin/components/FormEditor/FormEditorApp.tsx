@@ -1,5 +1,5 @@
 import React from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "@webiny/react-router";
 import { FormEditorProvider } from "./Context";
 import FormEditor from "./FormEditor";

@@ -1,6 +1,6 @@
 import { useCallback, useReducer, useEffect } from "react";
 import { Graph, alg } from "graphlib";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { getPlugins } from "@webiny/plugins";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 

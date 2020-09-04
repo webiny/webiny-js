@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";

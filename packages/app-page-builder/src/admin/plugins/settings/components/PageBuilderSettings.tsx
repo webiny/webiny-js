@@ -2,7 +2,7 @@ import React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import graphql from "./graphql";
 import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";

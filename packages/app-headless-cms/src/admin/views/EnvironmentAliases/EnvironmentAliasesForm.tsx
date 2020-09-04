@@ -6,7 +6,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { i18n } from "@webiny/app/i18n";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import get from "lodash.get";
 import { GET_ENVIRONMENT_ALIAS_BY_SLUG } from "./graphql";
 import NameSlug from "../../components/NameSlug";

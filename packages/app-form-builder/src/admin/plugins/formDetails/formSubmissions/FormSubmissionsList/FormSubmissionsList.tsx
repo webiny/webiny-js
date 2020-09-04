@@ -17,7 +17,7 @@ import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { EXPORT_FORM_SUBMISSIONS } from "@webiny/app-form-builder/admin/viewsGraphql";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";

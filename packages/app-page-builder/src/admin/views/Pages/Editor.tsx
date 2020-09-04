@@ -1,7 +1,8 @@
 import React, { useCallback } from "react";
 import { Provider } from "react-redux";
 import { useRouter } from "@webiny/react-router";
-import { Query, useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
+import { Query } from "@apollo/client/react/components";
 import { get } from "lodash";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { createElement } from "@webiny/app-page-builder/editor/utils";

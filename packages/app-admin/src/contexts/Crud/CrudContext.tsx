@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useMutation, useQuery } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/client";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { useDataList } from "@webiny/app/hooks/useDataList";

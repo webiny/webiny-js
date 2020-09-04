@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import { css } from "emotion";
 import { CopyButton } from "@webiny/ui/Button";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";

@@ -3,7 +3,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as RefreshIcon } from "@webiny/app-page-builder/admin/assets/baseline-autorenew-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { MenuItem } from "@webiny/ui/Menu";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { INVALIDATE_SSR_CACHE } from "./graphql";

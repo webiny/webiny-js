@@ -4,7 +4,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { omit, isEqual } from "lodash";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { PUBLISH_REVISION } from "./PublishPageButton/graphql";

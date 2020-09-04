@@ -1,4 +1,4 @@
-import { ApolloLink } from "apollo-link";
+import { ApolloLink } from "@apollo/client";
 
 function omitTypename(key, value) {
     return key === "__typename" ? undefined : value;

@@ -5,7 +5,7 @@ import { getPlugins } from "@webiny/plugins";
 import { SecurityScopesListPlugin } from "@webiny/app-security/types";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 
 const t = i18n.ns("app-security/admin/roles/form");
 

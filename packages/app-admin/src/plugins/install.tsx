@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import gql from "graphql-tag";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { i18n } from "@webiny/app/i18n";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 import { Alert } from "@webiny/ui/Alert";

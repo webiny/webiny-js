@@ -1,7 +1,7 @@
 import { get } from "lodash";
 import gql from "graphql-tag";
 import { Form } from "@webiny/form";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import React from "react";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementMailchimpComponentPlugin } from "../../types";

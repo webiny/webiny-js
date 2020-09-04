@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState } from "react";
 import { get, cloneDeep } from "lodash";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { css } from "emotion";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";

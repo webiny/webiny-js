@@ -1,6 +1,6 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/client";
 
 // App structure imports
 import { UiProvider } from "@webiny/app/contexts/Ui";

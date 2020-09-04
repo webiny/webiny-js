@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useQuery } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import { get, isEqual } from "lodash";
 import { prepareLoadListParams } from "./utils";
 import { getData, getError, getMeta } from "./functions";
 
 import { DocumentNode } from "graphql";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient, useQuery } from "@apollo/client";
 
 export type UseDataListParams = {
     useRouter?: boolean;

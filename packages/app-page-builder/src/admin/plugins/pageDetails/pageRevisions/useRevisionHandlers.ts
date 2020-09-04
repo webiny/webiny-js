@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "@webiny/react-router";
 import {
     CREATE_REVISION_FORM,

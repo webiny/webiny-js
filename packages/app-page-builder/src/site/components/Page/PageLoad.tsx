@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import PageRender from "./PageRender";
 import { GET_PUBLISHED_PAGE } from "./graphql";
 

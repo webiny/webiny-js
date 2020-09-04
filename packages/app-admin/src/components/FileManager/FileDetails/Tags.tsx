@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState } from "react";
 import { css } from "emotion";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client";
 import { get, cloneDeep } from "lodash";
 import { Chips, Chip } from "@webiny/ui/Chips";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";

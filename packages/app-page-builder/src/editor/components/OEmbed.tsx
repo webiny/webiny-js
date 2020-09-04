@@ -5,7 +5,7 @@ import { isEqual } from "lodash";
 import { get } from "lodash";
 import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client";
 import { PbUpdateElement, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { PbElement } from "@webiny/app-page-builder/types";
