@@ -121,8 +121,8 @@ export type PbPageElementImagesListComponentPlugin = Plugin & {
 };
 
 export type PbPageElementMenuComponentPlugin = Plugin & {
-    type: "pb-page-element-menu-component-plugin";
-    type: string;
+    type: "pb-page-element-menu-component";
+    title: string;
     componentName: string;
     component: ComponentType<any>;
 }

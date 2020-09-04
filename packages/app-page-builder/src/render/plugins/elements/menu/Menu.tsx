@@ -4,7 +4,7 @@
 import * as React from "react";
 import warning from "warning";
 import { useQuery } from "react-apollo";
-import { loadMenus } from "./graphql";
+import { LIST_MENUS } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
@@ -47,7 +47,26 @@ const Menu = props => {
     if (vars.sortBy) {
         sort = { [vars.sortBy]: parseInt(vars.sortDirection) || -1 };
     }
-
+    /*
+        query listMenus(
+        $where: JSON
+        $sort: JSON
+        $search: PbSearchInput
+        $limit: Int
+        $after: String
+        $before: String
+    ) {
+    */
+   //$search: PbSearchInput
+   const variables = {
+        where: vars.where,
+        sort,
+        search,
+        limit: parseInt(vars.resultsPerPage),
+        after: undefined,
+        before: undefined
+    }
+   /*
     const variables = {
         category: vars.category,
         sort,
@@ -57,33 +76,34 @@ const Menu = props => {
         after: undefined,
         before: undefined
     };
+    */
 
-    const { data, loading, refetch } = useQuery(loadPages, { variables });
+    const { data, loading, refetch } = useQuery(LIST_MENUS, { variables });
 
     if (loading) {
         return null;
     }
 
-    const pages = data.pageBuilder.listPublishedPages;
+    const menus = data.pageBuilder.menus;
 
-    if (!pages || !pages.data.length) {
+    if (!menus || !menus.data.length) {
         return null;
     }
 
     let prevPage = null;
-    if (pages.meta.hasPreviousPage) {
-        prevPage = () => refetch({ ...variables, before: pages.meta.cursors.previous });
+    if (menus.meta.hasPreviousPage) {
+        prevPage = () => refetch({ ...variables, before: menus.meta.cursors.previous });
     }
 
     let nextPage = null;
-    if (pages.meta.hasNextPage) {
-        nextPage = () => refetch({ ...variables, after: pages.meta.cursors.next });
+    if (menus.meta.hasNextPage) {
+        nextPage = () => refetch({ ...variables, after: menus.meta.cursors.next });
     }
 
     return (
         <>
             <ssr-cache data-class="pb-menu" />
-            <ListComponent {...pages} nextPage={nextPage} prevPage={prevPage} theme={theme} />
+            <ListComponent {...menus} nextPage={nextPage} prevPage={prevPage} theme={theme} />
         </>
     );
 }

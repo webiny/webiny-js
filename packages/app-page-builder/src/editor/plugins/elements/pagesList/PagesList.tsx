@@ -11,6 +11,8 @@ const PagesList = ({ data }) => {
     const components = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
+    console.log("PAGE LIST::::::::::::::");
+    console.log(components);
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
 

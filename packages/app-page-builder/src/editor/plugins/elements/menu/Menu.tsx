@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { loadPages } from "./graphql";
+import { LIST_MENUS } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { get } from "lodash";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
@@ -35,42 +35,44 @@ const Menu = ({data}) => {
     console.log(vars);
 
     //variables might need to be reworked
+
+   /// PbSearchInput required for search.
+
     const variables = {
-        category: vars.category,
+        where: vars.where,
         sort,
-        tags: vars.tags,
-        tagsRule: vars.tagsRule,
+        search,
         limit: parseInt(vars.resultsPerPage),
         after: undefined,
         before: undefined
     };
 
     return (
-        <Query query={loadPages} variables={variables}>
+        <Query query={LIST_MENUS} variables={variables}>
             {({ data, loading, refetch }) => {
                 if (loading) {
                     return <div>Loading...</div>;
                 }
 
-                const pages = get(data, "pageBuilder.listPublishedPages");
+                const menus = get(data, "pageBuilder.menus");
 
-                if (!pages || !pages.data.length) {
-                    return <div>No pages match the criteria.</div>;
+                if (!menus || !menus.data.length) {
+                    return <div>No menus match the criteria.</div>;
                 }
 
                 let prevPage = null;
-                if (pages.meta.hasPreviousPage) {
-                    prevPage = () => refetch({ ...variables, before: pages.meta.cursors.before });
+                if (menus.meta.hasPreviousPage) {
+                    prevPage = () => refetch({ ...variables, before: menus.meta.cursors.before });
                 }
 
                 let nextPage = null;
-                if (pages.meta.hasNextPage) {
-                    nextPage = () => refetch({ ...variables, after: pages.meta.cursors.after });
+                if (menus.meta.hasNextPage) {
+                    nextPage = () => refetch({ ...variables, after: menus.meta.cursors.after });
                 }
 
                 return (
                     <ListComponent
-                        {...pages}
+                        {...menus}
                         nextPage={nextPage}
                         prevPage={prevPage}
                         theme={theme}

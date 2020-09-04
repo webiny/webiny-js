@@ -1,6 +1,47 @@
 import gql from "graphql-tag";
 //alter this for menu not page lists
-export const loadPages = gql`
+
+export const LIST_MENUS = gql`
+    query listMenus(
+        $where: JSON
+        $sort: JSON
+        $search: PbSearchInput
+        $limit: Int
+        $after: String
+        $before: String
+    ) {
+        pageBuilder {
+            menus: listMenus(
+                where: $where
+                sort: $sort
+                search: $search
+                limit: $limit
+                after: $after
+                before: $before
+            ) {
+                data {
+                    id
+                    title
+                    slug
+                    description
+                    createdOn
+                }
+                meta {
+                    cursors {
+                        next
+                        previous
+                    }
+                    hasNextPage
+                    hasPreviousPage
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
+/*
+export const loadMenus = gql`
     query ListPublishedPages(
         $category: String
         $sort: PbPageSortInput
@@ -56,3 +97,4 @@ export const loadPages = gql`
         }
     }
 `;
+*/
