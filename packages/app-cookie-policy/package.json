@@ -10,6 +10,7 @@
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
+    "@apollo/client": "^3.1.4",
     "@babel/runtime": "^7.5.5",
     "@webiny/app": "^4.9.0",
     "@webiny/app-admin": "^4.9.0",
@@ -33,8 +34,7 @@
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "graphql-tag": "^2.10.3",
-    "react": "^16.8.6",
-    "react-apollo": "^3.1.3"
+    "react": "^16.8.6"
   },
   "publishConfig": {
     "access": "public",

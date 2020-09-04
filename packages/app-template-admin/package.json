@@ -16,6 +16,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@apollo/client": "^3.1.4",
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.27",
     "@webiny/app": "^4.9.0",
@@ -30,14 +31,8 @@
     "@webiny/plugins": "^4.9.0",
     "@webiny/react-router": "^4.9.0",
     "@webiny/ui": "^4.9.0",
-    "apollo-cache-inmemory": "^1.6.5",
-    "apollo-client": "^2.6.8",
-    "apollo-link": "^1.2.14",
-    "apollo-link-batch-http": "^1.2.14",
-    "apollo-link-error": "^1.1.13",
     "emotion": "^10.0.27",
-    "graphql-tag": "^2.10.3",
-    "react-apollo": "^3.1.5"
+    "graphql-tag": "^2.10.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
