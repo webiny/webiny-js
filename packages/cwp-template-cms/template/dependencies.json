@@ -45,6 +45,7 @@
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-standard": "^4.0.1",
     "jest": "^26.1.0",
+    "lerna": "^3.21.0",
     "merge": "^1.2.1",
     "typescript": "3.7.4",
     "ts-jest": "^26.1.1"
