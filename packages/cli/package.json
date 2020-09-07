@@ -24,8 +24,8 @@
     "fs-extra": "^9.0.0",
     "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
+    "public-ip": "^4.0.2",
     "semver": "^7.3.2",
-    "uuid": "^3.3.3",
     "write-json-file": "^4.2.0",
     "yargs": "^14.0.0"
   },

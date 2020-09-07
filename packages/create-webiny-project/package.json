@@ -27,11 +27,11 @@
     "listr": "^0.14.3",
     "load-json-file": "^6.2.0",
     "node-fetch": "^2.6.0",
+    "public-ip": "^4.0.2",
     "os": "^0.1.1",
     "p-retry": "^4.2.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.2",
-    "uuid": "^8.1.0",
     "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0",
     "yargs": "^15.3.1"
