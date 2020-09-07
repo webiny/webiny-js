@@ -35,6 +35,7 @@ export type MenuItemProps = {
 };
 
 const MenuItem = ({ data, className }: MenuItemProps) => {
+    console.log("MENU ITEM FROM RENDER::::::::::::");
     return (
         <Link to={data.fullUrl} className={"webiny-pb-page-element-menu__item " + className}>
             <div
@@ -67,6 +68,7 @@ const MenuItem = ({ data, className }: MenuItemProps) => {
 };
 
 const GridMenu = ({ data, nextPage, prevPage }) => {
+    console.log("GRID MENU FROM RENDER::::::::::::");
     return (
         <div className={"webiny-pb-page-element-menu webiny-pb-page-element-menu--grid"}>
             <div className={"webiny-pb-page-element-menu__items"}>

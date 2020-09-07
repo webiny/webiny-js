@@ -10,6 +10,7 @@ export default [
         type: "pb-render-page-element",
         elementType: "menu",
         render({ element, theme }) {
+            console.log("INDEX FROM RENDER 1::::::::::::::");
             return <Menu data={element.data} theme={theme} />;
         }
     } as PbRenderElementPlugin,

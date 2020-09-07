@@ -26,6 +26,7 @@ const Menu = props => {
         theme
     } = props;
 
+    console.log("PLUGINS FROM RENDER::::::::::::");
     const plugins = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
@@ -99,7 +100,7 @@ const Menu = props => {
     if (menus.meta.hasNextPage) {
         nextPage = () => refetch({ ...variables, after: menus.meta.cursors.next });
     }
-
+    console.log("List Component JSX:::::")
     return (
         <>
             <ssr-cache data-class="pb-menu" />

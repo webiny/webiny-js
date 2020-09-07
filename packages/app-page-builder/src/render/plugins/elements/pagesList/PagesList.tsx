@@ -18,6 +18,7 @@ declare global {
 }
 
 const PagesList = props => {
+    console.log("PAGE LIST FROM RENDER 2::::::::::::::::::::");
     const {
         data: { component, ...vars },
         theme
@@ -26,9 +27,9 @@ const PagesList = props => {
     const plugins = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
-
+    
     const pageList = plugins.find(cmp => cmp.componentName === component);
-
+    console.log(pageList);
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;
