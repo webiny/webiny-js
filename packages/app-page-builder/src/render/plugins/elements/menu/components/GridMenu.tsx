@@ -29,34 +29,34 @@ const formatDate = date => {
     return monthNames[month] + " " + day + ", " + year;
 };
 
-export type PageItemProps = {
+export type MenuItemProps = {
     data: any; // TODO: create a better type
     className?: string;
 };
 
-const PageItem = ({ data, className }: PageItemProps) => {
+const MenuItem = ({ data, className }: MenuItemProps) => {
     return (
-        <Link to={data.fullUrl} className={"webiny-pb-page-element-page-list__item " + className}>
+        <Link to={data.fullUrl} className={"webiny-pb-page-element-menu__item " + className}>
             <div
-                className={"webiny-pb-page-element-page-list__media"}
+                className={"webiny-pb-page-element-menu__media"}
                 style={{
                     backgroundImage: `url("${get(data, "settings.general.image.src")}?width=500")`
                 }}
             />
-            <div className={"webiny-pb-page-element-page-list__content"}>
-                <h3 className={"webiny-pb-page-element-page-list__title webiny-pb-typography-h3"}>
+            <div className={"webiny-pb-page-element-menu__content"}>
+                <h3 className={"webiny-pb-page-element-menu__title webiny-pb-typography-h3"}>
                     {data.title}
                 </h3>
                 <p
                     className={
-                        "webiny-pb-page-element-page-list__snippet webiny-pb-typography-description"
+                        "webiny-pb-page-element-menu__snippet webiny-pb-typography-description"
                     }
                 >
                     {data.snippet}
                 </p>
                 <div
                     className={
-                        "webiny-pb-page-element-page-list__date webiny-pb-typography-description"
+                        "webiny-pb-page-element-menu__date webiny-pb-typography-description"
                     }
                 >
                     {formatDate(data.publishedOn)}
@@ -68,13 +68,13 @@ const PageItem = ({ data, className }: PageItemProps) => {
 
 const GridMenu = ({ data, nextPage, prevPage }) => {
     return (
-        <div className={"webiny-pb-page-element-page-list webiny-pb-page-element-page-list--grid"}>
-            <div className={"webiny-pb-page-element-page-list__items"}>
+        <div className={"webiny-pb-page-element-menu webiny-pb-page-element-menu--grid"}>
+            <div className={"webiny-pb-page-element-menu__items"}>
                 {data.map(page => (
-                    <PageItem key={page.id} data={page} />
+                    <MenuItem key={page.id} data={page} />
                 ))}
             </div>
-            <div className={"webiny-pb-page-element-page-list__navigation"}>
+            <div className={"webiny-pb-page-element-menu__navigation"}>
                 {prevPage && (
                     <a onClick={prevPage}>
                         <PrevIcon /> Prev page
