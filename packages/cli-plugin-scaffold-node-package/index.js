@@ -71,7 +71,6 @@ module.exports = [
                     throw new Error(`Destination folder ${location} already exists!`);
                 }
 
-
                 oraSpinner.start(`Creating Node package files in ${green(fullLocation)}...`);
                 await wait();
 
@@ -159,7 +158,9 @@ module.exports = [
                 });
 
                 // Update root package.json - update "workspaces.packages" section.
-                oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
+                oraSpinner.start(
+                    `Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`
+                );
                 await wait();
 
                 const rootPackageJsonPath = path.join(projectRootPath, "package.json");
@@ -171,7 +172,9 @@ module.exports = [
 
                 oraSpinner.stopAndPersist({
                     symbol: green("✔"),
-                    text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                    text: `Workspace ${green(input.location)} added in root ${green(
+                        `package.json`
+                    )}.`
                 });
 
                 // Once everything is done, run `yarn` so the new packages are automatically installed.
@@ -181,6 +184,13 @@ module.exports = [
                     oraSpinner.stopAndPersist({
                         symbol: green("✔"),
                         text: "Dependencies installed."
+                    });
+
+                    oraSpinner.start(`Building package...`);
+                    await execa("yarn", ["build"], { cwd: fullLocation });
+                    oraSpinner.stopAndPersist({
+                        symbol: green("✔"),
+                        text: "Package built."
                     });
                 } catch (err) {
                     throw new Error(
