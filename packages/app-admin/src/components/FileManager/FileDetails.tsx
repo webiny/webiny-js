@@ -143,7 +143,10 @@ export default function FileDetails(props) {
                                 <Component key={index} {...props} />
                             ))}
 
-                            <ConfirmationDialog {...fileDeleteConfirmationProps}>
+                            <ConfirmationDialog
+                                {...fileDeleteConfirmationProps}
+                                style={{ zIndex: 100 }}
+                            >
                                 {({ showConfirmation }) => {
                                     return (
                                         <Tooltip
