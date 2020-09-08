@@ -22,16 +22,16 @@ interface ConfirmationCallbacks {
 }
 
 type Props = {
-    // Title of confirmation dialog.
+    // Title of confirmation dialog
     title?: React.ReactNode;
 
-    // Message of confirmation dialog.
+    // Message of confirmation dialog
     message?: React.ReactNode;
 
     // This element will be rendered during loading
     loading?: React.ReactNode;
 
-    // For testing purposes.
+    // For testing purposes
     "data-testid"?: string;
 
     // An element that will trigger the confirmation dialog.
@@ -39,6 +39,9 @@ type Props = {
 
     // Is `Confirm` button disabled
     disableConfirm?: boolean;
+
+    // Dialog component's custom in-line styles.
+    style?: React.CSSProperties;
 };
 
 type State = {
@@ -107,6 +110,7 @@ class ConfirmationDialog extends React.Component<Props, State> {
         return (
             <React.Fragment>
                 <Dialog
+                    style={this.props.style}
                     open={this.state.show}
                     onClose={this.hideConfirmation}
                     data-testid={this.props["data-testid"]}
