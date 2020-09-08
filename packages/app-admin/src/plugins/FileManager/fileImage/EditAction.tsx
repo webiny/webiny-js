@@ -66,7 +66,7 @@ const EditAction: React.FC<EditActionProps> = props => {
             </Tooltip>
             <Hotkeys zIndex={60} disabled={!state.dataUrl}>
                 <ImageEditorDialog
-                    dialogZIndex={51}
+                    dialogZIndex={100}
                     open={state.showImageEditor}
                     src={state.dataUrl}
                     onClose={() => dispatch({ type: "hideImageEditor" })}
