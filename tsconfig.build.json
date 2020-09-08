@@ -145,6 +145,7 @@
     "./packages/serverless-aws-s3-object",
     "./packages/serverless-component",
     "./packages/serverless-function",
+    "./packages/tracking",
     "**resources.js",
     "./webiny.root.js"
   ]

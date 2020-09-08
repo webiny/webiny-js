@@ -28,6 +28,7 @@
     "@webiny/app-security": "^4.10.0",
     "@webiny/app-template": "^4.10.0",
     "@webiny/react-router": "^4.10.0",
+    "@webiny/tracking": "^4.10.0",
     "@webiny/ui": "^4.10.0",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",

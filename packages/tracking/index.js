@@ -3,6 +3,7 @@ const path = require("path");
 const readJson = require("load-json-file");
 const FormData = require("form-data");
 const fetch = require("node-fetch");
+const { API_KEY, API_URL } = require("./api");
 
 let config;
 const getConfig = async () => {
@@ -19,9 +20,6 @@ const getConfig = async () => {
     }
     return config;
 };
-
-const API_KEY = "ZdDZgkeOt4Z_m-UWmqFsE1d6-kcCK3BH0ypYTUIFty4";
-const API_URL = "https://t.webiny.com";
 
 module.exports.sendEvent = async ({ event, data }) => {
     const config = await getConfig();

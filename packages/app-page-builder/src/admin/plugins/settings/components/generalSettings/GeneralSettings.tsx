@@ -11,6 +11,7 @@ import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
+import { sendEvent } from "@webiny/tracking/react";
 
 import {
     SimpleForm,
@@ -48,11 +49,20 @@ const GeneralSettings = () => {
                         {(update, { loading: mutationInProgress }) => (
                             <Form
                                 data={settings}
-                                onSubmit={async data => {
-                                    data.domain = data.domain.replace(/\/+$/g, "");
+                                onSubmit={async newData => {
+                                    newData.domain = newData.domain.replace(/\/+$/g, "");
+
+                                    if (
+                                        settings.domain !== newData.domain &&
+                                        !newData.domain.includes("localhost")
+                                    ) {
+                                        await sendEvent("custom-domain", {
+                                            domain: newData.domain
+                                        });
+                                    }
                                     await update({
                                         variables: {
-                                            data
+                                            data: newData
                                         }
                                     });
                                     showSnackbar("Settings updated successfully.");
