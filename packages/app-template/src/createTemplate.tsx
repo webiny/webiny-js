@@ -3,7 +3,6 @@ import { registerPlugins, getPlugins } from "@webiny/plugins";
 import { AppTemplateRenderer, AppTemplateRendererPlugin } from "./types";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import { Routes } from "./Routes";
-import { Telemetry } from "./telemetry/Telemetry";
 
 const compose = (...funcs: AppTemplateRenderer[]) =>
     funcs.reduce(
@@ -26,11 +25,6 @@ export function createTemplate<T>(factory: TemplateFactory<T>) {
             pl => pl.render
         );
 
-        return () =>
-            compose(...renderers)(
-                <Telemetry>
-                    <Routes />
-                </Telemetry>
-            );
+        return () => compose(...renderers)(<Routes />);
     };
 }

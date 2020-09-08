@@ -20,6 +20,9 @@ import cognito from "@webiny/app-plugin-security-cognito";
 import cognitoTheme from "@webiny/app-plugin-security-cognito-theme/admin";
 import fileManagerPlugins from "@webiny/app-file-manager/admin";
 
+// Webiny telemetry
+import { Telemetry } from "./telemetry/Telemetry";
+
 // ApolloClient
 import { createApolloClient } from "./apolloClient";
 import { NetworkError } from "./apolloClient/NetworkError";
@@ -92,6 +95,13 @@ export default createTemplate<AdminAppOptions>(opts => {
             name: "app-template-renderer-admin-theme",
             render(children) {
                 return <ThemeProvider>{children}</ThemeProvider>;
+            }
+        },
+        {
+            type: "app-template-renderer",
+            name: "app-template-renderer-telemetry",
+            render(children) {
+                return <Telemetry>{children}</Telemetry>;
             }
         }
     ];
