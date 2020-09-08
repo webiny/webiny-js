@@ -11,7 +11,7 @@ import graphql from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
-import { sendEvent } from "@webiny/tracking/react";
+import { sendEvent, setProperties } from "@webiny/tracking/react";
 
 import {
     SimpleForm,
@@ -56,7 +56,10 @@ const GeneralSettings = () => {
                                         settings.domain !== newData.domain &&
                                         !newData.domain.includes("localhost")
                                     ) {
-                                        await sendEvent("custom-domain", {
+                                        sendEvent("custom-domain", {
+                                            domain: newData.domain
+                                        });
+                                        setProperties({
                                             domain: newData.domain
                                         });
                                     }
