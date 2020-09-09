@@ -23,7 +23,7 @@ context("Roles Module", () => {
             .wait(500);
 
         cy.findByLabelText("Slug")
-            .should("disabled")
+            .should("be.disabled")
             .findByLabelText("Description")
             .type(" Test test.");
 
