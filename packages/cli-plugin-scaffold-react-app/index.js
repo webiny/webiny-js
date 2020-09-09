@@ -190,7 +190,7 @@ module.exports = [
                     findUp.sync("resources.js", {
                         cwd: fullLocation
                     })
-                );
+                ).replace(/\\/g, '/')
 
                 const deployCommandStackPath = rootResourcesPath
                     .replace(projectRootPath, "")
