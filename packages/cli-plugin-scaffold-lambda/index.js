@@ -19,6 +19,7 @@ module.exports = [
                     {
                         name: "location",
                         message: "Enter package location (including package name)",
+                        default: "api/new-function",
                         validate: location => {
                             if (location === "") {
                                 return "Please enter a package location";
