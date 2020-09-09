@@ -59,6 +59,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.branch }}
+          fetch-depth: 0
 
       - uses: actions/setup-node@v2-beta
         with:
