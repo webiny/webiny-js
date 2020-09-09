@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* use `React.CSSProperties;` for `style` props ([0c1dc19](https://github.com/webiny/webiny-js/commit/0c1dc190ac4a7c03e1e0035c44efa4d5986f798b))
+
+
+### Features
+
+* add `style` prop support ([86c3144](https://github.com/webiny/webiny-js/commit/86c3144b7ca6aa63a774fe4fbd76190458ce7cb9))
+* add support for "data-testid" prop ([7987521](https://github.com/webiny/webiny-js/commit/7987521614c5ee44587ee65bee36cad2b26b847c))
+
+
+
+
+
 # [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
 
 **Note:** Version bump only for package @webiny/ui
