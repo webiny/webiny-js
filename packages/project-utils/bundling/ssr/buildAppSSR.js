@@ -1,7 +1,10 @@
 const path = require("path");
 const fs = require("fs-extra");
 
-module.exports.buildAppSSR = async ({ app = null, output, ...options }, context) => {
+module.exports.buildAppSSR = async (
+    { app = null, indexHtmlPath = null, createAppPath = null, output, ...options },
+    context
+) => {
     if (!app) {
         throw new Error(`Specify an "app" path to use for SSR bundle.`);
     }
@@ -12,8 +15,11 @@ module.exports.buildAppSSR = async ({ app = null, output, ...options }, context)
     process.env.NODE_ENV = "production";
     process.env.REACT_APP_ENV = "ssr";
 
-    const indexHtml = path.resolve(app, "build", "index.html").replace(/\\/g, "\\\\");
-    const appComponent = path.resolve(app, "src", "App").replace(/\\/g, "\\\\");
+    indexHtmlPath = indexHtmlPath || path.resolve(app, "build", "index.html");
+    createAppPath = createAppPath || path.resolve(app, "src", "App");
+
+    const indexHtml = indexHtmlPath.replace(/\\/g, "\\\\");
+    const appComponent = createAppPath.replace(/\\/g, "\\\\");
 
     const chalk = require("chalk");
 
