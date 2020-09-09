@@ -18,6 +18,9 @@ type Props = {
     options?: Object;
     src?: string;
     onAccept: (src: string) => void;
+
+    // For testing purposes.
+    "data-testid"?: string;
 };
 
 const imageEditorDialog = css({
