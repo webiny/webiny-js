@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* add "@babel/cli" to list of dependencies ([df6c395](https://github.com/webiny/webiny-js/commit/df6c3954a77d517bd2fa92a68538c6c8ad233851))
+
+
+
+
+
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* add `publishConfig` and upate `scripts` ([7845767](https://github.com/webiny/webiny-js/commit/78457677c2409f382fcac15dfce3fb71cf6aedd8))
+* add `publishConfig` and upate `scripts` ([c5ec737](https://github.com/webiny/webiny-js/commit/c5ec737a4d071e022a7b93fc0f001867f0bbb6e7))
+* add default value for `location` param ([88d5e28](https://github.com/webiny/webiny-js/commit/88d5e284af097273cd3e8fdba07b04549b52876f))
+* add lerna to devDependencies ([e117e0f](https://github.com/webiny/webiny-js/commit/e117e0f569cdaa7f801f5552c068a32ee96a3859))
+* add missing `replace-in-path` dependency ([339f715](https://github.com/webiny/webiny-js/commit/339f715aa17c895a01de13ea0ab754567dea3789))
+* add package build step ([2eba095](https://github.com/webiny/webiny-js/commit/2eba0951dda942610719556271b2ab3751fedae2))
+* add package build step ([cdb5bc7](https://github.com/webiny/webiny-js/commit/cdb5bc7957ae8a3a2a5789dacd1895f6f7c5f1f4))
+* increase `ConfirmationDialog` component's zIndex to 100 ([5327c74](https://github.com/webiny/webiny-js/commit/5327c74606b42822fd582d35d2ccc854742922d8))
+* increase `dialogZIndex` to 100 ([03ec8de](https://github.com/webiny/webiny-js/commit/03ec8defc98225b9bd6c3a908c744a96d88627bf))
+* prettify output (replace backslashes with slashes) ([5647dcd](https://github.com/webiny/webiny-js/commit/5647dcd9ed06c442fb914dc766a481042aaaf8f0))
+* remove generation of `exclude` and `reference` paths ([e98faef](https://github.com/webiny/webiny-js/commit/e98faefc30b6c7c9bbb86611863d988619e5cc75))
+* use `React.CSSProperties;` for `style` props ([0c1dc19](https://github.com/webiny/webiny-js/commit/0c1dc190ac4a7c03e1e0035c44efa4d5986f798b))
+* **apps:** improve telemetry implementation ([54197a1](https://github.com/webiny/webiny-js/commit/54197a11d458c766e8676f000d4d19bab7f8b7d0))
+* **project-utils:** fix default openBrowser value ([4faa91d](https://github.com/webiny/webiny-js/commit/4faa91d96cf35e9ac4d919db59ffb090bbe45215))
+* **tracking:** add missing files ([f36768e](https://github.com/webiny/webiny-js/commit/f36768eeb4c07fc8379e93cadc7a8feec3990b9f))
+* **tracking:** set domain property on user ([eb1cf05](https://github.com/webiny/webiny-js/commit/eb1cf05c325f3391105fd714a716ba0be261df4b))
+* move telemetry to admin apps only ([ff68320](https://github.com/webiny/webiny-js/commit/ff683207e91f0df5d2eb310ad812e3e3e48371ac))
+* use IP address in .webiny/config ([1e3de11](https://github.com/webiny/webiny-js/commit/1e3de11ef4a4ab7ee130210236899070dcb0578e))
+
+
+### Features
+
+* add `style` prop support ([86c3144](https://github.com/webiny/webiny-js/commit/86c3144b7ca6aa63a774fe4fbd76190458ce7cb9))
+* add support for "data-testid" prop ([7987521](https://github.com/webiny/webiny-js/commit/7987521614c5ee44587ee65bee36cad2b26b847c))
+* improve created file's initial content ([8ba1cda](https://github.com/webiny/webiny-js/commit/8ba1cdae59db6cc7a9609a7e3da582d4be3a2028))
+
+
+
+
+
 # [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
 
 **Note:** Version bump only for package webiny-js

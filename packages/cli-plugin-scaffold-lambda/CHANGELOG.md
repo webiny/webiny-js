@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-lambda
+
+
+
+
+
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* add default value for `location` param ([88d5e28](https://github.com/webiny/webiny-js/commit/88d5e284af097273cd3e8fdba07b04549b52876f))
+* add missing `replace-in-path` dependency ([339f715](https://github.com/webiny/webiny-js/commit/339f715aa17c895a01de13ea0ab754567dea3789))
+
+
+### Features
+
+* improve created file's initial content ([8ba1cda](https://github.com/webiny/webiny-js/commit/8ba1cdae59db6cc7a9609a7e3da582d4be3a2028))
+
+
+
+
+
 # [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-lambda

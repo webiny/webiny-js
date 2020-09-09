@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-lambda",
-  "version": "4.10.0",
+  "version": "4.11.0-beta.1",
   "description": "Scaffolds a custom lambda for you",
   "main": "index.js",
   "scripts": {},
@@ -23,7 +23,8 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "replace-in-path": "^1.0.2"
   },
   "publishConfig": {
     "access": "public",
