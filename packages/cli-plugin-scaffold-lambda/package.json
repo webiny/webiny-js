@@ -23,7 +23,8 @@
     "lodash.camelcase": "^4.3.0",
     "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "replace-in-path": "^1.0.2"
   },
   "publishConfig": {
     "access": "public",
