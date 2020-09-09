@@ -7,6 +7,7 @@ const camelCase = require("lodash.camelcase");
 const kebabCase = require("lodash.kebabcase");
 const { green } = require("chalk");
 const indentString = require("indent-string");
+const { replaceInPath } = require("replace-in-path");
 
 module.exports = [
     {
@@ -79,6 +80,9 @@ module.exports = [
 
                 // Copy template files
                 await ncp(sourceFolder, location);
+
+                const codeReplacements = [{ find: "FUNCTION_NAME", replaceWith: resourceName }];
+                replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
 
                 // Update the package's name
                 const packageJsonPath = path.resolve(location, "package.json");
