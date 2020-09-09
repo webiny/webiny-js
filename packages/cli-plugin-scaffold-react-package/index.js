@@ -166,6 +166,13 @@ module.exports = [
                         symbol: green("✔"),
                         text: "Dependencies installed."
                     });
+
+                    oraSpinner.start(`Building package...`);
+                    await execa("yarn", ["build"], { cwd: fullLocation });
+                    oraSpinner.stopAndPersist({
+                        symbol: green("✔"),
+                        text: "Package built."
+                    });
                 } catch (err) {
                     throw new Error(
                         `Unable to install dependencies. Try running "yarn" in project root manually.`
