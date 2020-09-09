@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-admin-app-module",
-  "version": "4.10.0",
+  "version": "4.11.0-beta.0",
   "description": "Generate Webiny GraphQL React App",
   "main": "index.js",
   "repository": {
