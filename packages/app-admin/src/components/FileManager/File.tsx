@@ -87,13 +87,16 @@ export default React.memo(
         const { file, selected, onSelect, children, showFileDetails } = props;
 
         return (
-            <div className={styles}>
+            <div className={styles} data-testid={"fm-list-wrapper-file"}>
                 <div className={"body"}>
                     <div className={"checkedIcon"} onClick={onSelect}>
                         {selected ? <Checked /> : null}
                     </div>
                     <div className={"infoIcon"}>
-                        <InfoIcon onClick={showFileDetails} />
+                        <InfoIcon
+                            onClick={showFileDetails}
+                            data-testid={"fm-file-wrapper-file-info-icon"}
+                        />
                     </div>
                     <LazyLoad height={200} offsetVertical={300}>
                         <Ripple>
