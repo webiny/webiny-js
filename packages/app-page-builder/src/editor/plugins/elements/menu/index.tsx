@@ -74,6 +74,7 @@ export default () => {
             render(props) {
                 return (
                     <Tab icon={<MenuIcon />} label="Filter">
+                        <h1>MENU FILTER SETTINGS</h1>
                         <MenuFilterSettings {...props} />
                     </Tab>
                 );
@@ -86,6 +87,7 @@ export default () => {
             render(props) {
                 return (
                     <Tab icon={<MenuIcon />} label="Design">
+                        <h1>MENU DESIGN SETTINGS</h1>
                         <MenuDesignSettings {...props} />
                     </Tab>
                 );

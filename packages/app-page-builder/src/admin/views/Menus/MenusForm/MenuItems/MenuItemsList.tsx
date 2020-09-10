@@ -33,6 +33,7 @@ class MenuItemsList extends React.Component<any> {
     render() {
         const { items, onChange, editItem, deleteItem } = this.props;
         const data = Array.isArray(items) ? [...items] : [];
+        console.log(data);
 
         let dom = (
             <EmptyTree>
@@ -56,7 +57,9 @@ class MenuItemsList extends React.Component<any> {
             );
         }
 
-        return <TreeWrapper>{dom}</TreeWrapper>;
+        return <TreeWrapper>
+        <h1>DATA:!:!:!:!:!:!:!:!</h1>
+        {dom}</TreeWrapper>;
     }
 }
 

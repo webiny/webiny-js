@@ -18,7 +18,7 @@ const t = i18n.ns("app-page-builder/admin/menus/data-list");
 
 const MenusDataList = () => {
     const { actions, list } = useCrud();
-
+    ///receives list of menus created
     return (
         <DataList
             {...list}
@@ -42,7 +42,10 @@ const MenusDataList = () => {
                 }
             ]}
         >
-            {({ data, isSelected, select }) => (
+            {({ data, isSelected, select }) => { 
+                console.log("DATA:::::::::")
+                console.log(data);
+                return (
                 <List data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
@@ -69,7 +72,7 @@ const MenusDataList = () => {
                         </ListItem>
                     ))}
                 </List>
-            )}
+            )}}
         </DataList>
     );
 };

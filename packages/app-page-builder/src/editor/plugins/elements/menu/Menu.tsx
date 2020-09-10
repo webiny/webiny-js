@@ -9,10 +9,12 @@ import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types
 const Menu = ({data}) => {
     //menu data passed through here
     const { component, ...vars } = data;
+
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
     console.log("CHECKING MENU DATA FROM EDITOR::::::")
+    console.log(LIST_MENUS);
     console.log(components);
     const menu = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();

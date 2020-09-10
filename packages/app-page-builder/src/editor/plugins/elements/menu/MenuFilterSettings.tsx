@@ -5,6 +5,38 @@ import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
 
 const MenuFilterSettings = ({ Bind }) => {
+    /*
+                     id
+                    title
+                    url
+                    fullUrl
+                    snippet
+                    publishedOn
+                     settings {
+                        general {
+                            image {
+                                src
+                            }
+                        }
+                    }
+                    createdBy {
+                        firstName
+                        lastName
+                    }
+                    category {
+                        id
+                        name
+                    }
+    */
+   /*
+                   data {
+                    id
+                    title
+                    slug
+                    description
+                    createdOn
+                }
+   */
     return (
         <React.Fragment>
             <Grid>
@@ -14,9 +46,9 @@ const MenuFilterSettings = ({ Bind }) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"sortBy"} defaultValue={"publishedOn"}>
+                    <Bind name={"sortBy"} defaultValue={"createdOn"}>
                         <Select label={"Sort by"}>
-                            <option value={"publishedOn"}>Publishing date</option>
+                            <option value={"createdOn"}>Date Created</option>
                             <option value={"title"}>Title</option>
                         </Select>
                     </Bind>
