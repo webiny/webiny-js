@@ -20,12 +20,21 @@ const plugin: WebinyInitPlugin = {
             type: "admin-menu",
             order: 100,
             render({ Menu, Section, Item }) {
+                const items = settingsPlugins
+                    .map(plugin => ({
+                        name: plugin.name,
+                        element: plugin.render({ Section, Item })
+                    }))
+                    .filter(({ element }) => !!element);
+
+                if (!items.length) {
+                    return null;
+                }
+
                 return (
                     <Menu name="settings" label={t`Settings`} icon={<SettingsIcon />}>
-                        {settingsPlugins.map(plugin => (
-                            <React.Fragment key={plugin.name}>
-                                {plugin.render({ Section, Item })}
-                            </React.Fragment>
+                        {items.map(({ name, element }) => (
+                            <React.Fragment key={name}>{element}</React.Fragment>
                         ))}
                     </Menu>
                 );
