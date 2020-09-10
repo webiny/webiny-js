@@ -4,30 +4,11 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
-import { Roles } from "../views/Roles";
 import { Users } from "../views/Users";
 import { Groups } from "../views/Groups";
 import { Account } from "../views/Account";
 
 const plugins: RoutePlugin[] = [
-    {
-        name: "route-roles",
-        type: "route",
-        route: (
-            <Route
-                exact
-                path={"/roles"}
-                render={() => (
-                    <SecureRoute permission={"security.role.crud"}>
-                        <AdminLayout>
-                            <Helmet title={"Security - Roles"} />
-                            <Roles />
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
     {
         name: "route-groups",
         type: "route",

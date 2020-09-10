@@ -65,7 +65,6 @@ export default {
             avatar: File
             enabled: Boolean
             groups: [SecurityGroup]
-            roles: [SecurityRole]
             permissions: [JSON]
             personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
@@ -85,7 +84,6 @@ export default {
             avatar: RefInput
             enabled: Boolean
             groups: [ID]
-            roles: [ID]
         }
 
         # This input type is used by the user who is updating his own account

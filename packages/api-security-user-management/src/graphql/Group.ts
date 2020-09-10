@@ -17,7 +17,8 @@ export default {
             slug: String
             createdOn: DateTime
             description: String
-            roles: [SecurityRole]
+            #roles: [SecurityRole]
+            permissions: [JSON]
         }
 
         input SecurityGroupInput {
@@ -25,7 +26,8 @@ export default {
             name: String
             slug: String
             description: String
-            roles: [ID]
+            #roles: [ID]
+            permissions: [JSON]
         }
 
         input SecurityGroupSearchInput {

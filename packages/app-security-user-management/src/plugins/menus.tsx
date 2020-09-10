@@ -29,10 +29,9 @@ const SecurityMenu = ({ Menu, Section, Item }) => {
                 </Section>
             )}
 
-            {(groups || roles) && (
-                <Section label={t`Roles and Groups`}>
+            {groups && (
+                <Section label={t`Groups`}>
                     {groups && <Item label={t`Groups`} path="/groups" />}
-                    {roles && <Item label={t`Roles`} path="/roles" />}
                 </Section>
             )}
         </Menu>

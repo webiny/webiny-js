@@ -92,11 +92,11 @@ const UsersForm = () => {
                                             <GroupsAutocomplete label={t`Groups`} />
                                         </Bind>
                                     </Cell>
-                                    <Cell span={12}>
-                                        <Bind name="roles">
-                                            <RolesAutocomplete label={t`Roles`} />
-                                        </Bind>
-                                    </Cell>
+                                    {/*<Cell span={12}>*/}
+                                    {/*    <Bind name="roles">*/}
+                                    {/*        <RolesAutocomplete label={t`Roles`} />*/}
+                                    {/*    </Bind>*/}
+                                    {/*</Cell>*/}
                                 </AccordionItem>
                                 <AccordionItem
                                     description="Set Personal Access Tokens"

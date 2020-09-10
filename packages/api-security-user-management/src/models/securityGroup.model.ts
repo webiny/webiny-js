@@ -1,7 +1,8 @@
 import { flow } from "lodash";
-import { withHooks, withName, ref, string, boolean, withFields } from "@webiny/commodo";
+// import { validation } from "@webiny/validation";
+import { withHooks, withName, object, string, boolean, withFields } from "@webiny/commodo";
 
-export default ({ createBase, context }) => {
+export default ({ createBase }) => {
     // TODO: fix type when Commodo is migrated to TS
     const SecurityGroup: any = flow(
         withName("SecurityGroup"),
@@ -10,10 +11,10 @@ export default ({ createBase, context }) => {
             name: string(),
             slug: string(),
             system: boolean(),
-            roles: ref({
+            permissions: object({
                 list: true,
-                instanceOf: [context.models.SecurityRole, "model"],
-                using: [context.models.SecurityRoles2Models, "role"]
+                value: [],
+                // TODO: add a custom validation
             })
         })),
         withHooks({

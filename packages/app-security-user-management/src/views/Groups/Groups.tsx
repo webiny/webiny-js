@@ -11,7 +11,8 @@ const Groups = ({ scopes, formProps, listProps }: any) => {
     const variables = data => ({
         data: {
             ...pick(data, ["name", "slug", "description"]),
-            roles: (data.roles || []).map(x => x.id)
+            permissions: data.permissions || []
+            // roles: (data.roles || []).map(x => x.id)
         }
     });
 

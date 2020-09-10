@@ -2,6 +2,7 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
 import { Menu, Item, Section } from "./plugins/Menu/Navigation/components";
+import {ReactElement} from "react";
 
 type RenderParams = {
     content: React.ReactNode;
@@ -116,4 +117,9 @@ export type AdminInstallationPlugin = Plugin & {
 export type ApiInformationDialogPlugin = Plugin & {
     type: "admin-api-information-dialog";
     render(): React.ReactNode;
+};
+
+export type AdminAppPermissionRenderer = Plugin & {
+    type: "admin-app-permissions-renderer";
+    render(params: any): ReactElement;
 };
