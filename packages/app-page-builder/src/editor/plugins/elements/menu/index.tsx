@@ -64,6 +64,7 @@ export default () => {
                 };
             },
             render({ element }) {
+                console.log("OPENING MENU:::::::::::")
                 return <Menu data={element.data} />;
             }
         } as PbEditorPageElementPlugin,
@@ -81,7 +82,7 @@ export default () => {
             }
         } as PbEditorPageElementAdvancedSettingsPlugin,
         {
-            name: "pb-editor-page-element-advanced-settings-pages-list-design",
+            name: "pb-editor-page-element-advanced-settings-menu-design",
             type: "pb-editor-page-element-advanced-settings",
             elementType: "menu",
             render(props) {
