@@ -1,3 +1,5 @@
+import { PluginCollection } from '@webiny/plugins/types';
+
 // Layout plug
 import Header from "@webiny/app-admin/plugins/Header";
 import Content from "@webiny/app-admin/plugins/Content";
@@ -20,7 +22,7 @@ import install from "@webiny/app-admin/plugins/install";
 
 import init from "./init";
 
-export default () => [
+export default (): PluginCollection => [
     // Layout plugins
     Header,
     Content,
