@@ -1,11 +1,10 @@
 import gql from "graphql-tag";
 /*, $sortBy: String, $sortDirection: String*/
-
+//removed: $search: PbSearchInput
 export const LIST_MENUS = gql`
     query listMenus(
         $where: JSON
         $sort: JSON
-        $search: PbSearchInput
         $limit: Int
         $after: String
         $before: String
@@ -14,7 +13,6 @@ export const LIST_MENUS = gql`
             menus: listMenus(
                 where: $where
                 sort: $sort
-                search: $search
                 limit: $limit
                 after: $after
                 before: $before

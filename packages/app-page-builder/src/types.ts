@@ -125,7 +125,7 @@ export type PbPageElementMenuComponentPlugin = Plugin & {
     title: string;
     componentName: string;
     component: ComponentType<any>;
-}
+};
 
 export type PbPageElementPagesListComponentPlugin = Plugin & {
     type: "pb-page-element-pages-list-component";

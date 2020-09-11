@@ -62,7 +62,6 @@ const Menu = props => {
    const variables = {
         where: vars.where,
         sort,
-        search,
         limit: parseInt(vars.resultsPerPage),
         after: undefined,
         before: undefined

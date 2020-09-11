@@ -39,11 +39,12 @@ const Menu = ({data}) => {
     //variables might need to be reworked
 
    /// PbSearchInput required for search.
-
+    //WORK FROM HERE
+    //search, removed            $search: PbSearchInput
+    //const resultsPerPage =  parseInt(vars.resultsPerPage);
     const variables = {
         where: vars.where,
         sort,
-        search,
         limit: parseInt(vars.resultsPerPage),
         after: undefined,
         before: undefined
