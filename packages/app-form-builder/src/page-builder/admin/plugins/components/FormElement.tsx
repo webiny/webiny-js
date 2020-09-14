@@ -22,10 +22,13 @@ export type FormElementProps = {
 };
 
 const FormElement = (props: FormElementProps) => {
+    console.log("FORM ELEMENT:::::::");
     const { element, isActive } = props;
     let render = <span>Form not selected.</span>;
 
     const form = get(element, "data.settings.form") || {};
+    console.log("form data:::::");
+    console.log(form);
 
     if (form.revision) {
         const props = {
@@ -41,6 +44,7 @@ const FormElement = (props: FormElementProps) => {
         }
 
         render = <FormsForm {...props} />;
+        console.log(render);
     }
 
     return (

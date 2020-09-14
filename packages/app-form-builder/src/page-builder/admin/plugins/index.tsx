@@ -29,6 +29,7 @@ export default () => [
             title: "Form",
             group: "pb-editor-element-group-form",
             preview() {
+                console.log("PREVIEW BOX:::::::");
                 return (
                     <PreviewBox>
                         <FormLogo />
@@ -44,6 +45,8 @@ export default () => [
         target: ["column", "row", "list-item"],
         onCreate: "open-settings",
         render({ element }) {
+            console.log("render :::::::");
+            console.log(element);
             return <FormElement element={element} />;
         },
         create() {
@@ -60,6 +63,7 @@ export default () => [
         type: "pb-editor-page-element-advanced-settings",
         elementType: "form",
         render(props) {
+            console.log("FORM ELEMENT ADVANCED SETTINGS:::::::");
             return (
                 <Tab label="Form">
                     <FormElementAdvancedSettings {...props} />

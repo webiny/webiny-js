@@ -13,6 +13,7 @@ const FormOptionsWrapper = styled("div")({
 });
 
 const getOptions = ({ gqlResponse, data }) => {
+    console.log("GET OPTIONS:::::::");
     const output = {
         parents: {
             options: [],
@@ -55,6 +56,7 @@ const getOptions = ({ gqlResponse, data }) => {
 };
 
 const FormElementAdvancedSettings = ({ Bind, data }) => {
+    console.log("FORM ELEMENT ADVANCED SETTINGS:::::::");
     return (
         <FormOptionsWrapper>
             <Query query={LIST_FORMS} fetchPolicy="network-only">

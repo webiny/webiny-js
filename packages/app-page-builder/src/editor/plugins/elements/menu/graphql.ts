@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 /*, $sortBy: String, $sortDirection: String*/
 //removed: $search: PbSearchInput
+
 export const LIST_MENUS = gql`
     query listMenus(
         $where: JSON

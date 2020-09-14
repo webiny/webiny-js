@@ -24,7 +24,7 @@ const Menu = ({data}) => {
     }
 
     const { component: ListComponent } = menu;
-    
+
     if (!ListComponent) {
         return <div>You must select a component to render your menu!</div>;
     }
@@ -86,4 +86,4 @@ const Menu = ({data}) => {
     );
 };
 
-export default React.memo(Menu);
+export default React.memo(Menu); 
