@@ -16,7 +16,7 @@
     "@webiny/app": "^4.9.0",
     "@emotion/styled": "^10.0.27",
     "emotion": "^10.0.27",
-    "@webiny/app-security-user-management": "^4.9.0",
+    "@webiny/app-security-user-management": "^4.6.0",
     "@webiny/app-security": "^4.9.0",
     "@webiny/validation": "^4.9.0",
     "@webiny/form": "^4.9.0",
