@@ -215,8 +215,9 @@ export default {
             }
         }
     },
-    createProductWithValidValues: productId => ({
-        id: productId,
+    createProductWithValidValues: product => ({
+        id: product.id,
+        savedOn: product.savedOn,
         title: {
             values: [
                 {

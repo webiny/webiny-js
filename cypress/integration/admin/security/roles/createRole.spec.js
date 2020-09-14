@@ -23,7 +23,7 @@ context("Roles Module", () => {
             .wait(500);
 
         cy.findByLabelText("Slug")
-            .should("disabled")
+            .should("be.disabled")
             .findByLabelText("Description")
             .type(" Test test.");
 
@@ -101,7 +101,6 @@ context("Roles Module", () => {
                 cy.findByText(`Role with slug "test-role-${id}" already exists.`).should("exist");
             });
     });
-
 
     it("should save scopes correctly", () => {
         const id = uniqid();

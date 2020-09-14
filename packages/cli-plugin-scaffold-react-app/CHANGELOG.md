@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* prettify output (replace backslashes with slashes) ([5647dcd](https://github.com/webiny/webiny-js/commit/5647dcd9ed06c442fb914dc766a481042aaaf8f0))
+* remove generation of `exclude` and `reference` paths ([e98faef](https://github.com/webiny/webiny-js/commit/e98faefc30b6c7c9bbb86611863d988619e5cc75))
+
+
+
+
+
+# [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-app

@@ -24,7 +24,7 @@ context("Menus Module", () => {
             .wait(500);
 
         cy.findByLabelText("Slug")
-            .should("disabled")
+            .should("be.disabled")
             .findByLabelText("Description")
             .type(" Test test.")
             .findByText("Save menu")
@@ -52,7 +52,9 @@ context("Menus Module", () => {
                 .within(() => cy.findByText("Confirm").click());
         });
 
-        cy.findByText("Record deleted successfully.").should("exist").wait(500);
+        cy.findByText("Record deleted successfully.")
+            .should("exist")
+            .wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Cool Menu ${id}`).should("not.exist");
         });

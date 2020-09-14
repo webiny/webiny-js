@@ -20,6 +20,10 @@ class Status {
     }
 
     start() {
+        if (process.env.CI) {
+            return;
+        }
+
         // Hide cursor always, to keep it clean
         process.stdout.write(ansiEscapes.cursorHide);
         this.status.running = true;
@@ -65,6 +69,10 @@ class Status {
     }
 
     async render(status) {
+        if (process.env.CI) {
+            return;
+        }
+
         // Start Status engine, if it isn't running yet
         if (!this.isRunning()) {
             this.start();

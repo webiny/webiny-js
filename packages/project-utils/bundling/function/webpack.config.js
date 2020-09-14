@@ -43,7 +43,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         },
         plugins: [
             new webpack.DefinePlugin({ ...definitions, ...packageVersions }),
-            new WebpackBar({ name: path.basename(process.cwd()), reporters: ["fancy"] })
+            new WebpackBar({ name: path.basename(process.cwd()) })
         ],
         // Run babel on all .js files and skip those in node_modules
         module: {

@@ -58,6 +58,7 @@ const EditAction: React.FC<EditActionProps> = props => {
         <>
             <Tooltip content={<span>Edit image</span>} placement={"bottom"}>
                 <IconButton
+                    data-testid={"fm-edit-image-button"}
                     icon={<EditIcon style={{ margin: "0 8px 0 0" }} />}
                     onClick={async () => {
                         dispatch({ type: "setDataUrl", dataUrl: await toDataUrl(file.src) });
@@ -66,7 +67,8 @@ const EditAction: React.FC<EditActionProps> = props => {
             </Tooltip>
             <Hotkeys zIndex={60} disabled={!state.dataUrl}>
                 <ImageEditorDialog
-                    dialogZIndex={51}
+                    data-testid={"fm-image-editor-dialog"}
+                    dialogZIndex={100}
                     open={state.showImageEditor}
                     src={state.dataUrl}
                     onClose={() => dispatch({ type: "hideImageEditor" })}

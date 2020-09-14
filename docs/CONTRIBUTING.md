@@ -173,8 +173,4 @@ The page will be reloaded every ~3 seconds for 60 times. If there are no changes
 
 There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
 
-#### CI errors
-
-As you may have noticed, we're running the same suite for three times (the `Build & E2E` jobs in the screenshot below). This is because the Cypress tests are still in experimental / testing mode. In other words, they are not 100% stable - sometimes some random errors occur, which aren't actually errors that we should be concerned with. We will try to resolve this instability along the way, but just have in mind that we only need to be concerned if all three jobs fail. If at least one succeedes, that means we're OK.
-
 ![image](https://user-images.githubusercontent.com/5121148/89633328-f9c61a80-d8a3-11ea-9bae-a7dcae9fc60a.png)

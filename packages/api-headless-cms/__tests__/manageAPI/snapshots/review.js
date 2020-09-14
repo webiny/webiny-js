@@ -1,5 +1,7 @@
 export default /* GraphQL */ `
-    "Product review"
+    """
+    Product review
+    """
     type CmsRefReviewProductLocalized {
         value: Product
         locale: ID!

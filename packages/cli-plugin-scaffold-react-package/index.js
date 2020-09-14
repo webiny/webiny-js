@@ -141,9 +141,10 @@ module.exports = [
                     text: `React package files created in ${green(fullLocation)}.`
                 });
 
-
                 // Update root package.json - update "workspaces.packages" section.
-                oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
+                oraSpinner.start(
+                    `Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`
+                );
                 await wait();
 
                 const rootPackageJsonPath = path.join(projectRootPath, "package.json");
@@ -155,10 +156,11 @@ module.exports = [
 
                 oraSpinner.stopAndPersist({
                     symbol: green("✔"),
-                    text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                    text: `Workspace ${green(input.location)} added in root ${green(
+                        `package.json`
+                    )}.`
                 });
 
-                // Once everything is done, run `yarn` so the new packages are automatically installed.
                 try {
                     oraSpinner.start(`Installing dependencies...`);
                     await execa("yarn");
@@ -169,6 +171,21 @@ module.exports = [
                 } catch (err) {
                     throw new Error(
                         `Unable to install dependencies. Try running "yarn" in project root manually.`
+                    );
+                }
+
+                try {
+                    oraSpinner.start(`Building package...`);
+                    await execa("yarn", ["build"], { cwd: fullLocation });
+                    oraSpinner.stopAndPersist({
+                        symbol: green("✔"),
+                        text: "Package built."
+                    });
+                } catch (err) {
+                    throw new Error(
+                        `Unable to build package. Try running "yarn build" in ${green(
+                            fullLocation
+                        )}.`
                     );
                 }
             }

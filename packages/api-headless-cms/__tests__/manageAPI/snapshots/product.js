@@ -1,5 +1,7 @@
 export default /* GraphQL */ `
-    "Products being sold in our webshop"
+    """
+    Products being sold in our webshop
+    """
     type CmsRefProductCategoryLocalized {
         value: Category
         locale: ID!

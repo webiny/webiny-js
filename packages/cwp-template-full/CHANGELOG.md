@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* add "@babel/cli" to list of dependencies ([df6c395](https://github.com/webiny/webiny-js/commit/df6c3954a77d517bd2fa92a68538c6c8ad233851))
+
+
+
+
+
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* add lerna to devDependencies ([e117e0f](https://github.com/webiny/webiny-js/commit/e117e0f569cdaa7f801f5552c068a32ee96a3859))
+
+
+
+
+
+# [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

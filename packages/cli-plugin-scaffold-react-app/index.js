@@ -110,37 +110,10 @@ module.exports = [
                 envJson = envJson.replace("[RESOURCE_NAME]", resourceName);
                 fs.writeFileSync(envJsonPath, envJson);
 
-                // Compute "exclude" and "reference" paths if possible
-                const webinyProjectPath = path.dirname(baseTsConfigPath);
-                let excludeField, referencesField;
-                if ([appTypes.admin, appTypes.site].includes(appType)) {
-                    let appTemplatePackage; // "app-template-admin" or "app-template-site"
-                    if (appType === appTypes.admin) {
-                        appTemplatePackage = "app-template-admin";
-                    } else if (appType === appTypes.site) {
-                        appTemplatePackage = "app-template-site";
-                    }
-
-                    const excludePath = path
-                        .join(webinyProjectPath, `packages/${appTemplatePackage}`)
-                        .replace(/\\/g, "/");
-                    const referencesPath = path
-                        .join(
-                            webinyProjectPath,
-                            `packages/${appTemplatePackage}/tsconfig.build.json`
-                        )
-                        .replace(/\\/g, "/");
-
-                    excludeField = [excludePath];
-                    referencesField = [{ path: referencesPath }];
-                }
-
-                // Update tsconfig "extends", "exclude" and "references" paths
+                // Update tsconfig "extends"
                 const tsConfigPath = path.join(fullLocation, "tsconfig.json");
                 const tsconfig = require(tsConfigPath);
                 tsconfig.extends = baseTsConfigPath;
-                tsconfig.exclude = excludeField || tsconfig.exclude;
-                tsconfig.references = referencesField || tsconfig.references;
                 fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
 
                 oraSpinner.stopAndPersist({
@@ -186,11 +159,13 @@ module.exports = [
                         cwd: fullLocation
                     })
                 );
-                const rootResourcesPath = path.dirname(
-                    findUp.sync("resources.js", {
-                        cwd: fullLocation
-                    })
-                );
+                const rootResourcesPath = path
+                    .dirname(
+                        findUp.sync("resources.js", {
+                            cwd: fullLocation
+                        })
+                    )
+                    .replace(/\\/g, "/");
 
                 const deployCommandStackPath = rootResourcesPath
                     .replace(projectRootPath, "")

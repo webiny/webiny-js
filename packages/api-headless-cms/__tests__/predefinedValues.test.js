@@ -26,6 +26,6 @@ describe("Predefined Values Test", () => {
 
         let product = await products.create(mocks.createProductValidValues);
 
-        expect(product).toEqual(mocks.createProductWithValidValues(product.id));
+        expect(product).toEqual(mocks.createProductWithValidValues(product));
     });
 });

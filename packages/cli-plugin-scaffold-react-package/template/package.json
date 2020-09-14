@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\""
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
   }
 }

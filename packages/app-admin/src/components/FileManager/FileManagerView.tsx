@@ -23,12 +23,10 @@ import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
 import { i18n } from "@webiny/app/i18n";
-
-const t = i18n.ns("app-admin/file-manager/file-manager-view");
-
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
-import gql from "graphql-tag";
+
+const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
 const style = {
     draggingFeedback: css({
@@ -382,7 +380,7 @@ function FileManagerView(props: FileManagerViewProps) {
                             toggleTag={tag => toggleTag({ tag, queryParams })}
                         />
 
-                        <FileListWrapper>
+                        <FileListWrapper data-testid={"fm-list-wrapper"}>
                             <Scrollbar
                                 onScrollFrame={scrollFrame =>
                                     refreshOnScroll({

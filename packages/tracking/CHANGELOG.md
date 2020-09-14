@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/tracking
+
+
+
+
+
+# [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* **apps:** improve telemetry implementation ([54197a1](https://github.com/webiny/webiny-js/commit/54197a11d458c766e8676f000d4d19bab7f8b7d0))
+* **tracking:** add missing files ([f36768e](https://github.com/webiny/webiny-js/commit/f36768eeb4c07fc8379e93cadc7a8feec3990b9f))
+
+
+
+
+
+# [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/tracking
+
+
+
+
+
+# [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
+
+**Note:** Version bump only for package @webiny/tracking
+
+
+
+
+
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
 **Note:** Version bump only for package @webiny/tracking

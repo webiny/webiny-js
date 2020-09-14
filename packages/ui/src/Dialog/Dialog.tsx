@@ -21,7 +21,8 @@ export type DialogProps = {
 
     className?: string;
 
-    style?: { [key: string]: any };
+    // Component's custom in-line styles.
+    style?: React.CSSProperties;
 
     // If true, dialog will be permanently fixed inside of a view (works for temporary and persistent modes).
     open?: boolean;
@@ -95,7 +96,8 @@ export type DialogActionsProps = RmwcDialogActionsProps & {
      */
     children: React.ReactNode[] | React.ReactNode;
 
-    style?: object;
+    // Dialog component's custom in-line styles.
+    style?: React.CSSProperties;
 };
 
 /**

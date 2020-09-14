@@ -41,6 +41,6 @@ const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
         process.exit(1);
     }
 
-    verifyConfig();
+    await verifyConfig();
     require("./cli");
 })();

@@ -143,7 +143,11 @@ export default function FileDetails(props) {
                                 <Component key={index} {...props} />
                             ))}
 
-                            <ConfirmationDialog {...fileDeleteConfirmationProps}>
+                            <ConfirmationDialog
+                                {...fileDeleteConfirmationProps}
+                                data-testid={"fm-delete-file-confirmation-dialog"}
+                                style={{ zIndex: 100 }}
+                            >
                                 {({ showConfirmation }) => {
                                     return (
                                         <Tooltip
@@ -151,6 +155,7 @@ export default function FileDetails(props) {
                                             placement={"bottom"}
                                         >
                                             <IconButton
+                                                data-testid={"fm-delete-file-button"}
                                                 icon={
                                                     <DeleteIcon style={{ margin: "0 8px 0 0" }} />
                                                 }

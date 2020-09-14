@@ -2,7 +2,7 @@ module.exports = async (options = {}) => {
     const path = require("path");
     const appIndexJs = options.entry || path.resolve("src", "index.tsx");
 
-    if (!options.openBrowser) {
+    if (typeof options.openBrowser === "undefined") {
         options.openBrowser = true;
     }
 

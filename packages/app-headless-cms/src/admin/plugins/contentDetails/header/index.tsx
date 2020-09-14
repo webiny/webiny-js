@@ -6,6 +6,7 @@ import LocaleSelector from "./localeSelector/LocaleSelector";
 import SaveContentButton from "./saveContent/SaveContent";
 import SaveAndPublishButton from "./saveAndPublishContent/SaveAndPublishContent";
 import ContentFormOptionsMenu from "./contentFormOptionsMenu/ContentFormOptionsMenu";
+import RefreshContentButton from "./refreshContent/RefreshContent";
 
 const plugins: CmsContentDetailsPlugin[] = [
     {
@@ -32,21 +33,28 @@ const plugins: CmsContentDetailsPlugin[] = [
     {
         name: "cms-content-details-header-save",
         type: "cms-content-details-header-right",
-        render: props => {
+        render(props) {
             return <SaveContentButton {...props} />;
         }
     },
     {
         name: "cms-content-details-header-save-and-publish",
         type: "cms-content-details-header-right",
-        render: props => {
+        render(props) {
             return <SaveAndPublishButton {...props} />;
+        }
+    },
+    {
+        name: "cms-content-details-header-right-refresh",
+        type: "cms-content-details-header-right",
+        render(props) {
+            return <RefreshContentButton {...props} />;
         }
     },
     {
         name: "cms-content-details-header-option-menu",
         type: "cms-content-details-header-right",
-        render: props => {
+        render(props) {
             return <ContentFormOptionsMenu {...props} />;
         }
     }

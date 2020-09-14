@@ -7,5 +7,12 @@ module.exports = (stack, env = "prod") => {
         PROJECT_FOLDER,
         path.join(".webiny", "state", stack, env, "Webiny.json")
     );
-    return loadJson.sync(statePath);
+
+    try {
+        return loadJson.sync(statePath);
+    } catch (e) {
+        throw new Error(
+            `Failed to deployment state files from "${statePath}", for "${env}" environment. Does the environment exist?`
+        );
+    }
 };
