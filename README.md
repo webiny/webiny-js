@@ -315,6 +315,13 @@ Thanks goes to these wonderful people:
                         <sub><b>LaTotty</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/markwilcox">
+                        <img src="https://avatars1.githubusercontent.com/u/979220?v=4" width="100px;" alt="Mark Wilcox"/>
+                        <br />
+                        <sub><b>Mark Wilcox</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
