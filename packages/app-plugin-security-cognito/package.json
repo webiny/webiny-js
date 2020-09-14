@@ -16,7 +16,7 @@
     "@webiny/app": "^4.11.0-beta.1",
     "@emotion/styled": "^10.0.27",
     "emotion": "^10.0.27",
-    "@webiny/app-security-user-management": "^4.6.0",
+    "@webiny/app-security-user-management": "^4.11.0-beta.1",
     "@webiny/app-security": "^4.11.0-beta.1",
     "@webiny/validation": "^4.11.0-beta.1",
     "@webiny/form": "^4.11.0-beta.1",
