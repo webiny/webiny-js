@@ -6,3 +6,5 @@ export type Plugin = {
     init?: () => void;
     [key: string]: any;
 };
+
+export type PluginCollection = (Plugin | PluginCollection)[];
