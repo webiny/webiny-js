@@ -52,6 +52,12 @@ const linkStyles = css({
             textOverflow: "ellipsis",
             maxWidth: 180,
             display: "block"
+        },
+        ".mdc-typography--subtitle2": {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            maxWidth: 180
         }
     }
 });
