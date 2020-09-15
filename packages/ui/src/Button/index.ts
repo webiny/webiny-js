@@ -1,4 +1,6 @@
 export {
+    ButtonProps,
+    ButtonFloatingProps,
     ButtonDefault,
     ButtonPrimary,
     ButtonSecondary,
