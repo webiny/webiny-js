@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, Fragment, useReducer } from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
@@ -8,7 +8,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as HelpIcon } from "@webiny/app-headless-cms/admin/icons/help_outline.svg";
 import { PermissionSelector } from "./PermissionSelector";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-
+import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 const cmsContentEntryLocales = "cms.contentEntries.locales";
@@ -31,16 +31,74 @@ const flexClass = css({
     alignItems: "center"
 });
 
+const actionTypes = {
+    SET_PERMISSION_LEVEL: "SET_PERMISSION_LEVEL",
+    SYNC_PERMISSIONS: "SYNC_PERMISSIONS",
+    RESET: "RESET"
+};
+
+const reducer = (currentState, action) => {
+    let permissionLevel = currentState.permissionLevel;
+    switch (action.type) {
+        case actionTypes.SET_PERMISSION_LEVEL:
+            // Set settings for permission
+            permissionLevel = action.payload;
+
+            const showCustomPermission = permissionLevel.includes("custom");
+
+            return {
+                ...currentState,
+                permissionLevel,
+                showCustomPermission
+            };
+        case actionTypes.SYNC_PERMISSIONS:
+            const currentLocales = action.payload;
+
+            let isCustom = false;
+            if (currentLocales.length) {
+                permissionLevel = permissionLevel + "#custom";
+                isCustom = true;
+            } else {
+                permissionLevel = cmsContentEntryLocales;
+                isCustom = false;
+            }
+
+            return {
+                ...currentState,
+                synced: true,
+                permissionLevel,
+                showCustomPermission: isCustom
+            };
+        case actionTypes.RESET:
+            return {
+                ...initialState
+            };
+        default:
+            throw new Error("Unrecognised action: " + action);
+    }
+};
+
+const initialState = {
+    permissionLevel: "#",
+    showCustomPermission: false,
+    synced: false
+};
+
 export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
-    const [permission, setPermission] = useState(cmsContentEntryLocales);
-    const [showCustomPermission, setShowCustomPermission] = useState(false);
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const { permissionLevel, showCustomPermission, synced } = state;
 
     useEffect(() => {
-        const isCustom = permission.includes("custom");
-        setShowCustomPermission(isCustom);
+        !showCustomPermission && setValue("locales", []);
+    }, [showCustomPermission]);
 
-        !isCustom && setValue("locales", []);
-    }, [permission]);
+    const currentLocales = get(value, "locales", []);
+
+    useEffect(() => {
+        if (currentLocales && !synced) {
+            dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: currentLocales });
+        }
+    }, [currentLocales, permissionLevel]);
 
     const i18N = useI18N();
 
@@ -55,8 +113,10 @@ export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
             <Cell span={6}>
                 <Select
                     label={"Content models"}
-                    value={permission}
-                    onChange={value => setPermission(value)}
+                    value={permissionLevel}
+                    onChange={value =>
+                        dispatch({ type: actionTypes.SET_PERMISSION_LEVEL, payload: value })
+                    }
                 >
                     {localesPermissionOptions.map(item => (
                         <option key={item.id} value={item.value}>

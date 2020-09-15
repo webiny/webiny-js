@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, Fragment, useReducer, useCallback } from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
@@ -51,37 +51,117 @@ const flexClass = css({
     alignItems: "center"
 });
 
-export const ContentEntryPermission = ({ addPermission }) => {
-    const [value, setValue] = useState(() => ({
-        name: "",
-        own: false,
-        models: [],
-        groups: [],
-        locales: [],
-        canPublish: false
-    }));
-    const [permission, setPermission] = useState("#");
-    const [showModelSelector, setShowModelSelector] = useState(false);
-    const [showGroupSelector, setShowGroupSelector] = useState(false);
+const actionTypes = {
+    UPDATE_PERMISSION: "UPDATE_PERMISSION",
+    SET_PERMISSION_LEVEL: "SET_PERMISSION_LEVEL",
+    SYNC_PERMISSIONS: "SYNC_PERMISSIONS",
+    RESET: "RESET"
+};
+
+const reducer = (currentState, action) => {
+    let permissionLevel = currentState.permissionLevel;
+    let showModelSelector = currentState.showModelSelector;
+    let showGroupSelector = currentState.showGroupSelector;
+
+    switch (action.type) {
+        case actionTypes.SET_PERMISSION_LEVEL:
+            // Set settings for permission
+            permissionLevel = action.payload;
+
+            showModelSelector = permissionLevel.includes("#models");
+            showGroupSelector = permissionLevel.includes("#groups");
+
+            const own = permissionLevel.includes("own");
+            const permissionName = permissionLevel.split("#")[0];
+
+            let models = currentState.permission.models;
+            if (currentState.showModelSelector && !showModelSelector) {
+                models = [];
+            }
+
+            let groups = currentState.permission.groups;
+            if (currentState.showModelSelector && !showModelSelector) {
+                groups = [];
+            }
+
+            return {
+                ...currentState,
+                permissionLevel,
+                showModelSelector,
+                showGroupSelector,
+                permission: {
+                    ...currentState.permission,
+                    name: permissionName,
+                    own,
+                    models,
+                    groups
+                }
+            };
+        case actionTypes.UPDATE_PERMISSION:
+            const { key, value } = action.payload;
+            return {
+                ...currentState,
+                permission: { ...currentState.permission, [key]: value }
+            };
+        case actionTypes.SYNC_PERMISSIONS:
+            const currentPermission = action.payload;
+
+            permissionLevel = cmsContentEntryPermission;
+
+            if (currentPermission.own) {
+                permissionLevel = cmsContentEntryPermission + "#own";
+            }
+
+            if (Array.isArray(currentPermission.models) && currentPermission.models.length) {
+                permissionLevel = cmsContentEntryPermission + "#models";
+                showModelSelector = true;
+            }
+
+            if (Array.isArray(currentPermission.groups) && currentPermission.groups.length) {
+                permissionLevel = cmsContentEntryPermission + "#groups";
+                showGroupSelector = true;
+            }
+
+            return {
+                ...currentState,
+                synced: true,
+                permissionLevel,
+                showModelSelector,
+                showGroupSelector,
+                permission: { ...currentPermission, name: cmsContentEntryPermission }
+            };
+        case actionTypes.RESET:
+            return {
+                ...initialState
+            };
+        default:
+            throw new Error("Unrecognised action: " + action);
+    }
+};
+
+const initialState = {
+    permissionLevel: "#",
+    permission: { name: "", own: false, models: [], groups: [], locales: [], canPublish: false },
+    showModelSelector: false,
+    showGroupSelector: false,
+    synced: false
+};
+
+export const ContentEntryPermission = ({ value, setValue }) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const { permissionLevel, permission, showModelSelector, showGroupSelector, synced } = state;
+
+    const currentPermission = value[cmsContentEntryPermission];
 
     useEffect(() => {
-        // Set settings for permission
-        setShowModelSelector(permission.includes("#models"));
-        setShowGroupSelector(permission.includes("#groups"));
+        if (currentPermission && currentPermission.name && !synced) {
+            dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: currentPermission });
+        }
+    }, [currentPermission, permission]);
 
-        const own = permission.includes("own");
-        const permissionName = permission.split("#")[0];
-
-        setValue(value => ({
-            ...value,
-            name: permissionName,
-            own
-        }));
+    useEffect(() => {
+        setValue(cmsContentEntryPermission, permission);
     }, [permission]);
-
-    useEffect(() => {
-        addPermission({ permission: value, key: cmsContentEntryPermission });
-    }, [value]);
 
     // Data fetching
     const {
@@ -98,6 +178,15 @@ export const ContentEntryPermission = ({ addPermission }) => {
     } = useQuery(LIST_CONTENT_MODEL_GROUPS);
     const contentModelGroups = get(contentModelGroupData, "contentModelGroups.data", []);
 
+    const updatePermission = useCallback(
+        (key, value) =>
+            dispatch({
+                type: actionTypes.UPDATE_PERMISSION,
+                payload: { key, value }
+            }),
+        []
+    );
+
     return (
         <Fragment>
             <Cell span={6}>
@@ -111,8 +200,10 @@ export const ContentEntryPermission = ({ addPermission }) => {
             <Cell span={6}>
                 <Select
                     label={"Content models"}
-                    value={permission}
-                    onChange={value => setPermission(value)}
+                    value={permissionLevel}
+                    onChange={value =>
+                        dispatch({ type: actionTypes.SET_PERMISSION_LEVEL, payload: value })
+                    }
                 >
                     {contentModelPermissionOptions.map(item => (
                         <option key={item.id} value={item.value}>
@@ -124,10 +215,8 @@ export const ContentEntryPermission = ({ addPermission }) => {
             {showModelSelector && (
                 <Cell span={12}>
                     <PermissionSelector
-                        value={value}
-                        setValue={(key, newValue) => {
-                            setValue(value => ({ ...value, [key]: newValue }));
-                        }}
+                        value={permission}
+                        setValue={updatePermission}
                         selectorKey={"models"}
                         dataList={{
                             loading: contentModelLoading,
@@ -140,10 +229,8 @@ export const ContentEntryPermission = ({ addPermission }) => {
             {showGroupSelector && (
                 <Cell span={12}>
                     <PermissionSelector
-                        value={value}
-                        setValue={(key, newValue) => {
-                            setValue(value => ({ ...value, [key]: newValue }));
-                        }}
+                        value={permission}
+                        setValue={updatePermission}
                         selectorKey={"groups"}
                         dataList={{
                             loading: contentModelGroupLoading,
@@ -153,18 +240,8 @@ export const ContentEntryPermission = ({ addPermission }) => {
                     />
                 </Cell>
             )}
-            <ContentEntryPermissionBasedOnLanguage
-                value={value}
-                setValue={(key, newValue) => {
-                    setValue(value => ({ ...value, [key]: newValue }));
-                }}
-            />
-            <ContentEntryPublishPermission
-                value={value}
-                setValue={(key, newValue) => {
-                    setValue(value => ({ ...value, [key]: newValue }));
-                }}
-            />
+            <ContentEntryPermissionBasedOnLanguage value={permission} setValue={updatePermission} />
+            <ContentEntryPublishPermission value={permission} setValue={updatePermission} />
         </Fragment>
     );
 };

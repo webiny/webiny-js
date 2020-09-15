@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useReducer } from "react";
 import { css } from "emotion";
 import { Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
@@ -34,28 +34,83 @@ const flexClass = css({
     alignItems: "center"
 });
 
-export const ContentGroupPermission = ({ addPermission }) => {
-    const [value, setValue] = useState(() => ({
-        name: "",
-        own: false
-    }));
-    const [permission, setPermission] = useState("#");
+const actionTypes = {
+    UPDATE_PERMISSION: "UPDATE_PERMISSION",
+    SET_PERMISSION_LEVEL: "SET_PERMISSION_LEVEL",
+    SYNC_PERMISSIONS: "SYNC_PERMISSIONS",
+    RESET: "RESET"
+};
+
+const reducer = (currentState, action) => {
+    let permissionLevel = currentState.permissionLevel;
+    switch (action.type) {
+        case actionTypes.SET_PERMISSION_LEVEL:
+            // Set settings for permission
+            permissionLevel = action.payload;
+
+            const own = permissionLevel.includes("own");
+            const permissionName = permissionLevel.split("#")[0];
+
+            return {
+                ...currentState,
+                permissionLevel,
+                permission: {
+                    ...currentState.permission,
+                    name: permissionName,
+                    own
+                }
+            };
+        case actionTypes.UPDATE_PERMISSION:
+            const { key, value } = action.payload;
+            return {
+                ...currentState,
+                permission: { ...currentState.permission, [key]: value }
+            };
+        case actionTypes.SYNC_PERMISSIONS:
+            const currentPermission = action.payload;
+
+            permissionLevel = cmsContentModelGroupPermission;
+
+            if (currentPermission.own) {
+                permissionLevel = cmsContentModelGroupPermission + "#own";
+            }
+
+            return {
+                ...currentState,
+                synced: true,
+                permissionLevel,
+                permission: { ...currentPermission, name: cmsContentModelGroupPermission }
+            };
+        case actionTypes.RESET:
+            return {
+                ...initialState
+            };
+        default:
+            throw new Error("Unrecognised action: " + action);
+    }
+};
+
+const initialState = {
+    permissionLevel: "#",
+    permission: { name: "", own: false },
+    synced: false
+};
+
+export const ContentGroupPermission = ({ value, setValue }) => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const { permission, permissionLevel, synced } = state;
+
+    const currentPermission = value[cmsContentModelGroupPermission];
 
     useEffect(() => {
-        // Set settings for permission
-        const own = permission.includes("own");
-        const permissionName = permission.split("#")[0];
+        if (currentPermission && currentPermission.name && !synced) {
+            dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: currentPermission });
+        }
+    }, [currentPermission, permission]);
 
-        setValue(value => ({
-            ...value,
-            name: permissionName,
-            own
-        }));
+    useEffect(() => {
+        setValue(cmsContentModelGroupPermission, permission);
     }, [permission]);
-
-    useEffect(() => {
-        addPermission({ permission: value, key: cmsContentModelGroupPermission });
-    }, [value]);
 
     return (
         <Fragment>
@@ -70,8 +125,10 @@ export const ContentGroupPermission = ({ addPermission }) => {
             <Cell span={6}>
                 <Select
                     label={"Content groups"}
-                    value={permission}
-                    onChange={value => setPermission(value)}
+                    value={permissionLevel}
+                    onChange={value =>
+                        dispatch({ type: actionTypes.SET_PERMISSION_LEVEL, payload: value })
+                    }
                 >
                     {contentGroupPermissionOptions.map(item => (
                         <option key={item.id} value={item.value}>

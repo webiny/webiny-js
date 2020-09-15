@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment, useCallback } from "react";
+import React, { Fragment, useEffect, useCallback, useReducer } from "react";
 import { css } from "emotion";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -13,6 +13,7 @@ import { ContentModelPermission } from "@webiny/app-headless-cms/admin/plugins/p
 import { ContentGroupPermission } from "./ContentGroupPermission";
 import { ContentEntryPermission } from "./ContentEntryPermission";
 import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import get from "lodash.get";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -49,66 +50,106 @@ const permissionLevelOptions = [
     }
 ];
 
-const PermissionLevel = props => {
-    const [value, setValue] = useState(() => ({
-        name: ""
-    }));
-    const [permission, setPermission] = useState("#");
-    const [permissions, setPermissions] = useState({});
-    const [showCustomPermission, setShowCustomPermission] = useState(false);
+const actionTypes = {
+    UPDATE_PERMISSION: "UPDATE_PERMISSION",
+    SET_PERMISSION_LEVEL: "SET_PERMISSION_LEVEL",
+    SYNC_PERMISSIONS: "SYNC_PERMISSIONS",
+    RESET: "RESET"
+};
 
-    const [dirty, setDirty] = useState(false);
+const reducer = (currentState, action) => {
+    switch (action.type) {
+        case actionTypes.SET_PERMISSION_LEVEL:
+            const isCustom = action.payload.includes("custom");
+            const permissionName = action.payload.split("#")[0];
 
-    // Sync back the data
-    useEffect(() => {
-        // FIXME: I'm not very sure about this approach
-        if (props.value && !dirty) {
-            const allCMSPermissions = props.value.filter(perm => perm.name.startsWith("cms"));
+            return {
+                ...currentState,
+                permissionLevel: action.payload,
+                showCustomPermission: isCustom,
+                permission: {
+                    ...currentState.permission,
+                    name: permissionName
+                },
+                permissions: isCustom ? currentState.permissions : {}
+            };
+        case actionTypes.UPDATE_PERMISSION:
+            const { key, value } = action.payload;
+            return {
+                ...currentState,
+                permissions: { ...currentState.permissions, [key]: value }
+            };
+        case actionTypes.SYNC_PERMISSIONS:
+            const hasFullAccess = action.payload.some(perm => perm.name === "*");
+            const cmsPermissions = action.payload.filter(perm => perm.name.startsWith("cms"));
 
-            if (allCMSPermissions.length === 1 && allCMSPermissions[0].name === cmsPermission) {
-                setPermission(cmsPermission);
-            } else if (allCMSPermissions.length) {
-                setPermission(cmsPermission + "#custom");
+            if (cmsPermissions.length === 0 && !hasFullAccess) {
+                return currentState;
+            }
+
+            if (hasFullAccess) {
+                return {
+                    ...currentState,
+                    permissionLevel: cmsPermission
+                };
+            }
+
+            let permissionLevel = currentState.permissionLevel;
+            let permissions = currentState.permissions;
+            let showCustomPermission = currentState.showCustomPermission;
+
+            if (cmsPermissions.length === 1 && cmsPermissions[0].name === cmsPermission) {
+                permissionLevel = cmsPermission;
+            } else {
+                showCustomPermission = true;
+                permissionLevel = cmsPermission + "#custom";
                 const obj = {};
-                allCMSPermissions.forEach(perm => {
+                cmsPermissions.forEach(perm => {
                     obj[perm.name] = perm;
                 });
-                setPermissions(obj);
+                permissions = obj;
             }
-        }
-    }, [props.value, dirty]);
+
+            return {
+                ...currentState,
+                synced: true,
+                permissionLevel,
+                permissions,
+                showCustomPermission,
+                permission: { ...currentState.permission, name: cmsPermission }
+            };
+        case actionTypes.RESET:
+            return {
+                ...initialState
+            };
+        default:
+            throw new Error("Unrecognised action: " + action);
+    }
+};
+
+const initialState = {
+    permissionLevel: "#",
+    permission: { name: "" },
+    permissions: {},
+    showCustomPermission: false,
+    synced: false
+};
+
+const PermissionLevel = ({ value, onChange }) => {
+    const [
+        { permissionLevel, showCustomPermission, permission, permissions, synced },
+        dispatch
+    ] = useReducer(reducer, initialState);
+    // console.log("%cSTATE", "color: cyan; fontSize: 24px");
+    // console.log({ permissionLevel, showCustomPermission, permission, permissions });
 
     useEffect(() => {
-        const isCustom = permission.includes("custom");
-        setShowCustomPermission(isCustom);
-
-        const permissionName = permission.split("#")[0];
-        // Set default permission
-        setValue(value => ({
-            ...value,
-            name: permissionName
-        }));
-        //  Reset customPermissions
-        if (!isCustom) {
-            setPermissions({});
+        if (value && !synced) {
+            dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: value });
         }
+    }, [value, permission]);
 
-        if (permissionName === cmsPermission && !dirty) {
-            setDirty(true);
-        }
-    }, [permission]);
-
-    const addPermission = useCallback(
-        ({ permission, key }: { permission: SecurityPermission; key: string }) => {
-            if (!key) {
-                console.warn(`Missing "key" in [addPermission] call.`);
-            }
-
-            setPermissions(perms => ({ ...perms, [key]: permission }));
-        },
-        [permissions]
-    );
-
+    // TODO: Adding a "Submit/Save" button will simplify things here.
     useEffect(() => {
         // Need to set permissions
         let cmsPermissions = [];
@@ -120,17 +161,26 @@ const PermissionLevel = props => {
 
             if (customPermissions.length) {
                 cmsPermissions = [...customPermissions];
+            } else {
+                cmsPermissions.push(permission);
             }
         }
-        // If there are no customPermissions
-        if (!cmsPermissions.length && value) {
-            cmsPermissions.push(value);
-        }
+
         // If we have anything to set
         if (cmsPermissions.length) {
-            props.onChange(cmsPermissions);
+            onChange(cmsPermissions);
         }
-    }, [value, permissions]);
+    }, [permission, permissions]);
+
+    const updatePermission = useCallback((key, value) => {
+        dispatch({
+            type: actionTypes.UPDATE_PERMISSION,
+            payload: {
+                key,
+                value
+            }
+        });
+    }, []);
 
     return (
         <Fragment>
@@ -147,8 +197,10 @@ const PermissionLevel = props => {
                 <Cell span={6}>
                     <Select
                         label={t`Permission level`}
-                        value={permission}
-                        onChange={value => setPermission(value)}
+                        value={permissionLevel}
+                        onChange={value =>
+                            dispatch({ type: actionTypes.SET_PERMISSION_LEVEL, payload: value })
+                        }
                     >
                         {permissionLevelOptions.map(item => (
                             <option key={item.id} value={item.value}>
@@ -164,14 +216,14 @@ const PermissionLevel = props => {
                         <Cell span={12}>
                             <Typography use={"overline"}>{t`Content models and groups`}</Typography>
                         </Cell>
-                        <ContentModelPermission addPermission={addPermission} />
-                        <ContentGroupPermission addPermission={addPermission} />
+                        <ContentModelPermission value={permissions} setValue={updatePermission} />
+                        <ContentGroupPermission value={permissions} setValue={updatePermission} />
                     </Grid>
                     <Grid className={gridNoPaddingHorizontalClass}>
                         <Cell span={12}>
                             <Typography use={"overline"}>{t`Records`}</Typography>
                         </Cell>
-                        <ContentEntryPermission addPermission={addPermission} />
+                        <ContentEntryPermission value={permissions} setValue={updatePermission} />
                     </Grid>
                 </Fragment>
             )}
@@ -184,6 +236,7 @@ export default () => [
         type: "admin-app-permissions-renderer",
         name: "admin-app-permissions-renderer-cms",
         render({ key, ...props }) {
+            // permissions: []
             return (
                 <AccordionItem
                     key={key}
@@ -191,7 +244,12 @@ export default () => [
                     title={"Headless CMS"}
                     description={"Permissions for headless cms"}
                 >
-                    <PermissionLevel {...props} />
+                    {/* We use key to unmount the component */}
+                    <PermissionLevel
+                        key={get(props, "form.state.data.id", key)}
+                        {...props}
+
+                    />
                 </AccordionItem>
             );
         }
