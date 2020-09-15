@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import Forms from "../../../../../dist/admin/views/Forms/Forms";
 
 export const LIST_FORMS = gql`
     query FormsListForms {
