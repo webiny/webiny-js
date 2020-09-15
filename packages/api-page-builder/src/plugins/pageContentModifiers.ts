@@ -8,6 +8,12 @@ const getGetFileResolverPlugin = context => {
     return plugin;
 };
 
+const createImageSrc = async (context, key) => {
+    const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+
+    return `${srcPrefix}${key}`;
+};
+
 export default [
     {
         name: "cms-element-modifier-background-image",
@@ -35,20 +41,26 @@ export default [
         type: "pb-page-element-modifier",
         elementType: "image",
         getStorageValue({ element }) {
-            const file = get(element, "data.image.file.id");
-            if (file) {
-                set(element, "data.image.file", file);
+            const file = element?.data?.image?.file;
+            if (!file) {
+                throw new Error("Missing file information in the elements data.image path.");
             }
+            element.data.image.file = {
+                __type: "image",
+                id: file.id,
+                key: file.key
+            };
         },
         async setStorageValue({ element, context }) {
-            const id = get(element, "data.image.file");
-            if (id) {
-                const plugin = getGetFileResolverPlugin(context);
-                const file = await plugin.resolve({ context, id });
-                if (file) {
-                    set(element, "data.image.file", file);
-                }
+            const file = element?.data?.image?.file;
+            if (!file || !file.key) {
+                return;
             }
+            const src = await createImageSrc(context, file.key);
+            element.data.image.file = {
+                ...file,
+                src
+            };
         }
     }
 ];
