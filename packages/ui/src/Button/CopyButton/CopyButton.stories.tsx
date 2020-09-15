@@ -16,7 +16,7 @@ story.add(
                 <StoryReadme>{readme}</StoryReadme>
                 <StorySandbox title={"Copy button"}>
                     <div>
-                        <span>Click the button to copy the "Hello" value:</span>
+                        <span>Click the button to copy the &quot;Hello&quot; value:</span>
                         <CopyButton value="Hello" />
                     </div>
                 </StorySandbox>

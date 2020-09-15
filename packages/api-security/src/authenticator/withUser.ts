@@ -1,7 +1,7 @@
 import { flow } from "lodash";
 import { withFields, skipOnPopulate, withHooks, withProps, string } from "@webiny/commodo";
 
-export const withUser = (context) => (baseFn) => {
+export const withUser = context => baseFn => {
     return flow(
         withProps({
             getUser() {

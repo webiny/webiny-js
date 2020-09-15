@@ -1,4 +1,4 @@
-import { PluginCollection } from '@webiny/plugins/types';
+import { PluginCollection } from "@webiny/plugins/types";
 
 // Layout plug
 import Header from "@webiny/app-admin/plugins/Header";

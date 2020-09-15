@@ -138,7 +138,7 @@ const Install = ({ onInstalled }) => {
                                         label={
                                             <span>
                                                 I want to receive updates on product improvements
-                                                and new features. Doing so I accept Webiny's{" "}
+                                                and new features. Doing so I accept Webiny&apos;s{" "}
                                                 {privacyPolicyLink}.
                                             </span>
                                         }

@@ -14,7 +14,6 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 
-
 const t = i18n.ns("app-security/admin/roles/form");
 
 const RoleForm = () => {

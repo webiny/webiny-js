@@ -24,7 +24,7 @@ export type Change = any;
 export type Schema = any;
 export type Stack = any;
 
-export interface Data extends Immutable.Map<any, any> {}
+export type Data = Immutable.Map<any, any>
 
 export namespace Data {
     function create(properties: Immutable.Map<string, any> | { [key: string]: any }): Data;
@@ -1399,7 +1399,7 @@ export interface Plugin<T extends Controller = Controller> {
     schema?: SchemaProperties;
 }
 
-export interface Plugins<T extends Controller = Controller> extends Array<Plugin<T> | Plugins<T>> {}
+export type Plugins<T extends Controller = Controller> = Array<Plugin<T> | Plugins<T>>
 
 export interface EditorProperties<T extends Controller = Controller> {
     object?: "editor";
