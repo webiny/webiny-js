@@ -46,7 +46,7 @@ export default [
                 throw new Error("Missing file information in the elements data.image path.");
             }
             element.data.image.file = {
-                __type: "image",
+                __type: "file",
                 id: file.id,
                 key: file.key
             };
