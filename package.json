@@ -115,7 +115,7 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
-    "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
+    "eslint": "eslint \"./*.{js,jsx,ts,tsx}\" \"cypress/**/*.{js,jsx,ts,tsx}\" \"packages/**/*.{js,jsx,ts,tsx}\" --quiet",
     "build": "lerna run build --stream",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
@@ -137,8 +137,8 @@
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
-    "prettier": "prettier --config .prettierrc.js --write",
-    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
+    "prettier": "prettier \"*.{js,jsx,ts,tsx}\" \"cypress/**/*.{js,jsx,ts,tsx}\" \"packages/**/src/**/*.{js,jsx,ts,tsx}\" --config .prettierrc.js --write",
+    "prettier:check": "prettier \"./*.{js,jsx,ts,tsx}\" \"cypress/**/*.{js,jsx,ts,tsx}\" \"packages/**/src/**/*.{js,jsx,ts,tsx}\" --check --config .prettierrc.js",
     "setup-repo": "node scripts/setupRepo",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
