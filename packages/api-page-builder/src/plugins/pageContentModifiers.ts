@@ -11,17 +11,24 @@ type FileDbType = {
     key: string;
 };
 
-const createFileValue = async (context, file?: FileType): Promise<FileWithSrcType> => {
-    const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
-    return {
-        ...file,
-        src: `${srcPrefix}${file.key}`
-    };
+const createFileFromStorage = async (context, file?: FileType): Promise<FileWithSrcType> => {
+    if (!file || !file.key) {
+        return null;
+    }
+    try {
+        const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+        return {
+            ...file,
+            src: `${srcPrefix}${file.key}`
+        };
+    } catch (ex) {
+        return null;
+    }
 };
 
-const createFileForDatabase = (file?: FileType): FileDbType => {
+const createFileForStorage = (file?: FileType): FileDbType => {
     if (!file || !file.id || !file.key) {
-        throw new Error("Missing file information in the elements data.image path.");
+        return null;
     }
     return {
         __type: "file",
@@ -36,15 +43,21 @@ export default [
         type: "pb-page-element-modifier",
         elementType: "*",
         getStorageValue({ element }) {
-            const file = element?.data?.settings?.background?.image?.file;
-            element.data.settings.background.image.file = createFileForDatabase(file);
-        },
-        async setStorageValue({ element, context }) {
-            const file = element?.data?.settings?.background?.image?.file;
+            const file = createFileForStorage(element?.data?.settings?.background?.image?.file);
             if (!file) {
                 return;
             }
-            element.data.settings.background.image.file = await createFileValue(context, file);
+            element.data.settings.background.image.file = file;
+        },
+        async setStorageValue({ element, context }) {
+            const file = await createFileFromStorage(
+                context,
+                element?.data?.settings?.background?.image?.file
+            );
+            if (!file) {
+                return;
+            }
+            element.data.settings.background.image.file = file;
         }
     },
     {
@@ -53,14 +66,17 @@ export default [
         elementType: "image",
         getStorageValue({ element }) {
             const file = element?.data?.image?.file;
-            element.data.image.file = createFileForDatabase(file);
-        },
-        async setStorageValue({ element, context }) {
-            const file = element?.data?.image?.file;
             if (!file) {
                 return;
             }
-            element.data.image.file = await createFileValue(context, file);
+            element.data.image.file = createFileForStorage(file);
+        },
+        async setStorageValue({ element, context }) {
+            const file = await createFileFromStorage(context, element?.data?.image?.file);
+            if (!file) {
+                return;
+            }
+            element.data.image.file = file;
         }
     }
 ];
