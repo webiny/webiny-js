@@ -1,17 +1,33 @@
-import { set, get } from "lodash";
-
-const getGetFileResolverPlugin = context => {
-    const plugin = context.plugins.byName("pb-resolver-get-page-content-file");
-    if (!plugin) {
-        throw Error(`Resolver plugin "pb-resolver-get-page-content-file" is not configured!`);
-    }
-    return plugin;
+type FileType = {
+    id?: string;
+    key?: string;
 };
 
-const createImageSrc = async (context, key) => {
-    const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+type FileWithSrcType = FileType & { src: string };
 
-    return `${srcPrefix}${key}`;
+type FileDbType = {
+    __type: "file";
+    id: string;
+    key: string;
+};
+
+const createFileValue = async (context, file?: FileType): Promise<FileWithSrcType> => {
+    const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+    return {
+        ...file,
+        src: `${srcPrefix}${file.key}`
+    };
+};
+
+const createFileForDatabase = (file?: FileType): FileDbType => {
+    if (!file || !file.id || !file.key) {
+        throw new Error("Missing file information in the elements data.image path.");
+    }
+    return {
+        __type: "file",
+        id: file.id,
+        key: file.key
+    };
 };
 
 export default [
@@ -20,20 +36,15 @@ export default [
         type: "pb-page-element-modifier",
         elementType: "*",
         getStorageValue({ element }) {
-            const file = get(element, "data.settings.background.image.file.id");
-            if (file) {
-                set(element, "data.settings.background.image.file", file);
-            }
+            const file = element?.data?.settings?.background?.image?.file;
+            element.data.settings.background.image.file = createFileForDatabase(file);
         },
         async setStorageValue({ element, context }) {
-            const id = get(element, "data.settings.background.image.file");
-            if (id) {
-                const plugin = getGetFileResolverPlugin(context);
-                const file = await plugin.resolve({ context, id });
-                if (file) {
-                    set(element, "data.settings.background.image.file", file);
-                }
+            const file = element?.data?.settings?.background?.image?.file;
+            if (!file) {
+                return;
             }
+            element.data.settings.background.image.file = await createFileValue(context, file);
         }
     },
     {
@@ -42,25 +53,14 @@ export default [
         elementType: "image",
         getStorageValue({ element }) {
             const file = element?.data?.image?.file;
-            if (!file) {
-                throw new Error("Missing file information in the elements data.image path.");
-            }
-            element.data.image.file = {
-                __type: "file",
-                id: file.id,
-                key: file.key
-            };
+            element.data.image.file = createFileForDatabase(file);
         },
         async setStorageValue({ element, context }) {
             const file = element?.data?.image?.file;
-            if (!file || !file.key) {
+            if (!file) {
                 return;
             }
-            const src = await createImageSrc(context, file.key);
-            element.data.image.file = {
-                ...file,
-                src
-            };
+            element.data.image.file = await createFileValue(context, file);
         }
     }
 ];
