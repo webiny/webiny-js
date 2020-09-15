@@ -25,7 +25,9 @@ import {
     createUnpublishMutation
 } from "./useContentHandler/graphql";
 
-export default ({ database, type = "manage" } = {}) => {
+export default (
+    { database, type = "manage", plugins = [] } = { database: null, type: "manage", plugins: [] }
+) => {
     if (!database) {
         database = new Database();
     }
@@ -39,8 +41,13 @@ export default ({ database, type = "manage" } = {}) => {
         }),
         i18n,
         mockLocalesPlugins(),
-        headlessCmsHandler(),
-        dataManagerPlugins()
+        headlessCmsHandler({
+            server: {
+                introspection: true
+            }
+        }),
+        dataManagerPlugins(),
+        ...plugins
     );
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
