@@ -38,7 +38,6 @@ export default ({ getIdentityData = defaultGetIdentityData, ...amplify }: Cognit
             type: "apollo-link",
             createLink() {
                 return setContext(async (_, { headers }) => {
-
                     let user;
                     try {
                         user = await Auth.currentSession();

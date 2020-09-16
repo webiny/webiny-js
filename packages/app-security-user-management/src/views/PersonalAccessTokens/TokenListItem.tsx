@@ -42,7 +42,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
             });
         }
 
-        const newPATs = data.personalAccessTokens.filter((crtPAT) => crtPAT.id != PAT.id);
+        const newPATs = data.personalAccessTokens.filter(crtPAT => crtPAT.id != PAT.id);
 
         setValue("personalAccessTokens", newPATs);
         showSnackbar(t`Token deleted successfully!`);
@@ -68,7 +68,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
             });
         }
 
-        const newPATs = data.personalAccessTokens.map((crtPAT) =>
+        const newPATs = data.personalAccessTokens.map(crtPAT =>
             crtPAT !== PAT
                 ? crtPAT
                 : {
@@ -93,7 +93,7 @@ const TokenListItem = ({ setFormIsLoading, data, setValue, PAT }) => {
                     <Input
                         label={t`Token name`}
                         value={tokenName}
-                        onChange={(newName) => setTokenName(newName.slice(0, 100))}
+                        onChange={newName => setTokenName(newName.slice(0, 100))}
                     />
                 </DialogContent>
                 <DialogActions>

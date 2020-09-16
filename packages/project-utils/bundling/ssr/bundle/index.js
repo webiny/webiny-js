@@ -31,7 +31,7 @@ module.exports.bundle = ({ entry, output, ...options }) => {
                     return reject(err);
                 }
 
-                let errMessage = err.message;
+                const errMessage = err.message;
 
                 messages = formatWebpackMessages({
                     errors: [errMessage],

@@ -7,7 +7,7 @@ const checkPermission = (permission: any) => {
         return async (parent, args, context, info) => {
             const perms = await context.security.getPermissions();
 
-            if (perms.find((p) => minimatch(permission, p.name))) {
+            if (perms.find(p => minimatch(permission, p.name))) {
                 return resolver(parent, args, context, info);
             }
 

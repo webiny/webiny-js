@@ -107,9 +107,11 @@ class Component {
         await childComponentInstance.init();
 
         // disable context methods for child components
+        /* eslint-disable @typescript-eslint/no-empty-function */
         childComponentInstance.context.log = () => {};
         childComponentInstance.context.status = () => {};
         childComponentInstance.context.output = () => {};
+        /* eslint-enable @typescript-eslint/no-empty-function */
 
         return childComponentInstance;
     }

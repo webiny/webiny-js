@@ -84,7 +84,7 @@ const Element = (props: ElementProps) => {
             highlightElement({ element: element.id });
         }
     });
-
+    /* eslint-disable react/display-name */
     const renderDraggable = useHandler(props, ({ element }) => ({ drag }) => {
         return (
             <div ref={drag} className={"type " + typeStyle}>
