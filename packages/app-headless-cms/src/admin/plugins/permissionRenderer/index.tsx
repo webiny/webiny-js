@@ -13,9 +13,26 @@ import { ContentModelPermission } from "@webiny/app-headless-cms/admin/plugins/p
 import { ContentGroupPermission } from "./ContentGroupPermission";
 import { ContentEntryPermission } from "./ContentEntryPermission";
 import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
-import get from "lodash.get";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
+
+const createPermissionsArray = permissionsMap => {
+    const permissions: SecurityPermission[] = [];
+
+    if (!permissionsMap) {
+        return permissions;
+    }
+
+    const values = Object.values(permissionsMap);
+
+    for (let i = 0; i < values.length; i++) {
+        const perm = values[i];
+        if (perm.name) {
+            permissions.push(perm);
+        }
+    }
+    return permissions;
+};
 
 const gridClass = css({
     padding: "0px !important"
@@ -80,8 +97,9 @@ const reducer = (currentState, action) => {
                 permissions: { ...currentState.permissions, [key]: value }
             };
         case actionTypes.SYNC_PERMISSIONS:
-            const hasFullAccess = action.payload.some(perm => perm.name === "*");
-            const cmsPermissions = action.payload.filter(perm => perm.name.startsWith("cms"));
+            const perms = createPermissionsArray(action.payload);
+            const hasFullAccess = perms.some(perm => perm.name === "*");
+            const cmsPermissions = perms.filter(perm => perm.name.startsWith("cms"));
 
             if (cmsPermissions.length === 0 && !hasFullAccess) {
                 return currentState;
@@ -140,35 +158,19 @@ const PermissionLevel = ({ value, onChange }) => {
         { permissionLevel, showCustomPermission, permission, permissions, synced },
         dispatch
     ] = useReducer(reducer, initialState);
-    // console.log("%cSTATE", "color: cyan; fontSize: 24px");
-    // console.log({ permissionLevel, showCustomPermission, permission, permissions });
 
     useEffect(() => {
         if (value && !synced) {
             dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: value });
         }
-    }, [value, permission]);
+    }, [value, synced]);
 
     // TODO: Adding a "Submit/Save" button will simplify things here.
     useEffect(() => {
-        // Need to set permissions
-        let cmsPermissions = [];
-
-        if (permissions) {
-            const customPermissions = Object.values(
-                permissions
-            ).filter((perm: SecurityPermission) => Boolean(perm && perm.name));
-
-            if (customPermissions.length) {
-                cmsPermissions = [...customPermissions];
-            } else {
-                cmsPermissions.push(permission);
-            }
-        }
-
-        // If we have anything to set
-        if (cmsPermissions.length) {
-            onChange(cmsPermissions);
+        if (Object.keys(permissions).length) {
+            onChange({ ...value, ...permissions, [cmsPermission]: initialState.permission });
+        } else if (permission.name) {
+            onChange({ ...value, [permission.name]: permission });
         }
     }, [permission, permissions]);
 
@@ -235,9 +237,8 @@ export default () => [
     {
         type: "admin-app-permissions-renderer",
         name: "admin-app-permissions-renderer-cms",
-        render({ key, ...props }) {
-            // permissions: []
-            return (
+        render({ key, id, ...props }) {
+                        return (
                 <AccordionItem
                     key={key}
                     icon={<HeadlessCMSIcon />}
@@ -245,11 +246,7 @@ export default () => [
                     description={"Permissions for headless cms"}
                 >
                     {/* We use key to unmount the component */}
-                    <PermissionLevel
-                        key={get(props, "form.state.data.id", key)}
-                        {...props}
-
-                    />
+                    <PermissionLevel key={id} {...props} />
                 </AccordionItem>
             );
         }

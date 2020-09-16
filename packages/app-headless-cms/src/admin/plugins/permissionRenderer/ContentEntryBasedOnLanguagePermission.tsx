@@ -56,7 +56,7 @@ const reducer = (currentState, action) => {
 
             let isCustom = false;
             if (currentLocales.length) {
-                permissionLevel = permissionLevel + "#custom";
+                permissionLevel = cmsContentEntryLocales + "#custom";
                 isCustom = true;
             } else {
                 permissionLevel = cmsContentEntryLocales;
@@ -79,7 +79,7 @@ const reducer = (currentState, action) => {
 };
 
 const initialState = {
-    permissionLevel: "#",
+    permissionLevel: cmsContentEntryLocales,
     showCustomPermission: false,
     synced: false
 };
@@ -95,10 +95,10 @@ export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
     const currentLocales = get(value, "locales", []);
 
     useEffect(() => {
-        if (currentLocales && !synced) {
+        if (currentLocales && currentLocales.length && !synced) {
             dispatch({ type: actionTypes.SYNC_PERMISSIONS, payload: currentLocales });
         }
-    }, [currentLocales, permissionLevel]);
+    }, [currentLocales, synced]);
 
     const i18N = useI18N();
 

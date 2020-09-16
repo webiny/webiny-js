@@ -17,8 +17,43 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
+import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import get from "lodash.get";
 
 const t = i18n.ns("app-security/admin/groups/form");
+
+export const createPermissionsMap = (permissions: SecurityPermission[]) => {
+    const permissionsMap = {};
+    if (!permissions || !Array.isArray(permissions)) {
+        return permissionsMap;
+    }
+
+    for (let i = 0; i < permissions.length; i++) {
+        const perm = permissions[i];
+        if (perm.name) {
+            permissionsMap[perm.name] = perm;
+        }
+    }
+    return permissionsMap;
+};
+
+export const createPermissionsArray = permissionsMap => {
+    const permissions: SecurityPermission[] = [];
+
+    if (!permissionsMap) {
+        return permissions;
+    }
+
+    const values = Object.values(permissionsMap);
+
+    for (let i = 0; i < values.length; i++) {
+        const perm = values[i];
+        if (perm.name) {
+            permissions.push(perm);
+        }
+    }
+    return permissions;
+};
 
 const GroupForm = () => {
     const { form: crudForm } = useCrud();
@@ -26,6 +61,11 @@ const GroupForm = () => {
     const permissionPlugins = plugins.byType<AdminAppPermissionRenderer>(
         "admin-app-permissions-renderer"
     );
+    // From API to UI
+    crudForm.data = {
+        ...crudForm.data,
+        permissions: createPermissionsMap(crudForm.data.permissions)
+    };
 
     return (
         <Form {...crudForm}>
@@ -64,7 +104,16 @@ const GroupForm = () => {
                                         {props => (
                                             <Accordion elevation={0}>
                                                 {permissionPlugins.map(pl =>
-                                                    pl.render({ ...props, key: pl.name })
+                                                    pl.render({
+                                                        key: pl.name,
+                                                        id: get(
+                                                            props,
+                                                            "form.state.data.id",
+                                                            pl.name
+                                                        ),
+                                                        value: props.value,
+                                                        onChange: props.onChange
+                                                    })
                                                 )}
                                             </Accordion>
                                         )}
