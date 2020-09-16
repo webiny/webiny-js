@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* use the newly introduced `skipExisting` plugin registration option ([789c749](https://github.com/webiny/webiny-js/commit/789c7497c70e8d891fba878aa42fa539f78cefb0))
+
+
+
+
+
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/app-page-builder
