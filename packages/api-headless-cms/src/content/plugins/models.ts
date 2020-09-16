@@ -18,6 +18,20 @@ import {
 
 export default () => {
     async function apply(context: CmsContext) {
+        if (context.modelsInit) {
+            await context.modelsInit.promise;
+            return;
+        }
+
+        context.modelsInit = {
+            resolve: null,
+            promise: null
+        };
+
+        context.modelsInit.promise = new Promise(resolve => {
+            context.modelsInit.resolve = resolve;
+        });
+
         const driver = context.commodo && context.commodo.driver;
 
         if (!driver) {
@@ -130,6 +144,8 @@ export default () => {
         for (let i = 0; i < afterContentModelsPlugins.length; i++) {
             await afterContentModelsPlugins[i].apply(context);
         }
+
+        context.modelsInit.resolve();
     }
 
     return [
