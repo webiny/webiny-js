@@ -13,7 +13,7 @@ export default ({ createBase }) => {
             system: boolean(),
             permissions: object({
                 list: true,
-                value: [],
+                value: []
                 // TODO: add a custom validation
             })
         })),

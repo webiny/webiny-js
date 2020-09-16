@@ -238,7 +238,7 @@ export default () => [
         type: "admin-app-permissions-renderer",
         name: "admin-app-permissions-renderer-cms",
         render({ key, id, ...props }) {
-                        return (
+            return (
                 <AccordionItem
                     key={key}
                     icon={<HeadlessCMSIcon />}
