@@ -1,203 +1,202 @@
 {
 	"private": true,
-	"workspaces": {
-		"packages": [
-			"packages/*",
-			"apps/*",
-			"api/apolloGateway",
-			"api/settingsManager",
-			"api/databaseProxy",
-			"api/files/*",
-			"api/formBuilder",
-			"api/cms/*",
-			"api/i18n/*",
-			"api/pageBuilder",
-			"api/security/*",
-			"packages/app-plugin-page-builder-menu-element"
-		],
-		"nohoist": [
-			"**/inquirer/**",
-			"**/mime/**",
-			"**/@types/mocha",
-			"**/semver",
-			"**/slate",
-			"**/slate-react"
-		]
-	},
-	"contributors": [
-		"Pavel Denisjuk <pavel@webiny.com>",
-		"Sven Al Hamad <sven@webiny.com>",
-		"Adrian Smijulj <adrian@webiny.com>"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git"
-	},
-	"devDependencies": {
-		"@4tw/cypress-drag-drop": "^1.4.0",
-		"@babel/cli": "^7.0.0",
-		"@babel/core": "^7.0.0",
-		"@commitlint/cli": "^8.3.5",
-		"@commitlint/config-conventional": "^8.3.4",
-		"@shelf/jest-mongodb": "^1.1.0",
-		"@testing-library/cypress": "^5.0.2",
-		"@types/fs-extra": "^8.0.1",
-		"@types/jest": "^24.0.24",
-		"@types/jquery": "^3.3.31",
-		"@types/node": "^12.12.22",
-		"@types/react": "^16.9.17",
-		"@types/react-dom": "^16.9.4",
-		"@types/react-redux": "^7.1.5",
-		"@typescript-eslint/eslint-plugin": "^2.12.0",
-		"@typescript-eslint/parser": "^2.12.0",
-		"adio": "^1.0.1",
-		"babel-core": "^7.0.0-bridge.0",
-		"babel-eslint": "^9.0.0-beta.3",
-		"babel-jest": "^24.9.0",
-		"bufferutil": "^4.0.1",
-		"chalk": "^2.4.1",
-		"commitizen": "^2.10.1",
-		"contreebutors": "^1.1.3",
-		"cross-env": "^5.2.0",
-		"cypress": "^5.0.0",
-		"cz-customizable": "^5.2.0",
-		"empty": "^0.10.1",
-		"env-ci": "2.0.1",
-		"eslint": "^6.8.0",
-		"eslint-config-standard": "^14.1.0",
-		"eslint-import-resolver-babel-module": "^5.1.0",
-		"eslint-plugin-import": "^2.19.1",
-		"eslint-plugin-jest": "^23.1.1",
-		"eslint-plugin-node": "^10.0.0",
-		"eslint-plugin-promise": "^4.2.1",
-		"eslint-plugin-react": "^7.17.0",
-		"eslint-plugin-standard": "^4.0.1",
-		"eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
-		"execa": "^1.0.0",
-		"flatten": "^1.0.2",
-		"fs-extra": "^7.0.0",
-		"get-stream": "^3.0.0",
-		"get-yarn-workspaces": "^1.0.2",
-		"git-cz": "^1.7.1",
-		"glob": "^7.1.3",
-		"globby": "^8.0.1",
-		"got": "^9.6.0",
-		"husky": "^4.2.5",
-		"inquirer": "^7.0.0",
-		"inquirer-autocomplete-prompt": "^1.0.1",
-		"inquirer-checkbox-plus-prompt": "^1.0.1",
-		"inquirer-maxlength-input-prompt": "^1.0.0",
-		"jest": "^24.9.0",
-		"jest-extended": "^0.11.2",
-		"lerna": "^3.21.0",
-		"lint-staged": "^7.2.2",
-		"listr": "^0.14.3",
-		"load-json-file": "^6.2.0",
-		"lodash": "^4.17.11",
-		"longest": "^2.0.1",
-		"minimatch": "^3.0.4",
-		"node-fetch": "^2.6.0",
-		"prettier": "^1.14.2",
-		"rimraf": "^2.6.2",
-		"rxjs": "^6.5.5",
-		"semver": "^6.3.0",
-		"serverless": "^1.53.0",
-		"serverless-dotenv-plugin": "^2.1.1",
-		"serverless-offline": "^5.10.1",
-		"source-map-support": "^0.5.0",
-		"ts-jest": "^24.2.0",
-		"typescript": "3.7.4",
-		"utf-8-validate": "^5.0.2",
-		"webpack": "^4.39.2",
-		"write-json-file": "^4.2.0",
-		"yargs": "^12.0.1"
-	},
-	"optionalDependencies": {
-		"fsevents": "^2.0.7"
-	},
-	"scripts": {
-		"eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
-		"build": "lerna run build --stream",
-		"build:components": "lerna run build --scope=@webiny/serverless-* --stream",
-		"build:apps": "lerna run build --scope=@webiny/app* --stream",
-		"build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
-		"build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
-		"build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
-		"watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
-		"watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
-		"watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
-		"clear-dist": "yarn rimraf packages/*/dist",
-		"contributors:add": "contreebutors add --username",
-		"contributors:generate": "contreebutors render",
-		"commit": "node ./scripts/commitizen.js",
-		"commit:no-verify": "yarn commit --no-verify",
-		"commit:verify": "yarn lint-staged",
-		"commodo-versions": "node ./scripts/commodoVersions.js",
-		"webiny-versions": "node ./scripts/webinyVersions.js",
-		"release-latest": "node ./scripts/releaseLatest.js",
-		"lint-staged": "lint-staged",
-		"postinstall": "node ./scripts/linkPackages.js",
-		"prepublishOnly": "node scripts/prepublishOnly.js",
-		"prettier": "prettier --config .prettierrc.js --write",
-		"prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
-		"setup-repo": "node scripts/setupRepo",
-		"setup-env-files": "node scripts/setupEnvFiles",
-		"setup-ci-cypress": "node scripts/setupCiCypress",
-		"setup-cypress": "node scripts/setupCypress",
-		"test": "jest --config jest.config.js",
-		"validate-packages": "node scripts/validatePackages.js",
-		"webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
-	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "lint-staged",
-			"commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-		}
-	},
-	"lint-staged": {
-		"**/*.js": [
-			"adio",
-			"prettier --config .prettierrc.js --write",
-			"eslint",
-			"git add",
-			"jest --config jest.config.js --findRelatedTests"
-		]
-	},
-	"yargs": {
-		"populate--": true
-	},
-	"config": {
-		"commitizen": {
-			"cliPath": "node_modules/commitizen",
-			"path": "./scripts/cz-adapter"
-		}
-	},
-	"commitlint": {
-		"extends": [
-			"@commitlint/config-conventional"
-		],
-		"rules": {
-			"type-enum": [
-				2,
-				"always",
-				[
-					"feat",
-					"fix",
-					"docs",
-					"style",
-					"refactor",
-					"test",
-					"build",
-					"ci",
-					"chore",
-					"revert",
-					"merge",
-					"wip"
-				]
-			]
-		}
-	},
-	"resolutions": {
-		"pretty-format": "25.5.0"
-	}
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "apps/*",
+      "api/apolloGateway",
+      "api/settingsManager",
+      "api/databaseProxy",
+      "api/files/*",
+      "api/formBuilder",
+      "api/cms/*",
+      "api/i18n/*",
+      "api/pageBuilder",
+      "api/security/*"
+    ],
+    "nohoist": [
+      "**/inquirer/**",
+      "**/mime/**",
+      "**/@types/mocha",
+      "**/semver",
+      "**/slate",
+      "**/slate-react"
+    ]
+  },
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "devDependencies": {
+    "@4tw/cypress-drag-drop": "^1.4.0",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@commitlint/cli": "^8.3.5",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@shelf/jest-mongodb": "^1.1.0",
+    "@testing-library/cypress": "^5.0.2",
+    "@types/fs-extra": "^8.0.1",
+    "@types/jest": "^24.0.24",
+    "@types/jquery": "^3.3.31",
+    "@types/node": "^12.12.22",
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "@types/react-redux": "^7.1.5",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
+    "adio": "^1.0.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^9.0.0-beta.3",
+    "babel-jest": "^24.9.0",
+    "bufferutil": "^4.0.1",
+    "chalk": "^2.4.1",
+    "commitizen": "^2.10.1",
+    "contreebutors": "^1.1.3",
+    "cross-env": "^5.2.0",
+    "cypress": "^5.0.0",
+    "cz-customizable": "^5.2.0",
+    "empty": "^0.10.1",
+    "env-ci": "2.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-import-resolver-babel-module": "^5.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.17.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
+    "execa": "^1.0.0",
+    "flatten": "^1.0.2",
+    "fs-extra": "^7.0.0",
+    "get-stream": "^3.0.0",
+    "get-yarn-workspaces": "^1.0.2",
+    "git-cz": "^1.7.1",
+    "glob": "^7.1.3",
+    "globby": "^8.0.1",
+    "got": "^9.6.0",
+    "husky": "^4.2.5",
+    "inquirer": "^7.0.0",
+    "inquirer-autocomplete-prompt": "^1.0.1",
+    "inquirer-checkbox-plus-prompt": "^1.0.1",
+    "inquirer-maxlength-input-prompt": "^1.0.0",
+    "jest": "^24.9.0",
+    "jest-extended": "^0.11.2",
+    "lerna": "^3.21.0",
+    "lint-staged": "^7.2.2",
+    "listr": "^0.14.3",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.11",
+    "longest": "^2.0.1",
+    "minimatch": "^3.0.4",
+    "node-fetch": "^2.6.0",
+    "prettier": "^1.14.2",
+    "rimraf": "^2.6.2",
+    "rxjs": "^6.5.5",
+    "semver": "^6.3.0",
+    "serverless": "^1.53.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-offline": "^5.10.1",
+    "source-map-support": "^0.5.0",
+    "ts-jest": "^24.2.0",
+    "typescript": "3.7.4",
+    "utf-8-validate": "^5.0.2",
+    "webpack": "^4.39.2",
+    "write-json-file": "^4.2.0",
+    "yargs": "^12.0.1"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.0.7"
+  },
+  "scripts": {
+    "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
+    "build": "lerna run build --stream",
+    "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
+    "build:apps": "lerna run build --scope=@webiny/app* --stream",
+    "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
+    "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
+    "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
+    "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
+    "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
+    "watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
+    "clear-dist": "yarn rimraf packages/*/dist",
+    "contributors:add": "contreebutors add --username",
+    "contributors:generate": "contreebutors render",
+    "commit": "node ./scripts/commitizen.js",
+    "commit:no-verify": "yarn commit --no-verify",
+    "commit:verify": "yarn lint-staged",
+    "commodo-versions": "node ./scripts/commodoVersions.js",
+    "webiny-versions": "node ./scripts/webinyVersions.js",
+    "release-latest": "node ./scripts/releaseLatest.js",
+    "lint-staged": "lint-staged",
+    "postinstall": "node ./scripts/linkPackages.js",
+    "prepublishOnly": "node scripts/prepublishOnly.js",
+    "prettier": "prettier --config .prettierrc.js --write",
+    "prettier:check": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --check --config .prettierrc.js",
+    "setup-repo": "node scripts/setupRepo",
+    "setup-env-files": "node scripts/setupEnvFiles",
+    "setup-ci-cypress": "node scripts/setupCiCypress",
+    "setup-cypress": "node scripts/setupCypress",
+    "test": "jest --config jest.config.js",
+    "validate-packages": "node scripts/validatePackages.js",
+    "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "adio",
+      "prettier --config .prettierrc.js --write",
+      "eslint",
+      "git add",
+      "jest --config jest.config.js --findRelatedTests"
+    ]
+  },
+  "yargs": {
+    "populate--": true
+  },
+  "config": {
+    "commitizen": {
+      "cliPath": "node_modules/commitizen",
+      "path": "./scripts/cz-adapter"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "type-enum": [
+        2,
+        "always",
+        [
+          "feat",
+          "fix",
+          "docs",
+          "style",
+          "refactor",
+          "test",
+          "build",
+          "ci",
+          "chore",
+          "revert",
+          "merge",
+          "wip"
+        ]
+      ]
+    }
+  },
+  "resolutions": {
+    "pretty-format": "25.5.0"
+  }
 }
