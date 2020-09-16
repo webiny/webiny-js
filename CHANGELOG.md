@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add equality check for id `idValidation` ([5e7ee98](https://github.com/webiny/webiny-js/commit/5e7ee98879e52a799d86a7a8ddd6e0b8baef5f84))
+* **api-headless-cms:** trim `fieldId` before save ([173db34](https://github.com/webiny/webiny-js/commit/173db349bfb2fb1f08fc51345cf5bd01732c9851))
+* **app-headless-cms:** add `fieldIdValidator` ([613ccb8](https://github.com/webiny/webiny-js/commit/613ccb870c8900bd438eb986ea73039ac8c776d5))
+* **app-headless-cms:** trim `fieldId` beforeChange ([386be63](https://github.com/webiny/webiny-js/commit/386be63ce2af418d68d386abaf3217898538718b))
+* add `tsx` extension ([1e6d44c](https://github.com/webiny/webiny-js/commit/1e6d44c8c5624055e64805f5bdde5bee3bb70333))
+* improve error messaging ([e4fcf3b](https://github.com/webiny/webiny-js/commit/e4fcf3b880f2afc87751e75ad34423798b20e5f3))
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 

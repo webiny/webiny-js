@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* improve error messaging ([e4fcf3b](https://github.com/webiny/webiny-js/commit/e4fcf3b880f2afc87751e75ad34423798b20e5f3))
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-node-package

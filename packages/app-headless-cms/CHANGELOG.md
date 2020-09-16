@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add `fieldIdValidator` ([613ccb8](https://github.com/webiny/webiny-js/commit/613ccb870c8900bd438eb986ea73039ac8c776d5))
+* **app-headless-cms:** trim `fieldId` beforeChange ([386be63](https://github.com/webiny/webiny-js/commit/386be63ce2af418d68d386abaf3217898538718b))
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

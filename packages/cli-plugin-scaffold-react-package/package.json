@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-react-package",
-  "version": "4.11.0-beta.1",
+  "version": "4.11.0",
   "description": "Generate a React package similar to our 'app-' packages",
   "main": "index.js",
   "repository": {
