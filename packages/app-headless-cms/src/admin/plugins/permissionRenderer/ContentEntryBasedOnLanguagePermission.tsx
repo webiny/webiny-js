@@ -136,7 +136,7 @@ export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
                             error: null,
                             list: i18N
                                 .getLocales()
-                                .map(locale => ({ ...locale, name: locale.code }))
+                                .map(locale => ({ id: locale.code, name: locale.code }))
                         }}
                     />
                 </Cell>

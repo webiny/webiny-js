@@ -28,6 +28,7 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
             data {
                 id
                 name
+                slug
                 totalContentModels
             }
             meta {

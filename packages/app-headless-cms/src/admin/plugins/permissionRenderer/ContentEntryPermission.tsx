@@ -169,14 +169,21 @@ export const ContentEntryPermission = ({ value, setValue }) => {
         error: contentModelError,
         loading: contentModelLoading
     } = useQuery(LIST_CONTENT_MODELS);
-    const contentModels = get(contentModelData, "listContentModels.data", []);
+    const contentModels = get(contentModelData, "listContentModels.data", []).map(contentModel => ({
+        id: contentModel.modelId,
+        name: contentModel.name
+    }));
 
     const {
         data: contentModelGroupData,
         error: contentModelGroupError,
         loading: contentModelGroupLoading
     } = useQuery(LIST_CONTENT_MODEL_GROUPS);
-    const contentModelGroups = get(contentModelGroupData, "contentModelGroups.data", []);
+    const contentModelGroups = get(
+        contentModelGroupData,
+        "contentModelGroups.data",
+        []
+    ).map(contentModelGroup => ({ id: contentModelGroup.slug, name: contentModelGroup.name }));
 
     const updatePermission = useCallback(
         (key, value) =>

@@ -132,7 +132,10 @@ export const ContentModelPermission = ({ value, setValue }) => {
     }, [permission]);
 
     const { data, error, loading } = useQuery(LIST_CONTENT_MODELS);
-    const contentModels = get(data, "listContentModels.data", []);
+    const contentModels = get(data, "listContentModels.data", []).map(item => ({
+        id: item.modelId,
+        name: item.name
+    }));
 
     return (
         <Fragment>

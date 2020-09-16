@@ -8,6 +8,11 @@ import { ApolloError } from "apollo-client";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
+export type PermissionSelectorCheckList = {
+    id: string;
+    name: string;
+};
+
 export type PermissionSelectorProps = {
     value: any;
     setValue: (key: string, value: any) => void;
@@ -15,7 +20,7 @@ export type PermissionSelectorProps = {
     dataList: {
         loading: boolean;
         error: ApolloError;
-        list: any[];
+        list: PermissionSelectorCheckList[];
     };
 };
 
