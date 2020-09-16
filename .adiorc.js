@@ -34,7 +34,8 @@ module.exports = {
     ignore: {
         src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk"],
         dependencies: ["@babel/runtime"],
-        devDependencies: true
+        devDependencies: true,
+        peerDependencies: true
     },
     ignoreDirs: ["node_modules/", "dist/", "build/"],
     packages: [
