@@ -62,7 +62,9 @@ module.exports = [
                     throw new Error(`Destination folder ${fullModuleLocation} already exists.`);
                 }
 
-                oraSpinner.start(`Creating new Admin app module files in ${green(fullModuleLocation)}...`);
+                oraSpinner.start(
+                    `Creating new Admin app module files in ${green(fullModuleLocation)}...`
+                );
                 await wait();
 
                 await fs.mkdirSync(fullModuleLocation, { recursive: true });

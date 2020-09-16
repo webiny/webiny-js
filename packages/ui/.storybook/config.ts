@@ -9,7 +9,7 @@ function loadStories() {
         withInfo({
             inline: true,
             header: false,
-            source: false,
+            source: false
             // TableComponent: () => "TABLICA"
         })
     );

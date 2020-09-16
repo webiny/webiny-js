@@ -1,5 +1,8 @@
-**/node_modules
-**/dist
+**/node_modules/
+**/dist/
+**/build/
+**/.out/
 **/__tests__
+**/*.d.ts
 idea.js
 scripts

@@ -154,7 +154,9 @@ module.exports = [
                 });
 
                 // Update root package.json - update "workspaces.packages" section.
-                oraSpinner.start(`Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`);
+                oraSpinner.start(
+                    `Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`
+                );
                 await wait();
 
                 const rootPackageJsonPath = path.join(projectRootPath, "package.json");
@@ -166,7 +168,9 @@ module.exports = [
 
                 oraSpinner.stopAndPersist({
                     symbol: green("✔"),
-                    text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                    text: `Workspace ${green(input.location)} added in root ${green(
+                        `package.json`
+                    )}.`
                 });
 
                 // Update the package's name
@@ -252,7 +256,12 @@ module.exports = [
                     .replace("/", "");
 
                 console.log(`The next steps:`);
-                console.log(indentString(`1. Edit existing and create new plugins in ${green(pluginsLocation)}.`, 2));
+                console.log(
+                    indentString(
+                        `1. Edit existing and create new plugins in ${green(pluginsLocation)}.`,
+                        2
+                    )
+                );
                 console.log(
                     indentString(
                         `2. From project root, run ${green(
@@ -271,8 +280,9 @@ module.exports = [
                         2
                     )
                 );
-                console.log(`Learn more about API development at https://docs.webiny.com/docs/api-development/introduction`);
-
+                console.log(
+                    `Learn more about API development at https://docs.webiny.com/docs/api-development/introduction`
+                );
             }
         }
     }

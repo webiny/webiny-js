@@ -11,13 +11,10 @@ async function getDatabase(name) {
         return db;
     }
 
-    const client = await MongoClient.connect(
-        process.env.MONGODB_SERVER,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        }
-    );
+    const client = await MongoClient.connect(process.env.MONGODB_SERVER, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
 
     return client.db(name);
 }

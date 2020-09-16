@@ -36,7 +36,7 @@ export default ({ region, userPoolId }) => {
                         .adminGetUser({ Username: user.email, UserPoolId: userPoolId })
                         .promise();
 
-                    user.id = idpUser.UserAttributes.find((attr) => attr.Name === "sub").Value;
+                    user.id = idpUser.UserAttributes.find(attr => attr.Name === "sub").Value;
                     return;
                 } catch {
                     // User does not exist
@@ -62,7 +62,7 @@ export default ({ region, userPoolId }) => {
                 };
 
                 const { User } = await cognito.adminCreateUser(params).promise();
-                user.id = User.Attributes.find((attr) => attr.Name === "sub").Value;
+                user.id = User.Attributes.find(attr => attr.Name === "sub").Value;
 
                 const verify = {
                     UserPoolId: userPoolId,
