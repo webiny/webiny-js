@@ -88,7 +88,6 @@ const ToolbarDrawer = connect<any, any, any>(null, { deactivatePlugin })(
         return (
             <DrawerContainer open={active}>
                 <Drawer dismissible open={active} className={drawerStyle}>
-                    <h1>HELLO</h1>
                     <DrawerContent>{children}</DrawerContent>
                 </Drawer>
             </DrawerContainer>
