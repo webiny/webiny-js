@@ -13,7 +13,11 @@ const mocks = {
         data: {
             name: "Author",
             group: contentModelGroupId,
-            indexes: [{ fields: ["id"] }, { fields: ["uniqueSlug"] }, { fields: ["uniqueSlug", "title"] }],
+            indexes: [
+                { fields: ["id"] },
+                { fields: ["uniqueSlug"] },
+                { fields: ["uniqueSlug", "title"] }
+            ],
             fields: [
                 {
                     _id: "vqk-UApa0",

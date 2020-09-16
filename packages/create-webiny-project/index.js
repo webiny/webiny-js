@@ -308,7 +308,7 @@ async function createApp({ projectName, template, tag, log }) {
                             if (json.dependencies[name].startsWith("file:")) {
                                 return;
                             }
-                            
+
                             // Use version of @webiny/cli package (we have fixed package versioning)
                             json.dependencies[name] = `^` + latestVersion;
                         }
