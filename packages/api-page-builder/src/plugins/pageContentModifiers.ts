@@ -65,11 +65,11 @@ export default [
         type: "pb-page-element-modifier",
         elementType: "image",
         getStorageValue({ element }) {
-            const file = element?.data?.image?.file;
+            const file = createFileForStorage(element?.data?.image?.file);
             if (!file) {
                 return;
             }
-            element.data.image.file = createFileForStorage(file);
+            element.data.image.file = file;
         },
         async setStorageValue({ element, context }) {
             const file = await createFileFromStorage(context, element?.data?.image?.file);
