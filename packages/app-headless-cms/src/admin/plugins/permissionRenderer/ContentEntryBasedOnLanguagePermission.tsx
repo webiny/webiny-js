@@ -11,17 +11,17 @@ import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const cmsContentEntryLocales = "cms.contentEntries.locales";
+const PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE = "cms.manage.contentEntries.locales";
 
 const localesPermissionOptions = [
     {
         id: 0,
-        value: cmsContentEntryLocales,
+        value: PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE,
         label: "All Languages"
     },
     {
         id: 1,
-        value: cmsContentEntryLocales + "#custom",
+        value: PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE + "#custom",
         label: "Only specific languages"
     }
 ];
@@ -56,10 +56,10 @@ const reducer = (currentState, action) => {
 
             let isCustom = false;
             if (currentLocales.length) {
-                permissionLevel = cmsContentEntryLocales + "#custom";
+                permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE + "#custom";
                 isCustom = true;
             } else {
-                permissionLevel = cmsContentEntryLocales;
+                permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE;
                 isCustom = false;
             }
 
@@ -79,7 +79,7 @@ const reducer = (currentState, action) => {
 };
 
 const initialState = {
-    permissionLevel: cmsContentEntryLocales,
+    permissionLevel: PERMISSION_CMS_CONTENT_ENTRY_BY_LOCALE,
     showCustomPermission: false,
     synced: false
 };

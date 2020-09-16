@@ -9,7 +9,7 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const cmsContentModelGroupPermission = "cms.contentModelGroups.manage";
+const PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD = "cms.manage.contentModelGroup.crud";
 
 const contentGroupPermissionOptions = [
     {
@@ -19,12 +19,12 @@ const contentGroupPermissionOptions = [
     },
     {
         id: 1,
-        value: cmsContentModelGroupPermission,
+        value: PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD,
         label: "All content groups"
     },
     {
         id: 2,
-        value: cmsContentModelGroupPermission + "#own",
+        value: PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD + "#own",
         label: "Only the content groups they created"
     }
 ];
@@ -69,17 +69,17 @@ const reducer = (currentState, action) => {
         case actionTypes.SYNC_PERMISSIONS:
             const currentPermission = action.payload;
 
-            permissionLevel = cmsContentModelGroupPermission;
+            permissionLevel = PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD;
 
             if (currentPermission.own) {
-                permissionLevel = cmsContentModelGroupPermission + "#own";
+                permissionLevel = PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD + "#own";
             }
 
             return {
                 ...currentState,
                 synced: true,
                 permissionLevel,
-                permission: { ...currentPermission, name: cmsContentModelGroupPermission }
+                permission: { ...currentPermission, name: PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD }
             };
         case actionTypes.RESET:
             return {
@@ -100,7 +100,7 @@ export const ContentGroupPermission = ({ value, setValue }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { permission, permissionLevel, synced } = state;
 
-    const currentPermission = value[cmsContentModelGroupPermission];
+    const currentPermission = value[PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD];
 
     useEffect(() => {
         if (currentPermission && currentPermission.name && !synced) {
@@ -109,7 +109,7 @@ export const ContentGroupPermission = ({ value, setValue }) => {
     }, [currentPermission, permission]);
 
     useEffect(() => {
-        setValue(cmsContentModelGroupPermission, permission);
+        setValue(PERMISSION_CMS_CONTENT_MODEL_GROUP_CRUD, permission);
     }, [permission]);
 
     return (

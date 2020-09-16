@@ -47,7 +47,7 @@ const flexClass = css({
     alignItems: "center"
 });
 
-const cmsPermission = "cms.*";
+const PERMISSION_CMS_MANAGE_ALL = "cms.manage.*";
 
 const permissionLevelOptions = [
     {
@@ -57,12 +57,12 @@ const permissionLevelOptions = [
     },
     {
         id: 1,
-        value: cmsPermission,
+        value: PERMISSION_CMS_MANAGE_ALL,
         label: "Full Access"
     },
     {
         id: 2,
-        value: cmsPermission + "#custom",
+        value: PERMISSION_CMS_MANAGE_ALL + "#custom",
         label: "Custom Access"
     }
 ];
@@ -108,7 +108,7 @@ const reducer = (currentState, action) => {
             if (hasFullAccess) {
                 return {
                     ...currentState,
-                    permissionLevel: cmsPermission
+                    permissionLevel: PERMISSION_CMS_MANAGE_ALL
                 };
             }
 
@@ -116,11 +116,14 @@ const reducer = (currentState, action) => {
             let permissions = currentState.permissions;
             let showCustomPermission = currentState.showCustomPermission;
 
-            if (cmsPermissions.length === 1 && cmsPermissions[0].name === cmsPermission) {
-                permissionLevel = cmsPermission;
+            if (
+                cmsPermissions.length === 1 &&
+                cmsPermissions[0].name === PERMISSION_CMS_MANAGE_ALL
+            ) {
+                permissionLevel = PERMISSION_CMS_MANAGE_ALL;
             } else {
                 showCustomPermission = true;
-                permissionLevel = cmsPermission + "#custom";
+                permissionLevel = PERMISSION_CMS_MANAGE_ALL + "#custom";
                 const obj = {};
                 cmsPermissions.forEach(perm => {
                     obj[perm.name] = perm;
@@ -134,7 +137,7 @@ const reducer = (currentState, action) => {
                 permissionLevel,
                 permissions,
                 showCustomPermission,
-                permission: { ...currentState.permission, name: cmsPermission }
+                permission: { ...currentState.permission, name: PERMISSION_CMS_MANAGE_ALL }
             };
         case actionTypes.RESET:
             return {
@@ -168,7 +171,11 @@ const PermissionLevel = ({ value, onChange }) => {
     // TODO: Adding a "Submit/Save" button will simplify things here.
     useEffect(() => {
         if (Object.keys(permissions).length) {
-            onChange({ ...value, ...permissions, [cmsPermission]: initialState.permission });
+            onChange({
+                ...value,
+                ...permissions,
+                [PERMISSION_CMS_MANAGE_ALL]: initialState.permission
+            });
         } else if (permission.name) {
             onChange({ ...value, [permission.name]: permission });
         }

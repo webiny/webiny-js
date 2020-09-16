@@ -16,7 +16,7 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const cmsContentEntryPermission = "cms.contentEntries.manage";
+const PERMISSION_CMS_CONTENT_ENTRY_CRUD = "cms.manage.contentEntry.crud";
 
 const contentModelPermissionOptions = [
     {
@@ -26,22 +26,22 @@ const contentModelPermissionOptions = [
     },
     {
         id: 1,
-        value: cmsContentEntryPermission,
+        value: PERMISSION_CMS_CONTENT_ENTRY_CRUD,
         label: "Records inside any content model"
     },
     {
         id: 2,
-        value: cmsContentEntryPermission + "#models",
+        value: PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#models",
         label: "Only records inside specific content models"
     },
     {
         id: 3,
-        value: cmsContentEntryPermission + "#groups",
+        value: PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#groups",
         label: "Only records in specific content groups"
     },
     {
         id: 4,
-        value: cmsContentEntryPermission + "#own",
+        value: PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#own",
         label: "Only records in content models they created"
     }
 ];
@@ -106,19 +106,19 @@ const reducer = (currentState, action) => {
         case actionTypes.SYNC_PERMISSIONS:
             const currentPermission = action.payload;
 
-            permissionLevel = cmsContentEntryPermission;
+            permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_CRUD;
 
             if (currentPermission.own) {
-                permissionLevel = cmsContentEntryPermission + "#own";
+                permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#own";
             }
 
             if (Array.isArray(currentPermission.models) && currentPermission.models.length) {
-                permissionLevel = cmsContentEntryPermission + "#models";
+                permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#models";
                 showModelSelector = true;
             }
 
             if (Array.isArray(currentPermission.groups) && currentPermission.groups.length) {
-                permissionLevel = cmsContentEntryPermission + "#groups";
+                permissionLevel = PERMISSION_CMS_CONTENT_ENTRY_CRUD + "#groups";
                 showGroupSelector = true;
             }
 
@@ -128,7 +128,7 @@ const reducer = (currentState, action) => {
                 permissionLevel,
                 showModelSelector,
                 showGroupSelector,
-                permission: { ...currentPermission, name: cmsContentEntryPermission }
+                permission: { ...currentPermission, name: PERMISSION_CMS_CONTENT_ENTRY_CRUD }
             };
         case actionTypes.RESET:
             return {
@@ -151,7 +151,7 @@ export const ContentEntryPermission = ({ value, setValue }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { permissionLevel, permission, showModelSelector, showGroupSelector, synced } = state;
 
-    const currentPermission = value[cmsContentEntryPermission];
+    const currentPermission = value[PERMISSION_CMS_CONTENT_ENTRY_CRUD];
 
     useEffect(() => {
         if (currentPermission && currentPermission.name && !synced) {
@@ -160,7 +160,7 @@ export const ContentEntryPermission = ({ value, setValue }) => {
     }, [currentPermission, permission]);
 
     useEffect(() => {
-        setValue(cmsContentEntryPermission, permission);
+        setValue(PERMISSION_CMS_CONTENT_ENTRY_CRUD, permission);
     }, [permission]);
 
     // Data fetching
