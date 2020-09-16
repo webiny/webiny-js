@@ -37,7 +37,7 @@ export const createPermissionsMap = (permissions: SecurityPermission[]) => {
     return permissionsMap;
 };
 
-export const createPermissionsArray = permissionsMap => {
+export const createPermissionsArray = (permissionsMap: object) => {
     const permissions: SecurityPermission[] = [];
 
     if (!permissionsMap) {
@@ -47,7 +47,7 @@ export const createPermissionsArray = permissionsMap => {
     const values = Object.values(permissionsMap);
 
     for (let i = 0; i < values.length; i++) {
-        const perm = values[i];
+        const perm: SecurityPermission = values[i];
         if (perm.name) {
             permissions.push(perm);
         }

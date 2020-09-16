@@ -16,7 +16,7 @@ import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const createPermissionsArray = permissionsMap => {
+const createPermissionsArray = (permissionsMap: object) => {
     const permissions: SecurityPermission[] = [];
 
     if (!permissionsMap) {
@@ -26,7 +26,7 @@ const createPermissionsArray = permissionsMap => {
     const values = Object.values(permissionsMap);
 
     for (let i = 0; i < values.length; i++) {
-        const perm = values[i];
+        const perm: SecurityPermission = values[i];
         if (perm.name) {
             permissions.push(perm);
         }
