@@ -1,17 +1,17 @@
-type FileType = {
+type File = {
     id?: string;
     key?: string;
 };
 
-type FileWithSrcType = FileType & { src: string };
+type FileWithSrc = File & { src: string };
 
-type FileDbType = {
+type FileDb = {
     __type: "file";
     id: string;
     key: string;
 };
 
-const createFileFromStorage = async (context, file?: FileType): Promise<FileWithSrcType> => {
+const createFileFromStorage = async (context, file?: File): Promise<FileWithSrc> => {
     if (!file || !file.key) {
         return null;
     }
@@ -26,7 +26,7 @@ const createFileFromStorage = async (context, file?: FileType): Promise<FileWith
     }
 };
 
-const createFileForStorage = (file?: FileType): FileDbType => {
+const createFileForStorage = (file?: File): FileDb => {
     if (!file || !file.id || !file.key) {
         return null;
     }
