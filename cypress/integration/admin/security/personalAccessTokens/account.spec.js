@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 import { testPAT } from "./common";
 
 context("Account PATs Module", () => {

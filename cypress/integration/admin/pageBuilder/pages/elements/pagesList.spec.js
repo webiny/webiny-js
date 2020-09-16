@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 import uniqid from "uniqid";
 
 context("Page Elements - Pages List", () => {
