@@ -5,6 +5,7 @@ const { setupOutput } = require("./utils");
 
 module.exports.buildAppSSRFromSource = async (
     { handler = null, renderer = null, output = null, ...options },
+    // eslint-disable-next-line
     context
 ) => {
     if (!renderer || !handler) {

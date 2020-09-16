@@ -49,7 +49,7 @@ class Status {
 
         return this.statusEngineStop(reason);
     }
-
+    // eslint-disable-next-line
     statusEngineStop(reason) {
         this.status.running = false;
 

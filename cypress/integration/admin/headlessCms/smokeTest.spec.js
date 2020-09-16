@@ -1,3 +1,4 @@
+/* eslint-disable jest/expect-expect */
 import uniqid from "uniqid";
 import camelCase from "lodash/camelCase";
 

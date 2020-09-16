@@ -1,5 +1,11 @@
 import React from "react";
 
-export const Leaf = ({ attributes, children, leaf }) => {
+type LeafProps = {
+    attributes: any;
+    children: any;
+    leaf: any;
+};
+
+export const Leaf = ({ attributes, children }: LeafProps) => {
     return <span {...attributes}>{children}</span>;
 };

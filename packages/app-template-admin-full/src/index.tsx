@@ -1,4 +1,3 @@
-import React from "react";
 import adminAppTemplate, { AdminAppOptions } from "@webiny/app-template-admin";
 
 // Other plugins

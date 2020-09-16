@@ -31,7 +31,7 @@ const processHooks = async (hook, { context, ...options }) => {
         }
     }
 };
-
+// eslint-disable-next-line
 module.exports = async ({ options, ...inputs }, context) => {
     const { env, folder } = inputs;
     const stack = getStackName(folder);

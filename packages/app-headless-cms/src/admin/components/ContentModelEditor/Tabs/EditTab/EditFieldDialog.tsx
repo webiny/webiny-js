@@ -5,7 +5,6 @@ import { Dialog, DialogContent, DialogTitle, DialogActions, DialogButton } from 
 import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
-import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValuesTab from "./EditFieldDialog/PredefinedValuesTab";
 import { i18n } from "@webiny/app/i18n";
