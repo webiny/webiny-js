@@ -1,5 +1,5 @@
 {
-	"private": true,
+  "private": true,
   "workspaces": {
     "packages": [
       "packages/*",
