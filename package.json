@@ -2,7 +2,7 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*",
+      "packages/clea*",
       "apps/*",
       "api/apolloGateway",
       "api/settingsManager",

@@ -1,3 +1,4 @@
+console.log("HELLO WORLD!!!!");
 import * as React from "react";
 import { Query } from "react-apollo";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";

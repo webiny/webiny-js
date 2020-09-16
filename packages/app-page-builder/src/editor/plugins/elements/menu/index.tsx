@@ -65,6 +65,7 @@ export default () => {
             },
             render({ element }) {
                 console.log("OPENING MENU ELEMENT DATA:::::::::::");
+                console.log("TRY AGAIN!!!")
                 console.log(element.data);
                 return <Menu data={element.data} />;
             }
