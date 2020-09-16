@@ -42,8 +42,7 @@ const MenusDataList = () => {
                 }
             ]}
         >
-            {({ data, isSelected, select }) => {
-                return (
+            {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>

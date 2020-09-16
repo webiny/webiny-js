@@ -10,8 +10,8 @@ import button from "./button";
 import embeds from "./embeds";
 import pagesList from "./pagesList";
 import imagesList from "./imagesList";
-import menu from "./menu";
-
+//import menu from "./menu";
+//...menu
 export default [
     document(),
     row(),
@@ -24,6 +24,5 @@ export default [
     button(),
     ...embeds,
     ...pagesList,
-    ...imagesList,
-    ...menu
+    ...imagesList
 ];

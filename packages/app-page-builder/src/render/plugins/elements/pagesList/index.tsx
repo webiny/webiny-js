@@ -10,7 +10,6 @@ export default [
         type: "pb-render-page-element",
         elementType: "pages-list",
         render({ element, theme }) {
-            console.log("PAGE LIST FROM RENDER:::::::::::::::::::")
             return <PagesList data={element.data} theme={theme} />;
         }
     } as PbRenderElementPlugin,

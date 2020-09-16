@@ -35,7 +35,6 @@ export type PageItemProps = {
 };
 
 const PageItem = ({ data, className }: PageItemProps) => {
-    console.log("PAGE ITEM FROM RENDER::::::::::::::::");
     return (
         <Link to={data.fullUrl} className={"webiny-pb-page-element-page-list__item " + className}>
             <div
@@ -68,7 +67,6 @@ const PageItem = ({ data, className }: PageItemProps) => {
 };
 
 const GridPageList = ({ data, nextPage, prevPage }) => {
-    console.log("GRID PAGE LIST FROM RENDER:::::::::::::::::::::");
     return (
         <div className={"webiny-pb-page-element-page-list webiny-pb-page-element-page-list--grid"}>
             <div className={"webiny-pb-page-element-page-list__items"}>

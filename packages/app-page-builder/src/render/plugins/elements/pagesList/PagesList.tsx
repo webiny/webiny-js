@@ -27,9 +27,8 @@ const PagesList = props => {
     const plugins = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
-    
     const pageList = plugins.find(cmp => cmp.componentName === component);
-    console.log(pageList);
+
     if (!pageList) {
         warning(false, `Pages list component "${component}" is missing!`);
         return null;
