@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 context("Login Page", () => {
     it("must log in user successfully", () => {
         cy.visit("/")

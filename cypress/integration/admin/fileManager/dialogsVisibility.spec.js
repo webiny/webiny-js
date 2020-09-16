@@ -1,4 +1,3 @@
-/* eslint-disable jest/expect-expect */
 context("Account Module", () => {
     beforeEach(() => cy.login());
 
