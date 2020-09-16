@@ -5,10 +5,10 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.0.0-beta.0",
-    "@webiny/api-headless-cms": "^4.0.0-beta.0",
-    "@webiny/api-i18n": "^4.0.0-beta.0",
-    "@webiny/api-plugin-commodo-mongodb": "^4.0.0-beta.0",
-    "@webiny/project-utils": "^4.0.0-beta.4"
+    "@webiny/handler": "^4.11.0-beta.1",
+    "@webiny/api-headless-cms": "^4.11.0-beta.1",
+    "@webiny/api-i18n": "^4.11.0-beta.1",
+    "@webiny/api-plugin-commodo-mongodb": "^4.11.0-beta.1",
+    "@webiny/project-utils": "^4.11.0-beta.1"
   }
 }
