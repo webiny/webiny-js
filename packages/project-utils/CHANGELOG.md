@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **project-utils:** disable webpack progressbar in non interactive terminal ([6b380e4](https://github.com/webiny/webiny-js/commit/6b380e42f4bf5dd28e9db27f8923811f3d0a780f))
+
+
+### Features
+
+* **project-utils:** source path options for buildAppSSR ([f2f3de2](https://github.com/webiny/webiny-js/commit/f2f3de254e22f6aa498375aba5f8d0ab16dbd995)), closes [webiny/webiny-js#1218](https://github.com/webiny/webiny-js/issues/1218)
+
+
+
+
+
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/project-utils

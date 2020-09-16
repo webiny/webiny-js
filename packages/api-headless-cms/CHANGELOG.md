@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* add `createSchema` prop to `cms-model-field-to-graphql` plugin's `read` property ([67a3b36](https://github.com/webiny/webiny-js/commit/67a3b36c61faa6c1f4a88f002037d7c33529bcd0))
+* ensure multiple `models` context plugins don't clash ([044ee77](https://github.com/webiny/webiny-js/commit/044ee77bf396bda33624b74a41b4c560ff843693))
+
+
+
+
+
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
 

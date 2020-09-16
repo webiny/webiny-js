@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **cli-plugin-deploy-components:** disable status messages in CI ([d6597fa](https://github.com/webiny/webiny-js/commit/d6597faba2898c2469ea175e16f0175b8bf00b6f))
+
+
+
+
+
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-components
