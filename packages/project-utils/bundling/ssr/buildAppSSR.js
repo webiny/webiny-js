@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 
 module.exports.buildAppSSR = async (
     { app = null, indexHtmlPath = null, createAppPath = null, output, ...options },
+    // eslint-disable-next-line
     context
 ) => {
     if (!app) {

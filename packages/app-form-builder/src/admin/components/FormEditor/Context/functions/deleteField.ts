@@ -1,4 +1,4 @@
-import { FbFormModelField, FieldIdType, FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormModelField, FbFormModel } from "@webiny/app-form-builder/types";
 
 export default ({ field, data }: { field: FbFormModelField; data: FbFormModel }) => {
     // Remove the field from fields list...

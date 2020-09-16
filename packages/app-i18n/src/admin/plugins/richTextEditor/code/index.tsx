@@ -1,5 +1,4 @@
 import * as React from "react";
-import { css } from "emotion";
 import { isKeyHotkey } from "is-hotkey";
 import { ReactComponent as FormatCodeIcon } from "@webiny/app-i18n/admin/assets/icons/format_code.svg";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
@@ -7,13 +6,6 @@ import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 const isCodeHotkey = isKeyHotkey("mod+`");
 
 const mark = "code";
-
-/* prettier-ignore */
-const codeStyle = css`
-    background-color: var(--mdc-theme-background);
-    padding: 4px 8px;
-    line-height: 1.5rem;
-`;
 
 const plugin: I18NInputRichTextEditorPlugin = {
     name: "i18n-input-rich-text-editor-code",
