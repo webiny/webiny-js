@@ -1,0 +1,35 @@
+{
+	"name": "@webiny/pulumi-sdk",
+	"version": "4.7.0",
+	"main": "index.js",
+	"types": "types.d.ts",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"description": "A Node.js Pulumi SDK.",
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>",
+		"Sven Al Hamad <sven@webiny.com>",
+		"Adrian Smijulj <adrian@webiny.com>"
+	],
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"devDependencies": {
+		"@types/node": "^10.0.0"
+	},
+	"dependencies": {
+		"@pulumi/pulumi": "^2.0.0",
+		"@pulumi/aws": "^2.0.0",
+		"@pulumi/awsx": "^0.20.0"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}
