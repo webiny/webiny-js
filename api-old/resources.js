@@ -8,7 +8,7 @@ const apolloServiceEnv = {
     GRAPHQL_INTROSPECTION: process.env.GRAPHQL_INTROSPECTION,
     GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
     JWT_TOKEN_EXPIRES_IN: "2592000",
-    JWT_TOKEN_SECRET: process.env.JWT_SECRET,
+    JWT_TOKEN_SECRET: process.env.JWT_TOKEN_SECRET,
     SETTINGS_MANAGER_FUNCTION: "${settingsManager.arn}",
     PERMISSIONS_MANAGER_FUNCTION: "${securityPermissionsManager.arn}",
     VALIDATE_ACCESS_TOKEN_FUNCTION: "${securityValidateAccessToken.name}"
