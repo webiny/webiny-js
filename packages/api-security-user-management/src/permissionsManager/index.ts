@@ -4,7 +4,7 @@ export default () => [
     models(),
     {
         type: "permissions-manager-middleware",
-        async getPermissions({ identity, type }, context) {
+        async getPermissions({ identity }, context) {
             if (identity) {
                 const { SecurityUser } = context.models;
                 const user = await SecurityUser.findOne({ query: { id: identity } });

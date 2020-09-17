@@ -1,6 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { resolveUpdateSettings } from "@webiny/commodo-graphql";
 
 export const getSettings: GraphQLFieldResolver = async (root, args, context) => {
     try {

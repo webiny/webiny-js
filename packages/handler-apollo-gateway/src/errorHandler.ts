@@ -6,6 +6,7 @@ const plugin = (): ErrorHandlerPlugin => ({
     type: "error-handler",
     async handle({ args, error }) {
         const [event, context] = args;
+        // eslint-disable-next-line
         const { identity, ...requestContext } = event.requestContext;
 
         const report = {

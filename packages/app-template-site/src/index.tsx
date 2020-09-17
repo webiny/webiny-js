@@ -1,7 +1,7 @@
 import React from "react";
 import { createTemplate } from "@webiny/app-template";
 import { AppTemplateRendererPlugin } from "@webiny/app-template/types";
-import { BrowserRouter, Route, Redirect } from "@webiny/react-router";
+import { BrowserRouter } from "@webiny/react-router";
 import { ApolloProvider } from "react-apollo";
 
 // App structure imports

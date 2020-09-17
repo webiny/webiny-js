@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {
-    CmsContentModel,
+    CmsContentModel as CmsContentModelType,
     CmsModelFieldToGraphQLPlugin,
     CmsFieldTypePlugins,
     CmsContext
@@ -30,7 +30,7 @@ export const generateSchemaPlugins: GenerateSchemaPlugins = async ({ context }) 
     // Load model data
     const { CmsContentModel } = context.models;
 
-    const models: CmsContentModel[] = await CmsContentModel.find();
+    const models: CmsContentModelType[] = await CmsContentModel.find();
 
     const schemas = getSchemaFromFieldPlugins({ fieldTypePlugins, type: cms.type });
 

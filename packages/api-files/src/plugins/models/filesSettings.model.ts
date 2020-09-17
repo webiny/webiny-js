@@ -3,7 +3,6 @@ import {
     withStaticProps,
     withName,
     number,
-    int,
     string,
     boolean,
     fields,

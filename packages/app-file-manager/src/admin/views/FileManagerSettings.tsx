@@ -44,7 +44,7 @@ const FileManagerSettings = () => {
                                     showSnackbar("Settings updated successfully.");
                                 }}
                             >
-                                {({ Bind, form, data }) => (
+                                {({ Bind, form }) => (
                                     <SimpleForm>
                                         {(queryInProgress || mutationInProgress) && (
                                             <CircularProgress />

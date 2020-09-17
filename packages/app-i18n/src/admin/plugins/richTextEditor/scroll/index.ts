@@ -1,12 +1,16 @@
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
+type OnKeyDownEvent = {
+    event: any;
+};
+
 const plugin: I18NInputRichTextEditorPlugin = {
     name: "i18n-input-rich-text-editor-scroll",
     type: "i18n-input-rich-text-editor",
     plugin: {
         name: "scroll",
         editor: {
-            onKeyDown({ event }, next) {
+            onKeyDown(_ev: OnKeyDownEvent, next: () => void) {
                 const native = window.getSelection();
                 if (native.type === "None") {
                     return { top: 0, left: 0, width: 0, height: 0 };
