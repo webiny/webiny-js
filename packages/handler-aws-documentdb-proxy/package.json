@@ -1,0 +1,40 @@
+{
+  "name": "@webiny/handler-aws-documentdb-proxy",
+  "version": "4.7.0",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Webiny API plugin that provides a Commodo driver for DB Proxy.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "bson": "^4.0.4",
+    "mongodb": "^3.6.0",
+    "saslprep": "^1.0.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@shelf/jest-mongodb": "^1.1.5",
+    "@types/mongodb": "^3.5.26",
+    "@webiny/graphql": "^4.11.0-beta.1",
+    "@webiny/handler": "^4.11.0-beta.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  }
+}
