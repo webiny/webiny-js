@@ -1,6 +1,6 @@
 {
   "name": "@webiny/tracking",
-  "version": "4.12.0",
+  "version": "4.12.1-beta.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
