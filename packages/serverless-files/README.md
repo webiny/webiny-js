@@ -20,7 +20,7 @@ name: my-app
 vars:
   region: "us-east-1"
   env:
-    JWT_SECRET: ${env.JWT_SECRET}
+    JWT_TOKEN_SECRET: ${env.JWT_TOKEN_SECRET}
   database:
     server: ${env.MONGODB_SERVER}
     name: ${env.MONGODB_NAME}

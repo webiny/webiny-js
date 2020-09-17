@@ -37,7 +37,7 @@ const PROJECT_FOLDER = ".";
         envJson.default.S3_BUCKET = `webiny-js-files-${uuid()
             .split("-")
             .shift()}`;
-        envJson.default.JWT_SECRET = jwtSecret;
+        envJson.default.JWT_TOKEN_SECRET = jwtSecret;
         await writeJson(envJsonPath, envJson);
         console.log(`✅️ ${green("api/.env.json")} was created successfully!`);
     }
