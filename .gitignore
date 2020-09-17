@@ -30,3 +30,4 @@ cypress.json
 pbInstalation.zip
 Pulumi.*
 !Pulumi.yaml
+globalConfig.json
