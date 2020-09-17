@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
+
+
+### Bug Fixes
+
+* export using `*`, instead of doing named exports ([63a691b](https://github.com/webiny/webiny-js/commit/63a691b9cc1e219addf13fe230105bb3bddbe764))
+
+
+
+
+
+# [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.0...v4.12.0-beta.1) (2020-09-16)
+
+
+### Bug Fixes
+
+* add `@babel/plugin-proposal-throw-expressions` to `devDependencies` ([d7352c5](https://github.com/webiny/webiny-js/commit/d7352c5b532f46684f6eb3cca03dd1401b4d3cd2))
+
+
+
+
+
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* add `createSchema` prop to `cms-model-field-to-graphql` plugin's `read` property ([67a3b36](https://github.com/webiny/webiny-js/commit/67a3b36c61faa6c1f4a88f002037d7c33529bcd0))
+* ensure multiple `models` context plugins don't clash ([044ee77](https://github.com/webiny/webiny-js/commit/044ee77bf396bda33624b74a41b4c560ff843693))
+* use the newly introduced `skipExisting` plugin registration option ([789c749](https://github.com/webiny/webiny-js/commit/789c7497c70e8d891fba878aa42fa539f78cefb0))
+* **app-admin:** add PluginCollection type to handle plugin collections ([#1222](https://github.com/webiny/webiny-js/issues/1222)) ([e723744](https://github.com/webiny/webiny-js/commit/e7237440783009cf924f5b495e03349fe70f2586))
+* **app-security:** don't wrap email addresses with hyphens ([#1197](https://github.com/webiny/webiny-js/issues/1197)) ([de141bf](https://github.com/webiny/webiny-js/commit/de141bf67d852521b8fce042cecfc1d2b47af841))
+* **cli-plugin-deploy-components:** disable status messages in CI ([d6597fa](https://github.com/webiny/webiny-js/commit/d6597faba2898c2469ea175e16f0175b8bf00b6f))
+* **project-utils:** disable webpack progressbar in non interactive terminal ([6b380e4](https://github.com/webiny/webiny-js/commit/6b380e42f4bf5dd28e9db27f8923811f3d0a780f))
+
+
+### Features
+
+* introduce plugin registration options and the `skipExisting` option ([d3ca986](https://github.com/webiny/webiny-js/commit/d3ca986016098b8af438651547b7a84a9f9f0fa8))
+* **app-admin:** hide settings group if empty ([73bed5b](https://github.com/webiny/webiny-js/commit/73bed5bd76f9e0b4dc22a5abdd3dc7a253d43835))
+* **project-utils:** source path options for buildAppSSR ([f2f3de2](https://github.com/webiny/webiny-js/commit/f2f3de254e22f6aa498375aba5f8d0ab16dbd995)), closes [webiny/webiny-js#1218](https://github.com/webiny/webiny-js/issues/1218)
+* **ui:** export Button types ([e8061c2](https://github.com/webiny/webiny-js/commit/e8061c223ddaeaf69e1aa736ca51b963f55e6eab))
+
+
+
+
+
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add equality check for id `idValidation` ([5e7ee98](https://github.com/webiny/webiny-js/commit/5e7ee98879e52a799d86a7a8ddd6e0b8baef5f84))
+* **api-headless-cms:** trim `fieldId` before save ([173db34](https://github.com/webiny/webiny-js/commit/173db349bfb2fb1f08fc51345cf5bd01732c9851))
+* **app-headless-cms:** add `fieldIdValidator` ([613ccb8](https://github.com/webiny/webiny-js/commit/613ccb870c8900bd438eb986ea73039ac8c776d5))
+* **app-headless-cms:** trim `fieldId` beforeChange ([386be63](https://github.com/webiny/webiny-js/commit/386be63ce2af418d68d386abaf3217898538718b))
+* add `tsx` extension ([1e6d44c](https://github.com/webiny/webiny-js/commit/1e6d44c8c5624055e64805f5bdde5bee3bb70333))
+* improve error messaging ([e4fcf3b](https://github.com/webiny/webiny-js/commit/e4fcf3b880f2afc87751e75ad34423798b20e5f3))
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 

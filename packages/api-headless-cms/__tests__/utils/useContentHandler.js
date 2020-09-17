@@ -27,7 +27,9 @@ import {
     createUnpublishMutation
 } from "./useContentHandler/graphql";
 
-const useContentHandler = ({ database, type = "manage" } = {}) => {
+export default (
+    { database, type = "manage", plugins = [] } = { database: null, type: "manage", plugins: [] }
+) => {
     if (!database) {
         database = new Database();
     }
@@ -41,7 +43,8 @@ const useContentHandler = ({ database, type = "manage" } = {}) => {
         securityAuthJwtPlugins({
             secret: JWT_TOKEN_SIGN_SECRET
         }),
-        dataManagerPlugins()
+        dataManagerPlugins(),
+        ...plugins
     );
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
@@ -200,5 +203,3 @@ const useContentHandler = ({ database, type = "manage" } = {}) => {
         }
     };
 };
-
-export default useContentHandler;

@@ -176,8 +176,7 @@
       "adio",
       "yarn prettier:fix",
       "eslint",
-      "git add",
-      "jest --config jest.config.js --findRelatedTests"
+      "git add"
     ]
   },
   "yargs": {
