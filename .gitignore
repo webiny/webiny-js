@@ -1,8 +1,8 @@
 .idea
 .webpack
 .webiny
-.serverless
 .pulumi
+.serverless
 .env*
 .npmrc
 htpasswd
@@ -27,3 +27,4 @@ build/
 .cloudfns/
 yarn.lock
 cypress.json
+pbInstalation.zip
