@@ -35,10 +35,10 @@ type FileData = {
 
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
-const mapElementsFilesData = (files: FileData[]) => {
-    const mapped = {};
+const mapElementsFilesData = (files: FileData[]): Map<string, FileData> => {
+    const mapped = new Map<string, FileData>();
     for (const file of files) {
-        mapped[file.id] = file;
+        mapped.set(file.id, file);
     }
     return mapped;
 };
@@ -76,11 +76,11 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         }
 
                         const { preview: previewId, ...elementData } = elementsData[i];
-                        const preview = mappedElementsFilesData[previewId] || null;
+                        const preview = mappedElementsFilesData.get(previewId) || null;
 
                         const instance = new PbPageElement();
-                        instance.populate(elementData);
                         instance.populate({
+                            ...elementData,
                             preview
                         });
                         await instance.save();
