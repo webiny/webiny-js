@@ -2,6 +2,7 @@
 .webpack
 .webiny
 .serverless
+.pulumi
 .env*
 .npmrc
 htpasswd
