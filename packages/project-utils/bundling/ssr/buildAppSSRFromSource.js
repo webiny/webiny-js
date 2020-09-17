@@ -3,11 +3,12 @@ const fs = require("fs-extra");
 const { bundle } = require("./bundle");
 const { setupOutput } = require("./utils");
 
-module.exports.buildAppSSRFromSource = async (
-    { handler = null, renderer = null, output = null, ...options },
-    // eslint-disable-next-line
-    context
-) => {
+module.exports.buildAppSSRFromSource = async ({
+    handler = null,
+    renderer = null,
+    output = null,
+    ...options
+}) => {
     if (!renderer || !handler) {
         throw new Error(`Specify both "renderer" and "handler" to bundle.`);
     }
