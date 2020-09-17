@@ -12,7 +12,21 @@
       "api/cms/*",
       "api/i18n/*",
       "api/pageBuilder",
-      "api/security/*"
+      "api/security/*",
+
+      "apps/admin/code/app",
+      "apps/site/code/app",
+      "apps/site/code/databaseProxy",
+      "api/code/apolloGateway",
+      "api/code/settingsManager",
+      "api/code/databaseProxy",
+      "api/code/files/*",
+      "api/code/formBuilder",
+      "api/code/cms/*",
+      "api/code/i18n/*",
+      "api/code/pageBuilder",
+      "api/code/security/*",
+      "api/code/awsDocumentDbProxy"
     ],
     "nohoist": [
       "**/inquirer/**",
@@ -34,6 +48,7 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^1.4.0",
+    "@types/aws-regions": "^2.1.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
     "@commitlint/cli": "^8.3.5",
@@ -49,6 +64,7 @@
     "@types/react-redux": "^7.1.5",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
+    "aws-regions": "^2.2.0",
     "adio": "^1.0.1",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^9.0.0-beta.3",
