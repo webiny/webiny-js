@@ -10,15 +10,48 @@ import sleep from "./sleep";
 import chunk from "lodash.chunk";
 import loadJson from "load-json-file";
 
+type ElementData = {
+    id: string;
+    name: string;
+    category: string;
+    content: any;
+    data: string;
+    preview: string;
+};
+
+type FileData = {
+    id: string;
+    __physicalFileName: string;
+    name: string;
+    size: number;
+    type: string;
+    meta: {
+        width?: number;
+        height?: number;
+        aspectRatio?: number;
+        private: boolean;
+    };
+};
+
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
+const mapElementsFilesData = (files: FileData[]) => {
+    const mapped = {};
+    for (const file of files) {
+        mapped[file.id] = file;
+    }
+    return mapped;
+};
+// TODO can use cleanup and a bit of refactor at some point
 export default async ({ context, INSTALL_EXTRACT_DIR }) => {
-    const elementsData: { [key: string]: any }[] = await loadJson(
+    const elementsData: ElementData[] = await loadJson(
         path.join(INSTALL_EXTRACT_DIR, "data/elementsData.json")
     );
-    const elementsFilesData = await loadJson(
+    const elementsFilesData: FileData[] = await loadJson(
         path.join(INSTALL_EXTRACT_DIR, "data/elementsFilesData.json")
     );
+
+    const mappedElementsFilesData = mapElementsFilesData(elementsFilesData);
 
     try {
         const { PbPageElement } = context.models;
@@ -42,8 +75,15 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                             return;
                         }
 
+                        const { preview: previewId, ...elementData } = elementsData[i];
+                        const preview = mappedElementsFilesData[previewId] || null;
+
                         const instance = new PbPageElement();
-                        await instance.populate(elementsData[i]).save();
+                        instance.populate(elementData);
+                        instance.populate({
+                            preview
+                        });
+                        await instance.save();
                         resolve();
                     } catch (e) {
                         reject(e);
