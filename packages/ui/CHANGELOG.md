@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
+
+
+### Bug Fixes
+
+* export using `*`, instead of doing named exports ([63a691b](https://github.com/webiny/webiny-js/commit/63a691b9cc1e219addf13fe230105bb3bddbe764))
+
+
+
+
+
+# [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [4.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.0...v4.12.0-beta.1) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Features
+
+* **ui:** export Button types ([e8061c2](https://github.com/webiny/webiny-js/commit/e8061c223ddaeaf69e1aa736ca51b963f55e6eab))
+
+
+
+
+
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/ui

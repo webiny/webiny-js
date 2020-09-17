@@ -172,6 +172,10 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
             model: CmsContentModel;
             field: CmsContentModelField;
         }): GraphQLFieldResolver;
+        createSchema?(params: {
+            models: CmsContentModel[];
+            model: CmsContentModel;
+        }): GraphQLSchemaModule;
     };
     manage: {
         createListFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;

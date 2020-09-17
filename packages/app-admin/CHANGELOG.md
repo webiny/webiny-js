@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.0...v4.12.0-beta.1) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **app-admin:** add PluginCollection type to handle plugin collections ([#1222](https://github.com/webiny/webiny-js/issues/1222)) ([e723744](https://github.com/webiny/webiny-js/commit/e7237440783009cf924f5b495e03349fe70f2586))
+
+
+### Features
+
+* **app-admin:** hide settings group if empty ([73bed5b](https://github.com/webiny/webiny-js/commit/73bed5bd76f9e0b4dc22a5abdd3dc7a253d43835))
+
+
+
+
+
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/app-admin

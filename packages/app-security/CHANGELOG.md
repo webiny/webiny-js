@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [4.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.0...v4.12.0-beta.1) (2020-09-16)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **app-security:** don't wrap email addresses with hyphens ([#1197](https://github.com/webiny/webiny-js/issues/1197)) ([de141bf](https://github.com/webiny/webiny-js/commit/de141bf67d852521b8fce042cecfc1d2b47af841))
+
+
+
+
+
+# [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
 **Note:** Version bump only for package @webiny/app-security
