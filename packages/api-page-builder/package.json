@@ -38,7 +38,8 @@
     "lodash.pick": "^4.4.0",
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "zip-local": "^0.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
