@@ -28,3 +28,5 @@ build/
 yarn.lock
 cypress.json
 pbInstalation.zip
+Pulumi.*
+!Pulumi.yaml
