@@ -1,4 +1,8 @@
 {
   "extends": "../../tsconfig",
-  "include": ["src"]
+  "references": [
+    { "path": "../handler" },
+    { "path": "../handler-client" },
+    { "path": "../handler-http" }
+  ]
 }
