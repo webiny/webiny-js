@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-aws",
+  "name": "@webiny/handler-aws",
   "version": "4.12.1",
   "main": "index.js",
   "repository": {
