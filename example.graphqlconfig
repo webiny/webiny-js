@@ -1,0 +1,17 @@
+{
+  "name": "Webiny GraphQL Schema",
+  "schemaPath": "schema.graphql",
+  "excludes": ["packages/api**", "api/**"],
+  "includes": ["packages/app*/src/**"],
+  "extensions": {
+    "endpoints": {
+      "Webiny GraphQL Endpoint": {
+        "url": "{YOUR_API_CDN_URL}/graphql",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        },
+        "introspect": true
+      }
+    }
+  }
+}
