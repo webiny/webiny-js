@@ -3,6 +3,7 @@ import { HandlerClientPlugin } from "@webiny/handler-client/types";
 
 const plugin: HandlerClientPlugin = {
     type: "handler-client",
+    name: "handler-client",
     invoke({ name, payload, await }) {
         const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
         return Lambda.invoke({
