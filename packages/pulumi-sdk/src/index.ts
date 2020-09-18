@@ -51,6 +51,7 @@ class Pulumi {
             finalOptions
         );
 
+        // @ts-ignore
         subProcess.toConsole = () => {
             return toConsole(subProcess);
         };
