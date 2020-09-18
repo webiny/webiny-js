@@ -16,8 +16,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "bson": "^4.0.4",
-    "mongodb": "^3.6.0",
-    "saslprep": "^1.0.3"
+    "mongodb": "^3.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

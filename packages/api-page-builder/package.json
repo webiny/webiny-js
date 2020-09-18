@@ -60,10 +60,6 @@
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "adio": {
-    "ignoreDirs": [
-      "migration",
-      "src/installation"
-    ],
     "ignore": {
       "src": [
         "aws-sdk"
