@@ -37,7 +37,9 @@ const security = new Security({
     dbProxy: dbProxy.function,
     env: graphqlServiceEnv
 });
+
 graphqlServiceEnv.VALIDATE_ACCESS_TOKEN_FUNCTION = security.functions.validateAccessToken.arn;
+graphqlServiceEnv.PERMISSIONS_MANAGER_FUNCTION = security.functions.permissionsManager.arn;
 
 const i18n = new I18N({
     role: defaultLambdaRole.role,
