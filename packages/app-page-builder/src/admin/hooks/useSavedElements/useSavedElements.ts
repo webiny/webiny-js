@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "react-apollo";
-import { get } from "dot-prop-immutable";
 import { LIST_ELEMENTS } from "@webiny/app-page-builder/admin/graphql/pages";
 import createElementPlugin from "../../utils/createElementPlugin";
 import createBlockPlugin from "../../utils/createBlockPlugin";
@@ -18,7 +17,8 @@ export const useSavedElements = () => {
         return false;
     }
 
-    const elements = get(data, "pageBuilder.elements.data");
+    const elements = data?.pageBuilder?.elements?.data;
+    // TODO should we check for a possibility that there is no elements data?
     if (!ready) {
         elements.forEach(el => {
             if (el.type === "element") {

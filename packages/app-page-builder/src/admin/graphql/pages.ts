@@ -148,8 +148,18 @@ const elementFields = /*GraphQL*/ `
     category
     content
     preview {
+        id
         src
-        meta
+        name
+        fileName
+        size
+        type
+        meta {
+            width
+            height
+            aspectRatio
+            private
+        }
     }
 `;
 

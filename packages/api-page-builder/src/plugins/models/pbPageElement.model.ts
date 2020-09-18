@@ -1,9 +1,7 @@
-import { flow } from "lodash";
 import { validation } from "@webiny/validation";
 import content from "./pbPage/contentField";
 
-import { withFields, string, withName, fields, int, boolean } from "@webiny/commodo";
-import { float } from "commodo-fields-float";
+import { withFields, string, withName, fields, int, boolean, pipe, float } from "@webiny/commodo";
 
 const PbPageElementPreviewMetaModel = withFields({
     width: int(),
@@ -24,7 +22,7 @@ const PbPageElementPreviewModel = withFields({
 });
 
 export default ({ createBase, context }) =>
-    flow(
+    pipe(
         withName("PbPageElement"),
         withFields({
             name: string({ validation: validation.create("required") }),
