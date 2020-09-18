@@ -135,11 +135,13 @@ const docDbCluster = new aws.docdb.Cluster("documentdb-cluster", {
 const numberOfInstances = 2;
 const clusterInstances: aws.docdb.ClusterInstance[] = [];
 for (let i = 0; i < numberOfInstances; i++) {
-    clusterInstances.push(new aws.docdb.ClusterInstance(`document-db-cluster-instance-${i}`, {
-        clusterIdentifier: docDbCluster.id,
-        identifier: `documentdb-cluster-instance-${i}`,
-        instanceClass: "db.t3.medium"
-    }));
+    clusterInstances.push(
+        new aws.docdb.ClusterInstance(`document-db-cluster-instance-${i}`, {
+            clusterIdentifier: docDbCluster.id,
+            identifier: `documentdb-cluster-instance-${i}`,
+            instanceClass: "db.t3.medium"
+        })
+    );
 }
 
 const databaseProxy = new aws.lambda.Function("document-db-proxy", {

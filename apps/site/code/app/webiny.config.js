@@ -24,7 +24,7 @@ module.exports = {
             await startApp(options, context);
         },
         async build({ env, ...options }, context) {
-              // Load .env.json from project root
+            // Load .env.json from project root
             await context.loadEnv(context.resolve(".env.json"), env);
 
             // Load .env.json from cwd (this will change depending on the folder you specified)

@@ -82,5 +82,4 @@ class Cloudfront {
     }
 }
 
-
 export default Cloudfront;
