@@ -80,6 +80,9 @@ export default () => {
     }
 
     async function apply(context: CmsContext) {
+        // TODO: The fix from `master`, regarding multiple parallel queries and a single context wasn't
+        // TODO: transfered while merging master => v5. Check the following issue - it explains everything:
+        // TODO: https://github.com/webiny/webiny-js/issues/1244
         const createEnvironmentBase = createEnvironmentBaseFactory({
             context,
             addEnvironmentField: true

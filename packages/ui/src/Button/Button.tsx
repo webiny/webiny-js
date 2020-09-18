@@ -1,11 +1,11 @@
 import * as React from "react";
 import * as R from "@rmwc/button";
 import { Fab, FabProps } from "@rmwc/fab";
-import { Icon } from "../Icon/Icon";
+import { Icon, IconProps } from "../Icon/Icon";
 import classNames from "classnames";
 import { SyntheticEvent } from "react";
 
-type Props = {
+export type ButtonProps = {
     // Make button flat (only applicable to Primary button).
     flat?: boolean;
 
@@ -37,7 +37,7 @@ type Props = {
  * @returns {*}
  * @constructor
  */
-export const ButtonDefault = (props: Props) => {
+export const ButtonDefault = (props: ButtonProps) => {
     const { disabled, onClick, children, small, ripple = true, className = "", style } = props;
 
     return (
@@ -61,7 +61,7 @@ export const ButtonDefault = (props: Props) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonPrimary = (props: Props) => {
+export const ButtonPrimary = (props: ButtonProps) => {
     const {
         disabled,
         onClick,
@@ -95,7 +95,7 @@ export const ButtonPrimary = (props: Props) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonSecondary = (props: Props) => {
+export const ButtonSecondary = (props: ButtonProps) => {
     const {
         disabled,
         onClick,
@@ -122,7 +122,7 @@ export const ButtonSecondary = (props: Props) => {
     );
 };
 
-type ButtonFloatingProps = Props &
+export type ButtonFloatingProps = ButtonProps &
     FabProps & {
         label?: React.ReactNode;
         icon?: React.ReactNode;
@@ -168,4 +168,4 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
  * @returns {*}
  * @constructor
  */
-export const ButtonIcon = (props: any) => <Icon {...props} />;
+export const ButtonIcon = (props: IconProps) => <Icon {...props} />;
