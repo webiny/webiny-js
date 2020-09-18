@@ -6,7 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as HelpIcon } from "@webiny/app-headless-cms/admin/icons/help_outline.svg";
-import { PermissionSelector } from "./PermissionSelector";
+import { PermissionSelector, PermissionSelectorWrapper } from "../../components/PermissionSelector";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import get from "lodash.get";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
@@ -126,7 +126,7 @@ export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
                 </Select>
             </Cell>
             {showCustomPermission && (
-                <Cell span={12}>
+                <PermissionSelectorWrapper>
                     <PermissionSelector
                         value={value}
                         setValue={setValue}
@@ -139,7 +139,7 @@ export const ContentEntryPermissionBasedOnLanguage = ({ value, setValue }) => {
                                 .map(locale => ({ id: locale.code, name: locale.code }))
                         }}
                     />
-                </Cell>
+                </PermissionSelectorWrapper>
             )}
         </Fragment>
     );

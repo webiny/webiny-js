@@ -105,7 +105,6 @@ const GroupForm = () => {
                                             <Accordion elevation={0}>
                                                 {permissionPlugins.map(pl =>
                                                     pl.render({
-                                                        key: pl.name,
                                                         id: get(
                                                             props,
                                                             "form.state.data.id",

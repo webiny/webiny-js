@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import get from "lodash.get";
 import { i18n } from "@webiny/app/i18n";
 import { ApolloError } from "apollo-client";
+import { Cell } from "@webiny/ui/Grid";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -47,7 +48,14 @@ export const PermissionSelector = ({
     }
 
     return (
-        <CheckboxGroup value={models} onChange={value => setValue(selectorKey, [...value])}>
+        <CheckboxGroup
+            value={models}
+            onChange={value => setValue(selectorKey, [...value])}
+            label={selectorKey}
+            description={t`Select the {selectorKey} this permission will be allowed to access.`({
+                selectorKey
+            })}
+        >
             {({ onChange, getValue }) => (
                 <React.Fragment>
                     {list.map(({ id, name }) => (
@@ -63,3 +71,10 @@ export const PermissionSelector = ({
         </CheckboxGroup>
     );
 };
+
+export const PermissionSelectorWrapper = ({ children }) => (
+    <Fragment>
+        <Cell span={1} />
+        <Cell span={11}>{children}</Cell>
+    </Fragment>
+);
