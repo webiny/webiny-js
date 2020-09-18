@@ -57,7 +57,6 @@ module.exports = async ({ options, ...inputs }, context) => {
             item.includes(path.join(process.cwd(), folder))
         );
 
-        console.log('pac', packages)
         console.log(
             `⏳  Building ${packages.length} package(s) in ${green(
                 path.join(process.cwd(), folder)
@@ -101,7 +100,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         }
     });
 
-    console.log()
+    console.log();
     if (inputs.preview) {
         console.log(`⏳  Previewing stack...`);
     } else {
