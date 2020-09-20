@@ -24,6 +24,7 @@
   "dependencies": {
     "@pulumi/pulumi": "^2.0.0",
     "@pulumi/aws": "^2.0.0",
+    "@pulumi/awsx": "^0.20.0",
     "execa": "^4.0.3",
     "lodash": "^4.17.4"
   },
