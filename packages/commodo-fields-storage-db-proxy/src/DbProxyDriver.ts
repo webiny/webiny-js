@@ -1,51 +1,45 @@
-import LambdaClient from "aws-sdk/clients/lambda";
 import { EJSON } from "bson";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 const MONGO_CONNECTION_ERRORS = ["MongoServerSelectionError", "MongoNetworkError"];
 
 class DbProxyClient {
     dbProxyFunction: string;
+    context: HandlerClientContext;
 
-    constructor({ dbProxyFunction }) {
+    constructor({ dbProxyFunction, context }) {
         this.dbProxyFunction = dbProxyFunction;
+        this.context = context;
     }
 
     async runOperation(requestPayload) {
         const singleOperation = !Array.isArray(requestPayload);
 
-        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        const { Payload } = await Lambda.invoke({
-            FunctionName: this.dbProxyFunction,
-            Payload: JSON.stringify({
+        const data = await this.context.handlerClient.invoke({
+            name: this.dbProxyFunction,
+            payload: {
                 body: EJSON.stringify({
                     operations: singleOperation ? [requestPayload] : requestPayload
                 })
-            })
-        }).promise();
+            }
+        });
 
-        let parsedPayload;
-
-        try {
-            parsedPayload = JSON.parse(Payload as string);
-        } catch (e) {
-            throw new Error("Could not JSON.parse DB Proxy's response.");
-        }
-
-        if (parsedPayload.error) {
-            console.log("[commodo-fields-storage-db-proxy error:]", parsedPayload.error);
-            if (MONGO_CONNECTION_ERRORS.includes(parsedPayload.error.name)) {
+        if (data.error) {
+            console.log("[commodo-fields-storage-db-proxy error:]", data.error);
+            if (MONGO_CONNECTION_ERRORS.includes(data.error.name)) {
                 throw new Error(
                     `Could not connect to the MongoDB server, make sure the connection string is correct and that the database server allows outside connections. Check https://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection for more information.`
                 );
             }
-            throw new Error(`${parsedPayload.error.name}: ${parsedPayload.error.message}`);
+            throw new Error(`${data.error.name}: ${data.error.message}`);
         }
 
-        if (!parsedPayload.response) {
+        console.log('ovo govno', data)
+        if (!data.response) {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
 
-        const { results } = EJSON.parse(parsedPayload.response) as any;
+        const { results } = EJSON.parse(data.response) as any;
 
         if (singleOperation) {
             return results[0];
@@ -64,8 +58,14 @@ type Item = {
 class DbProxyDriver {
     client: DbProxyClient;
 
-    constructor({ dbProxyFunction = process.env.DB_PROXY_FUNCTION } = {}) {
-        this.client = new DbProxyClient({ dbProxyFunction });
+    constructor({
+        dbProxyFunction,
+        context
+    }: {
+        dbProxyFunction: string;
+        context: HandlerClientContext;
+    }) {
+        this.client = new DbProxyClient({ context, dbProxyFunction });
     }
 
     async create(items: Item[]) {
