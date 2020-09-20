@@ -1,12 +1,8 @@
+import { HandlerHttpContext } from "@webiny/handler-http/types";
+
 export default () => ({
     type: "context",
-    apply(context) {
-        context.http = {
-            query: null,
-            body: null,
-            path: null,
-            headers: null,
-            cookies: null
-        };
+    apply(context: HandlerHttpContext) {
+        context.http = null;
     }
 });
