@@ -12,19 +12,18 @@ export default () => ({
             );
         }
 
+        const { context } = options;
         const {
-            context: {
-                models: { SsrCache }
-            },
-            args
-        } = options;
+            models: { SsrCache }
+        } = context;
+
+        const http = context.http;
 
         withHooks({
             async afterInvalidate() {
                 const cloudfront = new CloudFront();
                 try {
-                    const [event] = args;
-                    const DistributionId = event.headers["X-Cdn-Id"];
+                    const DistributionId = http.headers["X-Cdn-Id"];
                     if (!DistributionId) {
                         throw new Error(
                             `Missing "X-Cdn-Id" header. Make sure to set "forwardIdViaHeaders" option on the CDN component to true`
