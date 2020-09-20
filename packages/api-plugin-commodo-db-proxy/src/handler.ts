@@ -1,6 +1,7 @@
 import { Db, MongoClient } from "mongodb";
 import { EJSON } from "bson";
-import { HandlerPlugin } from "@webiny/handler/types";
+import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { HandlerArgsContext } from "@webiny/handler-args/types";
 
 interface DatabaseProxyOptions {
     logCollection: string;
@@ -61,11 +62,11 @@ export default ({ logCollection, database, server, name }: DatabaseProxyOptions)
     return {
         name: "handler-database-proxy",
         type: "handler",
-        async handle({ args }) {
-            const [event] = args;
+        async handle(context: HandlerContext & HandlerArgsContext) {
+            const args = context.invocationArgs;
 
             try {
-                let { body } = event;
+                let { body } = args;
                 body = EJSON.parse(body);
 
                 if (!db) {
