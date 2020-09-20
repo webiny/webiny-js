@@ -16,7 +16,7 @@ export default (options: HandlerApolloServerOptions) => [
         name: "handler-setup-headless-plugins",
         async handle(context, next) {
             // We register plugins according to the received path params (schema type and environment).
-            const { key = "" } = context.http.path || {};
+            const { key = "" } = context.http.path.parameters || {};
             const [type = null, environment = null] = key.split("/");
             context.plugins.register(
                 await headlessPlugins({

@@ -9,7 +9,7 @@ const plugin: CreateApolloHandlerPlugin = {
     async create({ context, options }) {
         const http = context.http;
 
-        const { key = "" } = http.path || {};
+        const { key = "" } = http.path.parameters || {};
         const [type = null, environment = null] = key.split("/");
         const id = `${type}:${environment}`;
 
