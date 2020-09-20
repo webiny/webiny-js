@@ -26,7 +26,8 @@
     "@shelf/jest-mongodb": "^1.1.5",
     "@types/mongodb": "^3.5.16",
     "@webiny/graphql": "^4.12.1",
-    "@webiny/handler": "^4.12.1"
+    "@webiny/handler": "^4.12.1",
+    "@webiny/handler-args": "^4.12.1"
   },
   "publishConfig": {
     "access": "public",
