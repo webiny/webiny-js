@@ -9,12 +9,15 @@ export default {
         const { invocationArgs: args } = context;
         if (args.httpMethod) {
             context.http = {
-                method: args.httpMethod.toLowerCase(),
-                headers: args.headers,
-                query: args.queryStringParameters,
+                method: args.httpMethod,
                 body: args.body,
-                path: args.pathParameters,
-                cookies: args.cookies
+                headers: args.headers,
+                cookies: args.cookies,
+                path: {
+                    base: args.rawPath,
+                    parameters: args.pathParameters,
+                    query: args.queryStringParameters
+                }
             };
         }
     }
