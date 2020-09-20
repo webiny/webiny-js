@@ -8,8 +8,8 @@ import { HandlerPlugin } from "@webiny/handler/types";
 export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-download-file",
-    async handle({ args }) {
-        const [event] = args;
+    async handle(context) {
+        const event = context.invocationArgs;
 
         const handler = createHandler(async ({ body: { transformations, key } }) => {
             try {
