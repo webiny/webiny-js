@@ -3,6 +3,8 @@ import { GraphQLRequestContext } from "apollo-server-types";
 import { boolean } from "boolean";
 import { ApolloServer } from "apollo-server-lambda";
 import { HandlerArgs, HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
+
 import get from "lodash.get";
 import {
     HandlerApolloGatewayHeadersPlugin,
@@ -186,16 +188,17 @@ const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
 const plugins = (options: HandlerApolloGatewayOptions): HandlerPlugin => ({
     name: "handler-apollo-gateway",
     type: "handler",
-    async handle({ args, context }, next) {
-        const [event, handlerContext] = args;
+    async handle(context: HandlerContext & HandlerHttpContext, next) {
+        const event = context.invocationArgs;
 
-        if (!["POST", "GET", "OPTIONS"].includes(event.httpMethod)) {
+        if (!["post", "get", "options"].includes(context.http.method)) {
             return next();
         }
 
-        const handler = await getHandler({ options, args, context });
+        // TODO: reading from context.args here, we should read abstract key.
+        const handler = await getHandler({ options, args: context.args, context });
 
-        return await handler(event, handlerContext);
+        return await handler(event, {});
     }
 });
 
