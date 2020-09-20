@@ -1,4 +1,4 @@
-export default {
+export default () => ({
     type: "context",
     apply(context) {
         context.http = {
@@ -9,4 +9,4 @@ export default {
             cookies: null
         };
     }
-};
+});
