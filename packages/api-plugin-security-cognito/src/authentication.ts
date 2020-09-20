@@ -5,7 +5,7 @@ import util from "util";
 import { Context } from "@webiny/graphql/types";
 import { SecurityIdentity } from "@webiny/api-security";
 import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
-
+import { HandlerHttpContext } from "@webiny/handler-http/types";
 const verify = util.promisify(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
@@ -37,9 +37,8 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
     return [
         {
             type: "security-authentication",
-            async authenticate(context: Context) {
-                const [event] = context.args;
-                const { headers = {} } = event;
+            async authenticate(context: Context & HandlerHttpContext) {
+                const { method: httpMethod, headers = {} } = context.http;
                 let idToken = headers["Authorization"] || headers["authorization"] || "";
 
                 if (!idToken) {
@@ -48,7 +47,7 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
 
                 idToken = idToken.replace(/bearer\s/i, "");
 
-                if (isJwt(idToken) && event.httpMethod === "POST") {
+                if (isJwt(idToken) && httpMethod === "post") {
                     const jwks = await getJWKs();
                     const { header } = jwt.decode(idToken, { complete: true });
                     const jwk = jwks.find(key => key.kid === header.kid);

@@ -6,10 +6,10 @@ const handlers = {};
 const plugin: CreateApolloHandlerPlugin = {
     name: "handler-apollo-server-create-handler",
     type: "handler-apollo-server-create-handler",
-    async create({ args, context, options }) {
-        const [event] = args;
+    async create({ context, options }) {
+        const http = context.http;
 
-        const { key = "" } = event.pathParameters || {};
+        const { key = "" } = http.path || {};
         const [type = null, environment = null] = key.split("/");
         const id = `${type}:${environment}`;
 
