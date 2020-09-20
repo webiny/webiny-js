@@ -11,11 +11,17 @@ const MenuDesignSettings = ({ Bind, data }) => {
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
+    /*
+                    <Cell span={6}>
+                    <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
+                        <Input label={"Results per page"} />
+                    </Bind>
+                </Cell>*/
 
     return (
         <React.Fragment>
             <Grid>
-                <Cell span={6}>
+                <Cell span={12}>
                     <Bind
                         name={"component"}
                         defaultValue={components[0] ? components[0].componentName : null}
@@ -26,16 +32,10 @@ const MenuDesignSettings = ({ Bind, data }) => {
                         >
                             {components.map(cmp => (
                                 <option key={cmp.name} value={cmp.componentName}>
-                                    {cmp.title}
+                                    TITLE: {cmp.title} ~ NAME: {cmp.name} ~ COMPONENT NAME: {cmp.componentName}
                                 </option>
                             ))}
                         </Select>
-                    </Bind>
-                </Cell>
-
-                <Cell span={6}>
-                    <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
-                        <Input label={"Results per page"} />
                     </Bind>
                 </Cell>
             </Grid>

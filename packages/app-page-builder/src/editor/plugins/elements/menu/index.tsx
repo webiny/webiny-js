@@ -10,7 +10,7 @@ import { Tab } from "@webiny/ui/Tabs";
 //import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as MenuIcon } from "./menu-icon.svg";
 import Menu from "./Menu";
-import MenuFilterSettings from "./MenuFilterSettings";
+//import MenuFilterSettings from "./MenuFilterSettings";
 import MenuDesignSettings from "./MenuDesignSettings";
 import styled from "@emotion/styled";
 
@@ -70,7 +70,7 @@ export default () => {
                 return <Menu data={element.data} />;
             }
         } as PbEditorPageElementPlugin,
-        {
+        /*{
             name: "pb-editor-page-element-advanced-settings-menu-filter",
             type: "pb-editor-page-element-advanced-settings",
             elementType: "menu",
@@ -82,7 +82,7 @@ export default () => {
                     </Tab>
                 );
             }
-        } as PbEditorPageElementAdvancedSettingsPlugin,
+        } as PbEditorPageElementAdvancedSettingsPlugin,*/
         {
             name: "pb-editor-page-element-advanced-settings-menu-design",
             type: "pb-editor-page-element-advanced-settings",
