@@ -32,8 +32,8 @@ const canHandle = event => {
 export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-ssr-cache-api",
-    async handle({ args, context }, next) {
-        const [event] = args;
+    async handle(context, next) {
+        const event = context.invocationArgs;
 
         if (!canHandle(event)) {
             return next();

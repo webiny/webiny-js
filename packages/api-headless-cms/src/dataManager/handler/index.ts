@@ -35,8 +35,8 @@ export default () => [
     {
         type: "handler",
         name: "handler-data-manager",
-        async handle({ args, context }) {
-            const [event] = args;
+        async handle(context) {
+            const event = context.invocationArgs;
             const { environment, action, ...params } = event;
 
             try {

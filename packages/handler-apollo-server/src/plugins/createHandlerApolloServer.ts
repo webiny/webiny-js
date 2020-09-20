@@ -1,15 +1,16 @@
 import { createResponse } from "@webiny/handler";
-import { HandlerPlugin } from "@webiny/handler/types";
+import { HandlerPlugin, HandlerContext } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { CreateApolloHandlerPlugin, HandlerApolloServerOptions } from "../types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
 
 export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
     type: "handler",
     name: "handler-apollo-server",
-    async handle({ args, context }, next) {
-        const [event, handlerContext] = args;
+    async handle(context: HandlerContext & HandlerHttpContext, next) {
+        const event = context.invocationArgs;
 
-        if (!["POST", "GET", "OPTIONS"].includes(event.httpMethod)) {
+        if (!["post", "get", "options"].includes(context.http.method)) {
             return next();
         }
 
@@ -22,8 +23,10 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
                 throw Error(`"handler-apollo-server-create-handler" plugin is not configured!`);
             }
 
+
+            // TODO: reading from context.args here, we should read abstract key.
             const { handler } = await createApolloHandlerPlugin.create({
-                args,
+                args: context.args,
                 context,
                 options
             });
@@ -31,10 +34,11 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
             // Will return the complete response, including "statusCode", "headers", and "body" fields.
             return await handler(event, context);
         } catch (e) {
+            // TODO: this is weird, test this out.
             const { ...requestContext } = event.requestContext;
             const report = {
                 requestContext,
-                context: handlerContext,
+                context,
                 error: {
                     name: e.constructor.name,
                     message: e.message,

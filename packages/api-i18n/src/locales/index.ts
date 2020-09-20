@@ -5,7 +5,7 @@ export default () => [
     {
         type: "handler",
         name: "handler-i18n-locales",
-        async handle({ context }) {
+        async handle(context) {
             context.plugins.register(models());
             await applyContextPlugins(context);
 

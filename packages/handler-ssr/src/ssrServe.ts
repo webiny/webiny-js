@@ -23,8 +23,8 @@ export default (options): HandlerPlugin => {
         return {
             type: "handler",
             name: "handler-ssr-with-cache",
-            async handle({ args, context }, next) {
-                const [event] = args;
+            async handle(context, next) {
+                const event = context.invocationArgs;
                 if (!(event.httpMethod === "GET" && !mime.lookup(event.path))) {
                     return next();
                 }
@@ -100,8 +100,8 @@ export default (options): HandlerPlugin => {
     return {
         type: "handler",
         name: "handler-ssr-no-cache",
-        async handle({ args }, next) {
-            const [event] = args;
+        async handle(context, next) {
+            const event = context.invocationArgs;
 
             if (!(event.httpMethod === "GET" && !mime.lookup(event.path))) {
                 return next();

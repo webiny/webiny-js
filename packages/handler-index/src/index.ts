@@ -22,8 +22,8 @@ const load = (pathToResolve): Promise<Buffer> => {
 export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}): HandlerPlugin => ({
     type: "handler",
     name: "handler-index",
-    async handle({ args }, next) {
-        const [event] = args;
+    async handle(context, next) {
+        const event = context.invocationArgs;
         const canHandle = event.httpMethod === "GET" && !mime.lookup(event.path);
 
         if (!canHandle) {

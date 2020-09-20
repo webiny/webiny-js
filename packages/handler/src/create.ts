@@ -19,7 +19,7 @@ export default (...plugins) => async (...args) => {
 
         const handlers = context.plugins.byType<HandlerPlugin>("handler");
         const handler = middleware(handlers.map(pl => pl.handle));
-        const result = await handler({ args, context });
+        const result = await handler(context);
         if (!result) {
             throw Error(`Handlers did not produce a result!`);
         }

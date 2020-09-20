@@ -22,8 +22,8 @@ const load = (pathToResolve): Promise<Buffer> => {
 export default ({ cacheMaxAge = DEFAULT_CACHE_MAX_AGE } = {}) => ({
     type: "handler",
     name: "handler-files",
-    async handle({ args }, next) {
-        const [event] = args;
+    async handle(context, next) {
+        const event = context.invocationArgs;
 
         if (!(event.httpMethod === "GET" && mime.lookup(event.path))) {
             return next();

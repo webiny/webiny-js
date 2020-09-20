@@ -73,8 +73,8 @@ export default ({
     return {
         name: "handler-database-proxy",
         type: "handler",
-        async handle({ args }) {
-            const [event] = args;
+        async handle(context) {
+            const event = context.invocationArgs;
 
             try {
                 let { body } = event;
