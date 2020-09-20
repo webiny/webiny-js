@@ -17,6 +17,7 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/handler-client": "^4.12.1",
     "@webiny/handler-http": "^4.12.1",
+    "@webiny/handler-args": "^4.12.1",
     "@webiny/handler": "^4.12.1"
   },
   "devDependencies": {

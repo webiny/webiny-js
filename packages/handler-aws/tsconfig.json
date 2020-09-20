@@ -3,6 +3,7 @@
   "references": [
     { "path": "../handler" },
     { "path": "../handler-client" },
-    { "path": "../handler-http" }
+    { "path": "../handler-http" },
+    { "path": "../handler-args" },
   ]
 }
