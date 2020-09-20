@@ -1,24 +1,26 @@
-import flow from "lodash.flow";
 import { withStorage } from "@webiny/commodo/fields-storage";
+import { pipe } from "@webiny/commodo/pipe";
 import ssrCache from "./ssrCache.model";
 import { withId, DbProxyDriver } from "@webiny/commodo-fields-storage-db-proxy";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { HandlerContext, HandlerContextPlugin } from "@webiny/handler/types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 export default (options): HandlerContextPlugin => ({
-    type: "handler-context",
-    name: "handler-context-models",
-    apply({ context }) {
+    type: "context",
+    name: "context-models",
+    apply(context: HandlerContext & HandlerClientContext) {
         const createBase = () =>
-            flow(
+            pipe(
                 withId(),
                 withStorage({
                     driver: new DbProxyDriver({
-                        dbProxyFunction: process.env.DB_PROXY_FUNCTION
+                        dbProxyFunction: process.env.DB_PROXY_FUNCTION,
+                        context
                     })
                 })
             )();
 
-        const SsrCache = ssrCache({ createBase, options });
+        const SsrCache = ssrCache({ createBase, options, context });
         context.models = {
             SsrCache
         };

@@ -8,7 +8,7 @@ import { withName } from "@webiny/commodo/name";
 import { withHooks } from "@webiny/commodo/hooks";
 import { getSsrHtml } from "@webiny/handler-ssr/functions";
 
-export default ({ createBase, options = {} }: any = {}) =>
+export default ({ createBase, options = {}, context }: any = {}) =>
     flow(
         withName("SsrCache"),
         withFields({
@@ -106,7 +106,7 @@ export default ({ createBase, options = {} }: any = {}) =>
                 this.lastRefresh.duration = null;
                 await this.save();
 
-                this.content = await getSsrHtml(options.ssrFunction, { path: this.path });
+                this.content = await getSsrHtml(context, options.ssrFunction, { path: this.path });
                 this.refreshedOn = new Date();
                 this.lastRefresh.endedOn = this.refreshedOn;
                 this.lastRefresh.duration = this.lastRefresh.endedOn - this.lastRefresh.startedOn;

@@ -111,7 +111,7 @@ export default (options): HandlerPlugin => {
             }
 
             const path = http.path + "?" + qs.stringify(http.path.query);
-            const body = await getSsrHtml(options.ssrFunction, { path });
+            const body = await getSsrHtml(context, options.ssrFunction, { path });
 
             let buffer = Buffer.from(body);
             buffer = zlib.gzipSync(buffer);
