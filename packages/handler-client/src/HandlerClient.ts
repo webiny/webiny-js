@@ -13,7 +13,17 @@ class HandlerClient {
     }
 
     invoke(params: InvokeParams) {
-        return this.plugin.invoke(params);
+        try {
+            return this.plugin.invoke(params);
+        } catch (e) {
+            throw new Error(
+                `An error occurred while trying to invoke another handler with the following params: ${JSON.stringify(
+                    params,
+                    null,
+                    2
+                )}`
+            );
+        }
     }
 }
 
