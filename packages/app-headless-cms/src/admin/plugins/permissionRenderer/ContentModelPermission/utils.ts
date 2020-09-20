@@ -1,4 +1,3 @@
-import { css } from "emotion";
 import { AccessLevel } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
 
 export const PERMISSION_CMS_CONTENT_MODEL = "cms.manage.contentModel";
@@ -30,11 +29,6 @@ export const contentModelPermissionOptions = [
         label: "Only content models in a group"
     }
 ];
-
-export const flexClass = css({
-    display: "flex",
-    alignItems: "center"
-});
 
 export const actionTypes = {
     UPDATE_PERMISSION: "UPDATE_PERMISSION",

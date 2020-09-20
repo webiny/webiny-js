@@ -13,21 +13,14 @@ import {
     PermissionSelectorWrapper
 } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionSelector";
 import { PermissionAccessLevel } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
-import {
-    reducer,
-    actionTypes,
-    initialState,
-    contentModelPermissionOptions,
-    flexClass
-} from "../utils";
+import { reducer, actionTypes, initialState, contentModelPermissionOptions } from "../utils";
+import { flexClass } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/StyledComponents";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 export const ContentModelPermission = ({ value, setValue }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { permissionLevel, permission, showModelSelector, showGroupSelector, synced } = state;
-    // console.log("%cSTATE", "color: cyan; fontSize: 24px");
-    // console.log({ permissionLevel, permission, showModelSelector, showGroupSelector, synced });
 
     useEffect(() => {
         if (value && value.name && !synced) {
