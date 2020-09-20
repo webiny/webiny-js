@@ -24,9 +24,7 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
             }
 
 
-            // TODO: reading from context.args here, we should read abstract key.
             const { handler } = await createApolloHandlerPlugin.create({
-                args: context.args,
                 context,
                 options
             });
