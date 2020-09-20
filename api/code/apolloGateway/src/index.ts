@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import apolloGatewayHandler from "@webiny/handler-apollo-gateway";
 
 export const handler = createHandler(

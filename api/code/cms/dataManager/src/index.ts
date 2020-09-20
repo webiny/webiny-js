@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import dataManager from "@webiny/api-headless-cms/dataManager/handler";
 import mongodb from "@webiny/api-plugin-commodo-mongodb";
 import i18nServicePlugins from "@webiny/api-i18n/plugins/service";

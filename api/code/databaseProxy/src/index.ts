@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import databaseProxyHandler from "@webiny/api-plugin-commodo-db-proxy/handler";
 
 export const handler = createHandler(

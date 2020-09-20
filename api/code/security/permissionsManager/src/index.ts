@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import permissionsManagerPlugins from "@webiny/api-security-permissions-manager/handler";
 import userManagerPlugins from "@webiny/api-security-user-management/permissionsManager";

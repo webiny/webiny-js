@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import googleTagManagerPlugins from "@webiny/api-google-tag-manager";

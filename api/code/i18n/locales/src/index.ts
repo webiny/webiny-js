@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import locales from "@webiny/api-i18n/locales";
 import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 

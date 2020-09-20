@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import awsDocumentDbProxy from "@webiny/handler-aws-documentdb-proxy";
 
 export const handler = createHandler(
