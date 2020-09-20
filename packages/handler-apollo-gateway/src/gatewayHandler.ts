@@ -191,7 +191,7 @@ const plugins = (options: HandlerApolloGatewayOptions): HandlerPlugin => ({
     async handle(context: HandlerContext & HandlerHttpContext, next) {
         const event = context.invocationArgs;
 
-        if (!["post", "get", "options"].includes(context.http.method)) {
+        if (!["POST", "GET", "OPTIONS"].includes(context.http.method)) {
             return next();
         }
 

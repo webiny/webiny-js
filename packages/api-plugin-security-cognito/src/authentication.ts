@@ -47,7 +47,7 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
 
                 idToken = idToken.replace(/bearer\s/i, "");
 
-                if (isJwt(idToken) && httpMethod === "post") {
+                if (isJwt(idToken) && httpMethod === "POST") {
                     const jwks = await getJWKs();
                     const { header } = jwt.decode(idToken, { complete: true });
                     const jwk = jwks.find(key => key.kid === header.kid);
