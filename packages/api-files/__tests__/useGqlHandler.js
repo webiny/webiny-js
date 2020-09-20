@@ -1,12 +1,10 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-files/plugins";
 import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
-import securityAuthPlugins from "@webiny/api-security/plugins/auth";
-import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
-import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
+import securityPlugins from "@webiny/api-security/authenticator";
 
 export default ({ database } = {}) => {
     if (!database) {
@@ -17,24 +15,14 @@ export default ({ database } = {}) => {
     const handler = createHandler(
         neDb({ database }),
         apolloServerPlugins(),
-        securityAuthPlugins(),
-        securityAuthJwtPlugins({
-            secret: JWT_TOKEN_SIGN_SECRET
-        }),
+        securityPlugins(),
+        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
         filesPlugins(),
         filesResolvers()
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
-        // Set "full-access" JWT token into the "Authorization" header.
-        if (
-            typeof headers.Authorization === "undefined" &&
-            typeof headers.authorization === "undefined"
-        ) {
-            headers.Authorization = createJwtToken();
-        }
-
         const response = await handler({
             httpMethod,
             headers,
