@@ -28,3 +28,41 @@ export type FileData = {
         private: boolean;
     };
 };
+
+export type MappedFileData = Map<string, FileData>;
+
+export type PageData = {
+    id: string;
+    category: string;
+    title: string;
+    url: string;
+    content: {
+        id: string;
+        data: any;
+        settings: any;
+        elements: any[];
+        path: string;
+        type: string;
+    };
+    settings: {
+        general: {
+            tags: string[];
+            layout: string;
+            image: any;
+        };
+        seo: {
+            meta: any[];
+            title: string | null;
+            description: string | null;
+        };
+        social: {
+            meta: any[];
+            title: string | null;
+            description: string | null;
+            image: any;
+        };
+    };
+    version: number;
+    parent: string;
+    locked: boolean;
+};

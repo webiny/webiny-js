@@ -1,4 +1,3 @@
-import { flow } from "lodash";
 import { validation } from "@webiny/validation";
 import { withProps } from "@webiny/commodo";
 import mdbid from "mdbid";
@@ -15,7 +14,8 @@ import {
     ref,
     fields,
     withName,
-    withHooks
+    withHooks,
+    pipe
 } from "@webiny/commodo";
 
 export default ({ createBase, context, PbCategory, PbSettings }) => {
@@ -27,7 +27,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
         return fields;
     })();
 
-    const PbPage: any = flow(
+    const PbPage: any = pipe(
         withName("PbPage"),
         withFields(instance => ({
             category: ref({ instanceOf: PbCategory, validation: validation.create("required") }),
@@ -49,7 +49,7 @@ export default ({ createBase, context, PbCategory, PbSettings }) => {
             ),
             version: number(),
             parent: context.commodo.fields.id(),
-            published: flow(
+            published: pipe(
                 onSet(value => {
                     // Deactivate previously published revision
                     if (value && value !== instance.published && instance.isExisting()) {

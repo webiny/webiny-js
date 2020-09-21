@@ -13,6 +13,7 @@ import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
+import { Context } from "@webiny/api-settings-manager/types";
 
 const pageFetcher = ctx => ctx.models.PbPage;
 const elementFetcher = ctx => ctx.models.PbPageElement;
@@ -55,6 +56,23 @@ export default {
         type PbPageSettings {
             _empty: String
         }
+        
+        type PbElementPreviewMeta {
+            width: Number
+            height: Number
+            aspectRatio: Number
+            private: Boolean!
+        }
+        
+        type PbElementPreview {
+            id: String!
+            src: String!
+            fileName: String!
+            name: String!
+            size: Number!
+            type: String!
+            meta: PbElementPreviewMeta!
+        }
 
         type PbElement {
             id: ID
@@ -62,7 +80,7 @@ export default {
             type: String
             category: String
             content: JSON
-            preview: File
+            preview: PbElementPreview
         }
 
         input PbElementInput {
@@ -259,8 +277,34 @@ export default {
             }
         },
         PbElement: {
-            preview({ preview }) {
-                return preview ? { __typename: "File", id: preview } : null;
+            async preview({ preview }, _args: unknown, context: Context) {
+                if (!preview) {
+                    return null;
+                }
+                const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+                const response = {
+                    __typename: "PbElementPreview",
+                    id: preview.id,
+                    src: `${srcPrefix}${preview.__physicalFileName}`,
+                    fileName: preview.__physicalFileName,
+                    name: preview.name,
+                    size: preview.size,
+                    type: preview.type,
+                    meta: null
+                };
+                const { meta } = preview;
+                if (!meta) {
+                    return response;
+                }
+                return {
+                    ...response,
+                    meta: {
+                        width: meta.width,
+                        height: meta.height,
+                        aspectRatio: meta.aspectRatio,
+                        private: meta.private
+                    }
+                };
             }
         },
         PbQuery: {
