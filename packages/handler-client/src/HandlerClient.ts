@@ -1,5 +1,5 @@
 import { HandlerContext } from "@webiny/handler/types";
-import { HandlerClientPlugin, InvokeParams } from "./types";
+import { HandlerClientPlugin, InvokeArgs, InvokeResult } from "./types";
 
 class HandlerClient {
     plugin: HandlerClientPlugin;
@@ -12,7 +12,7 @@ class HandlerClient {
         }
     }
 
-    invoke(params: InvokeParams) {
+    invoke<T = InvokeResult>(params: InvokeArgs): Promise<T> {
         try {
             return this.plugin.invoke(params);
         } catch (e) {
