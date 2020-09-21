@@ -21,12 +21,13 @@ const extractFilenameOptions = event => {
     };
 };
 
-const getS3Object = async (event, s3) => {
+const getS3Object = async (event, s3, context) => {
     const { options, filename, extension } = extractFilenameOptions(event);
 
     for (let i = 0; i < loaders.length; i++) {
         const loader = loaders[i];
         const canProcess = loader.canProcess({
+            context,
             s3,
             options,
             file: {
@@ -37,6 +38,7 @@ const getS3Object = async (event, s3) => {
 
         if (canProcess) {
             return loader.process({
+                context,
                 s3,
                 options,
                 file: {
@@ -65,7 +67,7 @@ export default (): HandlerPlugin => ({
             const { region } = getEnvironment();
             const s3 = new S3({ region });
 
-            const { params, object } = await getS3Object(event, s3);
+            const { params, object } = await getS3Object(event, s3, context);
 
             if (object.ContentLength < MAX_RETURN_CONTENT_LENGTH) {
                 return {

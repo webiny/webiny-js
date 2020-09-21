@@ -1,40 +1,35 @@
 import sanitizeImageTransformations from "./sanitizeImageTransformations";
-import Lambda from "aws-sdk/clients/lambda";
-import { getObjectParams, getEnvironment } from "../../../utils";
+import { getObjectParams } from "../../../utils";
 import { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } from "../utils";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 // @ts-ignore
 const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION;
 
 interface TransformerParams {
+    context: HandlerContext & HandlerClientContext;
     key: string;
     transformations?: any;
 }
 
-const callImageTransformerLambda = async ({ key, transformations }: TransformerParams) => {
-    const env = getEnvironment();
-    const imageTransformerLambda = new Lambda({ region: env.region });
-    const response = await imageTransformerLambda
-        .invoke({
-            FunctionName: IMAGE_TRANSFORMER_FUNCTION,
-            Payload: JSON.stringify({
-                body: {
-                    key,
-                    transformations
-                }
-            })
-        })
-        .promise();
-
-    // @ts-ignore
-    return JSON.parse(response.Payload);
+const callImageTransformerLambda = async ({ key, transformations, context }: TransformerParams) => {
+    return await context.handlerClient.invoke({
+        name: IMAGE_TRANSFORMER_FUNCTION,
+        payload: {
+            body: {
+                key,
+                transformations
+            }
+        }
+    });
 };
 
 export default {
     canProcess: opts => {
         return SUPPORTED_IMAGES.includes(opts.file.extension);
     },
-    async process({ s3, file, options }) {
+    async process({ s3, file, options, context }) {
         // Loaders must return {object, params} object.
         let objectParams;
 
@@ -50,7 +45,8 @@ export default {
             } catch (e) {
                 const imageTransformerLambdaResponse = await callImageTransformerLambda({
                     key: file.name,
-                    transformations
+                    transformations,
+                    context
                 });
 
                 if (imageTransformerLambdaResponse.error) {
@@ -72,7 +68,8 @@ export default {
             };
         } catch (e) {
             const imageTransformerLambdaResponse = await callImageTransformerLambda({
-                key: file.name
+                key: file.name,
+                context
             });
 
             if (imageTransformerLambdaResponse.error) {
