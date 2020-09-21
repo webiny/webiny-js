@@ -1,8 +1,9 @@
-import { Plugin, PluginsContainer } from "@webiny/graphql/types";
+import { Plugin } from "@webiny/graphql/types";
+import { HandlerContext } from "@webiny/handler/types";
 
 export type HandlerApolloGatewayHeadersPlugin = Plugin & {
     type: "handler-apollo-gateway-headers";
-    buildHeaders(params: { headers: { [key: string]: string }; plugins: PluginsContainer }): void;
+    buildHeaders(params: { headers: { [key: string]: string }; context: HandlerContext }): void;
 };
 
 export interface HandlerApolloGatewayOptions {

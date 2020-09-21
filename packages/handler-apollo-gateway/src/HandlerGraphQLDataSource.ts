@@ -1,8 +1,6 @@
-import Lambda from "aws-sdk/clients/lambda";
 import { GraphQLRequestContext, GraphQLResponse, ValueOrPromise } from "apollo-server-types";
 import { Headers } from "apollo-server-env";
-
-const lambda = new Lambda({});
+import HandlerClient from "@webiny/handler-client/HandlerClient";
 
 export interface GraphQLDataSource {
     process<TContext>(
@@ -27,21 +25,23 @@ const headersToObject = headers => {
     return obj;
 };
 
-export class LambdaGraphQLDataSource implements GraphQLDataSource {
-    constructor(
-        config?: Partial<LambdaGraphQLDataSource> & object & ThisType<LambdaGraphQLDataSource>
-    ) {
-        if (config) {
-            return Object.assign(this, config);
-        }
-    }
+type Config = Partial<HandlerGraphQLDataSource> & { [key: string]: any } & ThisType<
+        HandlerGraphQLDataSource
+    >;
 
+export class HandlerGraphQLDataSource implements GraphQLDataSource {
+    functionName: string;
+    path = "/graphql";
+    handlerClient: HandlerClient;
     willSendRequest: (
         requestContext: Pick<GraphQLRequestContext<any>, "request" | "context">
     ) => ValueOrPromise<void>;
 
-    functionName: string;
-    path = "/graphql";
+    constructor(config: Config) {
+        if (config) {
+            return Object.assign(this, config);
+        }
+    }
 
     async process<TContext>({
         request,
@@ -67,14 +67,11 @@ export class LambdaGraphQLDataSource implements GraphQLDataSource {
             isBase64Encoded: true
         };
 
-        const { Payload } = await lambda
-            .invoke({
-                FunctionName: this.functionName,
-                Payload: JSON.stringify(event)
-            })
-            .promise();
+        const response = await this.handlerClient.invoke<ApolloServerResponse>({
+            name: this.functionName,
+            payload: event
+        });
 
-        const response: ApolloServerResponse = JSON.parse(Payload as string);
         const body = JSON.parse(response.body);
 
         if (body.error) {

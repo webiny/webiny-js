@@ -2,8 +2,9 @@ import { ApolloGateway } from "@apollo/gateway";
 import { GraphQLRequestContext } from "apollo-server-types";
 import { boolean } from "boolean";
 import { ApolloServer } from "apollo-server-lambda";
-import { HandlerArgs, HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 import get from "lodash.get";
 import {
@@ -11,7 +12,7 @@ import {
     HandlerApolloGatewayOptions,
     HandlerApolloGatewayServicePlugin
 } from "./types";
-import buildHeaders from "./buildHeaders";
+import buildHeaders from "./utils/buildHeaders";
 import { DataSource } from "./DataSource";
 
 function normalizeEvent(event) {
@@ -57,31 +58,22 @@ class ApolloGatewayError extends Error {
     }
 }
 
-type GetHandlerOptions = {
-    options: HandlerApolloGatewayOptions;
-    args: HandlerArgs;
-    context: HandlerContext;
-};
-
 let cache = null;
 
-const createHeaders = (event, context: HandlerContext) => {
-    const headers = buildHeaders(event);
-    headers["x-webiny-apollo-gateway-url"] = [
-        "https://",
-        event.requestContext.domainName,
-        event.requestContext.path
-    ].join("");
+type Context = HandlerContext & HandlerHttpContext & HandlerClientContext;
+
+const createHeaders = (context: Context) => {
+    const headers = buildHeaders(context.http);
 
     const headerPlugins = context.plugins.byType<HandlerApolloGatewayHeadersPlugin>(
         "handler-apollo-gateway-headers"
     );
-    headerPlugins.forEach(pl => pl.buildHeaders({ headers, plugins: context.plugins }));
+    headerPlugins.forEach(pl => pl.buildHeaders({ headers, context }));
 
     return headers;
 };
 
-const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
+const getHandler = async (context: Context, options) => {
     if (cache) {
         return cache;
     }
@@ -106,13 +98,14 @@ const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
         serviceList: services,
         buildService({ name }) {
             return new DataSource({
+                handlerClient: context.handlerClient,
                 functionName: services.find(s => s.name === name).function,
                 willSendRequest(params: Pick<GraphQLRequestContext, "request" | "context">) {
                     let headers = params.context.headers;
 
                     // If cold-start, `context.headers` will not be available.
                     if (!headers) {
-                        headers = createHeaders(args[0], context);
+                        headers = createHeaders(context);
                     }
 
                     Object.keys(headers).forEach(key => {
@@ -147,9 +140,7 @@ const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
             ...server,
             schema,
             executor,
-            context: async ({ event }) => {
-                return { headers: createHeaders(event, context) };
-            }
+            context: async () => ({ headers: createHeaders(context) })
         });
 
         const apolloHandler = apollo.createHandler({
@@ -188,17 +179,15 @@ const getHandler = async ({ args, options, context }: GetHandlerOptions) => {
 const plugins = (options: HandlerApolloGatewayOptions): HandlerPlugin => ({
     name: "handler-apollo-gateway",
     type: "handler",
-    async handle(context: HandlerContext & HandlerHttpContext, next) {
-        const event = context.invocationArgs;
-
+    async handle(context: Context, next) {
         if (!["POST", "GET", "OPTIONS"].includes(context.http.method)) {
             return next();
         }
 
-        // TODO: reading from context.args here, we should read abstract key.
-        const handler = await getHandler({ options, args: context.args, context });
+        const handler = await getHandler(context, options);
 
-        return await handler(event, {});
+        // TODO: replace with context.http
+        return await handler(context.invocationArgs, {});
     }
 });
 

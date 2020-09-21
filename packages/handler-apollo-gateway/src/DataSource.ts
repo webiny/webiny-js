@@ -1,7 +1,7 @@
-import { LambdaGraphQLDataSource } from "./LambdaGraphQLDataSource";
+import { HandlerGraphQLDataSource } from "./HandlerGraphQLDataSource";
 import { GraphQLRequestContext, GraphQLResponse } from "apollo-server-types";
 
-export class DataSource extends LambdaGraphQLDataSource {
+export class DataSource extends HandlerGraphQLDataSource {
     constructor({ onServiceError, ...config }: Partial<DataSource>) {
         super(config);
         this.onServiceError = onServiceError;
