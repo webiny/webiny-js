@@ -37,7 +37,7 @@ export type HandlerPlugin<
     C9 = HandlerContext
 > = Plugin & {
     type: "handler";
-    handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): Promise<any>;
+    handle(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9, next: Function): any;
 };
 
 export type HandlerErrorPlugin<
