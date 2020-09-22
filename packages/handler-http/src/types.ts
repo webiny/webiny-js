@@ -1,4 +1,10 @@
-export type HttpRequestObject = {
+type ResponseArgs = {
+    statusCode: number;
+    headers?: {};
+    body: string;
+};
+
+export type HandlerHttpContextObject = {
     method: "POST" | "GET" | "DELETE" | "OPTIONS";
     body: string;
     headers: { [key: string]: any };
@@ -8,8 +14,9 @@ export type HttpRequestObject = {
         parameters: { [key: string]: any };
         query: { [key: string]: any };
     };
+    response: (args: ResponseArgs) => { [key: string]: any };
 };
 
 export type HandlerHttpContext = {
-    http: HttpRequestObject;
+    http: HandlerHttpContextObject;
 };
