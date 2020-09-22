@@ -5,7 +5,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -13,7 +13,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -21,7 +21,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -29,7 +29,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.12.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.0...v4.12.0-beta.1) (2020-09-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -37,7 +37,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -45,7 +45,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -53,7 +53,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.11.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.0...v4.11.0-beta.1) (2020-09-09)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -61,7 +61,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.11.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.10.0...v4.11.0-beta.0) (2020-09-09)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -69,7 +69,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -77,7 +77,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -85,7 +85,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -93,7 +93,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.8.0...v4.9.0-beta.0) (2020-08-18)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -101,7 +101,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -109,7 +109,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.1...v4.8.0-beta.2) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -117,7 +117,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.0...v4.8.0-beta.1) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -125,7 +125,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.7.0...v4.8.0-beta.0) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -133,7 +133,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -141,7 +141,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -149,7 +149,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.6.0...v4.7.0-beta.0) (2020-07-28)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -157,7 +157,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -165,7 +165,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -173,7 +173,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -181,7 +181,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -189,7 +189,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.0...v4.5.1-beta.0) (2020-07-18)
 
-**Note:** Version bump only for package @webiny/handler-index
+
+### Bug Fixes
+
+* lock "apollo-server-lambda" version ([f6f57e4](https://github.com/webiny/webiny-js/commit/f6f57e4c91dada71d6feb3ed7e5d11e267c2182d))
 
 
 
@@ -197,7 +200,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -205,7 +208,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -213,7 +216,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -221,7 +224,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -229,7 +232,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.0...v4.5.0-beta.1) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -237,7 +240,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.4.0...v4.5.0-beta.0) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -245,7 +248,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -253,7 +256,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -261,7 +264,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -269,7 +272,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -277,7 +280,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.3.0...v4.4.0-beta.0) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -285,7 +288,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -293,7 +296,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -301,7 +304,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -309,7 +312,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -317,7 +320,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -325,7 +328,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -333,7 +336,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.2.0...v4.3.0-beta.0) (2020-06-30)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -341,7 +344,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -349,7 +352,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -357,7 +360,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.0...v4.2.0-beta.1) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -365,7 +368,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.1.1-beta.2...v4.2.0-beta.0) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -373,7 +376,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.1.1-beta.2](https://github.com/webiny/webiny-js/compare/v4.1.1-beta.1...v4.1.1-beta.2) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -392,7 +395,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.1.1-beta.0 (2020-06-22)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -400,7 +403,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -419,7 +422,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.2 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -427,7 +430,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.1 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -446,7 +449,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -454,7 +457,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.3-beta.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -462,7 +465,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.2 (2020-06-05)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -470,7 +473,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.1 (2020-06-04)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -478,7 +481,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.19...v4.0.0) (2020-06-04)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -508,7 +511,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.17 (2020-06-04)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -549,7 +552,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.13 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -557,7 +560,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.12 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -576,7 +579,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.10 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -584,7 +587,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.9 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -603,7 +606,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.7 (2020-06-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -611,7 +614,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0-beta.6](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2020-06-01)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -619,7 +622,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.4...v4.0.0-beta.5) (2020-05-31)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
+
+
+
+
+
+# [4.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.3...v4.0.0-beta.4) (2020-05-29)
+
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -627,7 +638,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
-**Note:** Version bump only for package @webiny/handler-index
+**Note:** Version bump only for package @webiny/handler-graphql-playground
 
 
 
@@ -638,4 +649,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
+* disable apollo server uploads ([24b837e](https://github.com/webiny/webiny-js/commit/24b837eaf5ed08f26f2486952337eaac4f938703))
 * remove http prefix from handler packages ([1f80774](https://github.com/webiny/webiny-js/commit/1f8077412e0a7fb39f8e577e6217e7049e707f75))
+* remove isColdStart flag ([90d90d3](https://github.com/webiny/webiny-js/commit/90d90d37c3c0a99f6b50f9b5e2ab819317797b8c))
