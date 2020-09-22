@@ -1,16 +1,14 @@
-import { ErrorHandlerPlugin } from "@webiny/handler/types";
-import { createResponse } from "@webiny/handler";
+import { boolean } from "boolean";
+import { HandlerErrorPlugin } from "@webiny/handler/types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HandlerArgsContext } from "@webiny/handler-args/types";
 
-const plugin = (): ErrorHandlerPlugin => ({
+const plugin = (): HandlerErrorPlugin<HandlerHttpContext, HandlerArgsContext> => ({
     name: "handler-apollo-gateway-error",
-    type: "error-handler",
-    async handle({ args, error }) {
-        const [event, context] = args;
-        // eslint-disable-next-line
-        const { identity, ...requestContext } = event.requestContext;
-
+    type: "handler-error",
+    async handle(context, error) {
+        // Previously we had the "requestContext" here, but it's already present in the context, so it was removed.
         const report = {
-            requestContext,
             context,
             errors: []
         };
@@ -21,11 +19,13 @@ const plugin = (): ErrorHandlerPlugin => ({
             report.errors.push({ name: error.constructor.name, message: error.message });
         }
 
-        if (process.env.DEBUG === "true") {
-            return createResponse({
+        if (boolean(process.env.DEBUG)) {
+            return context.http.response({
                 statusCode: 500,
-                type: "application/json",
-                body: JSON.stringify(report, null, 2)
+                body: JSON.stringify(report, null, 2),
+                headers: {
+                    "Content-Type": "application/json"
+                }
             });
         }
 
