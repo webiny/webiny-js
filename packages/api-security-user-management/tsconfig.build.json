@@ -5,6 +5,8 @@
     "node_modules",
     "dist",
     "../handler",
+    "../handler-client",
+    "../handler-http",
     "../graphql",
     "../api-security"
   ],
@@ -18,6 +20,8 @@
     { "path": "../commodo/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" }
   ]
 }

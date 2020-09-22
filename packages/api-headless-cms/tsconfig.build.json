@@ -12,6 +12,8 @@
     "../commodo-graphql",
     "../handler",
     "../handler-apollo-server",
+    "../handler-client",
+    "../handler-http",
     "../validation",
     "./jest.config.js"
   ],
@@ -29,6 +31,8 @@
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-apollo-server/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

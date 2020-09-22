@@ -32,7 +32,8 @@
     "ignore": {
       "dependencies": [
         "@pulumi/pulumi",
-        "@pulumi/aws"
+        "@pulumi/aws",
+        "@pulumi/awsx"
       ]
     }
   },

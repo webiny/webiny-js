@@ -11,6 +11,8 @@
     { "path": "../commodo-graphql" },
     { "path": "../handler" },
     { "path": "../handler-apollo-server" },
+    { "path": "../handler-client" },
+    { "path": "../handler-http" },
     { "path": "../validation" }
   ]
 }

@@ -27,6 +27,8 @@
     "@types/mongodb": "^3.5.16",
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler": "^4.12.1",
+    "@webiny/handler-aws": "^4.12.1",
+    "@webiny/handler-client": "^4.12.1",
     "@webiny/handler-args": "^4.12.1"
   },
   "publishConfig": {

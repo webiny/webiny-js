@@ -22,6 +22,8 @@
     "@webiny/commodo-graphql": "^4.12.1",
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler": "^4.12.1",
+    "@webiny/handler-http": "^4.12.1",
+    "@webiny/handler-client": "^4.12.1",
     "@webiny/handler-apollo-server": "^4.12.1",
     "@webiny/validation": "^4.12.1",
     "apollo-server-lambda": "2.15.1",

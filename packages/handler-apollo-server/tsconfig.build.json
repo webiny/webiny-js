@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../handler", "../graphql"],
+  "exclude": ["node_modules", "./dist", "../handler", "../handler-http" ,"../graphql"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,6 +9,7 @@
   },
   "references": [
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" },
     { "path": "../graphql/tsconfig.build.json" }
   ]
 }

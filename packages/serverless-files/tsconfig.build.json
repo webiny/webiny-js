@@ -5,6 +5,7 @@
     "node_modules",
     "./dist",
     "../handler",
+    "../handler-client",
     "../validation"
   ],
   "compilerOptions": {
@@ -14,6 +15,7 @@
   },
   "references": [
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }
