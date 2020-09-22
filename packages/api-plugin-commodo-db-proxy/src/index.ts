@@ -1,6 +1,6 @@
 import { DbProxyDriver, id, isId, withId } from "@webiny/commodo-fields-storage-db-proxy";
 import { ContextPlugin } from "@webiny/graphql/types";
-import { HandlerClientContext } from "@webiny/handler-client";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 import { HandlerContext } from "@webiny/handler/types";
 
 interface DbProxyOptions {
