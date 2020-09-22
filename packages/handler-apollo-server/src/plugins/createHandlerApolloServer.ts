@@ -1,4 +1,3 @@
-import { createResponse } from "@webiny/handler";
 import { HandlerPlugin, HandlerContext } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { CreateApolloHandlerPlugin, HandlerApolloServerOptions } from "../types";
@@ -22,7 +21,6 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
             if (!createApolloHandlerPlugin) {
                 throw Error(`"handler-apollo-server-create-handler" plugin is not configured!`);
             }
-
 
             const { handler } = await createApolloHandlerPlugin.create({
                 context,
@@ -50,12 +48,12 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
             );
 
             if (boolean(options.debug)) {
-                return createResponse({
+                return context.http.response({
                     statusCode: 500,
-                    type: "text/json",
                     body: JSON.stringify(report, null, 2),
                     headers: {
-                        "Cache-Control": "no-store"
+                        "Cache-Control": "no-store",
+                        "Content-Type": "text/json"
                     }
                 });
             }
