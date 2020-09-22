@@ -1,5 +1,6 @@
 import { applyContextPlugins } from "@webiny/graphql";
 import models from "../plugins/models";
+import { HandlerPlugin } from "@webiny/handler/types";
 
 export default () => [
     {
@@ -18,5 +19,5 @@ export default () => [
                 createdOn: locale.createdOn
             }));
         }
-    }
+    } as HandlerPlugin
 ];
