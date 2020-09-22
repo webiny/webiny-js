@@ -1,6 +1,5 @@
 import { PluginsContainer } from "@webiny/plugins";
-import createResponse from "./createResponse";
-import { HandlerContextPlugin, HandlerPlugin, ErrorHandlerPlugin } from "./types";
+import { HandlerContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
@@ -21,30 +20,13 @@ export default (...plugins) => async (...args) => {
         const handler = middleware(handlers.map(pl => pl.handle));
         const result = await handler(context);
         if (!result) {
-            throw Error(`Handlers did not produce a result!`);
+            throw Error(`No result was returned from registered handlers.`);
         }
 
         return result;
     } catch (error) {
-        const handlers = context.plugins.byType<ErrorHandlerPlugin>("error-handler");
+        const handlers = context.plugins.byType<HandlerErrorPlugin>("handler-error");
         const handler = middleware(handlers.map(pl => pl.handle));
-        const result = await handler({ args, context, error });
-
-        if (result) {
-            return result;
-        }
-
-        return createResponse({
-            statusCode: 500,
-            type: "application/json",
-            body: JSON.stringify({
-                error: {
-                    name: error.constructor.name,
-                    message: error.message,
-                    stack: error.stack
-                }
-            }),
-            headers: { "Cache-Control": "no-store" }
-        });
+        return handler(context, error);
     }
 };
