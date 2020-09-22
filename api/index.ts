@@ -11,6 +11,7 @@ import FileManager from "./stack/fileManager";
 import PageBuilder from "./stack/pageBuilder";
 import FormBuilder from "./stack/formBuilder";
 import HeadlessCms from "./stack/headlessCms";
+import GraphQLPlayground from "./stack/graphqlPlayground";
 
 const cognito = new Cognito();
 const defaultLambdaRole = new DefaultLambdaRole();
@@ -91,12 +92,24 @@ const apolloGateway = new ApolloGateway({
     }
 });
 
+const graphqlPlayground = new GraphQLPlayground({ role: defaultLambdaRole.role });
+
 const apiGateway = new ApiGateway({
     routes: [
         {
             path: "/graphql",
-            method: "ANY",
+            method: "POST",
             eventHandler: apolloGateway.functions.gateway
+        },
+        {
+            path: "/graphql",
+            method: "OPTIONS",
+            eventHandler: apolloGateway.functions.gateway
+        },
+        {
+            path: "/graphql",
+            method: "GET",
+            eventHandler: graphqlPlayground.function
         },
         {
             path: "/files/{path}",

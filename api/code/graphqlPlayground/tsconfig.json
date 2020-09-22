@@ -2,6 +2,7 @@
   "extends": "../../tsconfig",
   "references": [
     { "path": "../../packages/handler" },
-    { "path": "../../packages/handler-apollo-gateway" }
+    { "path": "../../packages/handler-aws" },
+    { "path": "../../packages/handler-graphql-playground" }
   ]
 }
