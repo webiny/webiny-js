@@ -1,7 +1,7 @@
 import { ApolloGateway } from "@apollo/gateway";
 import { GraphQLRequestContext } from "apollo-server-types";
 import { boolean } from "boolean";
-import { ApolloServerBase as ApolloServer, createPlaygroundOptions } from "apollo-server-core";
+import { ApolloServerBase as ApolloServer } from "apollo-server-core";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
@@ -9,10 +9,6 @@ import buildHeaders from "./buildHeaders";
 import { DataSource } from "./../DataSource";
 import get from "lodash.get";
 import { HandlerApolloGatewayHeadersPlugin, HandlerApolloGatewayServicePlugin } from "./../types";
-import {
-    renderPlaygroundPage,
-    RenderPageOptions as PlaygroundRenderPageOptions
-} from "@apollographql/graphql-playground-html";
 
 function getError(error) {
     let err = get(error, "extensions.response");
@@ -137,33 +133,6 @@ export default async (context: Context, options) => {
         cache = async function(context) {
             const { http } = context;
 
-            if (http.method === "GET") {
-                const acceptHeader = http.headers["Accept"] || http.headers["accept"];
-                if (acceptHeader && acceptHeader.includes("text/html")) {
-                    const path = http.path.base || "/";
-
-                    console.log("http.path.base", http.path.base);
-
-                    const playgroundOptions = createPlaygroundOptions(true);
-
-                    const playgroundRenderPageOptions: PlaygroundRenderPageOptions = {
-                        endpoint: path,
-                        ...playgroundOptions
-                    };
-
-                    return http.response({
-                        body: renderPlaygroundPage(playgroundRenderPageOptions),
-                        statusCode: 200,
-                        headers: {
-                            "Content-Type": "text/html",
-                            "Access-Control-Allow-Origin": "*"
-                        }
-                    });
-                }
-            }
-
-            console.log("idemo executati sa", http);
-
             const result = await apollo.executeOperation(JSON.parse(http.body));
             if (result.errors) {
                 throw new ApolloGatewayError(result.errors);
@@ -175,7 +144,7 @@ export default async (context: Context, options) => {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Origin": "*"
                 },
-                body: JSON.stringify(result.data)
+                body: JSON.stringify({ data: result.data })
             });
         };
     } catch (e) {
