@@ -1,4 +1,9 @@
-const OG_IMAGE_DIMENSIONS_PROPERTIES = ["image:width", "image:height"];
+enum OG_IMAGE {
+    WIDTH = "og:image:width",
+    HEIGHT = "og:image:height"
+}
+
+const OG_IMAGE_DIMENSIONS_PROPERTIES = [OG_IMAGE.WIDTH, OG_IMAGE.HEIGHT];
 
 export default async ({ form, value }) => {
     if (!value || value.src.startsWith("data:")) {
@@ -35,11 +40,11 @@ export default async ({ form, value }) => {
 
         next.data.settings.social.meta.push(
             {
-                property: "og:image:width",
+                property: OG_IMAGE.WIDTH,
                 content: String(image.width)
             },
             {
-                property: "og:image:height",
+                property: OG_IMAGE.HEIGHT,
                 content: String(image.height)
             }
         );
