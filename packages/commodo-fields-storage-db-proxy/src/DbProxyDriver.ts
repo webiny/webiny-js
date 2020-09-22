@@ -34,7 +34,6 @@ class DbProxyClient {
             throw new Error(`${data.error.name}: ${data.error.message}`);
         }
 
-        console.log('ovo govno', data)
         if (!data.response) {
             throw new Error(`Missing "response" key in received DB Proxy's response.`);
         }
