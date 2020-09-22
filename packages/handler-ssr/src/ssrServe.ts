@@ -1,5 +1,4 @@
 import qs from "querystringify";
-import { createResponse } from "@webiny/handler";
 import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
 import mime from "mime-types";
 import { getSsrHtml } from "./functions";
@@ -7,13 +6,13 @@ import zlib from "zlib";
 import { HandlerClientContext } from "@webiny/handler-client/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 
-const createSsrResponse = props => {
-    return createResponse({
-        type: "text/html",
+const createSsrResponse = (props, http) => {
+    return http.response({
         isBase64Encoded: true,
         headers: {
             "Cache-Control": "no-store",
-            "Content-Encoding": "gzip"
+            "Content-Encoding": "gzip",
+            "Content-Type": "text/html"
         },
         ...props
     });
@@ -53,7 +52,7 @@ export default (options): HandlerPlugin => {
                     buffer = zlib.gzipSync(buffer);
                     return createSsrResponse({
                         body: buffer.toString("base64")
-                    });
+                    }, http);
                 }
 
                 if (ssrCache.isEmpty) {
@@ -95,7 +94,7 @@ export default (options): HandlerPlugin => {
                         "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
                         "Content-Encoding": "gzip"
                     }
-                });
+                }, http);
             }
         };
     }
@@ -118,7 +117,7 @@ export default (options): HandlerPlugin => {
 
             return createSsrResponse({
                 body: buffer.toString("base64")
-            });
+            }, http);
         }
     };
 };
