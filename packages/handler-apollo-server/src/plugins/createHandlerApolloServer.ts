@@ -36,9 +36,8 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
                 });
 
                 // Will return the complete response, including "statusCode", "headers", and "body" fields.
-                return await handler(JSON.parse(http.body), context);
+                return handler(JSON.parse(http.body), context);
             } catch (e) {
-                console.log("eeee", e);
                 const report = {
                     error: {
                         name: e.constructor.name,
