@@ -12,13 +12,36 @@ const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 type AccessLevelType = AccessLevel;
 
+export type AccessLevelOperationType = "list" | "update" | "delete" | "publish";
+
 export enum AccessLevel {
-    ReadOnly = "readOnly",
-    ReadWrite = "readWrite",
-    ReadWriteDelete = "readWriteDelete",
-    ReadWritePublish = "readWritePublish",
-    ReadWriteDeletePublish = "readWriteDeletePublish"
+    ReadOnly = "list",
+    ReadWrite = "list|update",
+    ReadWriteDelete = "list|update|delete",
+    ReadWritePublish = "list|update|publish",
+    ReadWriteDeletePublish = "list|update|delete|publish"
 }
+
+export const accessLevelOperations: AccessLevelOperationType[] = [
+    "list",
+    "update",
+    "delete",
+    "publish"
+];
+
+export const orderAccessLevel = list => {
+    return list.sort(accessLevelSorter);
+};
+
+const accessLevelSorter = (a, b) => {
+    if (accessLevelOperations.indexOf(a) > accessLevelOperations.indexOf(b)) {
+        return 1;
+    } else if (accessLevelOperations.indexOf(a) < accessLevelOperations.indexOf(b)) {
+        return -1;
+    } else {
+        return 0;
+    }
+};
 
 const accessLevelOptions = [
     {
