@@ -68,13 +68,20 @@ export default [
                     image: PbSocialSettingsImage
                 }
 
+                input PBSocialSettingsImageMetaInput {
+                    width: Number
+                    height: Number
+                    aspectRatio: Number
+                    private: Boolean
+                }
+
                 input PbSocialSettingsImageInput {
                     id: ID!
                     name: String!
-                    key: String!
                     size: Number!
                     type: String!
                     src: String!
+                    meta: PBSocialSettingsImageMetaInput
                 }
 
                 input PbSocialSettingsInput {

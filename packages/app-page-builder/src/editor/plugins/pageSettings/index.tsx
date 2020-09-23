@@ -19,6 +19,15 @@ const plugins: PbEditorPageSettingsPlugin[] = [
                 image {
                     id
                     src
+                    name
+                    type
+                    size
+                    meta {
+                        width
+                        height
+                        aspectRatio
+                        private
+                    }
                 }
                 tags
                 layout
@@ -59,6 +68,15 @@ const plugins: PbEditorPageSettingsPlugin[] = [
                 image {
                     id
                     src
+                    name
+                    type
+                    size
+                    meta {
+                        width
+                        height
+                        aspectRatio
+                        private
+                    }
                 }
                 title
                 description

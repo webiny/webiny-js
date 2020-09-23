@@ -49,13 +49,20 @@ export default [
                     image: PbGeneralSettingsImage
                 }
 
+                input PbGeneralSettingsImageMetaInput {
+                    width: Number
+                    height: Number
+                    aspectRatio: Number
+                    private: Boolean
+                }
+
                 input PbGeneralSettingsImageInput {
                     id: ID!
                     name: String!
-                    key: String!
                     size: Number!
-                    type: String!
                     src: String!
+                    type: String!
+                    meta: PbGeneralSettingsImageMetaInput
                 }
 
                 input PbGeneralPageSettingsInput {
