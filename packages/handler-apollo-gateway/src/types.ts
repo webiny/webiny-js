@@ -8,12 +8,6 @@ export type HandlerApolloGatewayHeadersPlugin = Plugin & {
 
 export interface HandlerApolloGatewayOptions {
     debug?: boolean | string;
-    server?: {
-        introspection?: boolean | string;
-    };
-    handler?: {
-        cors?: { [key: string]: any };
-    };
     services: ApolloGatewayServiceDefinition[];
 }
 

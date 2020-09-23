@@ -2,7 +2,12 @@ import { HandlerPlugin, HandlerContext } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { CreateApolloHandlerPlugin, HandlerApolloServerOptions } from "../types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
-import buildCorsHeaders from "./../buildCorsHeaders";
+
+const DEFAULT_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+};
 
 export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
     type: "handler",
@@ -16,7 +21,7 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
         if (http.method === "OPTIONS") {
             return http.response({
                 statusCode: 204,
-                headers: buildCorsHeaders()
+                headers: DEFAULT_HEADERS
             });
         }
 
@@ -35,8 +40,14 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
                     options
                 });
 
-                // Will return the complete response, including "statusCode", "headers", and "body" fields.
-                return handler(JSON.parse(http.body), context);
+                const query = JSON.parse(http.body);
+                const { graphqlResponse } = await handler(query, context);
+
+                return http.response({
+                    body: graphqlResponse,
+                    statusCode: 200,
+                    headers: DEFAULT_HEADERS
+                });
             } catch (e) {
                 const report = {
                     error: {
@@ -56,6 +67,7 @@ export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
                         statusCode: 500,
                         body: JSON.stringify(report, null, 2),
                         headers: {
+                            ...DEFAULT_HEADERS,
                             "Cache-Control": "no-store",
                             "Content-Type": "text/json"
                         }

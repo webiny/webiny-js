@@ -4,43 +4,16 @@ import { boolean } from "boolean";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
-import buildHeaders from "./buildHeaders";
+import createHeaders from "./createHeaders";
 import { DataSource } from "./../DataSource";
-import get from "lodash.get";
-import { HandlerApolloGatewayHeadersPlugin, HandlerApolloGatewayServicePlugin } from "./../types";
+import { HandlerApolloGatewayServicePlugin } from "./../types";
 import { runHttpQuery } from "apollo-server-core/dist/runHttpQuery";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
 import { Headers } from "apollo-server-env";
-import buildCorsHeaders from "./buildCorsHeaders";
-
-function getError(error) {
-    let err = get(error, "extensions.response");
-    if (err) {
-        const body = JSON.parse(err.body);
-        return {
-            error: body.error.message,
-            stack: err.stack
-        };
-    }
-
-    err = get(error, "extensions.exception");
-    if (err) {
-        return {
-            error: error.message,
-            stack: err.stacktrace
-        };
-    }
-
-    if (error.error) {
-        return { error: error.error };
-    }
-
-    return { error };
-}
+import getError from "./getError";
 
 class ApolloGatewayError extends Error {
     errors: any[];
-
     constructor(errors) {
         super("");
         this.errors = errors;
@@ -50,17 +23,6 @@ class ApolloGatewayError extends Error {
 let cache = null;
 
 type Context = HandlerContext & HandlerHttpContext & HandlerClientContext;
-
-const createHeaders = (context: Context) => {
-    const headers = buildHeaders(context.http);
-
-    const headerPlugins = context.plugins.byType<HandlerApolloGatewayHeadersPlugin>(
-        "handler-apollo-gateway-headers"
-    );
-    headerPlugins.forEach(pl => pl.buildHeaders({ headers, context }));
-
-    return headers;
-};
 
 export default async (context: Context, options) => {
     if (cache) {
@@ -115,42 +77,22 @@ export default async (context: Context, options) => {
         throw new ApolloGatewayError(dataSourceErrors);
     }
 
-    try {
-        const { schema, executor } = await gateway.load();
-        const schemaHash = generateSchemaHash(schema);
+    const { schema, executor } = await gateway.load();
+    const schemaHash = generateSchemaHash(schema);
 
-        // Create handler.
-        cache = async function(context) {
-            const { http } = context;
-
-            try {
-                const { graphqlResponse } = await runHttpQuery([], {
-                    method: "POST",
-                    query: JSON.parse(http.body),
-                    options: { schema, schemaHash, context, executor },
-                    request: {
-                        url: "/graphql",
-                        method: "POST",
-                        headers: new Headers(http.headers)
-                    }
-                });
-
-                return http.response({
-                    body: graphqlResponse,
-                    headers: buildCorsHeaders({
-                        "Content-Type": "application/json"
-                    })
-                });
-            } catch (e) {
-                throw new ApolloGatewayError(e);
+    // Create handler.
+    cache = function(query, context) {
+        return runHttpQuery([], {
+            method: "POST",
+            query,
+            options: { schema, schemaHash, context, executor },
+            request: {
+                url: "/graphql",
+                method: "POST",
+                headers: new Headers(context.http.headers)
             }
-        };
-    } catch (e) {
-        if (dataSourceErrors.length > 0) {
-            throw new ApolloGatewayError(dataSourceErrors);
-        }
-        throw e;
-    }
+        });
+    };
 
     return cache;
 };
