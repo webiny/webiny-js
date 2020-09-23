@@ -60,16 +60,15 @@ export class HandlerGraphQLDataSource implements GraphQLDataSource {
             await this.willSendRequest({ request, context });
         }
 
-        const event = {
+        const payload = {
             headers: headersToObject(request.http.headers),
-            body: Buffer.from(JSON.stringify(request)).toString("base64"),
+            body: JSON.stringify(request),
             httpMethod: request.http.method,
-            isBase64Encoded: true
         };
 
         const response = await this.handlerClient.invoke<ApolloServerResponse>({
             name: this.functionName,
-            payload: event
+            payload
         });
 
         const body = JSON.parse(response.body);

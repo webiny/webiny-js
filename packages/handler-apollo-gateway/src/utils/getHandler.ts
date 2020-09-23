@@ -1,7 +1,6 @@
 import { ApolloGateway } from "@apollo/gateway";
 import { GraphQLRequestContext } from "apollo-server-types";
 import { boolean } from "boolean";
-import { ApolloServerBase as ApolloServer } from "apollo-server-core";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
@@ -9,6 +8,10 @@ import buildHeaders from "./buildHeaders";
 import { DataSource } from "./../DataSource";
 import get from "lodash.get";
 import { HandlerApolloGatewayHeadersPlugin, HandlerApolloGatewayServicePlugin } from "./../types";
+import { runHttpQuery } from "apollo-server-core/dist/runHttpQuery";
+import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
+import { Headers } from "apollo-server-env";
+import buildCorsHeaders from "./buildCorsHeaders";
 
 function getError(error) {
     let err = get(error, "extensions.response");
@@ -72,7 +75,6 @@ export default async (context: Context, options) => {
         throw Error(`Missing "handler-apollo-gateway-service" plugins!`);
     }
 
-    const { server = {} } = options;
     const dataSourceErrors = [];
 
     const services = servicePlugins.map(pl => {
@@ -109,43 +111,39 @@ export default async (context: Context, options) => {
         }
     });
 
+    if (dataSourceErrors.length > 0) {
+        throw new ApolloGatewayError(dataSourceErrors);
+    }
+
     try {
         const { schema, executor } = await gateway.load();
-
-        if (dataSourceErrors.length > 0) {
-            throw new ApolloGatewayError(dataSourceErrors);
-        }
-
-        const apollo = new ApolloServer({
-            uploads: false,
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            introspection: boolean(server.introspection),
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            playground: boolean(server.playground),
-            debug: boolean(process.env.DEBUG),
-            ...server,
-            schema,
-            executor,
-            context: async () => ({ headers: createHeaders(context) })
-        });
+        const schemaHash = generateSchemaHash(schema);
 
         // Create handler.
         cache = async function(context) {
             const { http } = context;
 
-            const result = await apollo.executeOperation(JSON.parse(http.body));
-            if (result.errors) {
-                throw new ApolloGatewayError(result.errors);
-            }
+            try {
+                const { graphqlResponse } = await runHttpQuery([], {
+                    method: "POST",
+                    query: JSON.parse(http.body),
+                    options: { schema, schemaHash, context, executor },
+                    request: {
+                        url: "/graphql",
+                        method: "POST",
+                        headers: new Headers(http.headers)
+                    }
+                });
 
-            return http.response({
-                headers: {
-                    ...result.http.headers,
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*"
-                },
-                body: JSON.stringify({ data: result.data })
-            });
+                return http.response({
+                    body: graphqlResponse,
+                    headers: buildCorsHeaders({
+                        "Content-Type": "application/json"
+                    })
+                });
+            } catch (e) {
+                throw new ApolloGatewayError(e);
+            }
         };
     } catch (e) {
         if (dataSourceErrors.length > 0) {

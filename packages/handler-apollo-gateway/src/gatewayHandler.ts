@@ -1,26 +1,34 @@
-import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { HandlerPlugin } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
 import { HandlerApolloGatewayOptions } from "./types";
 import getHandler from "./utils/getHandler";
+import buildCorsHeaders from "./utils/buildCorsHeaders";
 
-type Context = HandlerContext & HandlerHttpContext & HandlerClientContext;
-
-const plugins = (options: HandlerApolloGatewayOptions): HandlerPlugin => ({
+const plugins = (
+    options: HandlerApolloGatewayOptions
+): HandlerPlugin<HandlerHttpContext, HandlerClientContext> => ({
     name: "handler-apollo-gateway",
     type: "handler",
-    async handle(context: Context, next) {
-        if (!context.http) {
+    async handle(context, next) {
+        const { http } = context;
+        if (!http) {
             return next();
         }
 
-        if (!["POST", "GET", "OPTIONS"].includes(context.http.method)) {
-            return next();
+        if (http.method === "OPTIONS") {
+            return http.response({
+                statusCode: 204,
+                headers: buildCorsHeaders()
+            });
         }
 
-        const handler = await getHandler(context, options);
+        if (http.method === "POST") {
+            const handler = await getHandler(context, options);
+            return await handler(context);
+        }
 
-        return await handler(context);
+        return next();
     }
 });
 
