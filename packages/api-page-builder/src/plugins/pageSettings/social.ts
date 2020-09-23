@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { withFields, string, fields } from "@webiny/commodo";
 import PbImageFieldModel from "@webiny/api-page-builder/plugins/models/pbImageField.model";
+import { Context } from "@webiny/api-settings-manager/types";
 
 export default [
     {
@@ -43,18 +44,43 @@ export default [
                     content: String!
                 }
 
+                type PbSocialSettingsImageMeta {
+                    width: Number
+                    height: Number
+                    aspectRatio: Number
+                    private: Boolean
+                }
+
+                type PbSocialSettingsImage {
+                    id: ID
+                    name: String
+                    size: Number
+                    src: String
+                    type: String
+                    meta: PbSocialSettingsImageMeta
+                }
+
                 type PbSocialSettings {
                     title: String
                     description: String
                     meta: [PbOpenGraphTag]
-                    image: File
+                    image: PbSocialSettingsImage
+                }
+
+                input PbSocialSettingsImageInput {
+                    id: ID!
+                    name: String!
+                    key: String!
+                    size: Number!
+                    type: String!
+                    src: String!
                 }
 
                 input PbSocialSettingsInput {
                     title: String
                     description: String
                     meta: [PbOpenGraphTagInput!]
-                    image: RefInput
+                    image: PbSocialSettingsImageInput
                 }
 
                 extend type PbPageSettings {
@@ -67,8 +93,35 @@ export default [
             `,
             resolvers: {
                 PbSocialSettings: {
-                    image: ({ image }) => {
-                        return image ? { __typename: "File", id: image } : null;
+                    image: async ({ image }, _args: unknown, context: Context) => {
+                        if (!image) {
+                            return null;
+                        }
+                        const { srcPrefix } = await context.settingsManager.getSettings(
+                            "file-manager"
+                        );
+                        const { meta } = image;
+                        const response: any = {
+                            __typename: "File",
+                            id: image.id,
+                            src: `${srcPrefix}${image.name}`,
+                            name: image.name,
+                            size: image.size,
+                            type: image.type,
+                            meta: null
+                        };
+                        if (!meta) {
+                            return response;
+                        }
+                        return {
+                            ...response,
+                            meta: {
+                                width: meta.width,
+                                height: meta.height,
+                                aspectRatio: meta.aspectRatio,
+                                private: meta.private
+                            }
+                        };
                     }
                 }
             }

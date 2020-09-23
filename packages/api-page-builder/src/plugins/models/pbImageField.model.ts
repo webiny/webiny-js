@@ -7,12 +7,13 @@ const PbImageFieldMetaModel = withFields({
     private: boolean()
 });
 
-const PbImageFieldModel = withFields({
+const PbImageFieldModel: () => any = withFields({
     id: string(),
     name: string(),
     size: int(),
     type: string(),
     meta: fields({
+        value: null,
         instanceOf: PbImageFieldMetaModel()
     })
 });
