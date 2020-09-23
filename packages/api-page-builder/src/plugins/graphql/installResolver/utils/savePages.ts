@@ -119,7 +119,11 @@ const savePageFilesData = async (
     return mappedFileData;
 };
 
-const findAndReplaceFileAttributes = (page: PageData, mappedPageFilesData: MappedFileData) => {
+const findAndReplaceImageAttributes = (page: PageData, mappedPageFilesData: MappedFileData) => {
+    const generalImageId = page?.settings?.general?.image;
+    if (generalImageId) {
+        page.settings.general.image = mappedPageFilesData.get(generalImageId) || null;
+    }
     const socialImageId = page?.settings?.social?.image;
     if (socialImageId) {
         page.settings.social.image = mappedPageFilesData.get(socialImageId) || null;
@@ -127,11 +131,11 @@ const findAndReplaceFileAttributes = (page: PageData, mappedPageFilesData: Mappe
     if (Array.isArray(page.content?.elements) === false) {
         return page;
     }
-    findAndReplaceFileAttributesInElements(page.content.elements, mappedPageFilesData);
+    findAndReplaceImageAttributesInElements(page.content.elements, mappedPageFilesData);
     return page;
 };
 
-const findAndReplaceFileAttributesInElements = (
+const findAndReplaceImageAttributesInElements = (
     elements: any[],
     mappedPageFilesData: MappedFileData
 ) => {
@@ -143,7 +147,7 @@ const findAndReplaceFileAttributesInElements = (
             elements[key].data.image.file = file;
         }
         if (Array.isArray(elements[key].elements)) {
-            findAndReplaceFileAttributesInElements(elements[key].elements, mappedPageFilesData);
+            findAndReplaceImageAttributesInElements(elements[key].elements, mappedPageFilesData);
         }
     }
 };
@@ -172,7 +176,7 @@ const savePagesData = async (
                         return;
                     }
 
-                    const pageData = findAndReplaceFileAttributes(
+                    const pageData = findAndReplaceImageAttributes(
                         pagesData[i],
                         mappedPageFilesData
                     );
