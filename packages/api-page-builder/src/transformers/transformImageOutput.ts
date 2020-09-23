@@ -12,10 +12,7 @@ type Image = {
     meta: ImageMeta | null;
 };
 
-const transformImageOutput = (typeName: string, image: Image | undefined, srcPrefix: string) => {
-    if (!image) {
-        return null;
-    }
+const transformImageOutput = (typeName: string, image: Image, srcPrefix: string) => {
     const { meta } = image;
     const response = {
         __typename: typeName,

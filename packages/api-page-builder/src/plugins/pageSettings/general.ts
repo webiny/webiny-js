@@ -1,17 +1,23 @@
 import gql from "graphql-tag";
 import { string, fields, withFields } from "@webiny/commodo";
+import { transformImageOutput } from "@webiny/api-page-builder/transformers/transformImageOutput";
+import { Context } from "@webiny/api-settings-manager/types";
+import PbImageFieldModel from "@webiny/api-page-builder/plugins/models/pbImageField.model";
 
 export default [
     {
         name: "pb-page-settings-general",
         type: "pb-page-settings-model",
-        apply({ fields: settingsFields, context }) {
+        apply({ fields: settingsFields }) {
             settingsFields.general = fields({
                 value: {},
                 instanceOf: withFields({
                     tags: string({ list: true }),
                     layout: string(),
-                    image: context.commodo.fields.id()
+                    image: fields({
+                        value: null,
+                        instanceOf: PbImageFieldModel()
+                    })
                 })()
             });
         }
@@ -21,16 +27,41 @@ export default [
         type: "graphql-schema",
         schema: {
             typeDefs: gql`
+                type PbGeneralSettingsImageMeta {
+                    width: Number
+                    height: Number
+                    aspectRatio: Number
+                    private: Boolean
+                }
+
+                type PbGeneralSettingsImage {
+                    id: ID
+                    name: String
+                    size: Number
+                    src: String
+                    type: String
+                    meta: PbGeneralSettingsImageMeta
+                }
+
                 type PbGeneralPageSettings {
                     tags: [String]
                     layout: String
-                    image: File
+                    image: PbGeneralSettingsImage
+                }
+
+                input PbGeneralSettingsImageInput {
+                    id: ID!
+                    name: String!
+                    key: String!
+                    size: Number!
+                    type: String!
+                    src: String!
                 }
 
                 input PbGeneralPageSettingsInput {
                     tags: [String]
                     layout: String
-                    image: RefInput
+                    image: PbGeneralSettingsImageInput
                 }
 
                 extend type PbPageSettings {
@@ -43,8 +74,14 @@ export default [
             `,
             resolvers: {
                 PbGeneralPageSettings: {
-                    image: ({ image }) => {
-                        return image ? { __typename: "File", id: image } : null;
+                    image: async ({ image }, _args: unknown, context: Context) => {
+                        if (!image) {
+                            return null;
+                        }
+                        const { srcPrefix } = await context.settingsManager.getSettings(
+                            "file-manager"
+                        );
+                        return transformImageOutput("File", image, srcPrefix);
                     }
                 }
             }
