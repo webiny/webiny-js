@@ -6,7 +6,6 @@ export const handler = createHandler(
         debug: process.env.DEBUG,
         server: {
             introspection: process.env.GRAPHQL_INTROSPECTION,
-            playground: process.env.GRAPHQL_PLAYGROUND
         },
         services: Object.keys(process.env)
             .filter(name => name.startsWith("LAMBDA_SERVICE_"))
