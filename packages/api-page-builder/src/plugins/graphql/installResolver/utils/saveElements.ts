@@ -1,5 +1,4 @@
 /* eslint no-console: 0 */
-import get from "lodash.get";
 import pick from "lodash.pick";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
 import { GraphQLClient } from "graphql-request";
@@ -7,7 +6,7 @@ import fs from "fs-extra";
 import path from "path";
 import uploadToS3 from "./uploadToS3";
 import sleep from "./sleep";
-import chunk from "lodash.chunk";
+import { chunk } from "lodash";
 import loadJson from "load-json-file";
 import { ElementData, FileData } from "@webiny/api-page-builder/types";
 
@@ -45,7 +44,7 @@ const saveElementsFilesData = async (
     const chunksProcesses: Promise<FileData[]>[] = [];
 
     // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
-    const filesChunks = chunk(elementsFilesData, FILES_COUNT_IN_EACH_BATCH);
+    const filesChunks = chunk<FileData>(elementsFilesData, FILES_COUNT_IN_EACH_BATCH);
     await console.log(
         `saveElements: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
     );
@@ -63,7 +62,7 @@ const saveElementsFilesData = async (
                             data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
                         });
 
-                        const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
+                        const preSignedPostPayloads = response?.files?.uploadFiles?.data || [];
                         await console.log(
                             `saveElements: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                         );

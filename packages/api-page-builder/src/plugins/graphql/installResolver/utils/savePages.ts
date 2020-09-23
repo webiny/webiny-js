@@ -1,5 +1,4 @@
 /* eslint no-console: 0 */
-import get from "lodash.get";
 import pick from "lodash.pick";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
 import { GraphQLClient } from "graphql-request";
@@ -7,7 +6,7 @@ import fs from "fs-extra";
 import path from "path";
 import uploadToS3 from "./uploadToS3";
 import sleep from "./sleep";
-import chunk from "lodash.chunk";
+import { chunk } from "lodash";
 import loadJson from "load-json-file";
 import { FileData, MappedFileData, PageData } from "@webiny/api-page-builder/types";
 
@@ -47,7 +46,7 @@ const savePageFilesData = async (
     const chunksProcesses = [];
 
     // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
-    const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
+    const filesChunks = chunk<FileData>(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
     await console.log(
         `savePages: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
     );
@@ -64,7 +63,7 @@ const savePageFilesData = async (
                         data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
                     });
 
-                    const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
+                    const preSignedPostPayloads = response?.files?.uploadFiles?.data || [];
                     await console.log(
                         `savePages: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                     );
@@ -121,6 +120,10 @@ const savePageFilesData = async (
 };
 
 const findAndReplaceFileAttributes = (page: PageData, mappedPageFilesData: MappedFileData) => {
+    const socialImageId = page?.settings?.social?.image;
+    if (socialImageId) {
+        page.settings.social.image = mappedPageFilesData.get(socialImageId) || null;
+    }
     if (Array.isArray(page.content?.elements) === false) {
         return page;
     }
