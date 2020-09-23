@@ -14,6 +14,7 @@ import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
 import { Context } from "@webiny/api-settings-manager/types";
+import { transformImageOutput } from "@webiny/api-page-builder/transformers/transformImageOutput";
 
 const pageFetcher = ctx => ctx.models.PbPage;
 const elementFetcher = ctx => ctx.models.PbPageElement;
@@ -296,28 +297,8 @@ export default {
                     return null;
                 }
                 const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
-                const response = {
-                    __typename: "PbElementPreview",
-                    id: preview.id,
-                    src: `${srcPrefix}${preview.name}`,
-                    name: preview.name,
-                    size: preview.size,
-                    type: preview.type,
-                    meta: null
-                };
-                const { meta } = preview;
-                if (!meta) {
-                    return response;
-                }
-                return {
-                    ...response,
-                    meta: {
-                        width: meta.width,
-                        height: meta.height,
-                        aspectRatio: meta.aspectRatio,
-                        private: meta.private
-                    }
-                };
+
+                return transformImageOutput("PbElementPreview", preview, srcPrefix);
             }
         },
         PbQuery: {

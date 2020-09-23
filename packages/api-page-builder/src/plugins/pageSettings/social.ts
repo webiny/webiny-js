@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 import { withFields, string, fields } from "@webiny/commodo";
 import PbImageFieldModel from "@webiny/api-page-builder/plugins/models/pbImageField.model";
 import { Context } from "@webiny/api-settings-manager/types";
+import { transformImageOutput } from "@webiny/api-page-builder/transformers/transformImageOutput";
 
 export default [
     {
@@ -100,28 +101,7 @@ export default [
                         const { srcPrefix } = await context.settingsManager.getSettings(
                             "file-manager"
                         );
-                        const { meta } = image;
-                        const response: any = {
-                            __typename: "File",
-                            id: image.id,
-                            src: `${srcPrefix}${image.name}`,
-                            name: image.name,
-                            size: image.size,
-                            type: image.type,
-                            meta: null
-                        };
-                        if (!meta) {
-                            return response;
-                        }
-                        return {
-                            ...response,
-                            meta: {
-                                width: meta.width,
-                                height: meta.height,
-                                aspectRatio: meta.aspectRatio,
-                                private: meta.private
-                            }
-                        };
+                        return transformImageOutput("File", image, srcPrefix);
                     }
                 }
             }
