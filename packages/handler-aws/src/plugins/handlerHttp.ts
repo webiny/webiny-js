@@ -1,10 +1,10 @@
 import { HandlerHttpContext } from "@webiny/handler-http/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerArgsContext } from "@webiny/handler-args/types";
 
 export default {
     type: "context",
-    apply(context: HandlerContext & HandlerHttpContext & HandlerArgsContext) {
+    apply(context) {
         const { invocationArgs } = context;
         if (!invocationArgs.httpMethod) {
             return;
@@ -36,4 +36,4 @@ export default {
             context.http.body = Buffer.from(context.http.body, "base64").toString("utf-8");
         }
     }
-};
+} as HandlerContextPlugin<HandlerHttpContext & HandlerArgsContext>;
