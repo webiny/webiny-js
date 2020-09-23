@@ -1,7 +1,7 @@
 type ResponseArgs = {
     statusCode: number;
     headers?: {};
-    body: string;
+    body?: string;
 };
 
 export type HandlerHttpContextObject = {
