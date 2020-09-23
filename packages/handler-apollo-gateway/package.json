@@ -15,7 +15,6 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@apollographql/graphql-playground-html": "^1.6.26",
     "@apollo/gateway": "^0.14.1",
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler": "^4.12.1",
