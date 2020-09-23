@@ -33,9 +33,9 @@ const plugin: CreateApolloHandlerPlugin = {
                     query,
                     options: { schema, schemaHash, context },
                     request: {
-                        url: "/graphql",
-                        method: "POST",
-                        headers: new Headers()
+                        url: context.http.path.base,
+                        method: context.http.method,
+                        headers: new Headers(context.http.headers)
                     }
                 })
         };

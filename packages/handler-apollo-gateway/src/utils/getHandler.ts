@@ -87,8 +87,8 @@ export default async (context: Context, options) => {
             query,
             options: { schema, schemaHash, context, executor },
             request: {
-                url: "/graphql",
-                method: "POST",
+                url: context.http.path.base,
+                method: context.http.method,
                 headers: new Headers(context.http.headers)
             }
         });
