@@ -1,8 +1,9 @@
 import { Response, ErrorResponse } from "@webiny/graphql";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
-export default async (root: any, args: { [key: string]: any }, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { data: files } = args;
     const settings = await context.settingsManager.getSettings("file-manager");
 
@@ -35,3 +36,5 @@ export default async (root: any, args: { [key: string]: any }, context) => {
 
     return new Response(await Promise.all(promises));
 };
+
+export default resolver;

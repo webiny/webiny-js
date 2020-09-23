@@ -1,9 +1,10 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import S3 from "aws-sdk/clients/s3";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 
-export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { File } = context.models;
     const { id } = args;
 
@@ -32,3 +33,5 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
                 })
         );
 };
+
+export default resolver;
