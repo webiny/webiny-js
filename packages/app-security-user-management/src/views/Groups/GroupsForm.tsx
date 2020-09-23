@@ -17,43 +17,10 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
-import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
 import get from "lodash.get";
+import { createPermissionsMap } from "./utils";
 
 const t = i18n.ns("app-security/admin/groups/form");
-
-export const createPermissionsMap = (permissions: SecurityPermission[]) => {
-    const permissionsMap = {};
-    if (!permissions || !Array.isArray(permissions)) {
-        return permissionsMap;
-    }
-
-    for (let i = 0; i < permissions.length; i++) {
-        const perm = permissions[i];
-        if (perm.name) {
-            permissionsMap[perm.name] = perm;
-        }
-    }
-    return permissionsMap;
-};
-
-export const createPermissionsArray = (permissionsMap: object) => {
-    const permissions: SecurityPermission[] = [];
-
-    if (!permissionsMap) {
-        return permissions;
-    }
-
-    const values = Object.values(permissionsMap);
-
-    for (let i = 0; i < values.length; i++) {
-        const perm: SecurityPermission = values[i];
-        if (perm.name) {
-            permissions.push(perm);
-        }
-    }
-    return permissions;
-};
 
 const GroupForm = () => {
     const { form: crudForm } = useCrud();
