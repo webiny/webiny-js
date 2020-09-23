@@ -26,7 +26,6 @@
     "@webiny/handler-client": "^4.12.1",
     "@webiny/handler-apollo-server": "^4.12.1",
     "@webiny/validation": "^4.12.1",
-    "apollo-server-lambda": "2.15.1",
     "boolean": "^3.0.1",
     "fast-deep-equal": "^3.1.1",
     "fecha": "^4.0.0",
