@@ -16,7 +16,6 @@ import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockP
 import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/graphql/pages";
 import SaveDialog from "./SaveDialog";
 import { CREATE_FILE } from "./SaveDialog/graphql";
-import get from "lodash.get";
 import pick from "lodash.pick";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -57,12 +56,17 @@ const SaveAction = (props: Props) => {
             }
         });
 
-        const createdImage = get(createdImageResponse, "data.files.createFile", {});
+        const createdImage = createdImageResponse?.data?.files?.createFile || {};
         if (createdImage.error) {
             return showSnackbar("Image could not be saved.");
         }
 
-        formData.preview = createdImage.data.id; // eslint-disable-line
+        formData.preview = Object.keys(createdImage.data).reduce((acc, key) => {
+            if (["src", "tags", "createdOn"].includes(key) === false) {
+                acc[key] = createdImage.data[key];
+            }
+            return acc;
+        }, {});
 
         const query = formData.overwrite ? UPDATE_ELEMENT : CREATE_ELEMENT;
 
@@ -147,7 +151,11 @@ function getDataURLImageDimensions(dataURL: string) {
     return new Promise(resolve => {
         const image = new window.Image();
         image.onload = function() {
-            resolve({ width: image.width, height: image.height });
+            resolve({
+                width: image.width,
+                height: image.height,
+                aspectRatio: image.width && image.height ? image.width / image.height : null
+            });
         };
         image.src = dataURL;
     });

@@ -61,17 +61,16 @@ export default {
             width: Number
             height: Number
             aspectRatio: Number
-            private: Boolean!
+            private: Boolean
         }
         
         type PbElementPreview {
-            id: String!
-            src: String!
-            fileName: String!
-            name: String!
-            size: Number!
-            type: String!
-            meta: PbElementPreviewMeta!
+            id: ID
+            src: String
+            name: String
+            size: Number
+            type: String
+            meta: PbElementPreviewMeta
         }
 
         type PbElement {
@@ -82,13 +81,28 @@ export default {
             content: JSON
             preview: PbElementPreview
         }
+        
+        input PbElementPreviewMetaInput {
+            width: Number
+            height: Number
+            aspectRatio: Number
+            private: Boolean
+        }
+        
+        input PbElementPreviewInput {
+            id: ID
+            name: String
+            size: Number
+            type: String
+            meta: PbElementPreviewMetaInput
+        }
 
         input PbElementInput {
             name: String!
             type: String!
             category: String
             content: JSON!
-            preview: RefInput
+            preview: PbElementPreviewInput
         }
 
         input PbUpdateElementInput {
@@ -285,8 +299,7 @@ export default {
                 const response = {
                     __typename: "PbElementPreview",
                     id: preview.id,
-                    src: `${srcPrefix}${preview.__physicalFileName}`,
-                    fileName: preview.__physicalFileName,
+                    src: `${srcPrefix}${preview.name}`,
                     name: preview.name,
                     size: preview.size,
                     type: preview.type,

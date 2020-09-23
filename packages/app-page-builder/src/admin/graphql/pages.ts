@@ -151,7 +151,6 @@ const elementFields = /*GraphQL*/ `
         id
         src
         name
-        fileName
         size
         type
         meta {

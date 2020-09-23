@@ -10,6 +10,7 @@ const fileFields = /* GraphQL */ `
         type
         tags
         createdOn
+        meta
     }
 `;
 
