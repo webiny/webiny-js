@@ -1,11 +1,12 @@
 import gql from "graphql-tag";
 import { withFields, string, fields } from "@webiny/commodo";
+import PbImageFieldModel from "@webiny/api-page-builder/plugins/models/pbImageField.model";
 
 export default [
     {
         name: "pb-page-settings-social",
         type: "pb-page-settings-model",
-        apply({ fields: settingsFields, context }) {
+        apply({ fields: settingsFields }) {
             settingsFields.social = fields({
                 value: {},
                 instanceOf: withFields({
@@ -19,7 +20,10 @@ export default [
                     }),
                     title: string(),
                     description: string(),
-                    image: context.commodo.fields.id()
+                    image: fields({
+                        value: null,
+                        instanceOf: PbImageFieldModel()
+                    })
                 })()
             });
         }

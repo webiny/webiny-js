@@ -1,25 +1,7 @@
 import { validation } from "@webiny/validation";
 import content from "./pbPage/contentField";
-
-import { withFields, string, withName, fields, int, boolean, pipe, float } from "@webiny/commodo";
-
-const PbPageElementPreviewMetaModel = withFields({
-    width: int(),
-    height: int(),
-    aspectRatio: float(),
-    private: boolean()
-});
-
-const PbPageElementPreviewModel = withFields({
-    id: string(),
-    __physicalFileName: string(),
-    name: string(),
-    size: int(),
-    type: string(),
-    meta: fields({
-        instanceOf: PbPageElementPreviewMetaModel()
-    })
-});
+import { withFields, string, withName, fields, pipe } from "@webiny/commodo";
+import PbImageFieldModel from "./pbImageField.model";
 
 export default ({ createBase, context }) =>
     pipe(
@@ -30,7 +12,8 @@ export default ({ createBase, context }) =>
             type: string({ validation: validation.create("required,in:element:block") }),
             content: content({ context }),
             preview: fields({
-                instanceOf: PbPageElementPreviewModel()
+                value: null,
+                instanceOf: PbImageFieldModel()
             })
         })
     )(createBase({ maxPerPage: 1000 }));
