@@ -53,26 +53,22 @@ export const reducer = (currentState, action) => {
             const own = permissionLevel.includes("own");
             const permissionName = permissionLevel.split("#")[0];
 
-            // let models = currentState.permission.models;
-            // if (currentState.showModelSelector && !showModelSelector) {
-            //     models = [];
-            // }
-            //
-            // let groups = currentState.permission.groups;
-            // if (currentState.showModelSelector && !showModelSelector) {
-            //     groups = [];
-            // }
+            const newPermission = {
+                ...currentState.permission,
+                name: permissionName,
+                own
+            };
+
+            if (own) {
+                newPermission.accessLevel = AccessLevel.ReadWriteDeletePublish;
+            }
 
             return {
                 ...currentState,
                 permissionLevel,
                 showModelSelector,
                 showGroupSelector,
-                permission: {
-                    ...currentState.permission,
-                    name: permissionName,
-                    own
-                }
+                permission: newPermission
             };
         case actionTypes.UPDATE_PERMISSION:
             const { key, value } = action.payload;
@@ -123,7 +119,8 @@ export const initialState = {
         own: false,
         models: [],
         groups: [],
-        locales: []
+        locales: [],
+        accessLevel: AccessLevel.ReadOnly
     },
     showModelSelector: false,
     showGroupSelector: false,

@@ -1,3 +1,5 @@
+import { AccessLevel } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
+
 export const PERMISSION_CMS_CONTENT_MODEL_GROUP = "cms.manage.contentModelGroup";
 
 export const contentGroupPermissionOptions = [
@@ -35,14 +37,20 @@ export const reducer = (currentState, action) => {
             const own = permissionLevel.includes("own");
             const permissionName = permissionLevel.split("#")[0];
 
+            const newPermission = {
+                ...currentState.permission,
+                name: permissionName,
+                own
+            };
+
+            if (own) {
+                newPermission.accessLevel = AccessLevel.ReadWriteDelete;
+            }
+
             return {
                 ...currentState,
                 permissionLevel,
-                permission: {
-                    ...currentState.permission,
-                    name: permissionName,
-                    own
-                }
+                permission: newPermission
             };
         case actionTypes.UPDATE_PERMISSION:
             const { key, value } = action.payload;
@@ -76,6 +84,6 @@ export const reducer = (currentState, action) => {
 
 export const initialState = {
     permissionLevel: "#",
-    permission: { name: "", own: false },
+    permission: { name: "", own: false, accessLevel: AccessLevel.ReadOnly },
     synced: false
 };

@@ -56,13 +56,11 @@ export const reducer = (currentState, action) => {
             const newPermission = {
                 ...currentState.permission,
                 name: permissionName,
-                own,
-                accessLevel:
-                    currentState.permission.accessLevel || initialState.permission.accessLevel
+                own
             };
 
             if (own) {
-                delete newPermission.accessLevel;
+                newPermission.accessLevel = AccessLevel.ReadWriteDelete;
             }
 
             return {
