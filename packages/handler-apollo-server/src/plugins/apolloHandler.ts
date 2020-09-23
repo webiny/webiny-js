@@ -1,16 +1,9 @@
-import { ApolloServer } from "apollo-server-lambda";
 import { CreateApolloHandlerPlugin } from "../types";
-import { boolean } from "boolean";
 import { CreateSchemaPlugin } from "@webiny/handler-apollo-server/types";
-
-function normalizeEvent(event) {
-    // In AWS, when enabling binary support, received body gets base64 encoded. Did not find a way to solve this
-    // correctly, so for now we "normalize" the event before passing it to the handler. It would be nice if
-    // we could resolve this issue better / smarter in the future (configure integrations correctly?).
-    if (event.isBase64Encoded) {
-        event.body = Buffer.from(event.body, "base64").toString("utf-8");
-    }
-}
+import { runHttpQuery } from "apollo-server-core/dist/runHttpQuery";
+import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
+import { Headers } from "apollo-server-env";
+import buildCorsHeaders from "./../buildCorsHeaders";
 
 let cache;
 
@@ -22,8 +15,6 @@ const plugin: CreateApolloHandlerPlugin = {
             return cache;
         }
 
-        const { server = {}, handler = {} } = options;
-
         const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
             "handler-apollo-server-create-schema"
         );
@@ -33,42 +24,40 @@ const plugin: CreateApolloHandlerPlugin = {
         }
 
         const { schema } = await createSchemaPlugin.create(context);
+        const schemaHash = generateSchemaHash(schema);
 
-        const apolloServer = new ApolloServer({
-            uploads: false,
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            introspection: boolean(server.introspection),
-            // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
-            playground: boolean(server.playground),
-            debug: boolean(process.env.DEBUG),
-            ...server,
-            schema,
-            context: async ({ context }) => context
-        });
-
-        const apolloHandler = apolloServer.createHandler({
-            cors: {
-                origin: "*",
-                methods: "GET,HEAD,POST",
-                ...(handler.cors || {})
-            }
-        });
-
-        cache = {
-            schema,
-            handler: (event, context) => {
-                normalizeEvent(event);
-                return new Promise((resolve, reject) => {
-                    apolloHandler(event, context, (error, data) => {
-                        if (error) {
-                            return reject(error);
+        const { http } = context;
+        try {
+            cache = {
+                schema,
+                handler: async function(query, context) {
+                    const { graphqlResponse } = await runHttpQuery([], {
+                        method: "POST",
+                        query,
+                        options: { schema, schemaHash, context },
+                        request: {
+                            url: "/graphql",
+                            method: "POST",
+                            headers: new Headers(http.headers)
                         }
-
-                        resolve(data);
                     });
-                });
-            }
-        };
+
+                    return http.response({
+                        body: graphqlResponse,
+                        headers: buildCorsHeaders({
+                            "Content-Type": "application/json"
+                        })
+                    });
+                }
+            };
+        } catch (e) {
+            return http.response({
+                body: e,
+                headers: buildCorsHeaders({
+                    "Content-Type": "application/json"
+                })
+            });
+        }
 
         return cache;
     }
