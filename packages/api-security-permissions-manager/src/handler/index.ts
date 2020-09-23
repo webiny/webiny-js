@@ -26,7 +26,7 @@ const getPermissions = async (data, context: Context) => {
 
 const cache = {};
 
-export default (): HandlerPlugin => ({
+export default ({ cache: useCache = true }): HandlerPlugin => ({
     type: "handler",
     name: "handler-permissions-manager",
     async handle({ args, context }) {
@@ -38,15 +38,23 @@ export default (): HandlerPlugin => ({
                 throw Error(`Unsupported action "${action}"`);
             }
 
-            const cacheKey = data.identity || data.type;
+            let permissions = [];
 
-            if (cache[cacheKey]) {
-                return { error: false, data: cache[cacheKey] };
+            if (useCache) {
+                const cacheKey = data.identity || data.type;
+
+                if (cache[cacheKey]) {
+                    return { error: false, data: cache[cacheKey] };
+                }
+
+                permissions = await getPermissions(data, context);
+
+                cacheKey[cacheKey] = permissions;
+            } else {
+                permissions = await getPermissions(data, context);
             }
 
-            cache[cacheKey] = await getPermissions(data, context);
-
-            return { error: false, data: cache[cacheKey] || [] };
+            return { error: false, data: permissions };
         } catch (err) {
             console.log(err);
             return {
