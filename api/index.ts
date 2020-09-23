@@ -118,7 +118,17 @@ const apiGateway = new ApiGateway({
         },
         {
             path: "/cms/{key+}",
-            method: "ANY",
+            method: "GET",
+            eventHandler: graphqlPlayground.function
+        },
+        {
+            path: "/cms/{key+}",
+            method: "POST",
+            eventHandler: headlessCms.functions.content
+        },
+        {
+            path: "/cms/{key+}",
+            method: "OPTIONS",
             eventHandler: headlessCms.functions.content
         }
     ]
