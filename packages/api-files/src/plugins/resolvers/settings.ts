@@ -1,6 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { resolveUpdateSettings } from "@webiny/commodo-graphql";
 
 export const getSettings: GraphQLFieldResolver = async (root, args, context) => {
     try {
@@ -11,6 +10,21 @@ export const getSettings: GraphQLFieldResolver = async (root, args, context) => 
     } catch (e) {
         return new ErrorResponse({
             code: "GET_FILE_SETTINGS_ERROR",
+            message: e.message
+        });
+    }
+};
+
+export const updateSettings: GraphQLFieldResolver = async (root, args, context) => {
+    try {
+        const { data } = args;
+        await context.settingsManager.saveSettings("file-manager", data);
+        return {
+            data
+        };
+    } catch (e) {
+        return new ErrorResponse({
+            code: "UPDATE_FILE_SETTINGS_ERROR",
             message: e.message
         });
     }
