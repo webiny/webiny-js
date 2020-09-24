@@ -12,7 +12,7 @@ const ImagesList = ({ data, theme }) => {
     const pageList = plugins.find(cmp => cmp.componentName === component);
 
     if (!pageList) {
-        warning(false, `Pages list component "${component}" is missing!`);
+        warning(false, `Images list component "${component}" is missing!`);
         return null;
     }
 
