@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
-import filesPlugins from "@webiny/api-files/plugins";
+import filesPlugins from "@webiny/api-file-manager/plugins";
 import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 import securityPlugins from "@webiny/api-security/authenticator";
 import permissionsManager from "@webiny/api-security-permissions-manager/client";
