@@ -1,4 +1,4 @@
 import { createHandler } from "@webiny/handler-aws";
-import downloadFilePlugins from "@webiny/serverless-files/functions/download";
+import downloadFilePlugins from "@webiny/api-file-manager/handlers/download";
 
 export const handler = createHandler(downloadFilePlugins());

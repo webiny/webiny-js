@@ -5,7 +5,7 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.12.1",
+    "@webiny/handler-aws": "^4.12.1",
     "@webiny/handler-apollo-server": "^4.12.1",
     "@webiny/api-plugin-commodo-db-proxy": "^4.12.1",
     "@webiny/api-plugin-security-cognito": "^4.12.1",

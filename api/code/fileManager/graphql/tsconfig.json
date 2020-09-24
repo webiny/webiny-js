@@ -7,7 +7,7 @@
     { "path": "../../../../packages/api-settings-manager" },
     { "path": "../../../../packages/api-file-manager" },
     { "path": "../../../../packages/api-plugin-files-resolvers-mongodb" },
-    { "path": "../../../../packages/handler" },
+    { "path": "../../../../packages/handler-aws" },
     { "path": "../../../../packages/handler-apollo-server" }
   ]
 }
