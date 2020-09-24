@@ -1,4 +1,4 @@
-const { buildFunction } = require("@webiny/project-utils");
+const { buildFunction } = require("@webiny/api-file-manager/handlers/transform/bundle");
 
 module.exports = {
     commands: {
