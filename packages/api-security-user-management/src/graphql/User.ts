@@ -12,6 +12,17 @@ import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
+const transformAvatarOutput = (avatar: any, srcPrefix: string) => {
+    return {
+        __typename: "File",
+        id: avatar.id,
+        src: `${srcPrefix}${avatar.name}`,
+        name: avatar.name,
+        size: avatar.size,
+        type: avatar.type
+    };
+};
+
 export default {
     typeDefs: /* GraphQL */ `
         # Personal Access Token type
@@ -191,25 +202,24 @@ export default {
                     return null;
                 }
                 const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
-                return {
-                    __typename: "File",
-                    id: avatar.id,
-                    src: `${srcPrefix}${avatar.name}`,
-                    name: avatar.name,
-                    size: avatar.size,
-                    type: avatar.type
-                };
+                return transformAvatarOutput(avatar, srcPrefix);
             }
         },
         SecurityIdentity: {
             login: (_, args, context) => {
                 return context.security.getIdentity().login;
             },
-            async avatar(_, args, context) {
+            async avatar(_, args: unknown, context: any) {
                 const { SecurityUser } = context.models;
                 const identityId = context.security.getIdentity().id;
                 const user = await SecurityUser.findOne({ query: { id: identityId } });
-                return user.avatar ? { __typename: "File", id: user.avatar } : null;
+                const { avatar } = user || {};
+                if (!avatar) {
+                    return null;
+                }
+                const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+
+                return transformAvatarOutput(avatar, srcPrefix);
             },
             permissions: (_, args, context) => {
                 return context.security.getPermissions();
