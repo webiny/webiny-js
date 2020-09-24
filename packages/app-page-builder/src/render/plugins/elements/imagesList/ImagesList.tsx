@@ -9,13 +9,13 @@ const ImagesList = ({ data, theme }) => {
         "pb-page-element-images-list-component"
     );
 
-    const pageList = plugins.find(cmp => cmp.componentName === component);
-    if (!pageList) {
+    const imagesList = plugins.find(cmp => cmp.componentName === component);
+    if (!imagesList) {
         warning(false, `Images list component "${component}" is missing!`);
         return null;
     }
 
-    const { component: ListComponent } = pageList;
+    const { component: ListComponent } = imagesList;
 
     if (!ListComponent) {
         warning(false, `React component is not defined for "${component}"!`);
