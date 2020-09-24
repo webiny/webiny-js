@@ -1,6 +1,6 @@
 import md5 from "md5";
 import merge from "merge";
-import { pipe } from "@webiny/commodo";
+import { pipe, fields, number } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import {
     withHooks,
@@ -52,7 +52,15 @@ export default ({ createBase, context }): any => {
                 instanceOf: [context.models.SecurityGroup, "model"],
                 using: [context.models.SecurityGroups2Models, "group"]
             }),
-            avatar: context.commodo.fields.id(),
+            avatar: fields({
+                value: null,
+                instanceOf: withFields({
+                    id: string(),
+                    name: string(),
+                    size: number(),
+                    type: string()
+                })()
+            }),
             personalAccessTokens: skipOnPopulate()(
                 ref({
                     list: true,

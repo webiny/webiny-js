@@ -89,11 +89,20 @@ export default {
         }
 
         # This input type is used by the user who is updating his own account
+
+        input SecurityCurrentUserAvatarInput {
+            id: ID!
+            name: String!
+            key: String
+            size: Number!
+            src: String
+            type: String!
+        }
         input SecurityCurrentUserInput {
             email: String
             firstName: String
             lastName: String
-            avatar: RefInput
+            avatar: SecurityCurrentUserAvatarInput
         }
 
         type SecurityUserResponse {
@@ -177,8 +186,19 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
-            avatar({ avatar }) {
-                return avatar ? { __typename: "File", id: avatar } : null;
+            async avatar({ avatar }, _args: unknown, context: any) {
+                if (!avatar) {
+                    return null;
+                }
+                const { srcPrefix } = await context.settingsManager.getSettings("file-manager");
+                return {
+                    __typename: "File",
+                    id: avatar.id,
+                    src: `${srcPrefix}${avatar.name}`,
+                    name: avatar.name,
+                    size: avatar.size,
+                    type: avatar.type
+                };
             }
         },
         SecurityIdentity: {
