@@ -1,5 +1,5 @@
-import { flow } from "lodash";
 import {
+    pipe,
     withFields,
     onSet,
     setOnce,
@@ -13,7 +13,7 @@ import {
 import { validation } from "@webiny/validation";
 
 export default ({ createBase, context }) => {
-    const File = flow(
+    const File = pipe(
         withName("File"),
         withProps({
             get src() {

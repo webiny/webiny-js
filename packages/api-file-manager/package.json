@@ -25,7 +25,6 @@
     "@webiny/validation": "^4.12.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.4",
     "mime": "^2.4.4",
     "sanitize-filename": "^1.6.3",
     "uniqid": "^5.0.3"

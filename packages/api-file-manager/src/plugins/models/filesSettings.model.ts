@@ -1,4 +1,3 @@
-import { flow } from "lodash";
 import {
     withStaticProps,
     withName,
@@ -8,14 +7,15 @@ import {
     fields,
     withFields,
     setOnce,
-    onSet
+    onSet,
+    pipe
 } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 
 const SETTINGS_KEY = "file-manager";
 
 export default ({ createBase }) => {
-    const FilesSettings = flow(
+    const FilesSettings = pipe(
         withName("Settings"),
         withStaticProps({
             async load() {
