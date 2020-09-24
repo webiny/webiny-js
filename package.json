@@ -18,7 +18,7 @@
       "api/code/awsDocumentDbProxy",
       "api/cms/*",
       "api/code/databaseProxy",
-      "api/code/files/*",
+      "api/code/fileManager/*",
       "api/code/formBuilder",
       "api/code/graphqlPlayground",
       "api/code/i18n/*",
