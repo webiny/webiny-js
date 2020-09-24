@@ -6,6 +6,7 @@ import {
     orderAccessLevel
 } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
 import { PermissionRendererCmsManage } from "@webiny/app-headless-cms/types";
+import { PermissionRendererFileManager } from "@webiny/app-file-manager/types";
 
 const createPermissionsForDB = (permission: SecurityPermission): SecurityPermission[] => {
     const { name: permissionName, accessLevel, ...props } = permission;
@@ -86,7 +87,14 @@ export const createPermissionsMap = (permissions: SecurityPermission[]) => {
         "permission-renderer-cms-manage"
     );
 
-    const keys = cmsPermissionRendererPlugins.map(pl => pl.key);
+    const fileManagerPermissionRendererPlugins = plugins.byType<PermissionRendererFileManager>(
+        "permission-renderer-file-manager"
+    );
+
+    const keys = [
+        ...cmsPermissionRendererPlugins.map(pl => pl.key),
+        ...fileManagerPermissionRendererPlugins.map(pl => pl.key)
+    ];
 
     const permissionsMap = {};
     if (!permissions || !Array.isArray(permissions)) {

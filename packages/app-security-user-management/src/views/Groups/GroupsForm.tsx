@@ -67,6 +67,8 @@ const GroupForm = () => {
                             <Grid>
                                 <Cell span={12}>
                                     <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
+                                </Cell>
+                                <Cell span={12}>
                                     <Bind name={"permissions"}>
                                         {props => (
                                             <Accordion elevation={0}>
