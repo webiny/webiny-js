@@ -24,16 +24,14 @@
     "@webiny/plugins": "^4.12.1",
     "apollo-server-core": "2.17.0",
     "apollo-server-env": "^2.4.3",
-    "apollo-server-lambda": "2.15.1",
-    "boolean": "^3.0.1",
-    "lodash.get": "^4.4.2"
+    "boolean": "^3.0.1"
   },
   "devDependencies": {
     "@apollo/federation": "^0.16.0",
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "apollo-server": "^2.12.0",
+    "apollo-server-lambda": "2.15.1",
     "apollo-server-types": "^0.3.1",
     "jest-mock-console": "^1.0.0"
   },
