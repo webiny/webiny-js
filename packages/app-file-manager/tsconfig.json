@@ -3,8 +3,10 @@
   "references": [
     { "path": "../app-admin" },
     { "path": "../app-security" },
+    { "path": "../app-security-user-management" },
     { "path": "../app-page-builder" },
     { "path": "../form" },
+    { "path": "../plugins" },
     { "path": "../react-router" },
     { "path": "../validation" },
     { "path": "../ui" }
