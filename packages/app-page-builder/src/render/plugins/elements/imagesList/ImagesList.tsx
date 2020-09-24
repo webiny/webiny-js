@@ -3,7 +3,7 @@ import warning from "warning";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/types";
 
-const ImagesList = ({data, theme}) => {
+const ImagesList = ({ data, theme }) => {
     const { component } = data;
     const plugins = getPlugins<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
