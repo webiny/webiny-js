@@ -5,7 +5,6 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.12.1",
-    "@webiny/serverless-files": "^4.12.1"
+    "@webiny/handler": "^4.12.1"
   }
 }
