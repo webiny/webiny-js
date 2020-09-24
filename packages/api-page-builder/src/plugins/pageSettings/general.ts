@@ -59,8 +59,9 @@ export default [
                 input PbGeneralSettingsImageInput {
                     id: ID!
                     name: String!
+                    key: String
                     size: Number!
-                    src: String!
+                    src: String
                     type: String!
                     meta: PbGeneralSettingsImageMetaInput
                 }

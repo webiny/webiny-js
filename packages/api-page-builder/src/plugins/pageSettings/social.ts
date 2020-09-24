@@ -78,6 +78,7 @@ export default [
                 input PbSocialSettingsImageInput {
                     id: ID!
                     name: String!
+                    key: String
                     size: Number!
                     type: String!
                     src: String!
