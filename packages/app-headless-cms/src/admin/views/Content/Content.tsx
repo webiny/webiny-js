@@ -1,3 +1,4 @@
+import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 import React, { useMemo, useState } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { useDataList } from "@webiny/app/hooks/useDataList";
@@ -11,10 +12,6 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/content");
-
-type ContentModel = {
-    modelId: string;
-};
 
 const ContentRender = ({ contentModel }) => {
     const apolloClient = useApolloClient();
@@ -74,7 +71,7 @@ const ContentRender = ({ contentModel }) => {
 
 const Content = () => {
     const { match } = useRouter();
-    const [contentModel, setContentModel] = useState<ContentModel | undefined>();
+    const [contentModel, setContentModel] = useState<CmsEditorContentModel | undefined>();
     const { history } = useRouter();
     const { params } = match as any;
     const modelId = params?.modelId;
