@@ -7,14 +7,20 @@ class DocumentDb {
     databaseProxy: aws.lambda.Function;
     documentDbCluster: aws.docdb.Cluster;
     constructor() {
+        const subnetGroup = new aws.docdb.SubnetGroup("doc-db-subnet-group", {
+            subnetIds: vpc.subnets.private.map(subNet => subNet.id)
+        });
+
         const cluster = new aws.docdb.Cluster("documentdb-cluster", {
+            applyImmediately: true,
             backupRetentionPeriod: 1,
             clusterIdentifier: "documentdb-cluster",
             engine: "docdb",
             masterPassword: String(process.env.DOCUMENT_DB_PASSWORD),
             masterUsername: String(process.env.DOCUMENT_DB_USERNAME),
             preferredBackupWindow: "07:00-09:00",
-            skipFinalSnapshot: true
+            skipFinalSnapshot: true,
+            dbSubnetGroupName: subnetGroup.name
         });
 
         new aws.docdb.ClusterInstance(`document-db-cluster-instance-1`, {
