@@ -5,7 +5,7 @@
     "node_modules",
     "../app-admin",
     "../app-security",
-    "../api-security-user-management",
+    "../app-security-user-management",
     "../app-page-builder",
     "../form",
     "../plugins",

@@ -22,7 +22,6 @@
     "@webiny/commodo-graphql": "^4.11.0-beta.1",
     "@webiny/graphql": "^4.11.0-beta.1",
     "@webiny/validation": "^4.11.0-beta.1",
-    "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.4",
     "mime": "^2.4.4",
