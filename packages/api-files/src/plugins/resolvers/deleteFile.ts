@@ -9,6 +9,20 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { id } = args;
 
     const file = await File.findById(id);
+    // Logic for particular permission/resolver
+    // We can move it somewhere else and pass it to "hasScope" like CMS
+    const identity = context.security.getIdentity();
+    // Because check permission passed, we know this permission exist
+    const permission = await context.security.getPermission("files.file.delete");
+
+    if (permission.own && file.createdBy !== identity.id) {
+        return new ErrorResponse({
+            message: "Not authorized! Missing permission required for the operation!",
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: { permission }
+        });
+    }
+
     if (!file) {
         return new NotFoundResponse(id ? `File "${id}" not found!` : "File not found!");
     }
