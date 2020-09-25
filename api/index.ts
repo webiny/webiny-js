@@ -1,5 +1,5 @@
+import DocumentDb from "./stack/documentDb";
 import Cognito from "./stack/cognito";
-import DbProxy from "./stack/dbProxy";
 import Security from "./stack/security";
 import SettingsManager from "./stack/settingsManager";
 import I18N from "./stack/i18n";
@@ -13,17 +13,17 @@ import HeadlessCms from "./stack/headlessCms";
 import GraphQLPlayground from "./stack/graphqlPlayground";
 
 const cognito = new Cognito();
-const dbProxy = new DbProxy();
+const documentDb = new DocumentDb();
 
 const settingsManager = new SettingsManager({
-    dbProxy: dbProxy.function
+    dbProxy: documentDb.databaseProxy
 });
 
 const graphqlServiceEnv: { [key: string]: any } = {
     COGNITO_REGION: String(process.env.AWS_REGION),
     COGNITO_USER_POOL_ID: cognito.userPool.id,
     DEBUG: String(process.env.DEBUG),
-    DB_PROXY_FUNCTION: dbProxy.function.arn,
+    DB_PROXY_FUNCTION: documentDb.databaseProxy.arn,
     GRAPHQL_INTROSPECTION: String(process.env.GRAPHQL_INTROSPECTION),
     GRAPHQL_PLAYGROUND: String(process.env.GRAPHQL_PLAYGROUND),
     JWT_TOKEN_EXPIRES_IN: String(process.env.JWT_TOKEN_EXPIRES_IN),
@@ -32,7 +32,7 @@ const graphqlServiceEnv: { [key: string]: any } = {
 };
 
 const security = new Security({
-    dbProxy: dbProxy.function,
+    dbProxy: documentDb.databaseProxy,
     env: graphqlServiceEnv
 });
 
@@ -40,7 +40,7 @@ graphqlServiceEnv.VALIDATE_ACCESS_TOKEN_FUNCTION = security.functions.validateAc
 graphqlServiceEnv.PERMISSIONS_MANAGER_FUNCTION = security.functions.permissionsManager.arn;
 
 const i18n = new I18N({
-    dbProxy: dbProxy.function,
+    dbProxy: documentDb.databaseProxy,
     env: graphqlServiceEnv
 });
 
