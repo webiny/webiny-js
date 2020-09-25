@@ -17,7 +17,7 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
-import get from "lodash.get";
+import get from "lodash/get";
 import { createPermissionsMap } from "./utils";
 
 const t = i18n.ns("app-security/admin/groups/form");

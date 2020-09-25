@@ -2,14 +2,14 @@ import React from "react";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as HelpIcon } from "@webiny/app-headless-cms/admin/icons/help_outline.svg";
+import { ReactComponent as HelpIcon } from "@webiny/app-admin/assets/icons/round-help-24px.svg";
 
 export const flexClass = css({
     display: "flex",
     alignItems: "center"
 });
 
-export const gridClass = css({
+export const gridNoPaddingClass = css({
     padding: "0px !important"
 });
 

@@ -5,7 +5,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { Cell } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
-import get from "lodash.get";
+import get from "lodash/get";
 
 const t = i18n.ns("app-security-user-management/components/permission");
 

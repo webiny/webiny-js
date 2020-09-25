@@ -1,9 +1,9 @@
 import React, { Fragment, useEffect, useReducer } from "react";
 import { Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { reducer, actionTypes, initialState, contentModelPermissionOptions } from "../utils";
 import { PermissionInfo } from "@webiny/app-security-user-management/components/permission";
 import { i18n } from "@webiny/app/i18n";
+import { reducer, actionTypes, initialState, contentModelPermissionOptions } from "../utils";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer/SettingsPermission");
 
