@@ -61,11 +61,7 @@ module.exports = async (inputs, context) => {
         yes: true
     });
 
-    // TODO: format this to look nice
-    for await (const chunk of destroySubProcess.stdout) {
-        const line = String(chunk);
-        console.log(line.substr(0, line.length - 2));
-    }
+    await destroySubProcess.toConsole();
 
     console.log(`\n🎉 Done! Resources removed.`);
 
