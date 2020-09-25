@@ -37,3 +37,25 @@ export type FbFormTriggerHandlerPlugin = Plugin & {
     trigger: string;
     handle: (args: FbFormTriggerHandlerParams) => Promise<void>;
 };
+
+type FbFormFileResult = {
+    data: {
+        data: any;
+        file: any;
+    };
+    error?: {
+        message: string;
+        code: number;
+    };
+};
+export type FbFormUploadedFileResult = {
+    files?: {
+        uploadFile?: FbFormFileResult;
+    };
+};
+
+export type FbFormCreatedFileResult = {
+    files?: {
+        createFile?: FbFormFileResult;
+    };
+};

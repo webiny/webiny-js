@@ -46,8 +46,8 @@ type EditFieldDialogProps = {
 
 const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
     const [current, setCurrent] = useState(null);
-    const [isNewField, setIsNewField] = useState(false);
-    const [screen, setScreen] = useState();
+    const [isNewField, setIsNewField] = useState<boolean>(false);
+    const [screen, setScreen] = useState<string>(undefined);
 
     const { getFieldPlugin } = useFormEditor();
     const i18n = useI18N();

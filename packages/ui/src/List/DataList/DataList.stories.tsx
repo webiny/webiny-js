@@ -43,7 +43,12 @@ story.add(
                 console.log(`Implement setPreviousPage method (selected ${cursor}).`);
             },
             // @ts-ignore
-            perPageOptions: array("perPageOptions", [10, 25, 50], ",", "Basic"),
+            perPageOptions: (array(
+                "perPageOptions",
+                ["10", "25", "50"],
+                ",",
+                "Basic"
+            ) as unknown) as number[],
             setPerPage: perPage => {
                 console.log(`Implement setPerPage method (selected ${perPage}).`);
             },

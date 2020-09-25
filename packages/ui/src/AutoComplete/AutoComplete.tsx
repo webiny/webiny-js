@@ -230,12 +230,12 @@ class AutoComplete extends React.Component<AutoCompleteProps, State> {
                                     },
                                     onKeyUp: (e: React.KeyboardEvent<HTMLElement>) => {
                                         // @ts-ignore
-                                        const keyCode = keycode(e);
+                                        const keyCode: any = keycode(e);
                                         const target: any = e.target;
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
-                                        if (keyCode.length > 1 && keyCode !== "backspace") {
+                                        if (keyCode?.length > 1 && keyCode !== "backspace") {
                                             return;
                                         }
 

@@ -4,7 +4,6 @@ import { useDataList } from "@webiny/app/hooks/useDataList";
 import ContentDataList from "./ContentDataList";
 import ContentDetails from "./ContentDetails";
 import { createListQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
-import get from "lodash.get";
 import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
@@ -12,6 +11,10 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/content");
+
+type ContentModel = {
+    modelId: string;
+};
 
 const ContentRender = ({ contentModel }) => {
     const apolloClient = useApolloClient();
@@ -37,13 +40,13 @@ const ContentRender = ({ contentModel }) => {
         query: LIST_QUERY,
         variables,
         getData: response => {
-            return get(response, "content.data");
+            return response?.content?.data;
         },
         getMeta: response => {
-            return get(response, "content.meta");
+            return response?.content?.meta;
         },
         getError: response => {
-            return get(response, "content.error");
+            return response?.content?.error;
         }
     });
 
@@ -71,16 +74,17 @@ const ContentRender = ({ contentModel }) => {
 
 const Content = () => {
     const { match } = useRouter();
-    const [contentModel, setContentModel] = useState();
+    const [contentModel, setContentModel] = useState<ContentModel | undefined>();
     const { history } = useRouter();
-    const modelId = get(match, "params.modelId");
+    const { params } = match as any;
+    const modelId = params?.modelId;
     const { showSnackbar } = useSnackbar();
 
     useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
         skip: !modelId,
         variables: { modelId },
-        onCompleted: data => {
-            const contentModel = get(data, "getContentModel.data");
+        onCompleted: (data: any) => {
+            const contentModel = data?.getContentModel?.data;
             if (contentModel) {
                 return setContentModel(contentModel);
             }

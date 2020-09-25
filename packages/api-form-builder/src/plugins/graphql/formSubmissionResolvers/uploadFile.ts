@@ -1,8 +1,8 @@
+import { FbFormCreatedFileResult, FbFormUploadedFileResult } from "@webiny/api-form-builder/types";
 import got from "got";
 import FormData from "form-data";
 import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
 import { GraphQLClient } from "graphql-request";
-import { get } from "lodash";
 
 const uploadToS3 = async (buffer, preSignedPostPayload) => {
     const formData = new FormData();
@@ -26,22 +26,29 @@ export default async ({ context, buffer, file }) => {
             }
         });
 
-        let uploadFile = await client.request(UPLOAD_FILE, {
+        const uploadFileResult = await client.request<FbFormUploadedFileResult>(UPLOAD_FILE, {
             data: file
         });
 
-        uploadFile = get(uploadFile, "files.uploadFile");
+        const uploadFile = uploadFileResult?.files?.uploadFile;
+        if (!uploadFile) {
+            throw new Error("Missing uploaded file result data.");
+        }
+
         if (uploadFile.error) {
             throw new Error(uploadFile.error.message);
         }
 
         await uploadToS3(buffer, uploadFile.data.data);
 
-        let createFile = await client.request(CREATE_FILE, {
+        const createFileResult = await client.request<FbFormCreatedFileResult>(CREATE_FILE, {
             data: { ...uploadFile.data.file, meta: { private: true } }
         });
 
-        createFile = get(createFile, "files.createFile");
+        const createFile = createFileResult?.files?.createFile;
+        if (!createFile) {
+            throw new Error("Missing created file result data.");
+        }
         if (createFile.error) {
             throw new Error(createFile.error.message);
         }

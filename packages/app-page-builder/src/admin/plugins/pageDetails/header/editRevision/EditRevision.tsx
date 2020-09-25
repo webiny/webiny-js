@@ -14,7 +14,7 @@ const EditRevision = () => {
     const client = useApolloClient();
     const { history } = useRouter();
     const { page } = usePageDetails();
-    const [inProgress, setInProgress] = useState();
+    const [inProgress, setInProgress] = useState<boolean>(false);
 
     const unpublishedRevision = (get(page, "revisions") || []).find(
         item => !item.published && !item.locked

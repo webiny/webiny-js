@@ -7,6 +7,7 @@ import Droppable from "./../Droppable";
 type ContainerProps = {
     isOver: boolean;
     highlight: boolean;
+    children: any;
 };
 
 const Container = React.memo<ContainerProps>(

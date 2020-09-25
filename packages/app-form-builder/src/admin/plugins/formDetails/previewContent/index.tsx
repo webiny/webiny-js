@@ -23,7 +23,7 @@ const RenderBlock = styled("div")({
 });
 
 const PreviewContentTab = (props: FbFormDetailsPluginRenderParams) => {
-    const [revisionId, setRevisionId] = useState();
+    const [revisionId, setRevisionId] = useState<string>(undefined);
     useEffect(() => {
         setRevisionId(props.form.revisions[0].id);
     }, [props.form.id]);
