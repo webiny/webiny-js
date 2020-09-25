@@ -4,5 +4,8 @@
   "exclude": ["../../packages/app-template-site"],
   "references": [
     { "path": "../../packages/app-template-site/tsconfig.build.json" }
-  ]
+  ],
+  "compilerOptions": {
+    "noEmit": false
+  }
 }
