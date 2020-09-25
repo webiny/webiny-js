@@ -6,9 +6,9 @@ import { i18n } from "@webiny/app/i18n";
 import { PermissionRendererFileManager } from "@webiny/app-file-manager/types";
 import {
     PermissionInfo,
-    PermissionRendererWrapper
+    PermissionRendererWrapper,
+    gridNoPaddingClass
 } from "@webiny/app-security-user-management/components/permission";
-import { gridClass } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/StyledComponents";
 import {
     reducer,
     initialState,
@@ -82,7 +82,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
 
     return (
         <Fragment>
-            <Grid className={gridClass}>
+            <Grid className={gridNoPaddingClass}>
                 <Cell span={6}>
                     <PermissionInfo title={t`Permission level`} />
                 </Cell>
