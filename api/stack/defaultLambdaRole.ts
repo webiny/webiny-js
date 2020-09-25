@@ -26,4 +26,5 @@ class DefaultLambdaRole {
     }
 }
 
-export default DefaultLambdaRole;
+const defaultLambdaRole = new DefaultLambdaRole();
+export default defaultLambdaRole;

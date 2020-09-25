@@ -1,5 +1,8 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import vpc from "./vpc";
+import defaultLambdaRole from "./defaultLambdaRole";
+
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
@@ -13,7 +16,7 @@ class FileManager {
         graphql: aws.lambda.Function;
         download: aws.lambda.Function;
     };
-    constructor({ role, env }: { role: aws.iam.Role; env: { graphql: { [key: string]: any } } }) {
+    constructor({ env }: { env: { graphql: { [key: string]: any } } }) {
         this.bucket = new aws.s3.Bucket("fm-bucket", {
             forceDestroy: false,
             acl: "private",
@@ -32,7 +35,7 @@ class FileManager {
             timeout: 30,
             runtime: "nodejs10.x", // Because of the "sharp" library (built for Node10).
             memorySize: 1600,
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/fileManager/transform/build")
@@ -40,11 +43,15 @@ class FileManager {
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
         const manage = new aws.lambda.Function("fm-manage", {
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -55,11 +62,15 @@ class FileManager {
             }),
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
         const graphql = new aws.lambda.Function("fm-graphql", {
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -70,11 +81,15 @@ class FileManager {
             }),
             environment: {
                 variables: { ...env.graphql, S3_BUCKET: this.bucket.id }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
         const download = new aws.lambda.Function("fm-download", {
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -88,6 +103,10 @@ class FileManager {
                     S3_BUCKET: this.bucket.id,
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

@@ -1,6 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as path from "path";
+import vpc from "./vpc";
+import defaultLambdaRole from "./defaultLambdaRole";
+
 // @ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 
@@ -10,11 +13,9 @@ class PageBuilder {
     };
     constructor({
         bucket,
-        role,
         env
     }: {
         bucket: aws.s3.Bucket;
-        role: aws.iam.Role;
         env: { graphql: { [key: string]: string } };
     }) {
         const pbInstallationZipPath = path.join(__dirname, "pbInstallation.zip");
@@ -38,7 +39,7 @@ class PageBuilder {
             graphql: new aws.lambda.Function("pb-graphql", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
-                role: role.arn,
+                role: defaultLambdaRole.role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
@@ -50,6 +51,10 @@ class PageBuilder {
                         INSTALLATION_S3_BUCKET: bucket.id,
                         INSTALLATION_FILES_ZIP_KEY: pbInstallationZip.key
                     }
+                },
+                vpcConfig: {
+                    subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
                 }
             })
         };

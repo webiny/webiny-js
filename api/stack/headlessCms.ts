@@ -1,5 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import vpc from "./vpc";
+import defaultLambdaRole from "./defaultLambdaRole";
 
 class HeadlessCms {
     functions: {
@@ -8,12 +10,10 @@ class HeadlessCms {
         content: aws.lambda.Function;
     };
     constructor({
-        role,
         env,
         i18nLocalesFunction,
         settingsManagerFunction
     }: {
-        role: aws.iam.Role;
         settingsManagerFunction: aws.lambda.Function;
         i18nLocalesFunction: aws.lambda.Function;
         env: { content: { [key: string]: any }; graphql: { [key: string]: any } };
@@ -21,7 +21,7 @@ class HeadlessCms {
         const dataManager = new aws.lambda.Function("cms-data-manager", {
             runtime: "nodejs12.x",
             handler: "handler.handler",
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             timeout: 30,
             memorySize: 512,
             description: "CMS Data Manager",
@@ -34,13 +34,17 @@ class HeadlessCms {
                     MONGODB_NAME: process.env.MONGODB_NAME || "",
                     I18N_LOCALES_FUNCTION: i18nLocalesFunction.arn // TODO: use settings manager instead of this function?
                 }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
         const graphql = new aws.lambda.Function("cms-graphql", {
             runtime: "nodejs12.x",
             handler: "handler.handler",
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             timeout: 30,
             memorySize: 512,
             code: new pulumi.asset.AssetArchive({
@@ -51,13 +55,17 @@ class HeadlessCms {
                     ...env.graphql,
                     CMS_DATA_MANAGER_FUNCTION: dataManager.arn
                 }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
         const content = new aws.lambda.Function("cms-content", {
             runtime: "nodejs12.x",
             handler: "handler.handler",
-            role: role.arn,
+            role: defaultLambdaRole.role.arn,
             timeout: 30,
             memorySize: 512,
             description: "CMS Content API",
@@ -71,6 +79,10 @@ class HeadlessCms {
                     CMS_DATA_MANAGER_FUNCTION: dataManager.arn,
                     SETTINGS_MANAGER_FUNCTION: settingsManagerFunction.arn
                 }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

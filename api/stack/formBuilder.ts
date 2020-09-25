@@ -1,16 +1,16 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import vpc from "./vpc";
+import defaultLambdaRole from "./defaultLambdaRole";
 
 class FormBuilder {
     functions: {
         graphql: aws.lambda.Function;
     };
     constructor({
-        role,
         env,
         i18nLocalesFunction
     }: {
-        role: aws.iam.Role;
         i18nLocalesFunction: aws.lambda.Function;
         env: { graphql: { [key: string]: any } };
     }) {
@@ -18,7 +18,7 @@ class FormBuilder {
             graphql: new aws.lambda.Function("fb-graphql", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
-                role: role.arn,
+                role: defaultLambdaRole.role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
@@ -29,6 +29,10 @@ class FormBuilder {
                         ...env.graphql,
                         I18N_LOCALES_FUNCTION: i18nLocalesFunction.arn
                     }
+                },
+                vpcConfig: {
+                    subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
                 }
             })
         };

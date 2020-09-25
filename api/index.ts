@@ -1,5 +1,4 @@
 import Cognito from "./stack/cognito";
-import DefaultLambdaRole from "./stack/defaultLambdaRole";
 import DbProxy from "./stack/dbProxy";
 import Security from "./stack/security";
 import SettingsManager from "./stack/settingsManager";
@@ -14,10 +13,9 @@ import HeadlessCms from "./stack/headlessCms";
 import GraphQLPlayground from "./stack/graphqlPlayground";
 
 const cognito = new Cognito();
-const defaultLambdaRole = new DefaultLambdaRole();
-const dbProxy = new DbProxy({ role: defaultLambdaRole.role });
+const dbProxy = new DbProxy();
+
 const settingsManager = new SettingsManager({
-    role: defaultLambdaRole.role,
     dbProxy: dbProxy.function
 });
 
@@ -34,7 +32,6 @@ const graphqlServiceEnv: { [key: string]: any } = {
 };
 
 const security = new Security({
-    role: defaultLambdaRole.role,
     dbProxy: dbProxy.function,
     env: graphqlServiceEnv
 });
@@ -43,13 +40,11 @@ graphqlServiceEnv.VALIDATE_ACCESS_TOKEN_FUNCTION = security.functions.validateAc
 graphqlServiceEnv.PERMISSIONS_MANAGER_FUNCTION = security.functions.permissionsManager.arn;
 
 const i18n = new I18N({
-    role: defaultLambdaRole.role,
     dbProxy: dbProxy.function,
     env: graphqlServiceEnv
 });
 
 const fileManager = new FileManager({
-    role: defaultLambdaRole.role,
     env: {
         graphql: graphqlServiceEnv
     }
@@ -57,12 +52,10 @@ const fileManager = new FileManager({
 
 const pageBuilder = new PageBuilder({
     bucket: fileManager.bucket,
-    role: defaultLambdaRole.role,
     env: { graphql: graphqlServiceEnv }
 });
 
 const formBuilder = new FormBuilder({
-    role: defaultLambdaRole.role,
     i18nLocalesFunction: i18n.functions.locales,
     env: {
         graphql: graphqlServiceEnv
@@ -70,7 +63,6 @@ const formBuilder = new FormBuilder({
 });
 
 const headlessCms = new HeadlessCms({
-    role: defaultLambdaRole.role,
     i18nLocalesFunction: i18n.functions.locales,
     settingsManagerFunction: settingsManager.functions.settings,
     env: {
@@ -80,7 +72,6 @@ const headlessCms = new HeadlessCms({
 });
 
 const apolloGateway = new ApolloGateway({
-    role: defaultLambdaRole.role,
     env: {
         ...graphqlServiceEnv,
         LAMBDA_SERVICE_SECURITY: security.functions.graphql.arn,
@@ -92,7 +83,7 @@ const apolloGateway = new ApolloGateway({
     }
 });
 
-const graphqlPlayground = new GraphQLPlayground({ role: defaultLambdaRole.role });
+const graphqlPlayground = new GraphQLPlayground();
 
 const apiGateway = new ApiGateway({
     routes: [
