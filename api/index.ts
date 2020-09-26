@@ -26,8 +26,6 @@ const graphqlServiceEnv: { [key: string]: any } = {
     DB_PROXY_FUNCTION: documentDb.databaseProxy.arn,
     GRAPHQL_INTROSPECTION: String(process.env.GRAPHQL_INTROSPECTION),
     GRAPHQL_PLAYGROUND: String(process.env.GRAPHQL_PLAYGROUND),
-    JWT_TOKEN_EXPIRES_IN: String(process.env.JWT_TOKEN_EXPIRES_IN),
-    JWT_TOKEN_SECRET: String(process.env.JWT_TOKEN_EXPIRES_IN),
     SETTINGS_MANAGER_FUNCTION: settingsManager.functions.settings.arn
 };
 
