@@ -1,16 +1,13 @@
 import { ApolloGateway } from "@apollo/gateway";
-import { GraphQLRequestContext } from "apollo-server-types";
 import { boolean } from "boolean";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
-import createHeaders from "./createHeaders";
-import { DataSource } from "./../DataSource";
 import { HandlerApolloGatewayServicePlugin } from "./../types";
 import { runHttpQuery } from "apollo-server-core/dist/runHttpQuery";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
 import { Headers } from "apollo-server-env";
-import getError from "./getError";
+import HandlerGraphQLDataSource from "./HandlerGraphQLDataSource";
 
 class ApolloGatewayError extends Error {
     errors: any[];
@@ -47,28 +44,9 @@ export default async (context: Context, options) => {
         debug: boolean(options.debug),
         serviceList: services,
         buildService({ name }) {
-            return new DataSource({
-                handlerClient: context.handlerClient,
-                functionName: services.find(s => s.name === name).function,
-                willSendRequest(params: Pick<GraphQLRequestContext, "request" | "context">) {
-                    let headers = params.context.headers;
-
-                    // If cold-start, `context.headers` will not be available.
-                    if (!headers) {
-                        headers = createHeaders(context);
-                    }
-
-                    Object.keys(headers).forEach(key => {
-                        params.request.http.headers.set(key, headers[key]);
-                    });
-                },
-                onServiceError(error) {
-                    dataSourceErrors.push({
-                        ...getError(error),
-                        service: name,
-                        functionName: services.find(s => s.name === name).function
-                    });
-                }
+            return new HandlerGraphQLDataSource({
+                context,
+                functionName: services.find(s => s.name === name).function
             });
         }
     });
