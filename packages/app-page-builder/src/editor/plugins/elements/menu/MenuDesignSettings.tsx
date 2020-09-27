@@ -3,14 +3,96 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import Menu from "./Menu";
+import { LIST_MENUS } from "./graphql";
+import { Query } from "react-apollo";
+import { get } from "lodash";
+import styled from "@emotion/styled";
 import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 
-const MenuDesignSettings = ({ Bind, data }) => {
+const FormOptionsWrapper = styled("div")({
+    minHeight: 250
+});
+
+const getOptions = ({ gqlData, settingsData }) => {
+    console.log("GETTING OPTIONS::::::::");
+    console.log(gqlData);
+    console.log(settingsData);
+    const output = {
+        parents: {
+            options: [],
+            value: null
+        }
+    };
+
+    const selected = {
+        menus: get(settingsData, "settings.menu.element") || []
+    };
+    console.log(selected.menus);
+    //parentsList currently not working.
+    const menusList = get(gqlData, "pageBuilder.menus.data") || [];
+    console.log(menusList);
+    //const menus = get(data, "pageBuilder.menus");
+    console.log("OUTPUT::::::::::");
+
+    output.parents.options = menusList.map(({ id, title }) => ({ id, title }));
+    console.log(output.parents.options);
+    output.parents.value = output.parents.options.find(item => item.id === selected.menus.id) || null;    //const parent = parentsList.find(item => item.parent === selected.parent);
+    console.log(output.parents.value);
+
+    return output;
+};
+
+
+const MenuDesignSettings = ({ Bind, data: settingsData }) => {
+    
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
+    console.log("MenuDesignSettings Bind data components:::::::");
+    console.log(Bind);
+    console.log(settingsData);
+    console.log(components);
+
+    return (
+        <FormOptionsWrapper>
+            <Query query={LIST_MENUS} fetchPolicy="network-only">
+                {({ data: gqlData, loading, refetch }) => {
+                    if (loading) {
+                        return <div>Loading...</div>;
+                    }
+                    console.log("gqlResponse:::::::s:::::");
+                    console.log(gqlData);
+                    //console.log(settingsData);
+                    //WORK FROM HERE.. SECOND DATA DROM INITIAL
+                    const options = getOptions({ gqlData, settingsData });
+
+                    return (
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind
+                                    name={"settings.form.parent"}
+                                    validators={validation.create("required")}
+                                >
+                                    {({ onChange }) => (
+                                        <AutoComplete
+                                            options={options.parents.options}
+                                            value={options.parents.value}
+                                            onChange={onChange}
+                                            label={"Form"}
+                                        />
+                                    )}
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                    );
+                }}
+            </Query>
+        </FormOptionsWrapper>
+    )
+
     /*
                     <Cell span={6}>
                     <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
@@ -18,7 +100,7 @@ const MenuDesignSettings = ({ Bind, data }) => {
                     </Bind>
                 </Cell>*/
 
-    return (
+    /*return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
@@ -46,7 +128,7 @@ const MenuDesignSettings = ({ Bind, data }) => {
                 </Cell>
             </Grid>
         </React.Fragment>
-    );
+    );*/
 }
 
 export default MenuDesignSettings;

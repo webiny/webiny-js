@@ -40,36 +40,38 @@ export default () => {
                     );
                 }
             },
-            settings: ["pb-editor-page-element-settings-delete"],
-            target: ["row", "column"],
+            settings: [
+                "pb-editor-page-element-settings-delete",
+                "",
+                "pb-editor-page-element-settings-height"
+            ],
+            target: ["row", "column", "list-item"],
             onCreate: "open-settings",
-            create(options = {}) {
-                return {
-                    type: "menu",
-                    data: {
-                        resultsPerPage: 10,
-                        component: "default",
-                        settings: {
-                            margin: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
-                            },
-                            padding: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
-                            }
-                        }
-                    },
-                    ...options
-                };
-            },
             render({ element }) {
                 console.log("OPENING MENU ELEMENT DATA:::::::::::");
                 console.log("TRY AGAIN!!!")
-                console.log(element.data);
-                return <Menu data={element.data} />;
+                console.log(element);
+                return <Menu element={element} />;
+            },
+            create() {
+                return {
+                    type: "menu",
+                    elements: [],
+                    data: {},
+                    settings: {}
+                };
             }
         } as PbEditorPageElementPlugin,
+        /*
+        {data: {…}}
+data:
+data: {}
+elements: []
+id: "ezOAHusD4"
+path: "0.0.0.0.0"
+settings:
+type: "menu"
+        */
         /*{
             name: "pb-editor-page-element-advanced-settings-menu-filter",
             type: "pb-editor-page-element-advanced-settings",
@@ -88,6 +90,8 @@ export default () => {
             type: "pb-editor-page-element-advanced-settings",
             elementType: "menu",
             render(props) {
+                console.log("PROPS FOR MENU-DESIGN-SETTINGS::::::;;;;;;;;");
+                console.log(props);
                 return (
                     <Tab icon={<MenuIcon />} label="Design">
                         <h1>MENU DESIGN SETTINGS</h1>
