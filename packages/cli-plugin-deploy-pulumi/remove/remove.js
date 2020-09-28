@@ -58,7 +58,7 @@ module.exports = async (inputs, context) => {
     await processHooks("hook-before-remove", hooksParams);
     await processHooks("hook-stack-before-remove", hooksParams);
 
-    const { toConsole } = pulumi.run({
+    const { toConsole } = await pulumi.run({
         command: "destroy",
         args: {
             yes: true

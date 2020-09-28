@@ -6,7 +6,6 @@ const path = require("path");
 const execa = require("execa");
 const ProgressBar = require("progress");
 const getPackages = require("get-yarn-workspaces");
-const indentString = require("indent-string");
 const ora = require("ora");
 
 const notify = ({ message }) => {
@@ -16,6 +15,14 @@ const notify = ({ message }) => {
         icon: join(__dirname, "logo.png"),
         sound: false,
         wait: true
+    });
+};
+
+const sleep = () => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
+        }, 1000);
     });
 };
 
@@ -63,7 +70,7 @@ module.exports = async ({ options, ...inputs }, context) => {
                 path.join(process.cwd(), folder)
             )}...`
         );
-        const bar = new ProgressBar(indentString("[:bar] :percent :etas", 2), {
+        const bar = new ProgressBar(("[:bar] :percent :etas", 2), {
             complete: "=",
             incomplete: " ",
             width: 1024,
@@ -92,7 +99,7 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     const stacksDir = path.join(".", folder);
 
-    let spinner;
+    let spinner = new ora();
     const pulumi = new Pulumi({
         execa: {
             cwd: stacksDir,
@@ -105,7 +112,7 @@ module.exports = async ({ options, ...inputs }, context) => {
             console.log(
                 `🌟 ️It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
             );
-            spinner = new ora().start(`Downloading Pulumi binaries...`);
+            spinner.start(`Downloading Pulumi binaries...`);
         },
         afterPulumiInstall: () => {
             spinner.stopAndPersist({
@@ -115,22 +122,17 @@ module.exports = async ({ options, ...inputs }, context) => {
         }
     });
 
-    console.log();
-    if (inputs.preview) {
-        console.log(`⏳ Previewing stack...`);
-    } else {
-        console.log(`⏳ Deploying stack...`);
-    }
-
     let stackExists = true;
     try {
-        await pulumi.run({ command: ["stack", "select", env] });
+        const { process } = await pulumi.run({ command: ["stack", "select", env] });
+        await process;
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        await pulumi.run({ command: ["stack", "init", env] });
+        const { process } = await pulumi.run({ command: ["stack", "init", env] });
+        await process;
     }
 
     const isFirstDeploy = !stackExists;
@@ -138,10 +140,17 @@ module.exports = async ({ options, ...inputs }, context) => {
     const hookDeployArgs = { isFirstDeploy, context, env, stack };
 
     if (inputs.preview) {
-        console.log(`Skipping "hook-before-deploy" hook...`);
+        console.log(`Skipped "hook-before-deploy" hook.`);
     } else {
-        console.log(`Running "hook-before-deploy" hook...`);
+        spinner = spinner.start(`Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
+        await sleep();
+
+        const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
+        spinner.stopAndPersist({
+            symbol: green("✔"),
+            text: `Hook "hook-before-deploy" completed. ${continuing}\n`
+        });
     }
 
     if (inputs.preview) {
@@ -173,9 +182,14 @@ module.exports = async ({ options, ...inputs }, context) => {
     }
 
     if (inputs.preview) {
-        console.log(`Skipping "hook-after-deploy" hook...`);
+        console.log(`Skipped "hook-after-deploy" hook.`);
     } else {
-        console.log(`Running "hook-after-deploy" hook...`);
+        spinner = spinner.start(`Running "hook-after-deploy" hook...`);
         await processHooks("hook-after-deploy", hookDeployArgs);
+        await sleep();
+        spinner.stopAndPersist({
+            symbol: green("✔"),
+            text: `Hook "hook-after-deploy" completed.`
+        });
     }
 };
