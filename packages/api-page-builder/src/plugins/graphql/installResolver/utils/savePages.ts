@@ -83,23 +83,27 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         const filesChunk = filesChunks[i];
 
                         // 1. Get pre-signed POST payloads for current files chunk.
-                        const response = await context.handlerClient.invoke({
+                        let response = await context.handlerClient.invoke({
                             name: process.env.FILE_MANAGER_FUNCTION,
                             payload: {
                                 httpMethod: "POST",
-                                body: {
+                                headers: {
+                                    Authorization: context.token
+                                },
+                                body: JSON.stringify({
                                     query: UPLOAD_FILES,
                                     variables: {
                                         data: filesChunk.map(item =>
                                             pick(item, ["name", "size", "type"])
                                         )
                                     }
-                                }
+                                })
                             }
                         });
 
-                        console.log("dobeo responseaaaa", response);
-                        const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
+                        response = JSON.parse(response.body);
+                        const preSignedPostPayloads =
+                            get(response, "data.files.uploadFiles.data") || [];
                         await console.log(
                             `savePages: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                         );
@@ -126,16 +130,22 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         await context.handlerClient.invoke({
                             name: process.env.FILE_MANAGER_FUNCTION,
                             payload: {
-                                query: CREATE_FILES,
-                                variables: {
-                                    data: filesChunk.map((item, i) => {
-                                        return {
-                                            meta: item.meta,
-                                            ...preSignedPostPayloads[i].file,
-                                            id: item.id
-                                        };
-                                    })
-                                }
+                                httpMethod: "POST",
+                                headers: {
+                                    Authorization: context.token
+                                },
+                                body: JSON.stringify({
+                                    query: CREATE_FILES,
+                                    variables: {
+                                        data: filesChunk.map((item, i) => {
+                                            return {
+                                                meta: item.meta,
+                                                ...preSignedPostPayloads[i].file,
+                                                id: item.id
+                                            };
+                                        })
+                                    }
+                                })
                             }
                         });
 
