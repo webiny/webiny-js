@@ -66,11 +66,11 @@ module.exports = async ({ options, ...inputs }, context) => {
         );
 
         console.log(
-            `⏳  Building ${packages.length} package(s) in ${green(
+            `⏳ Building ${packages.length} package(s) in ${green(
                 path.join(process.cwd(), folder)
             )}...`
         );
-        const bar = new ProgressBar(("[:bar] :percent :etas", 2), {
+        const bar = new ProgressBar("[:bar] :percent :etas", {
             complete: "=",
             incomplete: " ",
             width: 1024,
