@@ -11,6 +11,7 @@ import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
+import { isTerminating } from "apollo-link/lib/linkUtils";
 
 const FormOptionsWrapper = styled("div")({
     minHeight: 250
@@ -37,10 +38,12 @@ const getOptions = ({ gqlData, settingsData }) => {
     //const menus = get(data, "pageBuilder.menus");
     console.log("OUTPUT::::::::::");
 
-    output.parents.options = menusList.map(({ id, title }) => ({ id, title }));
-    console.log(output.parents.options);
-    output.parents.value = output.parents.options.find(item => item.id === selected.menus.id) || null;    //const parent = parentsList.find(item => item.parent === selected.parent);
+    //changed title to name to pick up data with auto complete.
+    output.parents.options = menusList.map(({ id, title }) => ({ id, name: title }));
+    output.parents.value = output.parents.options.find(item => item.id === selected.menus) || null;    //const parent = parentsList.find(item => item.parent === selected.parent);
     console.log(output.parents.value);
+    console.log(output.parents.options);
+    console.log(selected.menus);
 
     return output;
 };
@@ -54,7 +57,7 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
     console.log("MenuDesignSettings Bind data components:::::::");
     console.log(Bind);
     console.log(settingsData);
-    console.log(components);
+    //console.log(components);
 
     return (
         <FormOptionsWrapper>
@@ -63,17 +66,17 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                     if (loading) {
                         return <div>Loading...</div>;
                     }
-                    console.log("gqlResponse:::::::s:::::");
+                    console.log("gqlResponse   options value:::::::s:::::");
                     console.log(gqlData);
                     //console.log(settingsData);
                     //WORK FROM HERE.. SECOND DATA DROM INITIAL
                     const options = getOptions({ gqlData, settingsData });
-
+                    console.log(options);
                     return (
                         <Grid>
                             <Cell span={12}>
                                 <Bind
-                                    name={"settings.form.parent"}
+                                    name={"settings.menu.element"}
                                     validators={validation.create("required")}
                                 >
                                     {({ onChange }) => (
@@ -81,7 +84,7 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                                             options={options.parents.options}
                                             value={options.parents.value}
                                             onChange={onChange}
-                                            label={"Form"}
+                                            label={"Menu"}
                                         />
                                     )}
                                 </Bind>

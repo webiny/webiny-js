@@ -37,6 +37,7 @@ const Menu = (props: MenuElementProps) => {
         "pb-page-element-menu-component"
     );*/
     //get dtata from here
+//    "settings.menu.element")
     const menu = get(element, "data.settings.menu") || {};
     console.log("CHECKING MENU DATA FROM EDITOR::::::");
     console.log(menu);
@@ -76,11 +77,16 @@ const Menu = (props: MenuElementProps) => {
         after: undefined,
         before: undefined
     };*/
+    console.log("menu.parent");
+    console.log(menu.parent);
+    console.log("element");
+    console.log(element);
+    //removing key number menu.parent
     return (
         <>
             {isActive && <Overlay />}
             <ElementRoot
-                key={`form-${menu.parent}`}
+                key={`form-1`}
                 element={element}
                 className={"webiny-pb-element-form"}
             >
