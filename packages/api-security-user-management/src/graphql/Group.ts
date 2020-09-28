@@ -78,13 +78,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: hasScope("security:group:crud")(resolveGet(groupFetcher)),
-            listGroups: hasScope("security:group:crud")(resolveList(groupFetcher))
+            getGroup: hasScope("security.group.manage")(resolveGet(groupFetcher)),
+            listGroups: hasScope("security.group.manage")(resolveList(groupFetcher))
         },
         SecurityMutation: {
-            createGroup: hasScope("security:group:crud")(resolveCreate(groupFetcher)),
-            updateGroup: hasScope("security:group:crud")(resolveUpdate(groupFetcher)),
-            deleteGroup: hasScope("security:group:crud")(resolveDelete(groupFetcher))
+            createGroup: hasScope("security.group.manage")(resolveCreate(groupFetcher)),
+            updateGroup: hasScope("security.group.manage")(resolveUpdate(groupFetcher)),
+            deleteGroup: hasScope("security.group.manage")(resolveDelete(groupFetcher))
         }
     }
 };
