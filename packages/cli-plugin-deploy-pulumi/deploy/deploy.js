@@ -46,10 +46,10 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     const projectRoot = context.paths.projectRoot;
 
-    // Load .env.json from project root
+    // Load .env.json from project root.
     await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
 
-    // Load .env.json from cwd (this will change depending on the folder you specified)
+    // Load .env.json from cwd (this will change depending on the folder you specified).
     await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
 
     if (inputs.build) {
@@ -93,8 +93,11 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     const pulumi = new Pulumi({
         defaults: {
-            options: { cwd: stacksDir, env: { PULUMI_CONFIG_PASSPHRASE: "123123" } },
-            flags: {
+            execa: {
+                cwd: stacksDir,
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+            },
+            pulumi: {
                 secretsProvider: "passphrase"
             }
         }
@@ -130,22 +133,25 @@ module.exports = async ({ options, ...inputs }, context) => {
         await processHooks("hook-stack-before-deploy", beforeDeployHookParams);
     }
 
-    let subProcess;
     if (inputs.preview) {
         const pu = new Pulumi({
             defaults: {
-                options: { cwd: stacksDir, env: { PULUMI_CONFIG_PASSPHRASE: "123123" } }
+                execa: {
+                    cwd: stacksDir,
+                    env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+                }
             }
         });
-        subProcess = pu.run("preview");
+        const [, toConsole] = pu.run("preview");
+        await toConsole();
     } else {
-        subProcess = pulumi.run("up", {
+        const [, toConsole] = pulumi.run("up", {
             yes: true,
             skipPreview: true
         });
-    }
 
-    await subProcess.toConsole();
+        await toConsole();
+    }
 
     const duration = getDuration();
     if (inputs.preview) {

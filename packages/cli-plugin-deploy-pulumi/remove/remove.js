@@ -34,7 +34,10 @@ module.exports = async (inputs, context) => {
 
     const pulumi = new Pulumi({
         defaults: {
-            options: { cwd: stacksDir, env: { PULUMI_CONFIG_PASSPHRASE: "123123" } }
+            execa: {
+                cwd: stacksDir,
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+            }
         }
     });
 
