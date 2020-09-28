@@ -14,7 +14,7 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "env-cmd -r .env.json --silent -e default webiny run start --env=local --stack=api",
+    "start": "webiny run start --env local",
     "build": "webiny run build"
   },
   "browserslist": {
