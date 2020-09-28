@@ -5,6 +5,7 @@ import menus from "./menus";
 import secureRouteError from "./secureRouteError";
 import installation from "./installation";
 import scopesList from "./scopesList";
+import permissionRenderer from "./permissionRenderer";
 
 export default () => [
     // Layout plugins
@@ -14,5 +15,6 @@ export default () => [
     menus,
     scopesList,
     secureRouteError,
-    installation
+    installation,
+    permissionRenderer()
 ];
