@@ -6,18 +6,16 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 const t = i18n.ns("app-security/admin/menus");
 
 // TODO: Update to  more fine grained scopes
-const ROLE_SECURITY_GROUPS = "security.group.crud";
-const ROLE_SECURITY_ROLES = "security.role.crud";
-const ROLE_SECURITY_USERS = "security.user.crud";
+const PERMISSION_SECURITY_GROUPS = "security.group.manage";
+const PERMISSION_SECURITY_USERS = "security.user.manage";
 
 const SecurityMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    const groups = identity.getPermission(ROLE_SECURITY_GROUPS);
-    const roles = identity.getPermission(ROLE_SECURITY_ROLES);
-    const users = identity.getPermission(ROLE_SECURITY_USERS);
+    const groups = identity.getPermission(PERMISSION_SECURITY_GROUPS);
+    const users = identity.getPermission(PERMISSION_SECURITY_USERS);
 
-    if (!groups && !roles && !users) {
+    if (!groups && !users) {
         return null;
     }
 

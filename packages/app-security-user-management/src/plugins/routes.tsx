@@ -8,6 +8,9 @@ import { Users } from "../views/Users";
 import { Groups } from "../views/Groups";
 import { Account } from "../views/Account";
 
+const PERMISSION_SECURITY_GROUPS = "security.group.manage";
+const PERMISSION_SECURITY_USERS = "security.user.manage";
+
 const plugins: RoutePlugin[] = [
     {
         name: "route-groups",
@@ -17,7 +20,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/groups"}
                 render={() => (
-                    <SecureRoute permission={"security.group.crud"}>
+                    <SecureRoute permission={PERMISSION_SECURITY_GROUPS}>
                         <AdminLayout>
                             <Helmet title={"Security - Groups"} />
                             <Groups />
@@ -35,7 +38,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/users"}
                 render={() => (
-                    <SecureRoute permission={"security.user.crud"}>
+                    <SecureRoute permission={PERMISSION_SECURITY_USERS}>
                         <AdminLayout>
                             <Helmet title={"Security - Users"} />
                             <Users />
