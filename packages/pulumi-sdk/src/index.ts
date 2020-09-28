@@ -1,19 +1,20 @@
 import execa from "execa";
-import { merge, kebabCase, get } from "lodash";
+import * as path from "path";
+import { merge, kebabCase, get, set } from "lodash";
 import toConsole from "./toConsole";
 
 type Command = string | string[];
-type Flags = { [key: string]: string | boolean };
-type Options = {
-    env?: { [key: string]: string };
-};
+type PulumiArgs = { [key: string]: string | boolean };
+type ExecaArgs = { [key: string]: string };
 
 type ConstructorOptions = {
     defaults?: {
-        flags: Flags;
-        options: Options;
+        pulumi: PulumiArgs;
+        execa: ExecaArgs;
     };
 };
+
+const FLAG_NON_INTERACTIVE = "--non-interactive";
 
 class Pulumi {
     options: ConstructorOptions;
@@ -21,42 +22,41 @@ class Pulumi {
         this.options = options;
     }
 
-    run(command: Command, rawFlags: Flags, rawOptions: Options = {}) {
+    run(command: Command, pulumiArgs?: PulumiArgs, rawExeca?: ExecaArgs) {
         if (!Array.isArray(command)) {
             command = [command];
         }
 
-        const normalizedFlags = merge({}, get(this.options, "defaults.flags"), rawFlags);
-        const finalFlags = [];
-        for (const key in normalizedFlags) {
-            const value = normalizedFlags[key];
+        // 1. Prepare Pulumi args.
+        const normalizedPulumiArgs = merge({}, get(this.options, "defaults.pulumi"), pulumiArgs);
+        const finalPulumiArgs = [];
+        for (const key in normalizedPulumiArgs) {
+            const value = normalizedPulumiArgs[key];
             if (!value) {
                 continue;
             }
 
             switch (typeof value) {
                 case "boolean":
-                    finalFlags.push(`--${kebabCase(key)}`);
+                    finalPulumiArgs.push(`--${kebabCase(key)}`);
                     continue;
                 default:
-                    finalFlags.push(`--${kebabCase(key)}`, value);
+                    finalPulumiArgs.push(`--${kebabCase(key)}`, value);
             }
         }
 
-        const finalOptions = merge({}, get(this.options, "defaults.options"), rawOptions);
+        // Prepare Execa args.
+        const finalExecaArgs = merge({}, get(this.options, "defaults.execa"), rawExeca);
+
+        set(finalExecaArgs, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
 
         const subProcess = execa(
-            "pulumi",
-            [...command, ...finalFlags, "--non-interactive"],
-            finalOptions
+            path.join(__dirname, "binaries", "pulumi", "pulumi"),
+            [...command, ...finalPulumiArgs, FLAG_NON_INTERACTIVE],
+            finalExecaArgs
         );
 
-        // @ts-ignore
-        subProcess.toConsole = () => {
-            return toConsole(subProcess);
-        };
-
-        return subProcess;
+        return [subProcess, () => toConsole(subProcess)];
     }
 }
 

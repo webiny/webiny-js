@@ -6,8 +6,8 @@ const processors: Array<LineProcessor | [(line: string) => boolean, LineProcesso
     [line => line.startsWith("pulumi:pulumi:Stack"), () => " "]
 ];
 
-export default async subProcess => {
-    for await (const chunk of subProcess.stdout) {
+const log = async std => {
+    for await (const chunk of std) {
         let line = String(chunk);
 
         for (let i = 0; i < processors.length; i++) {
@@ -25,4 +25,9 @@ export default async subProcess => {
 
         line && console.log(line);
     }
+};
+
+export default async subProcess => {
+    await log(subProcess.stdout);
+    await log(subProcess.stderr);
 };
