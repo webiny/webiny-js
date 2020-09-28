@@ -51,12 +51,12 @@ const setEnvironmentFromState = async ({ env, stack, map }, context) => {
         }
     });
 
-    const [subProcess] = pulumi.run(["stack", "output"], {
+    const { process } = pulumi.run(["stack", "output"], {
         stack: env,
         json: true
     });
 
-    const { stdout } = await subProcess;
+    const { stdout } = await process;
 
     const state = JSON.parse(stdout);
     Object.assign(process.env, getStateValues(state, map));

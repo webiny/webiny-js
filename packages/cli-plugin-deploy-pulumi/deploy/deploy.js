@@ -142,14 +142,13 @@ module.exports = async ({ options, ...inputs }, context) => {
                 }
             }
         });
-        const [, toConsole] = pu.run("preview");
+        const { toConsole } = pu.run("preview");
         await toConsole();
     } else {
-        const [, toConsole] = pulumi.run("up", {
+        const { toConsole } = pulumi.run("up", {
             yes: true,
             skipPreview: true
         });
-
         await toConsole();
     }
 

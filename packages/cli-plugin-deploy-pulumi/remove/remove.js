@@ -60,11 +60,11 @@ module.exports = async (inputs, context) => {
     await processHooks("hook-before-remove", hooksParams);
     await processHooks("hook-stack-before-remove", hooksParams);
 
-    const destroySubProcess = pulumi.run("destroy", {
+    const { toConsole } = pulumi.run("destroy", {
         yes: true
     });
 
-    await destroySubProcess.toConsole();
+    await toConsole();
 
     console.log(`\n🎉 Done! Resources removed.`);
 

@@ -56,7 +56,10 @@ class Pulumi {
             finalExecaArgs
         );
 
-        return [subProcess, () => toConsole(subProcess)];
+        return {
+            process: subProcess,
+            toConsole: () => toConsole(subProcess)
+        };
     }
 }
 
