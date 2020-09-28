@@ -1,3 +1,5 @@
+@import "theme";
+
 // material variables
 $mdc-theme-primary: $webiny-theme-light-primary;
 $mdc-theme-on-primary: $webiny-theme-light-on-primary;
@@ -7,7 +9,7 @@ $mdc-theme-surface: $webiny-theme-light-surface;
 $mdc-theme-on-surface: $webiny-theme-light-on-surface;
 $mdc-theme-background: $webiny-theme-light-background;
 $mdc-theme-on-background: $webiny-theme-light-on-background;
-$mdc-theme-text-primary-on-background: $webiny-theme-light-text-primary-on-background !global;
+$mdc-theme-text-primary-on-background: $webiny-theme-light-text-primary-on-background;
 $mdc-theme-text-secondary-on-background: $webiny-theme-light-text-secondary-on-background;
 $mdc-theme-text-hint-on-dark: $webiny-theme-light-text-hint-on-dark;
 $mdc-typography-font-family: $webiny-theme-typography-font-family;
@@ -67,6 +69,6 @@ body.dark-theme {
   --mdc-theme-text-hint-on-dark: #{$mdc-theme-text-hint-on-dark};
   --mdc-theme-caret-down: #{$webiny-theme-dark-caret-down};
 
-  @import "@material/textfield/mdc-text-field";
+  @import "~@material/textfield/mdc-text-field";
   @import "material-theme-assignments.scss";
 }

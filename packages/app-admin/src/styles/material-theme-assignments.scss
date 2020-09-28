@@ -1,3 +1,15 @@
+@import "~@material/top-app-bar/mixins.import";
+@import "~@material/elevation/mixins.import";
+@import "~@material/button/mixins.import";
+@import "~@material/icon-button/mixins.import";
+@import "~@material/drawer/mixins.import";
+@import "~@material/tab-bar/mixins.import";
+@import "~@material/switch/mixins.import";
+@import "~@material/textfield/mixins.import";
+@import "~@material/select/mixins.import";
+@import "~@material/checkbox/mixins.import";
+@import "~@material/radio/mixins.import";
+@import "~@material/snackbar/mixins.import";
 // top app bar should use theme-surface as the fill color
 .mdc-top-app-bar {
   @include mdc-top-app-bar-fill-color($mdc-theme-surface);
@@ -97,7 +109,8 @@
   @include mdc-list-item-meta-ink-color($mdc-theme-text-secondary-on-background);
   @include mdc-list-divider-color($mdc-theme-on-background);
   @include mdc-list-group-subheader-ink-color($mdc-theme-text-primary-on-background);
-  @include mdc-list-item-shape-radius(0);
+  // TODO figure out where is this comming from
+  // @include mdc-list-item-shape-radius(0);
 
   .mdc-list-item {
     color: $mdc-theme-text-primary-on-background;
