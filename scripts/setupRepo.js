@@ -15,10 +15,9 @@ const execa = require("execa");
         console.log(`🚨 Failed to build packages: ${err.message}`);
     }
 
-    console.log(`\n🏁 Your repo is almost ready!`);
     console.log(
-        `Update ${green(
-            ".env.json"
-        )} with your MongoDB connection string and you're ready to develop!\n`
+        `\n🏁 Your repo is ready. Run ${green(
+            "yarn webiny deploy api --env local"
+        )} to deploy your API stack.`
     );
 })();
