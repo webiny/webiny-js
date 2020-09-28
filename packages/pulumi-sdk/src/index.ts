@@ -2,61 +2,72 @@ import execa from "execa";
 import * as path from "path";
 import { merge, kebabCase, get, set } from "lodash";
 import toConsole from "./toConsole";
+import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];
 type PulumiArgs = { [key: string]: string | boolean };
-type ExecaArgs = { [key: string]: string };
+type ExecaArgs = { [key: string]: any };
 
-type ConstructorOptions = {
-    defaults?: {
-        pulumi: PulumiArgs;
-        execa: ExecaArgs;
-    };
+type DefaultArgs = {
+    args?: PulumiArgs;
+    execa?: ExecaArgs;
+    beforePulumiInstall?: () => any;
+    afterPulumiInstall?: () => any;
+};
+
+type RunArgs = {
+    command: Command;
+    args?: PulumiArgs;
+    execa?: ExecaArgs;
+    beforePulumiInstall?: () => any;
+    afterPulumiInstall?: () => any;
 };
 
 const FLAG_NON_INTERACTIVE = "--non-interactive";
 
 class Pulumi {
-    options: ConstructorOptions;
-    constructor(options: ConstructorOptions = {}) {
-        this.options = options;
+    defaultArgs: DefaultArgs;
+    constructor(options: DefaultArgs = {}) {
+        this.defaultArgs = options;
     }
 
-    run(command: Command, pulumiArgs?: PulumiArgs, rawExeca?: ExecaArgs) {
-        if (!Array.isArray(command)) {
-            command = [command];
+    async run(rawArgs: RunArgs) {
+        const args = merge({}, this.defaultArgs, rawArgs);
+
+        const installed = await downloadBinaries(args.beforePulumiInstall, args.afterPulumiInstall);
+
+        if (!Array.isArray(args.command)) {
+            args.command = [args.command];
         }
 
         // 1. Prepare Pulumi args.
-        const normalizedPulumiArgs = merge({}, get(this.options, "defaults.pulumi"), pulumiArgs);
-        const finalPulumiArgs = [];
-        for (const key in normalizedPulumiArgs) {
-            const value = normalizedPulumiArgs[key];
+        const finalArgs = [];
+        for (const key in args.args) {
+            const value = args.args[key];
             if (!value) {
                 continue;
             }
 
             switch (typeof value) {
                 case "boolean":
-                    finalPulumiArgs.push(`--${kebabCase(key)}`);
+                    finalArgs.push(`--${kebabCase(key)}`);
                     continue;
                 default:
-                    finalPulumiArgs.push(`--${kebabCase(key)}`, value);
+                    finalArgs.push(`--${kebabCase(key)}`, value);
             }
         }
 
-        // Prepare Execa args.
-        const finalExecaArgs = merge({}, get(this.options, "defaults.execa"), rawExeca);
-
-        set(finalExecaArgs, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
+        // Prepare execa args.
+        set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
 
         const subProcess = execa(
             path.join(__dirname, "binaries", "pulumi", "pulumi"),
-            [...command, ...finalPulumiArgs, FLAG_NON_INTERACTIVE],
-            finalExecaArgs
+            [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
+            args.execa
         );
 
         return {
+            installed,
             process: subProcess,
             toConsole: () => toConsole(subProcess)
         };
