@@ -9,6 +9,7 @@
     "../commodo-graphql",
     "../graphql",
     "../handler",
+    "../handler-client",
     "../validation"
   ],
   "compilerOptions": {
@@ -22,6 +23,7 @@
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../graphql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }

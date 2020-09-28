@@ -6,6 +6,7 @@
     { "path": "../commodo-graphql" },
     { "path": "../graphql" },
     { "path": "../handler" },
+    { "path": "../handler-client" },
     { "path": "../validation" }
   ]
 }
