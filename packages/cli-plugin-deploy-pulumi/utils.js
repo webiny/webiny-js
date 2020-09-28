@@ -44,17 +44,19 @@ const setEnvironmentFromState = async ({ env, stack, map }, context) => {
     const projectRoot = context.paths.projectRoot;
     const pulumi = new Pulumi({
         defaults: {
-            options: {
+            execa: {
                 cwd: path.join(projectRoot, stack),
-                env: { PULUMI_CONFIG_PASSPHRASE: "123123" }
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
             }
         }
     });
 
-    const { stdout } = await pulumi.run(["stack", "output"], {
+    const [subProcess] = pulumi.run(["stack", "output"], {
         stack: env,
         json: true
     });
+
+    const { stdout } = await subProcess;
 
     const state = JSON.parse(stdout);
     Object.assign(process.env, getStateValues(state, map));
