@@ -25,3 +25,5 @@ yarn.lock
 cypress.json
 .graphqlconfig
 schema.graphql
+packages/ui/.out
+netlify-static/*
