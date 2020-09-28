@@ -12,9 +12,11 @@ class PageBuilder {
         graphql: aws.lambda.Function;
     };
     constructor({
+        fileManagerFunction,
         bucket,
         env
     }: {
+        fileManagerFunction: aws.lambda.Function;
         bucket: aws.s3.Bucket;
         env: { graphql: { [key: string]: string } };
     }) {
@@ -49,7 +51,8 @@ class PageBuilder {
                     variables: {
                         ...env.graphql,
                         INSTALLATION_S3_BUCKET: bucket.id,
-                        INSTALLATION_FILES_ZIP_KEY: pbInstallationZip.key
+                        INSTALLATION_FILES_ZIP_KEY: pbInstallationZip.key,
+                        FILE_MANAGER_FUNCTION: fileManagerFunction.arn
                     }
                 },
                 vpcConfig: {

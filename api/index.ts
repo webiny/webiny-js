@@ -50,6 +50,7 @@ const fileManager = new FileManager({
 
 const pageBuilder = new PageBuilder({
     bucket: fileManager.bucket,
+    fileManagerFunction: fileManager.functions.graphql,
     env: { graphql: graphqlServiceEnv }
 });
 
