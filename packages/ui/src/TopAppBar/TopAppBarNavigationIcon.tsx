@@ -1,3 +1,4 @@
+import * as RMWC from "@rmwc/types";
 import * as React from "react";
 
 import {
@@ -7,7 +8,10 @@ import {
 
 export type TopAppBarNavigationIconProps = RmwcTopAppBarNavigationIconProps;
 
-const TopAppBarNavigationIcon = (props: TopAppBarNavigationIconProps) => {
+const TopAppBarNavigationIcon = <Tag extends React.ElementType<any> = "div">(
+    props: RMWC.ComponentProps<TopAppBarNavigationIconProps, React.HTMLProps<HTMLElement>, Tag>,
+    ref: any
+) => {
     return <RmwcTopAppBarNavigationIcon {...props} />;
 };
 

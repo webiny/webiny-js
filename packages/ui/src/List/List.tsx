@@ -1,3 +1,4 @@
+import * as RMWC from "@rmwc/types";
 import * as React from "react";
 import {
     List as RmwcList,
@@ -24,9 +25,6 @@ export type ListItemProps = RmwcListItemProps & {
 
 /**
  * ListItem components are placed as direct children to List component.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListItem = (props: ListItemProps) => {
     return <RmwcListItem {...props} />;
@@ -57,12 +55,12 @@ export type ListItemTextProps = RmwcListItemTextProps & {
 
 /**
  * Used to show regular text in list items.
- * @param props
- * @returns {*}
- * @constructor
  */
-export const ListItemText = (props: ListItemTextProps) => {
-    return <RmwcListItemText {...props}>{props.children}</RmwcListItemText>;
+export const ListItemText = <Tag extends React.ElementType<any> = "div">(
+    props: RMWC.ComponentProps<ListItemTextProps, React.HTMLProps<HTMLElement>, Tag>,
+    ref: any
+) => {
+    return <RmwcListItemText {...props}>{(props as any).children}</RmwcListItemText>;
 };
 
 export type ListItemTextPrimaryProps = {
@@ -85,9 +83,6 @@ export type ListItemTextSecondaryProps = {
 
 /**
  * Used to show secondary text in list items.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListItemTextSecondary = (props: ListItemTextSecondaryProps) => {
     return <RmwcListItemSecondaryText>{props.children}</RmwcListItemSecondaryText>;
@@ -97,9 +92,6 @@ export type ListItemGraphicProps = { children: React.ReactNode; className?: stri
 
 /**
  * Can be used to show an icon or any other custom element. Rendered on the left side.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListItemGraphic = (props: ListItemGraphicProps) => {
     return (
@@ -113,9 +105,6 @@ export type ListItemMetaProps = { children: React.ReactNode; className?: string 
 
 /**
  * Can be used to show an icon or any other custom element. Rendered on the right side.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListItemMeta = (props: ListItemMetaProps) => {
     return (
@@ -131,9 +120,6 @@ export type ListTopCaptionProps = {
 
 /**
  * Can be used to show a top caption inside ListItemMeta component.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListTopCaption = (props: ListTopCaptionProps) => {
     return (
@@ -149,9 +135,6 @@ export type ListBottomCaptionProps = {
 
 /**
  * Can be used to show a bottom caption inside ListItemMeta component.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListBottomCaption = (props: ListBottomCaptionProps) => {
     return (
@@ -167,9 +150,6 @@ export type ListTextOverlineProps = {
 
 /**
  * Can be used to show an overline text inside ListItem component.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListTextOverline = (props: ListTextOverlineProps) => {
     return (
@@ -185,9 +165,6 @@ export type ListActionsProps = {
 
 /**
  * Used to contain the actions inside ListItemMate component.
- * @param props
- * @returns {*}
- * @constructor
  */
 export const ListActions = (props: ListActionsProps) => {
     return (

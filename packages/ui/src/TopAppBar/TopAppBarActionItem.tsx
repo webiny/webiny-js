@@ -1,3 +1,4 @@
+import * as RMWC from "@rmwc/types";
 import * as React from "react";
 import {
     TopAppBarActionItem as RmwcTopAppBarActionItem,
@@ -6,7 +7,10 @@ import {
 
 export type TopAppBarActionItemProps = RmwcTopAppBarActionItemProps;
 
-const TopAppBarActionItem = (props: TopAppBarActionItemProps) => {
+const TopAppBarActionItem = <Tag extends React.ElementType<any> = "div">(
+    props: RMWC.ComponentProps<TopAppBarActionItemProps, React.HTMLProps<HTMLElement>, Tag>,
+    ref: any
+) => {
     return <RmwcTopAppBarActionItem {...props} />;
 };
 

@@ -78,8 +78,8 @@ class Menu extends React.Component<MenuProps, State> {
         menuIsOpen: false
     };
 
-    anchorRef = React.createRef();
-    menuRef = React.createRef();
+    anchorRef = React.createRef<HTMLDivElement>();
+    menuRef = React.createRef<HTMLDivElement>();
 
     componentDidUpdate() {
         if (!this.menuRef.current || !this.anchorRef.current) {

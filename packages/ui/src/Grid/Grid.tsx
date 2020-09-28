@@ -2,7 +2,7 @@ import * as React from "react";
 import {
     Grid as RmwcGrid,
     GridCell as RmwcGridCell,
-    GridInner as RmwcGridInner,
+    GridRow as RmwcGridRow,
     GridCellProps as RmwcGridCellProps,
     GridProps as RmwcGridProps
 } from "@rmwc/grid";
@@ -41,7 +41,7 @@ export type GridInnerProps = {
 };
 
 export const GridInner = (props: GridInnerProps) => {
-    return <RmwcGridInner {...props}>{props.children}</RmwcGridInner>;
+    return <RmwcGridRow {...props}>{props.children}</RmwcGridRow>;
 };
 
 GridInner.displayName = "GridInner";
