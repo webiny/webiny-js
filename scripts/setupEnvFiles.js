@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { green } = require("chalk");
-const crypto = require("crypto");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const uuid = require("uuid/v4");
@@ -28,16 +27,10 @@ const PROJECT_FOLDER = ".";
     } else {
         fs.copyFileSync(exampleEnvJsonPath, envJsonPath);
 
-        const jwtSecret = crypto
-            .randomBytes(128)
-            .toString("base64")
-            .slice(0, 60);
-
         const envJson = await loadJson.sync(envJsonPath);
         envJson.default.S3_BUCKET = `webiny-js-files-${uuid()
             .split("-")
             .shift()}`;
-        envJson.default.JWT_TOKEN_SECRET = jwtSecret;
         await writeJson(envJsonPath, envJson);
         console.log(`✅️ ${green("api/.env.json")} was created successfully!`);
     }
