@@ -16,7 +16,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
-import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
+import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import get from "lodash/get";
 import { createPermissionsMap } from "./utils";
 
@@ -25,7 +25,7 @@ const t = i18n.ns("app-security/admin/groups/form");
 const GroupForm = () => {
     const { form: crudForm } = useCrud();
 
-    const permissionPlugins = plugins.byType<AdminAppPermissionRenderer>(
+    const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
         "admin-app-permissions-renderer"
     );
     // From API to UI

@@ -1,5 +1,5 @@
 import { PermissionRendererCmsManage } from "@webiny/app-headless-cms/types";
-import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
+import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 
 import cmsContentModelPermissionPlugin from "./ContentModelPermission/index";
 import cmsContentModelGroupPermissionPlugin from "./ContentModelGroupPermission";
@@ -18,5 +18,5 @@ const permissionRendererCmsManagePlugins: PermissionRendererCmsManage[] = [
 
 export default () => [
     permissionRendererCmsManagePlugins,
-    cmsPermissionPlugin as AdminAppPermissionRenderer
+    cmsPermissionPlugin as AdminAppPermissionRendererPlugin
 ];

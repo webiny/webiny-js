@@ -1,6 +1,6 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
-import { AdminAppPermissionRenderer } from "@webiny/app-admin/types";
+import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import { ReactComponent as FileManagerIcon } from "@webiny/app-file-manager/admin/assets/icons/folder-open.svg";
 import { FileManagerPermissions } from "./components/FileManagerPermissions";
 import { i18n } from "@webiny/app/i18n";
@@ -23,4 +23,4 @@ export default {
             </AccordionItem>
         );
     }
-} as AdminAppPermissionRenderer;
+} as AdminAppPermissionRendererPlugin;

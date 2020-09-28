@@ -119,7 +119,7 @@ export type ApiInformationDialogPlugin = Plugin & {
     render(): React.ReactNode;
 };
 
-export type AdminAppPermissionRenderer = Plugin & {
+export type AdminAppPermissionRendererPlugin = Plugin & {
     type: "admin-app-permissions-renderer";
     render(params: any): ReactElement;
 };
