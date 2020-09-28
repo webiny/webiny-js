@@ -33,11 +33,9 @@ module.exports = async (inputs, context) => {
     await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
 
     const pulumi = new Pulumi({
-        defaults: {
-            execa: {
-                cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-            }
+        execa: {
+            cwd: stacksDir,
+            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
         }
     });
 
@@ -45,7 +43,7 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        await pulumi.run(["stack", "select", env]);
+        await pulumi.run({ command: ["stack", "select", env] });
     } catch (e) {
         stackExists = false;
     }
@@ -60,8 +58,11 @@ module.exports = async (inputs, context) => {
     await processHooks("hook-before-remove", hooksParams);
     await processHooks("hook-stack-before-remove", hooksParams);
 
-    const { toConsole } = pulumi.run("destroy", {
-        yes: true
+    const { toConsole } = pulumi.run({
+        command: "destroy",
+        args: {
+            yes: true
+        }
     });
 
     await toConsole();

@@ -23,7 +23,8 @@
     "lodash.get": "^4.4.2",
     "node-notifier": "^7.0.1",
     "write-json-file": "^4.3.0",
-    "progress": "^2.0.3"
+    "progress": "^2.0.3",
+    "ora": "^4.0.4"
   },
   "license": "MIT",
   "publishConfig": {

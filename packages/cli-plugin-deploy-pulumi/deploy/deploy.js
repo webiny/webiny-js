@@ -7,6 +7,7 @@ const execa = require("execa");
 const ProgressBar = require("progress");
 const getPackages = require("get-yarn-workspaces");
 const indentString = require("indent-string");
+const ora = require("ora");
 
 const notify = ({ message }) => {
     notifier.notify({
@@ -91,63 +92,74 @@ module.exports = async ({ options, ...inputs }, context) => {
 
     const stacksDir = path.join(".", folder);
 
+    let spinner;
     const pulumi = new Pulumi({
-        defaults: {
-            execa: {
-                cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-            },
-            pulumi: {
-                secretsProvider: "passphrase"
-            }
+        execa: {
+            cwd: stacksDir,
+            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+        },
+        args: {
+            secretsProvider: "passphrase"
+        },
+        beforePulumiInstall: () => {
+            console.log(
+                `🌟 ️It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
+            );
+            spinner = new ora().start(`Downloading Pulumi binaries...`);
+        },
+        afterPulumiInstall: () => {
+            spinner.stopAndPersist({
+                symbol: green("✔"),
+                text: `Pulumi binaries downloaded, continuing...\n`
+            });
         }
     });
 
     console.log();
     if (inputs.preview) {
-        console.log(`⏳  Previewing stack...`);
+        console.log(`⏳ Previewing stack...`);
     } else {
-        console.log(`⏳  Deploying stack...`);
+        console.log(`⏳ Deploying stack...`);
     }
 
     let stackExists = true;
     try {
-        await pulumi.run(["stack", "select", env]);
+        await pulumi.run({ command: ["stack", "select", env] });
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        await pulumi.run(["stack", "init", env]);
+        await pulumi.run({ command: ["stack", "init", env] });
     }
 
     const isFirstDeploy = !stackExists;
 
-    const beforeDeployHookParams = { isFirstDeploy, context, env, stack };
+    const hookDeployArgs = { isFirstDeploy, context, env, stack };
 
     if (inputs.preview) {
-        console.log(`Skipping "hook-before-deploy" and "hook-stack-before-deploy" hooks...`);
+        console.log(`Skipping "hook-before-deploy" hook...`);
     } else {
-        // TODO: why?
-        await processHooks("hook-before-deploy", beforeDeployHookParams);
-        await processHooks("hook-stack-before-deploy", beforeDeployHookParams);
+        console.log(`Running "hook-before-deploy" hook...`);
+        await processHooks("hook-before-deploy", hookDeployArgs);
     }
 
     if (inputs.preview) {
-        const pu = new Pulumi({
-            defaults: {
-                execa: {
-                    cwd: stacksDir,
-                    env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-                }
+        const { toConsole } = await new Pulumi.run({
+            command: "preview",
+            execa: {
+                cwd: stacksDir,
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
             }
         });
-        const { toConsole } = pu.run("preview");
         await toConsole();
     } else {
-        const { toConsole } = pulumi.run("up", {
-            yes: true,
-            skipPreview: true
+        const { toConsole } = await pulumi.run({
+            command: "up",
+            args: {
+                yes: true,
+                skipPreview: true
+            }
         });
         await toConsole();
     }
@@ -160,5 +172,10 @@ module.exports = async ({ options, ...inputs }, context) => {
         notify({ message: `"${folder}" stack deployed in ${duration}s.` });
     }
 
-    // TODO: after hooks ?
+    if (inputs.preview) {
+        console.log(`Skipping "hook-after-deploy" hook...`);
+    } else {
+        console.log(`Running "hook-after-deploy" hook...`);
+        await processHooks("hook-after-deploy", hookDeployArgs);
+    }
 };
