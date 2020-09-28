@@ -65,11 +65,6 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
         // 2. Save files.
         // 2.1 Get pre-signed POST payloads.
-        const client = new GraphQLClient(context.event.headers["x-webiny-apollo-gateway-url"], {
-            headers: {
-                Authorization: context.token
-            }
-        });
 
         // Contains all parallel file saving chunks.
         const chunksProcesses = [];
@@ -89,10 +84,22 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         const filesChunk = filesChunks[i];
 
                         // 1. Get pre-signed POST payloads for current files chunk.
-                        const response = await client.request(UPLOAD_FILES, {
-                            data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
+                        const response = await context.handlerClient.invoke({
+                            name: process.env.FILE_MANAGER_FUNCTION,
+                            payload: {
+                                httpMethod: "POST",
+                                body: {
+                                    query: UPLOAD_FILES,
+                                    variables: {
+                                        data: filesChunk.map(item =>
+                                            pick(item, ["name", "size", "type"])
+                                        )
+                                    }
+                                }
+                            }
                         });
 
+                        console.log("dobeo responseaaaa", response);
                         const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
                         await console.log(
                             `savePages: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
@@ -117,14 +124,20 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
                         // 3. Now that all of the files were successfully uploaded, we create files entries in the database.
                         await console.log("savePages: saving File entries into the database...");
-                        await client.request(CREATE_FILES, {
-                            data: filesChunk.map((item, i) => {
-                                return {
-                                    meta: item.meta,
-                                    ...preSignedPostPayloads[i].file,
-                                    id: item.id
-                                };
-                            })
+                        await context.handlerClient.invoke({
+                            name: process.env.FILE_MANAGER_FUNCTION,
+                            payload: {
+                                query: CREATE_FILES,
+                                variables: {
+                                    data: filesChunk.map((item, i) => {
+                                        return {
+                                            meta: item.meta,
+                                            ...preSignedPostPayloads[i].file,
+                                            id: item.id
+                                        };
+                                    })
+                                }
+                            }
                         });
 
                         promise();
