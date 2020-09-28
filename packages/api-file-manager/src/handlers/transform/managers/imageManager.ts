@@ -1,4 +1,4 @@
-import { getObjectParams, getEnvironment } from "../../../utils";
+import { getObjectParams, getEnvironment } from "../../utils";
 import {
     SUPPORTED_IMAGES,
     SUPPORTED_TRANSFORMABLE_IMAGES,
