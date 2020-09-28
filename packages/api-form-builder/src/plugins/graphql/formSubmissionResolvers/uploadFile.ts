@@ -1,7 +1,6 @@
 import got from "got";
 import FormData from "form-data";
 import { CREATE_FILE, UPLOAD_FILE } from "./graphql";
-import { GraphQLClient } from "graphql-request";
 import { get } from "lodash";
 
 const uploadToS3 = async (buffer, preSignedPostPayload) => {
@@ -20,25 +19,43 @@ const uploadToS3 = async (buffer, preSignedPostPayload) => {
 
 export default async ({ context, buffer, file }) => {
     try {
-        const client = new GraphQLClient(context.event.headers["x-webiny-apollo-gateway-url"], {
-            headers: {
-                Authorization: context.token
+        let uploadFile = await context.handlerClient.invoke({
+            name: process.env.FILE_MANAGER_FUNCTION,
+            payload: {
+                httpMethod: 'POST',
+                headers: {
+                    Authorization: context.token
+                },
+                body: {
+                    query: UPLOAD_FILE,
+                    variables: {
+                        data: file
+                    }
+                }
             }
         });
 
-        let uploadFile = await client.request(UPLOAD_FILE, {
-            data: file
-        });
-
-        uploadFile = get(uploadFile, "files.uploadFile");
+        uploadFile = get(uploadFile, "data.files.uploadFile");
         if (uploadFile.error) {
             throw new Error(uploadFile.error.message);
         }
 
         await uploadToS3(buffer, uploadFile.data.data);
 
-        let createFile = await client.request(CREATE_FILE, {
-            data: { ...uploadFile.data.file, meta: { private: true } }
+        let createFile = await context.handlerClient.invoke({
+            name: process.env.FILE_MANAGER_FUNCTION,
+            payload: {
+                httpMethod: 'POST',
+                headers: {
+                    Authorization: context.token
+                },
+                body: {
+                    query: CREATE_FILE,
+                    variables: {
+                        data: { ...uploadFile.data.file, meta: { private: true } }
+                    }
+                }
+            }
         });
 
         createFile = get(createFile, "files.createFile");
