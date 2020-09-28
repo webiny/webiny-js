@@ -34,6 +34,10 @@ const createPermissionForUI = (
 ): SecurityPermission[] => {
     const formattedPermissions = [];
 
+    // Handle full-access permissions
+    const fullAccessPermissions = permissions.filter(perm => perm.name.includes("*"));
+    formattedPermissions.push(...fullAccessPermissions);
+
     for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
 
