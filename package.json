@@ -4,13 +4,6 @@
     "packages": [
       "packages/*",
       "apps/*",
-      "api/apolloGateway",
-      "api/settingsManager",
-      "api/databaseProxy",
-      "api/files/*",
-      "api/i18n/*",
-      "api/pageBuilder",
-      "api/security/*",
       "apps/admin/code/app",
       "apps/site/code/app",
       "apps/site/code/databaseProxy",
