@@ -4,7 +4,11 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 
-const gridClass = css({ marginTop: 36 });
+const gridClass = css({
+    "&.mdc-layout-grid": {
+        marginTop: 36
+    }
+});
 
 export const PermissionRendererWrapper = ({ label, children }) => (
     <Elevation z={1}>
