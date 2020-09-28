@@ -2,7 +2,6 @@
 import get from "lodash.get";
 import pick from "lodash.pick";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
-import { GraphQLClient } from "graphql-request";
 import fs from "fs-extra";
 import path from "path";
 import uploadToS3 from "./uploadToS3";
