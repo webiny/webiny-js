@@ -51,6 +51,7 @@ const sassLoader = {
     loader: require.resolve("sass-loader"),
     options: {
         sourceMap: true,
+        implementation: require("sass"),
         sassOptions: { includePaths: sassIncludePaths }
     }
 };
@@ -234,13 +235,16 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             safari10: true
                         },
                         // Added for profiling in devtools
+                        /* eslint-disable-next-line */
                         keep_classnames: isEnvProductionProfile,
+                        /* eslint-disable-next-line */
                         keep_fnames: isEnvProductionProfile,
                         output: {
                             ecma: 5,
                             comments: false,
                             // Turned on because emoji and regex is not minified properly using default
                             // https://github.com/facebook/create-react-app/issues/2488
+                            /* eslint-disable-next-line */
                             ascii_only: true
                         }
                     },
@@ -650,6 +654,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             http2: "empty",
             net: "empty",
             tls: "empty",
+            /* eslint-disable-next-line */
             child_process: "empty"
         },
         // Turn off performance processing because we utilize
