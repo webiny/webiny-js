@@ -3,6 +3,7 @@ const tar = require("tar");
 const fs = require("fs");
 const download = require("download");
 const path = require("path");
+const extract = require("extract-zip");
 
 const PULUMI_VERSION = "2.10.2";
 const BINARIES_FOLDER = path.join(__dirname, "binaries");
@@ -60,10 +61,7 @@ async function setupWindows() {
 
     await download(downloadUrl, BINARIES_FOLDER);
 
-    await tar.extract({
-        cwd: BINARIES_FOLDER,
-        file: path.join(BINARIES_FOLDER, filename)
-    });
+    await extractZip(path.join(BINARIES_FOLDER, filename), filename);
 
     fs.unlinkSync(path.join(BINARIES_FOLDER, filename));
 }
@@ -80,4 +78,16 @@ async function setupLinux() {
     });
 
     fs.unlinkSync(path.join(BINARIES_FOLDER, filename));
+}
+
+function extractZip(zipPath, dir) {
+    return new Promise((resolve, reject) => {
+        extract(zipPath, { dir }, e => {
+            if (e) {
+                reject(e);
+                return;
+            }
+            resolve();
+        });
+    });
 }
