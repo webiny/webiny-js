@@ -199,6 +199,7 @@
     }
   },
   "resolutions": {
-    "pretty-format": "25.5.0"
+    "pretty-format": "25.5.0",
+    "apollo-server-core": "2.17.0"
   }
 }
