@@ -62,29 +62,6 @@ export default () => {
                 };
             }
         } as PbEditorPageElementPlugin,
-        /*
-        {data: {…}}
-data:
-data: {}
-elements: []
-id: "ezOAHusD4"
-path: "0.0.0.0.0"
-settings:
-type: "menu"
-        */
-        /*{
-            name: "pb-editor-page-element-advanced-settings-menu-filter",
-            type: "pb-editor-page-element-advanced-settings",
-            elementType: "menu",
-            render(props) {
-                return (
-                    <Tab icon={<MenuIcon />} label="Filter">
-                        <h1>MENU FILTER SETTINGS</h1>
-                        <MenuFilterSettings {...props} />
-                    </Tab>
-                );
-            }
-        } as PbEditorPageElementAdvancedSettingsPlugin,*/
         {
             name: "pb-editor-page-element-advanced-settings-menu-design",
             type: "pb-editor-page-element-advanced-settings",

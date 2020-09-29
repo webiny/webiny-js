@@ -34,10 +34,7 @@ const getOptions = ({ gqlData, settingsData }) => {
     console.log(selected.menus);
     //parentsList currently not working.
     const menusList = get(gqlData, "pageBuilder.menus.data") || [];
-    console.log(menusList);
-    //const menus = get(data, "pageBuilder.menus");
-    console.log("OUTPUT::::::::::");
-
+ 
     //changed title to name to pick up data with auto complete.
     output.parents.options = menusList.map(({ id, title }) => ({ id, name: title }));
     output.parents.value = output.parents.options.find(item => item.id === selected.menus) || null;    //const parent = parentsList.find(item => item.parent === selected.parent);
@@ -50,15 +47,12 @@ const getOptions = ({ gqlData, settingsData }) => {
 
 
 const MenuDesignSettings = ({ Bind, data: settingsData }) => {
-    
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
     console.log("MenuDesignSettings Bind data components:::::::");
     console.log(Bind);
     console.log(settingsData);
-    //console.log(components);
-
     return (
         <FormOptionsWrapper>
             <Query query={LIST_MENUS} fetchPolicy="network-only">
@@ -95,43 +89,6 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
             </Query>
         </FormOptionsWrapper>
     )
-
-    /*
-                    <Cell span={6}>
-                    <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
-                        <Input label={"Results per page"} />
-                    </Bind>
-                </Cell>*/
-
-    /*return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={12}>
-                    <Bind
-                        name={"component"}
-                        defaultValue={components[0] ? components[0].componentName : null}
-                    >
-                        <Select
-                            label={"Design"}
-                            description={"Select a component to render the list"}
-                        >
-                            {components.map(cmp => (
-                                <option key={cmp.name} value={cmp.componentName}>
-                                    TITLE: {cmp.title} ~ NAME: {cmp.name} ~ COMPONENT NAME: {cmp.componentName}
-                                </option>
-                            ))}
-                        </Select>
-                    </Bind>
-                </Cell>
-            </Grid>
-
-            <Grid>
-                <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <Menu data={data} />
-                </Cell>
-            </Grid>
-        </React.Fragment>
-    );*/
 }
 
 export default MenuDesignSettings;
