@@ -3,7 +3,6 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "apps/*",
       "apps/admin/code/app",
       "apps/site/code/app",
       "apps/site/code/databaseProxy",
