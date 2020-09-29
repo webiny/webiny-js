@@ -55,13 +55,6 @@ const installationSteps = {
     5: t`Finalizing...`
 };
 
-const getCurrentDomain = () => {
-    const isLocalHost = window.location.origin.includes("localhost");
-    const localDomain = "http://localhost:3000";
-
-    return isLocalHost ? localDomain : window.location.origin;
-};
-
 const PBInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
@@ -99,7 +92,7 @@ const PBInstaller = ({ onInstalled }) => {
     );
 
     return (
-        <Form onSubmit={onSubmit} data={{ domain: getCurrentDomain() }} submitOnEnter>
+        <Form onSubmit={onSubmit} submitOnEnter>
             {({ Bind, submit }) => (
                 <SimpleForm>
                     {loading && <CircularProgress label={installationSteps[installationStep]} />}
