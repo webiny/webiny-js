@@ -154,7 +154,8 @@ module.exports = async ({ options, ...inputs }, context) => {
     }
 
     if (inputs.preview) {
-        const { toConsole } = await new Pulumi.run({
+        const pulumi = new Pulumi();
+        const { toConsole } = await pulumi.run({
             command: "preview",
             execa: {
                 cwd: stacksDir,
