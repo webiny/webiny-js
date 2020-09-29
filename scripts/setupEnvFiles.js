@@ -53,7 +53,7 @@ const PROJECT_FOLDER = ".";
     }
 
     // Create `admin` .env.json
-    const adminRoot = path.join("apps", "admin", "code");
+    const adminRoot = path.join("apps", "admin", "code", "app");
     const exampleAdminEnvJsonPath = path.resolve(PROJECT_FOLDER, adminRoot, "example.env.json");
     const adminEnvJsonPath = path.resolve(PROJECT_FOLDER, adminRoot, ".env.json");
 
@@ -65,7 +65,7 @@ const PROJECT_FOLDER = ".";
     }
 
     // Create `site` .env.json
-    const siteRoot = path.join("apps", "site", "code");
+    const siteRoot = path.join("apps", "site", "code", "app");
     const exampleSiteEnvJsonPath = path.resolve(PROJECT_FOLDER, siteRoot, "example.env.json");
     const siteEnvJsonPath = path.resolve(PROJECT_FOLDER, siteRoot, ".env.json");
 
