@@ -13,6 +13,9 @@ const map = {
 module.exports = {
     commands: {
         async start({ env, ...options }, context) {
+            // Load .env.json from current directory.
+            await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
+
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
@@ -22,12 +25,7 @@ module.exports = {
             await startApp(options, context);
         },
         async build({ env, ...options }, context) {
-            const projectRoot = context.paths.projectRoot;
-
-            // Load .env.json from project root
-            await context.loadEnv(path.resolve(projectRoot, ".env.json"), env);
-
-            // Load .env.json from cwd (this will change depending on the folder you specified)
+            // Load .env.json from current directory.
             await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
 
             // Set environment variables for given project environment and stack.
