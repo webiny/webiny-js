@@ -18,9 +18,9 @@
     "@types/node": "^10.0.0"
   },
   "dependencies": {
-    "@pulumi/pulumi": "^2.0.0",
-    "@pulumi/aws": "^2.0.0",
-    "@pulumi/awsx": "^0.20.0",
+    "@pulumi/pulumi": "2.10.0",
+    "@pulumi/aws": "2.10.0",
+    "@pulumi/awsx": "0.22.0",
     "execa": "^4.0.3",
     "lodash": "^4.17.4",
     "tar": "^6.0.5",
@@ -37,7 +37,7 @@
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "watch": "babel src -d dist --sou`rce-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
