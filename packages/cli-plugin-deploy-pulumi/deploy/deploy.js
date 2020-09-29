@@ -117,7 +117,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         afterPulumiInstall: () => {
             spinner.stopAndPersist({
                 symbol: green("✔"),
-                text: `Pulumi binaries downloaded, continuing...\n`
+                text: `Pulumi binaries downloaded, continuing...`
             });
         }
     });
