@@ -18,14 +18,20 @@ class Vpc {
             cidrBlock: "10.0.0.0/24"
         });
 
+        const availabilityZones = aws.getAvailabilityZones({
+            state: "available"
+        });
+
         const privateSubnet1 = new aws.ec2.Subnet("private-subnet-1", {
             vpcId: vpc.id,
-            cidrBlock: "10.0.1.0/24"
+            cidrBlock: "10.0.1.0/24",
+            availabilityZone: availabilityZones.then(zone => zone.names[0])
         });
 
         const privateSubnet2 = new aws.ec2.Subnet("private-subnet-2", {
             vpcId: vpc.id,
-            cidrBlock: "10.0.2.0/24"
+            cidrBlock: "10.0.2.0/24",
+            availabilityZone: availabilityZones.then(zone => zone.names[1])
         });
 
         // Create Internet gateway.
