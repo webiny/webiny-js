@@ -142,7 +142,7 @@ export const ButtonFloating = (props: ButtonFloatingProps) => {
         icon,
         onClick,
         small = false,
-        label = false,
+        label = undefined,
         ripple = true,
         className = null,
         ...rest
