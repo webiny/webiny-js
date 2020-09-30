@@ -24,7 +24,7 @@ type RunArgs = {
 };
 
 const FLAG_NON_INTERACTIVE = "--non-interactive";
-const BINARIES_FOLDER = path.join(__dirname, "binaries");
+const PULUMI_FOLDER = path.join(__dirname, "pulumi");
 
 class Pulumi {
     defaultArgs: DefaultArgs;
@@ -35,7 +35,25 @@ class Pulumi {
     async run(rawArgs: RunArgs) {
         const args = merge({}, this.defaultArgs, rawArgs);
 
-        const installed = await downloadBinaries(BINARIES_FOLDER, args.beforePulumiInstall, args.afterPulumiInstall);
+        const installed = await downloadBinaries(
+            PULUMI_FOLDER,
+            args.beforePulumiInstall,
+            args.afterPulumiInstall
+        );
+
+        if (installed) {
+            const subProcess = execa(
+                path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
+                ["plugin", "install", "resource", "aws", "v2.13.1"],
+                {
+                    env: {
+                        PULUMI_HOME: PULUMI_FOLDER
+                    }
+                }
+            );
+
+            await toConsole(subProcess);
+        }
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];
@@ -60,10 +78,10 @@ class Pulumi {
 
         // Prepare execa args.
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
-        set(args.execa, "env.PULUMI_HOME", path.join(BINARIES_FOLDER, "files"));
+        set(args.execa, "env.PULUMI_HOME", PULUMI_FOLDER);
 
         const subProcess = execa(
-            path.join(__dirname, "binaries", "pulumi", "pulumi"),
+            path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
             [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
             args.execa
         );
