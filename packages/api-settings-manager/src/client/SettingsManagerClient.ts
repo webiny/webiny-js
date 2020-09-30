@@ -38,11 +38,6 @@ export class SettingsManagerClient {
     }
 
     private async invoke(operation: SettingsManagerOperation) {
-        const cached = this.cache.get(operation.key);
-        if (cached) {
-            return cached;
-        }
-
         const { error, data } = await this.context.handlerClient.invoke({
             name: this.settingsManagerFunction,
             payload: operation
@@ -58,6 +53,11 @@ export class SettingsManagerClient {
     }
 
     async getSettings(key: string) {
+        const cached = this.cache.get(key);
+        if (cached) {
+            return cached;
+        }
+
         return await this.invoke({ action: "getSettings", key });
     }
 
