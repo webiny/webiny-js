@@ -53,10 +53,14 @@ export class SettingsManagerClient {
     }
 
     async getSettings(key: string) {
+
+        /*
+        TODO: temporary disabled - need to wrap this whole story (go through all of the settings code for all apps).
         const cached = this.cache.get(key);
         if (cached) {
             return cached;
         }
+        */
 
         return await this.invoke({ action: "getSettings", key });
     }
