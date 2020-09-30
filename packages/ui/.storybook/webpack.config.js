@@ -29,8 +29,12 @@ module.exports = ({ config }) => {
             "style-loader",
             "css-loader",
             {
-                loader: "sass-loader",
-                options: { includePaths }
+                loader: require.resolve("sass-loader"),
+                options: {
+                    sourceMap: false,
+                    implementation: require("sass"),
+                    sassOptions: { includePaths }
+                }
             }
         ]
     });
