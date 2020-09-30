@@ -112,12 +112,12 @@ module.exports = async ({ options, ...inputs }, context) => {
             console.log(
                 `🌟 ️It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
             );
-            spinner.start(`Downloading Pulumi binaries...`);
+            spinner.start(`Downloading Pulumi...`);
         },
         afterPulumiInstall: () => {
             spinner.stopAndPersist({
                 symbol: green("✔"),
-                text: `Pulumi binaries downloaded, continuing...`
+                text: `Pulumi downloaded, continuing...`
             });
         }
     });
