@@ -109,7 +109,7 @@
   @include mdc-list-item-meta-ink-color($mdc-theme-text-secondary-on-background);
   @include mdc-list-divider-color($mdc-theme-on-background);
   @include mdc-list-group-subheader-ink-color($mdc-theme-text-primary-on-background);
-  // TODO figure out where is this comming from
+  // TODO figure out where is this coming from
   // @include mdc-list-item-shape-radius(0);
 
   .mdc-list-item {
