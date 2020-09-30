@@ -2,6 +2,7 @@ import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export type HandlerContext = {
     plugins: PluginsContainer;
+    args: Array<any>;
     [key: string]: any;
 };
 
@@ -9,7 +10,7 @@ export type HandlerArgs = any[];
 
 export type HandlerContextPlugin = Plugin & {
     type: "handler-context";
-    apply(params: { context: HandlerContext; args: HandlerArgs }): void;
+    apply(context: HandlerContext): void;
 };
 
 export type HandlerPlugin = Plugin & {

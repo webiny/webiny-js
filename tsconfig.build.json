@@ -34,6 +34,10 @@
       "@webiny/api-settings-manager/*": ["./packages/api-settings-manager/src/*"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
+      "@webiny/api-security-permissions-manager/*": ["./packages/api-security-permissions-manager/src/*"],
+      "@webiny/api-security-permissions-manager": ["./packages/api-security-permissions-manager/src"],
+      "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
+      "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
       "@webiny/app": ["./packages/app/src"],
       "@webiny/app-template/*": ["./packages/app-template/src/*"],
@@ -64,18 +68,14 @@
       "@webiny/app-page-builder-theme/*": ["./packages/app-page-builder-theme/src/*"],
       "@webiny/app-security": ["./packages/app-security/src"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
+      "@webiny/app-security-user-management": ["./packages/app-security-user-management/src"],
+      "@webiny/app-security-user-management/*": ["./packages/app-security-user-management/src/*"],
       "@webiny/app-plugin-admin-welcome-screen/*": [
         "./packages/app-plugin-admin-welcome-screen/src/*"
       ],
       "@webiny/app-plugin-admin-welcome-screen": ["./packages/app-plugin-admin-welcome-screen/src"],
       "@webiny/app-plugin-security-cognito": ["./packages/app-plugin-security-cognito/src"],
       "@webiny/app-plugin-security-cognito/*": ["./packages/app-plugin-security-cognito/src/*"],
-      "@webiny/app-plugin-security-cognito-theme": [
-        "./packages/app-plugin-security-cognito-theme/src"
-      ],
-      "@webiny/app-plugin-security-cognito-theme/*": [
-        "./packages/app-plugin-security-cognito-theme/src/*"
-      ],
       "@webiny/app-i18n/*": ["./packages/app-i18n/src/*"],
       "@webiny/commodo": ["./packages/commodo/src"],
       "@webiny/commodo/*": ["./packages/commodo/src/*"],
@@ -110,12 +110,6 @@
       "@webiny/react-router/*": ["./packages/react-router/src/*"],
       "@webiny/serverless-files": ["./packages/serverless-files/src"],
       "@webiny/serverless-files/*": ["./packages/serverless-files/src/*"],
-      "@webiny/service-i18n": ["./packages/service-i18n/src"],
-      "@webiny/service-i18n/*": ["./packages/service-i18n/src/*"],
-      "@webiny/service-headless-cms": ["./packages/service-headless-cms/src"],
-      "@webiny/service-headless-cms/*": ["./packages/service-headless-cms/src/*"],
-      "@webiny/service-headless-cms-handler": ["./packages/service-headless-cms-handler/src"],
-      "@webiny/service-headless-cms-handler/*": ["./packages/service-headless-cms-handler/src/*"],
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
@@ -134,7 +128,6 @@
     "./packages/cwp-template-cms",
     "./packages/project-utils",
     "./packages/serverless-api-gateway",
-    "./packages/serverless-apollo-service",
     "./packages/serverless-app",
     "./packages/serverless-aws-api-gateway",
     "./packages/serverless-aws-cloudfront",

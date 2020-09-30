@@ -1,8 +1,245 @@
-import accessTokenPlugins from "../src/plugins";
-import { createUtils } from "./utils";
 import { mockedUser } from "./mocks";
-import { graphql } from "graphql";
-import { JwtToken } from "../src/plugins/authentication";
+import useGqlHandler from "./useGqlHandler";
+import { createJwtToken } from "@webiny/api-security/testing";
+import mdbid from "mdbid";
+describe("Personal Access Tokens test", () => {
+    const { invoke, database } = useGqlHandler();
+
+    const initial = {
+        user: null,
+        jwt: null
+    };
+    beforeAll(async () => {
+        initial.user = await database.collection("SecurityUser").insert(mockedUser);
+        initial.jwt = createJwtToken(mockedUser);
+    });
+
+    test("should get PATs (no tokens)", async () => {
+        const [body] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: GET_CURRENT_USER
+            }
+        });
+
+        const user = body.data.security.getCurrentUser.data;
+        expect(user).toBeTruthy();
+        expect(user.id).toEqual(mockedUser.id);
+        expect(user.personalAccessTokens).toEqual([]);
+    });
+
+    test("should create PAT", async () => {
+        const [body1] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: CREATE_PAT,
+                variables: {
+                    userId: mockedUser.id,
+                    tokenName: "token-1"
+                }
+            }
+        });
+
+        const id = body1.data.security.createPAT.data.pat.id;
+        const token = body1.data.security.createPAT.data.token;
+
+        expect(id).toBeTruthy();
+        expect(body1.data).toEqual({
+            security: {
+                createPAT: {
+                    data: {
+                        pat: {
+                            id,
+                            name: "token-1",
+                            token: token.substr(-4)
+                        },
+                        token
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [body2] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: GET_CURRENT_USER
+            }
+        });
+
+        expect(body2.data).toEqual({
+            security: {
+                getCurrentUser: {
+                    data: {
+                        id: mockedUser.id,
+                        personalAccessTokens: [
+                            {
+                                id: id,
+                                name: "token-1",
+                                token: token.substr(-4)
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [body3] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: UPDATE_PAT,
+                variables: {
+                    tokenId: id,
+                    tokenName: "token-1-updated"
+                }
+            }
+        });
+
+        expect(body3.data).toEqual({
+            security: {
+                updatePAT: {
+                    data: {
+                        id,
+                        name: "token-1-updated",
+                        token: token.substr(-4)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [body4] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: GET_CURRENT_USER
+            }
+        });
+
+        expect(body4.data).toEqual({
+            security: {
+                getCurrentUser: {
+                    data: {
+                        id: mockedUser.id,
+                        personalAccessTokens: [
+                            {
+                                id: id,
+                                name: "token-1-updated",
+                                token: token.substr(-4)
+                            }
+                        ]
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [body5] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: DELETE_PAT,
+                variables: {
+                    tokenId: id
+                }
+            }
+        });
+
+        expect(body5.data).toEqual({
+            security: {
+                deletePAT: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        const [body6] = await invoke({
+            headers: {
+                authorization: initial.jwt
+            },
+            body: {
+                query: GET_CURRENT_USER
+            }
+        });
+
+        const user = body6.data.security.getCurrentUser.data;
+        expect(user).toBeTruthy();
+        expect(user.id).toEqual(mockedUser.id);
+        expect(user.personalAccessTokens).toEqual([]);
+    });
+
+    test("without permissions, updating other users should not be allowed", async () => {
+        const id = mdbid();
+        await database.collection("SecurityUser").insert({
+            id,
+            email: "some@thing.com"
+        });
+
+        const [body] = await invoke({
+            headers: {
+                authorization: null
+            },
+            body: {
+                query: CREATE_PAT,
+                variables: {
+                    userId: mockedUser.id,
+                    tokenName: "token-name-1"
+                }
+            }
+        });
+
+        expect(body.data).toEqual({
+            security: {
+                createPAT: {
+                    data: null,
+                    error: {
+                        message: 'Not authorized (scope "security:user:crud" not found).',
+                        data: null
+                    }
+                }
+            }
+        });
+
+        const [body2] = await invoke({
+            body: {
+                query: CREATE_PAT,
+                variables: {
+                    userId: mockedUser.id,
+                    tokenName: "token-name-1"
+                }
+            }
+        });
+
+        const { token, pat } = body2.data.security.createPAT.data;
+        expect(body2.data).toEqual({
+            security: {
+                createPAT: {
+                    data: {
+                        pat: {
+                            id: pat.id,
+                            name: "token-name-1",
+                            token: token.substr(-4)
+                        },
+                        token: token
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+});
 
 const GET_CURRENT_USER = /* GraphQL */ `
     {
@@ -78,125 +315,3 @@ const DELETE_PAT = /* GraphQL */ `
         }
     }
 `;
-
-describe("Personal Access Tokens [GraphQL] test suite", () => {
-    const tokenSecret = "ghsgashdgu";
-    const { useDatabase, useSchema } = createUtils([
-        accessTokenPlugins({ token: { secret: tokenSecret } })
-    ]);
-    const db = useDatabase();
-    let schema;
-    let context;
-    let tokenName1 = "Cool token #1";
-    let tokenName2 = "Cool token #1 - Renamed";
-    let createdToken;
-    let updatedToken;
-
-    beforeAll(async () => {
-        await db.getCollection("SecurityUser").insertOne(mockedUser);
-        delete mockedUser._id;
-
-        const jwt = new JwtToken({ secret: tokenSecret });
-        let payload = {
-            id: mockedUser.id,
-            type: "user",
-            access: {
-                scopes: [],
-                roles: [],
-                fullAccess: true
-            }
-        };
-        const token = await jwt.encode(payload, new Date().getTime() + 999999999);
-
-        ({ schema, context } = await useSchema());
-        context.event = {
-            headers: {
-                authorization: token
-            },
-            httpMethod: "POST"
-        };
-    });
-
-    test("Should get PATs (no tokens)", async () => {
-        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const user = response.data.security.getCurrentUser.data;
-        expect(user).toBeTruthy();
-        expect(user.id).toEqual(mockedUser.id);
-        expect(user.personalAccessTokens).toEqual([]);
-    });
-    test("Should create PAT", async () => {
-        const response = await graphql(schema, CREATE_PAT, {}, context, {
-            userId: mockedUser.id,
-            tokenName: tokenName1
-        });
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const { error, data } = response.data.security.createPAT;
-        if (error) {
-            throw JSON.stringify(error, null, 2);
-        }
-        expect(data.token).toBeTruthy();
-        expect(data.token.length).toEqual(48);
-        expect(data.pat.id).toBeTruthy();
-        expect(data.pat.name).toEqual(tokenName1);
-        expect(data.pat.token).toBeTruthy();
-        expect(data.pat.token.length).toEqual(4);
-        createdToken = data.pat;
-    });
-    test("Should get PATs (1 token)", async () => {
-        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const user = response.data.security.getCurrentUser.data;
-        expect(user.personalAccessTokens).toEqual([createdToken]);
-    });
-    test("Should update PAT", async () => {
-        const response = await graphql(schema, UPDATE_PAT, {}, context, {
-            tokenId: createdToken.id,
-            tokenName: tokenName2
-        });
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const { error, data: token } = response.data.security.updatePAT;
-        if (error) {
-            throw JSON.stringify(error, null, 2);
-        }
-        expect(token.name).toEqual(tokenName2);
-        updatedToken = token;
-    });
-    test("Should get PATs (1 token, new value)", async () => {
-        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const user = response.data.security.getCurrentUser.data;
-        expect(user.personalAccessTokens).toEqual([updatedToken]);
-    });
-    test("Should delete PAT", async () => {
-        const response = await graphql(schema, DELETE_PAT, {}, context, {
-            tokenId: updatedToken.id
-        });
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const { error, data } = response.data.security.deletePAT;
-        if (error) {
-            throw JSON.stringify(error, null, 2);
-        }
-        expect(data).toEqual(true);
-    });
-    test("Should get PATs (no tokens)", async () => {
-        const response = await graphql(schema, GET_CURRENT_USER, {}, context);
-        if (response.errors) {
-            throw JSON.stringify(response.errors, null, 2);
-        }
-        const user = response.data.security.getCurrentUser.data;
-        expect(user.personalAccessTokens).toEqual([]);
-    });
-});

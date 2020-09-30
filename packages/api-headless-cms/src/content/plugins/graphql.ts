@@ -38,9 +38,15 @@ const getMutations = type => {
 const getMutationResolvers = type => {
     if (type === "manage") {
         return {
-            createContentModel: resolveCreate(contentModelFetcher),
-            updateContentModel: resolveUpdate(contentModelFetcher),
-            deleteContentModel: resolveDelete(contentModelFetcher)
+            createContentModel: hasScope("cms:content-model:create")(
+                resolveCreate(contentModelFetcher)
+            ),
+            updateContentModel: hasScope("cms:content-model:update")(
+                resolveUpdate(contentModelFetcher)
+            ),
+            deleteContentModel: hasScope("cms:content-model:delete")(
+                resolveDelete(contentModelFetcher)
+            )
         };
     }
 
@@ -254,7 +260,6 @@ export default ({ type }) => [
                 contentModelGroup.getResolvers(type),
                 meta.resolvers
             )
-        },
-        security: merge({}, contentModelGroup.getResolvers(type))
+        }
     } as GraphQLSchemaPlugin<CmsContext>
 ];

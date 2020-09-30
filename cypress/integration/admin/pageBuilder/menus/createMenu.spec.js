@@ -52,7 +52,9 @@ context("Menus Module", () => {
                 .within(() => cy.findByText("Confirm").click());
         });
 
-        cy.findByText("Record deleted successfully.").should("exist").wait(500);
+        cy.findByText("Record deleted successfully.")
+            .should("exist")
+            .wait(500);
         cy.findByTestId("default-data-list").within(() => {
             cy.findByText(`Cool Menu ${id}`).should("not.exist");
         });

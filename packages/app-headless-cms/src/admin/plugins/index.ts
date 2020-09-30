@@ -12,6 +12,7 @@ import contentRevisions from "./contentDetails/contentRevisions";
 import contentModelEditorPlugins from "./../editor/plugins";
 import appTemplateRenderer from "./appTemplatePlugins";
 import welcomeScreenWidget from "./welcomeScreenWidget";
+import scopesList from "./scopesList";
 import ApiInformationDialog from "./apiInformationDialog";
 
 export default () => [
@@ -33,5 +34,6 @@ export default () => [
     appTemplateRenderer,
 
     welcomeScreenWidget,
+    scopesList,
     ApiInformationDialog
 ];

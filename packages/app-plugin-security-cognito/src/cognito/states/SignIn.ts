@@ -1,6 +1,5 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import debug from "../debug";
 import { AuthChangeState, AuthProps, AuthState } from "../Authenticator";
 
 export type SignInChildrenProps = {
@@ -37,25 +36,21 @@ class SignIn extends React.Component<SignInProps> {
     };
 
     signIn = input => {
-        this.setState({ loading: true });
+        this.setState({ loading: true, error: null });
         const { username, password } = input;
         const { changeState } = this.props;
 
         Auth.signIn(username.toLowerCase(), password)
             .then(user => {
                 this.setState({ loading: false });
-                debug("User %O", user);
                 if (
                     user.challengeName === "SMS_MFA" ||
                     user.challengeName === "SOFTWARE_TOKEN_MFA"
                 ) {
-                    debug("confirm user with %s", user.challengeName);
                     changeState("confirmSignIn", user);
                 } else if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
-                    debug("require new password %s", user.challengeParam);
                     changeState("requireNewPassword", user);
                 } else if (user.challengeName === "MFA_SETUP") {
-                    debug("TOTP setup %s", user.challengeParam);
                     changeState("TOTPSetup", user);
                 } else {
                     this.checkContact(user);
@@ -64,10 +59,8 @@ class SignIn extends React.Component<SignInProps> {
             .catch(err => {
                 this.setState({ loading: false });
                 if (err.code === "UserNotConfirmedException") {
-                    debug("the user is not confirmed");
                     changeState("confirmSignUp", { username });
                 } else if (err.code === "PasswordResetRequiredException") {
-                    debug("password reset required", err);
                     changeState("forgotPassword", { username, system: true });
                 } else {
                     this.setState({ error: err });

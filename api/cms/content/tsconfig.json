@@ -5,6 +5,7 @@
     { "path": "../../../packages/api-headless-cms" },
     { "path": "../../../packages/api-i18n" },
     { "path": "../../../packages/api-security" },
+    { "path": "../../../packages/api-security-permissions-manager" },
     { "path": "../../../packages/api-settings-manager" },
     { "path": "../../../packages/handler" }
   ]

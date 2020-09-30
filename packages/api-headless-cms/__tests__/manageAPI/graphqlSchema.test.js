@@ -1,10 +1,10 @@
-import { graphql } from "graphql";
-import { createUtils } from "../utils";
-import headlessPlugins from "../../src/content/plugins";
-import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
-import setupContentModels from "../setup/setupContentModels";
 import camelCase from "lodash/camelCase";
-import omit from "lodash/omit";
+import { Database } from "@commodo/fields-storage-nedb";
+import useContentHandler from "./../utils/useContentHandler";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
+import contentModels from "./../mocks/genericContentModels/contentModels";
+import { indexes } from "@webiny/api-headless-cms/content/plugins/models/indexesField";
+import { withFields } from "@webiny/commodo";
 
 const schemaTypesQuery = /* GraphQL */ `
     {
@@ -37,57 +37,56 @@ const schemaTypesQuery = /* GraphQL */ `
 `;
 
 describe("MANAGE - GraphQL Schema", () => {
-    let contentModels;
-    let contentModelGroup;
+    const database = new Database();
+    const { environment: environmentManage } = useContentHandler({ database });
 
-    const { useSchema, useDatabase, useContext } = createUtils([
-        headlessPlugins({ type: "manage", environment: "production" })
-    ]);
-
-    const db = useDatabase();
+    const initial = {};
 
     beforeAll(async () => {
-        await setupDefaultEnvironment(db);
-        const context = await useContext();
-        ({ contentModels, contentModelGroup } = await setupContentModels(context));
+        // Let's create a basic environment and a content model group.
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
+
+        const { createContentModel, content } = environmentManage(initial.environment.id);
+        const models = contentModels();
+        for (let i = 0; i < models.length; i++) {
+            let model = models[i];
+            await createContentModel({ data: model });
+        }
     });
 
-    test("insert content models data", async () => {
-        const mutation = /* GraphQL */ `
-            mutation CreateContentModel($data: CmsContentModelInput!) {
-                createContentModel(data: $data) {
-                    data {
-                        id
-                        modelId
-                    }
-                }
+    test("modelId should automatically be camelCased", async () => {
+        const { createContentModel } = environmentManage(initial.environment.id);
+
+        const data = [
+            {
+                name: "Category-2",
+                modelId: "category-2",
+                group: initial.contentModelGroup.id
+            },
+            {
+                name: "Product-2",
+                modelId: "product-2",
+                group: initial.contentModelGroup.id
+            },
+            {
+                name: "Review-2",
+                modelId: "review-2",
+                group: initial.contentModelGroup.id
             }
-        `;
+        ];
 
-        const { schema, context } = await useSchema();
-
-        const responses = [];
-        const newContentModels = contentModels.map(item => {
-            item.modelId = item.modelId + "-new";
-            return item;
-        });
-
-        for (let i = 0; i < newContentModels.length; i++) {
-            const data = omit(newContentModels[i], ["getUniqueIndexFields", "indexes"]);
-            responses.push(await graphql(schema, mutation, {}, context, { data }));
+        const newContentModels = [];
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            newContentModels.push(await createContentModel({ data: item }));
         }
 
-        for (let i = 0; i < responses.length; i++) {
-            const response = responses[i];
+        for (let i = 0; i < newContentModels.length; i++) {
+            const response = newContentModels[i];
             expect(response).toMatchObject({
-                data: {
-                    createContentModel: {
-                        data: {
-                            id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                            modelId: camelCase(newContentModels[i].modelId)
-                        }
-                    }
-                }
+                id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
+                modelId: camelCase(data[i].modelId)
             });
         }
     });
@@ -103,80 +102,52 @@ describe("MANAGE - GraphQL Schema", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
+        const { invoke } = environmentManage(initial.environment.id);
 
-        const responses = [];
-        for (let i = 0; i < contentModels.length; i++) {
-            const data = omit(contentModels[i], ["getUniqueIndexFields", "indexes"]);
+        const data = [
+            {
+                name: "Category",
+                modelId: "category",
+                group: initial.contentModelGroup.id
+            },
+            {
+                name: "Product",
+                modelId: "product",
+                group: initial.contentModelGroup.id
+            },
+            {
+                name: "Review",
+                modelId: "review",
+                group: initial.contentModelGroup.id
+            }
+        ];
 
-            responses.push(await graphql(schema, mutation, {}, context, { data }));
+        const newContentModels = [];
+        for (let i = 0; i < data.length; i++) {
+            let item = data[i];
+            newContentModels.push(
+                await invoke({
+                    body: {
+                        query: mutation,
+                        variables: { data: item }
+                    }
+                })
+            );
         }
 
-        for (let i = 0; i < responses.length; i++) {
-            const response = responses[i];
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
-                        error: {
-                            message: `Content model with modelId "${camelCase(
-                                contentModels[i].modelId
-                            )}" already exists.`
-                        }
-                    }
-                }
+        for (let i = 0; i < newContentModels.length; i++) {
+            const response = newContentModels[i];
+            expect(response[0].data.createContentModel.error).toEqual({
+                message: `Content model with modelId "${data[i].modelId}" already exists.`
             });
         }
     });
 
-    test("insert content models data (empty fields)", async () => {
-        const mutation = /* GraphQL */ `
-            mutation CreateContentModel($data: CmsContentModelInput!) {
-                createContentModel(data: $data) {
-                    data {
-                        id
-                        modelId
-                    }
-                }
-            }
-        `;
-
-        const { schema, context } = await useSchema();
-
-        const response = await graphql(schema, mutation, {}, context, {
-            data: {
-                name: "EmptyModel",
-                modelId: "emptyModel",
-                group: contentModelGroup.id
-            }
-        });
-
-        expect(response).toMatchObject({
-            data: {
-                createContentModel: {
-                    data: {
-                        id: expect.stringMatching("^[0-9a-fA-F]{24}$"),
-                        modelId: expect.stringMatching(/^[a-zA-Z]+$/)
-                    }
-                }
-            }
-        });
-    });
-
-    test("create commodo models and set them in the context", async () => {
-        const { context } = await useSchema();
-
-        for (let i = 0; i < contentModels.length; i++) {
-            expect(context.models[camelCase(contentModels[i].modelId)]).toBeTruthy();
-        }
-    });
-
     test("create GraphQL types from content models data", async () => {
-        const { schema, context } = await useSchema();
-        const response = await graphql(schema, schemaTypesQuery, {}, context);
-        const typeNames = contentModels.reduce((acc, item) => {
-            acc.push(item.name);
-            return acc;
-        }, []);
+        const { invoke } = environmentManage(initial.environment.id);
+
+        const [response] = await invoke({ body: { query: schemaTypesQuery } });
+        const typeNames = ["Category", "Product", "Review"];
         const cmsTypes = response.data.__schema.types
             .filter(t => typeNames.includes(t.name))
             .map(t => t.name);
@@ -187,12 +158,11 @@ describe("MANAGE - GraphQL Schema", () => {
     });
 
     test(`should correctly check if "indexes" field is "dirty"`, async () => {
-        const { models } = await useContext();
-        // Get content model to fetch model indexes
-        const categoryModel = await models.CmsContentModel.findOne({
-            query: { modelId: "category" }
-        });
+        const CategoryModel = withFields({
+            indexes: indexes()
+        })();
 
+        const categoryModel = new CategoryModel();
         // Update content model indexes
         categoryModel.indexes = [{ fields: ["slug"] }];
 

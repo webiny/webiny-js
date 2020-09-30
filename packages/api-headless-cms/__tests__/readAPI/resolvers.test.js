@@ -1,179 +1,92 @@
-import { graphql } from "graphql";
-import setupContentModels from "../setup/setupContentModels";
-import { createUtils } from "../utils";
-import createCategories from "../mocks/createCategories.read";
-import headlessPlugins from "../../src/content/plugins";
-import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
+import useContentHandler from "./../utils/useContentHandler";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
+import { Database } from "@commodo/fields-storage-nedb";
+import contentModels from "./../mocks/genericContentModels/contentModels";
+import createCategories from "./../mocks/genericContentModels/categories.read";
 
 describe("READ - Resolvers", () => {
-    let Category;
-    let categories;
-    let targetResult;
+    const database = new Database();
+    const { environment: environmentManage } = useContentHandler({ database });
+    const { environment: environmentRead } = useContentHandler({ database, type: "read" });
 
-    const { useSchema, useDatabase, useContext } = createUtils([
-        headlessPlugins({ type: "read", environment: "production" })
-    ]);
-
-    const db = useDatabase();
+    const initial = {};
 
     beforeAll(async () => {
-        await setupDefaultEnvironment(db);
-        const context = await useContext();
-        await setupContentModels(context);
-    });
+        // Let's create a basic environment and a content model group.
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
 
-    beforeEach(async () => {
-        // Insert demo data via models
-        const context = await useContext();
+        const { createContentModel, content } = environmentManage(initial.environment.id);
+        const [categoryModel] = contentModels();
 
-        Category = context.models.category;
+        await createContentModel({ data: categoryModel });
 
-        categories = await createCategories(context);
-
-        targetResult = {
-            data: {
-                id: categories[0].model.id,
-                title: categories[0].model.title.value(),
-                slug: categories[0].model.slug.value()
-            }
-        };
-    });
-
-    afterEach(async () => {
-        const entries = await Category.find();
-        for (let i = 0; i < entries.length; i++) {
-            await entries[i].delete();
-        }
+        initial.categories = await createCategories({ content });
     });
 
     test(`get entry by ID`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($id: ID!) {
-                getCategory(where: { id: $id }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
-                        message
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.read({ where: { id: initial.categories[0].id } });
 
-        const { schema, context } = await useSchema();
-
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            id: categories[0].model.id
+        expect(data).toEqual({
+            id: initial.categories[0].id,
+            title: "Hardware EN",
+            slug: "hardware-en"
         });
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.getCategory).toMatchObject(targetResult);
     });
 
     test(`get entry by slug (default locale matches slug)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.read({ where: { slug: "hardware-en" } });
 
-        const { schema, context } = await useSchema();
-        const REZA = await graphql(schema, query, {}, context, {
+        expect(data).toEqual({
+            id: initial.categories[0].id,
+            title: "Hardware EN",
             slug: "hardware-en"
         });
-
-        const aa = REZA;
-        // expect(data.getCategory).toMatchObject(targetResult);
     });
 
     test(`get entry by slug (from unpublished revision - should fail)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            slug: "framework-en"
-        });
+        let error;
 
-        expect(data.getCategory.data).toBeNull();
-        expect(data.getCategory.error.code).toBe("NOT_FOUND");
+        try {
+            await categories.read({ where: { slug: "framework-en" } });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe("Entry not found!");
     });
 
     test(`get entry by slug (default locale doesn't match slug)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            slug: "hardware-de"
-        });
+        let error;
 
-        expect(data.getCategory.data).toBe(null);
+        try {
+            await categories.read({ where: { slug: "hardware-de" } });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe("Entry not found!");
     });
 
     test(`get entry by slug (specific locale)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($locale: String, $slug: String) {
-                getCategory(locale: $locale, where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.read({ locale: "de-DE", where: { slug: "hardware-de" } });
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            slug: "hardware-de",
-            locale: "de-DE"
-        });
-
-        expect(data.getCategory).toMatchObject({
-            data: {
-                id: categories[0].model.id,
-                title: "Hardware DE",
-                slug: "hardware-de"
-            }
+        expect(data).toEqual({
+            id: initial.categories[0].id,
+            title: "Hardware DE",
+            slug: "hardware-de"
         });
     });
 
@@ -193,14 +106,12 @@ describe("READ - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            slug: "hardware-en"
-        });
+        const { invoke } = environmentRead(initial.environment.id);
+        const [body] = await invoke({ body: { query, variables: { slug: "hardware-en" } } });
 
-        expect(data.getCategory).toMatchObject({
+        expect(body.data.getCategory).toEqual({
             data: {
-                id: categories[0].model.id,
+                id: initial.categories[0].id,
                 title: "Hardware EN",
                 deTitle: "Hardware DE",
                 enSlug: "hardware-en",
@@ -210,86 +121,72 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (no parameters)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list();
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context);
-        expect(data.listCategories).toMatchObject({
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
-                    title: expect.stringMatching(/^A Category EN|B Category EN|Hardware EN$/),
-                    slug: expect.stringMatching(/^a-category-en|b-category-en|hardware-en$/)
-                })
-            ])
-        });
+        expect(data).toEqual([
+            {
+                id: initial.categories[2].id,
+                savedOn: data[0].savedOn,
+                slug: "b-category-en",
+                title: "B Category EN"
+            },
+            {
+                id: initial.categories[1].id,
+                savedOn: data[1].savedOn,
+                slug: "a-category-en",
+                title: "A Category EN"
+            },
+            {
+                id: initial.categories[0].id,
+                savedOn: data[2].savedOn,
+                slug: "hardware-en",
+                title: "Hardware EN"
+            }
+        ]);
     });
 
     test(`list entries (specific locale)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories(locale: "de-DE") {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list({ locale: "de-DE" });
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context);
-        expect(data.listCategories).toMatchObject({
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
-                    title: expect.stringMatching(/^A Category DE|B Category DE|Hardware DE$/),
-                    slug: expect.stringMatching(/^a-category-de|b-category-de|hardware-de/)
-                })
-            ])
-        });
+        expect(data).toEqual([
+            {
+                id: initial.categories[2].id,
+                savedOn: data[0].savedOn,
+                slug: "b-category-de",
+                title: "B Category DE"
+            },
+            {
+                id: initial.categories[1].id,
+                savedOn: data[1].savedOn,
+                slug: "a-category-de",
+                title: "A Category DE"
+            },
+            {
+                id: initial.categories[0].id,
+                savedOn: data[2].savedOn,
+                slug: "hardware-de",
+                title: "Hardware DE"
+            }
+        ]);
     });
 
     test(`list entries (limit)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories(limit: 1) {
-                    data {
-                        id
-                    }
-                    meta {
-                        totalCount
-                    }
-                }
-            }
-        `;
+        const { content } = environmentRead(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list({ limit: 1 });
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context);
-        expect(data.listCategories).toMatchObject({
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.stringMatching(/^[0-9a-fA-F]{24}$/)
-                })
-            ]),
-            meta: {
-                totalCount: 3
+        expect(data).toEqual([
+            {
+                id: initial.categories[2].id,
+                savedOn: data[0].savedOn,
+                slug: "b-category-en",
+                title: "B Category EN"
             }
-        });
+        ]);
     });
 
     test(`list entries (limit + after)`, async () => {
@@ -311,14 +208,10 @@ describe("READ - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context);
+        const { invoke } = environmentRead(initial.environment.id);
+        const [body1] = await invoke({ body: { query } });
 
-        if (errors1) {
-            throw Error(JSON.stringify(errors1, null, 2));
-        }
-
-        expect(data1.listCategories).toMatchObject({
+        expect(body1.data.listCategories).toMatchObject({
             data: [
                 {
                     title: "B Category EN"
@@ -333,15 +226,11 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
-            after: data1.listCategories.meta.cursors.next
+        const [body2] = await invoke({
+            body: { query, variables: { after: body1.data.listCategories.meta.cursors.next } }
         });
 
-        if (errors2) {
-            throw Error(JSON.stringify(errors2, null, 2));
-        }
-
-        expect(data2.listCategories).toMatchObject({
+        expect(body2.data.listCategories).toMatchObject({
             data: [
                 {
                     title: "A Category EN"
@@ -369,11 +258,10 @@ describe("READ - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            sort: ["slug_ASC"]
-        });
-        expect(data.listCategories).toMatchObject({
+        const { invoke } = environmentRead(initial.environment.id);
+        const [body] = await invoke({ body: { query, variables: { sort: ["slug_ASC"] } } });
+
+        expect(body.data.listCategories).toMatchObject({
             data: [
                 {
                     title: "A Category EN"
@@ -400,11 +288,10 @@ describe("READ - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context, {
-            sort: ["slug_DESC"]
-        });
-        expect(data.listCategories).toMatchObject({
+        const { invoke } = environmentRead(initial.environment.id);
+        const [body] = await invoke({ body: { query, variables: { sort: ["slug_DESC"] } } });
+
+        expect(body.data.listCategories).toMatchObject({
             data: [
                 {
                     title: "Hardware EN"
@@ -434,27 +321,35 @@ describe("READ - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data: data1 } = await graphql(schema, query, {}, context, {
-            where: { slug_contains: "category" }
-        });
-        expect(data1.listCategories.data.length).toBe(2);
-
-        const { data: data2 } = await graphql(schema, query, {}, context, {
-            where: { slug_not_contains: "category" }
+        const { invoke } = environmentRead(initial.environment.id);
+        const [body1] = await invoke({
+            body: { query, variables: { where: { slug_contains: "category" } } }
         });
 
-        expect(data2.listCategories.data.length).toBe(1);
+        expect(body1.data.listCategories.data.length).toBe(2);
 
-        const { data: data3 } = await graphql(schema, query, {}, context, {
-            where: { slug_in: ["b-category-en"] }
+        // TODO: cannot write this query in neDB (throws an error).
+        // TODO: @see packages/api-headless-cms/src/content/plugins/filterOperators/operatorNotContains.ts
+        /*const [body2] = await invoke({
+            body: { query, variables: { where: { slug_not_contains: "category" } } }
         });
-        expect(data3.listCategories.data.length).toBe(1);
 
-        const { data: data4 } = await graphql(schema, query, {}, context, {
-            where: { slug_not_in: ["a-category-en", "b-category-en"] }
+        expect(body2.data.listCategories.data.length).toBe(1);*/
+
+        const [body3] = await invoke({
+            body: { query, variables: { where: { slug_in: ["b-category-en"] } } }
         });
-        expect(data4.listCategories.data.length).toBe(1);
-        expect(data4.listCategories.data[0].title).toBe("Hardware EN");
+
+        expect(body3.data.listCategories.data.length).toBe(1);
+
+        const [body4] = await invoke({
+            body: {
+                query,
+                variables: { where: { slug_not_in: ["a-category-en", "b-category-en"] } }
+            }
+        });
+
+        expect(body4.data.listCategories.data.length).toBe(1);
+        expect(body4.data.listCategories.data[0].title).toBe("Hardware EN");
     });
 });

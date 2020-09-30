@@ -8,16 +8,24 @@ interface ExecuteAction {
     data?: { [key: string]: any };
 }
 
+const cache = {};
+
 async function executeAction({ action, key, data }: ExecuteAction, driver) {
     const options = { query: { key, deleted: false } };
     switch (action) {
         case "getSettings":
-            const settings = await driver.findOne({ name: "Settings", options });
-            return settings.data;
+            if (!cache[key]) {
+                const settings = await driver.findOne({ name: "Settings", options });
+                cache[key] = settings.data;
+            }
+
+            return cache[key];
         case "saveSettings":
             await driver.update([{ name: "Settings", ...options, data }]);
+            cache[key] = data;
             return true;
         case "deleteSettings":
+            delete cache[key];
             await driver.delete([{ name: "Settings", ...options }]);
             return true;
     }

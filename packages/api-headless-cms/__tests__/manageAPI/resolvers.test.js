@@ -1,347 +1,238 @@
-import { graphql } from "graphql";
-import { get } from "lodash";
-import setupContentModels from "../setup/setupContentModels";
-import { createUtils } from "../utils";
-import createCategories from "../mocks/createCategories.manage";
+import createCategories from "../mocks/genericContentModels/categories.manage";
 import { locales } from "../mocks/I18NLocales";
-import headlessPlugins from "../../src/content/plugins";
-import setupDefaultEnvironment from "../setup/setupDefaultEnvironment";
+import { Database } from "@commodo/fields-storage-nedb";
+import useContentHandler from "./../utils/useContentHandler";
+import contentModels from "./../mocks/genericContentModels/contentModels";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 describe("MANAGE - Resolvers", () => {
-    let categories;
-    let Category;
+    const database = new Database();
+    const { environment: environmentManage } = useContentHandler({ database });
 
-    const { useSchema, useDatabase, useContext } = createUtils([
-        headlessPlugins({ type: "manage", environment: "production" })
-    ]);
-
-    const db = useDatabase();
+    const initial = {};
 
     beforeAll(async () => {
-        await setupDefaultEnvironment(db);
-        const context = await useContext();
-        await setupContentModels(context);
-    });
+        // Let's create a basic environment and a content model group.
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
 
-    beforeEach(async () => {
-        const context = await useContext();
-        Category = context.models.category;
-        categories = await createCategories(context);
-    });
+        const { createContentModel, content } = environmentManage(initial.environment.id);
+        const [categoryModel] = contentModels();
 
-    afterEach(async () => {
-        const entries = await Category.find();
-        for (let i = 0; i < entries.length; i++) {
-            await entries[i].delete();
-        }
+        await createContentModel({ data: categoryModel });
+
+        initial.categories = await createCategories({ content });
     });
 
     test(`get category by ID`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($id: ID!) {
-                getCategory(where: { id: $id }) {
-                    data {
-                        id
-                        title {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                        slug {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                    }
-                }
-            }
-        `;
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.read({ id: initial.categories[0].id });
 
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            id: categories[0].model.id
-        });
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.getCategory).toMatchObject({
-            data: {
-                id: get(categories[0].data, "id"),
-                title: get(categories[0].data, "fields.title"),
-                slug: get(categories[0].data, "fields.slug")
-            }
+        expect(data).toMatchObject({
+            id: initial.categories[0].id,
+            title: initial.categories[0].title,
+            slug: initial.categories[0].slug
         });
     });
 
     test(`list categories (no parameters)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list();
+
+        expect(data).toEqual([
             {
-                listCategories {
-                    data {
-                        id
-                        title {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                        slug {
-                            values {
-                                locale
-                                value
-                            }
-                        }
-                    }
-                    error {
-                        message
-                    }
+                id: data[0].id,
+                savedOn: data[0].savedOn,
+                meta: {
+                    title: {
+                        value: "B Category EN"
+                    },
+                    published: false,
+                    version: 1,
+                    parent: data[0].id,
+                    status: "draft"
+                }
+            },
+            {
+                id: data[1].id,
+                savedOn: data[1].savedOn,
+                meta: {
+                    title: {
+                        value: "A Category EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[1].id,
+                    status: "published"
+                }
+            },
+            {
+                id: data[2].id,
+                savedOn: data[2].savedOn,
+                meta: {
+                    title: {
+                        value: "Hardware EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[2].id,
+                    status: "published"
                 }
             }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context);
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.listCategories).toMatchObject({
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                locale: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
-                                value: expect.stringMatching(
-                                    /^A Category EN|B Category EN|Hardware EN$/
-                                )
-                            })
-                        ])
-                    }),
-                    slug: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                locale: expect.stringMatching(/^[0-9a-fA-F]{24}$/),
-                                value: expect.stringMatching(
-                                    /^a-category-en|b-category-en|hardware-en$/
-                                )
-                            })
-                        ])
-                    })
-                })
-            ])
-        });
+        ]);
     });
 
     test(`list entries (limit)`, async () => {
-        const query = /* GraphQL */ `
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list({ limit: 1 });
+
+        expect(data).toEqual([
             {
-                listCategories(limit: 1) {
-                    data {
-                        id
-                    }
+                id: data[0].id,
+                savedOn: data[0].savedOn,
+                meta: {
+                    title: {
+                        value: "B Category EN"
+                    },
+                    published: false,
+                    version: 1,
+                    parent: data[0].id,
+                    status: "draft"
                 }
             }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data } = await graphql(schema, query, {}, context);
-        expect(data.listCategories).toMatchObject({
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.stringMatching(/^[0-9a-fA-F]{24}$/)
-                })
-            ])
-        });
-        expect(data.listCategories.data.length).toBe(1);
+        ]);
     });
 
     test(`list categories (sort ASC)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title {
-                            values {
-                                value
-                            }
-                        }
-                    }
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list({ sort: ["slug_ASC"] });
+
+        expect(data).toEqual([
+            {
+                id: data[0].id,
+                savedOn: data[0].savedOn,
+                meta: {
+                    title: {
+                        value: "A Category EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[0].id,
+                    status: "published"
+                }
+            },
+            {
+                id: data[1].id,
+                savedOn: data[1].savedOn,
+                meta: {
+                    title: {
+                        value: "B Category EN"
+                    },
+                    published: false,
+                    version: 1,
+                    parent: data[1].id,
+                    status: "draft"
+                }
+            },
+            {
+                id: data[2].id,
+                savedOn: data[2].savedOn,
+                meta: {
+                    title: {
+                        value: "Hardware EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[2].id,
+                    status: "published"
                 }
             }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            sort: ["slug_ASC"]
-        });
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.listCategories).toMatchObject({
-            data: [
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "A Category EN"
-                            })
-                        ])
-                    })
-                },
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "B Category EN"
-                            })
-                        ])
-                    })
-                },
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "Hardware EN"
-                            })
-                        ])
-                    })
-                }
-            ]
-        });
+        ]);
     });
 
     test(`list categories (sort DESC)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title {
-                            values {
-                                value
-                            }
-                        }
-                    }
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data = await categories.list({ sort: ["slug_DESC"] });
+
+        expect(data).toEqual([
+            {
+                id: data[0].id,
+                savedOn: data[0].savedOn,
+                meta: {
+                    title: {
+                        value: "Hardware EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[0].id,
+                    status: "published"
+                }
+            },
+            {
+                id: data[1].id,
+                savedOn: data[1].savedOn,
+                meta: {
+                    title: {
+                        value: "B Category EN"
+                    },
+                    published: false,
+                    version: 1,
+                    parent: data[1].id,
+                    status: "draft"
+                }
+            },
+            {
+                id: data[2].id,
+                savedOn: data[2].savedOn,
+                meta: {
+                    title: {
+                        value: "A Category EN"
+                    },
+                    published: true,
+                    version: 1,
+                    parent: data[2].id,
+                    status: "published"
                 }
             }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            sort: ["slug_DESC"]
-        });
-
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.listCategories).toMatchObject({
-            data: [
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "Hardware EN"
-                            })
-                        ])
-                    })
-                },
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "B Category EN"
-                            })
-                        ])
-                    })
-                },
-                {
-                    title: expect.objectContaining({
-                        values: expect.arrayContaining([
-                            expect.objectContaining({
-                                value: "A Category EN"
-                            })
-                        ])
-                    })
-                }
-            ]
-        });
+        ]);
     });
 
     test(`list categories (contains, not_contains, in, not_in)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($where: CategoryListWhereInput) {
-                listCategories(where: $where) {
-                    data {
-                        title {
-                            values {
-                                value
-                            }
-                        }
-                    }
-                    error {
-                        message
-                    }
-                }
-            }
-        `;
-
-        const { schema, context } = await useSchema();
-        const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
+        const { content } = environmentManage(initial.environment.id);
+        const categories = await content("category");
+        const data1 = await categories.list({
             where: { slug_contains: "category" }
         });
 
-        if (errors1) {
-            throw Error(JSON.stringify(errors1, null, 2));
-        }
+        expect(data1.length).toBe(2);
 
-        expect(data1.listCategories.data.length).toBe(2);
-
-        const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
+        // TODO: cannot write this query in neDB (throws an error).
+        // TODO: @see packages/api-headless-cms/src/content/plugins/filterOperators/operatorNotContains.ts
+        /*const data2 = await categories.list({
             where: { slug_not_contains: "category" }
         });
 
-        if (errors2) {
-            throw Error(JSON.stringify(errors2, null, 2));
-        }
+        expect(data2.length).toBe(1);*/
 
-        expect(data2.listCategories.data.length).toBe(1);
-
-        const { data: data3, errors: errors3 } = await graphql(schema, query, {}, context, {
-            where: { slug_in: ["b-category-en"] }
+        const data3 = await categories.list({
+            where: { slug_in: "b-category-en" }
         });
 
-        if (errors3) {
-            throw Error(JSON.stringify(errors3, null, 2));
-        }
+        expect(data3.length).toBe(1);
 
-        expect(data3.listCategories.data.length).toBe(1);
-
-        const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
+        const data4 = await categories.list({
             where: {
                 slug_not_in: ["a-category-en", "a-category-de", "b-category-en", "b-category-de"]
             }
         });
 
-        if (errors4) {
-            throw Error(JSON.stringify(errors4, null, 2));
-        }
-
-        expect(data4.listCategories.data.length).toBe(1);
-        expect(data4.listCategories.data[0].title.values[0].value).toBe("Hardware EN");
+        expect(data4.length).toBe(1);
+        expect(data4[0].meta.title.value).toBe("Hardware EN");
     });
 
     test(`create category`, async () => {
@@ -371,29 +262,31 @@ describe("MANAGE - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            data: {
-                title: {
-                    values: [
-                        { locale: locales.en.id, value: "Random EN" },
-                        { locale: locales.de.id, value: "Random DE" }
-                    ]
-                },
-                slug: {
-                    values: [
-                        { locale: locales.en.id, value: "random-en" },
-                        { locale: locales.de.id, value: "random-de" }
-                    ]
+        const { invoke } = environmentManage(initial.environment.id);
+
+        let [body] = await invoke({
+            body: {
+                query,
+                variables: {
+                    data: {
+                        title: {
+                            values: [
+                                { locale: locales.en.id, value: "Random EN" },
+                                { locale: locales.de.id, value: "Random DE" }
+                            ]
+                        },
+                        slug: {
+                            values: [
+                                { locale: locales.en.id, value: "random-en" },
+                                { locale: locales.de.id, value: "random-de" }
+                            ]
+                        }
+                    }
                 }
             }
         });
 
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.createCategory).toMatchObject({
+        expect(body.data.createCategory).toMatchObject({
             data: {
                 id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                 title: {
@@ -439,26 +332,28 @@ describe("MANAGE - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
-        const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
-            where: {
-                slug: categories[0].model.slug.value()
-            },
-            data: {
-                title: {
-                    values: [
-                        { locale: locales.en.id, value: "Software EN" },
-                        { locale: locales.de.id, value: "Software DE" }
-                    ]
+        const { invoke } = environmentManage(initial.environment.id);
+
+        let [body1] = await invoke({
+            body: {
+                query,
+                variables: {
+                    where: {
+                        slug: initial.categories[0].slug.values[0].value
+                    },
+                    data: {
+                        title: {
+                            values: [
+                                { locale: locales.en.id, value: "Software EN" },
+                                { locale: locales.de.id, value: "Software DE" }
+                            ]
+                        }
+                    }
                 }
             }
         });
 
-        if (errors1) {
-            throw Error(JSON.stringify(errors1, null, 2));
-        }
-
-        expect(data1.updateCategory).toMatchObject({
+        expect(body1.data.updateCategory).toMatchObject({
             data: {
                 id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                 title: {
@@ -472,25 +367,26 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
-            where: {
-                id: data1.updateCategory.data.id
-            },
-            data: {
-                title: {
-                    values: [
-                        { locale: locales.en.id, value: "Random EN" },
-                        { locale: locales.de.id, value: "Random DE" }
-                    ]
+        let [body2] = await invoke({
+            body: {
+                query,
+                variables: {
+                    where: {
+                        id: body1.data.updateCategory.data.id
+                    },
+                    data: {
+                        title: {
+                            values: [
+                                { locale: locales.en.id, value: "Random EN" },
+                                { locale: locales.de.id, value: "Random DE" }
+                            ]
+                        }
+                    }
                 }
             }
         });
 
-        if (errors2) {
-            throw Error(JSON.stringify(errors2, null, 2));
-        }
-
-        expect(data2.updateCategory).toMatchObject({
+        expect(body2.data.updateCategory).toMatchObject({
             data: {
                 id: expect.stringMatching("^[0-9a-fA-F]{24}"),
                 title: {
@@ -506,6 +402,21 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`delete category (by ID, by slug)`, async () => {
+        const database = new Database();
+        const { environment: environmentManage } = useContentHandler({ database });
+
+        const initial = {};
+
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
+
+        const { createContentModel, invoke, content } = environmentManage(initial.environment.id);
+        const [categoryModel] = contentModels();
+
+        await createContentModel({ data: categoryModel });
+
+        initial.categories = await createCategories({ content });
+
         const query = /* GraphQL */ `
             mutation DeleteCategory($where: CategoryDeleteWhereInput!) {
                 deleteCategory(where: $where) {
@@ -514,25 +425,24 @@ describe("MANAGE - Resolvers", () => {
             }
         `;
 
-        const { schema, context } = await useSchema();
+        const categories = await content("category");
+        expect((await categories.list()).length).toBe(3);
 
-        expect(await context.models.category.count()).toBe(3);
-
-        const { data, errors } = await graphql(schema, query, {}, context, {
-            where: {
-                slug: "hardware-en"
+        let [body] = await invoke({
+            body: {
+                query,
+                variables: {
+                    where: {
+                        slug: "hardware-en"
+                    }
+                }
             }
         });
 
-        if (errors) {
-            throw Error(JSON.stringify(errors, null, 2));
-        }
-
-        expect(data.deleteCategory).toMatchObject({
+        expect(body.data.deleteCategory).toMatchObject({
             data: true
         });
 
-        const countCategories = await context.models.category.count();
-        expect(countCategories).toBe(2);
+        expect((await categories.list()).length).toBe(2);
     });
 });

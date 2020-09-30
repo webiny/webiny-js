@@ -81,10 +81,10 @@ const FBInstaller = ({ onInstalled }) => {
 };
 
 const plugin: AdminInstallationPlugin = {
-    name: "installation-fb",
+    name: "admin-installation-fb",
     type: "admin-installation",
     title: t`Form Builder app`,
-    dependencies: ["installation-security"],
+    dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

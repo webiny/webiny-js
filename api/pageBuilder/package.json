@@ -5,16 +5,18 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.0.0-beta.0",
-    "@webiny/handler-apollo-server": "^4.0.0-beta.0",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.0",
-    "@webiny/api-settings-manager": "^4.0.0-beta.0",
-    "@webiny/api-security": "^4.0.0-beta.0",
-    "@webiny/api-google-tag-manager": "^4.0.0-beta.0",
-    "@webiny/api-cookie-policy": "^4.0.0-beta.0",
-    "@webiny/api-mailchimp": "^4.0.0-beta.0",
-    "@webiny/api-plugin-page-builder-resolvers-mongodb": "^4.0.0-beta.0",
-    "@webiny/api-page-builder": "^4.0.0-beta.0",
-    "@webiny/project-utils": "^4.0.0-beta.4"
+    "@webiny/handler": "^4.11.0-beta.1",
+    "@webiny/handler-apollo-server": "^4.11.0-beta.1",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.11.0-beta.1",
+    "@webiny/api-settings-manager": "^4.11.0-beta.1",
+    "@webiny/api-security": "^4.11.0-beta.1",
+    "@webiny/api-plugin-security-cognito": "^4.11.0-beta.1",
+    "@webiny/api-security-permissions-manager": "^4.11.0-beta.1",
+    "@webiny/api-google-tag-manager": "^4.11.0-beta.1",
+    "@webiny/api-cookie-policy": "^4.11.0-beta.1",
+    "@webiny/api-mailchimp": "^4.11.0-beta.1",
+    "@webiny/api-plugin-page-builder-resolvers-mongodb": "^4.11.0-beta.1",
+    "@webiny/api-page-builder": "^4.11.0-beta.1",
+    "@webiny/project-utils": "^4.11.0-beta.1"
   }
 }

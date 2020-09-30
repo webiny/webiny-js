@@ -3,6 +3,7 @@
   "references": [
     { "path": "../../../packages/api-plugin-commodo-db-proxy" },
     { "path": "../../../packages/api-security" },
+    { "path": "../../../packages/api-security-permissions-manager" },
     { "path": "../../../packages/api-settings-manager" },
     { "path": "../../../packages/api-files" },
     { "path": "../../../packages/api-plugin-files-resolvers-mongodb" },

@@ -20,7 +20,7 @@ const verifyConfig = async () => {
         config = { id: await publicIp.v4() };
         await writeJson(configPath, config);
     }
-    
+
     return config;
 };
 

@@ -44,6 +44,11 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
                         name
                     }
                 }
+                error {
+                    data
+                    code
+                    message
+                }
                 meta {
                     cursors {
                         next

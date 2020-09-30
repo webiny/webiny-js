@@ -5,6 +5,7 @@ const fields = `
     name
     description
     token
+    scopes
     environments {
         id
         name
@@ -40,7 +41,7 @@ export const GET_ACCESS_TOKEN = gql`
 `;
 
 export const CREATE_ACCESS_TOKEN = gql`
-    mutation createAccesstoken($data: CmsAccessTokenCreateInput!) {
+    mutation createAccessToken($data: CmsAccessTokenCreateInput!) {
         cms {
             createAccessToken(data: $data) {
                 data {

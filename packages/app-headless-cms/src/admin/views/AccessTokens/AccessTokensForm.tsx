@@ -59,50 +59,52 @@ function EnvironmentAliasesForm() {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="token">
-                                    <div>
+                                TODO: add permissions UI (or role selector)
+                                {/*<Bind name="scopes">
+                                    <ScopesMultiAutoComplete filter={filterReadScope} />
+                                </Bind>*/}
+                            </Cell>
+                            <Cell span={12}>
+                                <div>
+                                    <div
+                                        className={
+                                            "mdc-text-field-helper-text mdc-text-field-helper-text--persistent " +
+                                            webinyCheckboxTitle
+                                        }
+                                    >
+                                        Token
+                                    </div>
+                                    {data.token ? (
                                         <div
-                                            className={
-                                                "mdc-text-field-helper-text mdc-text-field-helper-text--persistent " +
-                                                webinyCheckboxTitle
-                                            }
+                                            style={{
+                                                background: "var(--mdc-theme-background)",
+                                                padding: "8px",
+                                                paddingLeft: "16px"
+                                            }}
                                         >
-                                            Token
-                                        </div>
-                                        {data.token ? (
-                                            <div
+                                            <span
                                                 style={{
-                                                    background: "var(--mdc-theme-background)",
-                                                    padding: "8px",
-                                                    paddingLeft: "16px"
+                                                    lineHeight: "48px",
+                                                    verticalAlign: "middle"
                                                 }}
                                             >
-                                                <span
-                                                    style={{
-                                                        lineHeight: "48px",
-                                                        verticalAlign: "middle"
-                                                    }}
-                                                >
-                                                    {data.token}
-                                                </span>
-                                                <span
-                                                    style={{ position: "absolute", right: "32px" }}
-                                                >
-                                                    <CopyButton
-                                                        value={data.token}
-                                                        onCopy={() =>
-                                                            showSnackbar("Succesfully copied!")
-                                                        }
-                                                    />
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <FormElementMessage>
-                                                Your Token will be shown once you save the form
-                                            </FormElementMessage>
-                                        )}
-                                    </div>
-                                </Bind>
+                                                {data.token}
+                                            </span>
+                                            <span style={{ position: "absolute", right: "32px" }}>
+                                                <CopyButton
+                                                    value={data.token}
+                                                    onCopy={() =>
+                                                        showSnackbar("Successfully copied!")
+                                                    }
+                                                />
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <FormElementMessage>
+                                            Your Token will be shown once you save the form
+                                        </FormElementMessage>
+                                    )}
+                                </div>
                             </Cell>
                             <Cell span={12}>
                                 <Bind

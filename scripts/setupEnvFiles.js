@@ -66,5 +66,4 @@ const PROJECT_FOLDER = ".";
         fs.copyFileSync(exampleSiteEnvJsonPath, siteEnvJsonPath);
         console.log(`✅️ ${green("apps/site/.env.json")} was created successfully!`);
     }
-
 })();

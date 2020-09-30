@@ -227,7 +227,14 @@ const mocks = {
             }
         }
     }),
-    createdAuthor1Entries2Entries: ({ authorId, book1Id, book2Id, book3Id, book4Id, environmentId }) => [
+    createdAuthor1Entries2Entries: ({
+        authorId,
+        book1Id,
+        book2Id,
+        book3Id,
+        book4Id,
+        environmentId
+    }) => [
         {
             deleted: false,
             entry1: authorId,

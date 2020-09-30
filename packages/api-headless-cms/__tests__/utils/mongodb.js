@@ -18,6 +18,10 @@ export default (id, plugins, createUtils) => {
             type: "context",
             name: "mongo-is-id",
             apply(context) {
+                if (!context.commodo) {
+                    context.commodo = {};
+                }
+
                 context.commodo.isId = value => {
                     if (typeof value === "string") {
                         return value.match(new RegExp("^[0-9a-fA-F]{24}$")) !== null;
@@ -27,13 +31,13 @@ export default (id, plugins, createUtils) => {
                 };
             }
         },
-        ...plugins,
         mongoDb({
             database: {
                 server: global.__MONGO_URI__,
                 name: global.__MONGO_DB_NAME__ + "_" + id
             },
             test: testCallbacks
-        })
+        }),
+        ...plugins
     ]);
 };

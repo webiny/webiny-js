@@ -63,10 +63,9 @@ describe("parallel queries test", () => {
                 }
             });
 
-            expect(response.data.cms1.data.length).toBe(3)
-            expect(response.data.cms2.data.length).toBe(3)
-            expect(response.data.cms3.data.length).toBe(3)
-
+            expect(response.data.cms1.data.length).toBe(3);
+            expect(response.data.cms2.data.length).toBe(3);
+            expect(response.data.cms3.data.length).toBe(3);
         }
     });
 });

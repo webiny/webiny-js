@@ -654,7 +654,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             http2: "empty",
             net: "empty",
             tls: "empty",
-            /* eslint-disable-next-line */
+            /* eslint-disable-next-line @typescript-eslint/camelcase */
             child_process: "empty"
         },
         // Turn off performance processing because we utilize

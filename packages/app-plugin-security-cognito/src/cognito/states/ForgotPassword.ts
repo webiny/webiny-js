@@ -1,6 +1,5 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import debug from "./../debug";
 import { AuthProps, AuthState } from "../Authenticator";
 
 export type ForgotPasswordChildrenProps = {
@@ -30,7 +29,6 @@ class ForgotPassword extends React.Component<ForgotPasswordProps> {
         const { username } = data;
         try {
             const res = await Auth.forgotPassword(username.toLowerCase());
-            debug("Forgot password %O", res);
             this.setState({ loading: false, codeSent: res.CodeDeliveryDetails, error: null });
         } catch (err) {
             if (err.code === "LimitExceededException") {

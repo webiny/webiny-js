@@ -19,6 +19,7 @@ export const handler = createHandler(
     dataManager(),
     {
         type: "cms-data-manager-entry-hook",
+        // eslint-disable-next-line
         async hook(params, context) {
             // Process the hook however you want :)
             // See `CmsDataManagerEntryHookPlugin` type for available hook parameters

@@ -7,20 +7,17 @@ import GraphQLLong from "graphql-type-long";
 import { RefInput } from "./RefInputScalar";
 import { Number } from "./NumberScalar";
 import { Any } from "./AnyScalar";
-import { PluginsContainer, GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
+import { GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
 import { applyContextPlugins } from "@webiny/graphql";
-
-type PrepareSchemaParams = { plugins: PluginsContainer };
 
 /**
  * @return {schema, context}
  */
-export async function prepareSchema({ plugins }: PrepareSchemaParams) {
-    const context: Context = { plugins };
+export async function prepareSchema(context: Context) {
     await applyContextPlugins(context);
 
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
-    const gqlPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+    const gqlPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
 
     for (let i = 0; i < gqlPlugins.length; i++) {
         if (typeof gqlPlugins[i].prepare === "function") {
@@ -28,7 +25,9 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
     }
 
-    const scalars = plugins.byType<GraphQLScalarPlugin>("graphql-scalar").map(item => item.scalar);
+    const scalars = context.plugins
+        .byType<GraphQLScalarPlugin>("graphql-scalar")
+        .map(item => item.scalar);
 
     const schemaDefs: GraphQLSchemaModule[] = [
         {
@@ -57,7 +56,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
     ];
 
     // Fetch schema plugins again, in case there were new plugins registered in the meantime.
-    const schemaPlugins = plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
+    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
     for (let i = 0; i < schemaPlugins.length; i++) {
         const { schema } = schemaPlugins[i];
         if (!schema) {
@@ -65,7 +64,7 @@ export async function prepareSchema({ plugins }: PrepareSchemaParams) {
         }
 
         if (typeof schema === "function") {
-            schemaDefs.push(await schema({ plugins }));
+            schemaDefs.push(await schema(context));
         } else {
             schemaDefs.push(schema);
         }

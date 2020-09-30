@@ -2,9 +2,11 @@ import { createHandler } from "@webiny/handler";
 import headlessCmsHandler from "@webiny/api-headless-cms/content";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
-import securityServicePlugins from "@webiny/api-security/plugins/service";
+import securityAuthPlugins from "@webiny/api-security/plugins/auth";
+import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
 import i18n from "@webiny/api-i18n/plugins/i18n";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
+import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
 
 import getData from "./useContentHandler/getData";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
@@ -15,12 +17,12 @@ import {
     GET_CONTENT_MODEL,
     DELETE_CONTENT_MODEL,
     createCreateMutation,
+    createReadQuery,
     createListQuery,
     createDeleteMutation,
     createUpdateMutation,
     createPublishMutation,
     createListRevisionsQuery,
-    createReadQuery,
     createCreateFromMutation,
     createUnpublishMutation
 } from "./useContentHandler/graphql";
@@ -34,17 +36,12 @@ export default (
 
     const cmsHandler = createHandler(
         neDb({ database }),
-        securityServicePlugins({
-            token: {
-                secret: "secret"
-            }
-        }),
         i18n,
         mockLocalesPlugins(),
-        headlessCmsHandler({
-            server: {
-                introspection: true
-            }
+        headlessCmsHandler({ server: { introspection: true } }),
+        securityAuthPlugins(),
+        securityAuthJwtPlugins({
+            secret: JWT_TOKEN_SIGN_SECRET
         }),
         dataManagerPlugins(),
         ...plugins
@@ -65,7 +62,7 @@ export default (
         database,
         cmsHandler,
         invoke,
-        environment: environmentId => {
+        environment: (environmentId, options = {}) => {
             const environmentApi = {
                 async invoke(args) {
                     if (!args.pathParameters) {
@@ -73,6 +70,18 @@ export default (
                     }
 
                     args.pathParameters.key = `${type}/${environmentId}`;
+
+                    if (!args.headers) {
+                        args.headers = {};
+                    }
+
+                    // Set "full-access" JWT token into the "Authorization" header.
+                    if (
+                        typeof args.headers.Authorization === "undefined" &&
+                        typeof args.headers.authorization === "undefined"
+                    ) {
+                        args.headers.Authorization = createJwtToken();
+                    }
 
                     return invoke(args);
                 },
@@ -117,7 +126,49 @@ export default (
                     return getData(body);
                 },
                 async content(modelId) {
-                    const [body] = await environmentApi.invoke({
+                    if (type === "manage") {
+                        const [body] = await environmentApi.invoke({
+                            body: {
+                                query: GET_CONTENT_MODEL_BY_MODEL_ID,
+                                variables: { modelId }
+                            }
+                        });
+
+                        const { data: contentModel, contentModelError } = body.data.content;
+
+                        if (contentModelError) {
+                            throw contentModelError;
+                        }
+
+                        const method = queryFactory => async (variables = {}) => {
+                            const [body] = await environmentApi.invoke({
+                                body: {
+                                    query: queryFactory(contentModel, "manage"),
+                                    variables
+                                }
+                            });
+
+                            return getData(body);
+                        };
+
+                        return {
+                            create: method(createCreateMutation),
+                            list: method(createListQuery),
+                            delete: method(createDeleteMutation),
+                            update: method(createUpdateMutation),
+                            publish: method(createPublishMutation),
+                            listRevisions: method(createListRevisionsQuery),
+                            read: method(createReadQuery),
+                            createFrom: method(createCreateFromMutation),
+                            unpublish: method(createUnpublishMutation)
+                        };
+                    }
+
+                    const environmentManage = useContentHandler({ database }).environment(
+                        environmentId
+                    );
+
+                    const [body] = await environmentManage.invoke({
                         body: {
                             query: GET_CONTENT_MODEL_BY_MODEL_ID,
                             variables: { modelId }
@@ -130,10 +181,10 @@ export default (
                         throw contentModelError;
                     }
 
-                    const method = queryFactory => async variables => {
+                    const method = queryFactory => async (variables = {}) => {
                         const [body] = await environmentApi.invoke({
                             body: {
-                                query: queryFactory(contentModel),
+                                query: queryFactory(contentModel, "read"),
                                 variables
                             }
                         });
@@ -142,15 +193,8 @@ export default (
                     };
 
                     return {
-                        create: method(createCreateMutation),
                         list: method(createListQuery),
-                        delete: method(createDeleteMutation),
-                        update: method(createUpdateMutation),
-                        publish: method(createPublishMutation),
-                        listRevisions: method(createListRevisionsQuery),
-                        read: method(createReadQuery),
-                        createFrom: method(createCreateFromMutation),
-                        unpublish: method(createUnpublishMutation)
+                        read: method(createReadQuery)
                     };
                 }
             };

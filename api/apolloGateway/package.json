@@ -5,8 +5,8 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/handler": "^4.0.0-beta.0",
-    "@webiny/handler-apollo-gateway": "^4.0.0-beta.0",
-    "@webiny/project-utils": "^4.0.0-beta.4"
+    "@webiny/handler": "^4.11.0-beta.1",
+    "@webiny/handler-apollo-gateway": "^4.11.0-beta.1",
+    "@webiny/project-utils": "^4.11.0-beta.1"
   }
 }

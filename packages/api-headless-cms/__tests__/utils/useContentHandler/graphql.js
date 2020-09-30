@@ -9,6 +9,12 @@ const I18N_FIELD = /* GraphQL */ `
     }
 `;
 
+const READ_I18N_FIELD = /* GraphQL */ `
+    {
+        value
+    }
+`;
+
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
@@ -44,13 +50,38 @@ const I18N_FIELD_WITH_CONTENT = /* GraphQL */ `
     }
 `;
 
-const createFieldsList = contentModel => {
+const READ_I18N_FIELD_WITH_CONTENT = /* GraphQL */ `
+    {
+        value {
+            id
+            meta {
+                title {
+                    value
+                }
+            }
+        }
+    }
+`;
+
+const createFieldsList = (contentModel, type = "manage") => {
+    if (type === "manage") {
+        const fields = contentModel.fields.map(field => {
+            if (field.type === "ref") {
+                return `${field.fieldId} ${I18N_FIELD_WITH_CONTENT}`;
+            }
+
+            return `${field.fieldId} ${I18N_FIELD}`;
+        });
+
+        return fields.join("\n");
+    }
+
     const fields = contentModel.fields.map(field => {
         if (field.type === "ref") {
-            return `${field.fieldId} ${I18N_FIELD_WITH_CONTENT}`;
+            return `${field.fieldId} ${READ_I18N_FIELD_WITH_CONTENT}`;
         }
 
-        return `${field.fieldId} ${I18N_FIELD}`;
+        return `${field.fieldId}`;
     });
 
     return fields.join("\n");
@@ -90,6 +121,7 @@ export const CREATE_CONTENT_MODEL = /* GraphQL */ `
             data {
                 id
                 name
+                modelId
                 titleFieldId
                 lockedFields
                 fields {
@@ -180,15 +212,16 @@ export const GET_CONTENT_MODEL_BY_MODEL_ID = /* GraphQL */ `
     }
 `;
 
-export const createReadQuery = model => {
+export const createReadQuery = (model, type = "manage") => {
     const ucFirstModelId = upperFirst(model.modelId);
 
-    return /* GraphQL */ `
+    if (type === "manage") {
+        return /* GraphQL */ `
         query get${ucFirstModelId}($id: ID!) {
             content: get${ucFirstModelId}(where: { id: $id }) {
             data {
                 id
-                ${createFieldsList(model)}
+                ${createFieldsList(model, type)}
                 savedOn
                 meta {
                     ${CONTENT_META_FIELDS}
@@ -196,6 +229,19 @@ export const createReadQuery = model => {
             }
             error ${ERROR_FIELD}
         }
+        }
+    `;
+    }
+
+    return /* GraphQL */ `
+        query get${ucFirstModelId}($locale: String, $where: ${ucFirstModelId}GetWhereInput!) {
+            content: get${ucFirstModelId}(where: $where, locale: $locale) {
+                data {
+                    id
+                    ${createFieldsList(model, type)}
+                }
+                error ${ERROR_FIELD}
+            }
         }
     `;
 };
@@ -224,11 +270,12 @@ export const createListRevisionsQuery = model => {
     `;
 };
 
-export const createListQuery = model => {
+export const createListQuery = (model, type = "manage") => {
     const ucFirstPluralizedModelId = upperFirst(model.pluralizedModelId);
     const ucFirstModelId = upperFirst(model.modelId);
 
-    return /* GraphQL */ `
+    if (type === "manage") {
+        return /* GraphQL */ `
         query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
             content: list${ucFirstPluralizedModelId}(
             where: $where
@@ -253,6 +300,34 @@ export const createListQuery = model => {
             error ${ERROR_FIELD}
         }
         }
+    `;
+    }
+
+    return /* GraphQL */ `
+        query list${ucFirstPluralizedModelId}($locale: String, $where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
+            content: list${ucFirstPluralizedModelId}(
+                locale: $locale
+                where: $where
+                sort: $sort
+                limit: $limit
+                after: $after
+                before: $before
+                ) {
+                    data {
+                        id
+                        savedOn
+                        ${createFieldsList(model, type)}
+                    }
+                    meta {
+                        cursors {
+                            next
+                            previous
+                        }
+                        totalCount
+                    }
+                    error ${ERROR_FIELD}
+                }
+            }
     `;
 };
 

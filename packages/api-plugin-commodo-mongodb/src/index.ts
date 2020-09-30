@@ -63,7 +63,7 @@ export default (options: CommodoMongoDBFactoryOptions) => {
         {
             name: "context-commodo",
             type: "context",
-            preApply(context) {
+            apply(context) {
                 return setup(options, context);
             }
         } as ContextPlugin

@@ -3,4 +3,8 @@
  * Reference it from other packages via the following import statement:
  * import { NewComponent } from "PACKAGE_NAME";
  */
-export const NewComponent = function() {};
+import * as React from "react";
+
+export const NewComponent = function() {
+    return <div>This is my new component.</div>;
+};

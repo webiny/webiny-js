@@ -199,7 +199,9 @@ module.exports = [
                     });
                 } catch (err) {
                     throw new Error(
-                        `Unable to build package. Try running "yarn build" in ${green(fullLocation)}.`
+                        `Unable to build package. Try running "yarn build" in ${green(
+                            fullLocation
+                        )}.`
                     );
                 }
             }

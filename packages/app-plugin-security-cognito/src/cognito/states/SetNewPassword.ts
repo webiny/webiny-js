@@ -1,6 +1,5 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import debug from "./../debug";
 import { AuthProps } from "../Authenticator";
 
 export type SetNewPasswordChildrenProps = {
@@ -28,8 +27,7 @@ class SetNewPassword extends React.Component<SetNewPasswordProps> {
         const { authData } = this.props;
 
         try {
-            const res = await Auth.forgotPasswordSubmit(authData.toLowerCase(), code, password);
-            debug("set-new-password:setPassword %O", res);
+            await Auth.forgotPasswordSubmit(authData.toLowerCase(), code, password);
             this.props.changeState("signIn", null, {
                 title: "Password updated",
                 text: "You can now login using your new password!",

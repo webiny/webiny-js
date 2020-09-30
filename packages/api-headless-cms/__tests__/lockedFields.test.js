@@ -1,38 +1,25 @@
-import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/lockedFields";
+import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 describe("Used fields", () => {
     const { database, environment } = useContentHandler();
-    const ids = { environment: mdbid(), contentModelGroup: mdbid() };
 
+    const initial = {};
     beforeAll(async () => {
         // Let's create a basic environment and a content model group.
-        await database.collection("CmsEnvironment").insert({
-            id: ids.environment,
-            name: "Initial Environment",
-            description: "This is the initial environment.",
-            createdFrom: null
-        });
-
-        await database.collection("CmsContentModelGroup").insert({
-            id: ids.contentModelGroup,
-            name: "Ungrouped",
-            slug: "ungrouped",
-            description: "A generic content model group",
-            icon: "fas/star",
-            environment: ids.environment
-        });
+        initial.environment = await createEnvironment({ database });
+        initial.contentModelGroup = await createContentModelGroup({ database });
     });
 
     it("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
         const { content, createContentModel, getContentModel, updateContentModel } = environment(
-            ids.environment
+            initial.environment.id
         );
 
         // 1. Create a content model with a single "title" field.
         let contentModel = await createContentModel(
-            mocks.withTitleFieldOnly({ contentModelGroupId: ids.contentModelGroup })
+            mocks.withTitleFieldOnly({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
         expect(contentModel.lockedFields).toEqual([]);

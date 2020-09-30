@@ -159,11 +159,13 @@ module.exports = [
                         cwd: fullLocation
                     })
                 );
-                const rootResourcesPath = path.dirname(
-                    findUp.sync("resources.js", {
-                        cwd: fullLocation
-                    })
-                ).replace(/\\/g, '/')
+                const rootResourcesPath = path
+                    .dirname(
+                        findUp.sync("resources.js", {
+                            cwd: fullLocation
+                        })
+                    )
+                    .replace(/\\/g, "/");
 
                 const deployCommandStackPath = rootResourcesPath
                     .replace(projectRootPath, "")

@@ -25,7 +25,7 @@ export default (options: DbProxyOptions) => [
     {
         name: "context-commodo",
         type: "context",
-        preApply(context) {
+        apply(context) {
             return apply(context, options);
         }
     } as ContextPlugin

@@ -102,7 +102,6 @@ context("Roles Module", () => {
             });
     });
 
-
     it("should save scopes correctly", () => {
         const id = uniqid();
         cy.visit("/roles")

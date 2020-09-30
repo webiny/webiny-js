@@ -1,65 +1,39 @@
+// @ts-nocheck
 import React from "react";
-import { getPlugin } from "@webiny/plugins";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { Authenticator } from "./cognito/Authenticator";
 import SignInState from "./cognito/states/SignIn";
+import SignedInState from "./cognito/states/SignedIn";
 import RequireNewPasswordState from "./cognito/states/RequireNewPassword";
 import ForgotPasswordState from "./cognito/states/ForgotPassword";
 import SetNewPasswordState from "./cognito/states/SetNewPassword";
-import invariant from "invariant";
-import {
-    SecurityCognitoViewForgotPasswordPlugin,
-    SecurityCognitoViewLoadingPlugin,
-    SecurityCognitoViewRequireNewPasswordPlugin,
-    SecurityCognitoViewSetNewPasswordPlugin,
-    SecurityCognitoViewSignInPlugin
-} from "./types";
 
-export type AuthenticationProps = {
-    onIdToken(idToken: string): void;
-    [key: string]: any;
-};
+import SignIn from "./views/SignIn";
+import RequireNewPassword from "./views/RequireNewPassword";
+import ForgotPassword from "./views/ForgotPassword";
+import SetNewPassword from "./views/SetNewPassword";
 
-const Authentication: React.FC<AuthenticationProps> = ({ onIdToken, ...viewProps }) => {
-    const { view: SignIn } = getPlugin<SecurityCognitoViewSignInPlugin>("cognito-view-sign-in");
-    invariant(SignIn, `Missing "cognito-view-sign-in" plugin!`);
-
-    const { view: RequireNewPassword } = getPlugin<SecurityCognitoViewRequireNewPasswordPlugin>(
-        "cognito-view-require-new-password"
-    );
-    invariant(RequireNewPassword, `Missing "cognito-view-require-new-password" plugin!`);
-
-    const { view: ForgotPassword } = getPlugin<SecurityCognitoViewForgotPasswordPlugin>(
-        "cognito-view-forgot-password"
-    );
-    invariant(ForgotPassword, `Missing "cognito-view-forgot-password" plugin!`);
-
-    const { view: SetNewPassword } = getPlugin<SecurityCognitoViewSetNewPasswordPlugin>(
-        "cognito-view-set-new-password"
-    );
-    invariant(SetNewPassword, `Missing "cognito-view-set-new-password" plugin!`);
-
-    const { view: Loading } = getPlugin<SecurityCognitoViewLoadingPlugin>("cognito-view-loading");
-    invariant(Loading, `Missing "cognito-view-loading" plugin!`);
-
+const Authentication = ({ children, getIdentityData }) => {
     return (
-        <Authenticator onIdToken={onIdToken}>
+        <Authenticator getIdentityData={getIdentityData}>
             {({ checkingUser, ...authProps }) =>
                 checkingUser ? (
-                    <Loading />
+                    <CircularProgress />
                 ) : (
                     <>
                         <SignInState {...authProps}>
-                            <SignIn {...viewProps} />
+                            <SignIn />
                         </SignInState>
                         <RequireNewPasswordState {...authProps}>
-                            <RequireNewPassword {...viewProps} />
+                            <RequireNewPassword />
                         </RequireNewPasswordState>
                         <ForgotPasswordState {...authProps}>
-                            <ForgotPassword {...viewProps} />
+                            <ForgotPassword />
                         </ForgotPasswordState>
                         <SetNewPasswordState {...authProps}>
-                            <SetNewPassword {...viewProps} />
+                            <SetNewPassword />
                         </SetNewPasswordState>
+                        <SignedInState {...authProps}>{children}</SignedInState>
                     </>
                 )
             }
