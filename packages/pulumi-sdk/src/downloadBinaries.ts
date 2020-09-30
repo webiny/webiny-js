@@ -6,10 +6,9 @@ const path = require("path");
 const extract = require("extract-zip");
 
 const PULUMI_VERSION = "2.10.2";
-const BINARIES_FOLDER = path.join(__dirname, "binaries");
 
-export default async (beforeInstall, afterInstall) => {
-    if (fs.existsSync(BINARIES_FOLDER)) {
+export default async (downloadFolder, beforeInstall, afterInstall) => {
+    if (fs.existsSync(downloadFolder)) {
         return false;
     }
 
@@ -20,13 +19,13 @@ export default async (beforeInstall, afterInstall) => {
     const platform = os.platform();
     switch (platform) {
         case "darwin":
-            await setupDarwin();
+            await setupDarwin(downloadFolder);
             break;
         case "linux":
-            await setupLinux();
+            await setupLinux(downloadFolder);
             break;
         case "win32":
-            await setupWindows();
+            await setupWindows(downloadFolder);
             break;
         default:
             throw Error(
@@ -41,43 +40,43 @@ export default async (beforeInstall, afterInstall) => {
     return true;
 };
 
-async function setupDarwin() {
+async function setupDarwin(downloadFolder) {
     const filename = `pulumi-v${PULUMI_VERSION}-darwin-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
-    await download(downloadUrl, BINARIES_FOLDER);
+    await download(downloadUrl, downloadFolder);
 
     await tar.extract({
-        cwd: BINARIES_FOLDER,
-        file: path.join(BINARIES_FOLDER, filename)
+        cwd: downloadFolder,
+        file: path.join(downloadFolder, filename)
     });
 
-    fs.unlinkSync(path.join(BINARIES_FOLDER, filename));
+    fs.unlinkSync(path.join(downloadFolder, filename));
 }
 
-async function setupWindows() {
+async function setupWindows(downloadFolder) {
     const filename = `pulumi-v${PULUMI_VERSION}-windows-x64.zip`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
-    await download(downloadUrl, BINARIES_FOLDER);
+    await download(downloadUrl, downloadFolder);
 
-    await extractZip(path.join(BINARIES_FOLDER, filename), filename);
+    await extractZip(path.join(downloadFolder, filename), filename);
 
-    fs.unlinkSync(path.join(BINARIES_FOLDER, filename));
+    fs.unlinkSync(path.join(downloadFolder, filename));
 }
 
-async function setupLinux() {
+async function setupLinux(downloadFolder) {
     const filename = `pulumi-v${PULUMI_VERSION}-linux-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
-    await download(downloadUrl, BINARIES_FOLDER);
+    await download(downloadUrl, downloadFolder);
 
     await tar.extract({
-        cwd: BINARIES_FOLDER,
-        file: path.join(BINARIES_FOLDER, filename)
+        cwd: downloadFolder,
+        file: path.join(downloadFolder, filename)
     });
 
-    fs.unlinkSync(path.join(BINARIES_FOLDER, filename));
+    fs.unlinkSync(path.join(downloadFolder, filename));
 }
 
 function extractZip(zipPath, dir) {

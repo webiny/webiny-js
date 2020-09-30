@@ -1,6 +1,6 @@
 import execa from "execa";
 import * as path from "path";
-import { merge, kebabCase, get, set } from "lodash";
+import { merge, kebabCase, set } from "lodash";
 import toConsole from "./toConsole";
 import downloadBinaries from "./downloadBinaries";
 
@@ -24,6 +24,7 @@ type RunArgs = {
 };
 
 const FLAG_NON_INTERACTIVE = "--non-interactive";
+const BINARIES_FOLDER = path.join(__dirname, "binaries");
 
 class Pulumi {
     defaultArgs: DefaultArgs;
@@ -34,7 +35,7 @@ class Pulumi {
     async run(rawArgs: RunArgs) {
         const args = merge({}, this.defaultArgs, rawArgs);
 
-        const installed = await downloadBinaries(args.beforePulumiInstall, args.afterPulumiInstall);
+        const installed = await downloadBinaries(BINARIES_FOLDER, args.beforePulumiInstall, args.afterPulumiInstall);
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];
@@ -59,6 +60,7 @@ class Pulumi {
 
         // Prepare execa args.
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
+        set(args.execa, "env.PULUMI_HOME", path.join(BINARIES_FOLDER, "files"));
 
         const subProcess = execa(
             path.join(__dirname, "binaries", "pulumi", "pulumi"),
