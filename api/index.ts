@@ -62,6 +62,7 @@ const formBuilder = new FormBuilder({
 });
 
 const headlessCms = new HeadlessCms({
+    dbProxyFunction: documentDb.databaseProxy,
     i18nLocalesFunction: i18n.functions.locales,
     settingsManagerFunction: settingsManager.functions.settings,
     env: {

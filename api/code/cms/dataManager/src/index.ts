@@ -1,6 +1,6 @@
 import { createHandler } from "@webiny/handler-aws";
 import dataManager from "@webiny/api-headless-cms/dataManager/handler";
-import mongodb from "@webiny/api-plugin-commodo-mongodb";
+import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import i18nServicePlugins from "@webiny/api-i18n/plugins/service";
 import { CmsDataManagerEntryHookPlugin } from "@webiny/api-headless-cms/dataManager/types";
 
@@ -12,7 +12,7 @@ import { CmsDataManagerEntryHookPlugin } from "@webiny/api-headless-cms/dataMana
  */
 
 export const handler = createHandler(
-    mongodb({ database: { server: process.env.MONGODB_SERVER, name: process.env.MONGODB_NAME } }),
+    dbProxyPlugins({ functionName: process.env.DB_PROXY_FUNCTION }),
     i18nServicePlugins({
         localesFunction: process.env.I18N_LOCALES_FUNCTION
     }),

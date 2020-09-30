@@ -12,8 +12,10 @@ class HeadlessCms {
     constructor({
         env,
         i18nLocalesFunction,
-        settingsManagerFunction
+        settingsManagerFunction,
+        dbProxyFunction
     }: {
+        dbProxyFunction: aws.lambda.Function;
         settingsManagerFunction: aws.lambda.Function;
         i18nLocalesFunction: aws.lambda.Function;
         env: { content: { [key: string]: any }; graphql: { [key: string]: any } };
@@ -30,8 +32,7 @@ class HeadlessCms {
             }),
             environment: {
                 variables: {
-                    MONGODB_SERVER: process.env.MONGODB_SERVER || "",
-                    MONGODB_NAME: process.env.MONGODB_NAME || "",
+                    DB_PROXY_FUNCTION: dbProxyFunction.arn,
                     I18N_LOCALES_FUNCTION: i18nLocalesFunction.arn // TODO: use settings manager instead of this function?
                 }
             },
