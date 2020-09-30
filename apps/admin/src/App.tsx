@@ -1,4 +1,3 @@
-import React from "react";
 import adminTemplate from "@webiny/app-template-admin-full";
 import "./App.scss";
 
