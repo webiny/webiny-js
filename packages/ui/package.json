@@ -35,6 +35,7 @@
     "@rmwc/slider": "^6.1.4",
     "@rmwc/snackbar": "^6.1.4",
     "@rmwc/switch": "^6.1.4",
+    "@rmwc/types": "^6.0.5",
     "@rmwc/tabs": "^6.1.4",
     "@rmwc/textfield": "^6.1.4",
     "@rmwc/top-app-bar": "^6.1.4",
