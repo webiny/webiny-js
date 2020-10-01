@@ -9,7 +9,8 @@
     "../app-plugin-security-cognito",
     "../form",
     "../ui",
-    "../validation"
+    "../validation",
+    "../plugins"
   ],
   "compilerOptions": {
     "rootDir": "./src",
