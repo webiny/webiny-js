@@ -28,7 +28,7 @@ The basic tools used to run and manage our monorepo are [yarn](https://classic.y
 
 We let `yarn` manage the workspaces and we use `lerna` to publish packages and run commands across workspaces. In `monorepo` lingo, a `workspace` is a single package.
 
-> It's VERY important that you understand how `yarn` links workspaces (packages), so make sure you read this article: https://classic.yarnpkg.com/en/docs/workspaces/.
+> You must understand how `yarn` links workspaces (packages), so make sure you read this article: https://classic.yarnpkg.com/en/docs/workspaces/.
 
 #### Custom package linking
 
@@ -45,7 +45,7 @@ So how do we solve this?
 Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`.
 
 Remember how `yarn` links packages? Can you already see the problem? Let's go step by step to make this very, very clear:
-So you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages taking inter-package dependencies into consideration).
+So you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages considering inter-package dependencies).
 
 Now you want to import one of your packages. Here's a sample code:
 
@@ -61,7 +61,7 @@ This code WILL FAIL. But why? `@webiny/plugins` will be resolved to `node_module
 
 We solved it by creating a small tool (located at `/packages/project-utils/packages/linkPackages.js`) that will relink packages exactly how we want them to be linked.
 
-In our packages we configure the desired target directory in `package.json` file, in the `publishConfig.directory`. We're being consistent with `lerna` which uses [that same configuration](https://github.com/lerna/lerna/tree/master/commands/publish#publishconfigdirectory) to determine which folder to use when publishing packages to `npm`.
+In our packages we configure the desired target directory in the `package.json` file, in the `publishConfig.directory`. We're being consistent with `lerna` which uses [that same configuration](https://github.com/lerna/lerna/tree/master/commands/publish#publishconfigdirectory) to determine which folder to use when publishing packages to `npm`.
 
 If you open `<webiny-js>/package.json`, you'll find a `postinstall` script. That script is executed each time `yarn` installs dependencies and is done doing its magic. This gives us the chance to relink packages exactly how we want them to be.
 
@@ -75,7 +75,7 @@ Webiny is designed to be a cloud-first platform, meaning it can not be run compl
 
 ### Stacks
 
-To deploy anything to the cloud provider, you create infrastructure stacks. A `stack` is a set of cloud resources that will be created for you when you run the deploy process. Webiny supports creation of unlimited number of stacks. By default, our project is setup to have the `api` stack (in the `api` folder), and the `apps` stack (in the `apps` folder). Folder names do not carry any meaning to the system, so they can be named anything.
+To deploy anything to the cloud provider, you create infrastructure stacks. A `stack` is a set of cloud resources that will be created for you when you run the deploy process. Webiny supports the creation of an unlimited number of stacks. By default, our project is setup to have the `api` stack (in the `api` folder), and the `apps` stack (in the `apps` folder). Folder names do not carry any meaning to the system, so they can be named anything.
 
 A stack is defined using a `resources.js` file. This file is only important as long as you use our default deployment mechanism.
 To see an example of a stack, open `<webiny-js>/api/resources.js`.
@@ -96,4 +96,4 @@ Ideally, services/apps should only be deployed using atomic cloud resources to m
 
 When a stack is deployed, it has to store the state of the cloud resources. State files are stored in `<webiny-js>/.webiny/state` folder. Each stack has its own subfolder, and inside you'll find all of your deployed environments and their corresponding state files.
 
-Inside the state folder you'll also find a file called `_.json` which contains an ID which is unique for your copy of the project. This ID is prepended to all cloud resources for uniqueness but also for ease of management in your cloud provider console.
+Inside the state folder you'll also find a file called `_.json` which contains an ID that is unique for your copy of the project. This ID is prepended to all cloud resources for uniqueness but also ease of management in your cloud provider console.
