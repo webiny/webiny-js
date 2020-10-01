@@ -6,6 +6,7 @@
     { "path": "../app-plugin-security-cognito" },
     { "path": "../form" },
     { "path": "../ui" },
-    { "path": "../validation" }
+    { "path": "../validation" },
+    { "path": "../plugins" }
   ]
 }

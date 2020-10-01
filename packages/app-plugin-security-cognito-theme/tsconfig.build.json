@@ -22,6 +22,7 @@
     { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../validation/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ]
 }
