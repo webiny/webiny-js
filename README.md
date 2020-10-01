@@ -45,7 +45,7 @@ You can see all the currently available components in our [storybook](https://st
 
 We also provide a server-side render setup out of the box. It is also powered by Lambda!
 
-Our apps are also composed using plugins, and we're very happy to provide you with an easy-to-share mechanism of `app templates`. Out of the box Webiny provides several app templates to get you going. Following the same approach, you can easily create your own templates for your own projects and share them on `npm` for the community to use.
+Our apps are also composed using plugins, and we're very happy to provide you with an easy-to-share mechanism of `app templates`. Out of the box Webiny provides several app templates to get you going. Following the same approach, you can easily create your templates for your projects and share them on `npm` for the community to use.
 
 ## Admin app
 
