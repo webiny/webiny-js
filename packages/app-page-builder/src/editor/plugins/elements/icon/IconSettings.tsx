@@ -43,7 +43,12 @@ const IconSettings = ({ element, updateElement }) => {
         <React.Fragment>
             <Tabs>
                 <Tab label={"Icon"}>
-                    <IconPicker label={"Icon"} value={icon.id} updateValue={updateIcon} />
+                    <IconPicker
+                        label={"Icon"}
+                        value={icon.id}
+                        updateValue={updateIcon}
+                        removable={false}
+                    />
                     <Input
                         label={"Width"}
                         value={icon.width}
