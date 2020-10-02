@@ -15,7 +15,7 @@ A simple data validation library, packed with frequently used validators like `r
 -   [Installation](#installation)
 -   [Get Started](#get-started)
 -   [Classes](#classes)
-    -   [Validation](#validation)
+    -   [Validation](#validation-1)
         -   [setValidator](#setvalidator)
         -   [getValidator](#getvalidator)
         -   [validate](#validate)
