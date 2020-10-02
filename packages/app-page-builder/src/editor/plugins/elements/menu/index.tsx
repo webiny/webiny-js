@@ -1,16 +1,11 @@
-//using editor / .. / pageList/index as an example template
-//https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/plugins/elements/pagesList/index.tsx
 import React from "react";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
 import { Tab } from "@webiny/ui/Tabs";
-//import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-//import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as MenuIcon } from "./menu-icon.svg";
 import Menu from "./Menu";
-//import MenuFilterSettings from "./MenuFilterSettings";
 import MenuDesignSettings from "./MenuDesignSettings";
 import styled from "@emotion/styled";
 
@@ -49,7 +44,6 @@ export default () => {
             onCreate: "open-settings",
             render({ element }) {
                 console.log("OPENING MENU ELEMENT DATA:::::::::::");
-                console.log("TRY AGAIN!!!")
                 console.log(element);
                 return <Menu element={element} />;
             },
@@ -74,7 +68,6 @@ export default () => {
                 console.log(props);
                 return (
                     <Tab icon={<MenuIcon />} label="Design">
-                        <h1>MENU DESIGN SETTINGS</h1>
                         <MenuDesignSettings {...props} />
                     </Tab>
                 );
