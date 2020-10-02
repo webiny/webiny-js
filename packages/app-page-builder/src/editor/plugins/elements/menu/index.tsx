@@ -56,8 +56,11 @@ export default () => {
             create() {
                 return {
                     type: "menu",
+                    component: "default",
                     elements: [],
-                    data: {},
+                    data: {
+                        component: "default"
+                    },
                     settings: {}
                 };
             }

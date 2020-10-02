@@ -1,6 +1,8 @@
 import React from "react";
 import Menu from "./Menu";
 import GridMenu from "./components/GridMenu";
+import MenuTemplate from "./components/MenuTemplate";
+
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
@@ -17,8 +19,8 @@ export default [
     {
         name: "pb-page-element-menu-component-default",
         type: "pb-page-element-menu-component",
-        title: "Grid list",
+        title: "Menu Template",
         componentName: "default",
-        component: GridMenu
+        component: MenuTemplate
     } as PbPageElementMenuComponentPlugin
 ];

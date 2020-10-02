@@ -36,7 +36,14 @@ const getOptions = ({ gqlData, settingsData }) => {
     const menusList = get(gqlData, "pageBuilder.menus.data") || [];
  
     //changed title to name to pick up data with auto complete.
-    output.parents.options = menusList.map(({ id, title }) => ({ id, name: title }));
+    /*
+                    id
+                    title
+                    slug
+                    description
+                    createdOn
+    */
+    output.parents.options = menusList.map(({ id, title, slug, description, items, createdOn }) => ({ id, name: title, slug, items, description, createdOn }));
     output.parents.value = output.parents.options.find(item => item.id === selected.menus) || null;    //const parent = parentsList.find(item => item.parent === selected.parent);
     console.log(output.parents.value);
     console.log(output.parents.options);

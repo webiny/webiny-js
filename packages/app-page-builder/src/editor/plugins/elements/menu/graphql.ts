@@ -21,6 +21,7 @@ export const LIST_MENUS = gql`
                     title
                     slug
                     description
+                    items
                     createdOn
                 }
                 meta {

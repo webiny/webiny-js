@@ -36,6 +36,7 @@ export type MenuItemProps = {
 
 const MenuItem = ({ data, className }: MenuItemProps) => {
     console.log("MENU ITEM FROM RENDER::::::::::::");
+    console.log(data);
     return (
         <Link to={data.fullUrl} className={"webiny-pb-page-element-menu__item " + className}>
             <div

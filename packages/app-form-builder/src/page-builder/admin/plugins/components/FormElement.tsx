@@ -26,7 +26,7 @@ const FormElement = (props: FormElementProps) => {
     let render = <span>Form not selected.</span>;
 
     const form = get(element, "data.settings.form") || {};
-
+    console.log("CHECKING FORMS:::::;;;;;  - Props");
     if (form.revision) {
         const props = {
             preview: true,
@@ -39,10 +39,14 @@ const FormElement = (props: FormElementProps) => {
         } else {
             props.revisionId = form.revision;
         }
-
+        console.log(props);
         render = <FormsForm {...props} />;
     }
-
+    console.log("isActive, form, element, render");
+    console.log(isActive);
+    console.log(form);
+    console.log(element);
+    console.log(render);
     return (
         <>
             {isActive && <Overlay />}
