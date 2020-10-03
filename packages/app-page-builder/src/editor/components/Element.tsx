@@ -78,7 +78,6 @@ const Element = (props: ElementProps) => {
         if (element.type === "document") {
             return;
         }
-
         e.stopPropagation();
         if (!highlight) {
             highlightElement({ element: element.id });
