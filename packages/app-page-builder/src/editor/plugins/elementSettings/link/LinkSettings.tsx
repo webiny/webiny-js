@@ -42,7 +42,7 @@ class LinkSettings extends React.Component<any> {
                             <React.Fragment>
                                 <Grid>
                                     <Cell span={12}>
-                                        <Bind name={"href"} validators={validation.create("url")}>
+                                        <Bind name={"href"} validators={validation.create("url:allowRelative")}>
                                             <DelayedOnChange>
                                                 {props => <Input {...props} label={"URL"} />}
                                             </DelayedOnChange>
