@@ -19,7 +19,7 @@ export default ({
     }
 
     const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
-    if (plugin) {
+    if (!plugin) {
         return <NotAuthorizedError />;
     }
     return plugin.render();
