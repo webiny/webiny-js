@@ -32,7 +32,12 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name="url" validators={validation.create("required,url:allowRelative")}>
+                                <Bind
+                                    name="url"
+                                    validators={validation.create(
+                                        "required,url:allowRelative:allowHref"
+                                    )}
+                                >
                                     <Input label="URL" />
                                 </Bind>
                             </Cell>

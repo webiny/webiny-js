@@ -12,6 +12,10 @@ const regex = {
     relative: new RegExp(
         // eslint-disable-next-line
         /^\/.*$/
+    ),
+    href: new RegExp(
+        // eslint-disable-next-line
+        /^(#|mailto:|tel:)\S*$/
     )
 };
 
@@ -37,6 +41,12 @@ export default (value: any, params: Array<string>) => {
 
     if (params.includes("allowRelative")) {
         if (regex.relative.test(value)) {
+            return;
+        }
+    }
+
+    if (params.includes("allowHref")) {
+        if (regex.href.test(value)) {
             return;
         }
     }
