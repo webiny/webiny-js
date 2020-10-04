@@ -36,7 +36,6 @@ const NotAuthorizedError = () => {
                 className={styles.authErrorImgStyle}
                 src={authErrorImg}
                 alt="Not Authorized"
-                width="40%"
             />
             <Typography use={"body1"} className={styles.bodyStyle}>
                 You are not authorized to view this route.
