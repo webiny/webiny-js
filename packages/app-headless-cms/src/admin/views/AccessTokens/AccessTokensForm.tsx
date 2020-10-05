@@ -91,7 +91,7 @@ function EnvironmentAliasesForm() {
                                                     <CopyButton
                                                         value={data.token}
                                                         onCopy={() =>
-                                                            showSnackbar("Succesfully copied!")
+                                                            showSnackbar("Successfully copied!")
                                                         }
                                                     />
                                                 </span>

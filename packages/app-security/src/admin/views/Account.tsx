@@ -14,7 +14,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import AvatarImage from "./Components/AvatarImage";
 import { validation } from "@webiny/validation";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import AccuntTokens from "./AccountTokens";
+import AccountTokens from "./AccountTokens";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
 
 import {
@@ -163,7 +163,7 @@ const UserAccountForm = () => {
                                             ),
                                             personalAccessTokens: (
                                                 <Bind name="personalAccessTokens">
-                                                    <AccuntTokens
+                                                    <AccountTokens
                                                         data={data}
                                                         setValue={setValue}
                                                         setFormIsLoading={setIsLoading}
