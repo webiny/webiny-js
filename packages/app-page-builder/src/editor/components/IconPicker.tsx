@@ -8,6 +8,7 @@ import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/Dela
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
+import classNames from "classnames";
 
 const COLUMN_COUNT = 6;
 
@@ -148,11 +149,14 @@ const IconPicker = ({ value, onChange, removable = true }) => {
                 }
                 const isSelectedIcon =
                     item.id[0] === selectedIconPrefix && item.id[1] === selectedIconName;
+                const gridItemClassName = classNames(gridItem, {
+                    [gridItemSelected]: isSelectedIcon
+                });
                 return (
                     <div
                         key={key}
                         style={style}
-                        className={gridItem + (isSelectedIcon ? ` ${gridItemSelected}` : "")}
+                        className={gridItemClassName}
                         onClick={() => {
                             onChange(item);
                             closeMenu();
