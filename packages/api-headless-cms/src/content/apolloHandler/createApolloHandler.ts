@@ -44,7 +44,6 @@ export default async function createApolloHandler({
         // @ts-ignore Not sure why it doesn't work, "boolean" function does return a boolean value.
         playground: boolean(server.playground),
         debug: boolean(process.env.DEBUG),
-        ...server,
         schema,
         context: async ({ event }) => ({
             event,
