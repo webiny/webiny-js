@@ -5,7 +5,7 @@ We have an active community on [slack](webiny.com/slack). Talk to the core-team,
 
 ## Working on an issue
 
-> IMPORTANT: Before working on a PR, please open an issue and discuss your intended changes with the maintainers. They may provide invaluable info and point you in the right direction to get the most out of your contribution.
+> IMPORTANT: Before working on a PR, please open an issue and discuss your intended changes with the maintainers. They may provide valuable and useful info and point you in the right direction to get the most out of your contribution.
 
 ### Branches
 
