@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.1...v4.13.0-beta.0) (2020-10-06)
+
+
+### Bug Fixes
+
+* remove redundant "server" ([4c9a47e](https://github.com/webiny/webiny-js/commit/4c9a47ee26fb8584af882549d89738c58bc45dc9))
+* **app-page-builder:** display image list in preview mode ([#1264](https://github.com/webiny/webiny-js/issues/1264)) ([18dbbc0](https://github.com/webiny/webiny-js/commit/18dbbc09ff8c9cb18d1f3ae815b60565a9102d31))
+
+
+
+
+
 ## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
 
 **Note:** Version bump only for package @webiny/handler-apollo-gateway
