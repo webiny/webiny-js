@@ -1,9 +1,22 @@
 import * as React from "react";
 import warning from "warning";
 import { useQuery } from "react-apollo";
-import { LIST_MENUS } from "./graphql";
+import { LIST_MENUS, READ_MENU } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
+
+import { css } from "emotion";
+const outerWrapper = css({
+    boxSizing: "border-box"
+});
+
+const innerWrapper = css({
+    left: 0,
+    width: "100%",
+    height: "auto",
+    position: "relative",
+    paddingBottom: 0
+});
 
 declare global {
     // eslint-disable-next-line
@@ -18,26 +31,41 @@ declare global {
 }
 
 const Menu = props => {
-    
     const {
-        data: { component, ...vars },
+        data: { component, settings: {
+            menu: {
+                element: menuId
+            }
+        }, ...vars },
         theme
     } = props;
 
     console.log("PLUGINS FROM RENDER::::::::::::");
+    console.log(props);
+
+    console.log(menuId);
+    /*
+    data.settings.menu.element
+    {data: {…}, theme: {…}}
+data:
+component: "default"
+settings:
+menu: {element: "5f4fafed4221bf0008a483c8"}
+    */
     const plugins = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
 
-    const menu = plugins.find(cmp => cmp.componentName === component);
+    const menuComponent = plugins.find(cmp => cmp.componentName === component);
+    console.log(menuComponent);
 
-    if (!menu) {
+    if (!menuComponent) {
         warning(false, `Menu component "${component}" is missing!`);
         return null;
     }
-    const { component: ListComponent } = menu;
+    const { component: MenuComponent } = menuComponent;
 
-    if (!ListComponent) {
+    if (!MenuComponent) {
         warning(false, `React component is not defined for "${component}"!`);
         return null;
     }
@@ -57,51 +85,68 @@ const Menu = props => {
     ) {
     */
    //$search: PbSearchInput
-   const variables = {
-        where: vars.where,
-        sort,
-        limit: parseInt(vars.resultsPerPage),
-        after: undefined,
-        before: undefined
-    }
-   /*
+ 
+   
     const variables = {
-        category: vars.category,
-        sort,
-        tags: vars.tags,
-        tagsRule: vars.tagsRule,
-        limit: parseInt(vars.resultsPerPage),
-        after: undefined,
-        before: undefined
+        id: menuId
     };
-    */
 
-    const { data, loading, refetch } = useQuery(LIST_MENUS, { variables });
+    const { data, loading, refetch } = useQuery(READ_MENU, { variables });
 
     if (loading) {
         return null;
     }
+    console.log("rendered data::::");
+    console.log(data);
+    /*
+    pageBuilder:
+menu:
+data:
+description: "ssss"
+id: "5f4fafed4221bf0008a483c8"
+items: (2) [{…}, {…}]
+slug: "sssss"
+title: "ssssssssss"
+__typename: "PbMenu"
+    */
+  /* pageBuilder:
+menu:
+data:
+description: "ssss"
+id: "5f4fafed4221bf0008a483c8"
+items: (2) [{…}, {…}]
+slug: "sssss"
+title: "ssssssssss"
+__typename: "PbMenu"*/
+    const menuData = data.pageBuilder.menu;
 
-    const menus = data.pageBuilder.menus;
-
-    if (!menus || !menus.data.length) {
+    /*if (!menuData || !menuData.data.length) {
         return null;
-    }
-
+    }*/
+    /*
     let prevPage = null;
-    if (menus.meta.hasPreviousPage) {
-        prevPage = () => refetch({ ...variables, before: menus.meta.cursors.previous });
-    }
+    if (menuData.meta.hasPreviousPage) {
+        prevPage = () => refetch({ ...variables, before: menuData.meta.cursors.previous });
+    }*/
 
-    let nextPage = null;
+    /*    let nextPage = null;
     if (menus.meta.hasNextPage) {
         nextPage = () => refetch({ ...variables, after: menus.meta.cursors.next });
-    }
+    }*/
     console.log("List Component JSX:::::")
+    let render = <span>Menu not selected.</span>;
+    if (menuData){
+        //data.ie
+        const props = {
+            preview: true,
+            menu: menuData.data.id,
+        };
+        render = <MenuComponent {...props} />;
+    }
     return (
         <>
             <ssr-cache data-class="pb-menu" />
-            <ListComponent {...menus} nextPage={nextPage} prevPage={prevPage} theme={theme} />
+            {render}
         </>
     );
 }

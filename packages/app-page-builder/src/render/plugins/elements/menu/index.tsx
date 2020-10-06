@@ -17,7 +17,7 @@ export default [
             return <Menu data={element.data} theme={theme} />;
         }
     } as PbRenderElementPlugin,
-    {
+    {   
         name: "pb-page-element-menu-component-default",
         type: "pb-page-element-menu-component",
         title: "Menu Template",

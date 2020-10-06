@@ -30,10 +30,11 @@ const Menu = (props: MenuElementProps) => {
     console.log(props);
  
     const menuData = get(element, "data") || {};
-
+    console.log("menuData:::::::::::");
+    console.log(menuData);
     const component = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
-    ).find(cmp => cmp.componentName === menuData.component);;
+    ).find(cmp => cmp.componentName === menuData.component);
 
     let menu;
    
