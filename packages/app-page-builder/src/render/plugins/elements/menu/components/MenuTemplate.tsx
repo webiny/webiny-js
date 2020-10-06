@@ -2,35 +2,35 @@ import React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { ButtonPrimary } from "@webiny/ui/Button";
 import MenuItems from "./MenuItems";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-import { LIST_MENUS, READ_MENU } from "../graphql";
-import { Query } from "react-apollo";
+import { READ_MENU } from "../graphql";
 import { useQuery } from "react-apollo";
-
-
 import { i18n } from "@webiny/app/i18n";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
-    SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 
 const MenuTemplate = ({menu}) => {
-
     console.log("Menu Template:::::::::::")
     console.log(menu);
+    
     const variables = {
         id: menu
     }
+
+    //refetch not being used
     const { data, loading: menuLoading, refetch } = useQuery(READ_MENU, {variables});
     console.log(data);
-    /*data.pageBuilder.menu.data*/
+    console.log(`menu loading: ${menuLoading}`);
+
+    if (menuLoading) {
+        return null;
+    }
     let menuData;
     if (data) {
         menuData = data.pageBuilder.menu.data;
@@ -40,12 +40,8 @@ const MenuTemplate = ({menu}) => {
     console.log(menuData);
     let { id, name: title, slug, description, items, createdOn, loading } = menuData;
     console.log("data collected");
-    /*const props = {
-        preview: true,
-        parentId: menu,
-    };*/
-    //const { form: crudForm } = useCrud();
-    //fetchPolicy="network-only"
+    console.log(menuData);
+  
     return (
         <Form {...menuData} data={id ? { id, title, slug, description, items, createdOn } : { items: [] }}>
             {({ data, form, Bind }) => (
