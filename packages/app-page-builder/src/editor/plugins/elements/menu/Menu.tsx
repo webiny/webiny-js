@@ -29,22 +29,24 @@ const Menu = (props: MenuElementProps) => {
     console.log("MENU PROPS ::::;;;;");
     console.log(props);
  
-    const menuData = get(element, "data") || {};
-    console.log("menuData:::::::::::");
-    console.log(menuData);
+    const data = get(element, "data") || {};
+    console.log("data:::::::::::");
+    console.log(data);
+
     const component = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
-    ).find(cmp => cmp.componentName === menuData.component);
+    ).find(cmp => cmp.componentName === data.component);
 
-    let menu;
+    let menuId;
    
-    if ('settings' in menuData) {
+    if ('settings' in data) {
         //SIMULAR TO:: const menu = get(element, "data.settings.menu") || {};
-        menu = menuData.settings.menu.element;
+        menuId = data.settings.menu.element;
     } else {
         return <div>Selected menu component not found!</div>;
     }
-
+    console.log(`menu ID: ${menuId}`);
+    
     const { component: MenuComponent } = component;
 
     if (!MenuComponent) {
@@ -53,10 +55,10 @@ const Menu = (props: MenuElementProps) => {
  
     let render = <span>Menu not selected.</span>;
 
-    if (menu){
+    if (menuId){
         const props = {
             preview: true,
-            menu: menu,
+            menu: menuId,
         };
         render = <MenuComponent {...props} />;
     }

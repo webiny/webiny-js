@@ -14,30 +14,29 @@ const FormOptionsWrapper = styled("div")({
 const getOptions = ({ gqlData, settingsData }) => {
 
     const output = {
-        parents: {
+        menuSelect: {
             options: [],
             value: null
         }
     };
 
     const selected = {
-        menus: get(settingsData, "settings.menu.element") || []
+        menuId: get(settingsData, "settings.menu.element") || []
     };
-    console.log("SELECTED > MENUS :::::::");
-    console.log(selected.menus);
+    console.log("selected menuId :::::::");
+    console.log(selected.menuId);
 
     const menusList = get(gqlData, "pageBuilder.menus.data") || [];
 
-    output.parents.options = menusList.map(({ id, title, slug, description, items, createdOn }) => ({ id, name: title, slug, items, description, createdOn }));
-    output.parents.value = output.parents.options.find(item => item.id === selected.menus) || null;
+    output.menuSelect.options = menusList.map(({ id, title, slug, description, items, createdOn }) => ({ id, name: title, slug, items, description, createdOn }));
+    output.menuSelect.value = output.menuSelect.options.find(item => item.id === selected.menuId) || null;
 
     return output;
 };
 
 
 const MenuDesignSettings = ({ Bind, data: settingsData }) => {
-    console.log("MenuDesignSettings:::::::");
-    console.log("settings data:::::")
+    console.log("MenuDesignSettings::::::settings data::::");
     console.log(settingsData);
     return (
         <FormOptionsWrapper>
@@ -59,8 +58,8 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                                 >
                                     {({ onChange }) => (
                                         <AutoComplete
-                                            options={options.parents.options}
-                                            value={options.parents.value}
+                                            options={options.menuSelect.options}
+                                            value={options.menuSelect.value}
                                             onChange={onChange}
                                             label={"Menu"}
                                         />

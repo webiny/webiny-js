@@ -43,8 +43,6 @@ export default () => {
             target: ["row", "column", "list-item"],
             onCreate: "open-settings",
             render({ element }) {
-                console.log("OPENING MENU ELEMENT DATA:::::::::::");
-                console.log(element);
                 return <Menu element={element} />;
             },
             create() {
@@ -64,8 +62,6 @@ export default () => {
             type: "pb-editor-page-element-advanced-settings",
             elementType: "menu",
             render(props) {
-                console.log("PROPS FOR MENU-DESIGN-SETTINGS::::::;;;;;;;;");
-                console.log(props);
                 return (
                     <Tab icon={<MenuIcon />} label="Design">
                         <MenuDesignSettings {...props} />
