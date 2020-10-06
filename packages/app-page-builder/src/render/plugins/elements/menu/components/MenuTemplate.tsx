@@ -18,7 +18,7 @@ const t = i18n.ns("app-page-builder/admin/menus/form");
 const MenuTemplate = ({menu}) => {
     console.log("Menu Template:::::::::::")
     console.log(menu);
-    
+      
     const variables = {
         id: menu
     }
