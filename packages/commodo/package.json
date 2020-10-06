@@ -16,7 +16,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@commodo/fields": "^1.2.1",
-		"@commodo/fields-storage": "^2.1.1",
+		"@commodo/fields-storage": "^2.1.2",
 		"@commodo/fields-storage-ref": "^1.2.1",
 		"@commodo/fields-storage-soft-delete": "^2.1.1",
 		"@commodo/hooks": "^1.2.1",
