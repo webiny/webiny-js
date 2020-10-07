@@ -26,7 +26,6 @@
     "@webiny/app": "^4.12.1",
     "@webiny/cli": "^4.12.1",
     "@webiny/handler": "^4.12.1",
-    "@webiny/handler-files": "^4.12.1",
     "@webiny/handler-ssr": "^4.12.1",
     "@webiny/react-router": "^4.12.1",
     "apollo-cache-inmemory": "^1.6.6",
