@@ -22,7 +22,7 @@ const Menu = props => {
             component, 
             settings: {
                 menu: {
-                    element: menuId
+                    element: menuID
                 }
             }, 
             ...vars 
@@ -32,7 +32,7 @@ const Menu = props => {
 
     console.log("PLUGINS FROM RENDER:::::::props, menuId::::::::::");
     console.log(props);
-    console.log(menuId);
+    console.log(menuID);
 
     const plugins = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
@@ -52,19 +52,18 @@ const Menu = props => {
         return null;
     }
    
-    let render = <span>Menu not selected.</span>;
-   
-    if (menuId){
-        const props = {
-            preview: true,
-            menu: menuId,
-        };
-        render = <MenuComponent {...props} />;
+    
+    const render = (menuId?: string) => {
+        if (!menuId) {
+          return <span>Menu not selected.</span>;
+        }
+        return <MenuComponent menu={menuId} preview={true} />;
     }
+   
     return (
         <>
             <ssr-cache data-class="pb-menu" />
-            {render}
+            {render(menuID)}
         </>
     );
 }
