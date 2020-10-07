@@ -5,7 +5,6 @@ import styled from "@emotion/styled";
 import { connect } from "react-redux";
 import { getPlugins } from "@webiny/plugins";
 import { getActiveElementId } from "@webiny/app-page-builder/editor/selectors";
-import { PbElement } from "@webiny/app-page-builder/types";
 
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
@@ -24,14 +23,11 @@ const Menu = ({ element, isActive }) => {
     console.log(isActive);
  
     const data = element?.data || {};
-    console.log("data:::::::::::");
-    console.log(data);
 
     const component = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     ).find(cmp => cmp.componentName === data.component);
    
- 
     if (!data?.settings) {
         return <div>Selected menu component not found!</div>
     }

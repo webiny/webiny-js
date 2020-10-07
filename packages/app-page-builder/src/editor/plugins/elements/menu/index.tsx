@@ -6,7 +6,7 @@ import {
 import { Tab } from "@webiny/ui/Tabs";
 import { ReactComponent as MenuIcon } from "./menu-icon.svg";
 import Menu from "./Menu";
-import MenuDesignSettings from "./MenuDesignSettings";
+import MenuOptionsSettings from "./MenuOptionsSettings";
 import styled from "@emotion/styled";
 
 const PreviewBox = styled("div")({
@@ -19,7 +19,6 @@ const PreviewBox = styled("div")({
 });
 
 export default () => {
-
     return [
         {
             name: "pb-editor-page-element-menu",
@@ -64,7 +63,7 @@ export default () => {
             render(props) {
                 return (
                     <Tab icon={<MenuIcon />} label="Design">
-                        <MenuDesignSettings {...props} />
+                        <MenuOptionsSettings {...props} />
                     </Tab>
                 );
             }

@@ -15,11 +15,9 @@ const getOptions = ({ gqlData, settingsData }) => {
 
     const menuID = settingsData?.settings?.menu?.element;
     const menusList = gqlData?.pageBuilder?.menus?.data || [];
-    
     const options = menusList.map(({ id, title, slug, description, items, createdOn }) => (
         { id, name: title, slug, items, description, createdOn }
     ));
-    
     return {
         options,
         value: options.find(item => item.id === menuID) || null
@@ -27,8 +25,8 @@ const getOptions = ({ gqlData, settingsData }) => {
 };
 
 
-const MenuDesignSettings = ({ Bind, data: settingsData }) => {
-    console.log("MenuDesignSettings::::::settings data::::");
+const MenuOptionsSettings = ({ Bind, data: settingsData }) => {
+    console.log("MenuOptionsSettings::::::settings data::::");
     console.log(settingsData);
     return (
         <FormOptionsWrapper>
@@ -38,9 +36,6 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                         return <div>Loading...</div>;
                     }
                     const { options, value } = getOptions({ gqlData, settingsData });
-                    console.log("options value::::::::::");
-                    console.log(options);
-                    console.log(value);
                     return (
                         <Grid>
                             <Cell span={12}>
@@ -66,4 +61,4 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
     )
 }
 
-export default MenuDesignSettings;
+export default MenuOptionsSettings;
