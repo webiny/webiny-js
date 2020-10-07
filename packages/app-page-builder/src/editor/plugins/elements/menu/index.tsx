@@ -9,15 +9,16 @@ import Menu from "./Menu";
 import MenuDesignSettings from "./MenuDesignSettings";
 import styled from "@emotion/styled";
 
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    margin: "0 auto",
+    width: 100,
+    svg: {
+        width: 100
+    }
+});
+
 export default () => {
-    const PreviewBox = styled("div")({
-        textAlign: "center",
-        margin: "0 auto",
-        width: 100,
-        svg: {
-            width: 100
-        }
-    });
 
     return [
         {
@@ -37,7 +38,6 @@ export default () => {
             },
             settings: [
                 "pb-editor-page-element-settings-delete",
-                "",
                 "pb-editor-page-element-settings-height"
             ],
             target: ["row", "column", "list-item"],
