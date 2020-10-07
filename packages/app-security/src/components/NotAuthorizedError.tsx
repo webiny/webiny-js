@@ -35,8 +35,10 @@ const NotAuthorizedError = () => {
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized"} />
-            <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
-            
+            <div className={styles.divStyles}>
+                <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
+            </div>
+
             <div className={styles.divStyles}>
                 <Typography use={"body1"} className={styles.bodyStyle}>
                     You are not authorized to view this route.

@@ -3,7 +3,7 @@ import { hasScopes } from "@webiny/app-security";
 import { getPlugin } from "@webiny/plugins";
 import { ResourcesType } from "../identity";
 import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
-import NotAuthorizedError from '@webiny/app-security/components/NotAuthorizedError'
+import NotAuthorizedError from "@webiny/app-security/components/NotAuthorizedError";
 
 export default ({
     children,
