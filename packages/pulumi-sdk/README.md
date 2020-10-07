@@ -1,20 +1,72 @@
 # @webiny/pulumi-sdk
-[![](https://img.shields.io/npm/dw/webiny-commodo.svg)](https://www.npmjs.com/package/webiny-commodo) 
-[![](https://img.shields.io/npm/v/webiny-commodo.svg)](https://www.npmjs.com/package/webiny-commodo)
+[![](https://img.shields.io/npm/dw/@webiny/pulumi-sdk.svg)](https://www.npmjs.com/package/@webiny/pulumi-sdk) 
+[![](https://img.shields.io/npm/v/@webiny/pulumi-sdk.svg)](https://www.npmjs.com/package/@webiny/pulumi-sdk)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-A set of frequently used Commodo higher order functions.
-
-For more information, please visit 
-[the official docs](https://github.com/doitadrian/commodo). 
+A simple Pulumi Node.JS SDK - programmatically execute Pulumi CLI commands within your Node.js scripts.
   
-## Install
-```
-npm install --save @webiny/pulumi-sdk
+Note that the package is not published to the NPM yet, it's still kinda experimental / work in progress. And probably, once the Pulumi Automation API hits the scene, this package probably won't be needed anymore. 🤞
+
+### Example
+
+```ts
+const pulumi = new Pulumi({
+        execa: {
+            cwd: stacksDir,
+            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+        },
+        args: {
+            secretsProvider: "passphrase"
+        },
+        beforePulumiInstall: () => {
+            console.log(
+                `💡 It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
+            );
+            spinner.start(`Downloading Pulumi...`);
+        },
+        afterPulumiInstall: () => {
+            spinner.stopAndPersist({
+                symbol: green("✔"),
+                text: `Pulumi downloaded, continuing...`
+            });
+        }
+    });
+
+    let stackExists = true;
+    try {
+        const { process } = await pulumi.run({ command: ["stack", "select", env] });
+        await process;
+    } catch (e) {
+        stackExists = false;
+    }
+
+    if (!stackExists) {
+        const { process } = await pulumi.run({ command: ["stack", "init", env] });
+        await process;
+    }
+
+    // Then later you can do for example...
+
+    if (isPreview) {
+        const pulumi = new Pulumi();
+        const { toConsole } = await pulumi.run({
+            command: "preview",
+            execa: {
+                cwd: stacksDir,
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+            }
+        });
+        await toConsole();
+    } else {
+        const { toConsole } = await pulumi.run({
+            command: "up",
+            args: {
+                yes: true,
+                skipPreview: true
+            }
+        });
+        await toConsole();
+    }
 ```
 
-Or if you prefer yarn: 
-```
-yarn add @webiny/pulumi-sdk
-```
