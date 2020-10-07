@@ -44,10 +44,11 @@ class Pulumi {
         if (installed) {
             const subProcess = execa(
                 path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-                ["plugin", "install", "resource", "aws", "v2.13.1"],
+                ["plugin", "install", "resource", "aws", "v3.5.0"],
                 {
                     env: {
-                        PULUMI_HOME: PULUMI_FOLDER
+                        PULUMI_HOME: PULUMI_FOLDER,
+                        PULUMI_SKIP_UPDATE_CHECK: "true"
                     }
                 }
             );

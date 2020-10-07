@@ -5,7 +5,7 @@ const download = require("download");
 const path = require("path");
 const extract = require("extract-zip");
 
-const PULUMI_VERSION = "2.10.2";
+const PULUMI_VERSION = "2.11.2";
 
 export default async (downloadFolder, beforeInstall, afterInstall) => {
     if (fs.existsSync(downloadFolder)) {
