@@ -18,34 +18,23 @@ const Overlay = styled("div")({
     opacity: 0.25
 });
 
-export type MenuElementProps = {
-    isActive: boolean;
-    element: PbElement;
-};
-
-const Menu = (props: MenuElementProps) => {
-    //menu data passed through here
-    const { element, isActive } = props;
-    console.log("MENU PROPS ::::;;;;");
-    console.log(props);
+const Menu = ({ element, isActive }) => {
+    console.log("MENU ELEMENT isActive ::::;;;;");
+    console.log(element);
+    console.log(isActive);
  
-    const data = get(element, "data") || {};
+    const data = element?.data || {};
     console.log("data:::::::::::");
     console.log(data);
 
     const component = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     ).find(cmp => cmp.componentName === data.component);
-
-    let menuId;
    
-    if ('settings' in data) {
-        //SIMULAR TO:: const menu = get(element, "data.settings.menu") || {};
-        menuId = data.settings.menu.element;
-    } else {
-        return <div>Selected menu component not found!</div>;
+ 
+    if (!data?.settings) {
+        return <div>Selected menu component not found!</div>
     }
-    console.log(`menu ID: ${menuId}`);
     
     const { component: MenuComponent } = component;
 
@@ -53,14 +42,11 @@ const Menu = (props: MenuElementProps) => {
         return <div>You must select a component to render your menu!</div>;
     }
  
-    let render = <span>Menu not selected.</span>;
-
-    if (menuId){
-        const props = {
-            preview: true,
-            menu: menuId,
-        };
-        render = <MenuComponent {...props} />;
+    const render = (menuId?: string) => {
+        if (!menuId) {
+          return <span>Menu not selected.</span>;
+        }
+        return <MenuComponent menu={menuId} preview={true} />;
     }
 
     return (
@@ -71,7 +57,7 @@ const Menu = (props: MenuElementProps) => {
                 element={element}
                 className={"webiny-pb-element-menu"}
             >
-                {render}
+                {render(data?.settings?.menu?.element)}
             </ElementRoot>
         </>
     )
