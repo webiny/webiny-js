@@ -13,25 +13,17 @@ const FormOptionsWrapper = styled("div")({
 
 const getOptions = ({ gqlData, settingsData }) => {
 
-    const output = {
-        menuSelect: {
-            options: [],
-            value: null
-        }
-    };
-
-    const selected = {
-        menuId: get(settingsData, "settings.menu.element") || []
-    };
-    console.log("selected menuId :::::::");
-    console.log(selected.menuId);
-
-    const menusList = get(gqlData, "pageBuilder.menus.data") || [];
-
-    output.menuSelect.options = menusList.map(({ id, title, slug, description, items, createdOn }) => ({ id, name: title, slug, items, description, createdOn }));
-    output.menuSelect.value = output.menuSelect.options.find(item => item.id === selected.menuId) || null;
-
-    return output;
+    const menuID = settingsData?.settings?.menu?.element;
+    const menusList = gqlData?.pageBuilder?.menus?.data || [];
+    
+    const options = menusList.map(({ id, title, slug, description, items, createdOn }) => (
+        { id, name: title, slug, items, description, createdOn }
+    ));
+    
+    return {
+        options,
+        value: options.find(item => item.id === menuID) || null
+    }
 };
 
 
@@ -45,10 +37,10 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                     if (loading) {
                         return <div>Loading...</div>;
                     }
-                    console.log("gqlResponse   options value:::::::s:::::");
-                    console.log(gqlData);
-                    const options = getOptions({ gqlData, settingsData });
+                    const { options, value } = getOptions({ gqlData, settingsData });
+                    console.log("options value::::::::::");
                     console.log(options);
+                    console.log(value);
                     return (
                         <Grid>
                             <Cell span={12}>
@@ -58,8 +50,8 @@ const MenuDesignSettings = ({ Bind, data: settingsData }) => {
                                 >
                                     {({ onChange }) => (
                                         <AutoComplete
-                                            options={options.menuSelect.options}
-                                            value={options.menuSelect.value}
+                                            options={options}
+                                            value={value}
                                             onChange={onChange}
                                             label={"Menu"}
                                         />
