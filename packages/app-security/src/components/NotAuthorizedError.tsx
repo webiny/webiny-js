@@ -24,7 +24,7 @@ const styles = {
         textDecoration: "none",
         "&:hover": {
             textDecoration: "none"
-        },
+        }
     })
 };
 
@@ -32,20 +32,24 @@ const NotAuthorizedError = () => {
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized"} />
-            <img
-                className={styles.authErrorImgStyle}
-                src={authErrorImg}
-                alt="Not Authorized"
-            />
-            <Typography use={"body1"} className={styles.bodyStyle}>
-                You are not authorized to view this route.
-            </Typography>
-            <Typography use={"body1"} className={styles.bodyStyle}>
-                Please contact your administrator to request access.
-            </Typography>
-            <Link to="/" className={styles.linkStyle}>
-                Take me back.
-            </Link>
+            <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
+            <div>
+                <Typography use={"body1"} className={styles.bodyStyle}>
+                    You are not authorized to view this route.
+                </Typography>
+            </div>
+
+            <div>
+                <Typography use={"body1"} className={styles.bodyStyle}>
+                    Please contact your administrator to request access.
+                </Typography>
+            </div>
+
+            <div>
+                <Link to="/" className={styles.linkStyle}>
+                    Take me back.
+                </Link>
+            </div>
         </ContentWrapper>
     );
 };
