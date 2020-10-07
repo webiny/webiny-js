@@ -110,7 +110,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         },
         beforePulumiInstall: () => {
             console.log(
-                `🌟 ️It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
+                `💡 It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
             );
             spinner.start(`Downloading Pulumi...`);
         },
