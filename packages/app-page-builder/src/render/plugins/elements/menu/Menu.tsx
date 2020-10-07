@@ -63,7 +63,7 @@ const Menu = props => {
     return (
         <>
             <ssr-cache data-class="pb-menu" />
-            {render(menuID:)}
+            {render(menuID)}
         </>
     );
 }
