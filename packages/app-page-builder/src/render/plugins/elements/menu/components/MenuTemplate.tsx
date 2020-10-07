@@ -18,29 +18,23 @@ const t = i18n.ns("app-page-builder/admin/menus/form");
 const MenuTemplate = ({menu}) => {
     console.log("Menu Template:::::::::::")
     console.log(menu);
-      
     const variables = {
         id: menu
     }
 
-    //refetch not being used
     const { data, loading: menuLoading, refetch } = useQuery(READ_MENU, {variables});
-    console.log(data);
-    console.log(`menu loading: ${menuLoading}`);
 
     if (menuLoading) {
-        return null;
-    }
-    let menuData;
-    if (data) {
-        menuData = data.pageBuilder.menu.data;
-    } else {
+        return <span>Loading...</span>
+    } 
+
+    if (!data) {
         return <span>Couln't find Menu!</span>
     }
-    console.log(menuData);
-    let { id, name: title, slug, description, items, createdOn, loading } = menuData;
-    console.log("data collected");
-    console.log(menuData);
+
+    const menuData = data?.pageBuilder?.menu?.data;
+
+    let { id, title, slug, description, items, createdOn, loading } = menuData;
   
     return (
         <Form {...menuData} data={id ? { id, title, slug, description, items, createdOn } : { items: [] }}>
