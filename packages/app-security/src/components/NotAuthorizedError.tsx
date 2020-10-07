@@ -8,7 +8,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 const ContentWrapper = styled("div")({
     display: "block",
-    padding: 25,
+    paddingTop: "15%",
     textAlign: "center",
     margin: "auto"
 });
@@ -25,6 +25,9 @@ const styles = {
         "&:hover": {
             textDecoration: "none"
         }
+    }),
+    divStyles: css({
+        padding: "5px"
     })
 };
 
@@ -33,19 +36,20 @@ const NotAuthorizedError = () => {
         <ContentWrapper>
             <Helmet title={"Not authorized"} />
             <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
-            <div>
+            
+            <div className={styles.divStyles}>
                 <Typography use={"body1"} className={styles.bodyStyle}>
                     You are not authorized to view this route.
                 </Typography>
             </div>
 
-            <div>
+            <div className={styles.divStyles}>
                 <Typography use={"body1"} className={styles.bodyStyle}>
                     Please contact your administrator to request access.
                 </Typography>
             </div>
 
-            <div>
+            <div className={styles.divStyles}>
                 <Link to="/" className={styles.linkStyle}>
                     Take me back.
                 </Link>
