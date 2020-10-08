@@ -116,7 +116,7 @@
   },
   "scripts": {
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
-    "eslint:fix": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix",
+    "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
     "build:components": "lerna run build --scope=@webiny/serverless-* --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
@@ -138,9 +138,9 @@
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
-    "prettier": "prettier --config .prettierrc.js --write",
-    "prettier:check": "prettier \"**/**/*.{js,jsx,ts,tsx}\" --check --config .prettierrc.js",
-    "prettier:fix": "prettier \"**/**/*.{js,jsx,ts,tsx}\" --config .prettierrc.js --write",
+    "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx}\" --config .prettierrc.js",
+    "prettier:check": "yarn prettier --check",
+    "prettier:fix": "yarn prettier --write",
     "setup-repo": "node scripts/setupRepo",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
@@ -158,10 +158,9 @@
   "lint-staged": {
     "**/*.js": [
       "adio",
-      "prettier --config .prettierrc.js --write",
+      "yarn prettier:fix",
       "eslint",
-      "git add",
-      "jest --config jest.config.js --findRelatedTests"
+      "git add"
     ]
   },
   "yargs": {

@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { withFields, string, object, setOnce, boolean, fields } from "@webiny/commodo";
+import { withFields, string, object, setOnce, onSet, boolean, fields, pipe } from "@webiny/commodo";
 import { i18nField } from "@webiny/api-headless-cms/content/plugins/modelFields/i18nFields";
 import { any } from "@webiny/api-headless-cms/content/plugins/models/anyField";
 import idValidation from "./idValidation";
@@ -14,7 +14,10 @@ export default context => {
 
     return withFields({
         _id: setOnce()(string({ validation: requiredShortString })),
-        fieldId: setOnce()(string({ validation: idValidation })),
+        fieldId: pipe(
+            onSet(value => value && value.trim()),
+            setOnce()
+        )(string({ validation: idValidation })),
         label: i18nField({
             field: string({ validation: requiredShortString }),
             context

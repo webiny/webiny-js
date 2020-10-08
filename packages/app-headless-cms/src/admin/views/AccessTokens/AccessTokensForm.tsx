@@ -24,8 +24,6 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 const t = i18n.ns("app-headless-cms/admin/accessTokens/form");
 
-const filterReadScope = ({ scope }) => scope && scope.startsWith("cms:");
-
 function EnvironmentAliasesForm() {
     const { showSnackbar } = useSnackbar();
     const { form: crudForm } = useCrud();

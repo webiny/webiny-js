@@ -1,10 +1,13 @@
 const path = require("path");
 const fs = require("fs-extra");
 
-module.exports.buildAppSSR = async (
-    { app = null, indexHtmlPath = null, createAppPath = null, output, ...options },
-    context
-) => {
+module.exports.buildAppSSR = async ({
+    app = null,
+    indexHtmlPath = null,
+    createAppPath = null,
+    output,
+    ...options
+}) => {
     if (!app) {
         throw new Error(`Specify an "app" path to use for SSR bundle.`);
     }

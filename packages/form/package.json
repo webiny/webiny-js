@@ -1,6 +1,6 @@
 {
   "name": "@webiny/form",
-  "version": "4.11.0-beta.1",
+  "version": "4.12.1",
   "main": "index.js",
   "repository": {
     "type": "git",

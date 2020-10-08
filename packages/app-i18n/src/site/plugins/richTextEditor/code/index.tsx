@@ -1,5 +1,4 @@
 import * as React from "react";
-import { css } from "emotion";
 import { I18NInputRichTextEditorPlugin } from "@webiny/app-i18n/types";
 
 const plugin: I18NInputRichTextEditorPlugin = {

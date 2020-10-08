@@ -1,5 +1,4 @@
 import React from "react";
-import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";

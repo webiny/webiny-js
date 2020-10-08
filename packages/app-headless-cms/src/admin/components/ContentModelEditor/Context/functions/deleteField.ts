@@ -1,8 +1,4 @@
-import {
-    CmsEditorField,
-    CmsEditorFieldId,
-    CmsEditorContentModel
-} from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
 export default ({ field, data }: { field: CmsEditorField; data: CmsEditorContentModel }) => {
     // Remove the field from fields list...
