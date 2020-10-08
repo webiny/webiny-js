@@ -13,8 +13,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "webiny run build",
-    "postbuild": "webiny run build-ssr",
-    "start": "webiny run start --env=local"
+    "start": "webiny run start --env local"
   },
   "browserslist": {
     "development": [
