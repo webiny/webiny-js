@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { DragLayerMonitor, useDragLayer } from "react-dnd";
+import { atom, useRecoilState } from "recoil";
 
 const layerStyles: React.CSSProperties = {
     position: "fixed",
@@ -30,8 +31,14 @@ const onOffsetChange = monitor => () => {
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
+const dragHelperOpacityAtom = atom<number>({
+    key: 'dragHelperOpacityAtom',
+    default: 0,
+});
+
 export default function DragPreview() {
-    const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
+    const [dragHelperOpacity, setDragHelperOpacity] = useRecoilState(dragHelperOpacityAtom);
+
     const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
             // @ts-ignore

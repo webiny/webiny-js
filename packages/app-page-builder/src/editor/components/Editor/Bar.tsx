@@ -1,37 +1,30 @@
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { getPlugins } from "@webiny/plugins";
-import { getUi } from "@webiny/app-page-builder/editor/selectors";
+import {
+    editorPluginsAtom,
+    editorUiActiveElementSelector
+} from "./recoil";
+import {getPlugins} from "@webiny/plugins";
+import {useRecoilValue} from "recoil";
 import DefaultEditorBar from "./DefaultEditorBar";
-import { PbEditorBarPlugin } from "@webiny/app-page-builder/types";
+import {PbEditorBarPlugin} from "@webiny/app-page-builder/types";
 
-export type EditorBarProps = {
-    plugins: { [group: string]: { [name: string]: any } };
-    activeElement: any;
-};
-
-const Bar: React.FC<EditorBarProps> = props => {
+const Bar: React.FC = () => {
+    const editorUiActiveElement = useRecoilValue(editorUiActiveElementSelector);
+    const editorPlugins = useRecoilValue(editorPluginsAtom);
     const plugins = getPlugins<PbEditorBarPlugin>("pb-editor-bar");
     let pluginBar = null;
-
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
-        if (plugin.shouldRender(props)) {
+        if (plugin.shouldRender({plugins: editorPlugins, activeElement: editorUiActiveElement})) {
             pluginBar = plugin.render();
             break;
         }
     }
-
     return (
-        <React.Fragment>
-            <DefaultEditorBar />
+        <>
+            <DefaultEditorBar/>
             {pluginBar}
-        </React.Fragment>
+        </>
     );
 };
-
-const stateToProps = state => {
-    return { ...getUi(state) };
-};
-
-export default connect<any, any, any>(stateToProps)(React.memo(Bar));
+export default React.memo(Bar);

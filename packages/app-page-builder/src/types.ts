@@ -1,3 +1,4 @@
+import { EditorPluginsAtomType } from "@webiny/app-page-builder/editor/components/Editor/Editor.recoil";
 import { ComponentType, ReactElement, ReactNode } from "react";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
@@ -10,7 +11,6 @@ import {
 } from "./admin/contexts/PageDetails/PageDetailsContext";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
-import { EditorBarProps } from "@webiny/app-page-builder/editor/components/Editor/Bar";
 import { Form } from "@webiny/form/Form";
 export { Redux } from "@webiny/app-page-builder/editor/redux";
 import { Item } from "@webiny/app-admin/plugins/Menu/Navigation/components";
@@ -356,9 +356,15 @@ export type PbEditorSlateMenuItemPlugin = Plugin & {
     }) => ReactElement;
 };
 
+
+export type PbEditorBarPluginShouldRenderProps = {
+    plugins: EditorPluginsAtomType;
+    activeElement: any;
+};
+
 export type PbEditorBarPlugin = Plugin & {
     type: "pb-editor-bar";
-    shouldRender(props: EditorBarProps): boolean;
+    shouldRender(props: PbEditorBarPluginShouldRenderProps): boolean;
     render(): ReactElement;
 };
 
