@@ -15,19 +15,18 @@ const ContentWrapper = styled("div")({
 
 const styles = {
     authErrorImgStyle: css({
-        width: "192px"
+        width: "192px", 
+        paddingBottom: "24px"
     }),
     bodyStyle: css({
-        color: "var(--mdc-theme-text-primary-on-background)"
+        color: "var(--mdc-theme-text-primary-on-background)",
+        display: "block"
     }),
     linkStyle: css({
         textDecoration: "none",
         "&:hover": {
             textDecoration: "none"
         }
-    }),
-    divStyles: css({
-        padding: "5px"
     })
 };
 
@@ -35,27 +34,20 @@ const NotAuthorizedError = () => {
     return (
         <ContentWrapper>
             <Helmet title={"Not authorized"} />
-            <div className={styles.divStyles}>
-                <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
-            </div>
 
-            <div className={styles.divStyles}>
-                <Typography use={"body1"} className={styles.bodyStyle}>
-                    You are not authorized to view this route.
-                </Typography>
-            </div>
+            <img className={styles.authErrorImgStyle} src={authErrorImg} alt="Not Authorized" />
 
-            <div className={styles.divStyles}>
-                <Typography use={"body1"} className={styles.bodyStyle}>
-                    Please contact your administrator to request access.
-                </Typography>
-            </div>
+            <Typography use={"body1"} className={styles.bodyStyle}>
+                You are not authorized to view this route.
+            </Typography>
 
-            <div className={styles.divStyles}>
-                <Link to="/" className={styles.linkStyle}>
-                    Take me back.
-                </Link>
-            </div>
+            <Typography use={"body1"} className={styles.bodyStyle}>
+                Please contact your administrator to request access.
+            </Typography>
+
+            <Link to="/" className={styles.linkStyle}>
+                Take me back.
+            </Link>
         </ContentWrapper>
     );
 };
