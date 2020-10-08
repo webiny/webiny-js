@@ -46,7 +46,7 @@ const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boo
 // TODO verify that this works
 const isPluginActiveSelector = isPluginActiveSelectorFactory("pb-editor-toolbar-preview");
 
-export default () => {
+const Content = () => {
     const rootElement = useRecoilValue(editorPageElementsRootElementSelector);
     const renderLayout = useRecoilValue(isPluginActiveSelector);
     const layout = useRecoilValue(editorPageLayoutSelector);
@@ -71,3 +71,5 @@ export default () => {
         </Elevation>
     );
 };
+
+export default Content;

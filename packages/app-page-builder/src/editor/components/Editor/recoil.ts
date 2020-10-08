@@ -26,9 +26,9 @@ export const editorUiAtom = atom<EditorUiAtomType>({
     }
 });
 
-export const editorUiActiveElementSelector = selector({
+export const editorUiActiveElementSelector = selector<PbElement | undefined>({
     key: "editorUiActiveElementSelector",
-    get: ({ get }): PbElement | undefined => {
+    get: ({ get }) => {
         const { activeElement } = get(editorUiAtom);
         return activeElement;
     }
@@ -43,9 +43,9 @@ export const editorPluginsAtom = atom<EditorPluginsAtomType>({
     default: {}
 });
 export const isPluginActiveSelectorFactory = (name: string): RecoilValue<boolean> => {
-    return selector({
+    return selector<boolean>({
         key: `isPluginActiveSelector-${name}`,
-        get: ({ get }): boolean => {
+        get: ({ get }) => {
             const type = getPluginType(name);
             if (!type) {
                 return false;
@@ -60,9 +60,9 @@ export const isPluginActiveSelectorFactory = (name: string): RecoilValue<boolean
     });
 };
 export const pluginsActiveNamesByTypeSelectorFactory = (type: string): RecoilValue<string[]> => {
-    return selector({
+    return selector<string[]>({
         key: `pluginsActiveNamesByTypeSelector-${type}`,
-        get: ({ get }): string[] => {
+        get: ({ get }) => {
             const activePlugins = get(editorPluginsAtom);
             const pluginsByType = activePlugins[type];
             if (!pluginsByType) {
@@ -72,7 +72,7 @@ export const pluginsActiveNamesByTypeSelectorFactory = (type: string): RecoilVal
         }
     });
 };
-export const deactivatePluginRecoil = (name: string): void => {
+export const deactivatePluginRecoilAction = (name: string): void => {
     const [editorPlugins, setEditorPlugins] = useRecoilState(editorPluginsAtom);
     const { type } = getPlugin(name) || {};
     if (!type) {
@@ -111,9 +111,9 @@ const editorPageAtom = atom<EditorPageAtomType>({
     key: "editorPageAtom",
     default: {}
 });
-const editorPageSelector = selector({
+const editorPageSelector = selector<PbElement>({
     key: "editorPageSelector",
-    get: ({ get }): PbElement => {
+    get: ({ get }) => {
         const page = get(editorPageAtom);
         if (page.content?.present) {
             return page.content.present;
@@ -137,9 +137,9 @@ export const editorPageElementsAtom = atom<EditorPageElementsAtom>({
     key: "editorPageElementsAtom",
     default: {}
 });
-export const editorPageElementsRootElementSelector = selector({
+export const editorPageElementsRootElementSelector = selector<PbElement | undefined>({
     key: "editorPageElementsRootElementSelector",
-    get: ({ get }): PbElement => {
+    get: ({ get }) => {
         const elements = get(editorPageElementsAtom);
         const page = get(editorPageSelector);
         // TODO check what actually to do at this point
@@ -153,9 +153,9 @@ export const editorPageElementsRootElementSelector = selector({
     }
 });
 
-export const editorPageLayoutSelector = selector({
+export const editorPageLayoutSelector = selector<string | undefined>({
     key: "editorPageLayoutSelector",
-    get: ({ get }): string | undefined => {
+    get: ({ get }) => {
         const page = get(editorPageAtom);
         return page.settings?.general?.layout;
     }

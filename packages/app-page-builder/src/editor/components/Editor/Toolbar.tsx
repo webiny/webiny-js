@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { deactivatePluginRecoil, pluginsActiveNamesByTypeSelectorFactory } from "./recoil";
+import { deactivatePluginRecoilAction, pluginsActiveNamesByTypeSelectorFactory } from "./recoil";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -69,7 +69,7 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children })
         if (active && !last.current.active) {
             addKeyHandler("escape", e => {
                 e.preventDefault();
-                deactivatePluginRecoil(name);
+                deactivatePluginRecoilAction(name);
             });
         }
         if (!active && last.current.active) {
