@@ -131,8 +131,22 @@ module.exports = async ({ options, ...inputs }, context) => {
     }
 
     if (!stackExists) {
-        const { process } = await pulumi.run({ command: ["stack", "init", env] });
-        await process;
+        const { process: pulumiProcess } = await pulumi.run({ command: ["stack", "init", env] });
+        await pulumiProcess;
+
+        // We need to add an arbitrary "aws:region" config value, just because Pulumi something to be there.
+        // @sse https://github.com/pulumi/pulumi-aws/issues/1153
+        const pulumiConfig = new Pulumi({
+            execa: {
+                cwd: stacksDir,
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+            },
+        });
+
+        const { process: configProcess } = await pulumiConfig.run({
+            command: ["config", "set", "aws:region", process.env.AWS_REGION]
+        });
+        await configProcess;
     }
 
     const isFirstDeploy = !stackExists;
