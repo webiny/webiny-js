@@ -41,6 +41,24 @@ const updateEnvValues = (envDir, envMap) => async ({ env, state }) => {
 };
 
 const setEnvironmentFromState = async ({ env, stack, map }, context) => {
+    if (!stack) {
+        console.log(
+            red(
+                `❗ Trying to pull deployment state information from stack, but stack name is missing.`
+            )
+        );
+        process.exit(1);
+    }
+
+    if (!env) {
+        console.log(
+            red(
+                `❗ Trying to pull deployment state information from stack "${stack}", but the environment ("env") argument was not passed. Did you maybe try to run the app build command without providing the --env={SOME_ENVIRONMENT}?`
+            )
+        );
+        process.exit(1);
+    }
+
     const projectRoot = context.paths.projectRoot;
     const pulumi = new Pulumi({
         execa: {
@@ -50,6 +68,24 @@ const setEnvironmentFromState = async ({ env, stack, map }, context) => {
     });
 
     {
+        // Check first if the stack exist, if not, throw an appropriate error.
+        let stackExists = true;
+        try {
+            const { process } = await pulumi.run({ command: ["stack", "select", env] });
+            await process;
+        } catch (e) {
+            stackExists = false;
+        }
+
+        if (!stackExists) {
+            console.log(
+                red(
+                    `❗ Trying to pull deployment state information from the "${stack}" stack (environment "${env}"), but it seems state files are missing. Did you deploy it yet?`
+                )
+            );
+            process.exit(1);
+        }
+
         const { process: runProcess } = await pulumi.run({
             command: ["stack", "output"],
             args: {
