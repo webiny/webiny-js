@@ -32,8 +32,8 @@ const onOffsetChange = monitor => () => {
 };
 
 const dragHelperOpacityAtom = atom<number>({
-    key: 'dragHelperOpacityAtom',
-    default: 0,
+    key: "dragHelperOpacityAtom",
+    default: 0
 });
 
 export default function DragPreview() {

@@ -1,12 +1,9 @@
 import React from "react";
-import {
-    editorPluginsAtom,
-    editorUiActiveElementSelector
-} from "./recoil";
-import {getPlugins} from "@webiny/plugins";
-import {useRecoilValue} from "recoil";
+import { editorPluginsAtom, editorUiActiveElementSelector } from "./recoil";
+import { getPlugins } from "@webiny/plugins";
+import { useRecoilValue } from "recoil";
 import DefaultEditorBar from "./DefaultEditorBar";
-import {PbEditorBarPlugin} from "@webiny/app-page-builder/types";
+import { PbEditorBarPlugin } from "@webiny/app-page-builder/types";
 
 const Bar: React.FC = () => {
     const editorUiActiveElement = useRecoilValue(editorUiActiveElementSelector);
@@ -15,14 +12,14 @@ const Bar: React.FC = () => {
     let pluginBar = null;
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
-        if (plugin.shouldRender({plugins: editorPlugins, activeElement: editorUiActiveElement})) {
+        if (plugin.shouldRender({ plugins: editorPlugins, activeElement: editorUiActiveElement })) {
             pluginBar = plugin.render();
             break;
         }
     }
     return (
         <>
-            <DefaultEditorBar/>
+            <DefaultEditorBar />
             {pluginBar}
         </>
     );

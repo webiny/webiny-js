@@ -1,10 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import {
-    deactivatePluginRecoil,
-    pluginsActiveNamesByTypeSelectorFactory
-} from "./recoil";
+import { deactivatePluginRecoil, pluginsActiveNamesByTypeSelectorFactory } from "./recoil";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -32,7 +29,7 @@ const ToolbarContainer = styled("div")({
     boxShadow: "1px 0px 5px 0px var(--mdc-theme-on-background)",
     zIndex: 3
 });
-const DrawerContainer = styled("div")(({open}: any) => ({
+const DrawerContainer = styled("div")(({ open }: any) => ({
     pointerEvents: open ? "all" : "none",
     ".mdc-drawer__drawer": {
         "> .mdc-list": {
@@ -65,9 +62,9 @@ type ToolbarDrawerProps = {
     active: boolean;
     children: React.ReactNode;
 };
-const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({name, active, children}) => {
-    const {removeKeyHandler, addKeyHandler} = useKeyHandler();
-    const last = useRef({active: null});
+const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children }) => {
+    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+    const last = useRef({ active: null });
     useEffect(() => {
         if (active && !last.current.active) {
             addKeyHandler("escape", e => {
@@ -80,18 +77,18 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({name, active, children}) =
         }
     });
     useEffect(() => {
-        last.current = {active};
+        last.current = { active };
     });
     return (
-        <DrawerContainer open={ active }>
-            <Drawer dismissible open={ active } className={ drawerStyle }>
-                <DrawerContent>{ children }</DrawerContent>
+        <DrawerContainer open={active}>
+            <Drawer dismissible open={active} className={drawerStyle}>
+                <DrawerContent>{children}</DrawerContent>
             </Drawer>
         </DrawerContainer>
     );
 };
 const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPlugin) => {
-    return React.cloneElement(plugin.renderAction(), {key: plugin.name});
+    return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
 const activeTopPluginsSelector = pluginsActiveNamesByTypeSelectorFactory("pb-editor-toolbar-top");
@@ -103,22 +100,22 @@ const Toolbar = () => {
     return (
         <>
             <ToolbarDrawerContainer>
-                { actionsTop
+                {actionsTop
                     .filter(plugin => typeof plugin.renderDrawer === "function")
                     .map(plugin => (
                         <ToolbarDrawer
-                            key={ plugin.name }
-                            name={ plugin.name }
-                            active={ Boolean(activePluginsTop.includes(plugin.name)) }
+                            key={plugin.name}
+                            name={plugin.name}
+                            active={Boolean(activePluginsTop.includes(plugin.name))}
                         >
-                            { plugin.renderDrawer() }
+                            {plugin.renderDrawer()}
                         </ToolbarDrawer>
-                    )) }
+                    ))}
             </ToolbarDrawerContainer>
             <ToolbarContainer>
                 <ToolbarActions>
-                    <div>{ actionsTop.map(renderPlugin) }</div>
-                    <div>{ actionsBottom.map(renderPlugin) }</div>
+                    <div>{actionsTop.map(renderPlugin)}</div>
+                    <div>{actionsBottom.map(renderPlugin)}</div>
                 </ToolbarActions>
             </ToolbarContainer>
         </>

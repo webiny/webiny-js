@@ -1,4 +1,4 @@
-import { EditorPluginsAtomType } from "@webiny/app-page-builder/editor/components/Editor/Editor.recoil";
+import { EditorPluginsAtomType } from "@webiny/app-page-builder/editor/components/Editor/recoil";
 import { ComponentType, ReactElement, ReactNode } from "react";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
@@ -355,7 +355,6 @@ export type PbEditorSlateMenuItemPlugin = Plugin & {
         activatePlugin(name: string): void;
     }) => ReactElement;
 };
-
 
 export type PbEditorBarPluginShouldRenderProps = {
     plugins: EditorPluginsAtomType;

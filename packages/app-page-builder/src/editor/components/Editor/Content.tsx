@@ -14,7 +14,7 @@ import { PbElement, PbPageLayout, PbPageLayoutPlugin } from "@webiny/app-page-bu
 import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 
-const ContentContainer = styled("div")(({theme}) => ({
+const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
     ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
@@ -37,7 +37,7 @@ const BaseContainer = styled("div")({
     margin: "0 auto"
 });
 const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boolean) => {
-    const content = (<Element id={ rootElement.id }/>);
+    const content = <Element id={rootElement.id} />;
     if (!render) {
         return content;
     }
@@ -50,7 +50,7 @@ export default () => {
     const rootElement = useRecoilValue(editorPageElementsRootElementSelector);
     const renderLayout = useRecoilValue(isPluginActiveSelector);
     const layout = useRecoilValue(editorPageLayoutSelector);
-    const {theme} = usePageBuilder();
+    const { theme } = usePageBuilder();
     const plugins = getPlugins<PbEditorContentPlugin>("pb-editor-content");
     const layouts = React.useMemo(() => {
         const plugins = getPlugins<PbPageLayoutPlugin>("pb-page-layout");
@@ -58,14 +58,14 @@ export default () => {
     }, []);
     const themeLayout = layouts.find(l => l.name === layout);
     if (renderLayout && !themeLayout) {
-        return <div>Layout &quot;{ layout }&quot; was not found in your theme!</div>;
+        return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
     }
     return (
-        <Elevation className={ contentContainerWrapper } z={ 2 }>
-            <ContentContainer theme={ theme }>
-                { plugins.map(plugin => React.cloneElement(plugin.render(), {key: plugin.name})) }
-                <BaseContainer className={ "webiny-pb-editor-content-preview" }>
-                    { renderContent(themeLayout, rootElement, renderLayout) }
+        <Elevation className={contentContainerWrapper} z={2}>
+            <ContentContainer theme={theme}>
+                {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
+                <BaseContainer className={"webiny-pb-editor-content-preview"}>
+                    {renderContent(themeLayout, rootElement, renderLayout)}
                 </BaseContainer>
             </ContentContainer>
         </Elevation>

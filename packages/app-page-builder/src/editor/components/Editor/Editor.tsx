@@ -1,11 +1,11 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { editorUiAtom } from "./recoil";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
-import {useRecoilValue} from "recoil";
-import {useRedo, useUndo} from "recoil-undo";
-import {DndProvider} from "react-dnd";
-import {useKeyHandler} from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useRecoilValue } from "recoil";
+import { useRedo, useUndo } from "recoil-undo";
+import { DndProvider } from "react-dnd";
+import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import "./Editor.scss";
 // Components
 import EditorBar from "./Bar";
@@ -14,10 +14,9 @@ import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";
 
-
 export const Editor = () => {
-    const {addKeyHandler, removeKeyHandler} = useKeyHandler();
-    const {isDragging, isResizing, slateFocused} = useRecoilValue(editorUiAtom);
+    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+    const { isDragging, isResizing, slateFocused } = useRecoilValue(editorUiAtom);
     const undo = useUndo();
     const redo = useRedo();
 
@@ -47,11 +46,11 @@ export const Editor = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             <div className={classSet(classes)}>
-                <EditorBar/>
-                <EditorToolbar/>
-                <EditorContent/>
-                <Dialogs/>
-                <DragPreview/>
+                <EditorBar />
+                <EditorToolbar />
+                <EditorContent />
+                <Dialogs />
+                <DragPreview />
             </div>
         </DndProvider>
     );
