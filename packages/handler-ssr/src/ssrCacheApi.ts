@@ -1,5 +1,4 @@
 import qs from "querystringify";
-import { createResponse } from "@webiny/handler";
 import mime from "mime-types";
 import { parseBody } from "./functions";
 import { HandlerPlugin } from "@webiny/handler/types";
@@ -32,9 +31,8 @@ const canHandle = event => {
 export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-ssr-cache-api",
-    async handle({ args, context }, next) {
-        const [event] = args;
-
+    async handle(context, next) {
+        const { http, invocationArgs: event } = context;
         if (!canHandle(event)) {
             return next();
         }
@@ -79,8 +77,10 @@ export default (): HandlerPlugin => ({
                     });
                 }
 
-                return createResponse({
-                    type: "text/json",
+                return http.response({
+                    headers: {
+                        "Content-Type": "text/json",
+                    },
                     body: JSON.stringify({
                         error: false,
                         data: null
@@ -110,8 +110,10 @@ export default (): HandlerPlugin => ({
                 };
 
                 if (data.ssrCache.isRefreshing) {
-                    return createResponse({
-                        type: "text/json",
+                    return http.response({
+                        headers: {
+                            "Content-Type": "text/json",
+                        },
                         body: JSON.stringify({
                             error: false,
                             data
@@ -130,8 +132,10 @@ export default (): HandlerPlugin => ({
                     }
 
                     if (!versionsDifferent && !ssrCache.hasExpired) {
-                        return createResponse({
-                            type: "text/json",
+                        return http.response({
+                            headers: {
+                                "Content-Type": "text/json",
+                            },
                             body: JSON.stringify({
                                 error: false,
                                 data
@@ -154,8 +158,10 @@ export default (): HandlerPlugin => ({
                     isRefreshing: ssrCache.isRefreshing
                 };
 
-                return createResponse({
-                    type: "text/json",
+                return http.response({
+                    headers: {
+                        "Content-Type": "text/json",
+                    },
                     body: JSON.stringify({
                         error: false,
                         data
@@ -163,8 +169,10 @@ export default (): HandlerPlugin => ({
                 });
             }
 
-            return createResponse({
-                type: "text/json",
+            return http.response({
+                headers: {
+                    "Content-Type": "text/json",
+                },
                 body: JSON.stringify({
                     error: true,
                     data: {
@@ -173,8 +181,10 @@ export default (): HandlerPlugin => ({
                 })
             });
         } catch (e) {
-            return createResponse({
-                type: "text/json",
+            return http.response({
+                headers: {
+                    "Content-Type": "text/json",
+                },
                 body: JSON.stringify({
                     error: true,
                     data: {

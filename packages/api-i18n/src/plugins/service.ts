@@ -1,7 +1,7 @@
 import i18n from "./i18n";
 import { ContextI18NGetLocales } from "@webiny/api-i18n/types";
-import LambdaClient from "aws-sdk/clients/lambda";
 import { Context } from "@webiny/graphql/types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 let localesCache;
 
@@ -17,25 +17,15 @@ export default (options: ServicePluginsOptions) => {
         {
             name: "context-i18n-get-locales",
             type: "context-i18n-get-locales",
-            async resolve() {
+            async resolve({ context }: { context: Context & HandlerClientContext }) {
                 if (Array.isArray(localesCache)) {
                     return localesCache;
                 }
 
-                const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-                const { Payload } = await Lambda.invoke({
-                    FunctionName: options.localesFunction
-                }).promise();
+                localesCache = await context.handlerClient.invoke({
+                    name: options.localesFunction
+                });
 
-                let parsedPayload;
-
-                try {
-                    parsedPayload = JSON.parse(Payload as string);
-                } catch (e) {
-                    throw new Error("Could not JSON.parse DB Proxy's response.");
-                }
-
-                localesCache = parsedPayload;
                 return localesCache;
             }
         } as ContextI18NGetLocales<Context>

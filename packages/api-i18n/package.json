@@ -20,6 +20,8 @@
     "@webiny/commodo": "^4.12.1",
     "@webiny/commodo-graphql": "^4.12.1",
     "@webiny/graphql": "^4.12.1",
+    "@webiny/handler": "^4.12.1",
+    "@webiny/handler-client": "^4.12.1",
     "@webiny/validation": "^4.12.1",
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",

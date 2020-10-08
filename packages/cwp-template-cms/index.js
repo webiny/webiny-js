@@ -36,9 +36,9 @@ module.exports = async ({ appName, root }) => {
             .toString("base64")
             .slice(0, 60);
 
-    apiEnv.local["JWT_SECRET"] = jwtSecret();
-    apiEnv.dev["JWT_SECRET"] = jwtSecret();
-    apiEnv.prod["JWT_SECRET"] = jwtSecret();
+    apiEnv.local["JWT_TOKEN_SECRET"] = jwtSecret();
+    apiEnv.dev["JWT_TOKEN_SECRET"] = jwtSecret();
+    apiEnv.prod["JWT_TOKEN_SECRET"] = jwtSecret();
     apiEnv.local["S3_BUCKET"] = s3BucketName(projectId, appName, "local");
     apiEnv.dev["S3_BUCKET"] = s3BucketName(projectId, appName, "dev");
     apiEnv.prod["S3_BUCKET"] = s3BucketName(projectId, appName, "prod");

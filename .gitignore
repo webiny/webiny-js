@@ -1,6 +1,7 @@
 .idea
 .webpack
 .webiny
+.pulumi
 .serverless
 .env*
 .npmrc
@@ -26,3 +27,7 @@ build/
 .cloudfns/
 yarn.lock
 cypress.json
+pbInstalation.zip
+Pulumi.*
+!Pulumi.yaml
+globalConfig.json

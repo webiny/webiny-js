@@ -2,7 +2,6 @@
 import get from "lodash.get";
 import pick from "lodash.pick";
 import { CREATE_FILES, UPLOAD_FILES } from "./graphql";
-import { GraphQLClient } from "graphql-request";
 import fs from "fs-extra";
 import path from "path";
 import uploadToS3 from "./uploadToS3";
@@ -60,11 +59,6 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
         // 2. Save files.
         // 2.1 Get pre-signed POST payloads.
-        const client = new GraphQLClient(context.event.headers["x-webiny-apollo-gateway-url"], {
-            headers: {
-                Authorization: context.token
-            }
-        });
 
         // Contains all parallel file saving chunks.
         const chunksProcesses = [];
@@ -84,11 +78,26 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         const filesChunk = filesChunks[i];
 
                         // 1. Get pre-signed POST payloads for current files chunk.
-                        const response = await client.request(UPLOAD_FILES, {
-                            data: filesChunk.map(item => pick(item, ["name", "size", "type"]))
+                        let response = await context.handlerClient.invoke({
+                            name: process.env.FILE_MANAGER_FUNCTION,
+                            payload: {
+                                httpMethod: 'POST',
+                                headers: {
+                                    Authorization: context.token
+                                },
+                                body: JSON.stringify({
+                                    query: UPLOAD_FILES,
+                                    variables: {
+                                        data: filesChunk.map(item =>
+                                            pick(item, ["name", "size", "type"])
+                                        )
+                                    }
+                                })
+                            }
                         });
 
-                        const preSignedPostPayloads = get(response, "files.uploadFiles.data") || [];
+                        response = JSON.parse(response.body);
+                        const preSignedPostPayloads = get(response, "data.files.uploadFiles.data") || [];
                         await console.log(
                             `saveElements: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                         );
@@ -112,14 +121,27 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
 
                         // 3. Now that all of the files were successfully uploaded, we create files entries in the database.
                         await console.log("saveElements: saving File entries into the database...");
-                        await client.request(CREATE_FILES, {
-                            data: filesChunk.map((item, i) => {
-                                return {
-                                    meta: item.meta,
-                                    ...preSignedPostPayloads[i].file,
-                                    id: item.id
-                                };
-                            })
+
+                        await context.handlerClient.invoke({
+                            name: process.env.FILE_MANAGER_FUNCTION,
+                            payload: {
+                                httpMethod: 'POST',
+                                headers: {
+                                    Authorization: context.token
+                                },
+                                body: JSON.stringify({
+                                    query: CREATE_FILES,
+                                    variables: {
+                                        data: filesChunk.map((item, i) => {
+                                            return {
+                                                meta: item.meta,
+                                                ...preSignedPostPayloads[i].file,
+                                                id: item.id
+                                            };
+                                        })
+                                    }
+                                })
+                            }
                         });
 
                         promise();

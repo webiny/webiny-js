@@ -3,6 +3,8 @@
   "references": [
     { "path": "../api-security" },
     { "path": "../graphql" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../handler-client" },
+    { "path": "../handler-http" }
   ]
 }

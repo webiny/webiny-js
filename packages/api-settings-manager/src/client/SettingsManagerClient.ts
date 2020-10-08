@@ -1,5 +1,6 @@
-import LambdaClient from "aws-sdk/clients/lambda";
 import { Action } from "../types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
+import { HandlerContext } from "@webiny/handler/types";
 
 interface SettingsManagerOperation {
     action: Action;
@@ -28,31 +29,19 @@ class SettingsManagerClientCache {
 
 export class SettingsManagerClient {
     settingsManagerFunction: string;
-    lambda: LambdaClient;
     cache: SettingsManagerClientCache;
-    constructor({ functionName }) {
+    context: HandlerContext & HandlerClientContext;
+    constructor({ context, functionName }) {
         this.settingsManagerFunction = functionName;
         this.cache = new SettingsManagerClientCache();
+        this.context = context;
     }
 
     private async invoke(operation: SettingsManagerOperation) {
-        const cached = this.cache.get(operation.key);
-        if (cached) {
-            return cached;
-        }
-
-        if (!this.lambda) {
-            this.lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        }
-
-        const { Payload } = await this.lambda
-            .invoke({
-                FunctionName: this.settingsManagerFunction,
-                Payload: JSON.stringify(operation)
-            })
-            .promise();
-
-        const { error, data } = JSON.parse(Payload as string);
+        const { error, data } = await this.context.handlerClient.invoke({
+            name: this.settingsManagerFunction,
+            payload: operation
+        })
 
         if (error) {
             throw Error(error);
@@ -64,6 +53,15 @@ export class SettingsManagerClient {
     }
 
     async getSettings(key: string) {
+
+        /*
+        TODO: temporary disabled - need to wrap this whole story (go through all of the settings code for all apps).
+        const cached = this.cache.get(key);
+        if (cached) {
+            return cached;
+        }
+        */
+
         return await this.invoke({ action: "getSettings", key });
     }
 

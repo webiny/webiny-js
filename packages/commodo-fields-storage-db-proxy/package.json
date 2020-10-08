@@ -12,7 +12,8 @@
 	"license": "MIT",
 	"dependencies": {
 		"@commodo/fields": "^1.2.1",
-		"bson": "^4.0.2"
+		"bson": "^4.0.2",
+		"@webiny/handler-client": "^4.12.1"
 	},
 	"publishConfig": {
 		"access": "public",

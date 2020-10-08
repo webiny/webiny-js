@@ -1,0 +1,19 @@
+{
+  "name": "api-form-builder",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler": "^4.12.1",
+    "@webiny/handler-apollo-server": "^4.12.1",
+    "@webiny/api-plugin-commodo-db-proxy": "^4.12.1",
+    "@webiny/api-plugin-security-cognito": "^4.12.1",
+    "@webiny/api-security": "^4.12.1",
+    "@webiny/api-security-permissions-manager": "^4.12.1",
+    "@webiny/api-settings-manager": "^4.12.1",
+    "@webiny/api-i18n": "^4.12.1",
+    "@webiny/api-form-builder": "^4.12.1",
+    "@webiny/project-utils": "^4.12.1"
+  }
+}

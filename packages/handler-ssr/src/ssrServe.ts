@@ -1,18 +1,18 @@
 import qs from "querystringify";
-import LambdaClient from "aws-sdk/clients/lambda";
-import { createResponse } from "@webiny/handler";
-import { HandlerPlugin } from "@webiny/handler/types";
+import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
 import mime from "mime-types";
 import { getSsrHtml } from "./functions";
 import zlib from "zlib";
+import { HandlerClientContext } from "@webiny/handler-client/types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
 
-const createSsrResponse = props => {
-    return createResponse({
-        type: "text/html",
+const createSsrResponse = (props, http) => {
+    return http.response({
         isBase64Encoded: true,
         headers: {
             "Cache-Control": "no-store",
-            "Content-Encoding": "gzip"
+            "Content-Encoding": "gzip",
+            "Content-Type": "text/html"
         },
         ...props
     });
@@ -23,13 +23,16 @@ export default (options): HandlerPlugin => {
         return {
             type: "handler",
             name: "handler-ssr-with-cache",
-            async handle({ args, context }, next) {
-                const [event] = args;
-                if (!(event.httpMethod === "GET" && !mime.lookup(event.path))) {
+            async handle(
+                context: HandlerContext & HandlerClientContext & HandlerHttpContext,
+                next
+            ) {
+                const { http } = context;
+                if (!(http.method == "GET" && !mime.lookup(http.path.base))) {
                     return next();
                 }
 
-                const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
+                const path = http.path.base + "?" + qs.stringify(http.path.query);
 
                 const { SsrCache } = context.models;
                 let ssrCache = await SsrCache.findByPath(path);
@@ -39,10 +42,9 @@ export default (options): HandlerPlugin => {
                     await ssrCache.save();
                 }
 
-                const version = event.headers["X-Cdn-Deployment-Id"];
+                const version = http.headers["X-Cdn-Deployment-Id"];
                 const noCache =
-                    event.queryStringParameters &&
-                    typeof event.queryStringParameters["ssr-no-cache"] !== undefined;
+                    http.path.query && typeof http.path.query["ssr-no-cache"] !== undefined;
 
                 if (noCache) {
                     await ssrCache.refresh(version);
@@ -50,7 +52,7 @@ export default (options): HandlerPlugin => {
                     buffer = zlib.gzipSync(buffer);
                     return createSsrResponse({
                         body: buffer.toString("base64")
-                    });
+                    }, http);
                 }
 
                 if (ssrCache.isEmpty) {
@@ -62,12 +64,12 @@ export default (options): HandlerPlugin => {
                         // is a short duration, enough for the actual refresh to complete, which will again update the
                         // expiration. Default value of "options.cache.staleTtl" is 20 seconds.
                         await ssrCache.incrementExpiresOn().save();
-                        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-                        await Lambda.invoke({
-                            FunctionName: process.env.AWS_LAMBDA_FUNCTION_NAME,
-                            InvocationType: "Event",
-                            Payload: JSON.stringify({
-                                ...event,
+
+                        await context.handlerClient.invoke({
+                            await: false,
+                            name: process.env.AWS_LAMBDA_FUNCTION_NAME,
+                            payload: {
+                                ...http,
                                 httpMethod: "POST",
                                 body: {
                                     ssr: [
@@ -78,8 +80,8 @@ export default (options): HandlerPlugin => {
                                         }
                                     ]
                                 }
-                            })
-                        }).promise();
+                            }
+                        });
                     }
                 }
 
@@ -92,7 +94,7 @@ export default (options): HandlerPlugin => {
                         "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
                         "Content-Encoding": "gzip"
                     }
-                });
+                }, http);
             }
         };
     }
@@ -100,22 +102,22 @@ export default (options): HandlerPlugin => {
     return {
         type: "handler",
         name: "handler-ssr-no-cache",
-        async handle({ args }, next) {
-            const [event] = args;
+        async handle(context: HandlerContext & HandlerHttpContext, next) {
+            const { http } = context;
 
-            if (!(event.httpMethod === "GET" && !mime.lookup(event.path))) {
+            if (!(http.method === "GET" && !mime.lookup(http.path.base))) {
                 return next();
             }
 
-            const path = event.path + qs.stringify(event.multiValueQueryStringParameters, true);
-            const body = await getSsrHtml(options.ssrFunction, { path });
+            const path = http.path + "?" + qs.stringify(http.path.query);
+            const body = await getSsrHtml(context, options.ssrFunction, { path });
 
             let buffer = Buffer.from(body);
             buffer = zlib.gzipSync(buffer);
 
             return createSsrResponse({
                 body: buffer.toString("base64")
-            });
+            }, http);
         }
     };
 };

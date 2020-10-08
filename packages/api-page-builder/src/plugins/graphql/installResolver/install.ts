@@ -5,9 +5,14 @@ import savePages from "./utils/savePages";
 import path from "path";
 import loadJson from "load-json-file";
 import { PbInstallPlugin } from "@webiny/api-page-builder/types";
-import { Context } from "@webiny/graphql/types";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
 
-export const install = async (root: any, args: { [key: string]: any }, context: Context) => {
+export const install = async (
+    root: any,
+    args: { [key: string]: any },
+    context: HandlerContext & HandlerHttpContext
+) => {
     // Start the download of initial Page Builder page / block images.
     const { PbSettings, PbCategory, PbMenu } = context.models;
 
@@ -36,14 +41,6 @@ export const install = async (root: any, args: { [key: string]: any }, context: 
     const { step } = args;
 
     try {
-        // For new installations, mark step 6 immediately as completed.
-        // This is because of https://github.com/webiny/webiny-js/pull/792.
-        // TODO: Remove this upon merging Headless CMS.
-        if (!installation.getStep(6).completed) {
-            installation.getStep(6).markAsCompleted();
-            await settings.save();
-        }
-
         if (!installation.stepAvailable(step)) {
             return new ErrorResponse({
                 code: "PB_INSTALL_ABORTED",

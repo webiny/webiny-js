@@ -1,7 +1,15 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../graphql", "../commodo-fields-storage-db-proxy", "../handler"],
+  "exclude": [
+    "node_modules",
+    "../graphql",
+    "../commodo-fields-storage-db-proxy",
+    "../handler",
+    "../handler-aws",
+    "../handler-args",
+    "../handler-client"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -10,6 +18,9 @@
   "references": [
     { "path": "../graphql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-args/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../commodo-fields-storage-db-proxy/tsconfig.build.json" }
   ]
 }

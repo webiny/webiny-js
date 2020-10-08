@@ -1,6 +1,5 @@
 import { applyContextPlugins } from "@webiny/graphql";
 import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
-import { createResponse } from "@webiny/handler";
 import headlessPlugins from "../../content/plugins";
 import { generateContentModelIndexes } from "./generateContentModelIndexes";
 import { generateRevisionIndexes } from "./generateRevisionIndexes";
@@ -9,6 +8,8 @@ import { deleteEnvironmentData } from "./deleteEnvironmentData";
 import { Action } from "../types";
 import { copyEnvironment } from "./copyEnvironment";
 import { CmsDataManagerEntryHookPlugin } from "@webiny/api-headless-cms/dataManager/types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
 
 // Setup plugins for given environment
 async function setupEnvironment(context, environment) {
@@ -35,8 +36,8 @@ export default () => [
     {
         type: "handler",
         name: "handler-data-manager",
-        async handle({ args, context }) {
-            const [event] = args;
+        async handle(context) {
+            const { invocationArgs: event, http } = context;
             const { environment, action, ...params } = event;
 
             try {
@@ -115,14 +116,18 @@ export default () => [
                         throw Error(`Unknown action "${action}"!`);
                 }
 
-                return createResponse({
-                    type: "application/json",
-                    body: JSON.stringify({ action, result })
+                // TODO: No need for doing a http response here.
+                return http.response({
+                    statusCode: 500,
+                    body: JSON.stringify({ action, result }),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
             } catch (err) {
                 console.log(err);
                 throw err;
             }
         }
-    } as HandlerPlugin
+    } as HandlerPlugin<HandlerHttpContext & HandlerClientContext>
 ];
