@@ -26,7 +26,7 @@ const getPermissions = async (data, context: Context) => {
 
 const cache = {};
 
-export default ({ cache: useCache = true }): HandlerPlugin => ({
+export default ({ cache: useCache = true } = {}): HandlerPlugin => ({
     type: "handler",
     name: "handler-permissions-manager",
     async handle({ args, context }) {
@@ -49,7 +49,7 @@ export default ({ cache: useCache = true }): HandlerPlugin => ({
 
                 permissions = await getPermissions(data, context);
 
-                cacheKey[cacheKey] = permissions;
+                cache[cacheKey] = permissions;
             } else {
                 permissions = await getPermissions(data, context);
             }
