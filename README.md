@@ -322,6 +322,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Mark Wilcox</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/anushkrishnav">
+                        <img src="https://avatars3.githubusercontent.com/u/54374648?v=4" width="100px;" alt="A N U S H"/>
+                        <br />
+                        <sub><b>A N U S H</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
