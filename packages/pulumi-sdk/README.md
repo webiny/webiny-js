@@ -11,62 +11,69 @@ Note that the package is not published to the NPM yet, it's still kinda experime
 ### Example
 
 ```ts
+const { Pulumi } = require("@webiny/pulumi-sdk");
+
+// Create a new instance of Pulumi class.
+// Note that Pulumi will be installed automatically on first use, you don't need to install it
+// manually first. That's why the `beforePulumiInstall` and `afterPulumiInstall` are exposed.
 const pulumi = new Pulumi({
-        execa: {
-            cwd: stacksDir,
-            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-        },
-        args: {
-            secretsProvider: "passphrase"
-        },
-        beforePulumiInstall: () => {
-            console.log(
-                `💡 It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
-            );
-            spinner.start(`Downloading Pulumi...`);
-        },
-        afterPulumiInstall: () => {
-            spinner.stopAndPersist({
-                symbol: green("✔"),
-                text: `Pulumi downloaded, continuing...`
-            });
-        }
+  execa: {
+    cwd: stacksDir,
+    env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+  },
+  args: {
+    secretsProvider: "passphrase"
+  },
+  beforePulumiInstall: () => {
+    console.log(
+      `💡 It looks like this is your first time using ${green(
+        "@webiny/pulumi-sdk"
+      )}.`
+    );
+    spinner.start(`Downloading Pulumi...`);
+  },
+  afterPulumiInstall: () => {
+    spinner.stopAndPersist({
+      symbol: green("✔"),
+      text: `Pulumi downloaded, continuing...`
     });
+  }
+});
 
-    let stackExists = true;
-    try {
-        const { process } = await pulumi.run({ command: ["stack", "select", env] });
-        await process;
-    } catch (e) {
-        stackExists = false;
+// Use existing stack if possible, otherwise create a new one.
+let stackExists = true;
+try {
+  const { process } = await pulumi.run({ command: ["stack", "select", env] });
+  await process;
+} catch (e) {
+  stackExists = false;
+}
+
+if (!stackExists) {
+  const { process } = await pulumi.run({ command: ["stack", "init", env] });
+  await process;
+}
+
+// If isPreview was set to true in our script, then run `preview` command, otherwise `up`.
+if (isPreview) {
+  const pulumi = new Pulumi();
+  const { toConsole } = await pulumi.run({
+    command: "preview",
+    execa: {
+      cwd: stacksDir,
+      env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
     }
-
-    if (!stackExists) {
-        const { process } = await pulumi.run({ command: ["stack", "init", env] });
-        await process;
+  });
+  await toConsole();
+} else {
+  const { toConsole } = await pulumi.run({
+    command: "up",
+    args: {
+      yes: true,
+      skipPreview: true
     }
-
-    // Then later you can do for example...
-
-    if (isPreview) {
-        const pulumi = new Pulumi();
-        const { toConsole } = await pulumi.run({
-            command: "preview",
-            execa: {
-                cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-            }
-        });
-        await toConsole();
-    } else {
-        const { toConsole } = await pulumi.run({
-            command: "up",
-            args: {
-                yes: true,
-                skipPreview: true
-            }
-        });
-        await toConsole();
-    }
+  });
+  await toConsole();
+}
 ```
 
