@@ -43,7 +43,8 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        await pulumi.run({ command: ["stack", "select", env] });
+        const { process } = await pulumi.run({ command: ["stack", "select", env] });
+        await process;
     } catch (e) {
         stackExists = false;
     }
