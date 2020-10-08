@@ -104,7 +104,7 @@
       "@webiny/handler-aws-documentdb-proxy/*": ["./packages/handler-aws-documentdb-proxy/src/*"],
       "@webiny/handler-client": ["./packages/handler-client/src"],
       "@webiny/handler-client/*": ["./packages/handler-client/src/*"],
-      "@webiny/handler-files": ["./packages/handler-files/src"],
+
       "@webiny/handler-files/*": ["./packages/handler-files/src/*"],
       "@webiny/handler-http": ["./packages/handler-http/src"],
       "@webiny/handler-http/*": ["./packages/handler-http/src/*"],
