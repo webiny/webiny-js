@@ -134,7 +134,7 @@ module.exports = async ({ options, ...inputs }, context) => {
         const { process: pulumiProcess } = await pulumi.run({ command: ["stack", "init", env] });
         await pulumiProcess;
 
-        // We need to add an arbitrary "aws:region" config value, just because Pulumi something to be there.
+        // We need to add an arbitrary "aws:region" config value, just because Pulumi needs something to be there.
         // @sse https://github.com/pulumi/pulumi-aws/issues/1153
         const pulumiConfig = new Pulumi({
             execa: {
