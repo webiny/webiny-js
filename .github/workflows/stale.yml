@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/stale@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GH_TOKEN }}
           stale-issue-message: >
             Please reopen this issue once you add more information and updates here.
             If this is not the case and you need some help, feel free to seek help
