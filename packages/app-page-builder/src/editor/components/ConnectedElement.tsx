@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/components/recoil";
+import { elementByIdSelectorFamily } from "./recoil";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 

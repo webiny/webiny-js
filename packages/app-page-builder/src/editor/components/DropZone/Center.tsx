@@ -1,7 +1,7 @@
 import React from "react";
 import Droppable from "./../Droppable";
 import styled from "@emotion/styled";
-import { elementPropsByIdSelectorFamily } from "@webiny/app-page-builder/editor/components/recoil";
+import { elementPropsByIdSelectorFamily } from "../recoil";
 import { useRecoilValue } from "recoil";
 
 type ContainerProps = {

@@ -1,19 +1,21 @@
-import * as React from "react";
-import { get } from "lodash";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { isEqual } from "lodash";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
+import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
+import React from "react";
 import Slate from "./Slate";
+import { elementByIdSelectorFamily } from "./recoil";
+import { useRecoilValue } from "recoil";
 
-const ConnectedSlate = props => {
-    return <Slate {...props} />;
+type Props = SlateEditorProps & {
+    elementId: string;
+};
+const ConnectedSlate: React.FunctionComponent<Props> = props => {
+    const { elementId } = props;
+    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+    const value = element?.data?.text;
+    const slateProps = {
+        ...props,
+        value
+    };
+    return <Slate {...slateProps} />;
 };
 
-export default connect<any, any, any>(
-    (state, props) => ({
-        value: get(getElement(state, props.elementId), "data.text")
-    }),
-    null,
-    null,
-    { areStatePropsEqual: isEqual }
-)(React.memo(ConnectedSlate));
+export default React.memo(ConnectedSlate);
