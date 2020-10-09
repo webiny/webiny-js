@@ -27,6 +27,18 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
+export type AdminMenuCommunityPlugin = Plugin & {
+    name: "admin-menu-community";
+    type: "admin-menu-community";
+    render(): React.ReactElement;
+};
+
+export type AdminMenuSourcePlugin = Plugin & {
+    name: "admin-menu-source";
+    type: "admin-menu-source";
+    render(): React.ReactElement;
+};
+
 export type AdminMenuLogoPlugin = Plugin & {
     name: "admin-menu-logo";
     type: "admin-menu-logo";
