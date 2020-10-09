@@ -1,19 +1,19 @@
 import React from "react";
 import Center from "./DropZone/Center";
-import Horizontal from "./DropZone/Horizontal";
-import Vertical from "./DropZone/Vertical";
+import Horizontal, { HorizontalPropsType } from "./DropZone/Horizontal";
+import Vertical, { VerticalPropsType } from "./DropZone/Vertical";
 
 export default {
-    Above(props) {
+    Above(props: HorizontalPropsType) {
         return <Horizontal {...props} />;
     },
-    Below(props) {
+    Below(props: HorizontalPropsType) {
         return <Horizontal {...props} below />;
     },
-    Left(props) {
+    Left(props: VerticalPropsType) {
         return <Vertical {...props} />;
     },
-    Right(props) {
+    Right(props: VerticalPropsType) {
         return <Vertical {...props} last />;
     },
     Center

@@ -44,14 +44,14 @@ const OuterDiv = React.memo<OuterDiv>(
     )
 );
 
-type Props = {
+export type HorizontalPropsType = {
     type: string;
     onDrop: DroppableOnDropPropType;
-    below: boolean;
-    isVisible: DroppableIsVisiblePropType;
+    below?: boolean;
+    isVisible?: DroppableIsVisiblePropType;
 };
 
-const Horizontal = ({ below, onDrop, isVisible, type }: Props) => {
+const Horizontal = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (

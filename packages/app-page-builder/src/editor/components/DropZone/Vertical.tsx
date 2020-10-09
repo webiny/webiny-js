@@ -41,14 +41,14 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
     )
 );
 
-type Props = {
+export type VerticalPropsType = {
     type: string;
     onDrop: DroppableOnDropPropType;
-    last: boolean;
-    isVisible: DroppableIsVisiblePropType;
+    last?: boolean;
+    isVisible?: DroppableIsVisiblePropType;
 };
 
-const Vertical = ({ last, onDrop, isVisible, type }: Props) => {
+const Vertical = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
