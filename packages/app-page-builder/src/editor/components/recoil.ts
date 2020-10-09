@@ -182,8 +182,8 @@ export const elementByIdSelectorFamily = selectorFamily<PbElement, string>({
 });
 
 type ElementByIdSelectorProps = {
-    active: boolean;
-    highlight: boolean;
+    isActive: boolean;
+    isHighlighted: boolean;
 };
 export const elementPropsByIdSelectorFamily = selectorFamily<ElementByIdSelectorProps, string>({
     key: "elementPropsByIdSelectorFamily",
@@ -196,8 +196,8 @@ export const elementPropsByIdSelectorFamily = selectorFamily<ElementByIdSelector
             const highlight = active || highlightElement === id;
 
             return {
-                active,
-                highlight: highlight && !isDragging && !isResizing
+                isActive: active,
+                isHighlighted: highlight && !isDragging && !isResizing
             };
         };
     }

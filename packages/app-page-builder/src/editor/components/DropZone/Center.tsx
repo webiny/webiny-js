@@ -48,12 +48,15 @@ type Props = {
 };
 
 const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children }) => {
-    const { active, highlight } = useRecoilValue(elementPropsByIdSelectorFamily(id));
+    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelectorFamily(id));
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (
                 <div style={{ width: "100%", height: "100%" }} ref={drop}>
-                    <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
+                    <Container
+                        isOver={(isOver && isDroppable) || isActive}
+                        highlight={isHighlighted}
+                    >
                         <Add>{children}</Add>
                     </Container>
                 </div>
