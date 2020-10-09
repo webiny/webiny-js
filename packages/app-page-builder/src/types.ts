@@ -1,5 +1,5 @@
-import { EditorPluginsAtomType } from "@webiny/app-page-builder/editor/components/Editor/recoil";
-import { ComponentType, ReactElement, ReactNode } from "react";
+import React, { ComponentType, ReactElement, ReactNode } from "react";
+import { EditorPluginsAtomType } from "./editor/components/recoil";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
