@@ -45,7 +45,7 @@ module.exports = (options, context) => {
             });
         }
 
-        return webpack(webpackConfig).run(async (err, stats) => {z
+        return webpack(webpackConfig).run(async (err, stats) => {
             if (err) {
                 return reject(err);
             }
