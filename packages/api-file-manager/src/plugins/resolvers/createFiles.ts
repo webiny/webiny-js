@@ -1,7 +1,8 @@
 import { Response, ErrorResponse } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { BATCH_CREATE_MAX_FILES } from "./utils/constants";
 
-export default async (root: any, args: { [key: string]: any }, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { data: files } = args;
     if (!Array.isArray(files)) {
         return new ErrorResponse({
@@ -40,3 +41,5 @@ export default async (root: any, args: { [key: string]: any }, context) => {
 
     return new Response(data);
 };
+
+export default resolver;

@@ -6,6 +6,7 @@ import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "@webiny/app-headless-cms/admin/components/ContentModelForm/ContentFormRender/components/Label";
+import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
 
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";
@@ -230,3 +231,29 @@ export type FormSettingsPluginRenderFunctionType = (props: {
     formData: any; // Content model settings.
     form: any;
 }) => React.ReactElement<any>;
+
+export type PermissionRendererPluginRenderFunctionType = (props: {
+    value: SecurityPermission;
+    setValue: (newValue: SecurityPermission) => void;
+}) => React.ReactElement<any>;
+
+export type PermissionRendererCmsManage = Plugin & {
+    type: "permission-renderer-cms-manage";
+    key: string;
+    label: string;
+    render: PermissionRendererPluginRenderFunctionType;
+};
+
+export type PermissionGroupRendererCMS = Plugin & {
+    type: "permission-group-renderer-cms";
+    label: string;
+    render: ({
+        value,
+        createSetValue,
+        cmsPermissionRendererPlugins
+    }: {
+        value: any;
+        createSetValue: any;
+        cmsPermissionRendererPlugins: PermissionRendererCmsManage[];
+    }) => React.ReactElement<any>;
+};

@@ -14,3 +14,18 @@ export const getSettings: GraphQLFieldResolver = async (root, args, context) => 
         });
     }
 };
+
+export const updateSettings: GraphQLFieldResolver = async (root, args, context) => {
+    try {
+        const { data } = args;
+        await context.settingsManager.saveSettings("file-manager", data);
+        return {
+            data
+        };
+    } catch (e) {
+        return new ErrorResponse({
+            code: "UPDATE_FILE_SETTINGS_ERROR",
+            message: e.message
+        });
+    }
+};

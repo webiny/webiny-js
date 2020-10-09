@@ -5,7 +5,21 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { hasCmsPermission } from "@webiny/api-security";
+
+const checkEnvironmentAliasSettingUpdatePermission = async ({ permission }) => {
+    let allowed = false;
+
+    if (permission.manageAliases) {
+        allowed = true;
+    }
+
+    return allowed;
+};
+
+const checkEnvironmentAliasSettingListPermission = async () => {
+    return true;
+};
 
 const environmentAliasFetcher = ctx => ctx.models.CmsEnvironmentAlias;
 
@@ -73,23 +87,28 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            getEnvironmentAlias: hasScope("cms:environment-alias:crud")(
-                resolveGet(environmentAliasFetcher)
-            ),
-            listEnvironmentAliases: hasScope("cms:environment-alias:crud")(
-                resolveList(environmentAliasFetcher)
-            )
+            getEnvironmentAlias: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentAliasSettingListPermission
+            )(resolveGet(environmentAliasFetcher)),
+            listEnvironmentAliases: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentAliasSettingListPermission
+            )(resolveList(environmentAliasFetcher))
         },
         CmsMutation: {
-            createEnvironmentAlias: hasScope("cms:environment-alias:crud")(
-                resolveCreate(environmentAliasFetcher)
-            ),
-            updateEnvironmentAlias: hasScope("cms:environment-alias:crud")(
-                resolveUpdate(environmentAliasFetcher)
-            ),
-            deleteEnvironmentAlias: hasScope("cms:environment-alias:crud")(
-                resolveDelete(environmentAliasFetcher)
-            )
+            createEnvironmentAlias: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentAliasSettingUpdatePermission
+            )(resolveCreate(environmentAliasFetcher)),
+            updateEnvironmentAlias: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentAliasSettingUpdatePermission
+            )(resolveUpdate(environmentAliasFetcher)),
+            deleteEnvironmentAlias: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentAliasSettingUpdatePermission
+            )(resolveDelete(environmentAliasFetcher))
         }
     }
 };

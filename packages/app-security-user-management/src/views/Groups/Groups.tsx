@@ -6,12 +6,14 @@ import GroupsDataList from "./GroupsDataList";
 import GroupsForm from "./GroupsForm";
 import { READ_GROUP, LIST_GROUPS, CREATE_GROUP, UPDATE_GROUP, DELETE_GROUP } from "./graphql";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
+import { createPermissionsArray } from "./utils";
 
 const Groups = ({ scopes, formProps, listProps }: any) => {
     const variables = data => ({
         data: {
             ...pick(data, ["name", "slug", "description"]),
-            roles: (data.roles || []).map(x => x.id)
+            // From UI to API
+            permissions: createPermissionsArray(data.permissions) || []
         }
     });
 

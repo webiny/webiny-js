@@ -7,7 +7,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 
     try {
         const settings = await FilesSettings.load();
-        if (await settings.data.installed) {
+        if (settings.data.installed) {
             return new ErrorResponse({
                 code: "FILES_INSTALL_ABORTED",
                 message: "File Manager is already installed."

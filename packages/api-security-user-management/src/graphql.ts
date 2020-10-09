@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
-import role from "./graphql/Role";
 import group from "./graphql/Group";
 import user from "./graphql/User";
 import install from "./graphql/Install";
@@ -57,7 +56,6 @@ export default (): GraphQLSchemaPlugin => ({
             }
 
             ${install.typeDefs}
-            ${role.typeDefs}
             ${group.typeDefs}
             ${user.typeDefs}
         `,
@@ -71,7 +69,6 @@ export default (): GraphQLSchemaPlugin => ({
                 }
             },
             install.resolvers,
-            role.resolvers,
             group.resolvers,
             user.resolvers
         )
