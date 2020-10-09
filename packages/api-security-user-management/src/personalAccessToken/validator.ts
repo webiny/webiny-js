@@ -5,8 +5,8 @@ export default () => [
     {
         type: "handler",
         name: "handler-validate-access-token",
-        async handle({ context }) {
-            const [event] = context.args;
+        async handle(context) {
+            const event = context.invocationArgs;
             let pat = event.pat;
 
             if (!pat || typeof pat !== "string") {

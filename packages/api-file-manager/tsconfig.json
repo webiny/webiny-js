@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["./src"],
+  "references": [
+    { "path": "../api-security" },
+    { "path": "../commodo-graphql" },
+    { "path": "../graphql" },
+    { "path": "../handler" },
+    { "path": "../handler-client" },
+    { "path": "../validation" }
+  ]
+}

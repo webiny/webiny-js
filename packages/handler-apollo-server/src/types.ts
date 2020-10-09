@@ -22,7 +22,6 @@ export type CreateApolloHandlerPlugin = Plugin & {
     name: "handler-apollo-server-create-handler";
     type: "handler-apollo-server-create-handler";
     create(params: {
-        args: Array<{ [key: string]: any }>;
         options: HandlerApolloServerOptions;
         context: HandlerContext;
     }): CreateApolloHandlerPluginCreateResponse | Promise<CreateApolloHandlerPluginCreateResponse>;

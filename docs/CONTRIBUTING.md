@@ -105,7 +105,7 @@ The easiest way to run a watch is by running `lerna run watch --scope=your-scope
 
 You can find examples of tests in some of the utility packages (`validation`, `i18n`, `plugins`).
 
-`api-files` and `api-headless-cms` contain examples of testing your GraphQL API.
+`api-file-manager` and `api-headless-cms` contain examples of testing your GraphQL API.
 
 We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
 

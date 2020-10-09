@@ -1,6 +1,6 @@
 import { EJSON } from "bson";
 import { MongoClient } from "mongodb";
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import databaseProxy from "../src/handler";
 
 describe("Database proxy handler", () => {

@@ -1,6 +1,6 @@
 import { CmsContentModel, CmsContext, CmsDataManager } from "@webiny/api-headless-cms/types";
-import LambdaClient from "aws-sdk/clients/lambda";
 import { Action } from "../types";
+import { HandlerClientContext } from "@webiny/handler-client/types";
 
 interface DataManagerOperation {
     environment?: string;
@@ -10,7 +10,7 @@ interface DataManagerOperation {
 
 export class DataManagerClient implements CmsDataManager {
     dataManagerFunction: string;
-    context: CmsContext;
+    context: CmsContext & HandlerClientContext;
 
     constructor({ dataManagerFunction, context }) {
         this.dataManagerFunction = dataManagerFunction;
@@ -18,12 +18,11 @@ export class DataManagerClient implements CmsDataManager {
     }
 
     private async invokeDataManager(operation: DataManagerOperation) {
-        const Lambda = new LambdaClient({ region: process.env.AWS_REGION });
-        await Lambda.invoke({
-            FunctionName: this.dataManagerFunction,
-            InvocationType: "Event",
-            Payload: JSON.stringify(operation)
-        }).promise();
+        await this.context.handlerClient.invoke({
+            name: this.dataManagerFunction,
+            payload: operation,
+            await: false
+        });
     }
 
     async generateRevisionIndexes({ revision }: any) {

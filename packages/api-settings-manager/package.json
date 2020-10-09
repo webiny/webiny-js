@@ -14,7 +14,7 @@
   "dependencies": {
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler": "^4.12.1",
-    "aws-sdk": "^2.685.0"
+    "@webiny/handler-client": "^4.12.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

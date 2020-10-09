@@ -652,7 +652,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * add a sample test to the template ([c92bae4](https://github.com/webiny/webiny-js/commit/c92bae495a9187ad07ad15b0e68d6ee9d54ffa9a))
 * allow defining the name of the initial model ([365b7ee](https://github.com/webiny/webiny-js/commit/365b7ee9ac49eed52e10a7cc8de8a100e33bba5c))
 * **cli:** add onExit callback ([5055d85](https://github.com/webiny/webiny-js/commit/5055d856e9b69efff3ffcd02f817d8b623d219d4))
-* **cwp-templates:** generate JWT_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
+* **cwp-templates:** generate JWT_TOKEN_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
 
 
 
