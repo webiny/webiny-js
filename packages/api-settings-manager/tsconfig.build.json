@@ -5,9 +5,10 @@
     "outDir": "./dist",
     "declarationDir": "./dist"
   },
-  "exclude": ["node_modules", "dist", "../graphql", "../handler"],
+  "exclude": ["node_modules", "dist", "../graphql", "../handler", "../handler-client"],
   "references": [
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../graphql/tsconfig.build.json" }
   ]
 }

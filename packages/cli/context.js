@@ -108,7 +108,7 @@ class Context {
         return path.replace(projectRoot, "<projectRoot>").replace(/\\/g, "/");
     }
 
-    async loadEnv(envPath, env, { debug = false }) {
+    async loadEnv(envPath, env, { debug = false } = {}) {
         if (fs.existsSync(envPath)) {
             const consoleError = console.error;
             const envFile = this.replaceProjectRoot(envPath);

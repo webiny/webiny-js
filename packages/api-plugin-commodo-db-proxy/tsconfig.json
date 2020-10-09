@@ -3,6 +3,9 @@
   "references": [
     { "path": "../graphql" },
     { "path": "../commodo-fields-storage-db-proxy" },
-    { "path": "../handler" }
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-args" },
+    { "path": "../handler-client" },
   ]
 }

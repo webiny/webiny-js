@@ -3,7 +3,7 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
-import filesPlugins from "@webiny/api-files/plugins";
+import filesPlugins from "@webiny/api-file-manager/plugins";
 import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 
 export const handler = createHandler(

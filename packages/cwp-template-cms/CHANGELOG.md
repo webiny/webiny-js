@@ -324,7 +324,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **cwp-templates:** generate JWT_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
+* **cwp-templates:** generate JWT_TOKEN_SECRET, S3_BUCKET, and MONGODB_NAME for all environments ([#1103](https://github.com/webiny/webiny-js/issues/1103)) ([210f8f3](https://github.com/webiny/webiny-js/commit/210f8f3b1f4ad863a0fef8e6bdc5c397762888dd))
 
 
 

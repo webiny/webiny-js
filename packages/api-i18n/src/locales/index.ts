@@ -1,11 +1,12 @@
 import { applyContextPlugins } from "@webiny/graphql";
 import models from "../plugins/models";
+import { HandlerPlugin } from "@webiny/handler/types";
 
 export default () => [
     {
         type: "handler",
         name: "handler-i18n-locales",
-        async handle({ context }) {
+        async handle(context) {
             context.plugins.register(models());
             await applyContextPlugins(context);
 
@@ -18,5 +19,5 @@ export default () => [
                 createdOn: locale.createdOn
             }));
         }
-    }
+    } as HandlerPlugin
 ];

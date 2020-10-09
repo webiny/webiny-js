@@ -1,16 +1,17 @@
 import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { SecurityIdentity } from "@webiny/api-security";
+import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HandlerContext } from "@webiny/handler/types";
 
 const getAuthorizationToken = context => {
-    const [event] = context.args;
-    const { headers = {} } = event;
+    const { headers = {} } = context.http;
     return (headers.authorization || headers.Authorization).replace(/bearer\s/i, "");
 };
 
 export default {
     name: "security-access-token",
     type: "security-authentication",
-    authenticate: async context => {
+    authenticate: async (context: HandlerContext & HandlerHttpContext) => {
         const { CmsAccessToken } = context.models;
 
         const accessToken = getAuthorizationToken(context);

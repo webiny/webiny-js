@@ -4,7 +4,7 @@ export default {
     /* GraphQL */
     typeDefs: `
         input PbInstallInput {
-            domain: String!
+            domain: String
             name: String!
         }
         

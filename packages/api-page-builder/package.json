@@ -21,6 +21,8 @@
     "@webiny/commodo-graphql": "^4.12.1",
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler-ssr": "^4.12.1",
+    "@webiny/handler": "^4.12.1",
+    "@webiny/handler-http": "^4.12.1",
     "@webiny/validation": "^4.12.1",
     "download": "^5.0.3",
     "extract-zip": "^1.6.7",
@@ -28,7 +30,6 @@
     "fs-extra": "^7.0.0",
     "got": "^9.6.0",
     "graphql": "^14.4.2",
-    "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",
@@ -38,7 +39,8 @@
     "lodash.pick": "^4.4.0",
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "zip-local": "^0.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -59,10 +61,6 @@
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "adio": {
-    "ignoreDirs": [
-      "migration",
-      "src/installation"
-    ],
     "ignore": {
       "src": [
         "aws-sdk"

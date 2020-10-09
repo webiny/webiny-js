@@ -16,6 +16,22 @@ const confirmationMessageStyles = css({
 export const configureDomainTitle = t`Configure domain`;
 
 export const ConfigureDomainMessage = ({ domain }) => {
+    if (typeof domain !== "string") {
+        return (
+            <span className={confirmationMessageStyles}>
+                {t`Public website domain is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
+                    {
+                        pageBuilderSettingsLink: (
+                            <Link
+                                to={"/settings/page-builder/general"}
+                            >{t`Page Builder settings`}</Link>
+                        )
+                    }
+                )}
+            </span>
+        );
+    }
+
     const isLocalHost = domain && domain.includes("localhost");
     return (
         <span className={confirmationMessageStyles}>

@@ -108,7 +108,17 @@ export default ({ createBase, context }) => {
                     }),
                     installation: fields({ instanceOf: InstallationFields, value: {} }),
                     name: string(),
-                    domain: onSet(value => value.replace(/\/+$/g, ""))(string()),
+                    domain: onSet(value => {
+                        if (typeof value === "string") {
+                            return value.replace(/\/+$/g, "");
+                        }
+
+                        return "";
+                    })(
+                        string({
+                            value: ""
+                        })
+                    ),
                     favicon: id(),
                     logo: id(),
                     social: fields({

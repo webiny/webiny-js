@@ -10,7 +10,6 @@ const getPermissions = async (data, context: Context) => {
     for (let i = 0; i < plugins.length; i++) {
         const plugin = plugins[i];
         if (typeof plugin.getPermissions === "function") {
-            console.log(`Running "${plugin.name}"`);
             const permissions = await plugin.getPermissions(data, context);
             if (Array.isArray(permissions)) {
                 console.log(`Loaded ${permissions.length} permissions.`);
@@ -29,9 +28,9 @@ const cache = {};
 export default ({ cache: useCache = true } = {}): HandlerPlugin => ({
     type: "handler",
     name: "handler-permissions-manager",
-    async handle({ args, context }) {
-        const [{ action, ...data }] = args;
-        console.log(`event`, args[0]);
+    async handle(context) {
+        const { action, ...data } = context.invocationArgs;
+        console.log(`event`, context.invocationArgs);
 
         try {
             if (action !== "getPermissions") {

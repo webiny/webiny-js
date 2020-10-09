@@ -34,8 +34,8 @@ async function executeAction({ action, key, data }: ExecuteAction, driver) {
 export default (): HandlerPlugin => ({
     type: "handler",
     name: "handler-settings-manager",
-    async handle({ args, context }) {
-        const [event] = args;
+    async handle(context) {
+        const event = context.invocationArgs;
 
         await applyContextPlugins(context);
 

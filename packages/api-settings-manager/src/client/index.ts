@@ -11,6 +11,7 @@ export default ({ functionName }: Params): ContextPlugin => {
         name: "context-settings-manager",
         apply(context) {
             context.settingsManager = new SettingsManagerClient({
+                context,
                 functionName
             });
         }
