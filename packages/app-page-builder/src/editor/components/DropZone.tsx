@@ -1,7 +1,7 @@
 import React from "react";
 import Center from "./DropZone/Center";
-import Horizontal, { HorizontalPropsType } from "./DropZone/Horizontal";
-import Vertical, { VerticalPropsType } from "./DropZone/Vertical";
+import { Horizontal, HorizontalPropsType } from "./DropZone/Horizontal";
+import { Vertical, VerticalPropsType } from "./DropZone/Vertical";
 
 export default {
     Above(props: HorizontalPropsType) {

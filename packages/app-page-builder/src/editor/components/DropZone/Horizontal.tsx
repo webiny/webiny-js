@@ -51,7 +51,7 @@ export type HorizontalPropsType = {
     isVisible?: DroppableIsVisiblePropType;
 };
 
-const Horizontal = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
+const HorizontalComponent = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -75,4 +75,4 @@ const Horizontal = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => 
     );
 };
 
-export default React.memo(Horizontal);
+export const Horizontal = React.memo(HorizontalComponent);

@@ -48,7 +48,7 @@ export type VerticalPropsType = {
     isVisible?: DroppableIsVisiblePropType;
 };
 
-const Vertical = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
+const VerticalComponent = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -73,4 +73,4 @@ const Vertical = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
     );
 };
 
-export default React.memo(Vertical);
+export const Vertical = React.memo(VerticalComponent);
