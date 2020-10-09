@@ -18,7 +18,6 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import AccountTokens from "../Account/AccountTokens";
 import GroupsAutocomplete from "./../Components/GroupsAutocomplete";
-import RolesAutocomplete from "./../Components/RolesAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/settings-24px.svg";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
@@ -92,11 +91,6 @@ const UsersForm = () => {
                                             <GroupsAutocomplete label={t`Groups`} />
                                         </Bind>
                                     </Cell>
-                                    {/*<Cell span={12}>*/}
-                                    {/*    <Bind name="roles">*/}
-                                    {/*        <RolesAutocomplete label={t`Roles`} />*/}
-                                    {/*    </Bind>*/}
-                                    {/*</Cell>*/}
                                 </AccordionItem>
                                 <AccordionItem
                                     description="Set Personal Access Tokens"
