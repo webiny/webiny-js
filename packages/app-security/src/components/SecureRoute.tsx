@@ -3,6 +3,7 @@ import { hasScopes } from "@webiny/app-security";
 import { getPlugin } from "@webiny/plugins";
 import { ResourcesType } from "../identity";
 import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
+import NotAuthorizedError from "@webiny/app-security/components/NotAuthorizedError";
 
 export default ({
     children,
@@ -19,7 +20,7 @@ export default ({
 
     const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
     if (!plugin) {
-        return <span>You are not authorized to view this route.</span>;
+        return <NotAuthorizedError />;
     }
     return plugin.render();
 };
