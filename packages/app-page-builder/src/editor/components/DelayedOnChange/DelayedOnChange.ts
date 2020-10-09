@@ -24,9 +24,9 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({
     delay = 400,
     ...other
 }) => {
-    const [value, setValue] = useState<string>(undefined);
+    const [value, setValue] = useState<string | undefined>(undefined);
 
-    const localTimeout = React.useRef<number>(null);
+    const localTimeout = React.useRef<number | null>(null);
 
     const applyValue = React.useCallback((value: any, callback: Function = emptyFunction) => {
         return () => {
@@ -36,10 +36,10 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({
         };
     }, []);
 
-    const onChangeLocal = React.useCallback((value: any) => {
+    const onChangeLocal = React.useCallback((value: string) => {
         return () => {
             setValue(() => {
-                return value;
+                return value || "";
             });
             // class component could have fired callback on setState - there is no such thing in function component
             // we have useEffect that fires on value change and if value is not undefined
