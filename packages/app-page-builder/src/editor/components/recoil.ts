@@ -163,15 +163,20 @@ export const editorPageLayoutSelector = selector<string | undefined>({
     }
 });
 
-const elementByIdSelectorFamily = selectorFamily<PbElement, string>({
+export const elementByIdSelectorFamily = selectorFamily<PbElement, string>({
     key: "elementByIdSelectorFamily",
     get: id => {
         return ({ get }) => {
             const elements = get(editorPageElementsAtom);
-            if (!elements[id]) {
-                throw new Error(`There is no element with id "${id}"`);
+            if (elements.hasOwnProperty(id)) {
+                return elements[id];
             }
-            return elements[id];
+            const element = Object.values(elements).find(el => el.path === id);
+            // TODO verify that element not existing can ever happen actually?
+            if (!element) {
+                throw new Error(`There is no element with id or path "${id}"`);
+            }
+            return element;
         };
     }
 });
