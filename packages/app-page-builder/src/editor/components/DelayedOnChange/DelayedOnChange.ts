@@ -1,6 +1,8 @@
-import * as React from "react";
-import _ from "lodash";
+import React, { useEffect, useState } from "react";
 
+const emptyFunction = () => {
+    return undefined;
+};
 /**
  * This component is used to wrap Input and Textarea components to optimize form re-render.
  * These 2 are the only components that trigger form model change on each character input.
@@ -10,71 +12,105 @@ import _ from "lodash";
  * The logic behind this component is to serve as a middleware between Form and Input/Textarea, and only notify form of a change when
  * a user stops typing for given period of time (400ms by default).
  */
-class DelayedOnChange extends React.Component<any> {
-    static defaultProps = {
-        delay: 400
-    };
+type Props = {
+    delay: number;
+    onChange: Function;
+    onBlur?: Function;
+    onKeyDown?: Function;
+};
+export const DelayedOnChange: React.FunctionComponent<Props> = ({
+    children,
+    onChange,
+    delay = 400,
+    ...other
+}) => {
+    const [value, setValue] = useState<string>(undefined);
 
-    delay = null;
-    state = { value: "" };
+    const localTimeout = React.useRef<number>(null);
 
-    componentDidMount() {
-        this.setState({ value: this.props.value });
-    }
-
-    applyValue = (value: any, callback: Function = _.noop) => {
-        this.delay && clearTimeout(this.delay);
-        this.delay = null;
-        this.props.onChange(value, callback);
-    };
-
-    onChange = (value: any) => {
-        this.setState({ value }, this.changed);
-    };
-
-    changed = () => {
-        this.delay && clearTimeout(this.delay);
-        this.delay = null;
-        this.delay = setTimeout(() => this.applyValue(this.state.value), this.props.delay);
-    };
-
-    render() {
-        const { children, ...other } = this.props;
-        const newProps = {
-            ...other,
-            value: this.state.value,
-            onChange: this.onChange
+    const applyValue = React.useCallback((value: any, callback: Function = emptyFunction) => {
+        return () => {
+            localTimeout.current && clearTimeout(localTimeout.current);
+            localTimeout.current = null;
+            onChange(value, callback);
         };
+    }, []);
 
-        const renderProp = typeof children === "function" ? children : false;
-        const child = renderProp
-            ? renderProp(newProps)
-            : React.cloneElement(children as React.ReactElement, newProps);
-
-        const props = { ...child.props };
-        const realOnKeyDown = props.onKeyDown || _.noop;
-        const realOnBlur = props.onBlur || _.noop;
-
-        // Need to apply value if input lost focus
-        props.onBlur = e => {
-            e.persist();
-            this.applyValue(e.target.value, () => realOnBlur(e));
+    const onChangeLocal = React.useCallback((value: any) => {
+        return () => {
+            setValue(() => {
+                return value;
+            });
+            // class component could have fired callback on setState - there is no such thing in function component
+            // we have useEffect that fires on value change and if value is not undefined
         };
+    }, []);
 
-        // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
-        props.onKeyDown = e => {
-            e.persist();
-            if (e.key === "Tab") {
-                this.applyValue(e.target.value, () => realOnKeyDown(e));
-            } else if (e.key === "Enter" && props["data-on-enter"]) {
-                this.applyValue(e.target.value, () => realOnKeyDown(e));
-            } else {
-                realOnKeyDown(e);
+    // this is fired upon change value state
+    const onValueStateChanged = React.useCallback(() => {
+        return () => {
+            localTimeout.current && clearTimeout(localTimeout.current);
+            localTimeout.current = null;
+            localTimeout.current = (setTimeout(
+                () => applyValue(value),
+                delay
+            ) as unknown) as number;
+        };
+    }, []);
+
+    // need to clear the timeout when unmounting the component
+    useEffect(() => {
+        return () => {
+            if (!localTimeout.current) {
+                return;
             }
+            clearTimeout(localTimeout.current);
+            localTimeout.current = null;
         };
+    });
 
-        return React.cloneElement(child, props);
-    }
-}
+    // must not fire on first render of the component
+    useEffect(() => {
+        if (value === undefined) {
+            return;
+        }
+        onValueStateChanged();
+    }, [value]);
+
+    const newProps = {
+        ...other,
+        value: value,
+        onChange: onChangeLocal
+    };
+
+    const renderProp = typeof children === "function" ? children : false;
+    const child = renderProp
+        ? renderProp(newProps)
+        : React.cloneElement(children as React.ReactElement, newProps);
+
+    const props = { ...child.props };
+    const realOnKeyDown = props.onKeyDown || emptyFunction;
+    const realOnBlur = props.onBlur || emptyFunction;
+
+    // Need to apply value if input lost focus
+    props.onBlur = e => {
+        e.persist();
+        applyValue(e.target.value, () => realOnBlur(e));
+    };
+
+    // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
+    props.onKeyDown = e => {
+        e.persist();
+        if (e.key === "Tab") {
+            applyValue(e.target.value, () => realOnKeyDown(e));
+        } else if (e.key === "Enter" && props["data-on-enter"]) {
+            applyValue(e.target.value, () => realOnKeyDown(e));
+        } else {
+            realOnKeyDown(e);
+        }
+    };
+
+    return React.cloneElement(child, props);
+};
 
 export default DelayedOnChange;
