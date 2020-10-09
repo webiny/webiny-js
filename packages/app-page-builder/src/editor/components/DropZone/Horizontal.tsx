@@ -18,7 +18,6 @@ type OuterDiv = {
 };
 
 const OuterDiv = React.memo<OuterDiv>(
-    // @ts-ignore
     styled("div")(
         {
             margin: 0,
@@ -32,8 +31,7 @@ const OuterDiv = React.memo<OuterDiv>(
         },
         (props: OuterDiv) => ({
             [props.below ? "bottom" : "top"]: 0,
-            // @ts-ignore
-            [InnerDiv]: {
+            [(InnerDiv as unknown) as string]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",
