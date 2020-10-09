@@ -83,7 +83,7 @@ module.exports = async ({ options, ...inputs }, context) => {
                 new Promise(async (resolve, reject) => {
                     try {
                         const cwd = packages[i];
-                        await execa("yarn", ["build"], { cwd });
+                        await execa("yarn", ["build", '--env', env], { cwd });
                         bar.tick();
 
                         resolve();
