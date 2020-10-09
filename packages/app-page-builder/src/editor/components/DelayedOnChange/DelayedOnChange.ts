@@ -13,7 +13,8 @@ const emptyFunction = () => {
  * a user stops typing for given period of time (400ms by default).
  */
 type Props = {
-    delay: number;
+    value: string;
+    delay?: number;
     onChange: Function;
     onBlur?: Function;
     onKeyDown?: Function;
@@ -22,11 +23,12 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({
     children,
     onChange,
     delay = 400,
+    value: initialValue,
     ...other
 }) => {
-    const [value, setValue] = useState<string | undefined>(undefined);
+    const [value, setValue] = useState<string>(initialValue);
 
-    const localTimeout = React.useRef<number | null>(null);
+    const localTimeout = React.useRef<number>(undefined);
 
     const applyValue = React.useCallback((value: any, callback: Function = emptyFunction) => {
         return () => {
@@ -39,7 +41,7 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({
     const onChangeLocal = React.useCallback((value: string) => {
         return () => {
             setValue(() => {
-                return value || "";
+                return value;
             });
             // class component could have fired callback on setState - there is no such thing in function component
             // we have useEffect that fires on value change and if value is not undefined
@@ -70,8 +72,10 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({
     });
 
     // must not fire on first render of the component
+    // we will know that if localTimeout is undefined
+    // at every other point it will be null or a number
     useEffect(() => {
-        if (value === undefined) {
+        if (localTimeout.current === undefined) {
             return;
         }
         onValueStateChanged();
