@@ -2,7 +2,7 @@ import invariant from "invariant";
 import { PbDocumentElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { getPlugin } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
-import { atom, RecoilValue, selector, useRecoilState } from "recoil";
+import { atom, selector, selectorFamily, useRecoilState } from "recoil";
 
 // copied from selectors/index.ts because that file will go away
 const getPluginType = (name: string): string => {
@@ -14,7 +14,8 @@ type EditorUiAtomType = {
     isDragging: boolean;
     isResizing: boolean;
     slateFocused: boolean;
-    activeElement?: PbElement;
+    activeElement?: string;
+    highlightElement?: string;
 };
 export const editorUiAtom = atom<EditorUiAtomType>({
     key: "editorUiAtom",
@@ -22,11 +23,12 @@ export const editorUiAtom = atom<EditorUiAtomType>({
         isDragging: false,
         isResizing: false,
         slateFocused: false,
-        activeElement: undefined
+        activeElement: undefined,
+        highlightElement: undefined
     }
 });
 
-export const editorUiActiveElementSelector = selector<PbElement | undefined>({
+export const editorUiActiveElementSelector = selector<string | undefined>({
     key: "editorUiActiveElementSelector",
     get: ({ get }) => {
         const { activeElement } = get(editorUiAtom);
@@ -42,10 +44,10 @@ export const editorPluginsAtom = atom<EditorPluginsAtomType>({
     key: "editorPluginsAtom",
     default: {}
 });
-export const isPluginActiveSelectorFactory = (name: string): RecoilValue<boolean> => {
-    return selector<boolean>({
-        key: `isPluginActiveSelector-${name}`,
-        get: ({ get }) => {
+export const isPluginActiveSelectorFamily = selectorFamily<boolean, string>({
+    key: "isPluginActiveSelectorFamily",
+    get: name => {
+        return ({ get }) => {
             const type = getPluginType(name);
             if (!type) {
                 return false;
@@ -56,22 +58,22 @@ export const isPluginActiveSelectorFactory = (name: string): RecoilValue<boolean
                 return false;
             }
             return pluginsByType.some(pl => pl.name === name);
-        }
-    });
-};
-export const pluginsActiveNamesByTypeSelectorFactory = (type: string): RecoilValue<string[]> => {
-    return selector<string[]>({
-        key: `pluginsActiveNamesByTypeSelector-${type}`,
-        get: ({ get }) => {
+        };
+    }
+});
+export const pluginsActiveNamesByTypeSelectorFamily = selectorFamily<string[], string>({
+    key: `pluginsActiveNamesByTypeSelectorFamily`,
+    get: type => {
+        return ({ get }) => {
             const activePlugins = get(editorPluginsAtom);
             const pluginsByType = activePlugins[type];
             if (!pluginsByType) {
                 return [];
             }
             return pluginsByType.map(p => p.name);
-        }
-    });
-};
+        };
+    }
+});
 export const deactivatePluginRecoilAction = (name: string): void => {
     const [editorPlugins, setEditorPlugins] = useRecoilState(editorPluginsAtom);
     const { type } = getPlugin(name) || {};
@@ -158,5 +160,40 @@ export const editorPageLayoutSelector = selector<string | undefined>({
     get: ({ get }) => {
         const page = get(editorPageAtom);
         return page.settings?.general?.layout;
+    }
+});
+
+const elementByIdSelectorFamily = selectorFamily<PbElement, string>({
+    key: "elementByIdSelectorFamily",
+    get: id => {
+        return ({ get }) => {
+            const elements = get(editorPageElementsAtom);
+            if (!elements[id]) {
+                throw new Error(`There is no element with id "${id}"`);
+            }
+            return elements[id];
+        };
+    }
+});
+
+type ElementByIdSelectorProps = {
+    active: boolean;
+    highlight: boolean;
+};
+export const elementPropsByIdSelectorFamily = selectorFamily<ElementByIdSelectorProps, string>({
+    key: "elementPropsByIdSelectorFamily",
+    get: id => {
+        return ({ get }) => {
+            const element = get(elementByIdSelectorFamily(id));
+            const { isDragging, isResizing, activeElement, highlightElement } = get(editorUiAtom);
+
+            const active = activeElement && activeElement === element.id;
+            const highlight = active || highlightElement === id;
+
+            return {
+                active,
+                highlight: highlight && !isDragging && !isResizing
+            };
+        };
     }
 });

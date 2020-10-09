@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { deactivatePluginRecoilAction, pluginsActiveNamesByTypeSelectorFactory } from "./recoil";
+import { deactivatePluginRecoilAction, pluginsActiveNamesByTypeSelectorFamily } from "../recoil";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -91,10 +91,10 @@ const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPl
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
-const activeTopPluginsSelector = pluginsActiveNamesByTypeSelectorFactory("pb-editor-toolbar-top");
-
 const Toolbar = () => {
-    const activePluginsTop = useRecoilValue(activeTopPluginsSelector);
+    const activePluginsTop = useRecoilValue(
+        pluginsActiveNamesByTypeSelectorFamily("pb-editor-toolbar-top")
+    );
     const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
     const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
     return (

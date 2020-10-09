@@ -3,8 +3,8 @@ import styled from "@emotion/styled";
 import {
     editorPageElementsRootElementSelector,
     editorPageLayoutSelector,
-    isPluginActiveSelectorFactory
-} from "./recoil";
+    isPluginActiveSelectorFamily
+} from "../recoil";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
@@ -43,13 +43,12 @@ const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boo
     }
     return React.createElement(layout.component, null, content);
 };
-// TODO verify that this works
-const isPluginActiveSelector = isPluginActiveSelectorFactory("pb-editor-toolbar-preview");
 
 const Content = () => {
     const rootElement = useRecoilValue(editorPageElementsRootElementSelector);
-    const renderLayout = useRecoilValue(isPluginActiveSelector);
+    const renderLayout = useRecoilValue(isPluginActiveSelectorFamily("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(editorPageLayoutSelector);
+
     const { theme } = usePageBuilder();
     const plugins = getPlugins<PbEditorContentPlugin>("pb-editor-content");
     const layouts = React.useMemo(() => {
