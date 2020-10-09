@@ -1,5 +1,5 @@
 import React from "react";
-import Droppable from "./../Droppable";
+import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
 
 const InnerDivVertical = styled("div")({
@@ -43,9 +43,9 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
 
 type Props = {
     type: string;
-    onDrop: Function;
+    onDrop: DroppableOnDropPropType;
     last: boolean;
-    isVisible: boolean;
+    isVisible: DroppableIsVisiblePropType;
 };
 
 const Vertical = ({ last, onDrop, isVisible, type }: Props) => {

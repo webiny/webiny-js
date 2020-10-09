@@ -1,5 +1,8 @@
 import React from "react";
-import Droppable from "@webiny/app-page-builder/editor/components/Droppable";
+import Droppable, {
+    DroppableIsVisiblePropType,
+    DroppableOnDropPropType
+} from "@webiny/app-page-builder/editor/components/Droppable";
 import styled from "@emotion/styled";
 
 const InnerDiv = styled("div")({
@@ -43,9 +46,9 @@ const OuterDiv = React.memo<OuterDiv>(
 
 type Props = {
     type: string;
-    onDrop: Function;
+    onDrop: DroppableOnDropPropType;
     below: boolean;
-    isVisible: boolean;
+    isVisible: DroppableIsVisiblePropType;
 };
 
 const Horizontal = ({ below, onDrop, isVisible, type }: Props) => {

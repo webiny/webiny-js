@@ -1,5 +1,5 @@
 import React from "react";
-import Droppable from "./../Droppable";
+import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
 import { elementPropsByIdSelectorFamily } from "../recoil";
 import { useRecoilValue } from "recoil";
@@ -38,12 +38,12 @@ const Add = styled("div")({
     margin: 0
 });
 
-const isVisible = () => true;
+const isVisible: DroppableIsVisiblePropType = () => true;
 
 type Props = {
     id: string;
     type: string;
-    onDrop: Function;
+    onDrop: DroppableOnDropPropType;
     children: React.ReactNode;
 };
 
