@@ -50,9 +50,12 @@ export default (options): HandlerPlugin => {
                     await ssrCache.refresh(version);
                     let buffer = Buffer.from(ssrCache.content);
                     buffer = zlib.gzipSync(buffer);
-                    return createSsrResponse({
-                        body: buffer.toString("base64")
-                    }, http);
+                    return createSsrResponse(
+                        {
+                            body: buffer.toString("base64")
+                        },
+                        http
+                    );
                 }
 
                 if (ssrCache.isEmpty) {
@@ -88,13 +91,16 @@ export default (options): HandlerPlugin => {
                 let buffer = Buffer.from(ssrCache.content);
                 buffer = zlib.gzipSync(buffer);
 
-                return createSsrResponse({
-                    body: buffer.toString("base64"),
-                    headers: {
-                        "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
-                        "Content-Encoding": "gzip"
-                    }
-                }, http);
+                return createSsrResponse(
+                    {
+                        body: buffer.toString("base64"),
+                        headers: {
+                            "Cache-Control": "public, max-age=" + ssrCache.expiresIn / 1000,
+                            "Content-Encoding": "gzip"
+                        }
+                    },
+                    http
+                );
             }
         };
     }
@@ -115,9 +121,12 @@ export default (options): HandlerPlugin => {
             let buffer = Buffer.from(body);
             buffer = zlib.gzipSync(buffer);
 
-            return createSsrResponse({
-                body: buffer.toString("base64")
-            }, http);
+            return createSsrResponse(
+                {
+                    body: buffer.toString("base64")
+                },
+                http
+            );
         }
     };
 };
