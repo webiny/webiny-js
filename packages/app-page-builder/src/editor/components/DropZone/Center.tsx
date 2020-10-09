@@ -1,17 +1,17 @@
+import { elementPropsByIdSelectorFamily } from "@webiny/app-page-builder/editor/components/recoil";
 import * as React from "react";
 import styled from "@emotion/styled";
-import { getElementProps } from "@webiny/app-page-builder/editor/selectors";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useRecoilValue } from "recoil";
 import Droppable from "./../Droppable";
 
 type ContainerProps = {
     isOver: boolean;
     highlight: boolean;
+    children: React.ReactNode;
 };
 
 const Container = React.memo<ContainerProps>(
-    // @ts-ignore
-    styled("div")(({ isOver }) => ({
+    styled("div")(({ isOver }: ContainerProps) => ({
         backgroundColor: "transparent",
         boxSizing: "border-box",
         height: "100%",
@@ -41,14 +41,14 @@ const Add = styled("div")({
 const isVisible = () => true;
 
 type Props = {
+    id: string;
     type: string;
     onDrop: Function;
     children: React.ReactNode;
-    active: boolean;
-    highlight: boolean;
 };
 
-const Center = ({ type, onDrop, children, active, highlight }: Props) => {
+const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children }) => {
+    const { active, highlight } = useRecoilValue(elementPropsByIdSelectorFamily(id));
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (
@@ -62,6 +62,4 @@ const Center = ({ type, onDrop, children, active, highlight }: Props) => {
     );
 };
 
-export default connect<any, any, any>((state, props) => {
-    return getElementProps(state, props);
-})(React.memo(Center));
+export default React.memo(Center);
