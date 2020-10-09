@@ -43,7 +43,7 @@ const processHooks = async (hook, { context, ...options }) => {
     }
 };
 
-module.exports = async ({ options, ...inputs }, context) => {
+module.exports = async (inputs, context) => {
     const start = new Date();
     const getDuration = () => {
         return (new Date() - start) / 1000;
