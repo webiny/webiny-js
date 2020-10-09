@@ -32,9 +32,6 @@ const BlockContainer = ({
                 }}
                 className={combineClassNames(...customClasses)}
             >
-                {!elements.length && (
-                    <DropZone.Center element={element}>Add an element here</DropZone.Center>
-                )}
                 {elements.map((childId, index) => (
                     <React.Fragment key={childId}>
                         <DropZone.Above

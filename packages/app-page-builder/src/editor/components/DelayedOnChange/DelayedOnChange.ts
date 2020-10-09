@@ -13,19 +13,14 @@ const emptyFunction = () => {
  * a user stops typing for given period of time (400ms by default).
  */
 type Props = {
-    value: string;
+    value?: string;
     delay?: number;
-    onChange: Function;
+    onChange?: Function;
     onBlur?: Function;
     onKeyDown?: Function;
 };
-export const DelayedOnChange: React.FunctionComponent<Props> = ({
-    children,
-    onChange,
-    delay = 400,
-    value: initialValue,
-    ...other
-}) => {
+export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...other }) => {
+    const { onChange, delay = 400, value: initialValue } = other;
     const [value, setValue] = useState<string>(initialValue);
 
     const localTimeout = React.useRef<number>(undefined);
