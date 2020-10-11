@@ -108,7 +108,7 @@ This is the reason we use yarn because its workspace management makes working wi
 
 Let's see an example package, the `api-cookie-policy`. 
 
-![Package content](/img/deep-dive/architecture/webiny-package-content.png)
+![Package content](https://docs.webiny.com/img/deep-dive/architecture/webiny-package-content.png)
 
 The package contains the `dist` and the `src` folders.
 
