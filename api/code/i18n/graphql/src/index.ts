@@ -1,11 +1,12 @@
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
-import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import securityPlugins from "@webiny/api-security/authenticator";
 import permissionsManager from "@webiny/api-security-permissions-manager/client";
 import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
 import i18nPlugins from "@webiny/api-i18n/plugins";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -15,7 +16,12 @@ export const handler = createHandler(
             playground: process.env.GRAPHQL_PLAYGROUND
         }
     }),
-    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    dynamoDb({
+        documentClient: new DocumentClient({
+            convertEmptyValues: true,
+            region: process.env.AWS_REGION
+        })
+    }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
     // Adds a context plugin to process `security` plugins for authentication
     securityPlugins(),
