@@ -10,6 +10,7 @@ export default () => [
         name: "context-i18n-get-locales",
         type: "context-i18n-get-locales",
         async resolve({ context }) {
+            return [];
             const { I18NLocale } = context.models;
             const locales = await I18NLocale.find();
             return locales.map(locale => ({

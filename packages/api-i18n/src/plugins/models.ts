@@ -1,7 +1,4 @@
-import { flow } from "lodash";
-import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { withUser } from "@webiny/api-security";
-import i18NLocale from "./models/i18nLocale.model";
+import i18n from "./models/i18n.model";
 
 export default () => ({
     name: "context-models",
@@ -15,22 +12,8 @@ export default () => ({
             );
         }
 
-        const createBase = () =>
-            flow(
-                withFields({
-                    id: context.commodo.fields.id()
-                }),
-                withStorage({ driver }),
-                withUser(context),
-                withSoftDelete(),
-                withCrudLogs()
-            )();
-
-        const I18NLocale = i18NLocale({ createBase });
-
         context.models = {
-            I18NLocale,
-            createBase
+            I18N: i18n(context)
         };
     }
 });
