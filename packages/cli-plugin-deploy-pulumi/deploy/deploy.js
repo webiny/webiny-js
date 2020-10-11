@@ -83,7 +83,7 @@ module.exports = async (inputs, context) => {
                 new Promise(async (resolve, reject) => {
                     try {
                         const cwd = packages[i];
-                        await execa("yarn", ["build", '--env', env], { cwd });
+                        await execa("yarn", ["build", "--env", env], { cwd });
                         bar.tick();
 
                         resolve();
@@ -140,7 +140,7 @@ module.exports = async (inputs, context) => {
             execa: {
                 cwd: stacksDir,
                 env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-            },
+            }
         });
 
         const { process: configProcess } = await pulumiConfig.run({
