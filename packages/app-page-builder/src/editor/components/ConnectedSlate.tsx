@@ -1,7 +1,7 @@
 import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
 import React from "react";
 import Slate from "./Slate";
-import { elementByIdSelectorFamily } from "./recoil";
+import { elementByIdSelectorFamily } from "../recoil/recoil";
 import { useRecoilValue } from "recoil";
 
 type Props = Omit<SlateEditorProps, "value"> & {

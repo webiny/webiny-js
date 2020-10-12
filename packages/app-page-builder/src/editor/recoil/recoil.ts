@@ -1,8 +1,22 @@
+import {
+    flattenContent,
+    saveEditorPageRevision,
+    updateChildPaths
+} from "@webiny/app-page-builder/editor/recoil/utils";
 import invariant from "invariant";
-import { PbDocumentElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbDocumentElementPlugin,
+    PbElement,
+    PbShallowElement
+} from "@webiny/app-page-builder/types";
 import { getPlugin } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
-import { atom, selector, selectorFamily, useRecoilState } from "recoil";
+import { atom, selector, selectorFamily, useRecoilState, useSetRecoilState } from "recoil";
+import { useBatching } from "recoil-undo";
+import lodashCloneDeep from "lodash/cloneDeep";
+import lodashMerge from "lodash/merge";
+import lodashSet from "lodash/set";
+import lodashGet from "lodash/get";
 
 // copied from selectors/index.ts because that file will go away
 const getPluginType = (name: string): string => {
@@ -98,28 +112,53 @@ export const deactivatePluginRecoilAction = (name: string): void => {
     });
 };
 
+type EditorPageCategoryType = {
+    id: string;
+    name: string;
+    url: string;
+};
+
 // state.page
-type EditorPageAtomType = {
-    content?: PbElement & {
-        present?: PbElement;
-    };
+export type EditorPageAtomType = {
+    id?: string;
+    title?: string;
+    url?: string;
+    content?: PbElement;
     settings?: {
         general?: {
             layout?: string;
         };
     };
+    parent?: string;
+    version: number;
+    elements: PbElement[];
+    locked: boolean;
+    published: boolean;
+    isHomePage: boolean;
+    isErrorPage: boolean;
+    isNotFoundPage: boolean;
+    savedOn?: Date;
+    snippet: string | null;
+    category?: EditorPageCategoryType;
 };
 const editorPageAtom = atom<EditorPageAtomType>({
     key: "editorPageAtom",
-    default: {}
+    default: {
+        elements: [],
+        locked: false,
+        version: 1,
+        published: false,
+        isHomePage: false,
+        isErrorPage: false,
+        isNotFoundPage: false,
+        snippet: null
+    }
 });
-const editorPageSelector = selector<PbElement>({
+export const editorPageSelector = selector<PbElement>({
     key: "editorPageSelector",
     get: ({ get }) => {
         const page = get(editorPageAtom);
-        if (page.content?.present) {
-            return page.content.present;
-        } else if (page.content) {
+        if (page.content) {
             return page.content;
         }
 
@@ -131,30 +170,6 @@ const editorPageSelector = selector<PbElement>({
         return document.create();
     }
 });
-// state.elements
-type EditorPageElementsAtom = {
-    [id: string]: PbElement;
-};
-export const editorPageElementsAtom = atom<EditorPageElementsAtom>({
-    key: "editorPageElementsAtom",
-    default: {}
-});
-export const editorPageElementsRootElementSelector = selector<PbElement | undefined>({
-    key: "editorPageElementsRootElementSelector",
-    get: ({ get }) => {
-        const elements = get(editorPageElementsAtom);
-        const page = get(editorPageSelector);
-        // TODO check what actually to do at this point
-        // currently there is a possibility that there is no elements under a page.id
-        // and it is undefined and that point
-        // is it correct or?
-        if (!elements[page.id]) {
-            return undefined;
-        }
-        return elements[page.id];
-    }
-});
-
 export const editorPageLayoutSelector = selector<string | undefined>({
     key: "editorPageLayoutSelector",
     get: ({ get }) => {
@@ -163,11 +178,19 @@ export const editorPageLayoutSelector = selector<string | undefined>({
     }
 });
 
-export const elementByIdSelectorFamily = selectorFamily<PbElement, string>({
+// state.elements
+type EditorPageFlatElementsAtom = {
+    [id: string]: PbShallowElement;
+};
+const editorPageFlatElementsAtom = atom<EditorPageFlatElementsAtom>({
+    key: "editorPageElementsAtom",
+    default: {}
+});
+export const elementByIdSelectorFamily = selectorFamily<PbShallowElement, string>({
     key: "elementByIdSelectorFamily",
     get: id => {
         return ({ get }) => {
-            const elements = get(editorPageElementsAtom);
+            const elements = get(editorPageFlatElementsAtom);
             if (elements.hasOwnProperty(id)) {
                 return elements[id];
             }
@@ -202,3 +225,89 @@ export const elementPropsByIdSelectorFamily = selectorFamily<ElementByIdSelector
         };
     }
 });
+
+// global actions
+const createElementWithoutElementsAsString = (element: PbElement): PbElement => {
+    if (!element.elements || typeof element.elements[0] !== "string") {
+        return element;
+    }
+    throw new Error("This should never happen.");
+    // return {
+    //     ...element,
+    //     elements: [],
+    // };
+};
+/**
+ * when element update happens:
+ * 1. update page content
+ * 2. flatten content and update elements
+ * 3. save revision if revision history is allowed
+ */
+type UpdateElementType = {
+    element: PbElement;
+    merge?: boolean;
+    history?: boolean;
+};
+
+const cloneAndMergePageContentState = (
+    page: EditorPageAtomType,
+    element: PbElement,
+    merge: boolean
+) => {
+    const newElement = updateChildPaths(createElementWithoutElementsAsString(element));
+    if (!merge) {
+        return {
+            ...(page.content || {}),
+            ...newElement
+        };
+    }
+    return lodashMerge(page.content, newElement);
+};
+/**
+ * TODO find a better way
+ * this builds new page content state
+ * using dot-prop-immutable so we can target deeply nested elements
+ */
+const buildNewPageContentState = (
+    { content }: EditorPageAtomType,
+    element: PbElement,
+    merge: boolean
+) => {
+    const newElement = updateChildPaths(createElementWithoutElementsAsString(element));
+    // .slice(2) removes `0.` from the beginning of the generated path
+    const path = element.path.replace(/\./g, ".elements.").slice(2);
+    const existingElement = lodashGet(content, path);
+    if (merge) {
+        return lodashSet(content, path, lodashMerge(existingElement, newElement));
+    }
+    return lodashSet(content, path, element);
+};
+const createNewPageState = (page: EditorPageAtomType, element: PbElement, merge: boolean) => {
+    if (element.type === "document") {
+        const content = cloneAndMergePageContentState(page, element, merge);
+        return {
+            ...page,
+            content
+        };
+    }
+    return {
+        ...page,
+        content: buildNewPageContentState(page, element, merge)
+    };
+};
+export const updateElementRecoil = ({ element, merge, history }: UpdateElementType) => {
+    // find out which path are we updating
+    // if type is document, we will update editorPageAtom.content
+    const [page, setPage] = useRecoilState(editorPageAtom);
+    const setElements = useSetRecoilState(editorPageFlatElementsAtom);
+    const { startBatch, endBatch } = useBatching();
+
+    const newPageState = createNewPageState(lodashCloneDeep(page), element, merge);
+    startBatch();
+    setPage(newPageState);
+    setElements(flattenContent(newPageState.content));
+    if (history === true) {
+        saveEditorPageRevision(newPageState);
+    }
+    endBatch();
+};

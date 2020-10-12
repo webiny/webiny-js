@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { deactivatePluginRecoilAction, pluginsActiveNamesByTypeSelectorFamily } from "../recoil";
+import {
+    deactivatePluginRecoilAction,
+    pluginsActiveNamesByTypeSelectorFamily
+} from "../../recoil/recoil";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";

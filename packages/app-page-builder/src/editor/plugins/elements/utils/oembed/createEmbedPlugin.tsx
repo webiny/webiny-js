@@ -18,7 +18,8 @@ type EmbedPluginConfig = {
     oembed?: {
         global?: string;
         sdk?: string;
-        onData?: Function;
+        // onData?: Function;
+        onData?: (data: { [key: string]: any }) => { [key: string]: any };
         renderEmbed?: (props: OEmbedProps) => React.ReactElement;
         init?: (params: { node: HTMLElement }) => void;
     };

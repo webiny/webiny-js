@@ -1,19 +1,15 @@
-import * as React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { updateElementRecoil } from "@webiny/app-page-builder/editor/recoil/recoil";
+import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
-import { isEqual } from "lodash";
-import { get } from "lodash";
-import { set } from "dot-prop-immutable";
 import gql from "graphql-tag";
 import { useQuery } from "react-apollo";
-import { PbUpdateElement, updateElement } from "@webiny/app-page-builder/editor/actions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { ReactElement } from "react";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
-    const { url } = get(element, "data.source") || {};
+    const { url } = element?.data?.source || {};
 
     if (!sdk || !url || window[global]) {
         return Promise.resolve();
@@ -32,7 +28,7 @@ function appendSDK(props) {
 
 function initEmbed(props) {
     const { sdk, init, element } = props;
-    if (sdk && get(element, "data.source.url")) {
+    if (sdk && element?.data?.source?.url) {
         const node = document.getElementById(element.id);
         if (typeof init === "function" && node) {
             init({ props, node });
@@ -63,23 +59,25 @@ const centerAlign = css({
 
 export type OEmbedProps = {
     element: PbElement;
-    updateElement: PbUpdateElement;
+    // updateElement: PbUpdateElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
-    data: any;
+    data?: any;
 };
-
-const OEmbed = React.memo((props: OEmbedProps) => {
+const OEmbedComponent = (props: OEmbedProps) => {
     const { showSnackbar } = useSnackbar();
-    const { element, updateElement, onData = d => d } = props;
+    const { element, onData = d => d } = props;
 
-    React.useEffect(() => {
+    useEffect(() => {
         appendSDK(props).then(() => initEmbed(props));
     });
 
-    const source = get(element, "data.source") || {};
-    const oembed = get(element, "data.oembed") || {};
-    const skip = !source.url || isEqual(oembed.source, source);
+    const source = element.data?.source || {};
+    const oembed = element.data?.oembed || {};
+    const sourceUrl = source.url;
+    const oembedSourceUrl = oembed.source?.url;
+
+    const skip = !sourceUrl || sourceUrl === oembedSourceUrl;
 
     const { loading } = useQuery(oembedQuery, {
         skip,
@@ -88,12 +86,16 @@ const OEmbed = React.memo((props: OEmbedProps) => {
             if (skip) {
                 return;
             }
-            const { data: oembed, error } = get(data, "pageBuilder.oembedData");
+            const { data: oembed, error } = data?.pageBuilder?.oembedData || {};
             if (oembed) {
-                // Store loaded oembed data
-                updateElement({
-                    element: set(element, "data.oembed", onData(oembed))
-                });
+                const newElement: PbElement = {
+                    ...element,
+                    data: {
+                        ...(element?.data || {}),
+                        oembed: onData(oembed)
+                    }
+                };
+                updateElementRecoil({ element: newElement });
             }
             if (error) {
                 showSnackbar(error.message);
@@ -101,34 +103,33 @@ const OEmbed = React.memo((props: OEmbedProps) => {
         }
     });
 
-    const renderEmpty = React.useCallback(
+    const renderEmpty = useCallback(
         () => <div>You must configure your embed in the settings!</div>,
         []
     );
 
-    const renderEmbed = React.useCallback(() => {
-        if (typeof props.renderEmbed === "function") {
-            return props.renderEmbed(props);
-        }
+    const renderEmbed = useCallback(
+        (targetElement: PbElement) => {
+            if (typeof props.renderEmbed === "function") {
+                return props.renderEmbed(props);
+            }
 
-        if (loading) {
-            return <div>Loading embed data...</div>;
-        }
+            if (loading) {
+                return <div>Loading embed data...</div>;
+            }
+            return (
+                <div
+                    id={targetElement.id}
+                    className={
+                        centerAlign + " pb-editor-dragging--disabled pb-editor-resizing--disabled"
+                    }
+                    dangerouslySetInnerHTML={{ __html: targetElement.data?.oembed?.html || "" }}
+                />
+            );
+        },
+        [element, loading]
+    );
 
-        return (
-            <div
-                id={element.id}
-                className={
-                    centerAlign + " pb-editor-dragging--disabled pb-editor-resizing--disabled"
-                }
-                dangerouslySetInnerHTML={{ __html: get(element, "data.oembed.html") || "" }}
-            />
-        );
-    }, [element, loading]);
-
-    const { url } = get(element, "data.source") || {};
-
-    return url ? renderEmbed() : renderEmpty();
-});
-
-export default connect<any, any, any>(null, { updateElement })(OEmbed);
+    return sourceUrl ? renderEmbed(element) : renderEmpty();
+};
+export default React.memo(OEmbedComponent);

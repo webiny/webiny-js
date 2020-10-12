@@ -1,12 +1,16 @@
 import React from "react";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
-import { editorUiAtom, elementByIdSelectorFamily, elementPropsByIdSelectorFamily } from "./recoil";
+import {
+    editorUiAtom,
+    elementByIdSelectorFamily,
+    elementPropsByIdSelectorFamily
+} from "./../recoil/recoil";
 import { Transition } from "react-transition-group";
 import { getPlugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -31,7 +35,12 @@ const getElementPlugin = (element): PbEditorPageElementPlugin => {
 const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
     const { id: elementId, className = "" } = props;
 
-    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+    // TODO find a way to fix
+    // expected value is PbShallowElement but plugins is looking for PbElement
+    // when looking at https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/components/Element.tsx#L137
+    // it is noticeable that getElement returns shallow element from state.elements
+    // when type is really PbShallowElement element - TS is complaining
+    const element = (useRecoilValue(elementByIdSelectorFamily(elementId)) as unknown) as PbElement;
     const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelectorFamily(elementId));
     const setEditorUi = useSetRecoilState(editorUiAtom);
 

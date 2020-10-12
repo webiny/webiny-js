@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { editorUiAtom } from "../recoil";
+import { editorUiAtom } from "../../recoil/recoil";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useRecoilValue } from "recoil";

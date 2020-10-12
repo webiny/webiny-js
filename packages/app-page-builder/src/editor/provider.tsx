@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { editorUiAtom } from "./components/recoil";
+import { editorUiAtom } from "./recoil/recoil";
 
 const EditorContext = React.createContext({} as any);
 const EditorProvider: React.FunctionComponent = props => {

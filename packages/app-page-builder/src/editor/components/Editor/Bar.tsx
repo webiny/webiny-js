@@ -1,5 +1,5 @@
 import React from "react";
-import { editorPluginsAtom, editorUiActiveElementSelector } from "../recoil";
+import { editorPluginsAtom, editorUiActiveElementSelector } from "../../recoil/recoil";
 import { getPlugins } from "@webiny/plugins";
 import { useRecoilValue } from "recoil";
 import DefaultEditorBar from "./DefaultEditorBar";

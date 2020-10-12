@@ -1,7 +1,7 @@
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import { elementPropsByIdSelectorFamily } from "../recoil";
+import { elementPropsByIdSelectorFamily } from "../../recoil/recoil";
 import { useRecoilValue } from "recoil";
 
 type ContainerProps = {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
@@ -68,10 +68,8 @@ const searchInput = css({
     }
 });
 
-const { useState, useCallback, useMemo, Fragment } = React;
-
 const IconPicker = ({ value, onChange }) => {
-    const [filter, setFilter] = useState("");
+    const [filter, setFilter] = useState<string>("");
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -122,7 +120,7 @@ const IconPicker = ({ value, onChange }) => {
     const renderGrid = useCallback(
         ({ closeMenu }) => {
             return (
-                <Fragment>
+                <>
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
@@ -144,7 +142,7 @@ const IconPicker = ({ value, onChange }) => {
                         rowHeight={100}
                         width={640}
                     />
-                </Fragment>
+                </>
             );
         },
         [icons]
