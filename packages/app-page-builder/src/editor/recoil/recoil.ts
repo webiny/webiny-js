@@ -1,8 +1,3 @@
-import {
-    flattenContent,
-    saveEditorPageRevision,
-    updateChildPaths
-} from "@webiny/app-page-builder/editor/recoil/utils";
 import invariant from "invariant";
 import {
     PbDocumentElementPlugin,
@@ -11,12 +6,7 @@ import {
 } from "@webiny/app-page-builder/types";
 import { getPlugin } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
-import { atom, selector, selectorFamily, useRecoilState, useSetRecoilState } from "recoil";
-import { useBatching } from "recoil-undo";
-import lodashCloneDeep from "lodash/cloneDeep";
-import lodashMerge from "lodash/merge";
-import lodashSet from "lodash/set";
-import lodashGet from "lodash/get";
+import { atom, selector, selectorFamily, useRecoilState } from "recoil";
 
 // copied from selectors/index.ts because that file will go away
 const getPluginType = (name: string): string => {
@@ -141,7 +131,7 @@ export type EditorPageAtomType = {
     snippet: string | null;
     category?: EditorPageCategoryType;
 };
-const editorPageAtom = atom<EditorPageAtomType>({
+export const editorPageAtom = atom<EditorPageAtomType>({
     key: "editorPageAtom",
     default: {
         elements: [],
@@ -182,7 +172,7 @@ export const editorPageLayoutSelector = selector<string | undefined>({
 type EditorPageFlatElementsAtom = {
     [id: string]: PbShallowElement;
 };
-const editorPageFlatElementsAtom = atom<EditorPageFlatElementsAtom>({
+export const editorPageFlatElementsAtom = atom<EditorPageFlatElementsAtom>({
     key: "editorPageElementsAtom",
     default: {}
 });
@@ -225,89 +215,3 @@ export const elementPropsByIdSelectorFamily = selectorFamily<ElementByIdSelector
         };
     }
 });
-
-// global actions
-const createElementWithoutElementsAsString = (element: PbElement): PbElement => {
-    if (!element.elements || typeof element.elements[0] !== "string") {
-        return element;
-    }
-    throw new Error("This should never happen.");
-    // return {
-    //     ...element,
-    //     elements: [],
-    // };
-};
-/**
- * when element update happens:
- * 1. update page content
- * 2. flatten content and update elements
- * 3. save revision if revision history is allowed
- */
-type UpdateElementType = {
-    element: PbElement;
-    merge?: boolean;
-    history?: boolean;
-};
-
-const cloneAndMergePageContentState = (
-    page: EditorPageAtomType,
-    element: PbElement,
-    merge: boolean
-) => {
-    const newElement = updateChildPaths(createElementWithoutElementsAsString(element));
-    if (!merge) {
-        return {
-            ...(page.content || {}),
-            ...newElement
-        };
-    }
-    return lodashMerge(page.content, newElement);
-};
-/**
- * TODO find a better way
- * this builds new page content state
- * using dot-prop-immutable so we can target deeply nested elements
- */
-const buildNewPageContentState = (
-    { content }: EditorPageAtomType,
-    element: PbElement,
-    merge: boolean
-) => {
-    const newElement = updateChildPaths(createElementWithoutElementsAsString(element));
-    // .slice(2) removes `0.` from the beginning of the generated path
-    const path = element.path.replace(/\./g, ".elements.").slice(2);
-    const existingElement = lodashGet(content, path);
-    if (merge) {
-        return lodashSet(content, path, lodashMerge(existingElement, newElement));
-    }
-    return lodashSet(content, path, element);
-};
-const createNewPageState = (page: EditorPageAtomType, element: PbElement, merge: boolean) => {
-    if (element.type === "document") {
-        const content = cloneAndMergePageContentState(page, element, merge);
-        return {
-            ...page,
-            content
-        };
-    }
-    return {
-        ...page,
-        content: buildNewPageContentState(page, element, merge)
-    };
-};
-export const updateElementRecoil = ({ element, merge, history }: UpdateElementType) => {
-    // find out which path are we updating
-    // if type is document, we will update editorPageAtom.content
-    const [page, setPage] = useRecoilState(editorPageAtom);
-    const setElements = useSetRecoilState(editorPageFlatElementsAtom);
-    const { startBatch, endBatch } = useBatching();
-
-    const newPageState = createNewPageState(lodashCloneDeep(page), element, merge);
-    startBatch();
-    setPage(newPageState);
-    setElements(flattenContent(newPageState.content));
-    if (history === true) {
-        saveEditorPageRevision(newPageState);
-    }
-    endBatch();
-};

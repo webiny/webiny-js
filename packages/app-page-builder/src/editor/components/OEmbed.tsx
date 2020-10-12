@@ -1,4 +1,4 @@
-import { updateElementRecoil } from "@webiny/app-page-builder/editor/recoil/recoil";
+import { updateElementRecoil } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
 import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import gql from "graphql-tag";
