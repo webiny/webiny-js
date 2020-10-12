@@ -5,31 +5,14 @@ import * as data from "./data";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
 
-const ensureFullAccessRole = async context => {
-    const { SecurityRole } = context.models;
-    let role = await SecurityRole.findOne({ query: { slug: "full-access" } });
-    if (!role) {
-        role = new SecurityRole();
-        await role.populate(data.fullAccessRole).save();
-    }
-    return role;
-};
-
 const ensureFullAccessGroup = async context => {
-    const { SecurityGroup, SecurityRole } = context.models;
+    const { SecurityGroup } = context.models;
     let group = await SecurityGroup.findOne({ query: { slug: "security-full-access" } });
     if (!group) {
-        // TODO: Remove this manual creation of "role" after commodo  update
-        const roles = [];
-        for (let i = 0; i < data.roles.length; i++) {
-            const roleData = data.roles[i];
-            const role = new SecurityRole();
-            await role.populate(roleData).save();
-            roles.push(role);
-        }
         group = new SecurityGroup();
-        await group.populate({ ...data.securityFullAccessGroup, roles: roles }).save();
+        await group.populate({ ...data.securityFullAccessGroup }).save();
     }
+    return group;
 };
 
 /**
@@ -60,13 +43,11 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(
             "security-user-management"
         );
-
-        const fullAccessRole = await ensureFullAccessRole(context);
-        await ensureFullAccessGroup(context);
+        const fullAccessGroup = await ensureFullAccessGroup(context);
 
         // Create new user
         const user = new SecurityUser();
-        await user.populate({ ...data, roles: [fullAccessRole] });
+        await user.populate({ ...data, groups: [fullAccessGroup] });
 
         await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
         await user.save();

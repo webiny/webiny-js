@@ -1,7 +1,4 @@
-const {
-    startApp,
-    buildApp,
-} = require("@webiny/project-utils");
+const { startApp, buildApp } = require("@webiny/project-utils");
 const path = require("path");
 const { setEnvironmentFromState } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 

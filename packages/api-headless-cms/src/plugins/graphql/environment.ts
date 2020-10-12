@@ -5,7 +5,21 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { hasCmsPermission } from "@webiny/api-security";
+
+const checkEnvironmentSettingUpdatePermission = async ({ permission }) => {
+    let allowed = false;
+
+    if (permission.manageEnvironments) {
+        allowed = true;
+    }
+
+    return allowed;
+};
+
+const checkEnvironmentSettingListPermission = async () => {
+    return true;
+};
 
 const environmentFetcher = ctx => ctx.models.CmsEnvironment;
 
@@ -71,13 +85,28 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            getEnvironment: hasScope("cms:environment:crud")(resolveGet(environmentFetcher)),
-            listEnvironments: hasScope("cms:environment:crud")(resolveList(environmentFetcher))
+            getEnvironment: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentSettingListPermission
+            )(resolveGet(environmentFetcher)),
+            listEnvironments: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentSettingListPermission
+            )(resolveList(environmentFetcher))
         },
         CmsMutation: {
-            createEnvironment: hasScope("cms:environment:crud")(resolveCreate(environmentFetcher)),
-            updateEnvironment: hasScope("cms:environment:crud")(resolveUpdate(environmentFetcher)),
-            deleteEnvironment: hasScope("cms:environment:crud")(resolveDelete(environmentFetcher))
+            createEnvironment: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentSettingUpdatePermission
+            )(resolveCreate(environmentFetcher)),
+            updateEnvironment: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentSettingUpdatePermission
+            )(resolveUpdate(environmentFetcher)),
+            deleteEnvironment: hasCmsPermission(
+                "cms.manage.setting",
+                checkEnvironmentSettingUpdatePermission
+            )(resolveDelete(environmentFetcher))
         }
     }
 };

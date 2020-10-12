@@ -1,13 +1,28 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import S3 from "aws-sdk/clients/s3";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 
-export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { File } = context.models;
     const { id } = args;
 
     const file = await File.findById(id);
+    // Logic for particular permission/resolver
+    // We can move it somewhere else and pass it to "hasScope" like CMS
+    const identity = context.security.getIdentity();
+    // Because check permission passed, we know this permission exist
+    const permission = await context.security.getPermission("files.file.delete");
+
+    if (permission.own && file.createdBy !== identity.id) {
+        return new ErrorResponse({
+            message: "Not authorized! Missing permission required for the operation!",
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: { permission }
+        });
+    }
+
     if (!file) {
         return new NotFoundResponse(id ? `File "${id}" not found!` : "File not found!");
     }
@@ -32,3 +47,5 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
                 })
         );
 };
+
+export default resolver;

@@ -41,7 +41,7 @@ export class SettingsManagerClient {
         const { error, data } = await this.context.handlerClient.invoke({
             name: this.settingsManagerFunction,
             payload: operation
-        })
+        });
 
         if (error) {
             throw Error(error);
@@ -53,7 +53,6 @@ export class SettingsManagerClient {
     }
 
     async getSettings(key: string) {
-
         /*
         TODO: temporary disabled - need to wrap this whole story (go through all of the settings code for all apps).
         const cached = this.cache.get(key);

@@ -29,7 +29,8 @@ const avatar = css({
     },
     img: {
         width: "100% !important",
-        height: "100% !important"
+        height: "100% !important",
+        objectFit: "cover"
     }
 });
 
@@ -82,12 +83,12 @@ export type AvatarProps = {
 export const Avatar = (props: AvatarProps) => {
     const { className, width, height, src, alt, fallbackText, renderImage, ...rest } = props;
 
-    let renderedImage = null;
+    let renderedImage;
     const imageProps = { src, alt };
     if (typeof renderImage === "function") {
         renderedImage = renderImage(imageProps);
     } else {
-        renderedImage = <img {...imageProps} />;
+        renderedImage = <img {...imageProps} alt={alt} />;
     }
 
     return (

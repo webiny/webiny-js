@@ -3,6 +3,7 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
+    { "path": "../app-headless-cms" },
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },

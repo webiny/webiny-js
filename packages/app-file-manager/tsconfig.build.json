@@ -5,8 +5,10 @@
     "node_modules",
     "../app-admin",
     "../app-security",
+    "../app-security-user-management",
     "../app-page-builder",
     "../form",
+    "../plugins",
     "../react-router",
     "../validation",
     "../ui"
@@ -19,8 +21,10 @@
   "references": [
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
+    { "path": "../app-security-user-management/tsconfig.build.json" },
     { "path": "../app-page-builder/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }

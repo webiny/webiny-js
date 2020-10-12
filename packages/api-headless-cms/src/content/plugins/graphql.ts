@@ -9,13 +9,111 @@ import {
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
 import { merge } from "lodash";
-import { hasScope } from "@webiny/api-security";
+import { hasScope, hasCmsPermission } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
 import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
 import meta from "./graphql/meta";
+
+const checkContentModelListPermission = async ({ args, context, permission }) => {
+    const { CmsContentModelGroup, CmsContentModel } = context.models;
+    const identity = context.security.getIdentity();
+
+    const query = { ...args.where };
+    const find = { query };
+
+    const contentModelData = await CmsContentModel.find(find);
+
+    let allowed = Boolean(contentModelData);
+
+    // Only load your own documents
+    if (allowed && permission.own) {
+        if (Array.isArray(contentModelData)) {
+            allowed = contentModelData.every(item => item.createdBy === identity.id);
+        } else {
+            allowed = contentModelData.createdBy === identity.id;
+        }
+    }
+
+    // Only load content in specific models
+    if (allowed && Array.isArray(permission.models) && permission.models.length) {
+        if (Array.isArray(contentModelData)) {
+            allowed = contentModelData.every(item => permission.models.includes(item.modelId));
+        } else {
+            allowed = permission.models.includes(contentModelData.modelId);
+        }
+    }
+
+    // Only load content in specific groups
+    if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
+        const contentModelGroupData = await CmsContentModelGroup.find({
+            query: { slug: { $in: permission.groups } }
+        });
+
+        const contentModelGroupIDsFromPermission = [];
+
+        if (Array.isArray(contentModelGroupData)) {
+            for (let i = 0; i < contentModelGroupData.length; i++) {
+                const contentModelGroup = contentModelGroupData[i];
+                contentModelGroupIDsFromPermission.push(contentModelGroup.id);
+            }
+        }
+
+        if (Array.isArray(contentModelData)) {
+            const contentModelGroupIDs = [];
+            for (let i = 0; i < contentModelData.length; i++) {
+                const contentModelGroup = await contentModelData[i].group;
+                // If not already exist in list, add the ID
+                if (contentModelGroupIDs.indexOf(contentModelGroup.id) === -1) {
+                    contentModelGroupIDs.push(contentModelGroup.id);
+                }
+            }
+
+            allowed = contentModelGroupIDs.every(id =>
+                contentModelGroupIDsFromPermission.includes(id)
+            );
+        } else {
+            const contentModelGroup = await contentModelData.group;
+
+            allowed = contentModelGroupIDsFromPermission.includes(contentModelGroup.id);
+        }
+    }
+
+    return allowed;
+};
+
+const checkContentModelUpdatePermission = async ({ args, context, permission }) => {
+    const { CmsContentModelGroup, CmsContentModel } = context.models;
+    const identity = context.security.getIdentity();
+
+    const instance = await CmsContentModel.findById(args.id);
+
+    let allowed = Boolean(instance);
+
+    // If "own", check for owner
+    if (allowed && permission.own) {
+        allowed = instance.createdBy === identity.id;
+    }
+    // if "models", check whether the request is for these models
+    if (allowed && Array.isArray(permission.models) && permission.models.length) {
+        allowed = permission.models.includes(instance.modelId);
+    }
+
+    // if "groups", check whether the request is for these groups
+    if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
+        const groupIDs = await CmsContentModelGroup.find({
+            query: { slug: { $in: permission.groups } }
+        });
+
+        const contentModelGroup = await instance.group;
+
+        allowed = groupIDs.includes(contentModelGroup.id);
+    }
+
+    return allowed;
+};
 
 const contentModelFetcher = ctx => ctx.models.CmsContentModel;
 
@@ -38,13 +136,14 @@ const getMutations = type => {
 const getMutationResolvers = type => {
     if (type === "manage") {
         return {
-            createContentModel: hasScope("cms:content-model:create")(
+            createContentModel: hasScope("cms.manage.contentModel.update")(
                 resolveCreate(contentModelFetcher)
             ),
-            updateContentModel: hasScope("cms:content-model:update")(
-                resolveUpdate(contentModelFetcher)
-            ),
-            deleteContentModel: hasScope("cms:content-model:delete")(
+            updateContentModel: hasCmsPermission(
+                "cms.manage.contentModel.update",
+                checkContentModelUpdatePermission
+            )(resolveUpdate(contentModelFetcher)),
+            deleteContentModel: hasScope("cms.manage.contentModel.delete")(
                 resolveDelete(contentModelFetcher)
             )
         };
@@ -65,8 +164,14 @@ const getMutationResolvers = type => {
 const getQueryResolvers = type => {
     if (type === "manage") {
         return {
-            getContentModel: hasScope("cms:content-model:crud")(resolveGet(contentModelFetcher)),
-            listContentModels: hasScope("cms:content-model:crud")(resolveList(contentModelFetcher))
+            getContentModel: hasCmsPermission(
+                "cms.manage.contentModel.list",
+                checkContentModelListPermission
+            )(resolveGet(contentModelFetcher)),
+            listContentModels: hasCmsPermission(
+                "cms.manage.contentModel.list",
+                checkContentModelListPermission
+            )(resolveList(contentModelFetcher))
         };
     }
 
