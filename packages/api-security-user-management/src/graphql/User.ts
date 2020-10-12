@@ -65,7 +65,6 @@ export default {
             avatar: File
             enabled: Boolean
             groups: [SecurityGroup]
-            roles: [SecurityRole]
             permissions: [JSON]
             personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
@@ -85,7 +84,6 @@ export default {
             avatar: RefInput
             enabled: Boolean
             groups: [ID]
-            roles: [ID]
         }
 
         # This input type is used by the user who is updating his own account
@@ -197,18 +195,18 @@ export default {
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
-            getUser: hasScope("security:user:crud")(resolveGet(userFetcher)),
-            listUsers: hasScope("security:user:crud")(resolveList(userFetcher))
+            getUser: hasScope("security.user.manage")(resolveGet(userFetcher)),
+            listUsers: hasScope("security.user.manage")(resolveList(userFetcher))
         },
         SecurityMutation: {
             login: resolveLogin(userFetcher),
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
-            createUser: hasScope("security:user:crud")(resolveCreateUser(userFetcher)),
-            updateUser: hasScope("security:user:crud")(resolveUpdateUser(userFetcher)),
-            deleteUser: hasScope("security:user:crud")(resolveDeleteUser(userFetcher)),
-            createPAT: hasScope("security:user:crud")(resolveCreatePAT),
-            updatePAT: hasScope("security:user:crud")(resolveUpdatePAT),
-            deletePAT: hasScope("security:user:crud")(resolveDeletePAT)
+            createUser: hasScope("security.user.manage")(resolveCreateUser(userFetcher)),
+            updateUser: hasScope("security.user.manage")(resolveUpdateUser(userFetcher)),
+            deleteUser: hasScope("security.user.manage")(resolveDeleteUser(userFetcher)),
+            createPAT: hasScope("security.user.manage")(resolveCreatePAT),
+            updatePAT: hasScope("security.user.manage")(resolveUpdatePAT),
+            deletePAT: hasScope("security.user.manage")(resolveDeletePAT)
         }
     }
 };

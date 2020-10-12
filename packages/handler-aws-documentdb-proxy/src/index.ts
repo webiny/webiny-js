@@ -33,8 +33,7 @@ export default ({
             sslValidate: true,
             sslCA: [ca],
             useNewUrlParser: true,
-            useUnifiedTopology: true,
-
+            useUnifiedTopology: true
         });
 
         return client.db(database);

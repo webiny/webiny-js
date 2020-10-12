@@ -22,7 +22,7 @@ class ApolloGateway {
                 vpcConfig: {
                     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
                     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                },
+                }
             })
         };
     }

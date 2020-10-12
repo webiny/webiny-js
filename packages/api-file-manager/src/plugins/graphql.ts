@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { emptyResolver } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
 
@@ -9,7 +9,7 @@ import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
-import { getSettings } from "./resolvers/settings";
+import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
 
 const getFile = ({ models }): any => models.File;
@@ -190,23 +190,21 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: hasScope("files:file:crud")(resolveGet(getFile)),
-                    listFiles: listFiles,
+                    getFile: hasScope("files.file.list")(resolveGet(getFile)),
+                    listFiles: hasScope("files.file.list")(listFiles),
                     listTags: listTags,
                     isInstalled,
-                    getSettings: getSettings
+                    getSettings: hasScope("files.settings.manage")(getSettings)
                 },
                 FilesMutation: {
-                    uploadFile: hasScope("files:file:crud")(uploadFile),
+                    uploadFile: hasScope("files.file.update")(uploadFile),
                     uploadFiles,
-                    createFile: hasScope("files:file:crud")(resolveCreate(getFile)),
-                    updateFile: hasScope("files:file:crud")(resolveUpdate(getFile)),
+                    createFile: hasScope("files.file.update")(resolveCreate(getFile)),
+                    updateFile: hasScope("files.file.update")(resolveUpdate(getFile)),
                     createFiles,
-                    deleteFile: hasScope("files:file:crud")(deleteFile),
+                    deleteFile: hasScope("files.file.delete")(deleteFile),
                     install,
-                    updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.FilesSettings)
-                    )
+                    updateSettings: hasScope("files.settings.manage")(updateSettings)
                 }
             }
         }

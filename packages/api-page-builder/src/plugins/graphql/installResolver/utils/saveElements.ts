@@ -81,7 +81,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         let response = await context.handlerClient.invoke({
                             name: process.env.FILE_MANAGER_FUNCTION,
                             payload: {
-                                httpMethod: 'POST',
+                                httpMethod: "POST",
                                 headers: {
                                     Authorization: context.token
                                 },
@@ -97,7 +97,8 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         });
 
                         response = JSON.parse(response.body);
-                        const preSignedPostPayloads = get(response, "data.files.uploadFiles.data") || [];
+                        const preSignedPostPayloads =
+                            get(response, "data.files.uploadFiles.data") || [];
                         await console.log(
                             `saveElements: received pre-signed POST payloads for ${preSignedPostPayloads.length} files.`
                         );
@@ -125,7 +126,7 @@ export default async ({ context, INSTALL_EXTRACT_DIR }) => {
                         await context.handlerClient.invoke({
                             name: process.env.FILE_MANAGER_FUNCTION,
                             payload: {
-                                httpMethod: 'POST',
+                                httpMethod: "POST",
                                 headers: {
                                     Authorization: context.token
                                 },

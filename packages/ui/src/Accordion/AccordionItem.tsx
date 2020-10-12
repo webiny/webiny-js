@@ -12,7 +12,9 @@ import classNames from "classnames";
 
 const Content = styled("div")({
     width: "100%",
+    borderRight: "1px solid var(--mdc-theme-background)",
     borderBottom: "1px solid var(--mdc-theme-background)",
+    borderLeft: "1px solid var(--mdc-theme-background)",
     boxSizing: "border-box"
 });
 

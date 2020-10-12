@@ -15,14 +15,14 @@ export default () => [
                 return user.permissions;
             }
 
-            // Identity is "anonymous", and we need to load the "anonymous" role.
-            const { SecurityRole } = context.models;
-            const role = await SecurityRole.findOne({ query: { slug: "anonymous" } });
-            if (!role) {
+            // Identity is "anonymous", and we need to load permissions from the "anonymous" group.
+            const { SecurityGroup } = context.models;
+            const group = await SecurityGroup.findOne({ query: { slug: "anonymous" } });
+            if (!group) {
                 return [];
             }
 
-            return role.permissions;
+            return group.permissions;
         }
     }
 ];

@@ -5,7 +5,7 @@ export const handler = createHandler(
     apolloGatewayHandler({
         debug: process.env.DEBUG,
         server: {
-            introspection: process.env.GRAPHQL_INTROSPECTION,
+            introspection: process.env.GRAPHQL_INTROSPECTION
         },
         services: Object.keys(process.env)
             .filter(name => name.startsWith("LAMBDA_SERVICE_"))

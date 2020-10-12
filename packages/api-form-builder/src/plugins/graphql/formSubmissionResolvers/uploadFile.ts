@@ -22,7 +22,7 @@ export default async ({ context, buffer, file }) => {
         let uploadFile = await context.handlerClient.invoke({
             name: process.env.FILE_MANAGER_FUNCTION,
             payload: {
-                httpMethod: 'POST',
+                httpMethod: "POST",
                 headers: {
                     Authorization: context.token
                 },
@@ -45,7 +45,7 @@ export default async ({ context, buffer, file }) => {
         let createFile = await context.handlerClient.invoke({
             name: process.env.FILE_MANAGER_FUNCTION,
             payload: {
-                httpMethod: 'POST',
+                httpMethod: "POST",
                 headers: {
                     Authorization: context.token
                 },

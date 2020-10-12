@@ -17,7 +17,10 @@ export class PermissionsManagerClient {
     }
 
     private async invoke(operation: PermissionManagerOperation) {
-        const { error, data } = await this.context.handlerClient.invoke({ name: this.functionName, payload: operation });
+        const { error, data } = await this.context.handlerClient.invoke({
+            name: this.functionName,
+            payload: operation
+        });
 
         if (error) {
             throw Error(error);

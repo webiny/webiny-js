@@ -13,6 +13,7 @@ export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
                 data {
                     id
                     name
+                    slug
                     isProduction
                     environmentAliases {
                         id

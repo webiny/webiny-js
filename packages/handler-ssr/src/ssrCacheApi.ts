@@ -79,7 +79,7 @@ export default (): HandlerPlugin => ({
 
                 return http.response({
                     headers: {
-                        "Content-Type": "text/json",
+                        "Content-Type": "text/json"
                     },
                     body: JSON.stringify({
                         error: false,
@@ -112,7 +112,7 @@ export default (): HandlerPlugin => ({
                 if (data.ssrCache.isRefreshing) {
                     return http.response({
                         headers: {
-                            "Content-Type": "text/json",
+                            "Content-Type": "text/json"
                         },
                         body: JSON.stringify({
                             error: false,
@@ -134,7 +134,7 @@ export default (): HandlerPlugin => ({
                     if (!versionsDifferent && !ssrCache.hasExpired) {
                         return http.response({
                             headers: {
-                                "Content-Type": "text/json",
+                                "Content-Type": "text/json"
                             },
                             body: JSON.stringify({
                                 error: false,
@@ -160,7 +160,7 @@ export default (): HandlerPlugin => ({
 
                 return http.response({
                     headers: {
-                        "Content-Type": "text/json",
+                        "Content-Type": "text/json"
                     },
                     body: JSON.stringify({
                         error: false,
@@ -171,7 +171,7 @@ export default (): HandlerPlugin => ({
 
             return http.response({
                 headers: {
-                    "Content-Type": "text/json",
+                    "Content-Type": "text/json"
                 },
                 body: JSON.stringify({
                     error: true,
@@ -183,7 +183,7 @@ export default (): HandlerPlugin => ({
         } catch (e) {
             return http.response({
                 headers: {
-                    "Content-Type": "text/json",
+                    "Content-Type": "text/json"
                 },
                 body: JSON.stringify({
                     error: true,

@@ -14,6 +14,7 @@ import appTemplateRenderer from "./appTemplatePlugins";
 import welcomeScreenWidget from "./welcomeScreenWidget";
 import scopesList from "./scopesList";
 import ApiInformationDialog from "./apiInformationDialog";
+import permissionRenderer from "./permissionRenderer";
 
 export default () => [
     install,
@@ -35,5 +36,6 @@ export default () => [
 
     welcomeScreenWidget,
     scopesList,
-    ApiInformationDialog
+    ApiInformationDialog,
+    permissionRenderer()
 ];

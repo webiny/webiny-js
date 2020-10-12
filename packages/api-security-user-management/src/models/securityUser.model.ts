@@ -42,11 +42,6 @@ export default ({ createBase, context }): any => {
             ),
             firstName: string(),
             lastName: string(),
-            roles: ref({
-                list: true,
-                instanceOf: [context.models.SecurityRole, "model"],
-                using: [context.models.SecurityRoles2Models, "role"]
-            }),
             groups: ref({
                 list: true,
                 instanceOf: [context.models.SecurityGroup, "model"],
@@ -75,39 +70,30 @@ export default ({ createBase, context }): any => {
 
                 return new Promise(async resolve => {
                     const allPermissions = [];
-                    const loadedRoles = [];
 
-                    const roles = [...(await this.roles)];
+                    const permissions = [];
                     const groups = await this.groups;
-                    // Get roles via `groups` relation
+                    // Get permissions via `groups` relation
                     for (let i = 0; i < groups.length; i++) {
-                        const roles = await groups[i].roles;
-                        for (let j = 0; j < roles.length; j++) {
-                            roles.push(roles[j]);
+                        const permissionsFromGroup = await groups[i].permissions;
+                        for (let j = 0; j < permissionsFromGroup.length; j++) {
+                            permissions.push(permissionsFromGroup[j]);
                         }
                     }
 
-                    // Get permissions from roles
-                    for (let j = 0; j < roles.length; j++) {
-                        const { slug, permissions } = roles[j];
-                        if (!loadedRoles.includes(slug)) {
-                            loadedRoles.push(slug);
+                    permissions.forEach(perm => {
+                        const permIndex = allPermissions.findIndex(p => p.name === perm.name);
+
+                        if (permIndex === -1) {
+                            allPermissions.push(perm);
+                        } else {
+                            allPermissions[permIndex] = merge.recursive(
+                                false,
+                                permissions[permIndex],
+                                perm
+                            );
                         }
-
-                        permissions.forEach(perm => {
-                            const permIndex = allPermissions.findIndex(p => p.name === perm.name);
-
-                            if (permIndex === -1) {
-                                allPermissions.push(perm);
-                            } else {
-                                allPermissions[permIndex] = merge.recursive(
-                                    false,
-                                    permissions[permIndex],
-                                    perm
-                                );
-                            }
-                        });
-                    }
+                    });
 
                     this.__permissions = allPermissions;
 

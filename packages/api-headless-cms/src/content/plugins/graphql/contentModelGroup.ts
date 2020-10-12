@@ -5,7 +5,51 @@ import {
     resolveList,
     resolveUpdate
 } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { hasScope, hasCmsPermission } from "@webiny/api-security";
+
+const checkEnvironmentPermission = async ({ context }) => {
+    let allowed = true;
+    const permission = await context.security.getPermission("cms.manage.environment");
+    // TODO: Need to check whether to allow this or not
+    if (!permission) {
+        return allowed;
+    }
+
+    if (Array.isArray(permission.environments) && permission.environments.length) {
+        const currentEnvironment = context.cms.environment;
+
+        allowed = permission.environments.includes(currentEnvironment);
+    }
+
+    return allowed;
+};
+
+const checkContentModelGroupListPermission = async ({ args, context, permission }) => {
+    const { CmsContentModelGroup } = context.models;
+    const identity = context.security.getIdentity();
+
+    let allowed = true;
+
+    const query = { ...args.where };
+    const find = { query };
+
+    const contentModelGroupData = await CmsContentModelGroup.find(find);
+
+    // Only load your own documents
+    if (permission.own && contentModelGroupData) {
+        if (Array.isArray(contentModelGroupData)) {
+            allowed = contentModelGroupData.every(group => group.createdBy === identity.id);
+        } else {
+            allowed = contentModelGroupData.createdBy === identity.id;
+        }
+    }
+    // Check CMS environment permission
+    if (allowed) {
+        allowed = await checkEnvironmentPermission({ context });
+    }
+
+    return allowed;
+};
 
 const contentModelGroupFetcher = ctx => ctx.models.CmsContentModelGroup;
 
@@ -86,19 +130,22 @@ export default {
 
         return {
             Query: {
-                getContentModelGroup: hasScope("cms:content-model-group:crud")(
+                getContentModelGroup: hasScope("cms.manage.contentModelGroup.list")(
                     resolveGet(contentModelGroupFetcher)
                 ),
-                listContentModelGroups: resolveList(contentModelGroupFetcher)
+                listContentModelGroups: hasCmsPermission(
+                    "cms.manage.contentModelGroup.list",
+                    checkContentModelGroupListPermission
+                )(resolveList(contentModelGroupFetcher))
             },
             Mutation: {
-                createContentModelGroup: hasScope("cms:content-model-group:crud")(
+                createContentModelGroup: hasScope("cms.manage.contentModelGroup.update")(
                     resolveCreate(contentModelGroupFetcher)
                 ),
-                updateContentModelGroup: hasScope("cms:content-model-group:crud")(
+                updateContentModelGroup: hasScope("cms.manage.contentModelGroup.update")(
                     resolveUpdate(contentModelGroupFetcher)
                 ),
-                deleteContentModelGroup: hasScope("cms:content-model-group:crud")(
+                deleteContentModelGroup: hasScope("cms.manage.contentModelGroup.delete")(
                     resolveDelete(contentModelGroupFetcher)
                 )
             }

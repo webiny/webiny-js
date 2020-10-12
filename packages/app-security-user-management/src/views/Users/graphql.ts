@@ -15,10 +15,6 @@ const fields = /* GraphQL */ `
             id
             name
         }
-        roles {
-            id
-            name
-        }
         personalAccessTokens {
             id
             name
