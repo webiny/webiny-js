@@ -96,7 +96,6 @@ export default {
             listI18NLocales: hasScope("i18n:locale:crud")(async (_, args, context) => {
                 const { I18N } = context.models;
 
-                const koba = args;
                 const query = { PK: PK_LOCALE, SK: null };
                 if (typeof args?.where?.codeBeginsWith === "string") {
                     query.SK = { $beginsWith: args.where.codeBeginsWith };
