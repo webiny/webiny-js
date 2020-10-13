@@ -13,15 +13,16 @@ const combineClassNames: CombineClassNamesType = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
-export type ElementRootChildrenFunction = (params: {
-    getAllClasses(...classes: string[]): string;
-    combineClassNames(...classes: string[]): string;
+type ElementRootChildrenFunctionParamsType = {
+    getAllClasses: (...classes: string[]) => string;
+    combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
-}) => ReactElement;
+};
+type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
-export type ElementRootProps = {
+type ElementRootProps = {
     element: PbElement;
     style?: CSSProperties;
     className?: string;

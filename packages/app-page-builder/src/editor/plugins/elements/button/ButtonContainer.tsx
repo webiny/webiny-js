@@ -1,10 +1,9 @@
-import React from "react";
-import { useHandler } from "@webiny/app/hooks/useHandler";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { set } from "dot-prop-immutable";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
+import React, { CSSProperties } from "react";
 import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
+import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
+import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
+import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useRecoilValue } from "recoil";
 
 const excludePlugins = [
     "pb-editor-slate-menu-item-link",
@@ -16,17 +15,32 @@ const excludePlugins = [
     "pb-editor-slate-editor-lists",
     "pb-editor-slate-editor-link"
 ];
-
-const ButtonContainer = props => {
-    const { getAllClasses, elementStyle, elementAttributes, element } = props;
+type ButtonContainerPropsType = {
+    getAllClasses: (...classes: string[]) => string;
+    elementStyle: CSSProperties;
+    elementAttributes: { [key: string]: string };
+    elementId: string;
+};
+const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props => {
+    const { getAllClasses, elementStyle, elementAttributes, elementId } = props;
+    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
     const { type = "default", icon = {} } = element.data || {};
     const svg = icon.svg || null;
     const { alignItems } = elementStyle;
 
     const { position = "left" } = icon;
 
-    const onChange = useHandler(props, ({ element, updateElement }) => (value: string) => {
-        updateElement({ element: set(element, "data.text", value) });
+    const onChange = useHandler(props, ({ element }) => (value: string) => {
+        const newElement = {
+            ...element,
+            data: {
+                ...(element.data || {}),
+                text: value
+            }
+        };
+        updateElementAction({
+            element: newElement
+        });
     });
 
     return (
@@ -57,7 +71,4 @@ const ButtonContainer = props => {
     );
 };
 
-export default connect<any, any, any>(
-    (state, props) => ({ element: getElement(state, props.elementId) }),
-    { updateElement }
-)(ButtonContainer);
+export default ButtonContainer;

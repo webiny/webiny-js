@@ -1,18 +1,16 @@
 import React, { CSSProperties } from "react";
+import Element from "@webiny/app-page-builder/editor/components/Element";
+import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions/dropElement";
 import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
 import { css } from "emotion";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import { useRecoilValue } from "recoil";
 
 type BlockContainerPropsType = {
+    combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
-    elementAttributes: {
-        [key: string]: string;
-    };
+    elementAttributes: { [key: string]: string };
     customClasses: string[];
-    combineClassNames: (...styles) => string;
     elementId: string;
 };
 const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
