@@ -11,7 +11,7 @@ class I18N {
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
-            memorySize: 1024,
+            memorySize: 512,
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/i18n/graphql/build")
             }),
