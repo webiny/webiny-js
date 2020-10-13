@@ -85,7 +85,7 @@ export default {
             getI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
                 const { I18N } = context.models;
                 const locale = await I18N.findOne({
-                    query: { PK: PK_LOCALE, SK: { $gt: " " } }
+                    query: { PK: PK_LOCALE, SK: args.code }
                 });
                 if (!locale) {
                     return new NotFoundResponse(`Locale "${args.code}" not found.`);
@@ -142,7 +142,7 @@ export default {
                     if (!locale) {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
-                    locale.data = args.data;
+                    locale.data.populate(args.data);
                     await locale.save();
                     return new Response(locale.data);
                 } catch (e) {
