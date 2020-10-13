@@ -5,6 +5,7 @@ import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 
 export const handler = createHandler(
     dynamoDb({
+        tableName: process.env.STORAGE_NAME,
         documentClient: new DocumentClient({
             convertEmptyValues: true,
             region: process.env.AWS_REGION
