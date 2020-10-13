@@ -1,7 +1,7 @@
 import models from "./models";
 import graphql from "./graphql";
 import i18n from "./i18n";
-import { PK_LOCALE } from "./models/i18n.model";
+import { PK_LOCALE } from "./models/localeData.model";
 
 export default () => [
     models(),
