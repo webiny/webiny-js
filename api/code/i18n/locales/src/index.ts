@@ -1,8 +1,14 @@
 import { createHandler } from "@webiny/handler-aws";
 import locales from "@webiny/api-i18n/locales";
-import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 
 export const handler = createHandler(
-    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    dynamoDb({
+        documentClient: new DocumentClient({
+            convertEmptyValues: true,
+            region: process.env.AWS_REGION
+        })
+    }),
     locales()
 );
