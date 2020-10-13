@@ -60,7 +60,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
 
     const nameValidator = useCallback(name => {
         if (!name.charAt(0).match(/[a-zA-Z]/)) {
-            throw new Error('Value is not valid - must not start with a number.');
+            throw new Error("Value is not valid - must not start with a number.");
         }
         if (name.trim().toLowerCase() === "id") {
             throw new Error('Value is not valid - "id" is an auto-generated field.');
@@ -112,7 +112,10 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     <Cell span={12}>
                                         <Bind
                                             name={"name"}
-                                            validators={[validation.create("required,maxLength:100"), nameValidator]}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                nameValidator
+                                            ]}
                                         >
                                             <Input
                                                 label={t`Name`}
