@@ -17,6 +17,7 @@ export const handler = createHandler(
         }
     }),
     dynamoDb({
+        tableName: process.env.STORAGE_NAME,
         documentClient: new DocumentClient({
             convertEmptyValues: true,
             region: process.env.AWS_REGION
