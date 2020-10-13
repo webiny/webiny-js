@@ -19,10 +19,17 @@
     "@webiny/validation": "^4.11.0-beta.1",
     "@webiny/handler-client": "^4.12.1",
     "@webiny/handler-http": "^4.12.1",
+    "commodo-fields-object": "^1.0.6",
+    "ksuid": "^2.0.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.20",
     "md5": "^2.3.0",
-    "merge": "^1.2.1"
+    "merge": "^1.2.1",
+    "@commodo/fields": "beta",
+    "@commodo/fields-storage": "beta",
+    "@commodo/fields-storage-dynamodb": "beta",
+    "@commodo/hooks": "beta",
+    "@commodo/name": "beta"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
