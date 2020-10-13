@@ -7,6 +7,7 @@ import {
 import { getPlugin } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
 import { atom, selector, selectorFamily, useRecoilState } from "recoil";
+import lodashGet from "lodash/get";
 
 // copied from selectors/index.ts because that file will go away
 const getPluginType = (name: string): string => {
@@ -190,6 +191,22 @@ export const elementByIdSelectorFamily = selectorFamily<PbShallowElement, string
                 throw new Error(`There is no element with id or path "${id}"`);
             }
             return element;
+        };
+    }
+});
+export const elementByIdWithChildrenSelectorFamily = selectorFamily<PbElement, string>({
+    key: "elementByIdWithChildrenSelectorFamily",
+    get: id => {
+        return ({ get }) => {
+            const { path } = get(elementByIdSelectorFamily(id));
+            const content = get(editorPageAtom);
+            const contentPath = path.replace(/\./g, ".elements.").slice(2);
+            // TODO find a better way to get the element from content
+            const element = lodashGet(content, contentPath);
+            if (!element) {
+                throw new Error(`Element with path "${contentPath}" not found.`);
+            }
+            return element as PbElement;
         };
     }
 });
