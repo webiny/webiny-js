@@ -3,16 +3,14 @@ import { useQuery, QueryResult } from "react-apollo";
 import gql from "graphql-tag";
 import get from "lodash.get";
 
-export const getI18NInformation = gql`
+export const GET_I18N_INFORMATION = gql`
     query GetI18NInformation {
         i18n {
             getI18NInformation {
                 currentLocale {
-                    id
                     code
                 }
                 locales {
-                    id
                     code
                     default
                 }
@@ -43,7 +41,7 @@ export type I18NProviderProps = {
 
 export const I18NProvider = (props: I18NProviderProps) => {
     const { children, loader } = props;
-    const { loading, data, refetch } = useQuery(getI18NInformation);
+    const { loading, data, refetch } = useQuery(GET_I18N_INFORMATION);
 
     if (loading && loader) {
         return loader;
