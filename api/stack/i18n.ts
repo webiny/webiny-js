@@ -47,7 +47,8 @@ class I18N {
             environment: {
                 variables: {
                     DB_PROXY_FUNCTION: dbProxy.arn,
-                    DEBUG: String(process.env.DEBUG)
+                    DEBUG: String(process.env.DEBUG),
+                    STORAGE_NAME: this.dynamoDbTable.name
                 }
             },
             vpcConfig: {
