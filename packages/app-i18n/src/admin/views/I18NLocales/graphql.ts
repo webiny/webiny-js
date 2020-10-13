@@ -1,30 +1,15 @@
 import gql from "graphql-tag";
 
 const BASE_FIELDS = `
-    id
     code
     default
     createdOn
 `;
 
 export const LIST_LOCALES = gql`
-    query listI18NLocales(
-        $where: JSON
-        $sort: JSON
-        $search: I18NLocaleSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query listI18NLocales {
         i18n {
-            i18NLocales: listI18NLocales(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            listI18NLocales {
                 data {
                     ${BASE_FIELDS}
                 }
@@ -42,10 +27,10 @@ export const LIST_LOCALES = gql`
     }
 `;
 
-export const READ_LOCALE = gql`
-    query getLocale($id: ID!) {
+export const GET_LOCALE = gql`
+    query getI18NLocale($code: String!) {
         i18n {
-            locale: getI18NLocale(id: $id){
+            getI18NLocale(code: $code){
                 data {
                     ${BASE_FIELDS}
                 }
@@ -76,9 +61,9 @@ export const CREATE_LOCALE = gql`
 `;
 
 export const UPDATE_LOCALE = gql`
-    mutation updateI18NLocale($id: ID!, $data: I18NLocaleInput!){
+    mutation updateI18NLocale($code: String!, $data: I18NLocaleInput!){
         i18n {
-            locale: updateI18NLocale(id: $id, data: $data) {
+            locale: updateI18NLocale(code: $code, data: $data) {
                 data {
                     ${BASE_FIELDS}
                 }
@@ -93,10 +78,9 @@ export const UPDATE_LOCALE = gql`
 `;
 
 export const DELETE_LOCALE = gql`
-    mutation deleteI18NLocale($id: ID!) {
+    mutation deleteI18NLocale($code: String!) {
         i18n {
-            deleteI18NLocale(id: $id) {
-                data
+            deleteI18NLocale(code: $code) {
                 error {
                     code
                     message
