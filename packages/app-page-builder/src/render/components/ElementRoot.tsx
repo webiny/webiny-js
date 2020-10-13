@@ -1,6 +1,4 @@
-import React, { CSSProperties, ReactElement } from "react";
-import { get } from "dot-prop-immutable";
-import { isEqual } from "lodash";
+import React, { CSSProperties, ReactElement, useEffect, useRef } from "react";
 import { getPlugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
@@ -10,7 +8,8 @@ import {
 
 const Node = "div";
 
-const combineClassNames = (...styles) => {
+type CombineClassNamesType = (...styles) => string;
+const combineClassNames: CombineClassNamesType = (...styles) => {
     return styles.filter(s => s !== "" && s !== "css-0").join(" ");
 };
 
@@ -29,60 +28,55 @@ export type ElementRootProps = {
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
 };
 
-class ElementRoot extends React.Component<ElementRootProps> {
-    stylePlugins: Array<PbRenderElementStylePlugin>;
-    attributePlugins: Array<PbRenderElementAttributesPlugin>;
+const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({ element, style = {}, children, className = null }) => {
 
-    constructor(props) {
-        super(props);
+    const shallowElement = {
+        id: element.id,
+        type: element.type,
+        data: element.data,
+    };
 
-        this.stylePlugins = getPlugins<PbRenderElementStylePlugin>("pb-render-page-element-style");
-        this.attributePlugins = getPlugins<PbRenderElementAttributesPlugin>(
-            "pb-render-page-element-attributes"
-        );
+    const stylePlugins = useRef<PbRenderElementStylePlugin[]>([]);
+    const attributePlugins = useRef<PbRenderElementAttributesPlugin[]>([]);
+
+    useEffect(() => {
+        stylePlugins.current = getPlugins<PbRenderElementStylePlugin>("pb-render-page-element-style");
+        attributePlugins.current = getPlugins<PbRenderElementAttributesPlugin>("pb-render-page-element-attributes");
+    }, []);
+
+    const finalStyle = this.stylePlugins.reduce((accumulatedStyles, plugin) => {
+        return plugin.renderStyle({ element: shallowElement, accumulatedStyles });
+    }, style);
+
+    const attributes = this.attributePlugins.reduce((accumulatedAttributes, plugin) => {
+        return plugin.renderAttributes({ element: shallowElement, accumulatedAttributes });
+    }, {});
+
+    const classNames = element.data?.settings?.className || "";
+
+    const getAllClasses = (...extraClasses) => {
+        return [className, ...extraClasses, ...classNames.split(" ")]
+            .filter(v => v && v !== "css-0")
+            .join(" ");
+    };
+
+    if (typeof children === "function") {
+        return children({
+            getAllClasses,
+            combineClassNames,
+            elementStyle: finalStyle,
+            elementAttributes: attributes,
+            customClasses: classNames.split(" ")
+        });
     }
 
-    shouldComponentUpdate(props: ElementRootProps) {
-        return !isEqual(props.element.data, this.props.element.data);
-    }
+    return (
+        <Node className={getAllClasses()} style={finalStyle} {...attributes}>
+            {children}
+        </Node>
+    );
+};
 
-    render() {
-        const { element, style = {}, children, className = null } = this.props;
-
-        const shallowElement = { id: element.id, type: element.type, data: element.data };
-
-        const finalStyle = this.stylePlugins.reduce((style, pl) => {
-            return pl.renderStyle({ element: shallowElement, style });
-        }, style);
-
-        const attributes = this.attributePlugins.reduce((attributes, pl) => {
-            return pl.renderAttributes({ element: shallowElement, attributes });
-        }, {});
-
-        const classNames = get(element, "data.settings.className", "");
-
-        const getAllClasses = (...extraClasses) => {
-            return [className, ...extraClasses, ...classNames.split(" ")]
-                .filter(v => v && v !== "css-0")
-                .join(" ");
-        };
-
-        if (typeof children === "function") {
-            return children({
-                getAllClasses,
-                combineClassNames,
-                elementStyle: finalStyle,
-                elementAttributes: attributes,
-                customClasses: classNames.split(" ")
-            });
-        }
-
-        return (
-            <Node className={getAllClasses()} style={finalStyle} {...attributes}>
-                {children}
-            </Node>
-        );
-    }
-}
+const ElementRoot = React.memo(ElementRootComponent);
 
 export { ElementRoot };

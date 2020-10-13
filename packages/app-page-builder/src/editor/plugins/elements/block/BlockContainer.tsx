@@ -1,27 +1,36 @@
-import * as React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import React, { CSSProperties } from "react";
+import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions/dropElement";
+import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
 import { css } from "emotion";
-import { isEqual } from "lodash";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
-import { dropElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
+import { useRecoilValue } from "recoil";
 
-const BlockContainer = ({
+type BlockContainerPropsType = {
+    elementStyle: CSSProperties;
+    elementAttributes: {
+        [key: string]: string;
+    };
+    customClasses: string[];
+    combineClassNames: (...styles) => string;
+    elementId: string;
+};
+const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
     combineClassNames,
-    element,
-    dropElement
+    elementId
 }) => {
-    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
+    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
     const { id, type, elements } = element;
+
+    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
 
     return (
         <div
             style={{ width: "100%", display: "flex", justifyContent: "center" }}
-            className={"webiny-pb-layout-block-container " + css(containerStyle)}
+            className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
             {...elementAttributes}
         >
             <div
@@ -37,9 +46,13 @@ const BlockContainer = ({
                         <DropZone.Above
                             type={type}
                             onDrop={source =>
-                                dropElement({
+                                dropElementAction({
                                     source,
-                                    target: { id, type, position: index }
+                                    target: {
+                                        id,
+                                        type,
+                                        position: index
+                                    }
                                 })
                             }
                         />
@@ -48,7 +61,7 @@ const BlockContainer = ({
                             <DropZone.Below
                                 type={type}
                                 onDrop={source => {
-                                    dropElement({
+                                    dropElementAction({
                                         source,
                                         target: {
                                             id,
@@ -66,9 +79,4 @@ const BlockContainer = ({
     );
 };
 
-export default connect<any, any, any>(
-    (state, props) => ({ element: getElement(state, props.elementId) }),
-    { dropElement },
-    null,
-    { areStatePropsEqual: isEqual }
-)(BlockContainer);
+export default React.memo(BlockContainer);

@@ -1,4 +1,4 @@
-import { updateElementRecoil } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
+import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
 import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import gql from "graphql-tag";
@@ -95,7 +95,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
                         oembed: onData(oembed)
                     }
                 };
-                updateElementRecoil({ element: newElement });
+                updateElementAction({ element: newElement });
             }
             if (error) {
                 showSnackbar(error.message);

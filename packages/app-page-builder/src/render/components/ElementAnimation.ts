@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useEffect} from "react";
 import aos from "aos";
 import "aos/dist/aos.css";
 import { throttle, once } from "lodash";
@@ -15,20 +15,16 @@ type ElementAnimationProps = {
     children: React.ReactNode | ElementAnimationChildrenFunction;
 };
 
-class ElementAnimation extends React.Component<ElementAnimationProps> {
-    componentDidMount() {
+const ElementAnimation: React.FunctionComponent<ElementAnimationProps> = ({children}) => {
+    useEffect(() => {
         init();
         refresh();
+    }, []);
+    if (typeof children === "function") {
+        return (children as ElementAnimationChildrenFunction)({ init, refresh });
     }
 
-    render() {
-        const { children } = this.props;
-        if (typeof children === "function") {
-            return (children as ElementAnimationChildrenFunction)({ init, refresh });
-        }
-
-        return this.props.children;
-    }
-}
+    return children as any;
+};
 
 export default ElementAnimation;

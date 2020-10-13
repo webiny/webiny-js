@@ -85,7 +85,7 @@ const createNewPageState = (page: EditorPageAtomType, element: PbElement, merge:
     };
 };
 
-export const updateElementRecoil = ({ element, merge, history }: UpdateElementType) => {
+export const updateElementAction = ({ element, merge, history }: UpdateElementType) => {
     // find out which path are we updating
     // if type is document, we will update editorPageAtom.content
     const [page, setPage] = useRecoilState(editorPageAtom);
