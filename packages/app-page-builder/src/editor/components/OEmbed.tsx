@@ -109,12 +109,12 @@ const OEmbedComponent = (props: OEmbedProps) => {
     );
 
     const renderEmbed = useCallback(
-        (targetElement: PbElement) => {
+        (targetElement: PbElement, isLoading: boolean) => {
             if (typeof props.renderEmbed === "function") {
                 return props.renderEmbed(props);
             }
 
-            if (loading) {
+            if (isLoading) {
                 return <div>Loading embed data...</div>;
             }
             return (
@@ -130,6 +130,6 @@ const OEmbedComponent = (props: OEmbedProps) => {
         [element, loading]
     );
 
-    return sourceUrl ? renderEmbed(element) : renderEmpty();
+    return sourceUrl ? renderEmbed(element, loading) : renderEmpty();
 };
 export default React.memo(OEmbedComponent);
