@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    editorUiActiveElementSelector,
+    editorUiActiveElementIdSelector,
     elementByIdSelectorFamily,
     elementByIdWithChildrenSelectorFamily
 } from "@webiny/app-page-builder/editor/recoil/recoil";
@@ -18,7 +18,7 @@ const pickKeys = (element: PbElement | PbShallowElement, keys?: string[]) => {
 };
 
 const getActiveElement = (propName: string, shallow: boolean, keys?: string[]) => {
-    const elementId = useRecoilValue(editorUiActiveElementSelector);
+    const elementId = useRecoilValue(editorUiActiveElementIdSelector);
     if (!elementId) {
         return {
             [propName]: null

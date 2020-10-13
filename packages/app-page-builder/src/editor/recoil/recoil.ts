@@ -33,11 +33,22 @@ export const editorUiAtom = atom<EditorUiAtomType>({
     }
 });
 
-export const editorUiActiveElementSelector = selector<string | undefined>({
-    key: "editorUiActiveElementSelector",
+export const editorUiActiveElementIdSelector = selector<string | undefined>({
+    key: "editorUiActiveElementIdSelector",
     get: ({ get }) => {
         const { activeElement } = get(editorUiAtom);
         return activeElement;
+    }
+});
+
+export const editorUiActiveElementSelector = selector({
+    key: "editorUiActiveElementSelector",
+    get: ({ get }) => {
+        const id = get(editorUiActiveElementIdSelector);
+        if (!id) {
+            throw new Error("There is no active element.");
+        }
+        return get(elementByIdSelectorFamily(id));
     }
 });
 
