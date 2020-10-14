@@ -4,25 +4,43 @@ import { InvalidFieldsError } from "@webiny/commodo-graphql";
 import * as data from "./data";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
+import { createSecurityGroup } from "../groupResolvers/utils";
+import {
+    GSI1_PK_GROUP,
+    GSI1_PK_USER
+} from "@webiny/api-security-user-management/models/security.model";
+import { createSecurityUser } from "../userResolvers/utils";
 
 const ensureFullAccessGroup = async context => {
+    const Model = context.models.Security;
     const { SecurityGroup } = context.models;
-    let group = await SecurityGroup.findOne({ query: { slug: "security-full-access" } });
-    if (!group) {
-        group = new SecurityGroup();
-        await group.populate({ ...data.securityFullAccessGroup }).save();
+
+    let securityRecord = await Model.findOne({
+        query: { GSI1_PK: GSI1_PK_GROUP, GSI1_SK: `slug#security-full-access` }
+    });
+
+    if (!securityRecord) {
+        const group = new SecurityGroup();
+        group.populate({
+            ...data.securityFullAccessGroup
+        });
+
+        securityRecord = await createSecurityGroup({ Model, group });
     }
-    return group;
+    const securityRecordData = await securityRecord.toStorage();
+    return securityRecordData.GSI_DATA;
 };
 
 /**
  * We consider security to be installed if there are users in Webiny DB.
  */
 const isSecurityInstalled = async context => {
-    const { SecurityUser } = context.models;
+    const Model = context.models.Security;
 
     // Check if at least 1 user exists in the system
-    return !!(await SecurityUser.findOne({ query: {} }));
+    return !!(await Model.findOne({
+        query: { GSI1_PK: GSI1_PK_USER, GSI1_SK: { $beginsWith: "login#" } }
+    }));
 };
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {
@@ -47,10 +65,12 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 
         // Create new user
         const user = new SecurityUser();
-        await user.populate({ ...data, groups: [fullAccessGroup] });
+        await user.populate({ ...data, group: fullAccessGroup });
 
         await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
-        await user.save();
+
+        await createSecurityUser({ Model: context.models.Security, user });
+
         return new Response(true);
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
