@@ -1,4 +1,5 @@
 import { ListResponse, ListErrorResponse } from "@webiny/graphql";
+import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/security.model";
 
 export default async (_, { where, sort = 1 }, context) => {
     const Model = context.models.Security;
@@ -12,7 +13,7 @@ export default async (_, { where, sort = 1 }, context) => {
         // Load "Groups"
         const groups = await Model.find({
             query: {
-                GSI1_PK: `Group`,
+                GSI1_PK: GSI1_PK_GROUP,
                 GSI1_SK: { $beginsWith: beginsWith }
             },
             sort: { GSI1_SK: sort }

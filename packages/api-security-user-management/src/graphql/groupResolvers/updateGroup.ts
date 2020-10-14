@@ -1,13 +1,14 @@
 import { Batch } from "@commodo/fields-storage";
 import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql";
+import { PK_GROUP, SK_GROUP } from "@webiny/api-security-user-management/models/security.model";
 
 export default async (_, { id, data }, context) => {
     const Model = context.models.Security;
 
-    const PK = `G#${id}`;
+    const PK = `${PK_GROUP}#${id}`;
 
     // Get `G#` items from table
-    const securityRecord = await Model.findOne({ query: { PK, SK: "A" } });
+    const securityRecord = await Model.findOne({ query: { PK, SK: SK_GROUP } });
 
     if (securityRecord) {
         try {
@@ -27,7 +28,7 @@ export default async (_, { id, data }, context) => {
             // Instead of creating new instances of "Security Model" we are reusing
             const securityRecordPrimary = new Model().populate(securityRecord);
             securityRecordPrimary.PK = PK;
-            securityRecordPrimary.SK = "A";
+            securityRecordPrimary.SK = SK_GROUP;
             securityRecordPrimary.GSI1_SK = `name#${group.name.toLowerCase()}`;
 
             const securityRecordSecondary = new Model().populate(securityRecord);

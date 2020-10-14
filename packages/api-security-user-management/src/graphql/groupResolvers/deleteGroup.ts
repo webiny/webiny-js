@@ -1,10 +1,11 @@
 import { Batch } from "@commodo/fields-storage";
 import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql";
+import { PK_GROUP } from "@webiny/api-security-user-management/models/security.model";
 
 export default async (_, { id }, context) => {
     const Model = context.models.Security;
 
-    const PK = `G#${id}`;
+    const PK = `${PK_GROUP}#${id}`;
 
     try {
         // Remove `G#` items from table

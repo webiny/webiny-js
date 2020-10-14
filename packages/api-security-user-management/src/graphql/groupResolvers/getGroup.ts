@@ -1,18 +1,21 @@
-import { NotFoundResponse, ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
+import {
+    GSI1_PK_GROUP,
+    PK_GROUP,
+    SK_GROUP
+} from "@webiny/api-security-user-management/models/security.model";
 
 export default async (_, { id, slug }, context) => {
     const Model = context.models.Security;
 
     try {
         if (id) {
-            const PK = `G#${id}`;
-            const SK = `A`;
-
+            const PK = `${PK_GROUP}#${id}`;
             // Load "Group" by "id"
             const group = await Model.findOne({
                 query: {
                     PK: PK,
-                    SK: SK
+                    SK: SK_GROUP
                 }
             });
 
@@ -23,7 +26,7 @@ export default async (_, { id, slug }, context) => {
         }
 
         if (slug) {
-            const GSI_PK = `Group`;
+            const GSI_PK = GSI1_PK_GROUP;
             const GSI_SK = `slug#${slug}`;
             // Load "Group" by "slug"
             const group = await Model.findOne({

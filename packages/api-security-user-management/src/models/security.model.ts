@@ -127,8 +127,9 @@ export const SecurityUserData = ({ context }) =>
         }))
     )();
 
-const PK_GROUP = "G";
-const SK_GROUP = "A";
+export const PK_GROUP = "G";
+export const SK_GROUP = "A";
+export const GSI1_PK_GROUP = "GROUP";
 
 export const SecurityGroupData = () =>
     compose(
@@ -151,9 +152,9 @@ export const SecurityGroupData = () =>
             })
         })),
         withHooks({
-            async beforeCreate(parent) {
+            async beforeSave(parent) {
                 const existingGroup = await parent.constructor.findOne({
-                    query: { GSI1_PK: "Group", GSI1_SK: `slug#${this.slug}` }
+                    query: { GSI1_PK: GSI1_PK_GROUP, GSI1_SK: `slug#${this.slug}` }
                 });
                 if (existingGroup) {
                     throw Error(`Group with slug "${this.slug}" already exists.`);
