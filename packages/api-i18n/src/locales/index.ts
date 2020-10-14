@@ -1,6 +1,6 @@
 import models from "../plugins/models";
 import { HandlerPlugin } from "@webiny/handler/types";
-import { PK_LOCALE } from "../plugins/models/i18n.model";
+import { PK_LOCALE } from "../plugins/models/localeData.model";
 
 export default () => [
     models(),
@@ -18,6 +18,5 @@ export default () => [
                 createdOn: locale.createdOn
             }));
         }
-    } as HandlerPlugin,
-
+    } as HandlerPlugin
 ];

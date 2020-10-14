@@ -111,7 +111,7 @@ const LIST_LOCALES = /* GraphQL */ `
 `;
 
 const GET_LOCALE = /* GraphQL */ `
-    query GetI18NLocale ($code: String!) {
+    query GetI18NLocale($code: String!) {
         i18n {
             getI18NLocale(code: $code) {
                 data {
