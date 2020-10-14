@@ -1,25 +1,16 @@
 import React from "react";
-import { ActionsEnum, runAction, subscribe, unsubscribe, unsubscribeAll } from "./actions";
+import { EventActionHandler } from "../eventActions";
 
 type ProviderType = {
-    actions: {
-        unsubscribeAll: () => void;
-        run: (action: string, args?: { [key: string]: any }) => Promise<ActionsEnum>;
-        subscribe: (action: string, callable: Function) => void;
-        unsubscribe: (action: string, callable: Function) => void;
-    };
+    actions: EventActionHandler;
 };
 const EditorContext = React.createContext<ProviderType>(null);
 const EditorProvider: React.FunctionComponent<any> = props => {
+    const eventActionsHandler = new EventActionHandler();
     const provider = {
-        actions: {
-            unsubscribeAll,
-            run: runAction,
-            subscribe,
-            unsubscribe
-        }
+        actions: eventActionsHandler
     };
-    unsubscribeAll();
+    eventActionsHandler.unsubscribeAll();
 
     return <EditorContext.Provider value={provider} {...props} />;
 };
