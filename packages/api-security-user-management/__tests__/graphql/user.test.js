@@ -1,7 +1,7 @@
 import useGqlHandler from "../useGqlHandler";
 import mocks from "../mocks/securityUser";
 
-describe("Security Group CRUD Test", () => {
+describe("Security User CRUD Test", () => {
     const { securityUser } = useGqlHandler();
     let userAId, userBId;
 
@@ -169,6 +169,40 @@ describe("Security Group CRUD Test", () => {
                             message: "User with given e-mail already exists.",
                             data: null
                         }
+                    }
+                }
+            }
+        });
+    });
+});
+
+describe(`"Login" test`, () => {
+    const { securityUser } = useGqlHandler();
+
+    test("Should be able to login", async () => {
+        let [response] = await securityUser.login();
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    login: {
+                        data: mocks.adminUser,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("Should be able to get current user", async () => {
+        let [response] = await securityUser.getCurrentUser();
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getCurrentUser: {
+                        data: mocks.adminUser,
+                        error: null
                     }
                 }
             }

@@ -4,6 +4,8 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import securityPlugins from "@webiny/api-security/authenticator";
 import userManagement from "@webiny/api-security-user-management";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { SecurityIdentity } from "@webiny/api-security";
+import mocks from "./mocks/securityUser";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
@@ -19,7 +21,13 @@ export default () => {
         apolloServerPlugins(),
         securityPlugins(),
         { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
-        // TODO: Add Cognito plugins for authentication
+        // Add Cognito plugins for authentication
+        {
+            type: "security-authentication",
+            async authenticate() {
+                return new SecurityIdentity(mocks.admin);
+            }
+        },
         // Add user management
         userManagement(),
         // Add Cognito plugins for user management
@@ -72,6 +80,9 @@ export default () => {
     };
 
     const securityUser = {
+        async login() {
+            return invoke({ body: { query: LOGIN } });
+        },
         async create(variables) {
             return invoke({ body: { query: CREATE_SECURITY_USER, variables } });
         },
@@ -86,6 +97,9 @@ export default () => {
         },
         async get(variables) {
             return invoke({ body: { query: GET_SECURITY_USER, variables } });
+        },
+        async getCurrentUser() {
+            return invoke({ body: { query: GET_CURRENT_SECURITY_USER } });
         }
     };
 
@@ -196,6 +210,26 @@ const GET_SECURITY_GROUP = /* GraphQL */ `
     }
 `;
 
+const LOGIN = /* GraphQL */ `
+    mutation login {
+        security {
+            login {
+                data {
+                    id
+                    email
+                    firstName
+                    lastName
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
 const CREATE_SECURITY_USER = /* GraphQL */ `
     mutation CreateUser($data: SecurityUserInput!) {
         security {
@@ -275,6 +309,26 @@ const GET_SECURITY_USER = /* GraphQL */ `
     query GetUser($id: ID, $login: String) {
         security {
             getUser(id: $id, login: $login) {
+                data {
+                    id
+                    email
+                    firstName
+                    lastName
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
+const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
+    query GetCurrentUser {
+        security {
+            getCurrentUser {
                 data {
                     id
                     email
