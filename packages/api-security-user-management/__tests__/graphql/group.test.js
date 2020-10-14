@@ -1,12 +1,12 @@
-import useGqlHandler from "./useGqlHandler";
-import securityGroupMock from "./mocks/securityUser.mock";
+import useGqlHandler from "../useGqlHandler";
+import mocks from "../mocks/securityGroup";
 
-describe("CRUD Test", () => {
+describe("Security Group CRUD Test", () => {
     const { securityGroup } = useGqlHandler();
     let groupAId, groupBId;
 
     test("should able to create, read, update and delete `Security Groups`", async () => {
-        let [response] = await securityGroup.create({ data: securityGroupMock.groupA });
+        let [response] = await securityGroup.create({ data: mocks.groupA });
 
         // Let's create two groups.
         groupAId = response.data.security.createGroup.data.id;
@@ -15,7 +15,7 @@ describe("CRUD Test", () => {
                 security: {
                     createGroup: {
                         data: {
-                            ...securityGroupMock.groupA,
+                            ...mocks.groupA,
                             id: groupAId
                         },
                         error: null
@@ -24,7 +24,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        [response] = await securityGroup.create({ data: securityGroupMock.groupB });
+        [response] = await securityGroup.create({ data: mocks.groupB });
 
         groupBId = response.data.security.createGroup.data.id;
         expect(response).toEqual({
@@ -32,7 +32,7 @@ describe("CRUD Test", () => {
                 security: {
                     createGroup: {
                         data: {
-                            ...securityGroupMock.groupB,
+                            ...mocks.groupB,
                             id: groupBId
                         },
                         error: null
@@ -50,11 +50,11 @@ describe("CRUD Test", () => {
                     listGroups: {
                         data: [
                             {
-                                ...securityGroupMock.groupA,
+                                ...mocks.groupA,
                                 id: groupAId
                             },
                             {
-                                ...securityGroupMock.groupB,
+                                ...mocks.groupB,
                                 id: groupBId
                             }
                         ],
@@ -76,7 +76,7 @@ describe("CRUD Test", () => {
                 security: {
                     updateGroup: {
                         data: {
-                            ...securityGroupMock.groupB,
+                            ...mocks.groupB,
                             id: groupBId,
                             name: updatedName
                         },
@@ -128,7 +128,7 @@ describe("CRUD Test", () => {
                 security: {
                     getGroup: {
                         data: {
-                            ...securityGroupMock.groupA,
+                            ...mocks.groupA,
                             id: groupAId
                         },
                         error: null
@@ -138,14 +138,14 @@ describe("CRUD Test", () => {
         });
 
         // Should contain "groupA" by slug
-        [response] = await securityGroup.get({ slug: securityGroupMock.groupA.slug });
+        [response] = await securityGroup.get({ slug: mocks.groupA.slug });
 
         expect(response).toEqual({
             data: {
                 security: {
                     getGroup: {
                         data: {
-                            ...securityGroupMock.groupA,
+                            ...mocks.groupA,
                             id: groupAId
                         },
                         error: null
@@ -157,7 +157,7 @@ describe("CRUD Test", () => {
 
     test('should not allow creating a group with same "slug"', async () => {
         // Creating a group with same "slug" should not be allowed
-        let [response] = await securityGroup.create({ data: securityGroupMock.groupA });
+        let [response] = await securityGroup.create({ data: mocks.groupA });
 
         expect(response).toEqual({
             data: {
@@ -166,7 +166,7 @@ describe("CRUD Test", () => {
                         data: null,
                         error: {
                             code: "",
-                            message: `Group with slug "${securityGroupMock.groupA.slug}" already exists.`,
+                            message: `Group with slug "${mocks.groupA.slug}" already exists.`,
                             data: null
                         }
                     }
@@ -177,7 +177,7 @@ describe("CRUD Test", () => {
 
     test('should filter and sort by "name"', async () => {
         // Add "Group-B
-        let [response] = await securityGroup.create({ data: securityGroupMock.groupB });
+        let [response] = await securityGroup.create({ data: mocks.groupB });
         groupBId = response.data.security.createGroup.data.id;
 
         // should return empty array for group name begins with "cms"
@@ -203,11 +203,11 @@ describe("CRUD Test", () => {
                     listGroups: {
                         data: [
                             {
-                                ...securityGroupMock.groupA,
+                                ...mocks.groupA,
                                 id: groupAId
                             },
                             {
-                                ...securityGroupMock.groupB,
+                                ...mocks.groupB,
                                 id: groupBId
                             }
                         ],
@@ -226,11 +226,11 @@ describe("CRUD Test", () => {
                     listGroups: {
                         data: [
                             {
-                                ...securityGroupMock.groupB,
+                                ...mocks.groupB,
                                 id: groupBId
                             },
                             {
-                                ...securityGroupMock.groupA,
+                                ...mocks.groupA,
                                 id: groupAId
                             }
                         ],
