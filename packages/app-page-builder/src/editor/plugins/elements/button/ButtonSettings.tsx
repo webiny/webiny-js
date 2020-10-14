@@ -118,27 +118,27 @@ const ButtonSettings = () => {
 
     const updateType = useCallback(
         (value: string) => setData(buildElementWithType(element, value)),
-        [setData]
+        [element.id]
     );
     const updateIcon = useCallback(
         (value: { id: string }) => setData(buildElementWithIconData(element, "id", value.id)),
-        [setData]
+        [element.id]
     );
     const updateIconColor = useCallback(
         (value: string) => setData(buildElementWithIconData(element, "color", value)),
-        [setData]
+        [element.id]
     );
     const updateIconColorPreview = useCallback(
         (value: string) => setData(buildElementWithIconData(element, "color", value), false),
-        [setData]
+        [element.id]
     );
     const updateIconWidth = useCallback(
         (value: string) => setData(buildElementWithIconData(element, "width", value)),
-        [setData]
+        [element.id]
     );
     const updateIconPosition = useCallback(
         (value: string) => setData(buildElementWithIconData(element, "position", value)),
-        [setData]
+        [element.id]
     );
 
     return (
