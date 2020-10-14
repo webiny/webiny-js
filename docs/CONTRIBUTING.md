@@ -1,6 +1,7 @@
 # CONTRIBUTING
 
 This guide is for anyone who wants to contribute to the Webiny project.
+We have an active community on [slack](webiny.com/slack). Talk to the core-team, and get help. Webiny team is always there for any questions.
 
 ## Working on an issue
 

@@ -1,22 +1,24 @@
 import * as React from "react";
 import { useSecurity } from "..";
+import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
+import NotAuthorizedError from "@webiny/app-security/components/NotAuthorizedError";
 
 let warned = false;
 
 export default ({
-    children,
-    scopes,
-    permission
-}: {
+                    children,
+                    scopes,
+                    permission
+                }: {
     children: any;
     scopes?: string[];
     permission?: string;
 }): React.ReactElement => {
     if (!permission && scopes) {
         !warned &&
-            console.warn(
-                `DEPRECATION WARNING: <SecureRoute> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
-            );
+        console.warn(
+            `DEPRECATION WARNING: <SecureRoute> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
+        );
         warned = true;
         permission = scopes[0];
     }
@@ -28,5 +30,9 @@ export default ({
         return children;
     }
 
-    return null;
+    const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
+    if (!plugin) {
+        return <NotAuthorizedError />;
+    }
+    return plugin.render();
 };

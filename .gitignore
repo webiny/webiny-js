@@ -1,7 +1,6 @@
 .idea
 .webpack
 .webiny
-.pulumi
 .serverless
 .env*
 .npmrc
@@ -23,11 +22,12 @@ build/
 .verdaccio
 .history
 *.tsbuildinfo
-.cloudfnsrc.js
-.cloudfns/
 yarn.lock
 cypress.json
-pbInstalation.zip
+.pulumi
 Pulumi.*
 !Pulumi.yaml
+pbInstalation.zip
 globalConfig.json
+.graphqlconfig
+schema.graphql
