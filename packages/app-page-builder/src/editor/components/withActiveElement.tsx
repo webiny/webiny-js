@@ -1,9 +1,9 @@
-import React from "react";
 import {
-    editorUiActiveElementIdSelector,
-    elementByIdSelectorFamily,
-    elementByIdWithChildrenSelectorFamily
-} from "@webiny/app-page-builder/editor/recoil/recoil";
+    activeElementIdSelector,
+    elementByIdSelector,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
+import React from "react";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 
@@ -18,19 +18,19 @@ const pickKeys = (element: PbElement | PbShallowElement, keys?: string[]) => {
 };
 
 const getActiveElement = (propName: string, shallow: boolean, keys?: string[]) => {
-    const elementId = useRecoilValue(editorUiActiveElementIdSelector);
+    const elementId = useRecoilValue(activeElementIdSelector);
     if (!elementId) {
         return {
             [propName]: null
         };
     }
     if (shallow || (keys?.length > 0 && keys.includes("elements") === false)) {
-        const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+        const element = useRecoilValue(elementByIdSelector(elementId));
         return {
             [propName]: pickKeys(element, keys)
         };
     }
-    const elementWithChildren = useRecoilValue(elementByIdWithChildrenSelectorFamily(elementId));
+    const elementWithChildren = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     return {
         [propName]: pickKeys(elementWithChildren, keys)
     };

@@ -1,5 +1,4 @@
 import React from "react";
-import { get } from "lodash";
 import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
@@ -22,8 +21,11 @@ export default [
         name: "pb-editor-page-settings-bar",
         type: "pb-editor-bar",
         shouldRender({ plugins }) {
-            const active = get(plugins, "pb-editor-bar");
-            return active ? active.find(pl => pl.name === "pb-editor-page-settings-bar") : false;
+            const active = plugins.get("pb-editor-bar");
+            if (!active || active.length === 0) {
+                return false;
+            }
+            return active.find(pl => pl.name === "pb-editor-page-settings-bar");
         },
         render() {
             return <PageSettings />;

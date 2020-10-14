@@ -1,7 +1,7 @@
-import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
 import React from "react";
 import Slate from "./Slate";
-import { elementByIdSelectorFamily } from "../recoil/recoil";
+import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
+import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
 
 type Props = Omit<SlateEditorProps, "value"> & {
@@ -9,7 +9,7 @@ type Props = Omit<SlateEditorProps, "value"> & {
 };
 const ConnectedSlate: React.FunctionComponent<Props> = props => {
     const { elementId } = props;
-    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const value = element?.data?.text;
     return <Slate {...props} value={value} />;
 };

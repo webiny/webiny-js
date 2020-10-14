@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { elementByIdSelectorFamily } from "../recoil/recoil";
+import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 
@@ -18,14 +18,14 @@ const ConnectedElement: React.FunctionComponent<Props> = ({
             // fix and try to avoid this
             return (): PbElement => {
                 const targetElement = (useRecoilValue(
-                    elementByIdSelectorFamily(elementId)
+                    elementByIdSelector(elementId)
                 ) as unknown) as PbElement;
                 if (!withChildren) {
                     return targetElement;
                 }
                 const targetElements = (targetElement.elements as unknown) as string[];
                 const elements = (targetElements.map(id =>
-                    useRecoilValue(elementByIdSelectorFamily(id))
+                    useRecoilValue(elementByIdSelector(id))
                 ) as unknown) as PbElement[];
                 return {
                     ...targetElement,

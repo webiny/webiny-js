@@ -2,10 +2,10 @@ import React from "react";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
 import {
-    editorUiAtom,
-    elementByIdSelectorFamily,
-    elementPropsByIdSelectorFamily
-} from "./../recoil/recoil";
+    elementByIdSelector,
+    elementPropsByIdSelector,
+    uiAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
 import { getPlugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
@@ -40,9 +40,9 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
     // when looking at https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/components/Element.tsx#L137
     // it is noticeable that getElement returns shallow element from state.elements
     // when type is really PbShallowElement element - TS is complaining
-    const element = (useRecoilValue(elementByIdSelectorFamily(elementId)) as unknown) as PbElement;
-    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelectorFamily(elementId));
-    const setEditorUi = useSetRecoilState(editorUiAtom);
+    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
+    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(elementId));
+    const setEditorUi = useSetRecoilState(uiAtom);
 
     const plugin = getElementPlugin(element);
 

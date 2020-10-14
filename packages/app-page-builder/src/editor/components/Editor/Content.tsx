@@ -1,10 +1,10 @@
+import {
+    contentSelector,
+    isPluginActiveSelector,
+    layoutSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import React from "react";
 import styled from "@emotion/styled";
-import {
-    editorPageLayoutSelector,
-    editorPageSelector,
-    isPluginActiveSelectorFamily
-} from "../../recoil/recoil";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
@@ -45,9 +45,9 @@ const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boo
 };
 
 const Content = () => {
-    const rootElement = useRecoilValue(editorPageSelector);
-    const renderLayout = useRecoilValue(isPluginActiveSelectorFamily("pb-editor-toolbar-preview"));
-    const layout = useRecoilValue(editorPageLayoutSelector);
+    const rootElement = useRecoilValue(contentSelector);
+    const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
+    const layout = useRecoilValue(layoutSelector);
 
     const { theme } = usePageBuilder();
     const plugins = getPlugins<PbEditorContentPlugin>("pb-editor-content");

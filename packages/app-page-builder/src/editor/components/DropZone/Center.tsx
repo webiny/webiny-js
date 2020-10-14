@@ -1,7 +1,7 @@
+import { elementPropsByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import { elementPropsByIdSelectorFamily } from "../../recoil/recoil";
 import { useRecoilValue } from "recoil";
 
 type ContainerProps = {
@@ -48,7 +48,7 @@ type Props = {
 };
 
 const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children }) => {
-    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelectorFamily(id));
+    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(id));
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (

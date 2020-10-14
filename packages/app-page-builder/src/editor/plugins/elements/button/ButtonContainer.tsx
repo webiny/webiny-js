@@ -1,7 +1,7 @@
 import React, { CSSProperties } from "react";
 import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
+import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
-import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useRecoilValue } from "recoil";
 
@@ -23,7 +23,7 @@ type ButtonContainerPropsType = {
 };
 const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props => {
     const { getAllClasses, elementStyle, elementAttributes, elementId } = props;
-    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {} } = element.data || {};
     const svg = icon.svg || null;
     const { alignItems } = elementStyle;

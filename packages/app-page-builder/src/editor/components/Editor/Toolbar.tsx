@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { css } from "emotion";
 import {
-    deactivatePluginRecoilAction,
-    pluginsActiveNamesByTypeSelectorFamily
-} from "../../recoil/recoil";
+    activePluginNamesSelector,
+    deactivatePluginMutation
+} from "@webiny/app-page-builder/editor/recoil/modules";
+import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { getPlugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -72,7 +72,7 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children })
         if (active && !last.current.active) {
             addKeyHandler("escape", e => {
                 e.preventDefault();
-                deactivatePluginRecoilAction(name);
+                deactivatePluginMutation(name);
             });
         }
         if (!active && last.current.active) {
@@ -95,9 +95,7 @@ const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPl
 };
 
 const Toolbar = () => {
-    const activePluginsTop = useRecoilValue(
-        pluginsActiveNamesByTypeSelectorFamily("pb-editor-toolbar-top")
-    );
+    const activePluginsTop = useRecoilValue(activePluginNamesSelector("pb-editor-toolbar-top"));
     const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
     const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
     return (

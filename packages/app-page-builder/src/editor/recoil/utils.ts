@@ -4,7 +4,7 @@ import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
 const fixChildPaths = (elements: PbElement[]): PbElement[] => {
     return (elements as PbElement[]).map((element, index) => {
-        const newElement = updateChildPaths(element);
+        const newElement = updateChildPathsUtil(element);
         const path = `${element.path}.${index}`;
         return {
             ...newElement,
@@ -13,7 +13,7 @@ const fixChildPaths = (elements: PbElement[]): PbElement[] => {
     });
 };
 
-export const updateChildPaths = (element: PbElement): PbElement => {
+export const updateChildPathsUtil = (element: PbElement): PbElement => {
     const { id = shortid.generate(), path = "0", type, data, elements } = element;
     return {
         ...element,
@@ -25,7 +25,7 @@ export const updateChildPaths = (element: PbElement): PbElement => {
     };
 };
 // eslint-disable-next-line
-export const saveEditorPageRevision = (_page: EditorPageAtomType) => {
+export const saveEditorPageRevisionUtil = (_page: EditorPageAtomType) => {
     // packages/app-page-builder/src/editor/actions/actions.ts:364
 };
 
@@ -33,10 +33,10 @@ export const saveEditorPageRevision = (_page: EditorPageAtomType) => {
 type FlattenElementsType = {
     [id: string]: PbShallowElement;
 };
-export const flattenContent = (el): FlattenElementsType => {
+export const flattenContentUtil = (el): FlattenElementsType => {
     let els = {};
     el.elements = (el.elements || []).map(child => {
-        els = { ...els, ...flattenContent(child) };
+        els = { ...els, ...flattenContentUtil(child) };
         return child.id;
     });
 

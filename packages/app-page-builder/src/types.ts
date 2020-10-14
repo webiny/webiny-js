@@ -1,5 +1,5 @@
+import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import React, { ComponentType, ReactElement, ReactNode } from "react";
-import { EditorPluginsAtomType } from "./editor/recoil/recoil";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
@@ -357,7 +357,7 @@ export type PbEditorSlateMenuItemPlugin = Plugin & {
 };
 
 export type PbEditorBarPluginShouldRenderProps = {
-    plugins: EditorPluginsAtomType;
+    plugins: PluginsAtomType;
     activeElement: any;
 };
 
@@ -438,3 +438,4 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     render(params?: { Bind: BindComponent; data: any }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
+

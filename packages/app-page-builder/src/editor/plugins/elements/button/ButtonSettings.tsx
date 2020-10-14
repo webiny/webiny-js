@@ -2,8 +2,8 @@ import React, { useCallback, useMemo } from "react";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
-import { editorUiActiveElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/recoil";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
@@ -94,7 +94,7 @@ type SetDataFunctionValuesType = {
 type SetDataFunctionType = (values: SetDataFunctionValuesType, history?: boolean) => void;
 
 const ButtonSettings = () => {
-    const element = useRecoilValue(editorUiActiveElementWithChildrenSelector);
+    const element = useRecoilValue(activeElementWithChildrenSelector);
     const { theme } = usePageBuilder();
     const { types } = theme?.elements?.button || [];
     const defaultType = types?.[0]?.name || "";

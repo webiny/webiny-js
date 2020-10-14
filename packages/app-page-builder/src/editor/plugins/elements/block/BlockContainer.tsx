@@ -1,9 +1,9 @@
 import React, { CSSProperties } from "react";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
-import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions/dropElement";
-import { elementByIdSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
 import { css } from "emotion";
+import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions/dropElement";
+import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
 
 type BlockContainerPropsType = {
@@ -20,7 +20,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     combineClassNames,
     elementId
 }) => {
-    const element = useRecoilValue(elementByIdSelectorFamily(elementId));
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const { id, type, elements } = element;
 
     const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
