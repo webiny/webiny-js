@@ -13,7 +13,7 @@
 	"dependencies": {
 		"@commodo/fields": "^1.2.1",
 		"bson": "^4.0.2",
-		"@webiny/handler-client": "^4.12.1"
+		"@webiny/handler-client": "^4.13.0"
 	},
 	"publishConfig": {
 		"access": "public",

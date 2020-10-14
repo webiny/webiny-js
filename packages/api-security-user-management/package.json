@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security-user-management",
-  "version": "4.12.1",
+  "version": "4.13.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,8 +17,8 @@
     "@webiny/commodo-graphql": "^4.11.0-beta.1",
     "@webiny/graphql": "^4.11.0-beta.1",
     "@webiny/validation": "^4.11.0-beta.1",
-    "@webiny/handler-client": "^4.12.1",
-    "@webiny/handler-http": "^4.12.1",
+    "@webiny/handler-client": "^4.13.0",
+    "@webiny/handler-http": "^4.13.0",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.20",
     "md5": "^2.3.0",

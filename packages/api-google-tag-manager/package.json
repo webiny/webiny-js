@@ -28,7 +28,7 @@
     "@webiny/api-settings-manager": "^4.13.0"
   },
   "peerDependencies": {
-    "@webiny/graphql": "^4.0.0-beta.0"
+    "@webiny/graphql": "^4.13.0"
   },
   "publishConfig": {
     "access": "public",
