@@ -21,6 +21,9 @@
     "@webiny/commodo-graphql": "^4.12.1",
     "@webiny/graphql": "^4.12.1",
     "@webiny/handler": "^4.12.1",
+    "@webiny/handler-aws": "^4.12.1",
+    "@webiny/handler-apollo-server": "^4.12.1",
+    "@webiny/api-plugin-commodo-dynamodb": "^4.12.1",
     "@webiny/handler-client": "^4.12.1",
     "@webiny/validation": "^4.12.1",
     "accept-language-parser": "^1.5.0",
@@ -29,9 +32,10 @@
     "lodash": "^4.17.4",
     "@commodo/fields": "beta",
     "@commodo/fields-storage": "beta",
-    "@commodo/fields-storage-dynamodb": "beta",
     "@commodo/hooks": "beta",
-    "@commodo/name": "beta"
+    "@commodo/name": "beta",
+    "repropose": "^1.0.2",
+    "ramda": "^0.26.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

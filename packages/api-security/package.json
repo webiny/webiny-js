@@ -18,9 +18,6 @@
     "@webiny/commodo": "^4.12.1",
     "@webiny/commodo-graphql": "^4.12.1",
     "@webiny/graphql": "^4.12.1",
-    "@webiny/validation": "^4.13.0",
-    "graphql": "^14.6.0",
-    "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.2.2",
     "lodash": "^4.17.4",
     "minimatch": "^3.0.4"

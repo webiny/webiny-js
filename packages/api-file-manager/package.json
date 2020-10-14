@@ -25,7 +25,6 @@
     "@webiny/validation": "^4.12.1",
     "@webiny/handler-client": "^4.12.1",
     "@webiny/project-utils": "^4.12.1",
-    "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "mime": "^2.4.4",
     "sanitize-filename": "^1.6.3",
