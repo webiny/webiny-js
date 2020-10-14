@@ -26,6 +26,7 @@
     "@emotion/styled": "^10.0.27",
     "@webiny/ui": "^4.12.1",
     "@webiny/react-router": "^4.12.1",
+    "@webiny/plugins": "^4.12.1",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
