@@ -13,7 +13,6 @@ export default {
             slug: String
             createdOn: DateTime
             description: String
-            #roles: [SecurityRole]
             permissions: [JSON]
         }
 
@@ -22,7 +21,6 @@ export default {
             name: String
             slug: String
             description: String
-            #roles: [ID]
             permissions: [JSON]
         }
 
@@ -60,7 +58,6 @@ export default {
 
         extend type SecurityQuery {
             getGroup(id: ID, slug: String): SecurityGroupResponse
-
             listGroups(where: ListSecurityGroupWhereInput, sort: Int): SecurityGroupListResponse
         }
 
