@@ -1,13 +1,8 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { WithFieldsError } from "@webiny/commodo";
 import { InvalidFieldsError, ErrorResponse, Response } from "@webiny/commodo-graphql";
-import { Batch } from "@commodo/fields-storage";
 import { SecurityUserManagementPlugin } from "../../types";
-import {
-    GSI1_PK_USER,
-    SK_USER,
-    PK_USER
-} from "@webiny/api-security-user-management/models/security.model";
+import { createSecurityUser } from "@webiny/api-security-user-management/graphql/userResolvers/utils";
 
 const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
     const Model = context.models.Security;
@@ -27,31 +22,7 @@ const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
             personalAccessTokens: data.personalAccessTokens
         });
 
-        const PK = `${PK_USER}#${user.id}`;
-
-        const securityRecordPrimary = new Model();
-        securityRecordPrimary.PK = PK;
-        securityRecordPrimary.SK = SK_USER;
-        securityRecordPrimary.GSI1_PK = GSI1_PK_USER;
-        securityRecordPrimary.GSI1_SK = `login#${user.email}`;
-        securityRecordPrimary.GSI_DATA = user;
-        securityRecordPrimary.data = user;
-
-        const securityRecordSecondary = new Model();
-        securityRecordSecondary.PK = PK;
-        securityRecordSecondary.SK = "createdOn";
-        securityRecordSecondary.GSI1_PK = GSI1_PK_USER;
-        securityRecordSecondary.GSI1_SK = `createdOn#${user.createdOn}`;
-        securityRecordSecondary.GSI_DATA = user;
-        securityRecordSecondary.data = user;
-
-        // Here we can't use the "SecurityUser" because "Batch" operation works with "Model" and not "instance"
-        const batch = new Batch(
-            // User item - A
-            [securityRecordPrimary, "save"],
-            // User item - createdOn
-            [securityRecordSecondary, "save"]
-        );
+        await createSecurityUser({ Model, user });
 
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(
             "security-user-management"
@@ -59,9 +30,7 @@ const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
 
         await authPlugin.createUser({ data: data, user }, context);
 
-        await batch.execute();
-
-        return new Response(securityRecordPrimary.data);
+        return new Response(user);
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
             const attrError = InvalidFieldsError.from(e);
