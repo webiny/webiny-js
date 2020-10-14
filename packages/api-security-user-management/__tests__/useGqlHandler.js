@@ -6,6 +6,22 @@ import userManagement from "@webiny/api-security-user-management";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import mocks from "./mocks/securityUser";
+import {
+    IS_INSTALLED,
+    GET_CURRENT_SECURITY_USER,
+    DELETE_SECURITY_USER,
+    UPDATE_SECURITY_USER,
+    CREATE_SECURITY_USER,
+    UPDATE_SECURITY_GROUP,
+    CREATE_SECURITY_GROUP,
+    DELETE_SECURITY_GROUP,
+    GET_SECURITY_GROUP,
+    GET_SECURITY_USER,
+    LIST_SECURITY_GROUPS,
+    LIST_SECURITY_USERS,
+    LOGIN,
+    INSTALL
+} from "./graphql";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
@@ -103,244 +119,20 @@ export default () => {
         }
     };
 
+    const install = {
+        async isInstalled() {
+            return invoke({ body: { query: IS_INSTALLED } });
+        },
+        async install(variables) {
+            return invoke({ body: { query: INSTALL, variables } });
+        }
+    };
+
     return {
         handler,
         invoke,
         securityGroup,
-        securityUser
+        securityUser,
+        install
     };
 };
-
-const CREATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation CreateGroup($data: SecurityGroupInput!) {
-        security {
-            createGroup(data: $data) {
-                data {
-                    id
-                    name
-                    description
-                    slug
-                    permissions
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const UPDATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation UpdateGroup($id: ID!, $data: SecurityGroupInput!) {
-        security {
-            updateGroup(id: $id, data: $data) {
-                data {
-                    id
-                    name
-                    description
-                    slug
-                    permissions
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const DELETE_SECURITY_GROUP = /* GraphQL */ `
-    mutation DeleteGroup($id: ID!) {
-        security {
-            deleteGroup(id: $id) {
-                data
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const LIST_SECURITY_GROUPS = /* GraphQL */ `
-    query ListGroups($where: ListSecurityGroupWhereInput, $sort: Int) {
-        security {
-            listGroups(where: $where, sort: $sort) {
-                data {
-                    id
-                    name
-                    description
-                    slug
-                    permissions
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const GET_SECURITY_GROUP = /* GraphQL */ `
-    query GetGroup($id: ID, $slug: String) {
-        security {
-            getGroup(id: $id, slug: $slug) {
-                data {
-                    id
-                    name
-                    description
-                    slug
-                    permissions
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const LOGIN = /* GraphQL */ `
-    mutation login {
-        security {
-            login {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const CREATE_SECURITY_USER = /* GraphQL */ `
-    mutation CreateUser($data: SecurityUserInput!) {
-        security {
-            createUser(data: $data) {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const UPDATE_SECURITY_USER = /* GraphQL */ `
-    mutation UpdateUser($id: ID!, $data: SecurityUserInput!) {
-        security {
-            updateUser(id: $id, data: $data) {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const DELETE_SECURITY_USER = /* GraphQL */ `
-    mutation DeleteUser($id: ID!) {
-        security {
-            deleteUser(id: $id) {
-                data
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const LIST_SECURITY_USERS = /* GraphQL */ `
-    query ListUser {
-        security {
-            listUsers {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const GET_SECURITY_USER = /* GraphQL */ `
-    query GetUser($id: ID, $login: String) {
-        security {
-            getUser(id: $id, login: $login) {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
-
-const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
-    query GetCurrentUser {
-        security {
-            getCurrentUser {
-                data {
-                    id
-                    email
-                    firstName
-                    lastName
-                }
-                error {
-                    message
-                    code
-                    data
-                }
-            }
-        }
-    }
-`;
