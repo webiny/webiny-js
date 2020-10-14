@@ -1,4 +1,3 @@
-import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import resolveLogin from "./userResolvers/login";
 import resolveGetCurrentUser from "./userResolvers/getCurrentUser";
@@ -9,6 +8,8 @@ import resolveDeleteUser from "./userResolvers/deleteUser";
 import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
 import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
+import listUsers from "./userResolvers/listUsers";
+import getUser from "./userResolvers/getUser";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
@@ -64,7 +65,7 @@ export default {
             gravatar: String
             avatar: File
             enabled: Boolean
-            groups: [SecurityGroup]
+            group: SecurityGroup
             permissions: [JSON]
             personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
@@ -83,7 +84,7 @@ export default {
             lastName: String
             avatar: RefInput
             enabled: Boolean
-            groups: [ID]
+            group: ID
         }
 
         # This input type is used by the user who is updating his own account
@@ -132,7 +133,7 @@ export default {
             getCurrentUser: SecurityUserResponse
 
             "Get a single user by id or specific search criteria"
-            getUser(id: ID, where: JSON, sort: String): SecurityUserResponse
+            getUser(id: ID, login: String): SecurityUserResponse
 
             "Get a list of users"
             listUsers(
@@ -195,15 +196,15 @@ export default {
         },
         SecurityQuery: {
             getCurrentUser: resolveGetCurrentUser,
-            getUser: hasScope("security.user.manage")(resolveGet(userFetcher)),
-            listUsers: hasScope("security.user.manage")(resolveList(userFetcher))
+            getUser: hasScope("security.user.manage")(getUser),
+            listUsers: hasScope("security.user.manage")(listUsers)
         },
         SecurityMutation: {
             login: resolveLogin(userFetcher),
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
-            createUser: hasScope("security.user.manage")(resolveCreateUser(userFetcher)),
-            updateUser: hasScope("security.user.manage")(resolveUpdateUser(userFetcher)),
-            deleteUser: hasScope("security.user.manage")(resolveDeleteUser(userFetcher)),
+            createUser: hasScope("security.user.manage")(resolveCreateUser),
+            updateUser: hasScope("security.user.manage")(resolveUpdateUser),
+            deleteUser: hasScope("security.user.manage")(resolveDeleteUser),
             createPAT: hasScope("security.user.manage")(resolveCreatePAT),
             updatePAT: hasScope("security.user.manage")(resolveUpdatePAT),
             deletePAT: hasScope("security.user.manage")(resolveDeletePAT)
