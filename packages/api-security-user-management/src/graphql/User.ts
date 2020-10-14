@@ -200,7 +200,7 @@ export default {
             listUsers: hasScope("security.user.manage")(listUsers)
         },
         SecurityMutation: {
-            login: resolveLogin(userFetcher),
+            login: resolveLogin,
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: hasScope("security.user.manage")(resolveCreateUser),
             updateUser: hasScope("security.user.manage")(resolveUpdateUser),
