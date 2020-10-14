@@ -29,20 +29,28 @@ type ElementRootProps = {
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
 };
 
-const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({ element, style = {}, children, className = null }) => {
-
+const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
+    element,
+    style = {},
+    children,
+    className = null
+}) => {
     const shallowElement = {
         id: element.id,
         type: element.type,
-        data: element.data,
+        data: element.data
     };
 
     const stylePlugins = useRef<PbRenderElementStylePlugin[]>([]);
     const attributePlugins = useRef<PbRenderElementAttributesPlugin[]>([]);
 
     useEffect(() => {
-        stylePlugins.current = getPlugins<PbRenderElementStylePlugin>("pb-render-page-element-style");
-        attributePlugins.current = getPlugins<PbRenderElementAttributesPlugin>("pb-render-page-element-attributes");
+        stylePlugins.current = getPlugins<PbRenderElementStylePlugin>(
+            "pb-render-page-element-style"
+        );
+        attributePlugins.current = getPlugins<PbRenderElementAttributesPlugin>(
+            "pb-render-page-element-attributes"
+        );
     }, []);
 
     const finalStyle = this.stylePlugins.reduce((accumulatedStyles, plugin) => {

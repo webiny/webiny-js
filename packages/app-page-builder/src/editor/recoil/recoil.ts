@@ -41,7 +41,7 @@ export const editorUiActiveElementIdSelector = selector<string | undefined>({
     }
 });
 
-export const editorUiActiveElementSelector = selector({
+export const editorUiActiveElementSelector = selector<PbShallowElement>({
     key: "editorUiActiveElementSelector",
     get: ({ get }) => {
         const id = get(editorUiActiveElementIdSelector);
@@ -49,6 +49,16 @@ export const editorUiActiveElementSelector = selector({
             throw new Error("There is no active element.");
         }
         return get(elementByIdSelectorFamily(id));
+    }
+});
+export const editorUiActiveElementWithChildrenSelector = selector<PbElement>({
+    key: "editorUiActiveElementWithChildrenSelector",
+    get: ({ get }) => {
+        const id = get(editorUiActiveElementIdSelector);
+        if (!id) {
+            throw new Error("There is no active element.");
+        }
+        return get(elementByIdWithChildrenSelectorFamily(id));
     }
 });
 

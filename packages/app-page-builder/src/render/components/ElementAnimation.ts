@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import aos from "aos";
 import "aos/dist/aos.css";
 import { throttle, once } from "lodash";
@@ -15,7 +15,7 @@ type ElementAnimationProps = {
     children: React.ReactNode | ElementAnimationChildrenFunction;
 };
 
-const ElementAnimation: React.FunctionComponent<ElementAnimationProps> = ({children}) => {
+const ElementAnimation: React.FunctionComponent<ElementAnimationProps> = ({ children }) => {
     useEffect(() => {
         init();
         refresh();
