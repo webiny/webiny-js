@@ -3,7 +3,7 @@ import { Link } from "@webiny/react-router";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import Helmet from "react-helmet";
-import authErrorImg from "../admin/assets/images/SecureRouteError.svg";
+import authErrorImg from "../assets/images/SecureRouteError.svg";
 import { Typography } from "@webiny/ui/Typography";
 
 const ContentWrapper = styled("div")({
