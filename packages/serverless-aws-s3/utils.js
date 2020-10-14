@@ -38,11 +38,11 @@ const bucketCreation = async (s3, Bucket) => {
 
 const ensureBucket = async (s3, name, debug) => {
     try {
-        debug(`Checking if bucket ${name} exists.`);
         debug(`Checking bucket ${name} for uppercase check.`);
-        if(name[0]>=65 && name[0]<=90){
+        if(name !== name.toLowerCase()){
             throw Error(`Bucket name must not contain uppercase characters`);
         }
+        debug(`Checking if bucket ${name} exists.`);
         await s3.headBucket({ Bucket: name }).promise();
     } catch (e) {
         if (e.code === "NotFound") {
