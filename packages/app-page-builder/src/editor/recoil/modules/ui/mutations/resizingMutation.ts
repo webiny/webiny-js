@@ -1,7 +1,7 @@
 import { uiAtom } from "../uiAtom";
 import { useSetRecoilState } from "recoil";
 
-const resizeUpdateAction = (value: boolean) => {
+const updateResizeValue = (value: boolean) => {
     const setUiAtomValue = useSetRecoilState(uiAtom);
 
     setUiAtomValue(prev => ({
@@ -10,10 +10,10 @@ const resizeUpdateAction = (value: boolean) => {
     }));
 };
 
-export const resizeStartAction = () => {
-    resizeUpdateAction(true);
+export const startResizeMutation = () => {
+    updateResizeValue(true);
 };
 
-export const resizeEndAction = () => {
-    resizeUpdateAction(false);
+export const endResizeMutation = () => {
+    updateResizeValue(false);
 };
