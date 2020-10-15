@@ -261,3 +261,23 @@ export const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
         }
     }
 `;
+
+export const UPDATE_CURRENT_SECURITY_USER = /* GraphQL */ `
+    mutation UpdateCurrentUser($data: SecurityCurrentUserInput!) {
+        security {
+            updateCurrentUser(data: $data) {
+                data {
+                    id
+                    email
+                    firstName
+                    lastName
+                }
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;

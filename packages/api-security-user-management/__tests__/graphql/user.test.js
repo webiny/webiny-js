@@ -208,4 +208,53 @@ describe(`"Login" test`, () => {
             }
         });
     });
+
+    test("Should be able to update current user", async () => {
+        let [response] = await securityUser.updateCurrentUser({
+            data: { email: "admin.new@webiny.com" }
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    updateCurrentUser: {
+                        data: { ...mocks.adminUser, email: "admin.new@webiny.com" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's see if the current user record updated or not
+        [response] = await securityUser.getCurrentUser();
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getCurrentUser: {
+                        data: { ...mocks.adminUser, email: "admin.new@webiny.com" },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's see if the old user record still exists
+        [response] = await securityUser.get({ login: "admin@webiny.com" });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getUser: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: "User not found!"
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

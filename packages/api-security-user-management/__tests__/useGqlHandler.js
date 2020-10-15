@@ -9,6 +9,7 @@ import mocks from "./mocks/securityUser";
 import {
     IS_INSTALLED,
     GET_CURRENT_SECURITY_USER,
+    UPDATE_CURRENT_SECURITY_USER,
     DELETE_SECURITY_USER,
     UPDATE_SECURITY_USER,
     CREATE_SECURITY_USER,
@@ -36,7 +37,13 @@ export default () => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
+        {
+            type: "security-authorization",
+            getPermissions: () => [
+                { name: "security.user.manage" },
+                { name: "security.group.manage" }
+            ]
+        },
         // Add Cognito plugins for authentication
         {
             type: "security-authentication",
@@ -116,6 +123,9 @@ export default () => {
         },
         async getCurrentUser() {
             return invoke({ body: { query: GET_CURRENT_SECURITY_USER } });
+        },
+        async updateCurrentUser(variables) {
+            return invoke({ body: { query: UPDATE_CURRENT_SECURITY_USER, variables } });
         }
     };
 
