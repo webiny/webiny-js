@@ -19,7 +19,7 @@ import DefaultHandle from "@webiny/app-admin/plugins/UserMenu/plugins/DefaultHan
 import Help from "@webiny/app-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
 import install from "@webiny/app-admin/plugins/install";
-import community from '@webiny/app-admin/plugins/Menu/community';
+import slack from '@webiny/app-admin/plugins/Menu/slack';
 import source from '@webiny/app-admin/plugins/Menu/source';
 
 import init from "./init";
@@ -42,7 +42,7 @@ export default (): PluginCollection => [
     Help,
     SendFeedback,
     install,
-    community,
+    slack,
     source,
     init
 ];

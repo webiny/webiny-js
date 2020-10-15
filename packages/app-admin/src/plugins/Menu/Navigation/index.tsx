@@ -6,7 +6,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { AdminMenuLogoPlugin, AdminMenuPlugin, AdminMenuCommunityPlugin, AdminMenuSourcePlugin } from "@webiny/app-admin/types";
+import { AdminMenuLogoPlugin, AdminMenuPlugin, AdminDrawerFooterMenuPlugin } from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
@@ -39,22 +39,6 @@ const Navigation = () => {
         return null;
     }, []);
 
-    const community = useMemo(() => {
-        const communityPlugin = getPlugin<AdminMenuCommunityPlugin>("admin-menu-community");
-        if (communityPlugin) {
-            return React.cloneElement(communityPlugin.render());
-        }
-        return null;
-    }, []);
-
-    const source = useMemo(() => {
-        const sourcePlugin = getPlugin<AdminMenuSourcePlugin>("admin-menu-source");
-        if (sourcePlugin) {
-            return React.cloneElement(sourcePlugin.render());
-        }
-        return null;
-    }, []);
-
     const menus = [];
     const menuPlugins = getPlugins<AdminMenuPlugin>("admin-menu");
 
@@ -65,6 +49,18 @@ const Navigation = () => {
             menus.push(
                 <React.Fragment key={plugin.name}>
                     {plugin.render({ Menu, Section, Item })}
+                </React.Fragment>
+            );
+        });
+
+    const footerMenus = [];
+    const footerMenuPlugins = getPlugins<AdminDrawerFooterMenuPlugin>("admin-drawer-footer-menu");
+
+    footerMenuPlugins &&
+        sortBy(footerMenuPlugins, [p => p.order || 50, p => p.name]).forEach(plugin => {
+            footerMenus.push(
+                <React.Fragment key={plugin.name}>
+                    {plugin.render()}
                 </React.Fragment>
             );
         });
@@ -103,8 +99,7 @@ const Navigation = () => {
                             {t`Documentation`}
                         </ListItem>
                     </a>
-                    {community}
-                    {source}
+                    {footerMenus}
                     <ListItem ripple={false} className={subFooter}>
                         <div>
                             <a
