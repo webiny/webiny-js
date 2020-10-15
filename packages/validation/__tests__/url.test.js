@@ -55,4 +55,19 @@ describe("url test", () => {
             true
         );
     });
+
+    it("should pass - href URL", () => {
+        expect(validation.validate("#", "url")).rejects.toThrow(ValidationError);
+        expect(validation.validate("mailto:foo@bar.com", "url")).rejects.toThrow(ValidationError);
+        expect(validation.validate("#", "url:allowHref")).resolves.toBe(true);
+        expect(validation.validate("mailto:foo@bar.com", "url:allowHref")).resolves.toBe(true);
+        expect(validation.validate("mailt:", "url:allowHref")).rejects.toThrow(ValidationError);
+        expect(validation.validate("mailto:foo @ bar.com", "url:allowHref")).rejects.toThrow(
+            ValidationError
+        );
+        expect(validation.validate("tele:", "url:allowHref")).rejects.toThrow(ValidationError);
+        expect(validation.validate("#hello world", "url:allowHref")).rejects.toThrow(
+            ValidationError
+        );
+    });
 });

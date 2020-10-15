@@ -18,7 +18,6 @@ export default (options: ServicePluginsOptions) => {
             name: "context-i18n-get-locales",
             type: "context-i18n-get-locales",
             async resolve({ context }: { context: Context & HandlerClientContext }) {
-                return [];
                 if (Array.isArray(localesCache)) {
                     return localesCache;
                 }

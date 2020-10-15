@@ -27,10 +27,20 @@ const ButtonSettings = ({ element, updateElement }) => {
         return (name, value, history = true) => {
             const attrKey = `data.${name}`;
 
-            let newElement = set(element, attrKey, value);
-            if (name.startsWith("icon")) {
-                const { id, width, color } = get(newElement, "data.icon");
-                newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
+            const newElement = set(element, attrKey, value);
+            const isIcon = name.startsWith("icon");
+            if (isIcon) {
+                const { id, width, color } = newElement.data?.icon || {};
+
+                const isSelectedIcon =
+                    icon.id && id ? icon.id[0] === id[0] && icon.id[1] === id[1] : false;
+
+                const updatedIcon = isSelectedIcon ? {} : newElement.data.icon || {};
+
+                newElement.data.icon = {
+                    ...updatedIcon,
+                    svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : undefined
+                };
             }
 
             if (!history) {
@@ -38,7 +48,7 @@ const ButtonSettings = ({ element, updateElement }) => {
                 return;
             }
 
-            if (historyUpdated[name] !== value) {
+            if (historyUpdated[name] !== value || (value === undefined && isIcon)) {
                 historyUpdated[name] = value;
                 updateElement({ element: newElement });
             }
@@ -46,7 +56,7 @@ const ButtonSettings = ({ element, updateElement }) => {
     }, [element, updateElement]);
 
     const updateType = useCallback(value => setData("type", value), [setData]);
-    const updateIcon = useCallback(value => setData("icon.id", value.id), [setData]);
+    const updateIcon = useCallback(value => setData("icon.id", value?.id), [setData]);
     const updateIconColor = useCallback((value: string) => setData("icon.color", value), [setData]);
     const updateIconColorPreview = useCallback(
         (value: string) => setData("icon.color", value, false),
@@ -77,11 +87,15 @@ const ButtonSettings = ({ element, updateElement }) => {
                     </Grid>
                 </Tab>
                 <Tab label={"Icon"}>
-                    <IconPicker label={"Icon"} value={icon.id} updateValue={updateIcon} />
-                    <Input label={"Width"} value={icon.width || 50} updateValue={updateIconWidth} />
+                    <IconPicker label={"Icon"} value={icon?.id} updateValue={updateIcon} />
+                    <Input
+                        label={"Width"}
+                        value={icon?.width || 50}
+                        updateValue={updateIconWidth}
+                    />
                     <ColorPicker
                         label={"Color"}
-                        value={icon.color}
+                        value={icon?.color}
                         updateValue={updateIconColor}
                         updatePreview={updateIconColorPreview}
                     />
@@ -90,7 +104,7 @@ const ButtonSettings = ({ element, updateElement }) => {
                             <Typography use={"overline"}>Position</Typography>
                         </Cell>
                         <Cell span={6}>
-                            <Select value={icon.position || "left"} onChange={updateIconPosition}>
+                            <Select value={icon?.position || "left"} onChange={updateIconPosition}>
                                 <option value={"left"}>Left</option>
                                 <option value={"right"}>Right</option>
                                 <option value={"top"}>Top</option>

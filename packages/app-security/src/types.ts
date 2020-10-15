@@ -20,3 +20,7 @@ export type SecurityScopesListPlugin = Plugin & {
         | (() => SecurityScopesListPluginScope[])
         | (({ apolloClient }) => Promise<SecurityScopesListPluginScope[]>);
 };
+
+export type SecureRouteErrorPlugin = Plugin & {
+    render(): React.ReactElement;
+};

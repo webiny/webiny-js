@@ -52,6 +52,23 @@ describe("CRUD Test", () => {
             }
         });
 
+        // Try creating a locale with default not set as true.
+        [response] = await createI18NLocale({ data: { code: "hr", default: false } });
+
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            code: "hr",
+                            default: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
         // List should show three locales.
         [response] = await listI18NLocales();
         expect(response).toEqual({
@@ -67,6 +84,11 @@ describe("CRUD Test", () => {
                                 code: "en-US",
                                 default: false
                             },
+                            {
+                                code: "hr",
+                                default: false
+                            },
+
                             {
                                 code: "hr-HR",
                                 default: true
@@ -107,6 +129,10 @@ describe("CRUD Test", () => {
                     listI18NLocales: {
                         data: [
                             {
+                                code: "hr",
+                                default: false
+                            },
+                            {
                                 code: "hr-HR",
                                 default: true
                             }
@@ -117,7 +143,38 @@ describe("CRUD Test", () => {
             }
         });
 
-        // After deleting both, list should return 0 locales.
+        // We should also be able to get the locale directly by providing the code.
+        [response] = await getI18NLocale({ code: "en-GB" });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    getI18NLocale: {
+                        data: {
+                            code: "en-GB",
+                            default: false
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        [response] = await getI18NLocale({ code: "hr-HR" });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    getI18NLocale: {
+                        data: {
+                            code: "hr-HR",
+                            default: true
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // After deleting two locales, list should return only 1 locale.
         [response] = await deleteI18NLocale({ code: "en-US" });
         expect(response).toEqual({
             data: {
@@ -148,6 +205,7 @@ describe("CRUD Test", () => {
             }
         });
 
+        // We tried deleting the third locale, but we can't do that since it's the default one.
         [response] = await deleteI18NLocale({ code: "hr-HR" });
         expect(response).toEqual({
             data: {
@@ -165,6 +223,7 @@ describe("CRUD Test", () => {
             }
         });
 
+        // Two locales should be returned here.
         [response] = await listI18NLocales();
         expect(response).toEqual({
             data: {
@@ -172,26 +231,14 @@ describe("CRUD Test", () => {
                     listI18NLocales: {
                         data: [
                             {
+                                code: "hr",
+                                default: false
+                            },
+                            {
                                 code: "hr-HR",
                                 default: true
                             }
                         ],
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // We should also be able to get the locale directly by providing the code.
-        [response] = await getI18NLocale({ code: "hr-HR" });
-        expect(response).toEqual({
-            data: {
-                i18n: {
-                    getI18NLocale: {
-                        data: {
-                            code: "hr-HR",
-                            default: true
-                        },
                         error: null
                     }
                 }

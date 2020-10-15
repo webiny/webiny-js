@@ -85,8 +85,8 @@ const RowChild = React.memo((props: Props) => {
                     {resizeProps => (
                         <ResizeHandle
                             {...resizeProps}
-                            leftWidth={leftElement.data.width}
-                            rightWidth={element.data.width}
+                            leftWidth={get(leftElement, "data.width")}
+                            rightWidth={get(element, "data.width")}
                         />
                     )}
                 </Resizer>

@@ -1,6 +1,7 @@
 import models from "./models";
 import graphql from "./graphql";
 import i18n from "./i18n";
+import { PK_LOCALE } from "./models/localeData.model";
 
 export default () => [
     models(),
@@ -10,15 +11,20 @@ export default () => [
         name: "context-i18n-get-locales",
         type: "context-i18n-get-locales",
         async resolve({ context }) {
-            return [];
-            const { I18NLocale } = context.models;
-            const locales = await I18NLocale.find();
-            return locales.map(locale => ({
-                id: locale.id,
-                code: locale.code,
-                default: locale.default,
-                createdOn: locale.createdOn
-            }));
+            const { I18N } = context.models;
+            const locales = await I18N.find({ query: { PK: PK_LOCALE, SK: { $gt: " " } } });
+            return locales
+                .map(locale => {
+                    return (
+                        locale.data && {
+                            id: locale.data.id,
+                            code: locale.data.code,
+                            default: locale.data.default,
+                            createdOn: locale.data.createdOn
+                        }
+                    );
+                })
+                .filter(Boolean);
         }
     }
 ];

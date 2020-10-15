@@ -1,7 +1,7 @@
 import { hasScope } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
-import { LocaleData, PK_LOCALE } from "./../models/i18n.model";
+import { LocaleData, PK_LOCALE } from "./../models/localeData.model";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
 
 export default {
@@ -85,7 +85,7 @@ export default {
             getI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
                 const { I18N } = context.models;
                 const locale = await I18N.findOne({
-                    query: { PK: PK_LOCALE, SK: { $gt: " " } }
+                    query: { PK: PK_LOCALE, SK: args.code }
                 });
                 if (!locale) {
                     return new NotFoundResponse(`Locale "${args.code}" not found.`);
@@ -96,7 +96,6 @@ export default {
             listI18NLocales: hasScope("i18n:locale:crud")(async (_, args, context) => {
                 const { I18N } = context.models;
 
-                const koba = args;
                 const query = { PK: PK_LOCALE, SK: null };
                 if (typeof args?.where?.codeBeginsWith === "string") {
                     query.SK = { $beginsWith: args.where.codeBeginsWith };
@@ -143,7 +142,7 @@ export default {
                     if (!locale) {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
-                    locale.data = args.data;
+                    locale.data.populate(args.data);
                     await locale.save();
                     return new Response(locale.data);
                 } catch (e) {

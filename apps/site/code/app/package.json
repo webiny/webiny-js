@@ -1,35 +1,35 @@
 {
-  "name": "site",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@webiny/app-template-site": "^4.12.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  },
-  "devDependencies": {
-    "env-cmd": "^10.1.0"
-  },
-  "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
-    "build": "webiny run build",
-    "start": "webiny run start --env local"
-  },
-  "browserslist": {
-    "development": [
-      "last 2 chrome versions",
-      "last 2 firefox versions",
-      "last 2 edge versions"
-    ],
-    "production": [
-      ">0.25%",
-      "not op_mini all",
-      "ie 11"
-    ]
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
-  }
+	"name": "site",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@webiny/app-template-site": "^4.13.0",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1"
+	},
+	"devDependencies": {
+		"env-cmd": "^10.1.0"
+	},
+	"scripts": {
+		"analyze": "source-map-explorer build/static/js/main.*",
+		"build": "webiny run build",
+		"start": "webiny run start --env local"
+	},
+	"browserslist": {
+		"development": [
+			"last 2 chrome versions",
+			"last 2 firefox versions",
+			"last 2 edge versions"
+		],
+		"production": [
+			">0.25%",
+			"not op_mini all",
+			"ie 11"
+		]
+	},
+	"svgo": {
+		"plugins": {
+			"removeViewBox": false
+		}
+	}
 }
