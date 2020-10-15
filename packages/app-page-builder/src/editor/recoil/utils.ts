@@ -1,5 +1,5 @@
-import { EditorPageAtomType } from "@webiny/app-page-builder/editor/recoil/recoil";
 import shortid from "shortid";
+import { PageAtomType } from "./modules";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
 const fixChildPaths = (elements: PbElement[]): PbElement[] => {
@@ -25,7 +25,7 @@ export const updateChildPathsUtil = (element: PbElement): PbElement => {
     };
 };
 // eslint-disable-next-line
-export const saveEditorPageRevisionUtil = (_page: EditorPageAtomType) => {
+export const saveEditorPageRevisionUtil = (_page: PageAtomType) => {
     // packages/app-page-builder/src/editor/actions/actions.ts:364
 };
 

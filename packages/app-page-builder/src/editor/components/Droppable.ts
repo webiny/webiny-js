@@ -1,6 +1,6 @@
 import React from "react";
+import { uiAtom } from "../recoil/modules";
 import { PbElement } from "@webiny/app-page-builder/types";
-import { editorUiAtom } from "./../recoil/recoil";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
 import { useRecoilValue } from "recoil";
 
@@ -45,7 +45,7 @@ const Droppable = (props: DroppableProps) => {
     const { type, children, isDroppable = () => true, onDrop } = props;
     let { isVisible } = props;
 
-    const { isDragging } = useRecoilValue(editorUiAtom);
+    const { isDragging } = useRecoilValue(uiAtom);
 
     const [{ item, isOver }, drop] = useDrop({
         accept: "element",

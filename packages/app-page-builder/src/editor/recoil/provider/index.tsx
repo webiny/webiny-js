@@ -10,7 +10,7 @@ const EditorProvider: React.FunctionComponent<any> = props => {
     const provider = {
         actions: eventActionsHandler
     };
-    eventActionsHandler.unsubscribeAll();
+    eventActionsHandler.clearEventRegistry();
 
     return <EditorContext.Provider value={provider} {...props} />;
 };

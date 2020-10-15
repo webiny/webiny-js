@@ -1,7 +1,7 @@
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
+import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useEffect } from "react";
-import { css } from "emotion";
 import gql from "graphql-tag";
+import { css } from "emotion";
 import { useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { PbElement } from "@webiny/app-page-builder/types";

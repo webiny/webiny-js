@@ -1,10 +1,10 @@
-import { editorUiAtom } from "@webiny/app-page-builder/editor/recoil/recoil";
+import { uiAtom } from "../uiAtom";
 import { useSetRecoilState } from "recoil";
 
 const resizeUpdateAction = (value: boolean) => {
-    const setEditorUi = useSetRecoilState(editorUiAtom);
+    const setUiAtomValue = useSetRecoilState(uiAtom);
 
-    setEditorUi(prev => ({
+    setUiAtomValue(prev => ({
         ...prev,
         isResizing: value
     }));

@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import { css } from "emotion";
-import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions/dropElement";
+import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
 import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
 

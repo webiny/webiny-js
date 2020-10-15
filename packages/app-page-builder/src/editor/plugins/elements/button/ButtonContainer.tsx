@@ -1,7 +1,7 @@
+import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { CSSProperties } from "react";
 import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
 import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions/updateElement";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useRecoilValue } from "recoil";
 

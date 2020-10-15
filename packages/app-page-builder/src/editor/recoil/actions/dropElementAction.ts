@@ -1,7 +1,7 @@
-import { elementByIdWithChildrenSelectorFamily } from "@webiny/app-page-builder/editor/recoil/recoil";
+import invariant from "invariant";
+import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { getPlugins } from "@webiny/plugins";
-import invariant from "invariant";
 import { useRecoilValue } from "recoil";
 
 const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
@@ -17,7 +17,7 @@ const getSourceElement = (source: PbElement): PbElement => {
     if (!source.path) {
         return (source as unknown) as PbElement;
     }
-    const element = useRecoilValue(elementByIdWithChildrenSelectorFamily(source.id));
+    const element = useRecoilValue(elementWithChildrenByIdSelector(source.id));
     if (!element) {
         throw new Error(`There is no element with id "${source.id}"`);
     }
@@ -35,7 +35,7 @@ type DropElementType = {
 // replaces https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/actions/actions.ts#L226
 export const dropElementAction = ({ source, target }: DropElementType) => {
     const { id, type, position } = target;
-    const targetElement = useRecoilValue(elementByIdWithChildrenSelectorFamily(id));
+    const targetElement = useRecoilValue(elementWithChildrenByIdSelector(id));
     if (!targetElement) {
         throw new Error(`There is no element with id "${id}"`);
     }

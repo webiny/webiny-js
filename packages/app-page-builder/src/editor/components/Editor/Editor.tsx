@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { editorUiAtom } from "../../recoil/recoil";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
+import { uiAtom } from "../../recoil/modules";
 import { useRecoilValue } from "recoil";
 import { useRedo, useUndo } from "recoil-undo";
 import { DndProvider } from "react-dnd";
@@ -16,7 +16,7 @@ import Dialogs from "./Dialogs";
 
 export const Editor = () => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-    const { isDragging, isResizing, slateFocused } = useRecoilValue(editorUiAtom);
+    const { isDragging, isResizing, slateFocused } = useRecoilValue(uiAtom);
     const undo = useUndo();
     const redo = useRedo();
 
