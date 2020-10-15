@@ -6,7 +6,7 @@ import {
 import React from "react";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -50,10 +50,10 @@ const Content = () => {
     const layout = useRecoilValue(layoutSelector);
 
     const { theme } = usePageBuilder();
-    const plugins = getPlugins<PbEditorContentPlugin>("pb-editor-content");
+    const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
     const layouts = React.useMemo(() => {
-        const plugins = getPlugins<PbPageLayoutPlugin>("pb-page-layout");
-        return plugins.map(pl => pl.layout);
+        const layoutPlugins = plugins.byType<PbPageLayoutPlugin>("pb-page-layout");
+        return layoutPlugins.map(pl => pl.layout);
     }, []);
     const themeLayout = layouts.find(l => l.name === layout);
     if (renderLayout && !themeLayout) {
@@ -62,7 +62,9 @@ const Content = () => {
     return (
         <Elevation className={contentContainerWrapper} z={2}>
             <ContentContainer theme={theme}>
-                {plugins.map(plugin => React.cloneElement(plugin.render(), { key: plugin.name }))}
+                {pluginsByType.map(plugin =>
+                    React.cloneElement(plugin.render(), { key: plugin.name })
+                )}
                 <BaseContainer className={"webiny-pb-editor-content-preview"}>
                     {renderContent(themeLayout, rootElement, renderLayout)}
                 </BaseContainer>

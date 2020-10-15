@@ -6,7 +6,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import {
     PbEditorToolbarBottomPlugin,
@@ -96,8 +96,8 @@ const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPl
 
 const Toolbar = () => {
     const activePluginsTop = useRecoilValue(activePluginNamesSelector("pb-editor-toolbar-top"));
-    const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
-    const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
+    const actionsTop = plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
+    const actionsBottom = plugins.byType<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
     return (
         <>
             <ToolbarDrawerContainer>

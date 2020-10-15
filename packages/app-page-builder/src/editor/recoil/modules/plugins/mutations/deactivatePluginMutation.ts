@@ -1,19 +1,19 @@
 import { pluginsAtom } from "../pluginsAtom";
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useRecoilState } from "recoil";
 
 export const deactivatePluginMutation = (name: string): void => {
     const [editorPlugins, setEditorPlugins] = useRecoilState(pluginsAtom);
-    const { type } = getPlugin(name) || {};
+    const { type } = plugins.byName(name) || {};
     if (!type) {
         return;
     }
-    const plugins = editorPlugins.get(type);
-    if (!plugins || plugins.length === 0) {
+    const allPluginsByType = editorPlugins.get(type);
+    if (!allPluginsByType || allPluginsByType.length === 0) {
         return;
     }
-    const filtered = plugins.filter(pl => pl.name !== name);
-    if (filtered.length !== plugins.length) {
+    const filtered = allPluginsByType.filter(pl => pl.name !== name);
+    if (filtered.length !== allPluginsByType.length) {
         return;
     }
     // TODO verity that it is better to update state via fn instead of object
