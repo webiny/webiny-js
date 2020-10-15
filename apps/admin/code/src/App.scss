@@ -1,0 +1,8 @@
+// Import theme styles
+@import "~theme/styles.scss";
+
+// Import admin app styles
+@import "~@webiny/app-admin/styles.scss";
+
+// Import i18n app styles; this contains styles for rich-text editor
+@import "~@webiny/app-i18n/styles.scss";

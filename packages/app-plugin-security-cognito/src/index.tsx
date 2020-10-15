@@ -4,6 +4,7 @@ import { setContext } from "apollo-link-context";
 import Authentication from "./Authentication";
 import { ApolloClient } from "apollo-client";
 import { LOGIN } from "@webiny/app-security-user-management/graphql";
+import { PluginCollection } from "@webiny/plugins/types";
 
 export type CognitoOptions = {
     region: string;
@@ -25,7 +26,10 @@ export const defaultGetIdentityData = async ({ client }) => {
     };
 };
 
-export default ({ getIdentityData = defaultGetIdentityData, ...amplify }: CognitoOptions) => {
+export default ({
+    getIdentityData = defaultGetIdentityData,
+    ...amplify
+}: CognitoOptions): PluginCollection => {
     Auth.configure(amplify);
 
     const authentication = children => {
@@ -58,10 +62,6 @@ export default ({ getIdentityData = defaultGetIdentityData, ...amplify }: Cognit
                     };
                 });
             }
-        },
-        {
-            type: "app-template-renderer",
-            render: authentication
         },
         {
             type: "app-installer-security",

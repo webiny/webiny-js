@@ -234,16 +234,13 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             safari10: true
                         },
                         // Added for profiling in devtools
-                        /* eslint-disable-next-line @typescript-eslint/camelcase */
                         keep_classnames: isEnvProductionProfile,
-                        /* eslint-disable-next-line @typescript-eslint/camelcase */
                         keep_fnames: isEnvProductionProfile,
                         output: {
                             ecma: 5,
                             comments: false,
                             // Turned on because emoji and regex is not minified properly using default
                             // https://github.com/facebook/create-react-app/issues/2488
-                            /* eslint-disable-next-line @typescript-eslint/camelcase */
                             ascii_only: true
                         }
                     },
@@ -354,7 +351,15 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             loader: require.resolve("eslint-loader")
                         }
                     ],
-                    include: paths.appSrc
+                    //include: paths.appSrc
+                    include: file => {
+                        if (file.includes("dist")) {
+                            return false;
+                        }
+
+                        return paths.allPackages.some(p => file.includes(p));
+                    },
+                    exclude: /node_modules/
                 },
                 {
                     // "oneOf" will traverse all following loaders until one will
@@ -376,7 +381,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
-                            include: [paths.appSrc, paths.appIndexJs],
+                            include: [paths.appSrc, paths.appIndexJs, ...paths.allPackages],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 presets: [require.resolve("babel-preset-react-app")],
@@ -653,7 +658,6 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             http2: "empty",
             net: "empty",
             tls: "empty",
-            /* eslint-disable-next-line @typescript-eslint/camelcase */
             child_process: "empty"
         },
         // Turn off performance processing because we utilize

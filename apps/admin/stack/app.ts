@@ -16,7 +16,7 @@ class App {
         });
 
         // Sync the contents of the source directory with the S3 bucket, which will in-turn show up on the CDN.
-        const webContentsRootPath = path.join(__dirname, "..", "code", "app", "build");
+        const webContentsRootPath = path.join(__dirname, "..", "code", "build");
         App.crawlDirectory(webContentsRootPath, (filePath: string) => {
             const relativeFilePath = filePath.replace(webContentsRootPath + "/", "");
             new aws.s3.BucketObject(

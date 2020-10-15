@@ -1,7 +1,7 @@
 import { hasScope } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
-import { LocaleData, PK_LOCALE } from "./../models/i18n.model";
+import { LocaleData, PK_LOCALE } from "../models/localeData.model";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
 
 export default {
