@@ -1,14 +1,28 @@
 import React from "react";
 import { EventActionHandler } from "../eventActions";
+import {
+    dropElementAction,
+    DropElementActionCallableType,
+    updateElementAction,
+    UpdateElementActionCallableType
+} from "../actions";
 
 type ProviderType = {
-    actions: EventActionHandler;
+    eventActions: EventActionHandler;
+    actions: {
+        dropElementAction: DropElementActionCallableType;
+        updateElementAction: UpdateElementActionCallableType;
+    };
 };
 const EditorContext = React.createContext<ProviderType>(null);
 const EditorProvider: React.FunctionComponent<any> = props => {
     const eventActionsHandler = new EventActionHandler();
     const provider = {
-        actions: eventActionsHandler
+        eventActions: eventActionsHandler,
+        actions: {
+            dropElementAction,
+            updateElementAction
+        }
     };
     eventActionsHandler.clearEventRegistry();
 

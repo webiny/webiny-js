@@ -32,8 +32,13 @@ type DropElementType = {
         position: number;
     };
 };
+
+export type DropElementActionCallableType = (args: DropElementType) => void;
 // replaces https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/actions/actions.ts#L226
-export const dropElementAction = ({ source, target }: DropElementType) => {
+export const dropElementAction: DropElementActionCallableType = ({
+    source,
+    target
+}: DropElementType) => {
     const { id, type, position } = target;
     const targetElement = useRecoilValue(elementWithChildrenByIdSelector(id));
     if (!targetElement) {

@@ -1,25 +1,50 @@
 import React, { useCallback, useMemo } from "react";
+import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
+import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import { set } from "dot-prop-immutable";
-import { get, isEqual } from "lodash";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
-import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
-import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
+import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useRecoilValue } from "recoil";
 
-const ButtonSettings = ({ element, updateElement }) => {
+// TODO check is it possible to dynamically add icons?
+// if yes, this wont work
+let icons;
+const getIcons = (): PbIcon[] => {
+    if (!icons) {
+        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
+        icons = plugins.reduce((icons, pl) => {
+            return icons.concat(pl.getIcons());
+        }, []);
+    }
+    return icons;
+};
+
+const getSvg = (id: string[], props: any = {}) => {
+    if (!props.width) {
+        props.width = 50;
+    }
+    const icon: PbIcon = getIcons().find(ic => ic.id[0] === id[0] && ic.id[1] === id[1]);
+    if (!icon) {
+        return null;
+    }
+    return renderToStaticMarkup(React.cloneElement(icon.svg, props));
+};
+
+const ButtonSettings = () => {
+    const element = useRecoilValue(activeElementWithChildrenSelector);
     const { theme } = usePageBuilder();
-    const { types } = get(theme, "elements.button", []);
-    const { type = get(types, "0.name", ""), icon = {} } = get(element, "data", {});
+    const { types } = theme?.elements?.button || [];
+    const defaultType = types?.[0]?.name || "";
+    const { type = defaultType, icon = {} } = element.data || {};
 
     const setData = useMemo(() => {
         const historyUpdated = {};
@@ -44,16 +69,16 @@ const ButtonSettings = ({ element, updateElement }) => {
             }
 
             if (!history) {
-                updateElement({ element: newElement, history });
+                updateElementAction({ element: newElement, history });
                 return;
             }
 
             if (historyUpdated[name] !== value || (value === undefined && isIcon)) {
                 historyUpdated[name] = value;
-                updateElement({ element: newElement });
+                updateElementAction({ element: newElement });
             }
         };
-    }, [element, updateElement]);
+    }, [element.id]);
 
     const updateType = useCallback(value => setData("type", value), [setData]);
     const updateIcon = useCallback(value => setData("icon.id", value?.id), [setData]);
@@ -68,7 +93,7 @@ const ButtonSettings = ({ element, updateElement }) => {
     ]);
 
     return (
-        <React.Fragment>
+        <>
             <Tabs>
                 <Tab label={"Button"}>
                     <Grid>
@@ -114,32 +139,8 @@ const ButtonSettings = ({ element, updateElement }) => {
                     </Grid>
                 </Tab>
             </Tabs>
-        </React.Fragment>
+        </>
     );
 };
 
-let icons;
-const getIcons = (): PbIcon[] => {
-    if (!icons) {
-        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
-        icons = plugins.reduce((icons, pl) => {
-            return icons.concat(pl.getIcons());
-        }, []);
-    }
-    return icons;
-};
-
-const getSvg = (id: string[], props: any = {}) => {
-    if (!props.width) {
-        props.width = 50;
-    }
-    const icon: PbIcon = getIcons().find(ic => isEqual(ic.id, id));
-    if (!icon) {
-        return null;
-    }
-    return renderToStaticMarkup(React.cloneElement(icon.svg, props));
-};
-
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(React.memo(ButtonSettings));
+export default ButtonSettings;

@@ -32,11 +32,6 @@ const createElementWithoutElementsAsString = (element: PbElement): PbElement => 
  * 2. flatten content and update elements
  * 3. save revision if revision history is allowed
  */
-type UpdateElementActionType = {
-    element: PbElement;
-    merge?: boolean;
-    history?: boolean;
-};
 
 const cloneAndMergePageContentState = (page: PageAtomType, element: PbElement, merge: boolean) => {
     const newElement = updateChildPathsUtil(createElementWithoutElementsAsString(element));
@@ -80,6 +75,14 @@ const createNewPageState = (page: PageAtomType, element: PbElement, merge: boole
         content: buildNewPageContentState(page, element, merge)
     };
 };
+
+type UpdateElementActionType = {
+    element: PbElement;
+    merge?: boolean;
+    history?: boolean;
+};
+
+export type UpdateElementActionCallableType = (args: UpdateElementActionType) => void;
 
 export const updateElementAction = ({ element, merge, history }: UpdateElementActionType) => {
     // find out which path are we updating
