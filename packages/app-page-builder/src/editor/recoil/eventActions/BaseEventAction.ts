@@ -1,9 +1,9 @@
 import { EventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/EventAction";
 
-export abstract class BaseEventAction<T extends any> implements EventAction<T> {
+export abstract class BaseEventAction<T extends object> implements EventAction<T> {
     private readonly _args: T;
 
-    protected constructor(args: T) {
+    public constructor(args: T) {
         this._args = args;
     }
     public getArgs(): T {

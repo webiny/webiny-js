@@ -1,3 +1,6 @@
+import shortid from "shortid";
+import { EventAction } from "./EventAction";
+
 type EventActionHandlerEventsType = Map<string, Set<Function>>;
 
 export enum EventActionHandlerStatusEnum {
@@ -7,21 +10,32 @@ export enum EventActionHandlerStatusEnum {
 }
 
 export enum EventActionHandlerSignal {
-    IS_LAST = 0x001,
-    ABORT = 0x999
+    IS_LAST = shortid.generate(),
+    ABORT = shortid.generate()
 }
 
+type EventActionClassConstructor = { new (...args: any[]): any };
+/**
+ * Usages
+ * subscribing to an event: handler.subscribe(TargetEventClass, (args) => {your code})
+ * unsubscribing from an event: handler.unsubscribe(TargetEventClass, (args) => {same function you subscribed with})
+ * triggering an event: handler.trigger(new TargetEventClass(args))
+ *
+ * removing certain event: handler.removeEventFromRegistry(TargetEventClass)
+ * removing all subscriptions and events: handler.clearEventRegistry()
+ */
 export class EventActionHandler {
     public static readonly SUCCESS = EventActionHandlerStatusEnum.SUCCESS;
     public static readonly NO_CALLABLES = EventActionHandlerStatusEnum.NO_CALLABLES;
     public static readonly ABORTED = EventActionHandlerStatusEnum.ABORTED;
 
-    private readonly _events: EventActionHandlerEventsType = new Map();
+    private readonly _eventRegistry: EventActionHandlerEventsType = new Map();
     private _eventActionRunning: string | null = null;
 
-    public subscribe(name: string, callable: Function): void {
+    public subscribe(target: EventActionClassConstructor, callable: Function): void {
+        const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
-            this._events.set(name, new Set());
+            this._eventRegistry.set(name, new Set());
         }
         const list = this.get(name);
         if (list.has(callable)) {
@@ -30,7 +44,8 @@ export class EventActionHandler {
         list.add(callable);
     }
 
-    public unsubscribe(name: string, callable: Function): void {
+    public unsubscribe(target: EventActionClassConstructor, callable: Function): void {
+        const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
             throw new Error(
                 `It seems you want to unsubscribe to an event that you have not subscribed to with given function.`
@@ -46,18 +61,22 @@ export class EventActionHandler {
         this.set(name, newSet);
     }
 
-    public trigger(name: string, args?: any): number {
+    public trigger<T extends object>(eventAction: EventAction<T>): number {
         if (this.isEventActionRunning()) {
-            throw new Error(`Currently there is an action running "${this._eventActionRunning}".`);
+            throw new Error(
+                `Currently there is an action running "${this.getEventActionRunning()}".`
+            );
         }
+        const name = eventAction.getName();
         const targetCallables = this.get(name);
         if (!targetCallables) {
             return EventActionHandler.NO_CALLABLES;
         }
         this.setEventActionRunning(name);
+        const args = eventAction.getArgs();
         for (const fn of targetCallables.values()) {
             try {
-                const result = fn(...(args || {}));
+                const result = fn(args);
                 if (result === EventActionHandlerSignal.IS_LAST) {
                     this.clearEventActionRunning();
                     return EventActionHandler.SUCCESS;
@@ -76,13 +95,18 @@ export class EventActionHandler {
         return EventActionHandler.SUCCESS;
     }
 
-    public unsubscribeAll(): void {
-        this._events.clear();
+    public removeEventFromRegistry(target: EventActionClassConstructor): void {
+        const name = this.getEventActionClassName(target);
+        this._eventRegistry.set(name, new Set());
+    }
+
+    public clearEventRegistry(): void {
+        this._eventRegistry.clear();
         this.clearEventActionRunning();
     }
 
     private get(name: string): Set<Function> {
-        const list = this._events.get(name);
+        const list = this._eventRegistry.get(name);
         if (!list) {
             throw new Error(`There are no events with name ${name}.`);
         }
@@ -90,11 +114,11 @@ export class EventActionHandler {
     }
 
     private set(name: string, list: Set<Function>): void {
-        this._events.set(name, list);
+        this._eventRegistry.set(name, list);
     }
 
     private has(name: string): boolean {
-        return this._events.has(name);
+        return this._eventRegistry.has(name);
     }
 
     private isEventActionRunning(): boolean {
@@ -105,7 +129,25 @@ export class EventActionHandler {
         this._eventActionRunning = name;
     }
 
+    private getEventActionRunning(): string | null {
+        if (!this._eventActionRunning) {
+            throw new Error("There is no event action running.");
+        }
+        return this._eventActionRunning;
+    }
+
     private clearEventActionRunning(): void {
         this._eventActionRunning = null;
+    }
+
+    private getEventActionClassName(target: EventActionClassConstructor): string {
+        if (target.constructor?.name && typeof target.constructor.name === "string") {
+            return target.constructor.name;
+        } else if (typeof target.name === "string") {
+            return target.name;
+        } else if (typeof target.name === "function") {
+            return (target as any).name();
+        }
+        throw new Error("Could not find class name.");
     }
 }
