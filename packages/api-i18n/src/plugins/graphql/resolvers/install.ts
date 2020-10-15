@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/graphql";
-import { PK_LOCALE, LocaleData } from "../../models/i18n.model";
+import { PK_LOCALE, LocaleData } from "../../models/localeData.model";
 
 export const install = async (
     root: any,

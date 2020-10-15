@@ -25,10 +25,9 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props
     const { getAllClasses, elementStyle, elementAttributes, elementId } = props;
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {} } = element.data || {};
-    const svg = icon.svg || null;
     const { alignItems } = elementStyle;
 
-    const { position = "left" } = icon;
+    const { svg = null, position = "left" } = icon || {};
 
     const onChange = useHandler(props, ({ element }) => (value: string) => {
         const newElement = {

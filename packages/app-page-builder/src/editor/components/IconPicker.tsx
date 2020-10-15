@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import * as React from "react";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
@@ -8,10 +8,12 @@ import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/Dela
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
+import classNames from "classnames";
 
 const COLUMN_COUNT = 6;
 
 const gridItem = css({
+    position: "relative",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
@@ -49,6 +51,21 @@ const gridItem = css({
     }
 });
 
+const gridItemSelected = css({
+    backgroundColor: "var(--mdc-theme-text-secondary-on-background)",
+    color: "#FFFFFF",
+    ">svg": {
+        fill: "#FFFFFF"
+    },
+    "> .remove": {
+        position: "absolute",
+        width: "auto",
+        marginBottom: "0",
+        top: "2px",
+        right: "5px"
+    }
+});
+
 const grid = css({
     padding: 20
 });
@@ -68,8 +85,10 @@ const searchInput = css({
     }
 });
 
-const IconPicker = ({ value, onChange }) => {
-    const [filter, setFilter] = useState<string>("");
+const { useState, useCallback, useMemo, Fragment } = React;
+
+const IconPicker = ({ value, onChange, removable = true }) => {
+    const [filter, setFilter] = useState("");
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -79,16 +98,47 @@ const IconPicker = ({ value, onChange }) => {
         [filter]
     );
 
+    const { prefix: selectedIconPrefix, name: selectedIconName } = useMemo(() => {
+        if (!value || Array.isArray(value) === false || !removable) {
+            return {
+                prefix: undefined,
+                name: undefined
+            };
+        }
+        return {
+            prefix: value[0],
+            name: value[1]
+        };
+    }, [value]);
+
     const allIcons: PbIcon[] = useMemo(() => {
         const plugins = getPlugins<PbIconsPlugin>("pb-icons");
-        return plugins.reduce((icons: Array<PbIcon>, pl) => {
-            return icons.concat(pl.getIcons());
+        let selectedIconItem = null;
+        const allIconItems = plugins.reduce((icons: Array<PbIcon>, pl) => {
+            const pluginIcons = pl.getIcons().filter(({ id }) => {
+                const [prefix, name] = id;
+                if (!selectedIconPrefix || !selectedIconName || prefix !== selectedIconPrefix) {
+                    return true;
+                }
+                return name !== selectedIconName;
+            });
+            const selectedIcon = pl.getIcons().find(({ name }) => {
+                return name === selectedIconName;
+            });
+            if (selectedIcon) {
+                selectedIconItem = selectedIcon;
+            }
+            return icons.concat(pluginIcons);
         }, []);
-    }, []);
+        if (selectedIconItem) {
+            allIconItems.unshift(selectedIconItem);
+        }
+        return allIconItems;
+    }, [selectedIconPrefix, selectedIconName]);
 
     const icons = useMemo(() => {
         return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
-    }, [filter]);
+    }, [filter, selectedIconPrefix, selectedIconName]);
 
     const renderCell = useCallback(
         ({ closeMenu }) => {
@@ -97,17 +147,26 @@ const IconPicker = ({ value, onChange }) => {
                 if (!item) {
                     return null;
                 }
-
+                const isSelectedIcon =
+                    item.id[0] === selectedIconPrefix && item.id[1] === selectedIconName;
+                const gridItemClassName = classNames(gridItem, {
+                    [gridItemSelected]: isSelectedIcon
+                });
                 return (
                     <div
                         key={key}
                         style={style}
-                        className={gridItem}
+                        className={gridItemClassName}
                         onClick={() => {
                             onChange(item);
                             closeMenu();
                         }}
                     >
+                        {isSelectedIcon && (
+                            <span className="remove">
+                                <FontAwesomeIcon icon={["fas", "times"]} />
+                            </span>
+                        )}
                         <FontAwesomeIcon icon={item.id} size={"2x"} />
                         <Typography use={"body2"}>{item.name}</Typography>
                     </div>
@@ -120,7 +179,7 @@ const IconPicker = ({ value, onChange }) => {
     const renderGrid = useCallback(
         ({ closeMenu }) => {
             return (
-                <>
+                <Fragment>
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
@@ -142,7 +201,7 @@ const IconPicker = ({ value, onChange }) => {
                         rowHeight={100}
                         width={640}
                     />
-                </>
+                </Fragment>
             );
         },
         [icons]

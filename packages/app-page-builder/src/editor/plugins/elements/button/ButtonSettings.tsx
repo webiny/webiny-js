@@ -1,145 +1,71 @@
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useMemo } from "react";
-import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
-import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
-import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { renderToStaticMarkup } from "react-dom/server";
 import { getPlugins } from "@webiny/plugins";
+import { connect } from "@webiny/app-page-builder/editor/redux";
+import { set } from "dot-prop-immutable";
+import { get, isEqual } from "lodash";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { PbElement, PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
-import { useRecoilValue } from "recoil";
+import { updateElement } from "@webiny/app-page-builder/editor/actions";
+import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
+import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
+import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
+import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 
-// TODO check is it possible to dynamically add icons?
-// if yes, this wont work
-let icons;
-const getIcons = (): PbIcon[] => {
-    if (!icons) {
-        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
-        icons = plugins.reduce((icons, pl) => {
-            return icons.concat(pl.getIcons());
-        }, []);
-    }
-    return icons;
-};
-
-const getSvg = (id: string[], props: any = {}) => {
-    if (!props.width) {
-        props.width = 50;
-    }
-    const icon: PbIcon = getIcons().find(ic => ic.id[0] === id[0] && ic.id[1] === id[1]);
-    if (!icon) {
-        return null;
-    }
-    return renderToStaticMarkup(React.cloneElement(icon.svg, props));
-};
-
-type BuildElementResultType = {
-    element: PbElement;
-    name: string;
-    value: string;
-};
-const buildElementWithIconData = (
-    element: PbElement,
-    propertyName: string,
-    value: string
-): BuildElementResultType => {
-    const icon = {
-        ...(element.data.icon || {}),
-        [propertyName]: value
-    };
-    const { id: iconId, width, color } = icon;
-    const iconSvg = getSvg(iconId, { width, color });
-    const newElement = {
-        ...element,
-        data: {
-            ...(element.data || {}),
-            icon: {
-                ...icon,
-                svg: iconSvg
-            }
-        }
-    };
-    return {
-        element: newElement,
-        name: propertyName,
-        value: value
-    };
-};
-
-const buildElementWithType = (element: PbElement, value: string): BuildElementResultType => {
-    const newElement = {
-        ...element,
-        data: {
-            ...element.data,
-            type: value
-        }
-    };
-    return {
-        element: newElement,
-        name: "type",
-        value
-    };
-};
-
-type SetDataFunctionValuesType = {
-    element: PbElement;
-    name: string;
-    value: string;
-};
-type SetDataFunctionType = (values: SetDataFunctionValuesType, history?: boolean) => void;
-
-const ButtonSettings = () => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+const ButtonSettings = ({ element, updateElement }) => {
     const { theme } = usePageBuilder();
-    const { types } = theme?.elements?.button || [];
-    const defaultType = types?.[0]?.name || "";
-    const { type = defaultType, icon = {} } = element.data || {};
+    const { types } = get(theme, "elements.button", []);
+    const { type = get(types, "0.name", ""), icon = {} } = get(element, "data", {});
 
-    const setData: SetDataFunctionType = useMemo(() => {
+    const setData = useMemo(() => {
         const historyUpdated = {};
 
-        return ({ element: newElement, name, value }, history = true) => {
+        return (name, value, history = true) => {
+            const attrKey = `data.${name}`;
+
+            const newElement = set(element, attrKey, value);
+            const isIcon = name.startsWith("icon");
+            if (isIcon) {
+                const { id, width, color } = newElement.data?.icon || {};
+
+                const isSelectedIcon =
+                    icon.id && id ? icon.id[0] === id[0] && icon.id[1] === id[1] : false;
+
+                const updatedIcon = isSelectedIcon ? {} : newElement.data.icon || {};
+
+                newElement.data.icon = {
+                    ...updatedIcon,
+                    svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : undefined
+                };
+            }
+
             if (!history) {
-                updateElementAction({ element: newElement, history });
+                updateElement({ element: newElement, history });
                 return;
             }
 
-            if (historyUpdated[name] !== value) {
+            if (historyUpdated[name] !== value || (value === undefined && isIcon)) {
                 historyUpdated[name] = value;
-                updateElementAction({ element: newElement });
+                updateElement({ element: newElement });
             }
         };
-    }, [element.id]);
+    }, [element, updateElement]);
 
-    const updateType = useCallback(
-        (value: string) => setData(buildElementWithType(element, value)),
-        [element.id]
-    );
-    const updateIcon = useCallback(
-        (value: { id: string }) => setData(buildElementWithIconData(element, "id", value.id)),
-        [element.id]
-    );
-    const updateIconColor = useCallback(
-        (value: string) => setData(buildElementWithIconData(element, "color", value)),
-        [element.id]
-    );
+    const updateType = useCallback(value => setData("type", value), [setData]);
+    const updateIcon = useCallback(value => setData("icon.id", value?.id), [setData]);
+    const updateIconColor = useCallback((value: string) => setData("icon.color", value), [setData]);
     const updateIconColorPreview = useCallback(
-        (value: string) => setData(buildElementWithIconData(element, "color", value), false),
-        [element.id]
+        (value: string) => setData("icon.color", value, false),
+        [setData]
     );
-    const updateIconWidth = useCallback(
-        (value: string) => setData(buildElementWithIconData(element, "width", value)),
-        [element.id]
-    );
-    const updateIconPosition = useCallback(
-        (value: string) => setData(buildElementWithIconData(element, "position", value)),
-        [element.id]
-    );
+    const updateIconWidth = useCallback((value: string) => setData("icon.width", value), [setData]);
+    const updateIconPosition = useCallback((value: string) => setData("icon.position", value), [
+        setData
+    ]);
 
     return (
         <React.Fragment>
@@ -161,11 +87,15 @@ const ButtonSettings = () => {
                     </Grid>
                 </Tab>
                 <Tab label={"Icon"}>
-                    <IconPicker label={"Icon"} value={icon.id} updateValue={updateIcon} />
-                    <Input label={"Width"} value={icon.width || 50} updateValue={updateIconWidth} />
+                    <IconPicker label={"Icon"} value={icon?.id} updateValue={updateIcon} />
+                    <Input
+                        label={"Width"}
+                        value={icon?.width || 50}
+                        updateValue={updateIconWidth}
+                    />
                     <ColorPicker
                         label={"Color"}
-                        value={icon.color}
+                        value={icon?.color}
                         updateValue={updateIconColor}
                         updatePreview={updateIconColorPreview}
                     />
@@ -174,7 +104,7 @@ const ButtonSettings = () => {
                             <Typography use={"overline"}>Position</Typography>
                         </Cell>
                         <Cell span={6}>
-                            <Select value={icon.position || "left"} onChange={updateIconPosition}>
+                            <Select value={icon?.position || "left"} onChange={updateIconPosition}>
                                 <option value={"left"}>Left</option>
                                 <option value={"right"}>Right</option>
                                 <option value={"top"}>Top</option>
@@ -188,4 +118,28 @@ const ButtonSettings = () => {
     );
 };
 
-export default ButtonSettings;
+let icons;
+const getIcons = (): PbIcon[] => {
+    if (!icons) {
+        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
+        icons = plugins.reduce((icons, pl) => {
+            return icons.concat(pl.getIcons());
+        }, []);
+    }
+    return icons;
+};
+
+const getSvg = (id: string[], props: any = {}) => {
+    if (!props.width) {
+        props.width = 50;
+    }
+    const icon: PbIcon = getIcons().find(ic => isEqual(ic.id, id));
+    if (!icon) {
+        return null;
+    }
+    return renderToStaticMarkup(React.cloneElement(icon.svg, props));
+};
+
+export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
+    updateElement
+})(React.memo(ButtonSettings));

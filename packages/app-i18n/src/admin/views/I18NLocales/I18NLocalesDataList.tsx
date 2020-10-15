@@ -50,7 +50,7 @@ const I18NLocalesDataList = () => {
 
             const code = new URLSearchParams(location.search).get("code");
             if (code === item.code) {
-                history.push(`/i18n/locales`)
+                history.push(`/i18n/locales`);
             }
 
             refetchLocales();

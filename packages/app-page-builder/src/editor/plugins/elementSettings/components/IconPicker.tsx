@@ -8,6 +8,7 @@ type Props = {
     label: string;
     value: string;
     updateValue: (value: any) => void;
+    removable?: boolean;
 };
 
 class IconPicker extends React.Component<Props> {
@@ -16,14 +17,18 @@ class IconPicker extends React.Component<Props> {
     }
 
     render() {
-        const { label, value, updateValue } = this.props;
+        const { label, value, updateValue, removable } = this.props;
         return (
             <Grid>
                 <Cell span={4}>
                     <Typography use={"overline"}>{label}</Typography>
                 </Cell>
                 <Cell span={8}>
-                    <IconPickerComponent value={value} onChange={updateValue} />
+                    <IconPickerComponent
+                        value={value}
+                        onChange={updateValue}
+                        removable={removable}
+                    />
                 </Cell>
             </Grid>
         );
