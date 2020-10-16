@@ -145,7 +145,7 @@ export const SecurityGroupData = () =>
             name: string({ validation: validation.create("required") }),
             slug: string({ validation: validation.create("required") }),
             description: string({ validation: validation.create("required") }),
-            system: boolean(),
+            system: boolean({ value: false }),
             permissions: object({
                 list: true,
                 value: []

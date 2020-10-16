@@ -17,7 +17,7 @@ const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
             email: data.email,
             firstName: data.firstName,
             lastName: data.lastName,
-            groups: data.groups,
+            group: data.group,
             avatar: data.avatar,
             personalAccessTokens: data.personalAccessTokens
         });

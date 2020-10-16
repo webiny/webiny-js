@@ -27,8 +27,7 @@ const ensureFullAccessGroup = async context => {
 
         securityRecord = await createSecurityGroup({ Model, group });
     }
-    const securityRecordData = await securityRecord.toStorage();
-    return securityRecordData.GSI_DATA;
+    return securityRecord.GSI_DATA;
 };
 
 /**
@@ -65,7 +64,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 
         // Create new user
         const user = new SecurityUser();
-        await user.populate({ ...data, group: fullAccessGroup });
+        await user.populate({ ...data, group: fullAccessGroup.id });
 
         await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
 

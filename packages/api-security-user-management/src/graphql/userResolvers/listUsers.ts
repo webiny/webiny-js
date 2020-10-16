@@ -16,15 +16,8 @@ export default async (_, args, context) => {
         const results = [];
         for (let i = 0; i < securityRecords.length; i++) {
             const { GSI_DATA: user } = securityRecords[i];
-            const { GSI_DATA: data } = await securityRecords[i].toStorage();
 
-            results.push({
-                ...data,
-                fullName: user.fullName,
-                group: await user.groupData,
-                permissions: await user.permissions,
-                personalAccessTokens: await user.personalAccessTokensData
-            });
+            results.push(user);
         }
 
         return new ListResponse(results);

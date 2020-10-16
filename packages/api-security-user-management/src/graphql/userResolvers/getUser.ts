@@ -43,20 +43,8 @@ export default async (_, args, context) => {
         }
 
         const user = record.GSI_DATA;
-        const { GSI_DATA: data } = await record.toStorage();
 
-        // Use "SecurityUser" props
-        const groupData = await user.groupData;
-        const permissions = await user.permissions;
-        const personalAccessTokensData = await user.personalAccessTokensData;
-
-        return new Response({
-            ...data,
-            fullName: user.fullName,
-            group: groupData,
-            permissions,
-            personalAccessTokens: personalAccessTokensData
-        });
+        return new Response(user);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
