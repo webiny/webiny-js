@@ -7,25 +7,18 @@ module.exports = (options = {}) => ({
             "deploy <folder> [resources...]",
             `Deploy resources from <folder>.`,
             yargs => {
-                yargs.positional("folder", {
-                    describe: `Folder to deploy. Requires resources.js file`,
+                yargs.positional("stack", {
+                    describe: `Stack to deploy. Requires resources.js file`,
                     type: "string"
                 });
                 yargs.option("env", {
-                    required: true,
-                    describe: `Environment to deploy`,
+                    describe: `Environment`,
                     type: "string"
                 });
                 yargs.option("preview", {
                     required: false,
                     default: false,
                     describe: `Preview the deploy instead of actually performing it`,
-                    type: "boolean"
-                });
-                yargs.option("build", {
-                    required: false,
-                    default: true,
-                    describe: `Build the stack code before deploying`,
                     type: "boolean"
                 });
             },

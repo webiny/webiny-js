@@ -51,11 +51,13 @@ module.exports = async (inputs, context) => {
 
     const projectRoot = context.paths.projectRoot;
 
-    // Load .env.json from project root.
-    await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
+    if (env) {
+        // Load .env.json from project root.
+        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
 
-    // Load .env.json from cwd (this will change depending on the folder you specified).
-    await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+        // Load .env.json from cwd (this will change depending on the folder you specified).
+        await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+    }
 
     const stacksDir = path.join(".", folder);
 
