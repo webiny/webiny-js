@@ -1,26 +1,26 @@
 const { green } = require("chalk");
-const path = require("path");
+const { resolve, join } = require("path");
 const execa = require("execa");
 const ProgressBar = require("progress");
 const getPackages = require("get-yarn-workspaces");
 
 module.exports = async (inputs, context) => {
-    const { env, folder, debug = true } = inputs;
+    const { env, path, debug = true } = inputs;
 
     const projectRoot = context.paths.projectRoot;
 
     if (env) {
         // Load .env.json from project root.
-        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
+        await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
 
         // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+        await context.loadEnv(resolve(projectRoot, path, ".env.json"), env, { debug });
     }
 
-    const packages = getPackages().filter(item => item.includes(path.join(process.cwd(), folder)));
+    const packages = getPackages().filter(item => item.includes(join(process.cwd(), path)));
 
     console.log(
-        `⏳  Building ${packages.length} package(s) in ${green(path.join(process.cwd(), folder))}...`
+        `⏳  Building ${packages.length} package(s) in ${green(join(process.cwd(), path))}...`
     );
 
     const bar = new ProgressBar("[:bar] :percent (:current/:total)", {

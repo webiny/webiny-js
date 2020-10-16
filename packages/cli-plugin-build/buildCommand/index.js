@@ -4,10 +4,11 @@ module.exports = (options = {}) => ({
     create({ yargs, context }) {
         yargs.example("$0 build api --env=dev");
         yargs.command(
-            "build <folder> [resources...]",
-            `build resources from <folder>.`,
+            "build <path>",
+            `build resources from <path>.`,
             yargs => {
                 yargs.positional("path", {
+                    required: false,
                     describe: `Path`,
                     type: "string"
                 });
@@ -15,9 +16,13 @@ module.exports = (options = {}) => ({
                     describe: `Environment`,
                     type: "string"
                 });
+                yargs.option("debug", {
+                    describe: `Debug`,
+                    type: "string"
+                });
             },
             async argv => {
-                await require("./build")({ ...argv, debug: true, options }, context);
+                await require("./build")({ ...argv, options }, context);
                 process.exit(0);
             }
         );
