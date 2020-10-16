@@ -4,14 +4,15 @@ module.exports = (options = {}) => ({
     create({ yargs, context }) {
         yargs.example("$0 deploy api --env=dev");
         yargs.command(
-            "deploy <folder> [resources...]",
-            `Deploy resources from <folder>.`,
+            "deploy <stack>",
+            `Deploys given stack`,
             yargs => {
                 yargs.positional("stack", {
-                    describe: `Stack to deploy. Requires resources.js file`,
+                    describe: `Stack to deploy`,
                     type: "string"
                 });
                 yargs.option("env", {
+                    required: true,
                     describe: `Environment`,
                     type: "string"
                 });
