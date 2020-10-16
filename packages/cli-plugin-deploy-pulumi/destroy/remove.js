@@ -26,11 +26,13 @@ module.exports = async (inputs, context) => {
 
     const projectRoot = context.paths.projectRoot;
 
-    // Load .env.json from project root
-    await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
+    if (env) {
+        // Load .env.json from project root.
+        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
 
-    // Load .env.json from cwd (this will change depending on the folder you specified)
-    await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+        // Load .env.json from cwd (this will change depending on the folder you specified).
+        await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+    }
 
     const pulumi = new Pulumi({
         execa: {
@@ -56,8 +58,8 @@ module.exports = async (inputs, context) => {
 
     const hooksParams = { context, env, stack };
 
-    await processHooks("hook-before-remove", hooksParams);
-    await processHooks("hook-stack-before-remove", hooksParams);
+    await processHooks("hook-before-destroy", hooksParams);
+    await processHooks("hook-stack-before-destroy", hooksParams);
 
     const { toConsole } = await pulumi.run({
         command: "destroy",
@@ -68,8 +70,8 @@ module.exports = async (inputs, context) => {
 
     await toConsole();
 
-    console.log(`\n🎉 Done! Resources removed.`);
+    console.log(`\n🎉 Done! Resources destroyed.`);
 
-    await processHooks("hook-stack-after-remove", hooksParams);
-    await processHooks("hook-after-remove", hooksParams);
+    await processHooks("hook-stack-after-destroy", hooksParams);
+    await processHooks("hook-after-destroy", hooksParams);
 };
