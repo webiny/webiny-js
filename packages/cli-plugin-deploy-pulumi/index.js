@@ -1,1 +1,1 @@
-module.exports = options => [require("./deploy")(options), require("./remove")];
+module.exports = options => [require("./deploy")(options), require("./destroy")];
