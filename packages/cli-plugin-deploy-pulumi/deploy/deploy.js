@@ -3,9 +3,6 @@ const { green } = require("chalk");
 const notifier = require("node-notifier");
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const path = require("path");
-const execa = require("execa");
-const ProgressBar = require("progress");
-const getPackages = require("get-yarn-workspaces");
 const ora = require("ora");
 
 const notify = ({ message }) => {
@@ -26,9 +23,9 @@ const sleep = () => {
     });
 };
 
-const getStackName = folder => {
-    folder = folder.split("/").pop();
-    return folder === "." ? basename(process.cwd()) : folder;
+const getStackName = stack => {
+    stack = stack.split("/").pop();
+    return stack === "." ? basename(process.cwd()) : stack;
 };
 
 const processHooks = async (hook, { context, ...options }) => {
@@ -49,55 +46,20 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, folder, debug = true } = inputs;
-    const stack = getStackName(folder);
+    const { env, stack, debug = true } = inputs;
+    const stackName = getStackName(stack);
 
     const projectRoot = context.paths.projectRoot;
 
-    // Load .env.json from project root.
-    await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
+    if (env) {
+        // Load .env.json from project root.
+        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
 
-    // Load .env.json from cwd (this will change depending on the folder you specified).
-    await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
-
-    if (inputs.build) {
-        const packages = getPackages().filter(item =>
-            item.includes(path.join(process.cwd(), folder))
-        );
-
-        console.log(
-            `⏳ Building ${packages.length} package(s) in ${green(
-                path.join(process.cwd(), folder)
-            )}...`
-        );
-        const bar = new ProgressBar("[:bar] :percent :etas", {
-            complete: "=",
-            incomplete: " ",
-            width: 1024,
-            total: packages.length
-        });
-
-        const promises = [];
-        for (let i = 0; i < packages.length; i++) {
-            promises.push(
-                new Promise(async (resolve, reject) => {
-                    try {
-                        const cwd = packages[i];
-                        await execa("yarn", ["build", "--env", env], { cwd });
-                        bar.tick();
-
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                })
-            );
-        }
-
-        await Promise.all(promises);
+        // Load .env.json from cwd (this will change depending on the folder you specified).
+        await context.loadEnv(path.resolve(projectRoot, stack, ".env.json"), env, { debug });
     }
 
-    const stacksDir = path.join(".", folder);
+    const stacksDir = path.join(".", stack);
 
     let spinner = new ora();
     const pulumi = new Pulumi({
@@ -151,7 +113,7 @@ module.exports = async (inputs, context) => {
 
     const isFirstDeploy = !stackExists;
 
-    const hookDeployArgs = { isFirstDeploy, context, env, stack };
+    const hookDeployArgs = { isFirstDeploy, context, env, stack: stackName };
 
     if (inputs.preview) {
         console.log(`Skipped "hook-before-deploy" hook.`);
@@ -193,7 +155,7 @@ module.exports = async (inputs, context) => {
         console.log(`\n🎉 Done! Preview finished in ${green(duration + "s")}.\n`);
     } else {
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
-        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
+        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
     }
 
     if (inputs.preview) {
