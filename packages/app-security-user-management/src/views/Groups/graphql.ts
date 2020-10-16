@@ -9,23 +9,9 @@ const fields = `
 `;
 
 export const LIST_GROUPS: any = gql`
-    query listGroups(
-        $where: JSON
-        $sort: JSON
-        $search: SecurityGroupSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query listGroups($where: ListSecurityGroupWhereInput, $sort: Int) {
         security {
-            groups: listGroups(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            groups: listGroups(where: $where, sort: $sort) {
                 data {
                     id
                     name

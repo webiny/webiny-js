@@ -82,13 +82,13 @@ const UsersForm = () => {
                                     </Grid>
                                 </AccordionItem>
                                 <AccordionItem
-                                    description="Set Groups & Roles"
-                                    title="Groups & Roles"
+                                    description="Set Group"
+                                    title="Group"
                                     icon={<SecurityIcon />}
                                 >
                                     <Cell span={12} style={{ marginBottom: "8px" }}>
-                                        <Bind name="groups">
-                                            <GroupsAutocomplete label={t`Groups`} />
+                                        <Bind name="group">
+                                            <GroupsAutocomplete label={t`Group`} />
                                         </Bind>
                                     </Cell>
                                 </AccordionItem>

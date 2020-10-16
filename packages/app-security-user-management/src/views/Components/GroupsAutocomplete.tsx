@@ -1,12 +1,12 @@
 import * as React from "react";
-import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
 import gql from "graphql-tag";
 import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
-
+// TODO: currently "search" doesn't work
 const LIST_GROUPS = gql`
-    query listGroups($search: SecurityGroupSearchInput) {
+    query listGroups($where: ListSecurityGroupWhereInput) {
         security {
-            groups: listGroups(search: $search) {
+            groups: listGroups(where: $where) {
                 data {
                     id
                     name
@@ -21,5 +21,5 @@ export default function GroupsAutocomplete(props) {
         search: query => ({ query, fields: ["name"] }),
         query: LIST_GROUPS
     });
-    return <MultiAutoComplete {...props} {...autoComplete} />;
+    return <AutoComplete {...props} {...autoComplete} />;
 }
