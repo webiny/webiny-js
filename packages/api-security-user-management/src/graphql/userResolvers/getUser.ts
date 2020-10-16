@@ -3,7 +3,7 @@ import {
     GSI1_PK_USER,
     PK_USER,
     SK_USER
-} from "@webiny/api-security-user-management/models/security.model";
+} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 export default async (_, args, context) => {
     const { id, login } = args;

@@ -3,7 +3,7 @@ import {
     GSI1_PK_GROUP,
     PK_GROUP,
     SK_GROUP
-} from "@webiny/api-security-user-management/models/security.model";
+} from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { id, slug }, context) => {
     const Model = context.models.Security;

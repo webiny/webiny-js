@@ -8,7 +8,7 @@ import {
     NotFoundResponse
 } from "@webiny/commodo-graphql";
 import { SecurityUserManagementPlugin } from "../../types";
-import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/security.model";
+import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { id, data } = args;

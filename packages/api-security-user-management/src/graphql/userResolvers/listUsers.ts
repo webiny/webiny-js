@@ -1,5 +1,5 @@
 import { ListResponse, ListErrorResponse } from "@webiny/graphql";
-import { GSI1_PK_USER } from "@webiny/api-security-user-management/models/security.model";
+import { GSI1_PK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
 
 export default async (_, args, context) => {
     const Model = context.models.Security;

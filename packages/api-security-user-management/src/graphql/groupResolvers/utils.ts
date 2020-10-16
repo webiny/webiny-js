@@ -3,7 +3,7 @@ import {
     GSI1_PK_GROUP,
     PK_GROUP,
     SK_GROUP
-} from "@webiny/api-security-user-management/models/security.model";
+} from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export const createSecurityGroup = async ({ Model, group }) => {
     const PK = `${PK_GROUP}#${group.id}`;

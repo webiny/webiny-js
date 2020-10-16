@@ -3,7 +3,7 @@ import {
     GSI1_PK_USER,
     PK_USER,
     SK_USER
-} from "@webiny/api-security-user-management/models/security.model";
+} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 export const createSecurityUser = ({ Model, user }) => {
     const PK = `${PK_USER}#${user.id}`;

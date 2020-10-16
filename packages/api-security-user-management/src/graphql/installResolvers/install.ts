@@ -5,10 +5,8 @@ import * as data from "./data";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
 import { createSecurityGroup } from "../groupResolvers/utils";
-import {
-    GSI1_PK_GROUP,
-    GSI1_PK_USER
-} from "@webiny/api-security-user-management/models/security.model";
+import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
+import { GSI1_PK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
 import { createSecurityUser } from "../userResolvers/utils";
 
 const ensureFullAccessGroup = async context => {

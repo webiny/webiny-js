@@ -1,6 +1,6 @@
 import { Batch } from "@commodo/fields-storage";
 import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql";
-import { PK_GROUP, SK_GROUP } from "@webiny/api-security-user-management/models/security.model";
+import { PK_GROUP, SK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { id, data }, context) => {
     const Model = context.models.Security;
