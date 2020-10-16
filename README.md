@@ -29,9 +29,9 @@ To get started with Webiny, simply [follow this link](https://docs.webiny.com) ð
 
 ## Webiny is the easiest way to adopt serverless!
 
-Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS). 
+Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS).
 
-Our plugin-based approach to the whole system will make it easy for you to override, upgrade and tweak the system to fit your needs. 
+Our plugin-based approach to the whole system will make it easy for you to override, upgrade and tweak the system to fit your needs.
 
 ### GraphQL API
 
@@ -57,7 +57,7 @@ To find out more about it, visit https://docs.webiny.com/docs/webiny-apps/admin/
 
 At this time, we provide a custom mechanism to deploy your project to the cloud using AWS SDK wrapped into reusable components. It's not the most robust mechanism, but it will serve you well during development especially with our `watch and redeploy` feature, which will deploy your code every time you change something during development ðŸš€
 
-In Webiny - everything is a plugin. And so is the deployment process. You can also deploy Webiny using native CloudFormation if you will, Pulumi, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible. 
+In Webiny - everything is a plugin. And so is the deployment process. You can also deploy Webiny using native CloudFormation if you will, Pulumi, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible.
 
 ## Contributing
 
@@ -320,6 +320,27 @@ Thanks goes to these wonderful people:
                         <img src="https://avatars1.githubusercontent.com/u/979220?v=4" width="100px;" alt="Mark Wilcox"/>
                         <br />
                         <sub><b>Mark Wilcox</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/anushkrishnav">
+                        <img src="https://avatars3.githubusercontent.com/u/54374648?v=4" width="100px;" alt="A N U S H"/>
+                        <br />
+                        <sub><b>A N U S H</b></sub>
+                    </a>
+                    <br />
+                </td></tr><tr><td align="center">
+                    <a href="https://github.com/aloks98">
+                        <img src="https://avatars3.githubusercontent.com/u/45600289?v=4" width="100px;" alt="Alok Kumar Sahoo"/>
+                        <br />
+                        <sub><b>Alok Kumar Sahoo</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/sccalabr">
+                        <img src="https://avatars1.githubusercontent.com/u/4111230?v=4" width="100px;" alt="null"/>
+                        <br />
+                        <sub><b>sccalabr</b></sub>
                     </a>
                     <br />
                 </td></tr>

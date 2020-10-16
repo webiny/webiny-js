@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.1...v4.13.0-beta.0) (2020-10-06)
+
+
+### Bug Fixes
+
+* get values via `lodash.get` ([c7ab4f5](https://github.com/webiny/webiny-js/commit/c7ab4f5c6e0bfb82ccb80782b5d0af0914b99ae1))
+* increment min version of the `@commodo/fields-storage` package ([373b2cf](https://github.com/webiny/webiny-js/commit/373b2cfac92bd09121d6048e384908fd4c04e7fe))
+* remove redundant "server" ([4c9a47e](https://github.com/webiny/webiny-js/commit/4c9a47ee26fb8584af882549d89738c58bc45dc9))
+* **app-file-manager:** add missing `security-scopes-list` plugin ([a3ceabd](https://github.com/webiny/webiny-js/commit/a3ceabdb99e6e0a4c401bcb820ab5ab0b0fe7917))
+* **app-page-builder:** display image list in preview mode ([#1264](https://github.com/webiny/webiny-js/issues/1264)) ([18dbbc0](https://github.com/webiny/webiny-js/commit/18dbbc09ff8c9cb18d1f3ae815b60565a9102d31))
+
+
+### Features
+
+* add ability to remove selected icon on button ([#1274](https://github.com/webiny/webiny-js/issues/1274)) ([bfb0d46](https://github.com/webiny/webiny-js/commit/bfb0d4606a160d771d3fa6b01775e7a94d6ec241))
+* add support for login logo customization ([#1272](https://github.com/webiny/webiny-js/issues/1272)) ([77cce64](https://github.com/webiny/webiny-js/commit/77cce6474acad8086c1dcd2453c601f3d1736cdb))
+
+
+
+
+
 ## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
 
 **Note:** Version bump only for package webiny-js

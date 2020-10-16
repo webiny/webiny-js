@@ -18,6 +18,5 @@ export default () => [
                 createdOn: locale.createdOn
             }));
         }
-    } as HandlerPlugin,
-
+    } as HandlerPlugin
 ];

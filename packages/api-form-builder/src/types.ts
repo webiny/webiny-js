@@ -32,6 +32,10 @@ export type FbFormTriggerHandlerParams = {
     form: { [key: string]: any }; // TODO: Form model instance
 };
 
+/**
+ * Used to define custom business logic that gets executed upon successful form submission (e.g. send data to a specific e-mail address).
+ * @see https://docs.webiny.com/docs/webiny-apps/form-builder/development/plugins-reference/api#form-trigger-handler
+ */
 export type FbFormTriggerHandlerPlugin = Plugin & {
     type: "form-trigger-handler";
     trigger: string;
