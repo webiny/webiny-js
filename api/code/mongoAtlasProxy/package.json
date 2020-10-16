@@ -1,0 +1,12 @@
+{
+	"name": "api-database-proxy",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "webiny run build"
+	},
+	"dependencies": {
+		"@webiny/handler": "^4.13.0",
+		"@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
+		"@webiny/project-utils": "^4.13.0"
+	}
+}

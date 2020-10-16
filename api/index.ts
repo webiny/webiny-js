@@ -1,4 +1,5 @@
-import DocumentDb from "./stack/documentDb";
+import * as pulumi from "@pulumi/pulumi";
+import getDatabase from "./stack/database";
 import Cognito from "./stack/cognito";
 import Security from "./stack/security";
 import SettingsManager from "./stack/settingsManager";
@@ -12,25 +13,26 @@ import FormBuilder from "./stack/formBuilder";
 import HeadlessCms from "./stack/headlessCms";
 import GraphQLPlayground from "./stack/graphqlPlayground";
 
+const database = getDatabase();
+
 const cognito = new Cognito();
-const documentDb = new DocumentDb();
 
 const settingsManager = new SettingsManager({
-    dbProxy: documentDb.databaseProxy
+    dbProxy: database.databaseProxy
 });
 
 const graphqlServiceEnv: { [key: string]: any } = {
     COGNITO_REGION: String(process.env.AWS_REGION),
     COGNITO_USER_POOL_ID: cognito.userPool.id,
     DEBUG: String(process.env.DEBUG),
-    DB_PROXY_FUNCTION: documentDb.databaseProxy.arn,
+    DB_PROXY_FUNCTION: database.databaseProxy.arn,
     GRAPHQL_INTROSPECTION: String(process.env.GRAPHQL_INTROSPECTION),
     GRAPHQL_PLAYGROUND: String(process.env.GRAPHQL_PLAYGROUND),
     SETTINGS_MANAGER_FUNCTION: settingsManager.functions.settings.arn
 };
 
 const security = new Security({
-    dbProxy: documentDb.databaseProxy,
+    dbProxy: database.databaseProxy,
     env: graphqlServiceEnv
 });
 
@@ -38,7 +40,7 @@ graphqlServiceEnv.VALIDATE_ACCESS_TOKEN_FUNCTION = security.functions.validateAc
 graphqlServiceEnv.PERMISSIONS_MANAGER_FUNCTION = security.functions.permissionsManager.arn;
 
 const i18n = new I18N({
-    dbProxy: documentDb.databaseProxy,
+    dbProxy: database.databaseProxy,
     env: graphqlServiceEnv
 });
 
@@ -62,7 +64,7 @@ const formBuilder = new FormBuilder({
 });
 
 const headlessCms = new HeadlessCms({
-    dbProxyFunction: documentDb.databaseProxy,
+    dbProxyFunction: database.databaseProxy,
     i18nLocalesFunction: i18n.functions.locales,
     settingsManagerFunction: settingsManager.functions.settings,
     env: {
