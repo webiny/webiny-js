@@ -6,7 +6,11 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { AdminMenuLogoPlugin, AdminMenuPlugin, AdminDrawerFooterMenuPlugin } from "@webiny/app-admin/types";
+import {
+    AdminMenuLogoPlugin,
+    AdminMenuPlugin,
+    AdminDrawerFooterMenuPlugin
+} from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
@@ -57,12 +61,8 @@ const Navigation = () => {
     const footerMenuPlugins = getPlugins<AdminDrawerFooterMenuPlugin>("admin-drawer-footer-menu");
 
     footerMenuPlugins &&
-        sortBy(footerMenuPlugins, [p => p.order || 50, p => p.name]).forEach(plugin => {
-            footerMenus.push(
-                <React.Fragment key={plugin.name}>
-                    {plugin.render()}
-                </React.Fragment>
-            );
+        footerMenuPlugins.forEach(plugin => {
+            footerMenus.push(<React.Fragment key={plugin.name}>{plugin.render()}</React.Fragment>);
         });
 
     return (
