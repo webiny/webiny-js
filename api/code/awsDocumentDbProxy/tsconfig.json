@@ -1,0 +1,7 @@
+{
+  "extends": "../../../tsconfig",
+  "references": [
+    { "path": "../../../packages/handler-aws" },
+    { "path": "../../../packages/handler-aws-documentdb-proxy" }
+  ]
+}
