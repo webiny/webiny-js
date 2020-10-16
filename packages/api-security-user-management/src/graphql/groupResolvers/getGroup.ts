@@ -6,7 +6,7 @@ import {
 } from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { id, slug }, context) => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     try {
         if (id) {

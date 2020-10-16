@@ -3,7 +3,7 @@ import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql";
 import { PK_GROUP, SK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { id, data }, context) => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     const PK = `${PK_GROUP}#${id}`;
 

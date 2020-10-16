@@ -5,7 +5,7 @@ import { SecurityUserManagementPlugin } from "../../types";
 import { createSecurityUser } from "@webiny/api-security-user-management/graphql/userResolvers/utils";
 
 const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
     const { SecurityUser } = context.models;
 
     try {

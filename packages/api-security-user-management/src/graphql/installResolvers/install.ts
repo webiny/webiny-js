@@ -10,7 +10,7 @@ import { GSI1_PK_USER } from "@webiny/api-security-user-management/models/securi
 import { createSecurityUser } from "../userResolvers/utils";
 
 const ensureFullAccessGroup = async context => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
     const { SecurityGroup } = context.models;
 
     let securityRecord = await Model.findOne({
@@ -32,7 +32,7 @@ const ensureFullAccessGroup = async context => {
  * We consider security to be installed if there are users in Webiny DB.
  */
 const isSecurityInstalled = async context => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     // Check if at least 1 user exists in the system
     return !!(await Model.findOne({
@@ -66,7 +66,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 
         await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
 
-        await createSecurityUser({ Model: context.models.Security, user });
+        await createSecurityUser({ Model: context.models.SECURITY, user });
 
         return new Response(true);
     } catch (e) {

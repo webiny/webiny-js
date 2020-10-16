@@ -6,7 +6,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const identity = context.security.getIdentity();
 
     if (identity) {
-        const Model = context.models.Security;
+        const Model = context.models.SECURITY;
 
         const securityRecord = await Model.findOne({
             query: { PK: `${PK_USER}#${identity.id}`, SK: SK_USER }

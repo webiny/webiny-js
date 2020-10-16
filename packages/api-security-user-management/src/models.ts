@@ -20,6 +20,6 @@ export default () => ({
         context.models.SecurityPersonalAccessToken = SecurityPersonalAccessTokenData({ context });
         context.models.SecurityUser = SecurityUserData({ context });
         context.models.SecurityGroup = SecurityGroupData();
-        context.models.Security = SecurityModel({ context });
+        context.models.SECURITY = SecurityModel({ context });
     }
 });

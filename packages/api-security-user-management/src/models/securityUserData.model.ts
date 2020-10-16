@@ -70,7 +70,7 @@ export const SecurityUserData = ({ context }) =>
                 return "https://www.gravatar.com/avatar/" + md5(dataInstance.email);
             },
             get groupData() {
-                const Model = context.models.Security;
+                const Model = context.models.SECURITY;
 
                 return new Promise(async resolve => {
                     // Get group item from table
@@ -98,7 +98,7 @@ export const SecurityUserData = ({ context }) =>
                 });
             },
             get personalAccessTokensData() {
-                const Model = context.models.Security;
+                const Model = context.models.SECURITY;
 
                 return new Promise(async resolve => {
                     const personalAccessTokens = await Model.find({

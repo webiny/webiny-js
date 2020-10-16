@@ -6,7 +6,7 @@ import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/se
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { id } = args;
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     const PK = `${PK_USER}#${id}`;
 

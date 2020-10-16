@@ -1,16 +1,16 @@
 import models from "../models";
 import {
-    GSI1_PK_GROUP,
     PK_USER,
     SK_USER
-} from "@webiny/api-security-user-management/models/security.model";
+} from "@webiny/api-security-user-management/models/securityUserData.model";
+import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default () => [
     models(),
     {
         type: "permissions-manager-middleware",
         async getPermissions({ identity }, context) {
-            const Model = context.models.Security;
+            const Model = context.models.SECURITY;
             if (identity) {
                 const securityRecord = await Model.findOne({
                     query: { PK: `${PK_USER}#${identity}`, SK: SK_USER }

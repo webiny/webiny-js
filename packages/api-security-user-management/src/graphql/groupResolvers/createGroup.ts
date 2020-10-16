@@ -2,7 +2,7 @@ import { Response, ErrorResponse } from "@webiny/graphql";
 import { createSecurityGroup } from "./utils";
 
 export default async (_, { data }, context) => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
     const { SecurityGroup } = context.models;
 
     try {

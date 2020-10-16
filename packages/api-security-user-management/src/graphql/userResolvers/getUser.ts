@@ -7,7 +7,7 @@ import {
 
 export default async (_, args, context) => {
     const { id, login } = args;
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     try {
         let record;

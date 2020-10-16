@@ -10,7 +10,10 @@ import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 import listUsers from "./userResolvers/listUsers";
 import getUser from "./userResolvers/getUser";
-import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/security.model";
+import {
+    PK_USER,
+    SK_USER
+} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
@@ -192,7 +195,7 @@ export default {
                 return context.security.getIdentity().login;
             },
             async avatar(_, args, context) {
-                const Model = context.models.Security;
+                const Model = context.models.SECURITY;
                 const identityId = context.security.getIdentity().id;
                 const securityRecord = await Model.findOne({
                     query: { PK: `${PK_USER}#${identityId}`, SK: SK_USER }

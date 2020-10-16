@@ -5,7 +5,7 @@ import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/se
 import { updateSecurityUser } from "@webiny/api-security-user-management/graphql/userResolvers/utils";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const Model = context.models.Security;
+    const Model = context.models.SECURITY;
 
     const { security, plugins } = context;
 

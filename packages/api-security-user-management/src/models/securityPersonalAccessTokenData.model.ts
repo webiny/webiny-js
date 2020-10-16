@@ -22,7 +22,7 @@ export const SecurityPersonalAccessTokenData = ({ context }) =>
         })),
         withProps(instance => ({
             get userData() {
-                const Model = context.models.Security;
+                const Model = context.models.SECURITY;
 
                 return new Promise(async (resolve, reject) => {
                     const user = await Model.findOne({

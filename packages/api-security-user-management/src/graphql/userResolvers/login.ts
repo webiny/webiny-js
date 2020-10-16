@@ -16,7 +16,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             throw new Error("Not authorized!");
         }
 
-        const Model: any = context.models.Security;
+        const Model: any = context.models.SECURITY;
         const { SecurityUser } = context.models;
 
         const securityRecord = await Model.findOne({
