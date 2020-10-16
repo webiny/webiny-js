@@ -2,7 +2,6 @@ module.exports = {
     projectName: "webiny-js",
     cli: {
         plugins: [
-            require("@webiny/cli-plugin-deploy-pulumi")(),
             require("@webiny/cwp-template-full/hooks/api")(),
             require("@webiny/cwp-template-full/hooks/apps")(),
             require("@webiny/cli-plugin-scaffold"),
@@ -11,7 +10,9 @@ module.exports = {
             require("@webiny/cli-plugin-scaffold-admin-app-module"),
             require("@webiny/cli-plugin-scaffold-node-package"),
             require("@webiny/cli-plugin-scaffold-react-package"),
-            require("@webiny/cli-plugin-scaffold-react-app")
+            require("@webiny/cli-plugin-scaffold-react-app"),
+            require("@webiny/cli-plugin-build")(),
+            require("@webiny/cli-plugin-deploy-pulumi")(),
         ]
     }
 };
