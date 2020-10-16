@@ -1,6 +1,6 @@
 # DEVELOPMENT OVERVIEW
 
-In this article, we'll explain how Webiny works so you can confidently start contributing
+In this article, we'll explain how Webiny works so you can confidently start contributing.
 
 ### Webiny Local Setup
 
