@@ -1,7 +1,7 @@
 import React from "react";
 import { ApolloProvider } from "react-apollo";
-import { BrowserRouter } from "@webiny/react-router";
 import { UiProvider } from "@webiny/app/contexts/Ui";
+import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -9,8 +9,8 @@ import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller"
 import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
+import { BrowserRouter } from "@webiny/react-router";
 import { createApolloClient } from "./apolloClient";
-import { Routes } from "./components/Routes";
 import { NetworkError } from "./components/NetworkError";
 
 // Import styles which include custom theme styles

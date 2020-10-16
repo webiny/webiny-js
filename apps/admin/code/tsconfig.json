@@ -1,7 +1,6 @@
 {
-  "extends": "../../../../tsconfig",
+  "extends": "../../../tsconfig",
   "include": ["src"],
-  "exclude": ["../../../../packages/app-template-admin-full"],
   "compilerOptions": {
     "composite": false
   }

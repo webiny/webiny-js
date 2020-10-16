@@ -20,7 +20,7 @@ import Help from "@webiny/app-admin/plugins/UserMenu/plugins/Help";
 import SendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
 import install from "@webiny/app-admin/plugins/install";
 
-import init from "./init";
+import settingsMenu from "./settingsMenu";
 
 export default (): PluginCollection => [
     // Layout plugins
@@ -40,5 +40,5 @@ export default (): PluginCollection => [
     Help,
     SendFeedback,
     install,
-    init
+    settingsMenu
 ];

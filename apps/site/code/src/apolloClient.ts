@@ -5,7 +5,7 @@ import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { createOmitTypenameLink } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
-import { GET_ERROR } from "./NetworkError";
+import { GET_ERROR } from "./components/NetworkError";
 
 export const createApolloClient = () => {
     return new ApolloClient({
