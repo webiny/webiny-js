@@ -65,7 +65,7 @@ const Action = ({
                 removeKeyHandler(short);
             });
         };
-    });
+    }, []);
 
     return (
         <Tooltip
