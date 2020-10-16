@@ -1,7 +1,13 @@
 import { atom } from "recoil";
-import { Plugin } from "@webiny/plugins/types";
 
-export type PluginsAtomType = Map<string, Plugin[]>;
+export type PluginsAtomPluginParamsType = {
+    [key: string]: any;
+};
+export type PluginsAtomPluginType = {
+    name: string;
+    params: PluginsAtomPluginParamsType;
+};
+export type PluginsAtomType = Map<string, PluginsAtomPluginType[]>;
 export const pluginsAtom = atom<PluginsAtomType>({
     key: "pluginsAtom",
     default: new Map()

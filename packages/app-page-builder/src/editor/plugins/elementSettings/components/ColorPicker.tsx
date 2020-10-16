@@ -3,8 +3,22 @@ import { connect } from "react-redux";
 import { get } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
+import { useRecoilValue } from "recoil";
+
+const extrapolateActiveElementValue = (
+    value?: string,
+    valueKey?: string,
+    defaultValue?: string
+): string | undefined => {
+    if (!valueKey) {
+        return value;
+    }
+    const element = useRecoilValue(activeElementSelector);
+    if (!element) {
+        throw new Error("There is no active element.");
+    }
+    return lodashGet(element, valueKey, defaultValue);
+};
 
 type ColorPickerProps = {
     label: string;
@@ -13,7 +27,15 @@ type ColorPickerProps = {
     updateValue: Function;
 };
 
-const ColorPicker = ({ label, value, updatePreview, updateValue }: ColorPickerProps) => {
+const ColorPicker = ({
+    label,
+    value,
+    valueKey,
+    defaultValue,
+    updatePreview,
+    updateValue
+}: ColorPickerProps) => {
+    const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
         <Grid>
             <Cell span={4}>
@@ -31,16 +53,4 @@ const ColorPicker = ({ label, value, updatePreview, updateValue }: ColorPickerPr
     );
 };
 
-type ColorPickerConnectProps = {
-    value?: string;
-    valueKey?: string;
-    defaultValue?: string;
-};
-
-export default connect<any, any, any>(
-    (state, { value, valueKey, defaultValue }: ColorPickerConnectProps) => {
-        return {
-            value: valueKey ? get(getActiveElement(state), valueKey, defaultValue) : value
-        };
-    }
-)(React.memo(ColorPicker));
+export default React.memo(ColorPicker);
