@@ -338,9 +338,16 @@ Thanks goes to these wonderful people:
                     <br />
                 </td><td align="center">
                     <a href="https://github.com/sccalabr">
-                        <img src="https://avatars1.githubusercontent.com/u/4111230?v=4" width="100px;" alt="null"/>
+                        <img src="https://avatars1.githubusercontent.com/u/4111230?v=4" width="100px;" alt="sccalabr"/>
                         <br />
                         <sub><b>sccalabr</b></sub>
+                    </a>
+                    <br />
+                </td><td align="center">
+                    <a href="https://github.com/ng29">
+                        <img src="https://avatars2.githubusercontent.com/u/26463272?v=4" width="100px;" alt="Nitin Gupta"/>
+                        <br />
+                        <sub><b>Nitin Gupta</b></sub>
                     </a>
                     <br />
                 </td></tr>
