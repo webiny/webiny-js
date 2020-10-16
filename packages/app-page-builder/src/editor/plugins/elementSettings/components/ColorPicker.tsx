@@ -1,6 +1,7 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import { get } from "lodash";
+import React from "react";
+import lodashGet from "lodash/get";
+import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker";
+import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { useRecoilValue } from "recoil";
@@ -22,7 +23,9 @@ const extrapolateActiveElementValue = (
 
 type ColorPickerProps = {
     label: string;
-    value: string;
+    value?: string;
+    valueKey?: string;
+    defaultValue?: string;
     updatePreview: Function;
     updateValue: Function;
 };
@@ -44,7 +47,7 @@ const ColorPicker = ({
             <Cell span={8}>
                 <ColorPickerCmp
                     compact
-                    value={value}
+                    value={targetValue}
                     onChange={updatePreview}
                     onChangeComplete={updateValue}
                 />

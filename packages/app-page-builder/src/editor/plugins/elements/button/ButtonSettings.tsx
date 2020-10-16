@@ -3,7 +3,7 @@ import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/compo
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
 import { renderToStaticMarkup } from "react-dom/server";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { set } from "dot-prop-immutable";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Select } from "@webiny/ui/Select";
@@ -20,8 +20,8 @@ import { useRecoilValue } from "recoil";
 let icons;
 const getIcons = (): PbIcon[] => {
     if (!icons) {
-        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
-        icons = plugins.reduce((icons, pl) => {
+        const pluginsByType = plugins.byType<PbIconsPlugin>("pb-icons");
+        icons = pluginsByType.reduce((icons, pl) => {
             return icons.concat(pl.getIcons());
         }, []);
     }

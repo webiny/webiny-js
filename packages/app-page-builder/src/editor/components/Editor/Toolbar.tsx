@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import {
-    activePluginNamesSelector,
+    activePluginsByTypeNamesSelector,
     deactivatePluginMutation
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";

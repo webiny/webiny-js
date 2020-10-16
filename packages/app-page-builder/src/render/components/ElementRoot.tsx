@@ -1,12 +1,10 @@
 import React, { CSSProperties, ReactElement, useEffect, useRef } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
     PbRenderElementAttributesPlugin,
     PbElement
 } from "@webiny/app-page-builder/types";
-
-const Node = "div";
 
 type CombineClassNamesType = (...styles) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {
@@ -38,27 +36,28 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     const shallowElement = {
         id: element.id,
         type: element.type,
-        data: element.data
+        data: element.data,
+        elements: []
     };
 
     const stylePlugins = useRef<PbRenderElementStylePlugin[]>([]);
     const attributePlugins = useRef<PbRenderElementAttributesPlugin[]>([]);
 
     useEffect(() => {
-        stylePlugins.current = getPlugins<PbRenderElementStylePlugin>(
+        stylePlugins.current = plugins.byType<PbRenderElementStylePlugin>(
             "pb-render-page-element-style"
         );
-        attributePlugins.current = getPlugins<PbRenderElementAttributesPlugin>(
+        attributePlugins.current = plugins.byType<PbRenderElementAttributesPlugin>(
             "pb-render-page-element-attributes"
         );
     }, []);
 
-    const finalStyle = this.stylePlugins.reduce((accumulatedStyles, plugin) => {
-        return plugin.renderStyle({ element: shallowElement, accumulatedStyles });
+    const finalStyle = stylePlugins.current.reduce((accumulatedStyles, plugin) => {
+        return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });
     }, style);
 
-    const attributes = this.attributePlugins.reduce((accumulatedAttributes, plugin) => {
-        return plugin.renderAttributes({ element: shallowElement, accumulatedAttributes });
+    const attributes = attributePlugins.current.reduce((accumulatedAttributes, plugin) => {
+        return plugin.renderAttributes({ element: shallowElement, attributes: accumulatedAttributes });
     }, {});
 
     const classNames = element.data?.settings?.className || "";
@@ -80,9 +79,9 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     }
 
     return (
-        <Node className={getAllClasses()} style={finalStyle} {...attributes}>
+        <div className={getAllClasses()} style={finalStyle} {...attributes}>
             {children}
-        </Node>
+        </div>
     );
 };
 

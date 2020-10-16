@@ -1,8 +1,13 @@
 import React, { useEffect, useCallback, ReactElement } from "react";
+import { togglePluginAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import {
+    isPluginActiveSelector,
+    activePluginsByTypeTotalSelector,
+    uiAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { getUi, getActivePlugins, isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useRecoilValue } from "recoil";
 

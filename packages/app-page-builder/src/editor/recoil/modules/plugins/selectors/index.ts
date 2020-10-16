@@ -1,4 +1,3 @@
-export * from "./activePluginNamesSelector";
+export * from "./activePluginsByTypeNamesSelector";
+export * from "./activePluginsByTypeTotalSelector";
 export * from "./isPluginActiveByNameSelector";
-
-export const x = () => {};

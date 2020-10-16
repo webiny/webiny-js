@@ -1,14 +1,16 @@
 import invariant from "invariant";
 import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useRecoilValue } from "recoil";
 
+const elementPluginType = "pb-editor-page-element";
+
 const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
-    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
-    const plugin = plugins.find(pl => pl.elementType === type);
+    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>(elementPluginType);
+    const plugin = pluginsByType.find(pl => pl.elementType === type);
     if (!plugin) {
-        throw new Error(`There is no plugin in "pb-editor-page-element" for element type ${type}`);
+        throw new Error(`There is no plugin in "${elementPluginType}" for element type ${type}`);
     }
     return plugin;
 };
