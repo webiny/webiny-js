@@ -10,7 +10,7 @@
 <!--- If you report bug, please follow template below -->
 <!--- It will allow us to better understand problem and help you faster -->
 
-## Specifications
+## Specifications:
 
   - version:
   - OS:
@@ -22,7 +22,7 @@
 ## Actual Behavior
 <!--- Tell us what happens instead of the expected behavior -->
 
-## Steps to Reproduce the Problem
+## Steps to Reproduce the Problem:
 <!--- Provide a link to a live example, or an unambiguous set of steps to -->
 <!--- reproduce this bug. Include code to reproduce, if relevant -->
 1.
