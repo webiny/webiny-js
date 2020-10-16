@@ -10,6 +10,7 @@ import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 import listUsers from "./userResolvers/listUsers";
 import getUser from "./userResolvers/getUser";
+import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/security.model";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
@@ -178,6 +179,12 @@ export default {
             },
             avatar({ avatar }) {
                 return avatar ? { __typename: "File", id: avatar } : null;
+            },
+            async group(parent) {
+                return await parent.groupData;
+            },
+            async permissions(parent) {
+                return await parent.permissions;
             }
         },
         SecurityIdentity: {
@@ -185,9 +192,13 @@ export default {
                 return context.security.getIdentity().login;
             },
             async avatar(_, args, context) {
-                const { SecurityUser } = context.models;
+                const Model = context.models.Security;
                 const identityId = context.security.getIdentity().id;
-                const user = await SecurityUser.findOne({ query: { id: identityId } });
+                const securityRecord = await Model.findOne({
+                    query: { PK: `${PK_USER}#${identityId}`, SK: SK_USER }
+                });
+
+                const user = securityRecord.data;
                 return user.avatar ? { __typename: "File", id: user.avatar } : null;
             },
             permissions: (_, args, context) => {
