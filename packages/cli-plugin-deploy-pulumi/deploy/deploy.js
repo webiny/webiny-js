@@ -3,9 +3,6 @@ const { green } = require("chalk");
 const notifier = require("node-notifier");
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const path = require("path");
-const execa = require("execa");
-const ProgressBar = require("progress");
-const getPackages = require("get-yarn-workspaces");
 const ora = require("ora");
 
 const notify = ({ message }) => {
@@ -59,43 +56,6 @@ module.exports = async (inputs, context) => {
 
     // Load .env.json from cwd (this will change depending on the folder you specified).
     await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
-
-    if (inputs.build) {
-        const packages = getPackages().filter(item =>
-            item.includes(path.join(process.cwd(), folder))
-        );
-
-        console.log(
-            `⏳ Building ${packages.length} package(s) in ${green(
-                path.join(process.cwd(), folder)
-            )}...`
-        );
-        const bar = new ProgressBar("[:bar] :percent :etas", {
-            complete: "=",
-            incomplete: " ",
-            width: 1024,
-            total: packages.length
-        });
-
-        const promises = [];
-        for (let i = 0; i < packages.length; i++) {
-            promises.push(
-                new Promise(async (resolve, reject) => {
-                    try {
-                        const cwd = packages[i];
-                        await execa("yarn", ["build", "--env", env], { cwd });
-                        bar.tick();
-
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                })
-            );
-        }
-
-        await Promise.all(promises);
-    }
 
     const stacksDir = path.join(".", folder);
 
