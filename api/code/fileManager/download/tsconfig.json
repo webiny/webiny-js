@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../../tsconfig",
   "references": [
     { "path": "../../../../packages/api-file-manager" },
     { "path": "../../../../packages/handler-aws" }

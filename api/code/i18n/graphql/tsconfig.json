@@ -1,5 +1,5 @@
 {
-  "extends": "../../../tsconfig",
+  "extends": "../../../../tsconfig",
   "references": [
     { "path": "../../../../packages/api-plugin-commodo-dynamodb" },
     { "path": "../../../../packages/api-i18n" },
