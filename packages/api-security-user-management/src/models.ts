@@ -1,18 +1,7 @@
-import { flow } from "lodash";
-import {
-    withStorage,
-    withCrudLogs,
-    withSoftDelete,
-    withFields,
-    withProps,
-    withStaticProps,
-    string
-} from "@webiny/commodo";
-import { withUser } from "@webiny/api-security";
-import securityGroup from "./models/securityGroup.model";
-import securityGroups2Models from "./models/securityGroups2Models.model";
-import securityUser from "./models/securityUser.model";
-import securityPersonalAccessToken from "./models/securityPersonalAccessToken.model";
+import SecurityModel from "./models/security.model";
+import { SecurityPersonalAccessTokenData } from "./models/securityPersonalAccessTokenData.model";
+import { SecurityUserData } from "./models/securityUserData.model";
+import { SecurityGroupData } from "./models/securityGroupData.model";
 
 export default () => ({
     name: "context-models",
@@ -26,41 +15,11 @@ export default () => ({
             );
         }
 
-        const createBase = () =>
-            flow(
-                withFields({
-                    id: string()
-                }),
-                withStorage({ driver }),
-                withUser(context),
-                withSoftDelete(),
-                withCrudLogs(),
-                withProps({
-                    isId() {
-                        return true;
-                    }
-                }),
-                withStaticProps({
-                    isId() {
-                        return true;
-                    }
-                })
-            )();
-
         context.models = context.models || {};
-        context.models.SecurityGroup = securityGroup({
-            createBase
-        });
-        context.models.SecurityGroups2Models = securityGroups2Models({ createBase, context });
-        context.models.SecurityUser = securityUser({
-            context,
-            createBase
-        });
-        context.models.SecurityPersonalAccessToken = securityPersonalAccessToken({
-            createBase,
-            context
-        });
 
-        context.models.createBase = createBase;
+        context.models.SecurityPersonalAccessToken = SecurityPersonalAccessTokenData({ context });
+        context.models.SecurityUser = SecurityUserData({ context });
+        context.models.SecurityGroup = SecurityGroupData();
+        context.models.Security = SecurityModel({ context });
     }
 });
