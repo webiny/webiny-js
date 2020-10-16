@@ -23,9 +23,9 @@ const sleep = () => {
     });
 };
 
-const getStackName = folder => {
-    folder = folder.split("/").pop();
-    return folder === "." ? basename(process.cwd()) : folder;
+const getStackName = stack => {
+    stack = stack.split("/").pop();
+    return stack === "." ? basename(process.cwd()) : stack;
 };
 
 const processHooks = async (hook, { context, ...options }) => {
@@ -46,8 +46,8 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, folder, debug = true } = inputs;
-    const stack = getStackName(folder);
+    const { env, stack, debug = true } = inputs;
+    const stackName = getStackName(stack);
 
     const projectRoot = context.paths.projectRoot;
 
@@ -56,10 +56,10 @@ module.exports = async (inputs, context) => {
         await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
 
         // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
+        await context.loadEnv(path.resolve(projectRoot, stack, ".env.json"), env, { debug });
     }
 
-    const stacksDir = path.join(".", folder);
+    const stacksDir = path.join(".", stack);
 
     let spinner = new ora();
     const pulumi = new Pulumi({
@@ -113,7 +113,7 @@ module.exports = async (inputs, context) => {
 
     const isFirstDeploy = !stackExists;
 
-    const hookDeployArgs = { isFirstDeploy, context, env, stack };
+    const hookDeployArgs = { isFirstDeploy, context, env, stack: stackName };
 
     if (inputs.preview) {
         console.log(`Skipped "hook-before-deploy" hook.`);
@@ -155,7 +155,7 @@ module.exports = async (inputs, context) => {
         console.log(`\n🎉 Done! Preview finished in ${green(duration + "s")}.\n`);
     } else {
         console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
-        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
+        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
     }
 
     if (inputs.preview) {
