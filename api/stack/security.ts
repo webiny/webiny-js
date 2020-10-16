@@ -9,7 +9,30 @@ class Security {
         validateAccessToken: aws.lambda.Function;
         permissionsManager: aws.lambda.Function;
     };
+    dynamoDbTable: aws.dynamodb.Table;
     constructor({ dbProxy, env }: { dbProxy: aws.lambda.Function; env: { [key: string]: any } }) {
+        this.dynamoDbTable = new aws.dynamodb.Table("SECURITY", {
+            attributes: [
+                { name: "PK", type: "S" },
+                { name: "SK", type: "S" },
+                { name: "GSI1_PK", type: "S" },
+                { name: "GSI1_SK", type: "S" }
+            ],
+            billingMode: "PAY_PER_REQUEST",
+            hashKey: "PK",
+            rangeKey: "SK",
+            globalSecondaryIndexes: [
+                {
+                    name: "GSI1",
+                    hashKey: "GSI1_PK",
+                    rangeKey: "GSI1_SK",
+                    projectionType: "ALL",
+                    readCapacity: 1,
+                    writeCapacity: 1
+                }
+            ]
+        });
+
         const permissionsManager = new aws.lambda.Function("security-permissions-manager", {
             runtime: "nodejs12.x",
             handler: "handler.handler",
@@ -21,6 +44,7 @@ class Security {
             }),
             environment: {
                 variables: {
+                    STORAGE_NAME: this.dynamoDbTable.name,
                     DB_PROXY_FUNCTION: dbProxy.arn,
                     DEBUG: String(process.env.DEBUG)
                 }
@@ -42,6 +66,7 @@ class Security {
             }),
             environment: {
                 variables: {
+                    STORAGE_NAME: this.dynamoDbTable.name,
                     DB_PROXY_FUNCTION: dbProxy.arn,
                     PERMISSIONS_MANAGER_FUNCTION: permissionsManager.arn,
                     DEBUG: String(process.env.DEBUG)
@@ -66,7 +91,8 @@ class Security {
                 variables: {
                     ...env,
                     VALIDATE_ACCESS_TOKEN_FUNCTION: validateAccessToken.arn,
-                    PERMISSIONS_MANAGER_FUNCTION: permissionsManager.arn
+                    PERMISSIONS_MANAGER_FUNCTION: permissionsManager.arn,
+                    STORAGE_NAME: this.dynamoDbTable.name
                 }
             },
             vpcConfig: {
