@@ -1,4 +1,10 @@
+export type EventActionOptionsType = {
+    isFirst?: boolean;
+    isLast?: boolean;
+};
+
 export interface EventAction<T extends object> {
-    getName(): string;
     getArgs(): T;
+    getName(): string;
+    getOptions(): EventActionOptionsType;
 }

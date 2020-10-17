@@ -38,7 +38,6 @@ const EditorProvider: React.FunctionComponent<any> = props => {
             undo: useUndo()
         }
     };
-    eventActionsHandler.clearEventRegistry();
     registerDefaultEventActions(eventActionsHandler);
 
     return <EditorContext.Provider value={provider} {...props} />;

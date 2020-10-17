@@ -1,26 +1,23 @@
-import { EventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/EventAction";
+import { EventAction, EventActionOptionsType } from "./EventAction";
 
-export type BaseEventOptionsType = {
-    isFirst?: boolean;
-    isLast?: boolean;
-};
 export abstract class BaseEventAction<T extends object> implements EventAction<T> {
     private readonly _args: T;
-    private readonly _options: BaseEventOptionsType;
+    private readonly _options: EventActionOptionsType;
 
-    public constructor(args: T, options?: BaseEventOptionsType) {
+    public constructor(args: T, options?: EventActionOptionsType) {
         this._args = args;
         this._options = options;
-    }
-    public getArgs(): T {
-        return this._args;
     }
 
     public getName(): string {
         return this.constructor.name;
     }
 
-    public getOptions(): BaseEventOptionsType {
+    public getArgs(): T {
+        return this._args;
+    }
+
+    public getOptions(): EventActionOptionsType {
         return this._options;
     }
 }
