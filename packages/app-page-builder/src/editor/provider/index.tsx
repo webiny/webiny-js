@@ -4,23 +4,26 @@ import { useRedo, useUndo } from "recoil-undo";
 import { registerDefaultEventActions } from "./utils/registerDefaultEventActions";
 import { eventActionTransaction } from "./utils/eventActionTransaction";
 import {
+    createElementAction,
+    deleteElementAction,
     dropElementAction,
-    DropElementActionCallableType,
-    updateElementAction,
-    UpdateElementActionCallableType
+    togglePluginAction,
+    updateElementAction
 } from "../recoil/actions";
 
-type ActionTransactionCallableType = (Function) => Promise<any>;
 type ProviderType = {
     eventActionHandler: EventActionHandler;
+    eventActionTransaction: typeof eventActionTransaction;
     actions: {
-        dropElementAction: DropElementActionCallableType;
-        updateElementAction: UpdateElementActionCallableType;
-        eventActionTransaction: ActionTransactionCallableType;
+        createElementAction: typeof createElementAction;
+        deleteElementAction: typeof deleteElementAction;
+        dropElementAction: typeof dropElementAction;
+        togglePluginAction: typeof togglePluginAction;
+        updateElementAction: typeof updateElementAction;
     };
-    flow: {
-        undo: () => void;
-        redo: () => void;
+    state: {
+        useUndo: typeof useUndo;
+        useRedo: typeof useRedo;
     };
 };
 const EditorContext = createContext<ProviderType>(null);
@@ -28,14 +31,17 @@ const EditorProvider: React.FunctionComponent<any> = props => {
     const eventActionsHandler = new EventActionHandler();
     const provider: ProviderType = {
         eventActionHandler: eventActionsHandler,
+        eventActionTransaction,
         actions: {
+            createElementAction,
+            deleteElementAction,
             dropElementAction,
-            updateElementAction,
-            eventActionTransaction
+            togglePluginAction,
+            updateElementAction
         },
-        flow: {
-            redo: useRedo(),
-            undo: useUndo()
+        state: {
+            useRedo,
+            useUndo
         }
     };
     registerDefaultEventActions(eventActionsHandler);
@@ -50,11 +56,9 @@ const useEditorEventActionHandler: UseEventActionHandlerType = () => {
     const { eventActionHandler } = useContext(EditorContext);
     return eventActionHandler;
 };
-type UseEventActionTransactionType = () => ActionTransactionCallableType;
+type UseEventActionTransactionType = () => typeof eventActionTransaction;
 const useEditorEventActionTransaction: UseEventActionTransactionType = () => {
-    const {
-        actions: { eventActionTransaction }
-    } = useContext(EditorContext);
+    const { eventActionTransaction } = useContext(EditorContext);
     return eventActionTransaction;
 };
 

@@ -59,12 +59,17 @@ export class EventActionHandler {
 
     public async trigger<T extends object>(ev: EventAction<T>): Promise<number> {
         const name = ev.getName();
+        if (!this.has(ev.getName())) {
+            throw new Error(`There is no event action that is registered with name "${name}".`);
+        }
         const targetCallables = this.get(name);
         if (!targetCallables) {
             return EventActionHandler.NO_CALLABLES;
         }
         const args = ev.getArgs();
         for (const fn of targetCallables.values()) {
+            // TODO tbd if required to run in try/catch
+            // and need to check if we will have status codes for triggers
             try {
                 const result = await fn(args);
                 if (result === EventActionHandlerSignal.IS_LAST) {
