@@ -20,11 +20,10 @@ const createElementWithoutElementsAsString = (element: PbElement): PbElement => 
     if (!element.elements || typeof element.elements[0] !== "string") {
         return element;
     }
-    throw new Error("This should never happen.");
-    // return {
-    //     ...element,
-    //     elements: [],
-    // };
+    return {
+        ...element,
+        elements: []
+    };
 };
 /**
  * when element update happens:

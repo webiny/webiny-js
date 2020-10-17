@@ -14,7 +14,7 @@ export enum EventActionHandlerSignal {
     ABORT = shortid.generate()
 }
 
-type EventActionClassConstructor = { new (...args: any[]): any };
+type EventActionClassConstructor = { new (...args: any[]): EventAction<any> };
 /**
  * Usages
  * subscribing to an event: handler.subscribe(TargetEventClass, (args) => {your code})
@@ -32,51 +32,47 @@ export class EventActionHandler {
     private readonly _eventRegistry: EventActionHandlerEventsType = new Map();
     private _eventActionRunning: string | null = null;
 
-    public subscribe(target: EventActionClassConstructor, callable: Function): void {
+    public on(target: EventActionClassConstructor, callable: Function): void {
         const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
             this._eventRegistry.set(name, new Set());
         }
         const list = this.get(name);
         if (list.has(callable)) {
-            throw new Error(`You cannot subscribe to one event with same function.`);
+            throw new Error(
+                `You cannot register event action "${name}" with identical function that already is registered.`
+            );
         }
         list.add(callable);
     }
 
-    public unsubscribe(target: EventActionClassConstructor, callable: Function): void {
+    public off(target: EventActionClassConstructor, callable: Function): void {
         const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
-            throw new Error(
-                `It seems you want to unsubscribe to an event that you have not subscribed to with given function.`
-            );
+            return;
         }
         const list = this.get(name);
-        const newSet = new Set<Function>();
-        for (const fn of list.values()) {
-            if (fn != callable) {
-                newSet.add(fn);
-            }
+        if (!list.has(callable)) {
+            return;
         }
-        this.set(name, newSet);
+        list.delete(callable);
     }
 
-    public trigger<T extends object>(eventAction: EventAction<T>): number {
+    public async trigger<T extends object>(ev: EventAction<T>): Promise<number> {
         if (this.isEventActionRunning()) {
             throw new Error(
                 `Currently there is an action running "${this.getEventActionRunning()}".`
             );
         }
-        const name = eventAction.getName();
+        const name = ev.getName();
         const targetCallables = this.get(name);
         if (!targetCallables) {
             return EventActionHandler.NO_CALLABLES;
         }
-        this.setEventActionRunning(name);
-        const args = eventAction.getArgs();
+        const args = ev.getArgs();
         for (const fn of targetCallables.values()) {
             try {
-                const result = fn(args);
+                const result = await fn(args);
                 if (result === EventActionHandlerSignal.IS_LAST) {
                     this.clearEventActionRunning();
                     return EventActionHandler.SUCCESS;
@@ -87,18 +83,76 @@ export class EventActionHandler {
             } catch (ex) {
                 this.clearEventActionRunning();
                 throw new Error(
-                    `Action event "${name}" produced some kind of exception, please check it.`
+                    `Action event action "${name}" produced some kind of exception, please check it.`
                 );
             }
         }
         this.clearEventActionRunning();
         return EventActionHandler.SUCCESS;
     }
+    //
+    // public subscribe(target: EventActionClassConstructor, callable: Function): void {
+    //     const name = this.getEventActionClassName(target);
+    //     if (!this.has(name)) {
+    //         this._eventRegistry.set(name, new Set());
+    //     }
+    //     const list = this.get(name);
+    //     if (list.has(callable)) {
+    //         throw new Error(`You cannot subscribe to one event with same function.`);
+    //     }
+    //     list.add(callable);
+    // }
+    //
+    // public unsubscribe(target: EventActionClassConstructor, callable: Function): void {
+    //     const name = this.getEventActionClassName(target);
+    //     if (!this.has(name)) {
+    //         throw new Error(
+    //             `It seems you want to unsubscribe to an event that you have not subscribed to with given function.`
+    //         );
+    //     }
+    //     const list = this.get(name);
+    //     const newSet = new Set<Function>();
+    //     for (const fn of list.values()) {
+    //         if (fn != callable) {
+    //             newSet.add(fn);
+    //         }
+    //     }
+    //     this.set(name, newSet);
+    // }
 
-    public removeEventFromRegistry(target: EventActionClassConstructor): void {
-        const name = this.getEventActionClassName(target);
-        this._eventRegistry.set(name, new Set());
-    }
+    // public trigger<T extends object>(eventAction: EventAction<T>): number {
+    //     if (this.isEventActionRunning()) {
+    //         throw new Error(
+    //             `Currently there is an action running "${this.getEventActionRunning()}".`
+    //         );
+    //     }
+    //     const name = eventAction.getName();
+    //     const targetCallables = this.get(name);
+    //     if (!targetCallables) {
+    //         return EventActionHandler.NO_CALLABLES;
+    //     }
+    //     this.setEventActionRunning(name);
+    //     const args = eventAction.getArgs();
+    //     for (const fn of targetCallables.values()) {
+    //         try {
+    //             const result = fn(args);
+    //             if (result === EventActionHandlerSignal.IS_LAST) {
+    //                 this.clearEventActionRunning();
+    //                 return EventActionHandler.SUCCESS;
+    //             } else if (result === EventActionHandlerSignal.ABORT) {
+    //                 this.clearEventActionRunning();
+    //                 return EventActionHandler.ABORTED;
+    //             }
+    //         } catch (ex) {
+    //             this.clearEventActionRunning();
+    //             throw new Error(
+    //                 `Action event action "${name}" produced some kind of exception, please check it.`
+    //             );
+    //         }
+    //     }
+    //     this.clearEventActionRunning();
+    //     return EventActionHandler.SUCCESS;
+    // }
 
     public clearEventRegistry(): void {
         this._eventRegistry.clear();
@@ -107,8 +161,8 @@ export class EventActionHandler {
 
     private get(name: string): Set<Function> {
         const list = this._eventRegistry.get(name);
-        if (!list) {
-            throw new Error(`There are no events with name ${name}.`);
+        if (!list || list.size === 0) {
+            throw new Error(`There are no event actions in group "${name}".`);
         }
         return list;
     }

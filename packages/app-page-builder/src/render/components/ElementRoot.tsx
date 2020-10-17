@@ -57,7 +57,10 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     }, style);
 
     const attributes = attributePlugins.current.reduce((accumulatedAttributes, plugin) => {
-        return plugin.renderAttributes({ element: shallowElement, attributes: accumulatedAttributes });
+        return plugin.renderAttributes({
+            element: shallowElement,
+            attributes: accumulatedAttributes
+        });
     }, {});
 
     const classNames = element.data?.settings?.className || "";

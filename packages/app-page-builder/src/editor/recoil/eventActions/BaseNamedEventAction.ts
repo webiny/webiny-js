@@ -1,10 +1,10 @@
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
+import { BaseEventAction, BaseEventOptionsType } from "./BaseEventAction";
 
 export abstract class BaseNamedEventAction<T extends object> extends BaseEventAction<T> {
     private readonly _name: string;
 
-    protected constructor(name: string, args: T) {
-        super(args);
+    public constructor(name: string, args: T, options?: BaseEventOptionsType) {
+        super(args, options);
         this._name = name;
     }
 

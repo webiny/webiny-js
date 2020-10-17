@@ -1,6 +1,14 @@
 import React from "react";
-import { redux } from "@webiny/app-page-builder/editor/redux";
 import Block from "./Block";
+import {
+    useEditorEventActionHandler,
+    useEditorEventActionTransaction
+} from "@webiny/app-page-builder/editor/provider";
+import {
+    CreateElementEventAction,
+    DeleteElementEventAction,
+    UpdateElementEventAction
+} from "@webiny/app-page-builder/editor/recoil/modules/elements/eventAction";
 import { set } from "dot-prop-immutable";
 import {
     createElement,
@@ -9,11 +17,6 @@ import {
     cloneElement,
     addElementToParent
 } from "@webiny/app-page-builder/editor/utils";
-import {
-    updateElement,
-    deleteElement,
-    elementCreated
-} from "@webiny/app-page-builder/editor/actions";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
@@ -81,16 +84,39 @@ export default (): PbEditorPageElementPlugin => {
             const block = addElementToParent(element, target, position);
 
             // Dispatch update action
-            redux.store.dispatch(updateElement({ element: block }));
+            const eventActionHandler = useEditorEventActionHandler();
+            const eventActionTransaction = useEditorEventActionTransaction();
 
-            // Delete exiting element
-            if (source.path) {
-                redux.store.dispatch(deleteElement({ element: source }));
-            }
+            return eventActionTransaction(async () => {
+                await eventActionHandler.trigger(
+                    new UpdateElementEventAction({
+                        element: block
+                    })
+                );
+                // updateElementAction({element: block});
+                // redux.store.dispatch(updateElement({ element: block }));
 
-            if (dispatchNew) {
-                redux.store.dispatch(elementCreated({ element, source }));
-            }
+                // Delete exiting element
+                if (source.path) {
+                    await eventActionHandler.trigger(
+                        new DeleteElementEventAction({
+                            element: source
+                        })
+                    );
+                    // deleteElementAction({element: source});
+                    // redux.store.dispatch(deleteElement({ element: source }));
+                }
+                if (!dispatchNew) {
+                    return;
+                }
+                await eventActionHandler.trigger(
+                    new CreateElementEventAction({
+                        element,
+                        source
+                    })
+                );
+                // redux.store.dispatch(elementCreated({ element, source }));
+            });
         },
         onChildDeleted({ element }) {
             if (element.elements.length === 0) {
@@ -100,7 +126,13 @@ export default (): PbEditorPageElementPlugin => {
                     })
                 ]);
 
-                redux.store.dispatch(updateElement({ element }));
+                const eventActionHandler = useEditorEventActionHandler();
+                eventActionHandler.trigger(
+                    new UpdateElementEventAction({
+                        element
+                    })
+                );
+                // redux.store.dispatch(updateElement({ element }));
             }
         }
     };

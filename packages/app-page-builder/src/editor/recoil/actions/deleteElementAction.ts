@@ -4,7 +4,7 @@ import {
     elementParentWithChildrenByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useRecoilValue } from "recoil";
 import { useBatching } from "recoil-undo";
 
@@ -13,10 +13,6 @@ type DeleteElementActionType = {
 };
 // packages/app-page-builder/src/editor/actions/actions.ts:195
 export const deleteElementAction = ({ element }: DeleteElementActionType) => {
-    // next(action);
-
-    // store.dispatch(deactivateElement());
-
     const { startBatch, endBatch } = useBatching();
 
     startBatch();
@@ -31,11 +27,10 @@ export const deleteElementAction = ({ element }: DeleteElementActionType) => {
         })
     };
     updateElementAction({ element: newElement });
-    // store.dispatch(updateElement({ element: newElement }));
 
     // Execute `onChildDeleted` if defined
-    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
-    const plugin = plugins.find(pl => pl.elementType === newElement.type);
+    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
+    const plugin = pluginsByType.find(pl => pl.elementType === newElement.type);
     if (!plugin) {
         return;
     }
