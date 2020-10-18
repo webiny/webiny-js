@@ -27,7 +27,7 @@ const style = {
         alignSelf: "center"
     })
 };
-
+//use file for navigation
 const Navigation = () => {
     const { hideMenu, menuIsShown, initSections } = useNavigation();
     const [infoOpened, setInfoOpened] = useState(false);

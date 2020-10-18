@@ -1,6 +1,8 @@
 import React from "react";
 import Menu from "./Menu";
+import MenuNavigation from "./components/MenuNavigation";
 import MenuTemplate from "./components/MenuTemplate";
+
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
@@ -16,8 +18,15 @@ export default [
     {   
         name: "pb-page-element-menu-component-default",
         type: "pb-page-element-menu-component",
-        title: "Menu Template",
+        title: "Menu Navigation",
         componentName: "default",
+        component: MenuNavigation
+    } as PbPageElementMenuComponentPlugin,
+    {   
+        name: "pb-page-element-menu-component-form",
+        type: "pb-page-element-menu-component",
+        title: "Menu Form",
+        componentName: "Menu Form",
         component: MenuTemplate
     } as PbPageElementMenuComponentPlugin
 ];

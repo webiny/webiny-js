@@ -19,16 +19,17 @@ const Menu = props => {
     //vara and theme currently not being used
     const {
         data: { 
-            component, 
             settings: {
                 menu: {
-                    element: menuID
-                }
+                    element: menuID,
+                    component
+                },
             }, 
             ...vars 
         },
         theme
     } = props;
+
 
     console.log("PLUGINS FROM RENDER:::::::props, menuId::::::::::");
     console.log(props);
@@ -37,7 +38,8 @@ const Menu = props => {
     const plugins = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
-
+    console.log(plugins);
+    console.log(component)
     const menuPlugin = plugins.find(cmp => cmp.componentName === component);
     console.log(menuPlugin);
 
@@ -59,7 +61,7 @@ const Menu = props => {
         }
         return <MenuComponent menu={menuId} preview={true} />;
     }
-   
+    console.log("rendering:::::::")
     return (
         <>
             <ssr-cache data-class="pb-menu" />

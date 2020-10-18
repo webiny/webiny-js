@@ -23,21 +23,23 @@ const Menu = ({ element, isActive }) => {
     console.log(isActive);
  
     const data = element?.data || {};
+    console.log(data);
 
-    const component = getPlugins<PbPageElementMenuComponentPlugin>(
-        "pb-page-element-menu-component"
-    ).find(cmp => cmp.componentName === data.component);
    
     if (!data?.settings) {
         return <div>Selected menu component not found!</div>
     }
     
+    const component = getPlugins<PbPageElementMenuComponentPlugin>(
+        "pb-page-element-menu-component"
+    ).find(cmp => cmp.componentName === data?.settings?.menu?.component) ;
+
     const { component: MenuComponent } = component;
 
     if (!MenuComponent) {
         return <div>You must select a component to render your menu!</div>;
     }
- 
+
     const render = (menuId?: string) => {
         if (!menuId) {
           return <span>Menu not selected.</span>;
