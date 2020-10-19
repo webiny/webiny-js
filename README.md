@@ -350,6 +350,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Nitin Gupta</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/BhuwanChandra">
+                        <img src="https://avatars1.githubusercontent.com/u/46065877?v=4" width="100px;" alt="Bhuwan Chandra"/>
+                        <br />
+                        <sub><b>Bhuwan Chandra</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
