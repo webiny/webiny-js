@@ -6,13 +6,15 @@ import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { css } from "emotion";
 import { getPlugin, getPlugins } from "@webiny/plugins";
-import { AdminMenuLogoPlugin, AdminMenuPlugin } from "@webiny/app-admin/types";
+import {
+    AdminMenuLogoPlugin,
+    AdminMenuPlugin,
+    AdminDrawerFooterMenuPlugin
+} from "@webiny/app-admin/types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
-import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";
-import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import ApiInformationDialog from "@webiny/app-admin/components/ApiInformationDialog";
 
@@ -55,6 +57,14 @@ const Navigation = () => {
             );
         });
 
+    const footerMenus = [];
+    const footerMenuPlugins = getPlugins<AdminDrawerFooterMenuPlugin>("admin-drawer-footer-menu");
+
+    footerMenuPlugins &&
+        footerMenuPlugins.forEach(plugin => {
+            footerMenus.push(<React.Fragment key={plugin.name}>{plugin.render()}</React.Fragment>);
+        });
+
     return (
         <Drawer modal open={menuIsShown()} onClose={hideMenu}>
             <DrawerHeader className={navHeader}>
@@ -89,30 +99,7 @@ const Navigation = () => {
                             {t`Documentation`}
                         </ListItem>
                     </a>
-                    <a
-                        href="https://community.webiny.com/"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        <ListItem ripple={false}>
-                            <ListItemGraphic>
-                                <Icon icon={<CommunityIcon />} />
-                            </ListItemGraphic>
-                            {t`Community`}
-                        </ListItem>
-                    </a>
-                    <a
-                        href="https://github.com/webiny/webiny-js"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        <ListItem ripple={false}>
-                            <ListItemGraphic>
-                                <Icon icon={<GithubIcon />} />
-                            </ListItemGraphic>
-                            {t`Source`}
-                        </ListItem>
-                    </a>
+                    {footerMenus}
                     <ListItem ripple={false} className={subFooter}>
                         <div>
                             <a
