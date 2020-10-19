@@ -1,7 +1,7 @@
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
-import adminPlugins from "@webiny/app-admin/plugins";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import fileManagerPlugins from "@webiny/app-file-manager/admin";
+import adminPlugins from "./admin";
 
 export default [
     /**
@@ -15,7 +15,7 @@ export default [
     /**
      * Complete admin app UI
      */
-    adminPlugins(),
+    adminPlugins,
     /**
      * FileManager settings module to control file size limits.
      */
