@@ -5,6 +5,7 @@
       "packages/*",
       "apps/admin/code/app",
       "apps/site/code/app",
+      "apps/theme",
       "api/code/apolloGateway",
       "api/code/awsDocumentDbProxy",
       "api/code/mongoAtlasProxy",
