@@ -157,8 +157,8 @@
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "adio",
-      "yarn prettier:fix",
-      "yarn eslint:fix",
+      "prettier --write",
+      "eslint",
       "git add"
     ]
   },
