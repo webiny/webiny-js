@@ -12,6 +12,7 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { BrowserRouter } from "@webiny/react-router";
 import { createApolloClient } from "./apolloClient";
 import { NetworkError } from "./components/NetworkError";
+import Authentication from "./components/Authentication";
 
 // Import styles which include custom theme styles
 import "./App.scss";
@@ -20,21 +21,25 @@ export const App = () => (
     <ApolloProvider client={createApolloClient()}>
         <SecurityProvider>
             <NetworkError>
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
-                    <UiProvider>
-                        <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
-                            <AppInstaller>
-                                <PageBuilderProvider>
-                                    <CmsProvider>
-                                        <ThemeProvider>
-                                            <Routes />
-                                        </ThemeProvider>
-                                    </CmsProvider>
-                                </PageBuilderProvider>
-                            </AppInstaller>
-                        </I18NProvider>
-                    </UiProvider>
-                </BrowserRouter>
+                <Authentication>
+                    <BrowserRouter basename={process.env.PUBLIC_URL}>
+                        <UiProvider>
+                            <I18NProvider
+                                loader={<CircularProgress label={"Loading locales..."} />}
+                            >
+                                <AppInstaller>
+                                    <PageBuilderProvider>
+                                        <CmsProvider>
+                                            <ThemeProvider>
+                                                <Routes />
+                                            </ThemeProvider>
+                                        </CmsProvider>
+                                    </PageBuilderProvider>
+                                </AppInstaller>
+                            </I18NProvider>
+                        </UiProvider>
+                    </BrowserRouter>
+                </Authentication>
             </NetworkError>
         </SecurityProvider>
     </ApolloProvider>
