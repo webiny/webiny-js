@@ -9,7 +9,6 @@ import {
     DeleteElementEventAction,
     UpdateElementEventAction
 } from "@webiny/app-page-builder/editor/recoil/modules/elements/eventAction";
-import { set } from "dot-prop-immutable";
 import {
     createElement,
     createRow,
@@ -119,21 +118,31 @@ export default (): PbEditorPageElementPlugin => {
             });
         },
         onChildDeleted({ element }) {
-            if (element.elements.length === 0) {
-                element = set(element, "elements", [
-                    createRow({
-                        elements: [createColumn({ data: { width: 100 } })]
-                    })
-                ]);
-
-                const eventActionHandler = useEditorEventActionHandler();
-                eventActionHandler.trigger(
-                    new UpdateElementEventAction({
-                        element
-                    })
-                );
-                // redux.store.dispatch(updateElement({ element }));
+            if (element.elements.length > 0) {
+                return;
             }
+            const newElement = {
+                ...element,
+                elements: [
+                    createRow({
+                        elements: [
+                            createColumn({
+                                data: {
+                                    width: 100
+                                }
+                            })
+                        ]
+                    })
+                ]
+            };
+
+            const eventActionHandler = useEditorEventActionHandler();
+            eventActionHandler.trigger(
+                new UpdateElementEventAction({
+                    element: newElement
+                })
+            );
+            // redux.store.dispatch(updateElement({ element }));
         }
     };
 };

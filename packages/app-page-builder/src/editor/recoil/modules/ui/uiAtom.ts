@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-type UiAtomType = {
+export type UiAtomType = {
     isDragging: boolean;
     isResizing: boolean;
     slateFocused: boolean;

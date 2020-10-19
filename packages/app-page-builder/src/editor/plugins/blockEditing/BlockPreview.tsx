@@ -1,3 +1,5 @@
+import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { TogglePluginEventAction } from "@webiny/app-page-builder/editor/recoil/modules/plugins/eventAction";
 import * as React from "react";
 import { ButtonFloating, IconButton } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -13,7 +15,16 @@ import kebabCase from "lodash/kebabCase";
 
 const BlockPreview = props => {
     const { plugin, addBlockToContent, deactivatePlugin, onEdit, onDelete } = props;
-
+    const eventActionHandler = useEditorEventActionHandler();
+    const onClickToAddHandler = (ev) => {
+        addBlockToContent(plugin);
+        if (ev.shitfKey) {
+            return;
+        }
+        eventActionHandler.trigger(new TogglePluginEventAction({
+            name: "pb-editor-search-blocks-bar"
+        }))
+    };
     return (
         <Elevation
             z={1}
@@ -26,13 +37,7 @@ const BlockPreview = props => {
                 <Styled.AddBlock className={"add-block"}>
                     <ButtonFloating
                         label={"Click to Add"}
-                        onClick={e => {
-                            addBlockToContent(plugin);
-                            !e.shiftKey &&
-                                deactivatePlugin({
-                                    name: "pb-editor-search-blocks-bar"
-                                });
-                        }}
+                        onClick={onClickToAddHandler}
                         icon={<AddIcon />}
                     />
                 </Styled.AddBlock>

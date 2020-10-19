@@ -12,9 +12,9 @@ export const elementByIdSelector = selectorFamily<PbShallowElement, string>({
             }
             const element = Object.values(elements).find(el => el.path === id);
             // TODO verify that element not existing can ever happen actually?
-            if (!element) {
-                throw new Error(`There is no element with id or path "${id}"`);
-            }
+            // if (!element) {
+            //     throw new Error(`There is no element with id or path "${id}"`);
+            // }
             return element;
         };
     }

@@ -1,3 +1,5 @@
+import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { UpdateElementEventAction } from "@webiny/app-page-builder/editor/recoil/modules/elements/eventAction";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Mutation } from "react-apollo";
 import { connect } from "@webiny/app-page-builder/editor/redux";
@@ -87,13 +89,21 @@ const SearchBar = props => {
         return () => removeKeyHandler("escape");
     }, []);
 
+    const eventActionHandler = useEditorEventActionHandler();
     const addBlockToContent = useCallback(
         plugin => {
             const element = {
                 ...content,
                 elements: [...content.elements, createBlockElements(plugin.name)]
             };
-            updateElement({ element });
+            // updateElement({ element });
+            eventActionHandler.trigger(new UpdateElementEventAction({
+                element: {
+                    ...content,
+                    elements: [...content.elements, createBlockElements(plugin.name)]
+                },
+            }))
+
         },
         [content]
     );

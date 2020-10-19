@@ -1,26 +1,24 @@
-import {
-    pluginsAtom,
-    PluginsAtomPluginParamsType
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { pluginsAtom, PluginsAtomPluginParamsType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
+import React, { useCallback } from "react";
 import { useRecoilState } from "recoil";
 
-export type TogglePluginActionType = {
+export type TogglePluginType = {
     name: string;
     params?: PluginsAtomPluginParamsType;
     closeOtherInGroup?: boolean;
 };
-export const togglePluginAction = ({
-    name,
-    params,
-    closeOtherInGroup = false
-}: TogglePluginActionType): void => {
+type ProviderType = {
+    togglePlugin: ({name}: TogglePluginType) => void;
+};
+
+const TogglePluginActionContext = React.createContext<ProviderType>(null);
+
+const togglePlugin = ({name, closeOtherInGroup, params}: TogglePluginType, pluginsAtomValue, setPluginsAtomValue) => {
     const plugin = plugins.byName(name);
-    // TODO check if ok because error was not thrown in old action
     if (!plugin) {
         throw new Error(`There is no plugin with name "${name}".`);
     }
-    const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
     const activePluginsByType = pluginsAtomValue.get(plugin.type) || [];
     const isAlreadyActive = activePluginsByType.some(
         activePlugin => activePlugin.name === plugin.name
@@ -38,8 +36,23 @@ export const togglePluginAction = ({
         activePluginsByType.push({ name, params });
         newPluginMap.set(plugin.type, activePluginsByType);
     }
-
     setPluginsAtomValue(newPluginMap);
 };
 
+const TogglePluginActionProvider = (props) => {
+    const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
 
+    const value = {
+        togglePlugin: (params: TogglePluginType) => {
+            return togglePlugin(params, pluginsAtomValue, setPluginsAtomValue);
+        },
+    };
+    return (
+        <TogglePluginActionContext.Provider value={value} {...props} />
+    );
+};
+
+
+const useTogglePluginAction = () => React.useContext(TogglePluginActionContext);
+
+export {TogglePluginActionProvider, useTogglePluginAction};

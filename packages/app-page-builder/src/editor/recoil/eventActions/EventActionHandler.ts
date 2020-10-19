@@ -17,8 +17,8 @@ export enum EventActionHandlerSignal {
 type EventActionClassConstructor = { new (...args: any[]): EventAction<any> };
 /**
  * Usages
- * subscribing to an event: handler.subscribe(TargetEventClass, (args) => {your code})
- * unsubscribing from an event: handler.unsubscribe(TargetEventClass, (args) => {same function you subscribed with})
+ * subscribing to an event: handler.on(TargetEventClass, (args) => {your code})
+ * unsubscribing from an event: handler.off(TargetEventClass, (args) => {your code; same function you subscribed with})
  * triggering an event: handler.trigger(new TargetEventClass(args))
  *
  * removing certain event: handler.removeEventFromRegistry(TargetEventClass)
@@ -79,7 +79,7 @@ export class EventActionHandler {
                 }
             } catch (ex) {
                 throw new Error(
-                    `Action event action "${name}" produced some kind of exception, please check it.`
+                    `Event action "${name}" produced some kind of exception, please check it.`
                 );
             }
         }
@@ -92,8 +92,8 @@ export class EventActionHandler {
 
     private get(name: string): Set<Function> {
         const list = this._registry.get(name);
-        if (!list || list.size === 0) {
-            throw new Error(`There are no event actions in group "${name}".`);
+        if (!list) {
+            throw new Error(`There is no event action group "${name}" defined.`);
         }
         return list;
     }
@@ -107,15 +107,11 @@ export class EventActionHandler {
     }
 
     private getEventActionClassName(target: EventActionClassConstructor): string {
-        if (target.constructor?.name && typeof target.constructor.name === "string") {
-            return target.constructor.name;
-        } else if (typeof target.name === "string") {
-            return target.name;
-        } else if (typeof target.name === "function") {
-            return (target as any).name();
-        } else if (typeof (target as any).getName === "function") {
-            return (target as any).getName();
+        const cls = new target();
+        const name = cls.getName() || cls.constructor.name;
+        if (!name) {
+            throw new Error("Could not find class name.");
         }
-        throw new Error("Could not find class name.");
+        return name;
     }
 }
