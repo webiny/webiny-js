@@ -1,3 +1,4 @@
+import React from "react";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
