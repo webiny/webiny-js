@@ -1,17 +1,23 @@
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/commodo-graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
+import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
+import { updateSecurityUser } from "@webiny/api-security-user-management/graphql/userResolvers/utils";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const { SecurityUser } = context.models;
+    const Model = context.models.SECURITY;
 
     const { security, plugins } = context;
 
-    const currentUser = await SecurityUser.findOne({ query: { id: security.getIdentity().id } });
-    if (currentUser) {
+    const securityRecord = await Model.findOne({
+        query: { PK: `${PK_USER}#${security.getIdentity().id}`, SK: SK_USER }
+    });
+    if (securityRecord) {
         try {
+            const currentUser = securityRecord.data;
             currentUser.populate(args.data);
-            await currentUser.save();
+
+            await updateSecurityUser({ Model, modelInstance: securityRecord, user: currentUser });
 
             const authPlugin = plugins.byName<SecurityUserManagementPlugin>(
                 "security-user-management"

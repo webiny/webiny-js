@@ -1,10 +1,17 @@
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
-import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import permissionsManagerPlugins from "@webiny/api-security-permissions-manager/handler";
 import userManagerPlugins from "@webiny/api-security-user-management/permissionsManager";
+import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 
 export const handler = createHandler(
-    dbProxyPlugins({ functionName: process.env.DB_PROXY_FUNCTION }),
-    permissionsManagerPlugins(),
+    dynamoDb({
+        tableName: process.env.STORAGE_NAME,
+        documentClient: new DocumentClient({
+            convertEmptyValues: true,
+            region: process.env.AWS_REGION
+        })
+    }),
+    permissionsManagerPlugins({ cache: false }),
     userManagerPlugins()
 );
