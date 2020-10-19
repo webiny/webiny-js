@@ -13,7 +13,7 @@ const SimpleFormPlaceholder = styled.div({
     minWidth: 400
 });
 
-const t = i18n.ns("app-admin/admin/installation");
+const t = i18n.ns("app-file-manager/admin/installation");
 
 const IS_INSTALLED = gql`
     {
