@@ -19,12 +19,13 @@ export const SecurityUserData = ({ context }) =>
         withHooks(),
         withFields(dataInstance => ({
             __type: string({ value: PK_USER }),
-            id: string({ value: KSUID.randomSync().string }),
+            id: compose(setOnce())(string({ validation: validation.create("required") })),
             createdOn: compose(
                 skipOnPopulate(),
                 setOnce()
             )(string({ value: new Date().toISOString() })),
             savedOn: compose(skipOnPopulate())(string({ value: new Date().toISOString() })),
+            createdBy: object(),
             email: onSet(value => {
                 if (value === dataInstance.email) {
                     return value;
