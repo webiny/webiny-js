@@ -11,7 +11,7 @@ const fields = /* GraphQL */ `
             id
             src
         }
-        groups {
+        group {
             id
             name
         }

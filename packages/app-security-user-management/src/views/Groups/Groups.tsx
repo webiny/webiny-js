@@ -24,7 +24,7 @@ const Groups = ({ scopes, formProps, listProps }: any) => {
                 read={READ_GROUP}
                 list={{
                     query: LIST_GROUPS,
-                    variables: { sort: { savedOn: -1 } }
+                    variables: { sort: -1 }
                 }}
                 update={{
                     mutation: UPDATE_GROUP,

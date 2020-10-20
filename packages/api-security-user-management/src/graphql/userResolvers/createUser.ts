@@ -1,30 +1,36 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { WithFieldsError } from "@webiny/commodo";
-import { InvalidFieldsError } from "@webiny/commodo-graphql";
+import { InvalidFieldsError, ErrorResponse, Response } from "@webiny/commodo-graphql";
 import { SecurityUserManagementPlugin } from "../../types";
+import { createSecurityUser } from "@webiny/api-security-user-management/graphql/userResolvers/utils";
 
-export default (userFetcher): GraphQLFieldResolver => async (root, args, context) => {
-    const User = userFetcher(context);
-    const user = new User();
-    await user.populate(args.data);
-
-    const existingUser = await User.findOne({ query: { email: args.data.email } });
-    if (existingUser) {
-        return new ErrorResponse({
-            code: "USER_EXISTS",
-            message: "User with given e-mail already exists."
-        });
-    }
+const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
+    const Model = context.models.SECURITY;
+    const { SecurityUser } = context.models;
 
     try {
+        const identity = context.security.getIdentity();
+
+        const user = new SecurityUser();
+        await user.populate({
+            createdBy: identity,
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            group: data.group,
+            avatar: data.avatar,
+            personalAccessTokens: data.personalAccessTokens
+        });
+
+        await createSecurityUser({ Model, user });
+
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(
             "security-user-management"
         );
 
-        await authPlugin.createUser({ data: args.data, user }, context);
+        await authPlugin.createUser({ data: data, user }, context);
 
-        await user.save();
+        return new Response(user);
     } catch (e) {
         if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
             const attrError = InvalidFieldsError.from(e);
@@ -40,5 +46,6 @@ export default (userFetcher): GraphQLFieldResolver => async (root, args, context
             data: e.data
         });
     }
-    return new Response(user);
 };
+
+export default resolver;

@@ -11,8 +11,7 @@ const variables = data => {
     return {
         data: {
             ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
-            // roles: (data.roles || []).map(x => x.id),
-            groups: (data.groups || []).map(x => x.id)
+            group: data?.group
         }
     };
 };
