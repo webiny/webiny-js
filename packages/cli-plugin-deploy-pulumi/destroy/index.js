@@ -17,7 +17,7 @@ module.exports = {
                 });
             },
             async argv => {
-                await require("./destroy")({ ...argv, debug: true }, context);
+                await require("./remove")({ ...argv, debug: true }, context);
                 process.exit(0);
             }
         );

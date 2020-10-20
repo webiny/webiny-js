@@ -27,6 +27,8 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
+      "@webiny/@webiny/api-plugin-elastic-search-client/*": ["./packages/api-plugin-elastic-search-client/src/*"],
+      "@webiny/@webiny/api-plugin-elastic-search-client": ["./packages/api-plugin-elastic-search-client/src/*"],
       "@webiny/api-plugin-commodo-db-proxy/*": ["./packages/api-plugin-commodo-db-proxy/src/*"],
       "@webiny/api-plugin-commodo-db-proxy": ["./packages/api-plugin-commodo-db-proxy/src"],
       "@webiny/api-plugin-commodo-dynamodb/*": ["./packages/api-plugin-commodo-dynamodb/src/*"],
