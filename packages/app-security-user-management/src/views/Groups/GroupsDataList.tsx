@@ -31,26 +31,29 @@ const GroupsDataList = () => {
     const { showConfirmation } = useConfirmationDialog();
 
     const data = listQuery?.data?.security?.groups?.data || [];
+    const id = new URLSearchParams(location.search).get("id");
 
-    const deleteItem = useCallback(item => {
-        showConfirmation(async () => {
-            const response = await deleteIt({
-                variables: item
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.security?.deleteGroup?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
+
+                if (id === item.id) {
+                    history.push(`/security/groups`);
+                }
             });
-
-            const error = response?.data?.security?.deleteGroup?.error;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
-
-            const id = new URLSearchParams(location.search).get("id");
-            if (id === item.id) {
-                history.push(`/security/groups`);
-            }
-        });
-    }, []);
+        },
+        [id]
+    );
 
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
@@ -64,7 +67,7 @@ const GroupsDataList = () => {
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id}>
+                        <ListItem key={item.id} selected={item.id === id}>
                             <ListItemText
                                 onClick={() => history.push(`/security/groups?id=${item.id}`)}
                             >
@@ -74,15 +77,7 @@ const GroupsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() =>
-                                                    showConfirmation(() => deleteItem(item))
-                                                }
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                    <DeleteIcon onClick={() => deleteItem(item)} />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

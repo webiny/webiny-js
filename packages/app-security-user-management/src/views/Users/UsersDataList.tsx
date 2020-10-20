@@ -42,25 +42,29 @@ const UsersDataList = () => {
 
     const data = listQuery?.data?.security?.users?.data || [];
 
-    const deleteItem = useCallback(item => {
-        showConfirmation(async () => {
-            const response = await deleteIt({
-                variables: item
+    const id = new URLSearchParams(location.search).get("id");
+
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.security?.deleteUser?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
+
+                if (id === item.id) {
+                    history.push(`/security/users`);
+                }
             });
-
-            const error = response?.data?.security?.deleteUser?.error;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
-
-            const id = new URLSearchParams(location.search).get("id");
-            if (id === item.id) {
-                history.push(`/security/users`);
-            }
-        });
-    }, []);
+        },
+        [id]
+    );
 
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
@@ -74,7 +78,7 @@ const UsersDataList = () => {
             {({ data }) => (
                 <ScrollList twoLine avatarList>
                     {data.map(item => (
-                        <ListItem key={item.id}>
+                        <ListItem key={item.id} selected={item.id === id}>
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
@@ -95,15 +99,7 @@ const UsersDataList = () => {
                             <ListItemMeta>
                                 <ListActions>
                                     {identity && identity.id !== item.id ? (
-                                        <ConfirmationDialog>
-                                            {({ showConfirmation }) => (
-                                                <DeleteIcon
-                                                    onClick={() =>
-                                                        showConfirmation(() => deleteItem(item))
-                                                    }
-                                                />
-                                            )}
-                                        </ConfirmationDialog>
+                                        <DeleteIcon onClick={() => deleteItem(item)} />
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
