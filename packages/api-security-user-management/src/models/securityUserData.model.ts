@@ -4,6 +4,7 @@ import { compose } from "ramda";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
 import { withFields, string, skipOnPopulate, setOnce, onSet } from "@commodo/fields";
+import { object } from "commodo-fields-object";
 import { withProps } from "repropose";
 import md5 from "md5";
 import { PK_GROUP, SK_GROUP } from "./securityGroupData.model";
@@ -53,7 +54,7 @@ export const SecurityUserData = ({ context }) =>
             firstName: string(),
             lastName: string(),
             group: string(),
-            avatar: string(),
+            avatar: object(),
             personalAccessTokens: skipOnPopulate()(
                 string({
                     list: true,
