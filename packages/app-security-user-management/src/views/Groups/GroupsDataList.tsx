@@ -19,28 +19,7 @@ const t = i18n.ns("app-security/admin/groups/data-list");
 const GroupsDataList = () => {
     const { actions, list } = useCrud();
     return (
-        <DataList
-            {...list}
-            title={t`Security Groups`}
-            sorters={[
-                {
-                    label: t`Newest to oldest`,
-                    sorters: { savedOn: -1 }
-                },
-                {
-                    label: t`Oldest to newest`,
-                    sorters: { savedOn: 1 }
-                },
-                {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
-                },
-                {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
-                }
-            ]}
-        >
+        <DataList {...list} title={t`Security Groups`}>
             {({ data, select, isSelected }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
