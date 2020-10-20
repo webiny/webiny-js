@@ -16,7 +16,7 @@ export default {
                 key={this.name}
                 icon={<FileManagerIcon />}
                 title={t`File Manager`}
-                description={t`Permissions for file manager app`}
+                description={t`Permissions for File manager app`}
             >
                 {/* We use key to unmount the component */}
                 <FileManagerPermissions key={id} {...props} />

@@ -54,7 +54,7 @@ const I18NLocalesDataList = () => {
                     history.push(`/i18n/locales`);
                 }
 
-                await refetchLocales();
+                refetchLocales();
             });
         },
         [code]

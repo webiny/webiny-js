@@ -17,7 +17,7 @@ export default () =>
                     key={this.name}
                     icon={<SecurityIcon />}
                     title={t`Security`}
-                    description={t`Permissions for security app`}
+                    description={t`Permissions for Security app`}
                 >
                     {/* We use key to unmount the component */}
                     <SecurityPermissions key={id} {...props} />

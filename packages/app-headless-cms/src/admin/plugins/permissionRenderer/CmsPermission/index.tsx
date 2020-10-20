@@ -14,7 +14,7 @@ export default {
                 key={this.name}
                 icon={<HeadlessCMSIcon />}
                 title={"Headless CMS"}
-                description={"Permissions for headless cms"}
+                description={"Permissions for Headless CMS"}
             >
                 {/* We use key to unmount the component */}
                 <CmsPermissions key={id} {...props} />
