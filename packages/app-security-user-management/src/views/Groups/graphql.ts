@@ -5,7 +5,6 @@ const fields = `
     name
     slug
     description
-    locales
     permissions
     createdOn
 `;

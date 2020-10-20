@@ -13,7 +13,6 @@ export default {
             slug: String
             createdOn: DateTime
             description: String
-            locales: [String]
             permissions: [JSON]
         }
 
@@ -22,7 +21,6 @@ export default {
             name: String
             slug: String
             description: String
-            locales: [String]
             permissions: [JSON]
         }
 

@@ -3,7 +3,6 @@ const mocks = {
         name: "Group-A",
         slug: "/group-a",
         description: "A: Dolor odit et quia animi ipsum nostrum nesciunt.",
-        locales: ["en-us"],
         permissions: [
             {
                 name: "security.*"
@@ -14,7 +13,6 @@ const mocks = {
         name: "Group-B",
         slug: "/group-b",
         description: "B: Dolor odit et quia animi ipsum nostrum nesciunt.",
-        locales: [],
         permissions: [
             {
                 name: "security.*"

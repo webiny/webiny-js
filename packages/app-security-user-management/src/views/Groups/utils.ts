@@ -143,7 +143,7 @@ export const createPermissionsArray = (permissionsMap: object) => {
 
 export const formatDataForAPI = data => ({
     data: {
-        ...pick(data, ["name", "slug", "description", "locales"]),
+        ...pick(data, ["name", "slug", "description"]),
         // From UI to API
         permissions: createPermissionsArray(data.permissions) || []
     }
