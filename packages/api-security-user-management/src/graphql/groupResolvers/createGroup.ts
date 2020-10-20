@@ -10,6 +10,7 @@ export default async (_, { data }, context) => {
         const group = new SecurityGroup().populate({
             createdBy: identity,
             description: data.description,
+            locales: data.locales,
             name: data.name,
             slug: data.slug,
             permissions: data.permissions

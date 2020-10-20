@@ -36,6 +36,7 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
                     id
                     name
                     description
+                    locales
                     slug
                     permissions
                 }
@@ -57,6 +58,7 @@ export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
                     id
                     name
                     description
+                    locales
                     slug
                     permissions
                 }
@@ -93,6 +95,7 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
                     id
                     name
                     description
+                    locales
                     slug
                     permissions
                 }
@@ -114,6 +117,7 @@ export const GET_SECURITY_GROUP = /* GraphQL */ `
                     id
                     name
                     description
+                    locales
                     slug
                     permissions
                 }
