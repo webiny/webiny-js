@@ -11,7 +11,7 @@ import { createPermissionsArray } from "./utils";
 const Groups = ({ scopes, formProps, listProps }: any) => {
     const variables = data => ({
         data: {
-            ...pick(data, ["name", "slug", "description"]),
+            ...pick(data, ["name", "slug", "description", "locales"]),
             // From UI to API
             permissions: createPermissionsArray(data.permissions) || []
         }

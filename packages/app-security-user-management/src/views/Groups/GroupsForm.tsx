@@ -15,24 +15,43 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
+import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import get from "lodash/get";
 import { createPermissionsMap } from "./utils";
+import { LIST_LOCALES } from "@webiny/app-i18n/admin/views/I18NLocales/graphql";
+import { useQuery } from "react-apollo";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import get from "lodash/get";
 
 const t = i18n.ns("app-security/admin/groups/form");
 
 const GroupForm = () => {
     const { form: crudForm } = useCrud();
+    const { showSnackbar } = useSnackbar();
 
     const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
         "admin-app-permissions-renderer"
     );
     // From API to UI
-    crudForm.data = {
-        ...crudForm.data,
-        permissions: createPermissionsMap(crudForm.data.permissions)
-    };
+    if (Array.isArray(crudForm.data.permissions)) {
+        crudForm.data = {
+            ...crudForm.data,
+            permissions: createPermissionsMap(crudForm.data.permissions)
+        };
+    }
+
+    // Fetch "locales"
+    const listQuery = useQuery(LIST_LOCALES);
+    const localesData = listQuery?.data?.i18n?.listI18NLocales?.data || [];
+
+    if (listQuery.loading) {
+        return <CircularProgress label={t`Loading locales`} />;
+    }
+
+    if (listQuery.error) {
+        showSnackbar(t`Error while loading locales.`);
+    }
 
     return (
         <Form {...crudForm}>
@@ -66,6 +85,35 @@ const GroupForm = () => {
                             </Grid>
                             <Grid>
                                 <Cell span={12}>
+                                    <Bind name="locales">
+                                        <CheckboxGroup
+                                            label={t`Locales selection`}
+                                            description={t`Choose only locales you want to give permission for.`}
+                                        >
+                                            {({ onChange, getValue }) => (
+                                                <React.Fragment>
+                                                    {localesData
+                                                        .map(locale => ({
+                                                            id: locale.code,
+                                                            name: locale.code
+                                                        }))
+                                                        .map(({ id, name }) => (
+                                                            <Checkbox
+                                                                disabled={false}
+                                                                key={id}
+                                                                label={name}
+                                                                value={getValue(id)}
+                                                                onChange={onChange(id)}
+                                                            />
+                                                        ))}
+                                                </React.Fragment>
+                                            )}
+                                        </CheckboxGroup>
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                            <Grid>
+                                <Cell span={12}>
                                     <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
                                 </Cell>
                                 <Cell span={12}>
@@ -78,6 +126,11 @@ const GroupForm = () => {
                                                             props,
                                                             "form.state.data.id",
                                                             pl.name
+                                                        ),
+                                                        locales: get(
+                                                            props,
+                                                            "form.state.data.locales",
+                                                            []
                                                         ),
                                                         value: props.value,
                                                         onChange: props.onChange
