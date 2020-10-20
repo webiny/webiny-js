@@ -24,9 +24,6 @@ export const FileManagerPermissions = ({ value, onChange }) => {
         { permissionLevel, showCustomPermission, permission, permissions, synced },
         dispatch
     ] = useReducer(reducer, initialState);
-    console.log("%cSTATE", "color: green; fontSize: 24px");
-    console.log({ permissionLevel, showCustomPermission, permission, permissions, synced });
-    console.log("value: ", value);
 
     useEffect(() => {
         if (value && !synced) {

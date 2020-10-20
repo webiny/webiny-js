@@ -2,7 +2,10 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import { SecurityUserManagementPlugin } from "@webiny/api-security-user-management/types";
 import { Batch } from "@commodo/fields-storage";
-import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
+import {
+    PK_USER,
+    SK_USER
+} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { id } = args;
