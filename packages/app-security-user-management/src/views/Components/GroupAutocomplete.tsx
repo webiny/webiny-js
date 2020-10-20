@@ -16,7 +16,7 @@ const LIST_GROUPS = gql`
     }
 `;
 
-export default function GroupsAutocomplete(props) {
+export default function GroupAutocomplete(props) {
     const autoComplete = useAutocomplete({
         search: query => ({ query, fields: ["name"] }),
         query: LIST_GROUPS

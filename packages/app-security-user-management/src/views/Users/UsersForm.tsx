@@ -17,7 +17,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import AccountTokens from "../Account/AccountTokens";
-import GroupsAutocomplete from "./../Components/GroupsAutocomplete";
+import GroupAutocomplete from "../Components/GroupAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/settings-24px.svg";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
@@ -88,7 +88,7 @@ const UsersForm = () => {
                                 >
                                     <Cell span={12} style={{ marginBottom: "8px" }}>
                                         <Bind name="group">
-                                            <GroupsAutocomplete label={t`Group`} />
+                                            <GroupAutocomplete label={t`Group`} />
                                         </Bind>
                                     </Cell>
                                 </AccordionItem>
