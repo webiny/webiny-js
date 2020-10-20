@@ -13,16 +13,13 @@ const Groups = ({ scopes, formProps, listProps }: any) => {
                 delete={DELETE_GROUP}
                 read={READ_GROUP}
                 list={{
-                    query: LIST_GROUPS,
-                    variables: { sort: -1 }
+                    query: LIST_GROUPS
                 }}
                 update={{
-                    mutation: UPDATE_GROUP,
-                    variables
+                    mutation: UPDATE_GROUP
                 }}
                 create={{
-                    mutation: CREATE_GROUP,
-                    variables
+                    mutation: CREATE_GROUP
                 }}
             >
                 {({ actions }) => (
