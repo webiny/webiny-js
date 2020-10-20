@@ -1,11 +1,12 @@
-import { useSetRecoilState } from "recoil";
-import { uiAtom } from "@webiny/app-page-builder/editor/recoil/modules/ui/uiAtom";
+import { MutationActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { UiAtomType } from "@webiny/app-page-builder/editor/recoil/modules/ui/uiAtom";
 
-export const activateElementMutation = (id: string) => {
-    const setUiAtom = useSetRecoilState(uiAtom);
-
-    setUiAtom(prev => ({
-        ...prev,
+export const activateElementMutation: MutationActionCallable<UiAtomType, string> = (
+    uiState,
+    id
+) => {
+    return {
+        ...uiState,
         activeElement: id
-    }));
+    };
 };

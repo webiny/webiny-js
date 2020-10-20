@@ -1,5 +1,3 @@
-import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { TogglePluginEventAction } from "@webiny/app-page-builder/editor/recoil/modules/plugins/eventAction";
 import * as React from "react";
 import { ButtonFloating, IconButton } from "@webiny/ui/Button";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -14,16 +12,19 @@ import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 
 const BlockPreview = props => {
-    const { plugin, addBlockToContent, deactivatePlugin, onEdit, onDelete } = props;
-    const eventActionHandler = useEditorEventActionHandler();
-    const onClickToAddHandler = (ev) => {
+    const { plugin, addBlockToContent, onEdit, onDelete } = props;
+    const onClickToAddHandler = ev => {
         addBlockToContent(plugin);
         if (ev.shitfKey) {
             return;
         }
-        eventActionHandler.trigger(new TogglePluginEventAction({
-            name: "pb-editor-search-blocks-bar"
-        }))
+        // eventActionHandler.trigger(new TogglePluginEventAction({
+        //     name: "pb-editor-search-blocks-bar"
+        // }))
+        //
+        // activatePluginAction({
+        //     name: "pb-editor-search-blocks-bar",
+        // })
     };
     return (
         <Elevation

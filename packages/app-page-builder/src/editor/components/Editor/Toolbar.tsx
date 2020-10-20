@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import {
-    activePluginsByTypeNamesSelector,
-    deactivatePluginMutation
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activePluginsByTypeNamesSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
@@ -66,13 +65,18 @@ type ToolbarDrawerProps = {
     children: React.ReactNode;
 };
 const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children }) => {
+    const eventActionHandler = useEventActionHandler();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
     const last = useRef({ active: null });
     useEffect(() => {
         if (active && !last.current.active) {
             addKeyHandler("escape", e => {
                 e.preventDefault();
-                deactivatePluginMutation(name);
+                eventActionHandler.trigger(
+                    new DeactivatePluginActionEvent({
+                        name
+                    })
+                );
             });
         }
         if (!active && last.current.active) {

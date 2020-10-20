@@ -1,26 +1,17 @@
-import {
-    pluginsAtom,
-    PluginsAtomPluginParamsType
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { TogglePluginActionArgsType } from "./types";
+import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { plugins } from "@webiny/plugins";
-import { useRecoilState } from "recoil";
 
-export type TogglePluginActionType = {
-    name: string;
-    params?: PluginsAtomPluginParamsType;
-    closeOtherInGroup?: boolean;
-};
-export const togglePluginAction = ({
-    name,
-    params,
-    closeOtherInGroup = false
-}: TogglePluginActionType): void => {
+export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType> = (
+    state,
+    args
+) => {
+    const { name, params, closeOtherInGroup = false } = args;
     const plugin = plugins.byName(name);
-    // TODO check if ok because error was not thrown in old action
     if (!plugin) {
         throw new Error(`There is no plugin with name "${name}".`);
     }
-    const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
+    const { plugins: pluginsAtomValue } = state;
     const activePluginsByType = pluginsAtomValue.get(plugin.type) || [];
     const isAlreadyActive = activePluginsByType.some(
         activePlugin => activePlugin.name === plugin.name
@@ -39,7 +30,7 @@ export const togglePluginAction = ({
         newPluginMap.set(plugin.type, activePluginsByType);
     }
 
-    setPluginsAtomValue(newPluginMap);
+    return {
+        plugins: newPluginMap
+    };
 };
-
-

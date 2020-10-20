@@ -1,3 +1,5 @@
+import { DropElementActionArgsType } from "./types";
+import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import invariant from "invariant";
 import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
@@ -26,21 +28,8 @@ const getSourceElement = (source: PbElement): PbElement => {
     return element;
 };
 
-type DropElementType = {
-    source: PbElement;
-    target: {
-        id: string;
-        type: string;
-        position: number;
-    };
-};
-
-export type DropElementActionCallableType = (args: DropElementType) => void;
-// replaces https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/actions/actions.ts#L226
-export const dropElementAction: DropElementActionCallableType = ({
-    source,
-    target
-}: DropElementType) => {
+export const dropElementAction: EventActionCallable<DropElementActionArgsType> = (state, args) => {
+    const { source, target } = args;
     const { id, type, position } = target;
     const targetElement = useRecoilValue(elementWithChildrenByIdSelector(id));
     if (!targetElement) {
@@ -54,9 +43,13 @@ export const dropElementAction: DropElementActionCallableType = ({
 
     const sourceElement = getSourceElement(source);
 
+    // TODO must accept state and then return what stuff to set
     plugin.onReceived({
+        // state,
         source: sourceElement,
         target: targetElement,
         position: position
     });
+
+    return {};
 };

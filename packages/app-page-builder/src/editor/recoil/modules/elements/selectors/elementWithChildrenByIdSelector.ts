@@ -1,8 +1,8 @@
+import { selectorFamily } from "recoil";
 import { contentSelector } from "../../page/selectors/contentSelector";
 import { elementByIdSelector } from "./elementByIdSelector";
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashGet from "lodash/get";
-import { selectorFamily } from "recoil";
 
 export const elementWithChildrenByIdSelector = selectorFamily<PbElement, string>({
     key: "elementWithChildrenByIdSelector",
@@ -14,7 +14,8 @@ export const elementWithChildrenByIdSelector = selectorFamily<PbElement, string>
             // TODO find a better way to get the element from content
             const element = lodashGet(content, contentPath);
             if (!element) {
-                throw new Error(`Element with path "${contentPath}" not found.`);
+                return undefined;
+                // throw new Error(`Element with path "${contentPath}" not found.`);
             }
             return element as PbElement;
         };

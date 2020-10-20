@@ -1,14 +1,11 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import {
+    CreateElementActionEvent,
+    DeleteElementActionEvent,
+    UpdateElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
 import React from "react";
 import Block from "./Block";
-import {
-    useEditorEventActionHandler,
-    useEditorEventActionTransaction
-} from "@webiny/app-page-builder/editor/provider";
-import {
-    CreateElementEventAction,
-    DeleteElementEventAction,
-    UpdateElementEventAction
-} from "@webiny/app-page-builder/editor/recoil/modules/elements/eventAction";
 import {
     createElement,
     createRow,
@@ -45,9 +42,9 @@ export default (): PbEditorPageElementPlugin => {
             return {
                 type: "block",
                 elements: [
-                    createRow({
-                        elements: [createColumn({ data: { width: 100 } })]
-                    })
+                    // createRow({
+                    //     elements: [createColumn({ data: { width: 100 } })]
+                    // })
                 ],
                 data: {
                     settings: {
@@ -71,6 +68,7 @@ export default (): PbEditorPageElementPlugin => {
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position = null }: any) {
+            const handler = useEventActionHandler();
             let dispatchNew = false;
             let element;
             if (source.path) {
@@ -82,45 +80,35 @@ export default (): PbEditorPageElementPlugin => {
 
             const block = addElementToParent(element, target, position);
 
-            // Dispatch update action
-            const eventActionHandler = useEditorEventActionHandler();
-            const eventActionTransaction = useEditorEventActionTransaction();
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: block
+                })
+            );
 
-            return eventActionTransaction(async () => {
-                await eventActionHandler.trigger(
-                    new UpdateElementEventAction({
-                        element: block
+            if (source.path) {
+                handler.trigger(
+                    new DeleteElementActionEvent({
+                        element: source
                     })
                 );
-                // updateElementAction({element: block});
-                // redux.store.dispatch(updateElement({ element: block }));
+            }
 
-                // Delete exiting element
-                if (source.path) {
-                    await eventActionHandler.trigger(
-                        new DeleteElementEventAction({
-                            element: source
-                        })
-                    );
-                    // deleteElementAction({element: source});
-                    // redux.store.dispatch(deleteElement({ element: source }));
-                }
-                if (!dispatchNew) {
-                    return;
-                }
-                await eventActionHandler.trigger(
-                    new CreateElementEventAction({
-                        element,
-                        source
-                    })
-                );
-                // redux.store.dispatch(elementCreated({ element, source }));
-            });
+            if (!dispatchNew) {
+                return;
+            }
+            handler.trigger(
+                new CreateElementActionEvent({
+                    element,
+                    source
+                })
+            );
         },
         onChildDeleted({ element }) {
             if (element.elements.length > 0) {
                 return;
             }
+            const handler = useEventActionHandler();
             const newElement = {
                 ...element,
                 elements: [
@@ -135,14 +123,12 @@ export default (): PbEditorPageElementPlugin => {
                     })
                 ]
             };
-
-            const eventActionHandler = useEditorEventActionHandler();
-            eventActionHandler.trigger(
-                new UpdateElementEventAction({
+            // redux.store.dispatch(updateElement({ element }));
+            handler.trigger(
+                new UpdateElementActionEvent({
                     element: newElement
                 })
             );
-            // redux.store.dispatch(updateElement({ element }));
         }
     };
 };

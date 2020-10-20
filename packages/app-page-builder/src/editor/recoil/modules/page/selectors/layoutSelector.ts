@@ -1,7 +1,7 @@
+import { connectedReadSelector } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { pageAtom } from "../pageAtom";
-import { selector } from "recoil";
 
-export const layoutSelector = selector<string | undefined>({
+export const layoutSelector = connectedReadSelector<string | undefined>({
     key: "layoutSelector",
     get: ({ get }) => {
         const page = get(pageAtom);

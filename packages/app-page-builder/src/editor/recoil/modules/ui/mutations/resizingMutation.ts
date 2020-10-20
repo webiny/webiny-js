@@ -1,19 +1,20 @@
-import { uiAtom } from "../uiAtom";
-import { useSetRecoilState } from "recoil";
+import { MutationActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { UiAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 
-const updateResizeValue = (value: boolean) => {
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-
-    setUiAtomValue(prev => ({
-        ...prev,
+const updateResizeValue: MutationActionCallable<UiAtomType, boolean> = (
+    uiState,
+    value: boolean
+) => {
+    return {
+        ...uiState,
         isResizing: value
-    }));
+    };
 };
 
-export const startResizeMutation = () => {
-    updateResizeValue(true);
+export const startResizeMutation: MutationActionCallable<UiAtomType> = uiState => {
+    return updateResizeValue(uiState, true);
 };
 
-export const endResizeMutation = () => {
-    updateResizeValue(false);
+export const endResizeMutation: MutationActionCallable<UiAtomType> = uiState => {
+    return updateResizeValue(uiState, false);
 };

@@ -1,6 +1,6 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useEffect, useCallback, ReactElement } from "react";
-import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { TogglePluginEventAction } from "@webiny/app-page-builder/editor/recoil/modules/plugins/eventAction";
 import {
     isPluginActiveSelector,
     activePluginsByTypeTotalSelector,
@@ -38,7 +38,7 @@ const Action = ({
     shortcut: shortcutProp,
     ...props
 }: ActionProps) => {
-    const eventActionHandler = useEditorEventActionHandler();
+    const eventActionHandler = useEventActionHandler();
     const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
     const { slateFocused } = useRecoilValue(uiAtom);
     const settingsActive =
@@ -53,7 +53,7 @@ const Action = ({
             return onClick();
         }
         eventActionHandler.trigger(
-            new TogglePluginEventAction({
+            new TogglePluginActionEvent({
                 name: plugin,
                 closeOtherInGroup: true
             })

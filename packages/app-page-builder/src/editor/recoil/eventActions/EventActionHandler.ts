@@ -1,20 +1,52 @@
-import shortid from "shortid";
+import {
+    elementsAtom,
+    ElementsAtomType,
+    pageAtom,
+    PageAtomType,
+    pluginsAtom,
+    PluginsAtomType,
+    uiAtom,
+    UiAtomType
+} from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    connectedAtomValue,
+    connectedBatchEnd,
+    connectedBatchStart,
+    updateConnectedValue
+} from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { EventAction } from "./EventAction";
 
-type EventActionHandlerEventsType = Map<string, Set<Function>>;
+export type EventActionHandlerActionStateType = {
+    ui: UiAtomType;
+    plugins: PluginsAtomType;
+    page: PageAtomType;
+    elements: ElementsAtomType;
+};
+export type EventActionHandlerActionStateResponseType = {
+    ui?: UiAtomType;
+    plugins?: PluginsAtomType;
+    page?: PageAtomType;
+    elements?: ElementsAtomType;
+};
+export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T | object;
+export type EventActionCallable<T> = (
+    state: EventActionHandlerActionStateType,
+    args: T
+) => EventActionHandlerActionStateResponseType;
 
-export enum EventActionHandlerStatusEnum {
-    SUCCESS = 1,
-    NO_CALLABLES = 0,
-    ABORTED = -1
-}
+type CallableArgsType = {
+    [key: string]: any;
+};
+type CallableType<T extends CallableArgsType = any> = (
+    state: EventActionHandlerActionStateType,
+    args?: T
+) => EventActionHandlerActionStateResponseType;
+type ListType = Map<symbol, CallableType>;
+type RegistryType = Map<string, ListType>;
 
-export enum EventActionHandlerSignal {
-    IS_LAST = shortid.generate(),
-    ABORT = shortid.generate()
-}
+type TargetType = { new (...args: any[]): EventAction<any> };
+type UnregisterType = () => void;
 
-type EventActionClassConstructor = { new (...args: any[]): EventAction<any> };
 /**
  * Usages
  * subscribing to an event: handler.on(TargetEventClass, (args) => {your code})
@@ -25,72 +57,77 @@ type EventActionClassConstructor = { new (...args: any[]): EventAction<any> };
  * removing all subscriptions: handler.clearRegistry()
  */
 export class EventActionHandler {
-    public static readonly SUCCESS = EventActionHandlerStatusEnum.SUCCESS;
-    public static readonly NO_CALLABLES = EventActionHandlerStatusEnum.NO_CALLABLES;
-    public static readonly ABORTED = EventActionHandlerStatusEnum.ABORTED;
+    private readonly _registry: RegistryType = new Map();
 
-    private readonly _registry: EventActionHandlerEventsType = new Map();
-
-    public on(target: EventActionClassConstructor, callable: Function): void {
+    public on(target: TargetType, callable: CallableType): UnregisterType {
         const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
-            this.set(name, new Set());
+            this.set(name, new Map());
         }
-        const list = this.get(name);
-        if (list.has(callable)) {
+        const events = this.get(name);
+        if (this.hasCb(events, callable)) {
             throw new Error(
                 `You cannot register event action "${name}" with identical function that already is registered.`
             );
         }
-        list.add(callable);
+
+        const id = Symbol("eventActionCb");
+        events.set(id, callable);
+        return () => {
+            this.off(id);
+        };
     }
 
-    public off(target: EventActionClassConstructor, callable: Function): void {
-        const name = this.getEventActionClassName(target);
-        if (!this.has(name)) {
-            return;
+    public off(id: symbol): boolean {
+        const registry = Array.from(this._registry.values());
+        for (const list of registry) {
+            if (!list.has(id)) {
+                continue;
+            }
+            return list.delete(id);
         }
-        const list = this.get(name);
-        if (!list.has(callable)) {
-            return;
-        }
-        list.delete(callable);
+        return false;
     }
 
-    public async trigger<T extends object>(ev: EventAction<T>): Promise<number> {
+    public async trigger<T extends CallableArgsType>(ev: EventAction<T>): Promise<number> {
         const name = ev.getName();
         if (!this.has(ev.getName())) {
             throw new Error(`There is no event action that is registered with name "${name}".`);
         }
         const targetCallables = this.get(name);
         if (!targetCallables) {
-            return EventActionHandler.NO_CALLABLES;
+            return;
         }
+
+        const initialState = {
+            elements: connectedAtomValue(elementsAtom),
+            page: connectedAtomValue(pageAtom),
+            plugins: connectedAtomValue(pluginsAtom),
+            ui: connectedAtomValue(uiAtom)
+        };
+
         const args = ev.getArgs();
-        for (const fn of targetCallables.values()) {
-            // TODO tbd if required to run in try/catch
-            // and need to check if we will have status codes for triggers
-            try {
-                const result = await fn(args);
-                if (result === EventActionHandlerSignal.IS_LAST) {
-                    return EventActionHandler.SUCCESS;
-                } else if (result === EventActionHandlerSignal.ABORT) {
-                    return EventActionHandler.ABORTED;
-                }
-            } catch (ex) {
-                throw new Error(
-                    `Event action "${name}" produced some kind of exception, please check it.`
-                );
-            }
+        const callables = Array.from(targetCallables.values());
+        let results = {};
+        for (const cb of callables) {
+            const r = await cb({ ...initialState, ...results }, args);
+            results = {
+                ...results,
+                ...r
+            };
         }
-        return EventActionHandler.SUCCESS;
+        const hasResults = Object.values(results).length > 0;
+        if (!hasResults) {
+            return;
+        }
+        this.saveState(results);
     }
 
     public clearRegistry(): void {
         this._registry.clear();
     }
 
-    private get(name: string): Set<Function> {
+    private get(name: string): ListType {
         const list = this._registry.get(name);
         if (!list) {
             throw new Error(`There is no event action group "${name}" defined.`);
@@ -98,7 +135,7 @@ export class EventActionHandler {
         return list;
     }
 
-    private set(name: string, list: Set<Function>): void {
+    private set(name: string, list: ListType): void {
         this._registry.set(name, list);
     }
 
@@ -106,12 +143,35 @@ export class EventActionHandler {
         return this._registry.has(name);
     }
 
-    private getEventActionClassName(target: EventActionClassConstructor): string {
+    private hasCb(list: ListType, callable: CallableType): boolean {
+        const values = Array.from(list.values());
+        return values.some(cb => cb === callable);
+    }
+
+    private getEventActionClassName(target: TargetType): string {
         const cls = new target();
         const name = cls.getName() || cls.constructor.name;
         if (!name) {
             throw new Error("Could not find class name.");
         }
         return name;
+    }
+
+    private saveState(results: EventActionHandlerActionStateResponseType): void {
+        connectedBatchStart();
+        if (results.ui) {
+            updateConnectedValue(uiAtom, results.ui);
+        }
+        if (results.plugins) {
+            updateConnectedValue(pluginsAtom, results.plugins);
+        }
+        if (results.elements) {
+            updateConnectedValue(elementsAtom, results.elements);
+        }
+        if (results.page) {
+            updateConnectedValue(pageAtom, results.page);
+        }
+
+        connectedBatchEnd();
     }
 }

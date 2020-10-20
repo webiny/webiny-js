@@ -1,3 +1,4 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import React, { useCallback, useMemo } from "react";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
@@ -11,7 +12,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
 
@@ -40,6 +41,7 @@ const getSvg = (id: string[], props: any = {}) => {
 };
 
 const ButtonSettings = () => {
+    const eventActionHandler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { theme } = usePageBuilder();
     const { types } = theme?.elements?.button || [];
@@ -69,13 +71,22 @@ const ButtonSettings = () => {
             }
 
             if (!history) {
-                updateElementAction({ element: newElement, history });
+                eventActionHandler.trigger(
+                    new UpdateElementActionEvent({
+                        element: newElement,
+                        history
+                    })
+                );
                 return;
             }
 
             if (historyUpdated[name] !== value || (value === undefined && isIcon)) {
                 historyUpdated[name] = value;
-                updateElementAction({ element: newElement });
+                eventActionHandler.trigger(
+                    new UpdateElementActionEvent({
+                        element: newElement
+                    })
+                );
             }
         };
     }, [element.id]);

@@ -1,8 +1,9 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import React, { CSSProperties } from "react";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import { css } from "emotion";
-import { dropElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import { DropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
 
@@ -21,6 +22,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     elementId
 }) => {
     const element = useRecoilValue(elementByIdSelector(elementId));
+    const eventActionHandler = useEventActionHandler();
     const { id, type, elements } = element;
 
     const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
@@ -43,30 +45,34 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                     <React.Fragment key={childId}>
                         <DropZone.Above
                             type={type}
-                            onDrop={source =>
-                                dropElementAction({
-                                    source,
-                                    target: {
-                                        id,
-                                        type,
-                                        position: index
-                                    }
-                                })
-                            }
+                            onDrop={source => () => {
+                                eventActionHandler.trigger(
+                                    new DropElementActionEvent({
+                                        source,
+                                        target: {
+                                            id,
+                                            type,
+                                            position: index
+                                        }
+                                    })
+                                );
+                            }}
                         />
                         <Element key={childId} id={childId} />
                         {index === elements.length - 1 && (
                             <DropZone.Below
                                 type={type}
                                 onDrop={source => {
-                                    dropElementAction({
-                                        source,
-                                        target: {
-                                            id,
-                                            type,
-                                            position: elements.length
-                                        }
-                                    });
+                                    eventActionHandler.trigger(
+                                        new DropElementActionEvent({
+                                            source,
+                                            target: {
+                                                id,
+                                                type,
+                                                position: elements.length
+                                            }
+                                        })
+                                    );
                                 }}
                             />
                         )}

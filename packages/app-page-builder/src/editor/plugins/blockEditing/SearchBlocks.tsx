@@ -1,10 +1,11 @@
-import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { UpdateElementEventAction } from "@webiny/app-page-builder/editor/recoil/modules/elements/eventAction";
+import {
+    TogglePluginActionEvent,
+    UpdateElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Mutation } from "react-apollo";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getContent } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
@@ -22,6 +23,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { useRecoilValue } from "recoil";
 
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
@@ -61,8 +63,9 @@ const sortBlocks = blocks => {
     });
 };
 
-const SearchBar = props => {
-    const { updateElement, content, deactivatePlugin } = props;
+const SearchBar = () => {
+    const { content } = useRecoilValue(pageAtom);
+    const eventActionHandler = useEventActionHandler();
 
     const [search, setSearch] = useState("");
     const [editingBlock, setEditingBlock] = useState(null);
@@ -80,30 +83,34 @@ const SearchBar = props => {
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
+    const deactivatePlugin = () => {
+        eventActionHandler.trigger(
+            new TogglePluginActionEvent({
+                name: "pb-editor-search-blocks-bar"
+            })
+        );
+    };
+
     useEffect(() => {
         addKeyHandler("escape", e => {
             e.preventDefault();
-            deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+            deactivatePlugin();
         });
 
         return () => removeKeyHandler("escape");
     }, []);
 
-    const eventActionHandler = useEditorEventActionHandler();
     const addBlockToContent = useCallback(
         plugin => {
             const element = {
                 ...content,
                 elements: [...content.elements, createBlockElements(plugin.name)]
             };
-            // updateElement({ element });
-            eventActionHandler.trigger(new UpdateElementEventAction({
-                element: {
-                    ...content,
-                    elements: [...content.elements, createBlockElements(plugin.name)]
-                },
-            }))
-
+            eventActionHandler.trigger(
+                new UpdateElementActionEvent({
+                    element
+                })
+            );
         },
         [content]
     );
@@ -227,7 +234,7 @@ const SearchBar = props => {
     }, [search]);
 
     const onExited = useCallback(() => {
-        deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+        deactivatePlugin();
     }, []);
 
     const categoryPlugin = allCategories.find(pl => pl.categoryName === activeCategory);
@@ -308,7 +315,4 @@ const SearchBar = props => {
     );
 };
 
-export default connect<any, any, any>(state => ({ content: getContent(state) }), {
-    deactivatePlugin,
-    updateElement
-})(SearchBar);
+export default SearchBar;

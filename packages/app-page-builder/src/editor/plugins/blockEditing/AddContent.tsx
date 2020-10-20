@@ -1,16 +1,11 @@
-import { useTogglePluginAction } from "@webiny/app-page-builder/editor/provider/TogglePluginActionProvider";
-import { useUpdateElementAction } from "@webiny/app-page-builder/editor/provider/UpdateElementActionProvider";
-import { elementsInContentTotalSelector } from "@webiny/app-page-builder/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
 import React from "react";
 import styled from "@emotion/styled";
-import { useEditorEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { TogglePluginEventAction } from "@webiny/app-page-builder/editor/recoil/modules/plugins/eventAction";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { elementsInContentTotalSelector } from "@webiny/app-page-builder/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
 import { keyframes } from "emotion";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
-import { getContent } from "@webiny/app-page-builder/editor/selectors";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
 import { useRecoilValue } from "recoil";
 
@@ -53,25 +48,17 @@ const AddBlockContent = styled("div")({
 
 const AddContent = () => {
     const totalElements = useRecoilValue(elementsInContentTotalSelector);
-    const eventActionHandler = useEditorEventActionHandler();
-    const {updateElement} = useUpdateElementAction();
-    const {togglePlugin} = useTogglePluginAction();
+    const eventActionHandler = useEventActionHandler();
     if (totalElements) {
         return null;
     }
 
     const onClickHandler = () => {
-        togglePlugin({
-            name: "pb-editor-search-blocks-bar",
-        });
-        // togglePluginAction({
-        //     name: "pb-editor-search-blocks-bar",
-        // });
-        // updateElement({
-        //     element: {
-        //         id: 1,
-        //     },
-        // });
+        eventActionHandler.trigger(
+            new TogglePluginActionEvent({
+                name: "pb-editor-search-blocks-bar"
+            })
+        );
     };
     return (
         <AddBlockContainer data-type={"container"}>

@@ -1,20 +1,16 @@
+import { UpdateElementActionArgsType } from "./types";
+import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashGet from "lodash/get";
 import lodashMerge from "lodash/merge";
 import lodashSet from "lodash/set";
-import {
-    elementsAtom,
-    pageAtom,
-    PageAtomType
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import {
     flattenContentUtil,
     saveEditorPageRevisionUtil,
     updateChildPathsUtil
 } from "@webiny/app-page-builder/editor/recoil/utils";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { useBatching } from "recoil-undo";
 
 const createElementWithoutElementsAsString = (element: PbElement): PbElement => {
     if (!element.elements || typeof element.elements[0] !== "string") {
@@ -75,27 +71,20 @@ const createNewPageState = (page: PageAtomType, element: PbElement, merge: boole
     };
 };
 
-type UpdateElementActionType = {
-    element: PbElement;
-    merge?: boolean;
-    history?: boolean;
-};
-
-export type UpdateElementActionCallableType = (args: UpdateElementActionType) => void;
-
-export const updateElementAction = ({ element, merge, history }: UpdateElementActionType) => {
-    // find out which path are we updating
-    // if type is document, we will update editorPageAtom.content
-    const [page, setPage] = useRecoilState(pageAtom);
-    const setElements = useSetRecoilState(elementsAtom);
-    const { startBatch, endBatch } = useBatching();
+export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
+    state,
+    args
+) => {
+    const { element, merge, history } = args;
+    const { page } = state;
 
     const newPageState = createNewPageState(lodashCloneDeep(page), element, merge);
-    startBatch();
-    setPage(newPageState);
-    setElements(flattenContentUtil(newPageState.content));
+    // TODO find a way to save revision after setting the state
     if (history === true) {
         saveEditorPageRevisionUtil(newPageState);
     }
-    endBatch();
+    return {
+        page: newPageState,
+        elements: flattenContentUtil(newPageState.content)
+    };
 };

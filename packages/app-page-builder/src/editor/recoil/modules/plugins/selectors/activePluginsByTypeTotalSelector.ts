@@ -1,5 +1,5 @@
-import { pluginsAtom } from "../pluginsAtom";
 import { selectorFamily } from "recoil";
+import { pluginsAtom } from "../pluginsAtom";
 
 export const activePluginsByTypeTotalSelector = selectorFamily<number, string>({
     key: "activePluginsByTypeTotalSelector",

@@ -1,6 +1,7 @@
 import React, { CSSProperties } from "react";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useRecoilValue } from "recoil";
@@ -22,6 +23,7 @@ type ButtonContainerPropsType = {
     elementId: string;
 };
 const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props => {
+    const eventActionHandler = useEventActionHandler();
     const { getAllClasses, elementStyle, elementAttributes, elementId } = props;
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {} } = element.data || {};
@@ -37,9 +39,11 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props
                 text: value
             }
         };
-        updateElementAction({
-            element: newElement
-        });
+        eventActionHandler.trigger(
+            new UpdateElementActionEvent({
+                element: newElement
+            })
+        );
     });
 
     return (

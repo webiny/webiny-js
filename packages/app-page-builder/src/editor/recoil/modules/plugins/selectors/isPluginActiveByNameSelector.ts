@@ -1,5 +1,5 @@
-import { selectorFamily } from "recoil";
 import { plugins } from "@webiny/plugins";
+import { selectorFamily } from "recoil";
 import { pluginsAtom } from "../pluginsAtom";
 
 export const isPluginActiveSelector = selectorFamily<boolean, string>({

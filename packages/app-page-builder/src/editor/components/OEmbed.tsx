@@ -1,4 +1,5 @@
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useEffect } from "react";
 import gql from "graphql-tag";
 import { css } from "emotion";
@@ -59,12 +60,12 @@ const centerAlign = css({
 
 export type OEmbedProps = {
     element: PbElement;
-    // updateElement: PbUpdateElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
     data?: any;
 };
 const OEmbedComponent = (props: OEmbedProps) => {
+    const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const { element, onData = d => d } = props;
 
@@ -95,7 +96,11 @@ const OEmbedComponent = (props: OEmbedProps) => {
                         oembed: onData(oembed)
                     }
                 };
-                updateElementAction({ element: newElement });
+                eventActionHandler.trigger(
+                    new UpdateElementActionEvent({
+                        element: newElement
+                    })
+                );
             }
             if (error) {
                 showSnackbar(error.message);

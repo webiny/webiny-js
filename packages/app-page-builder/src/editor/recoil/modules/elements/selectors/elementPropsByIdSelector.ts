@@ -1,6 +1,6 @@
+import { selectorFamily } from "recoil";
 import { elementByIdSelector } from "./elementByIdSelector";
 import { uiAtom } from "../../ui/uiAtom";
-import { selectorFamily } from "recoil";
 
 type ActiveElementPropsByIdSelector = {
     isActive: boolean;

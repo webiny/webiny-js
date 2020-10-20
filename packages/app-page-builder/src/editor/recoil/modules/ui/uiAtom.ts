@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 
 export type UiAtomType = {
     isDragging: boolean;
@@ -7,7 +7,7 @@ export type UiAtomType = {
     activeElement: string | null;
     highlightElement: string | null;
 };
-export const uiAtom = atom<UiAtomType>({
+export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
     default: {
         isDragging: false,

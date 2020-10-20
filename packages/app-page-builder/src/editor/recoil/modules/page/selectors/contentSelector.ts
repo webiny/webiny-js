@@ -1,10 +1,10 @@
+import { connectedReadSelector } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import invariant from "invariant";
 import { pageAtom } from "../pageAtom";
 import { PbDocumentElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
-import { selector } from "recoil";
 
-export const contentSelector = selector<PbElement>({
+export const contentSelector = connectedReadSelector<PbElement>({
     key: "contentSelector",
     get: ({ get }) => {
         const page = get(pageAtom);
