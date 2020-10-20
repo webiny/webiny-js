@@ -6,6 +6,7 @@ import {
     orderAccessLevel
 } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
 import { PermissionRendererCmsManage } from "@webiny/app-headless-cms/types";
+import { pick } from "lodash";
 
 const createPermissionsForDB = (permission: SecurityPermission): SecurityPermission[] => {
     const { name: permissionName, accessLevel, ...props } = permission;
@@ -139,3 +140,11 @@ export const createPermissionsArray = (permissionsMap: object) => {
 
     return permissions;
 };
+
+export const formatDataForAPI = data => ({
+    data: {
+        ...pick(data, ["name", "slug", "description", "locales"]),
+        // From UI to API
+        permissions: createPermissionsArray(data.permissions) || []
+    }
+});

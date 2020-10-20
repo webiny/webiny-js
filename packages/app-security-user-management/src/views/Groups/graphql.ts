@@ -7,6 +7,7 @@ const fields = `
     description
     locales
     permissions
+    createdOn
 `;
 
 export const LIST_GROUPS: any = gql`
