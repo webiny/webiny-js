@@ -23,7 +23,7 @@ const SecurityMenu = ({ Menu, Section, Item }) => {
         <Menu name="security" label={t`Security`} icon={<SecurityIcon />}>
             {users && (
                 <Section label={t`Identities`}>
-                    {users && <Item label={t`Users`} path="/users" />}
+                    {users && <Item label={t`Users`} path="/security/users" />}
                 </Section>
             )}
 
