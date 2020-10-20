@@ -34,28 +34,31 @@ const I18NLocalesDataList = () => {
     const { showConfirmation } = useConfirmationDialog();
 
     const data = listQuery?.data?.i18n?.listI18NLocales?.data || [];
+    const code = new URLSearchParams(location.search).get("code");
 
-    const deleteItem = useCallback(item => {
-        showConfirmation(async () => {
-            const response = await deleteIt({
-                variables: item
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.i18n?.deleteI18NLocale?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`Locale "{code}" deleted.`({ code: item.code }));
+
+                if (code === item.code) {
+                    history.push(`/i18n/locales`);
+                }
+
+                await refetchLocales();
             });
-
-            const error = response?.data?.i18n?.deleteI18NLocale?.error;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(t`Locale "{code}" deleted.`({ code: item.code }));
-
-            const code = new URLSearchParams(location.search).get("code");
-            if (code === item.code) {
-                history.push(`/i18n/locales`);
-            }
-
-            refetchLocales();
-        });
-    }, []);
+        },
+        [code]
+    );
 
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
@@ -69,7 +72,7 @@ const I18NLocalesDataList = () => {
             {({ data }) => (
                 <ScrollList>
                     {data.map(item => (
-                        <ListItem key={item.code}>
+                        <ListItem key={item.code} selected={item.code === code}>
                             <ListItemText
                                 onClick={() => history.push(`/i18n/locales?code=${item.code}`)}
                             >
