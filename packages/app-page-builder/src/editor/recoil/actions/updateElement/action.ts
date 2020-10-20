@@ -81,7 +81,7 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
     const newPageState = createNewPageState(lodashCloneDeep(page), element, merge);
     // TODO find a way to save revision after setting the state
     if (history === true) {
-        saveEditorPageRevisionUtil(newPageState);
+        // saveEditorPageRevisionUtil(newPageState);
     }
     return {
         page: newPageState,

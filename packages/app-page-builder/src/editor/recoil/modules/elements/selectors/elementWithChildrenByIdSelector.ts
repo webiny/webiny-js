@@ -1,3 +1,4 @@
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { selectorFamily } from "recoil";
 import { contentSelector } from "../../page/selectors/contentSelector";
 import { elementByIdSelector } from "./elementByIdSelector";
@@ -21,3 +22,13 @@ export const elementWithChildrenByIdSelector = selectorFamily<PbElement, string>
         };
     }
 });
+export const getElementWithChildrenById = (state: PbState, id: string): PbElement | undefined => {
+    const {path} = state.elements[id];
+    const content = state.page.content;
+    const contentPath = path.replace(/\./g, ".elements.").slice(2);
+    const element = lodashGet(content, contentPath);
+    if (!element) {
+        return undefined;
+    }
+    return element as PbElement;
+};

@@ -17,25 +17,19 @@ type ConnectedStoreType = {
     value: any;
     state: RecoilState<any>;
 };
-
-type ConnectedStoreHelpersType = {
-    startBatch: () => void;
-    endBatch: () => void;
-    undo: () => void;
-    redo: () => void;
-};
+type HelpersType = "startBatch" | "endBatch" | "undo" | "redo";
 
 class ConnectedStore {
     private readonly _store: Map<string, ConnectedStoreType> = new Map();
-    private _helpers: ConnectedStoreHelpersType;
+    private readonly _helpers: Map<HelpersType, () => void> = new Map();
 
-    public addRecoilState<T>(rs: RecoilState<T>): RecoilState<T> {
-        this._store.set(rs.key, {
-            state: rs,
+    public addRecoilState<T>(state: RecoilState<T>): RecoilState<T> {
+        this._store.set(state.key, {
+            state: state,
             setter: null,
             value: null
         });
-        return rs;
+        return state;
     }
 
     public updateRecoilState<T>(a: RecoilState<T>, newVal: T) {
@@ -70,56 +64,53 @@ class ConnectedStore {
 
     public useInContext(context: any): void {
         const batching = useBatching;
-        const hook = useSetRecoilState;
+        const setHook = useSetRecoilState;
         const getHook = useRecoilValue;
         const update = (store: ConnectedStoreType) => {
-            store.setter = hook(store.state);
+            store.setter = setHook(store.state);
         };
         const value = function(store: ConnectedStoreType) {
             store.value = getHook(store.state);
         };
 
-        for (const store of this._store.values()) {
+        for (const store of this.getStoreValues()) {
             update.apply(context, [store]);
             value.apply(context, [store]);
         }
 
+        this._helpers.clear();
         const { startBatch, endBatch } = batching.apply(context);
-
-        this._helpers = {
-            startBatch,
-            endBatch,
-            undo: useUndo.apply(context),
-            redo: useRedo.apply(context)
-        };
+        this._helpers.set("startBatch", startBatch);
+        this._helpers.set("endBatch", endBatch);
+        this._helpers.set("undo", useUndo.apply(context));
+        this._helpers.set("redo", useRedo.apply(context));
     }
 
     public startBatch(): void {
-        this._helpers.startBatch();
+        this._helpers.get("startBatch");
     }
 
     public endBatch(): void {
-        this._helpers.endBatch();
+        this._helpers.get("endBatch");
     }
 
     public undo(): void {
-        this._helpers.undo();
+        this._helpers.get("undo");
     }
 
     public redo(): void {
-        this._helpers.redo();
+        this._helpers.get("redo");
+    }
+
+    private getStoreValues(): IterableIterator<ConnectedStoreType> {
+        return this._store.values();
     }
 }
 
 export const connectedStore: ConnectedStore = new ConnectedStore();
 
-let hadFirstRun = false;
 export const ConnectedStoreComponent: React.FunctionComponent = () => {
-    if (hadFirstRun) {
-        return null;
-    }
     connectedStore.useInContext(this);
-    hadFirstRun = true;
     return null;
 };
 
@@ -132,38 +123,38 @@ export const connectedRecoilState = <T>(atom: RecoilState<T>): [T, SetterOrUpdat
     ];
 };
 
-export function updateConnectedValue<T>(state: RecoilState<T>, val: T): void {
+export const updateConnectedValue = <T>(state: RecoilState<T>, val: T): void => {
     connectedStore.updateRecoilState(state, val);
 }
 
-export function connectedAtomValue<T>(state: RecoilState<T>): T {
+export const connectedAtomValue = <T>(state: RecoilState<T>): T => {
     return connectedStore.getRecoilState<T>(state);
 }
 
-export function connectedAtom<T>(options: AtomOptions<T>): RecoilState<T> {
+export const connectedAtom = <T>(options: AtomOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(atom<T>(options));
 }
 
-export function connectedReadSelector<T>(options: ReadOnlySelectorOptions<T>): RecoilState<T> {
+export const connectedReadSelector = <T>(options: ReadOnlySelectorOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(selector<T>(options) as RecoilState<T>);
 }
 
-export function connectedSelector<T>(options: ReadWriteSelectorOptions<T>): RecoilState<T> {
+export const connectedSelector = <T>(options: ReadWriteSelectorOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(selector<T>(options) as RecoilState<T>);
 }
 
-export function connectedBatchStart(): void {
+export const connectedBatchStart = (): void => {
     connectedStore.startBatch();
 }
 
-export function connectedBatchEnd(): void {
+export const connectedBatchEnd = (): void => {
     connectedStore.endBatch();
 }
 
-export function connectedUndo(): void {
+export const connectedUndo = (): void => {
     connectedStore.undo();
 }
 
-export function connectedRedo(): void {
+export const connectedRedo = (): void => {
     connectedStore.redo();
 }

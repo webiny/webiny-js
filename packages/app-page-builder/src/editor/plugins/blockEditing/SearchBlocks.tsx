@@ -4,7 +4,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Mutation } from "react-apollo";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -64,7 +64,7 @@ const sortBlocks = blocks => {
 };
 
 const SearchBar = () => {
-    const { content } = useRecoilValue(pageAtom);
+    const content = useRecoilValue(contentSelector);
     const eventActionHandler = useEventActionHandler();
 
     const [search, setSearch] = useState("");
@@ -111,6 +111,8 @@ const SearchBar = () => {
                     element
                 })
             );
+
+            deactivatePlugin();
         },
         [content]
     );

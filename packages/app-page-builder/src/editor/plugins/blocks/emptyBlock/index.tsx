@@ -12,9 +12,9 @@ export default {
         return createBlock({
             ...options,
             elements: [
-                createRow({
-                    elements: [createColumn({ data: { width: 100 } })]
-                })
+                // createRow({
+                //     elements: [createColumn({ data: { width: 100 } })]
+                // })
             ]
         });
     },
