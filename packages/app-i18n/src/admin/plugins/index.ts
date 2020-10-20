@@ -3,6 +3,7 @@ import { AdminGlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
 import routes from "./routes";
 import menus from "./menus";
 import richTextEditor from "./richTextEditor";
+import localeSelector from "./localeSelector";
 import install from "./install";
 import scopesList from "./scopesList";
 
