@@ -18,7 +18,6 @@ import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import get from "lodash/get";
-import { createPermissionsMap } from "./utils";
 
 const t = i18n.ns("app-security/admin/groups/form");
 
@@ -28,11 +27,6 @@ const GroupForm = () => {
     const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
         "admin-app-permissions-renderer"
     );
-    // From API to UI
-    crudForm.data = {
-        ...crudForm.data,
-        permissions: createPermissionsMap(crudForm.data.permissions)
-    };
 
     return (
         <Form {...crudForm}>
@@ -72,17 +66,20 @@ const GroupForm = () => {
                                     <Bind name={"permissions"}>
                                         {props => (
                                             <Accordion elevation={0}>
-                                                {permissionPlugins.map(pl =>
-                                                    pl.render({
-                                                        id: get(
-                                                            props,
-                                                            "form.state.data.id",
-                                                            pl.name
-                                                        ),
-                                                        value: props.value,
-                                                        onChange: props.onChange
-                                                    })
-                                                )}
+                                                {permissionPlugins.map(pl => (
+                                                    <React.Fragment key={pl.name}>
+                                                        {pl.render({
+                                                            id: get(
+                                                                props,
+                                                                "form.state.data.id",
+                                                                pl.name
+                                                            ),
+                                                            securityGroup: data,
+                                                            value: props.value,
+                                                            onChange: props.onChange
+                                                        })}
+                                                    </React.Fragment>
+                                                ))}
                                             </Accordion>
                                         )}
                                     </Bind>
