@@ -8,6 +8,9 @@ const registerPlugins = (...args: any): void => {
 };
 
 const getPlugins = <T extends Plugin = Plugin>(type?: string) => {
+    if (!type) {
+        return plugins.all<T>();
+    }
     return plugins.byType<T>(type);
 };
 
