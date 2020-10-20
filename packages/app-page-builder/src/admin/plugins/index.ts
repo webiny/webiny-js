@@ -11,6 +11,7 @@ import install from "./install";
 import scopesList from "./scopesList";
 import appTemplatePlugins from "./appTemplatePlugins";
 import welcomeScreenWidget from "./welcomeScreenWidget";
+import permissionRenderer from "./permissionRenderer";
 
 export default () => [
     header,
@@ -25,5 +26,6 @@ export default () => [
     scopesList,
     install,
     appTemplatePlugins,
-    welcomeScreenWidget
+    welcomeScreenWidget,
+    permissionRenderer
 ];
