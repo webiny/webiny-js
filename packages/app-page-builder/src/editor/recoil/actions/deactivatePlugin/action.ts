@@ -1,8 +1,8 @@
 import { DeactivatePluginActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { plugins } from "@webiny/plugins";
 
-export const deactivatePluginAction: EventActionCallable<DeactivatePluginActionArgsType> = (
+export const deactivatePluginAction: EventActionCallableType<DeactivatePluginActionArgsType> = (
     { plugins: pluginsAtomValue },
     { name }
 ) => {
@@ -18,6 +18,8 @@ export const deactivatePluginAction: EventActionCallable<DeactivatePluginActionA
     newPluginMap.set(plugin.type, newPluginsByType);
 
     return {
-        plugins: newPluginMap
+        state: {
+            plugins: newPluginMap
+        }
     };
 };

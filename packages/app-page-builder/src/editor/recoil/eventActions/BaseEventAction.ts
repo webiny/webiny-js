@@ -1,10 +1,10 @@
 import { EventAction, EventActionOptionsType } from "./EventAction";
 
-export abstract class BaseEventAction<T extends object> implements EventAction<T> {
+export abstract class BaseEventAction<T extends object = any> implements EventAction<T> {
     private readonly _args: T;
     private readonly _options: EventActionOptionsType;
 
-    public constructor(args: T, options?: EventActionOptionsType) {
+    public constructor(args?: T, options?: EventActionOptionsType) {
         this._args = args;
         this._options = options;
     }

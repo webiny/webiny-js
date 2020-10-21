@@ -1,8 +1,8 @@
 import { TogglePluginActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { plugins } from "@webiny/plugins";
 
-export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType> = (
+export const togglePluginAction: EventActionCallableType<TogglePluginActionArgsType> = (
     state,
     args
 ) => {
@@ -31,6 +31,8 @@ export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType>
     }
 
     return {
-        plugins: newPluginMap
+        state: {
+            plugins: newPluginMap
+        }
     };
 };

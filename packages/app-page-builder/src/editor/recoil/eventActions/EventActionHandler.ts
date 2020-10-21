@@ -1,3 +1,4 @@
+import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
 import {
     elementsAtom,
     ElementsAtomType,
@@ -23,25 +24,25 @@ export type EventActionHandlerActionStateType = {
     elements: ElementsAtomType;
 };
 export type EventActionHandlerActionStateResponseType = {
-    ui?: UiAtomType;
-    plugins?: PluginsAtomType;
-    page?: PageAtomType;
-    elements?: ElementsAtomType;
+    state?: {
+        ui?: UiAtomType;
+        plugins?: PluginsAtomType;
+        page?: PageAtomType;
+        elements?: ElementsAtomType;
+    };
+    actions?: BaseEventAction[];
 };
 export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
-export type EventActionCallable<T> = (
-    state: EventActionHandlerActionStateType,
-    args: T
-) => EventActionHandlerActionStateResponseType;
 
-type CallableArgsType = {
+type EventActionCallableArgsType = {
     [key: string]: any;
 };
-type CallableType<T extends CallableArgsType = any> = (
+export type EventActionCallableType<T extends EventActionCallableArgsType = any> = (
     state: EventActionHandlerActionStateType,
     args?: T
 ) => EventActionHandlerActionStateResponseType;
-type ListType = Map<symbol, CallableType>;
+
+type ListType = Map<symbol, EventActionCallableType>;
 type RegistryType = Map<string, ListType>;
 
 type TargetType = { new (...args: any[]): EventAction<any> };
@@ -50,16 +51,15 @@ type UnregisterType = () => void;
 /**
  * Usages
  * subscribing to an event: handler.on(TargetEventClass, (args) => {your code})
- * unsubscribing from an event: handler.off(TargetEventClass, (args) => {your code; same function you subscribed with})
+ * unsubscribing from an event: handler.off(id)
  * triggering an event: handler.trigger(new TargetEventClass(args))
  *
- * removing certain event: handler.removeEventFromRegistry(TargetEventClass)
  * removing all subscriptions: handler.clearRegistry()
  */
 export class EventActionHandler {
     private readonly _registry: RegistryType = new Map();
 
-    public on(target: TargetType, callable: CallableType): UnregisterType {
+    public on(target: TargetType, callable: EventActionCallableType): UnregisterType {
         const name = this.getEventActionClassName(target);
         if (!this.has(name)) {
             this.set(name, new Map());
@@ -89,7 +89,9 @@ export class EventActionHandler {
         return false;
     }
 
-    public async trigger<T extends CallableArgsType>(ev: EventAction<T>): Promise<number> {
+    public async trigger<T extends EventActionCallableArgsType>(
+        ev: EventAction<T>
+    ): Promise<number> {
         const name = ev.getName();
         if (!this.has(ev.getName())) {
             throw new Error(`There is no event action that is registered with name "${name}".`);
@@ -108,19 +110,28 @@ export class EventActionHandler {
 
         const args = ev.getArgs();
         const callables = Array.from(targetCallables.values());
-        let results = {};
+        const results: EventActionHandlerActionStateResponseType = {
+            state: {},
+            actions: []
+        };
         for (const cb of callables) {
-            const r = await cb({ ...initialState, ...results }, args);
-            results = {
-                ...results,
-                ...r
+            const r = await cb({ ...initialState, ...results.state }, args);
+            results.state = {
+                ...results.state,
+                ...(r.state || {})
             };
+            results.actions.push(...(r.actions || []));
         }
-        const hasResults = Object.values(results).length > 0;
-        if (!hasResults) {
+        const hasResults = Object.values(results.state).length > 0;
+        if (hasResults) {
+            this.saveState(results);
+        }
+        if (results.actions.length === 0) {
             return;
         }
-        this.saveState(results);
+        for (const action of results.actions) {
+            await this.trigger(action);
+        }
     }
 
     public clearRegistry(): void {
@@ -143,7 +154,7 @@ export class EventActionHandler {
         return this._registry.has(name);
     }
 
-    private hasCb(list: ListType, callable: CallableType): boolean {
+    private hasCb(list: ListType, callable: EventActionCallableType): boolean {
         const values = Array.from(list.values());
         return values.some(cb => cb === callable);
     }
@@ -157,19 +168,19 @@ export class EventActionHandler {
         return name;
     }
 
-    private saveState(results: EventActionHandlerActionStateResponseType): void {
+    private saveState({ state }: EventActionHandlerActionStateResponseType): void {
         connectedBatchStart();
-        if (results.ui) {
-            updateConnectedValue(uiAtom, results.ui);
+        if (state.ui) {
+            updateConnectedValue(uiAtom, state.ui);
         }
-        if (results.plugins) {
-            updateConnectedValue(pluginsAtom, results.plugins);
+        if (state.plugins) {
+            updateConnectedValue(pluginsAtom, state.plugins);
         }
-        if (results.elements) {
-            updateConnectedValue(elementsAtom, results.elements);
+        if (state.elements) {
+            updateConnectedValue(elementsAtom, state.elements);
         }
-        if (results.page) {
-            updateConnectedValue(pageAtom, results.page);
+        if (state.page) {
+            updateConnectedValue(pageAtom, state.page);
         }
 
         connectedBatchEnd();

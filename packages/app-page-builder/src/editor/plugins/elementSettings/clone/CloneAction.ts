@@ -30,7 +30,6 @@ const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }
             cloneElement(element),
             ...(position < parent.elements.length ? parent.elements.slice(position) : [])
         ]);
-
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement

@@ -1,13 +1,13 @@
 import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
 import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
-import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { elementParentWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 import { useRecoilValue } from "recoil";
 
 // packages/app-page-builder/src/editor/actions/actions.ts:195
-export const deleteElementAction: EventActionCallable<DeleteElementActionArgsType> = (
+export const deleteElementAction: EventActionCallableType<DeleteElementActionArgsType> = (
     state,
     args
 ) => {
@@ -40,14 +40,16 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
     }
 
     return {
-        ui: {
-            ...ui,
-            activeElement: undefined
-        },
-        page: {
-            ...page,
-            content: {
-                ...content
+        state: {
+            ui: {
+                ...ui,
+                activeElement: undefined
+            },
+            page: {
+                ...page,
+                content: {
+                    ...content
+                }
             }
         }
     };

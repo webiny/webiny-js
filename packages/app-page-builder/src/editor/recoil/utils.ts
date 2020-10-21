@@ -2,27 +2,31 @@ import shortid from "shortid";
 import { PageAtomType } from "./modules";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
-const fixChildPaths = (elements: PbElement[]): PbElement[] => {
-    return (elements as PbElement[]).map((element, index) => {
-        const newElement = updateChildPathsUtil(element);
-        const path = `${element.path || "0"}.${index}`;
-        return {
-            ...newElement,
+const updateElementsPaths = (elements: PbElement[], parentPath: string): PbElement[] => {
+    return elements.map((element, index) => {
+        const path = `${parentPath}.${index}`;
+        const id = element.id || shortid.generate();
+        return updateElementPaths({
+            ...element,
+            id,
             path
-        };
+        });
     });
 };
-
-export const updateChildPathsUtil = (element: PbElement): PbElement => {
-    const { id = shortid.generate(), path = "0", type, data, elements } = element;
+const updateElementPaths = (element: PbElement): PbElement => {
+    const { id = shortid.generate(), path = "0", type, data } = element;
     return {
         ...element,
         id,
         path,
-        type: type,
-        data: data,
-        elements: fixChildPaths(elements)
+        type,
+        data,
+        elements: updateElementsPaths(element.elements, path)
     };
+};
+
+export const updateChildPathsUtil = (element: PbElement): PbElement => {
+    return updateElementPaths(element);
 };
 // eslint-disable-next-line
 export const saveEditorPageRevisionUtil = (_page: PageAtomType) => {
@@ -56,7 +60,7 @@ const saveElementToPath = (target: PbElement, paths: number[], element: PbElemen
     return saveElementToPath(target.elements[path], paths, element);
 };
 
-export const saveElementToPathUtil = (
+export const saveElementToContentUtil = (
     target: PbElement,
     path: string,
     element: PbElement

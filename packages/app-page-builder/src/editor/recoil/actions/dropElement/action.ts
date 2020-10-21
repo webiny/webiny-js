@@ -1,5 +1,5 @@
 import { DropElementActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import invariant from "invariant";
 import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
@@ -28,7 +28,10 @@ const getSourceElement = (source: PbElement): PbElement => {
     return element;
 };
 
-export const dropElementAction: EventActionCallable<DropElementActionArgsType> = (state, args) => {
+export const dropElementAction: EventActionCallableType<DropElementActionArgsType> = (
+    state,
+    args
+) => {
     const { source, target } = args;
     const { id, type, position } = target;
     const targetElement = useRecoilValue(elementWithChildrenByIdSelector(id));

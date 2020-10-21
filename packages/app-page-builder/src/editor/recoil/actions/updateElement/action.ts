@@ -1,5 +1,6 @@
+import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { UpdateElementActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashMerge from "lodash/merge";
@@ -8,7 +9,7 @@ import {
     extrapolateContentElementUtil,
     flattenContentUtil,
     saveEditorPageRevisionUtil,
-    saveElementToPathUtil,
+    saveElementToContentUtil,
     updateChildPathsUtil
 } from "@webiny/app-page-builder/editor/recoil/utils";
 
@@ -52,13 +53,13 @@ const buildNewPageContentState = (
     const newElement = updateChildPathsUtil(createElementWithoutElementsAsString(element));
     const existingElement = extrapolateContentElementUtil(content, element.path);
     if (merge) {
-        return saveElementToPathUtil(
+        return saveElementToContentUtil(
             content,
             element.path,
             lodashMerge(existingElement, newElement)
         );
     }
-    return saveElementToPathUtil(content, element.path, newElement);
+    return saveElementToContentUtil(content, element.path, newElement);
 };
 const createNewPageState = (page: PageAtomType, element: PbElement, merge: boolean) => {
     if (element.type === "document") {
@@ -74,18 +75,21 @@ const createNewPageState = (page: PageAtomType, element: PbElement, merge: boole
     };
 };
 
-export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
+export const updateElementAction: EventActionCallableType<UpdateElementActionArgsType> = (
     state,
     args
 ) => {
     const { element, merge, history } = args;
     const page = createNewPageState(lodashCloneDeep(state.page), element, merge);
-    // TODO find a way to save revision after setting the state
+    const actions = [];
     if (history === true) {
-        // saveEditorPageRevisionUtil(newPageState);
+        actions.push(new SaveRevisionActionEvent());
     }
     return {
-        page,
-        elements: flattenContentUtil(lodashCloneDeep(page.content))
+        state: {
+            page,
+            elements: flattenContentUtil(lodashCloneDeep(page.content))
+        },
+        actions
     };
 };
