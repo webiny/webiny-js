@@ -6,8 +6,8 @@ export default () => {
     return {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-deactivate-plugin",
-        onEditorMount: (handler) => {
+        onEditorMount: handler => {
             return handler.on(DeactivatePluginActionEvent, deactivatePluginAction);
-        },
+        }
     } as PbEditorEventActionPlugin;
 };

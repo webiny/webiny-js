@@ -6,8 +6,8 @@ export default () => {
     return {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-toggle-plugin",
-        onEditorMount: (handler) => {
+        onEditorMount: handler => {
             return handler.on(TogglePluginActionEvent, togglePluginAction);
-        },
+        }
     } as PbEditorEventActionPlugin;
 };

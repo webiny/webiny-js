@@ -6,8 +6,8 @@ export default () => {
     return {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-update-element",
-        onEditorMount: (handler) => {
+        onEditorMount: handler => {
             return handler.on(UpdateElementActionEvent, updateElementAction);
-        },
+        }
     } as PbEditorEventActionPlugin;
 };
