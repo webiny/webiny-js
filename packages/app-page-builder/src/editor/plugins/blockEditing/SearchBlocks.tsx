@@ -106,6 +106,9 @@ const SearchBar = () => {
                 ...content,
                 elements: [...content.elements, createBlockElements(plugin.name)]
             };
+            console.log("ADDING BLOCK TO CONTENT");
+            console.log(JSON.stringify(element));
+            console.log("ADDED BLOCK TO CONTENT");
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
                     element

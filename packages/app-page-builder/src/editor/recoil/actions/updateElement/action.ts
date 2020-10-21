@@ -85,6 +85,6 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
     }
     return {
         page: newPageState,
-        elements: flattenContentUtil(newPageState.content)
+        elements: flattenContentUtil(lodashCloneDeep(newPageState.content))
     };
 };

@@ -28,7 +28,7 @@ export type EventActionHandlerActionStateResponseType = {
     page?: PageAtomType;
     elements?: ElementsAtomType;
 };
-export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T | object;
+export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
 export type EventActionCallable<T> = (
     state: EventActionHandlerActionStateType,
     args: T

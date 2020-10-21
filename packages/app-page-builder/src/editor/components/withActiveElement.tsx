@@ -1,6 +1,9 @@
 import React from "react";
 import { getGlobalState } from "@webiny/app-page-builder/editor/provider";
-import { activeElementSelector, getElementWithChildrenById } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementSelector,
+    getElementWithChildrenById
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
@@ -15,7 +18,13 @@ const pickKeys = (element: PbElement | PbShallowElement, keys?: string[]) => {
     }, {});
 };
 
-const getActiveElement = (state: PbState, element: PbShallowElement | undefined, propName: string, shallow: boolean, keys?: string[]) => {
+const getActiveElement = (
+    state: PbState,
+    element: PbShallowElement | undefined,
+    propName: string,
+    shallow: boolean,
+    keys?: string[]
+) => {
     if (!element) {
         return {
             [propName]: null

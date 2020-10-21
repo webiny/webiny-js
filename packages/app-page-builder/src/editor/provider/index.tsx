@@ -44,8 +44,8 @@ const createUseEditorStateAtom = <T extends any>(atom: RecoilState<T>) => {
 export const getGlobalState = () => ({
     ui: connectedAtomValue(uiAtom),
     plugins: connectedAtomValue(pluginsAtom),
-       elements: connectedAtomValue(elementsAtom),
-       page: connectedAtomValue(pageAtom)
+    elements: connectedAtomValue(elementsAtom),
+    page: connectedAtomValue(pageAtom)
 });
 export const useEditorState = () => {
     return {

@@ -29,6 +29,15 @@ export type PbElement = {
     [key: string]: any;
 };
 
+export type PbShallowElement = {
+    id: string;
+    path: string;
+    type: string;
+    elements: string[];
+    data: { [key: string]: any };
+    [key: string]: any;
+};
+
 export type PbTheme = {
     colors: { [key: string]: string };
     elements: { [key: string]: any };
@@ -136,8 +145,6 @@ export type PbAddonRenderPlugin = Plugin & {
     type: "addon-render";
     component: ReactElement;
 };
-
-export type PbShallowElement = Omit<PbElement, "elements"> & { elements: string[] };
 
 export type Action = {
     type: string;

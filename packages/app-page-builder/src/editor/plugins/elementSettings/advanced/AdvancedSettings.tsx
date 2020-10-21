@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import {
+    DeactivatePluginActionEvent,
+    UpdateElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
+import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { getPlugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { useHandler } from "@webiny/app/hooks/useHandler";
 import { css } from "emotion";
 import {
     Dialog,
@@ -19,8 +22,11 @@ import {
 } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
-import { updateElement, deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
-import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementAdvancedSettingsPlugin,
+    PbElement
+} from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
 const emptyElement = { data: {}, type: null };
 
@@ -34,17 +40,28 @@ const dialogStyle = css({
     }
 });
 
-const AdvancedSettings = props => {
-    const { element, open, deactivatePlugin } = props;
+type AdvancedSettingsPropsType = {
+    element: PbElement;
+};
+const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
+
+    const isPluginActive = useRecoilValue(
+        isPluginActiveSelector("pb-editor-page-element-settings-advanced")
+    );
+    const eventActionHandler = useEventActionHandler();
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     const closeDialog = useCallback(() => {
-        deactivatePlugin({ name: "pb-editor-page-element-settings-advanced" });
+        eventActionHandler.trigger(
+            new DeactivatePluginActionEvent({
+                name: "pb-editor-page-element-settings-advanced"
+            })
+        );
     }, []);
 
-    const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: FormData) => {
+    const onSubmit = (formData: FormData) => {
         // Get element settings plugins
         const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
             "pb-editor-page-element-advanced-settings"
@@ -57,19 +74,50 @@ const AdvancedSettings = props => {
             return formData;
         }, formData);
 
-        updateElement({
-            element: merge(element, "data", formData)
-        });
+        eventActionHandler.trigger(
+            new UpdateElementActionEvent({
+                element: merge(element, "data", formData)
+            })
+        );
         closeDialog();
-    });
+    };
+
+    // const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: FormData) => {
+    //     // Get element settings plugins
+    //     const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
+    //         "pb-editor-page-element-advanced-settings"
+    //     ).filter(pl => pl.elementType === element.type);
+    //
+    //     formData = plugins.reduce((formData, pl) => {
+    //         if (pl.onSave) {
+    //             return pl.onSave(formData);
+    //         }
+    //         return formData;
+    //     }, formData);
+    //
+    //     updateElement({
+    //         element: merge(element, "data", formData)
+    //     });
+    //     closeDialog();
+    // });
 
     useEffect(() => {
-        open ? addKeyHandler("escape", closeDialog) : removeKeyHandler("escape");
-    });
+        if (isPluginActive) {
+            addKeyHandler("escape", closeDialog);
+            return;
+        }
+
+        removeKeyHandler("escape");
+    }, [isPluginActive]);
+    useEffect(() => {
+        return () => {
+            removeKeyHandler("escape");
+        };
+    }, []);
 
     return (
         <Dialog
-            open={open}
+            open={isPluginActive}
             onClose={closeDialog}
             className={dialogStyle}
             data-testid={"pb-editor-advanced-element-settings-dialog"}
@@ -77,7 +125,7 @@ const AdvancedSettings = props => {
             <DialogTitle>Settings</DialogTitle>
             <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                 {({ submit, Bind, data, form }) => (
-                    <React.Fragment>
+                    <>
                         <DialogContent>
                             <Tabs>
                                 {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
@@ -91,22 +139,26 @@ const AdvancedSettings = props => {
                             <DialogCancel>Cancel</DialogCancel>
                             <DialogButton onClick={submit}>Save</DialogButton>
                         </DialogActions>
-                    </React.Fragment>
+                    </>
                 )}
             </Form>
         </Dialog>
     );
 };
 
-const withConnect = connect<any, any, any>(
-    state => ({
-        open: isPluginActive("pb-editor-page-element-settings-advanced")(state)
-    }),
-    { updateElement, deactivatePlugin }
-);
+// const withConnect = connect<any, any, any>(
+//     state => ({
+//         open: isPluginActive("pb-editor-page-element-settings-advanced")(state)
+//     }),
+//     { updateElement, deactivatePlugin }
+// );
 
-export default withConnect(
-    withActiveElement({ shallow: true })(
-        React.memo(AdvancedSettings, (prev, next) => prev.open === next.open)
-    )
-);
+const AdvancedSettingsMemoized = React.memo(AdvancedSettings);
+
+export default withActiveElement({ shallow: true })(AdvancedSettingsMemoized);
+
+// export default withConnect(
+//     withActiveElement({ shallow: true })(
+//         React.memo(AdvancedSettings, (prev, next) => prev.open === next.open)
+//     )
+// );

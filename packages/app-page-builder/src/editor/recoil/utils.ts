@@ -5,7 +5,7 @@ import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 const fixChildPaths = (elements: PbElement[]): PbElement[] => {
     return (elements as PbElement[]).map((element, index) => {
         const newElement = updateChildPathsUtil(element);
-        const path = `${element.path}.${index}`;
+        const path = `${element.path || "0"}.${index}`;
         return {
             ...newElement,
             path

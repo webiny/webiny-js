@@ -125,36 +125,36 @@ export const connectedRecoilState = <T>(atom: RecoilState<T>): [T, SetterOrUpdat
 
 export const updateConnectedValue = <T>(state: RecoilState<T>, val: T): void => {
     connectedStore.updateRecoilState(state, val);
-}
+};
 
 export const connectedAtomValue = <T>(state: RecoilState<T>): T => {
     return connectedStore.getRecoilState<T>(state);
-}
+};
 
 export const connectedAtom = <T>(options: AtomOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(atom<T>(options));
-}
+};
 
 export const connectedReadSelector = <T>(options: ReadOnlySelectorOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(selector<T>(options) as RecoilState<T>);
-}
+};
 
 export const connectedSelector = <T>(options: ReadWriteSelectorOptions<T>): RecoilState<T> => {
     return connectedStore.addRecoilState(selector<T>(options) as RecoilState<T>);
-}
+};
 
 export const connectedBatchStart = (): void => {
     connectedStore.startBatch();
-}
+};
 
 export const connectedBatchEnd = (): void => {
     connectedStore.endBatch();
-}
+};
 
 export const connectedUndo = (): void => {
     connectedStore.undo();
-}
+};
 
 export const connectedRedo = (): void => {
     connectedStore.redo();
-}
+};

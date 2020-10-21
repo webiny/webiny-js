@@ -13,6 +13,7 @@ const Bar: React.FC = () => {
     const editorPlugins = useRecoilValue(pluginsAtom);
     const pluginsByType = plugins.byType<PbEditorBarPlugin>("pb-editor-bar");
     let pluginBar = null;
+    console.log(editorPlugins, elementId);
     for (const plugin of pluginsByType) {
         if (plugin.shouldRender({ plugins: editorPlugins, activeElement: elementId })) {
             pluginBar = plugin.render();

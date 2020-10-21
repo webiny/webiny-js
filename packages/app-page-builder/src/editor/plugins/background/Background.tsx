@@ -1,8 +1,13 @@
+import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import {
+    deactivateElementMutation,
+    uiAtom,
+    unHighlightElementMutation
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
-import { highlightElement, deactivateElement } from "@webiny/app-page-builder/editor/actions";
 import { css } from "emotion";
+import { useSetRecoilState } from "recoil";
 
 const backgroundStyle = css({
     position: "fixed",
@@ -11,17 +16,30 @@ const backgroundStyle = css({
     width: "100%",
     minHeight: "100%"
 });
+type BackgroundPropsType = {
+    element: PbElement | PbShallowElement;
+};
+const Background: React.FunctionComponent<BackgroundPropsType> = ({ element }) => {
+    const setUiAtomValue = useSetRecoilState(uiAtom);
 
-const Background = ({ element, deactivateElement, highlightElement }) => {
+    const deactivateElement = () => {
+        if (!element) {
+            return;
+        }
+        setUiAtomValue(deactivateElementMutation);
+    };
+    // const unHighlightElement = () => {
+    //     setUiAtomValue(unHighlightElementMutation);
+    // };
     return (
         <div
             className={backgroundStyle}
-            onMouseOver={() => highlightElement({ element: null })}
-            onClick={() => element && deactivateElement()}
+            // onMouseOver={() => unHighlightElement()}
+            onClick={() => deactivateElement}
         />
     );
 };
 
-export default connect<any, any, any>(null, { deactivateElement, highlightElement })(
-    withActiveElement()(Background)
-);
+const BackgroundMemoized = React.memo(Background);
+
+export default withActiveElement()(BackgroundMemoized);

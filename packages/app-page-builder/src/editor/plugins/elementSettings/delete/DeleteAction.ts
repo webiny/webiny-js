@@ -1,17 +1,25 @@
 import React from "react";
-import { useHandler } from "@webiny/app/hooks/useHandler";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { DeleteElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { getPlugins } from "@webiny/plugins";
-import { deleteElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
-const DeleteAction = props => {
-    const { element, children } = props;
+type DeleteActionPropsType = {
+    children: React.ReactElement;
+};
+const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children }) => {
+    const eventActionHandler = useEventActionHandler();
+    const element = useRecoilValue(activeElementSelector);
 
-    const onClick = useHandler(props, ({ element, deleteElement }) => () => {
-        deleteElement({ element });
-    });
+    const onClick = () => {
+        eventActionHandler.trigger(
+            new DeleteElementActionEvent({
+                element
+            })
+        );
+    };
 
     const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
         pl => pl.elementType === element.type
@@ -29,6 +37,4 @@ const DeleteAction = props => {
     return React.cloneElement(children, { onClick });
 };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    deleteElement
-})(DeleteAction);
+export default React.memo(DeleteAction);

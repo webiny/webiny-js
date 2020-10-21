@@ -1,16 +1,18 @@
+import { unHighlightElementMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/unHighlightElementMutation";
 import React from "react";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
 import {
     elementByIdSelector,
     elementPropsByIdSelector,
+    highlightElementMutation,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { PbEditorPageElementPlugin, PbShallowElement } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -23,33 +25,29 @@ export type ElementPropsType = {
     className?: string;
 };
 
-const getElementPlugin = (element): PbEditorPageElementPlugin => {
+const getElementPlugin = (element: PbShallowElement): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
     }
 
-    const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
-    return plugins.find(pl => pl.elementType === element.type);
+    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
+    return pluginsByType.find(pl => pl.elementType === element.type);
 };
 
-const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
-    const { id: elementId, className = "" } = props;
-
-    // TODO find a way to fix
-    // expected value is PbShallowElement but plugins is looking for PbElement
-    // when looking at https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/editor/components/Element.tsx#L137
-    // it is noticeable that getElement returns shallow element from state.elements
-    // when type is really PbShallowElement element - TS is complaining
-    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
+const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
+    id: elementId,
+    className = ""
+}) => {
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(elementId));
-    const setEditorUi = useSetRecoilState(uiAtom);
+    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
 
     const plugin = getElementPlugin(element);
 
     const beginDrag = React.useCallback(() => {
         const data = { id: element.id, type: element.type, path: element.path };
         setTimeout(() => {
-            setEditorUi(prev => ({
+            setUiAtomValue(prev => ({
                 ...prev,
                 isDragging: true
             }));
@@ -58,7 +56,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
     }, [elementId]);
 
     const endDrag = React.useCallback(() => {
-        setEditorUi(prev => ({
+        setUiAtomValue(prev => ({
             ...prev,
             isDragging: false
         }));
@@ -68,7 +66,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
         if (element.type === "document" || isActive) {
             return;
         }
-        setEditorUi(prev => ({
+        setUiAtomValue(prev => ({
             ...prev,
             activeElement: elementId
         }));
@@ -83,10 +81,23 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
             if (isHighlighted) {
                 return;
             }
-            setEditorUi(prev => ({
+            setUiAtomValue(prev => ({
                 ...prev,
                 highlightElement: elementId
             }));
+        },
+        [elementId]
+    );
+    const onMouseOut = React.useCallback(
+        ev => {
+            if (element.type === "document") {
+                return;
+            }
+            ev.stopPropagation();
+            if (isHighlighted) {
+                return;
+            }
+            setUiAtomValue(highlightElementMutation);
         },
         [elementId]
     );
@@ -115,6 +126,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = props => {
                 <ElementContainer
                     id={element.id}
                     onMouseOver={onMouseOver}
+                    onMouseOut={onMouseOut}
                     highlight={isHighlighted}
                     active={isActive}
                     style={{ ...defaultStyle, ...transitionStyles[state] }}

@@ -16,7 +16,7 @@ export default (): PbEditorPageElementPlugin => {
         },
         render({ element }) {
             // TODO figure out if we can change this on the plugin type level
-            return <Document element={element as unknown as PbShallowElement} />;
+            return <Document element={(element as unknown) as PbShallowElement} />;
         }
     };
 };
