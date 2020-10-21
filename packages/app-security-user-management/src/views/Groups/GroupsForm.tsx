@@ -17,7 +17,7 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { createPermissionsMap, formatDataForAPI } from "./utils";
+import { formatDataForAPI } from "./utils";
 import { useMutation, useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
@@ -75,18 +75,11 @@ const GroupForm = () => {
         [id]
     );
 
-    let data = getQuery?.data?.security?.group.data || {};
+    const data = getQuery?.data?.security?.group.data || {};
 
     const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
         "admin-app-permissions-renderer"
     );
-    // From API to UI
-    if (Array.isArray(data.permissions)) {
-        data = {
-            ...data,
-            permissions: createPermissionsMap(data.permissions)
-        };
-    }
 
     return (
         <Form data={data} onSubmit={onSubmit}>
@@ -126,17 +119,20 @@ const GroupForm = () => {
                                     <Bind name={"permissions"}>
                                         {props => (
                                             <Accordion elevation={0}>
-                                                {permissionPlugins.map(pl =>
-                                                    pl.render({
-                                                        id: get(
-                                                            props,
-                                                            "form.state.data.id",
-                                                            pl.name
-                                                        ),
-                                                        value: props.value,
-                                                        onChange: props.onChange
-                                                    })
-                                                )}
+                                                {permissionPlugins.map(pl => (
+                                                    <React.Fragment key={pl.name}>
+                                                        {pl.render({
+                                                            id: get(
+                                                                props,
+                                                                "form.state.data.id",
+                                                                pl.name
+                                                            ),
+                                                            securityGroup: data,
+                                                            value: props.value,
+                                                            onChange: props.onChange
+                                                        })}
+                                                    </React.Fragment>
+                                                ))}
                                             </Accordion>
                                         )}
                                     </Bind>
