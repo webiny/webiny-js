@@ -4,6 +4,7 @@ import { useDataList } from "@webiny/app/hooks/useDataList";
 import ContentDataList from "./ContentDataList";
 import ContentDetails from "./ContentDetails";
 import { createListQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash.get";
 import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
@@ -104,4 +105,16 @@ const Content = () => {
     return <ContentRender contentModel={contentModel} key={contentModel.modelId} />;
 };
 
-export default Content;
+const AwaitEnvironment = () => {
+    const {
+        environments: { apolloClient }
+    } = useCms();
+
+    if (!apolloClient) {
+        return null;
+    }
+
+    return <Content/>;
+};
+
+export default AwaitEnvironment;
