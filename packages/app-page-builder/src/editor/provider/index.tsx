@@ -47,6 +47,8 @@ export const getGlobalState = () => ({
     elements: connectedAtomValue(elementsAtom),
     page: connectedAtomValue(pageAtom)
 });
+
+(window as any).getGlobalState = getGlobalState;
 export const useEditorState = () => {
     return {
         ui: createUseEditorStateAtom(uiAtom),

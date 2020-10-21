@@ -82,25 +82,6 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
         closeDialog();
     };
 
-    // const onSubmit = useHandler(props, ({ element, updateElement }) => (formData: FormData) => {
-    //     // Get element settings plugins
-    //     const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
-    //         "pb-editor-page-element-advanced-settings"
-    //     ).filter(pl => pl.elementType === element.type);
-    //
-    //     formData = plugins.reduce((formData, pl) => {
-    //         if (pl.onSave) {
-    //             return pl.onSave(formData);
-    //         }
-    //         return formData;
-    //     }, formData);
-    //
-    //     updateElement({
-    //         element: merge(element, "data", formData)
-    //     });
-    //     closeDialog();
-    // });
-
     useEffect(() => {
         if (isPluginActive) {
             addKeyHandler("escape", closeDialog);
@@ -146,19 +127,6 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
     );
 };
 
-// const withConnect = connect<any, any, any>(
-//     state => ({
-//         open: isPluginActive("pb-editor-page-element-settings-advanced")(state)
-//     }),
-//     { updateElement, deactivatePlugin }
-// );
-
 const AdvancedSettingsMemoized = React.memo(AdvancedSettings);
 
 export default withActiveElement({ shallow: true })(AdvancedSettingsMemoized);
-
-// export default withConnect(
-//     withActiveElement({ shallow: true })(
-//         React.memo(AdvancedSettings, (prev, next) => prev.open === next.open)
-//     )
-// );

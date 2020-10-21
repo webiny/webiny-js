@@ -3,23 +3,23 @@ import { PluginsAtomType } from "../pluginsAtom";
 import { plugins } from "@webiny/plugins";
 
 export const deactivatePluginMutation: MutationActionCallable<PluginsAtomType, string> = (
-    pluginsState,
+    state,
     name
 ) => {
     const { type } = plugins.byName(name) || {};
     if (!type) {
-        return {};
+        return state;
     }
-    const allPluginsByType = pluginsState.get(type);
+    const allPluginsByType = state.get(type);
     if (!allPluginsByType || allPluginsByType.length === 0) {
-        return {};
+        return state;
     }
     const filtered = allPluginsByType.filter(pl => pl.name !== name);
     if (filtered.length !== allPluginsByType.length) {
-        return {};
+        return state;
     }
     return {
-        ...pluginsState,
+        ...state,
         [type]: filtered
     };
 };

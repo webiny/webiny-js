@@ -1,18 +1,22 @@
-import { unHighlightElementMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/unHighlightElementMutation";
 import React from "react";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
+import { disableDraggingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/disableDraggingMutation";
+import { enableDraggingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/enableDraggingMutation";
+import { unHighlightElementMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/unHighlightElementMutation";
 import {
+    activateElementMutation,
     elementByIdSelector,
     elementPropsByIdSelector,
+    elementWithChildrenByIdSelector,
     highlightElementMutation,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { PbEditorPageElementPlugin, PbShallowElement } from "@webiny/app-page-builder/types";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
     ElementContainer,
@@ -25,7 +29,7 @@ export type ElementPropsType = {
     className?: string;
 };
 
-const getElementPlugin = (element: PbShallowElement): PbEditorPageElementPlugin => {
+const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
     }
@@ -38,38 +42,29 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     id: elementId,
     className = ""
 }) => {
-    const element = useRecoilValue(elementByIdSelector(elementId));
+    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
     const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(elementId));
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const setUiAtomValue = useSetRecoilState(uiAtom);
 
     const plugin = getElementPlugin(element);
 
     const beginDrag = React.useCallback(() => {
         const data = { id: element.id, type: element.type, path: element.path };
         setTimeout(() => {
-            setUiAtomValue(prev => ({
-                ...prev,
-                isDragging: true
-            }));
+            setUiAtomValue(enableDraggingMutation);
         });
         return { ...data, target: plugin.target };
     }, [elementId]);
 
     const endDrag = React.useCallback(() => {
-        setUiAtomValue(prev => ({
-            ...prev,
-            isDragging: false
-        }));
+        setUiAtomValue(disableDraggingMutation);
     }, [elementId]);
 
     const onClick = React.useCallback((): void => {
         if (element.type === "document" || isActive) {
             return;
         }
-        setUiAtomValue(prev => ({
-            ...prev,
-            activeElement: elementId
-        }));
+        setUiAtomValue(prev => activateElementMutation(prev, elementId));
     }, [elementId]);
 
     const onMouseOver = React.useCallback(
@@ -81,10 +76,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setUiAtomValue(prev => ({
-                ...prev,
-                highlightElement: elementId
-            }));
+            setUiAtomValue(prev => highlightElementMutation(prev, elementId));
         },
         [elementId]
     );
@@ -97,7 +89,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setUiAtomValue(highlightElementMutation);
+            setUiAtomValue(unHighlightElementMutation);
         },
         [elementId]
     );
@@ -118,7 +110,11 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         return null;
     }
 
-    const renderedPlugin = tryRenderingPlugin(() => plugin.render({ element }));
+    const renderedPlugin = tryRenderingPlugin(() =>
+        plugin.render({
+            element
+        })
+    );
 
     return (
         <Transition in={true} timeout={250} appear={true}>

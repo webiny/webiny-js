@@ -5,6 +5,7 @@ import { PbShallowElement } from "@webiny/app-page-builder/types";
 type DocumentProps = { element: PbShallowElement };
 
 const Document = ({ element }: DocumentProps) => {
+    console.log(JSON.stringify(element));
     return (
         <div className={"webiny-pb-page-document"} data-testid={"pb-editor-page-canvas-section"}>
             {element.elements.map(el => {

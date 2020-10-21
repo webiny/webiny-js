@@ -1,5 +1,5 @@
 import {
-    TogglePluginActionEvent,
+    DeactivatePluginActionEvent,
     UpdateElementActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -85,7 +85,7 @@ const SearchBar = () => {
 
     const deactivatePlugin = () => {
         eventActionHandler.trigger(
-            new TogglePluginActionEvent({
+            new DeactivatePluginActionEvent({
                 name: "pb-editor-search-blocks-bar"
             })
         );
@@ -106,9 +106,6 @@ const SearchBar = () => {
                 ...content,
                 elements: [...content.elements, createBlockElements(plugin.name)]
             };
-            console.log("ADDING BLOCK TO CONTENT");
-            console.log(JSON.stringify(element));
-            console.log("ADDED BLOCK TO CONTENT");
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
                     element

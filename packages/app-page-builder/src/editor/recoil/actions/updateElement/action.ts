@@ -2,13 +2,13 @@ import { UpdateElementActionArgsType } from "./types";
 import { EventActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashCloneDeep from "lodash/cloneDeep";
-import lodashGet from "lodash/get";
 import lodashMerge from "lodash/merge";
-import lodashSet from "lodash/set";
 import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import {
+    extrapolateContentElementUtil,
     flattenContentUtil,
     saveEditorPageRevisionUtil,
+    saveElementToPathUtil,
     updateChildPathsUtil
 } from "@webiny/app-page-builder/editor/recoil/utils";
 
@@ -38,6 +38,7 @@ const cloneAndMergePageContentState = (page: PageAtomType, element: PbElement, m
     }
     return lodashMerge(page.content, newElement);
 };
+
 /**
  * TODO find a better way
  * this builds new page content state
@@ -49,13 +50,15 @@ const buildNewPageContentState = (
     merge: boolean
 ) => {
     const newElement = updateChildPathsUtil(createElementWithoutElementsAsString(element));
-    // .slice(2) removes `0.` from the beginning of the generated path
-    const path = element.path.replace(/\./g, ".elements.").slice(2);
-    const existingElement = lodashGet(content, path);
+    const existingElement = extrapolateContentElementUtil(content, element.path);
     if (merge) {
-        return lodashSet(content, path, lodashMerge(existingElement, newElement));
+        return saveElementToPathUtil(
+            content,
+            element.path,
+            lodashMerge(existingElement, newElement)
+        );
     }
-    return lodashSet(content, path, element);
+    return saveElementToPathUtil(content, element.path, newElement);
 };
 const createNewPageState = (page: PageAtomType, element: PbElement, merge: boolean) => {
     if (element.type === "document") {
@@ -76,15 +79,13 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
     args
 ) => {
     const { element, merge, history } = args;
-    const { page } = state;
-
-    const newPageState = createNewPageState(lodashCloneDeep(page), element, merge);
+    const page = createNewPageState(lodashCloneDeep(state.page), element, merge);
     // TODO find a way to save revision after setting the state
     if (history === true) {
         // saveEditorPageRevisionUtil(newPageState);
     }
     return {
-        page: newPageState,
-        elements: flattenContentUtil(lodashCloneDeep(newPageState.content))
+        page,
+        elements: flattenContentUtil(lodashCloneDeep(page.content))
     };
 };
