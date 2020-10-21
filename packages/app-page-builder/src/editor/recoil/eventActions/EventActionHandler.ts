@@ -1,3 +1,4 @@
+import { getGlobalState } from "@webiny/app-page-builder/editor/provider";
 import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
 import {
     elementsAtom,
@@ -40,7 +41,7 @@ type EventActionCallableArgsType = {
 export type EventActionCallableType<T extends EventActionCallableArgsType = any> = (
     state: EventActionHandlerActionStateType,
     args?: T
-) => EventActionHandlerActionStateResponseType;
+) => EventActionHandlerActionStateResponseType | Promise<EventActionHandlerActionStateResponseType>;
 
 type ListType = Map<symbol, EventActionCallableType>;
 type RegistryType = Map<string, ListType>;
@@ -78,20 +79,7 @@ export class EventActionHandler {
         };
     }
 
-    public off(id: symbol): boolean {
-        const registry = Array.from(this._registry.values());
-        for (const list of registry) {
-            if (!list.has(id)) {
-                continue;
-            }
-            return list.delete(id);
-        }
-        return false;
-    }
-
-    public async trigger<T extends EventActionCallableArgsType>(
-        ev: EventAction<T>
-    ): Promise<number> {
+    public async trigger<T extends EventActionCallableArgsType>(ev: EventAction<T>): Promise<void> {
         const name = ev.getName();
         if (!this.has(ev.getName())) {
             throw new Error(`There is no event action that is registered with name "${name}".`);
@@ -115,13 +103,14 @@ export class EventActionHandler {
             actions: []
         };
         for (const cb of callables) {
-            const r = await cb({ ...initialState, ...results.state }, args);
+            const r = (await cb({ ...initialState, ...results.state }, args)) || ({} as any);
             results.state = {
                 ...results.state,
                 ...(r.state || {})
             };
             results.actions.push(...(r.actions || []));
         }
+
         const hasResults = Object.values(results.state).length > 0;
         if (hasResults) {
             this.saveState(results);
@@ -136,6 +125,17 @@ export class EventActionHandler {
 
     public clearRegistry(): void {
         this._registry.clear();
+    }
+
+    private off(id: symbol): boolean {
+        const registry = Array.from(this._registry.values());
+        for (const list of registry) {
+            if (!list.has(id)) {
+                continue;
+            }
+            return list.delete(id);
+        }
+        return false;
     }
 
     private get(name: string): ListType {

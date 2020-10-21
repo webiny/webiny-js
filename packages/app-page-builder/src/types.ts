@@ -1,3 +1,4 @@
+import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { Value } from "slate";
@@ -444,4 +445,17 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     elementType: string;
     render(params?: { Bind: BindComponent; data: any }): ReactElement;
     onSave?: (data: FormData) => FormData;
+};
+
+export type PbEditorEventActionPlugin = Plugin & {
+    type: "pb-editor-event-action-plugin";
+    name: string;
+    // returns an unregister event action callable
+    // please have one action per plugin
+    // you can register more but then unregistering won't work properly
+    onEditorMount: (handler: EventActionHandler) => () => void;
+    // runs when editor is unmounting
+    // by default it runs unregister callable
+    // but dev can do what ever and then run unregister callable - or not
+    onEditorUnmount?: (handler: EventActionHandler, cb: () => void) => void;
 };
