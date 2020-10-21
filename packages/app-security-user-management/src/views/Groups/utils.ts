@@ -1,12 +1,23 @@
 import { plugins } from "@webiny/plugins";
 import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
-import {
-    accessLevelOperations,
-    AccessLevelOperationType,
-    orderAccessLevel
-} from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/PermissionAccessLevel";
-import { PermissionRendererCmsManage } from "@webiny/app-headless-cms/types";
 import { pick } from "lodash";
+
+// FIXME: Remove this after "permission UI" refactor
+export const accessLevelOperations = ["list", "update", "delete", "publish"];
+
+export const orderAccessLevel = list => {
+    return list.sort(accessLevelSorter);
+};
+
+const accessLevelSorter = (a, b) => {
+    if (accessLevelOperations.indexOf(a) > accessLevelOperations.indexOf(b)) {
+        return 1;
+    } else if (accessLevelOperations.indexOf(a) < accessLevelOperations.indexOf(b)) {
+        return -1;
+    } else {
+        return 0;
+    }
+};
 
 const createPermissionsForDB = (permission: SecurityPermission): SecurityPermission[] => {
     const { name: permissionName, accessLevel, ...props } = permission;
@@ -20,7 +31,7 @@ const createPermissionsForDB = (permission: SecurityPermission): SecurityPermiss
     }
 
     // Create operation operationTypes from access level
-    const operationTypes: AccessLevelOperationType[] = accessLevel.split("|");
+    const operationTypes = accessLevel.split("|");
 
     return operationTypes.map(token => ({
         ...props,
@@ -44,11 +55,12 @@ const createPermissionForUI = (
         const permissionsWithKey = permissions.filter(perm => {
             const dot = ".";
             const tokens = perm.name.split(dot);
-            const operation = tokens.pop() as AccessLevelOperationType;
+            const operation = tokens.pop();
             let permissionNameAsKey = tokens.join(dot);
 
             // Special case where the permission name doesn't contains "operation"
             // For example, "cms.manage.setting" or "cms.manage.environment"
+            // @ts-ignore
             if (!accessLevelOperations.includes(operation)) {
                 permissionNameAsKey = perm.name;
             }
@@ -68,7 +80,8 @@ const createPermissionForUI = (
         const operations = [];
 
         permissionsWithKey.forEach(perm => {
-            const operationType = perm.name.split(".").pop() as AccessLevelOperationType;
+            const operationType = perm.name.split(".").pop();
+            // @ts-ignore
             if (accessLevelOperations.includes(operationType)) {
                 operations.push(operationType);
             }
@@ -87,10 +100,8 @@ const createPermissionForUI = (
 };
 
 export const createPermissionsMap = (permissions: SecurityPermission[]) => {
-    const cmsPermissionRendererPlugins = plugins.byType<PermissionRendererCmsManage>(
-        "permission-renderer-cms-manage"
-    );
-    // TODO: Can we do it in a better way
+    // FIXME: Remove this after "permission UI" refactor
+    const cmsPermissionRendererPlugins = plugins.byType("permission-renderer-cms-manage");
     const fileManagerPermissionRendererPlugins = plugins.byType("permission-renderer-file-manager");
     const securityPermissionRendererPlugins = plugins.byType("permission-renderer-security");
 

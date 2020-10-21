@@ -7,7 +7,6 @@
     "./dist",
     "../app",
     "../app-admin",
-    "../app-headless-cms",
     "../app-security",
     "../form",
     "../plugins",
@@ -24,7 +23,6 @@
   "references": [
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
