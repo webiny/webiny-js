@@ -45,8 +45,7 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        const { process } = await pulumi.run({ command: ["stack", "select", env] });
-        await process;
+        await pulumi.run({ command: ["stack", "select", env] });
     } catch (e) {
         stackExists = false;
     }
@@ -61,14 +60,13 @@ module.exports = async (inputs, context) => {
     await processHooks("hook-before-destroy", hooksParams);
     await processHooks("hook-stack-before-destroy", hooksParams);
 
-    const { toConsole } = await pulumi.run({
+    await pulumi.run({
         command: "destroy",
+        execa: { stdio: "inherit" },
         args: {
             yes: true
         }
     });
-
-    await toConsole();
 
     console.log(`\n🎉 Done! Resources destroyed.`);
 

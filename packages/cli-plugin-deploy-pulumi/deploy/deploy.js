@@ -86,15 +86,13 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        const { process } = await pulumi.run({ command: ["stack", "select", env] });
-        await process;
+        await pulumi.run({ command: ["stack", "select", env] });
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        const { process: pulumiProcess } = await pulumi.run({ command: ["stack", "init", env] });
-        await pulumiProcess;
+        await pulumi.run({ command: ["stack", "init", env] });
 
         // We need to add an arbitrary "aws:region" config value, just because Pulumi needs something to be there.
         // @sse https://github.com/pulumi/pulumi-aws/issues/1153
@@ -105,10 +103,9 @@ module.exports = async (inputs, context) => {
             }
         });
 
-        const { process: configProcess } = await pulumiConfig.run({
+        await pulumiConfig.run({
             command: ["config", "set", "aws:region", process.env.AWS_REGION]
         });
-        await configProcess;
     }
 
     const isFirstDeploy = !stackExists;
@@ -131,23 +128,25 @@ module.exports = async (inputs, context) => {
 
     if (inputs.preview) {
         const pulumi = new Pulumi();
-        const { toConsole } = await pulumi.run({
+        await pulumi.run({
             command: "preview",
             execa: {
                 cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE },
+                stdio: "inherit"
             }
         });
-        await toConsole();
     } else {
-        const { toConsole } = await pulumi.run({
+        await pulumi.run({
             command: "up",
             args: {
                 yes: true,
                 skipPreview: true
+            },
+            execa: {
+                stdio: "inherit"
             }
         });
-        await toConsole();
     }
 
     const duration = getDuration();

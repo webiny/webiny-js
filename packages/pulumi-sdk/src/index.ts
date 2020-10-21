@@ -1,7 +1,6 @@
 import execa from "execa";
 import * as path from "path";
 import { merge, kebabCase, set } from "lodash";
-import toConsole from "./toConsole";
 import downloadBinaries from "./downloadBinaries";
 
 type Command = string | string[];
@@ -42,18 +41,17 @@ class Pulumi {
         );
 
         if (installed) {
-            const subProcess = execa(
+            await execa(
                 path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
                 ["plugin", "install", "resource", "aws", "v3.5.0"],
                 {
+                    stdio: "inherit",
                     env: {
                         PULUMI_HOME: PULUMI_FOLDER,
                         PULUMI_SKIP_UPDATE_CHECK: "true"
                     }
                 }
             );
-
-            await toConsole(subProcess);
         }
 
         if (!Array.isArray(args.command)) {
@@ -81,17 +79,11 @@ class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", PULUMI_FOLDER);
 
-        const subProcess = execa(
+        return await execa(
             path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
             [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
-            args.execa
+            { ...args.execa }
         );
-
-        return {
-            installed,
-            process: subProcess,
-            toConsole: () => toConsole(subProcess)
-        };
     }
 }
 
