@@ -7,9 +7,6 @@ class ElasticSearch {
     constructor() {
         const domainName = "webiny-js";
 
-        const currentRegion = aws.getRegion({});
-        const currentCallerIdentity = aws.getCallerIdentity({});
-
         const esServiceLinkedRole = new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
             awsServiceName: "es.amazonaws.com"
         });
@@ -33,21 +30,6 @@ class ElasticSearch {
                 advancedOptions: {
                     "rest.action.multi.allow_explicit_index": "true"
                 },
-                accessPolicies: Promise.all([currentRegion, currentCallerIdentity]).then(
-                    ([currentRegion, currentCallerIdentity]) => ({
-                        Version: "2012-10-17",
-                        Statement: [
-                            {
-                                Action: ["es:*"],
-                                Principal: {
-                                    AWS: ["*"]
-                                },
-                                Effect: "Allow",
-                                Resource: `arn:aws:es:${currentRegion.name}:${currentCallerIdentity.accountId}:domain/${domainName}/*`
-                            }
-                        ]
-                    })
-                ),
                 snapshotOptions: {
                     automatedSnapshotStartHour: 23
                 },
@@ -59,6 +41,23 @@ class ElasticSearch {
                 dependsOn: [esServiceLinkedRole]
             }
         );
+
+        new aws.elasticsearch.DomainPolicy(`${domainName}-policy`, {
+            domainName: this.domain.domainName.apply(v => `${v}`),
+            accessPolicies: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: ["es:*"],
+                        Principal: {
+                            AWS: ["*"]
+                        },
+                        Effect: "Allow",
+                        Resource: this.domain.arn.apply(v => `${v}/*`)
+                    }
+                ]
+            }
+        });
     }
 }
 
