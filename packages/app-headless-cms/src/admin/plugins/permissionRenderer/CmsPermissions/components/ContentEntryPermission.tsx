@@ -17,6 +17,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 export const ContentEntryPermission = ({ Bind, data, entity, title }) => {
+    // TODO: We'll revisit "locale" based data fetching later.
     // Data fetching
     const {
         data: contentModelData,
