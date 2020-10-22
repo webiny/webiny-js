@@ -11,15 +11,14 @@ export default () =>
     ({
         type: "admin-app-permissions-renderer",
         name: "admin-app-permissions-renderer-security",
-        render({ id, ...props }) {
+        render(props) {
             return (
                 <AccordionItem
                     icon={<SecurityIcon />}
                     title={t`Security`}
                     description={t`Manage Security app access permissions.`}
                 >
-                    {/* We use key to unmount the component */}
-                    <SecurityPermissions key={id} {...props} />
+                    <SecurityPermissions {...props} />
                 </AccordionItem>
             );
         }

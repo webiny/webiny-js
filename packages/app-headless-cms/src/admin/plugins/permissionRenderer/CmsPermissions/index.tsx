@@ -7,15 +7,14 @@ import { CMSPermissions } from "./CmsPermissions";
 export default {
     type: "admin-app-permissions-renderer",
     name: "admin-app-permissions-renderer-cms",
-    render({ id, ...props }) {
+    render(props) {
         return (
             <AccordionItem
                 icon={<HeadlessCMSIcon />}
                 title={"Headless CMS"}
                 description={"Manage Headless CMS app access permissions."}
             >
-                {/* We use key to unmount the component */}
-                <CMSPermissions key={id} {...props} />
+                <CMSPermissions {...props} />
             </AccordionItem>
         );
     }
