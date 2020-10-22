@@ -15,6 +15,8 @@ import install from "./install";
 import scopesList from "./scopesList";
 import welcomeScreenWidget from "./welcomeScreenWidget";
 
+import permissionRenderer from "./permissionRenderer";
+
 export default () => [
     install,
     settings,
@@ -32,5 +34,6 @@ export default () => [
     formEditorPlugins,
     formSitePlugins(),
 
-    welcomeScreenWidget
+    welcomeScreenWidget,
+    permissionRenderer()
 ];
