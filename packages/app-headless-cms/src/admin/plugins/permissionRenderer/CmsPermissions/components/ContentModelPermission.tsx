@@ -112,7 +112,9 @@ export const ContentModelPermission = ({ Bind, data, entity, title }) => {
                                     <option value={"rw"}>{t`Read, write`}</option>
                                     <option value={"rwp"}>{t`Read, write, publish`}</option>
                                     <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    <option value={"rwdp"}>{t`Read, write, delete, publish`}</option>
+                                    <option
+                                        value={"rwdp"}
+                                    >{t`Read, write, delete, publish`}</option>
                                 </Select>
                             </Bind>
                         </Cell>

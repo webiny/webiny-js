@@ -34,7 +34,9 @@ export const PermissionSelector = ({
     const { list, error, loading } = dataList;
 
     if (error) {
-        return <Typography use={"subtitle2"}>{error?.message || "Something went wrong!"}</Typography>;
+        return (
+            <Typography use={"subtitle2"}>{error?.message || "Something went wrong!"}</Typography>
+        );
     }
 
     if (loading) {

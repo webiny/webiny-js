@@ -77,14 +77,16 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const returnData = { accessLevel: 'custom', settingsAccessLevel: "no" };
+        const returnData = { accessLevel: "custom", settingsAccessLevel: "no" };
         ["categories", "menus", "pages"].forEach(entity => {
             const data = {
                 [`${entity}AccessLevel`]: "no",
                 [`${entity}Permissions`]: "r"
             };
 
-            const entityPermission = permissions.find(item => item.name === `page-builder.${entity}`);
+            const entityPermission = permissions.find(
+                item => item.name === `page-builder.${entity}`
+            );
             if (entityPermission) {
                 data[`${entity}AccessLevel`] = entityPermission.own ? "own" : "full";
                 if (data[`${entity}AccessLevel`] === "full") {

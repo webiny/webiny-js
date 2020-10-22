@@ -1,4 +1,3 @@
-import KSUID from "ksuid";
 import { validation } from "@webiny/validation";
 import { compose } from "ramda";
 import { withName } from "@commodo/name";

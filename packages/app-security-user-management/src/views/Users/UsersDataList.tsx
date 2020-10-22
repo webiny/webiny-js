@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
 
