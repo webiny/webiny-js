@@ -2,8 +2,7 @@ import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import { ReactComponent as HeadlessCMSIcon } from "@webiny/app-headless-cms/admin/icons/devices_other-black-24px.svg";
-
-import { CmsPermissions } from "./components/CmsPermissions";
+import { CMSPermissions } from "./CmsPermissions";
 
 export default {
     type: "admin-app-permissions-renderer",
@@ -11,13 +10,12 @@ export default {
     render({ id, ...props }) {
         return (
             <AccordionItem
-                key={this.name}
                 icon={<HeadlessCMSIcon />}
                 title={"Headless CMS"}
-                description={"Permissions for Headless CMS"}
+                description={"Manage Headless CMS app access permissions."}
             >
                 {/* We use key to unmount the component */}
-                <CmsPermissions key={id} {...props} />
+                <CMSPermissions key={id} {...props} />
             </AccordionItem>
         );
     }
