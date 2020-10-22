@@ -45,7 +45,7 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
                 if (data.filesAccessLevel === "own") {
                     permission.own = true;
                 } else {
-                    permission.permissions = dpermissionRendererata.filesPermissions;
+                    permission.permissions = data.filesPermissions;
                 }
                 newValue.push(permission);
             }
