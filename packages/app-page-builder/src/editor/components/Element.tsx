@@ -7,15 +7,14 @@ import { unHighlightElementMutation } from "@webiny/app-page-builder/editor/reco
 import {
     activateElementMutation,
     elementByIdSelector,
-    elementPropsByIdSelector,
-    elementWithChildrenByIdSelector,
+    getElementProps,
     highlightElementMutation,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
@@ -43,8 +42,8 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     className = ""
 }) => {
     const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
-    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(elementId));
-    const setUiAtomValue = useSetRecoilState(uiAtom);
+    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const { isActive, isHighlighted } = getElementProps(uiAtomValue, element);
 
     const plugin = getElementPlugin(element);
 
@@ -82,12 +81,8 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     );
     const onMouseLeave = React.useCallback(
         ev => {
-            if (element.type === "document") {
-                return;
-            }
-            ev.stopPropagation();
-            if (!isHighlighted) {
-                return;
+            if (element.type !== "document") {
+                ev.stopPropagation();
             }
             setUiAtomValue(unHighlightElementMutation);
         },

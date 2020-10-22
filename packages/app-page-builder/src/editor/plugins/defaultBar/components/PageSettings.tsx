@@ -4,7 +4,7 @@ import {
     DeactivatePluginActionEvent,
     UpdatePageRevisionActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { pageAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -25,6 +25,7 @@ import { useRecoilValue } from "recoil";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 import { useApolloClient } from "react-apollo";
+import lodashOmit from "lodash/omit";
 
 type PageSettingsPropsType = {
     [key: string]: any;
@@ -46,6 +47,8 @@ const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}
         />
     );
 };
+
+const excludedPageKeys = ["content"];
 
 type PageSettingsContentPropsType = {
     pluginsByType: PbEditorPageSettingsPlugin[];
@@ -72,10 +75,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
         );
     }, []);
 
-    const page = {
-        ...pageAtomValue,
-        content: undefined
-    };
+    const page = lodashOmit<PageAtomType, "content">(pageAtomValue, ["content"]);
 
     const savePage = useCallback(
         pageValue => {

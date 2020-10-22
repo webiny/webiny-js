@@ -1,6 +1,7 @@
+import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { selectorFamily } from "recoil";
 import { elementByIdSelector } from "./elementByIdSelector";
-import { uiAtom } from "../../ui/uiAtom";
+import { uiAtom, UiAtomType } from "../../ui/uiAtom";
 
 type ActiveElementPropsByIdSelector = {
     isActive: boolean;
@@ -23,3 +24,25 @@ export const elementPropsByIdSelector = selectorFamily<ActiveElementPropsByIdSel
         };
     }
 });
+
+type GetElementPropsCallableType = (
+    state: UiAtomType,
+    element?: PbElement | PbShallowElement
+) => ActiveElementPropsByIdSelector;
+export const getElementProps: GetElementPropsCallableType = (state, element) => {
+    if (!element) {
+        return {
+            isActive: false,
+            isHighlighted: false
+        };
+    }
+    const { isDragging, isResizing, activeElement, highlightElement } = state;
+
+    const active = activeElement && activeElement === element.id;
+    const highlight = active || highlightElement === element.id;
+
+    return {
+        isActive: active,
+        isHighlighted: highlight && !isDragging && !isResizing
+    };
+};
