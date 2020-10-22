@@ -17,7 +17,7 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { plugins } from "@webiny/plugins";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { formatDataForAPI } from "./utils";
+import { pickDataForAPI } from "./utils";
 import { useMutation, useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import get from "lodash/get";
@@ -57,8 +57,8 @@ const GroupForm = () => {
         async data => {
             const isUpdate = data.createdOn;
             const [operation, args] = isUpdate
-                ? [update, { variables: { id: data.id, ...formatDataForAPI(data) } }]
-                : [create, { variables: { ...formatDataForAPI(data) } }];
+                ? [update, { variables: { id: data.id, data: pickDataForAPI(data) } }]
+                : [create, { variables: { data: pickDataForAPI(data) } }];
 
             const response = await operation(args);
 

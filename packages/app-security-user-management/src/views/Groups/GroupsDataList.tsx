@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import {
     DataList,
     ScrollList,
