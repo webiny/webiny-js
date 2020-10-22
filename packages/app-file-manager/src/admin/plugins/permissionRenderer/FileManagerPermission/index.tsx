@@ -15,7 +15,7 @@ export default {
             <AccordionItem
                 icon={<FileManagerIcon />}
                 title={t`File Manager`}
-                description={t`Permissions for File manager app`}
+                description={t`Manage File manager app access permissions.`}
             >
                 <FileManagerPermissions {...props} />
             </AccordionItem>
