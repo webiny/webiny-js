@@ -17,6 +17,9 @@
     "@webiny/commodo-graphql": "^4.11.0-beta.1",
     "@webiny/graphql": "^4.11.0-beta.1",
     "@webiny/validation": "^4.11.0-beta.1",
+    "@webiny/handler-aws": "^4.13.0",
+    "@webiny/handler-apollo-server": "^4.13.0",
+    "@webiny/api-plugin-commodo-dynamodb": "^4.13.0",
     "@webiny/handler-client": "^4.13.0",
     "@webiny/handler-http": "^4.13.0",
     "commodo-fields-object": "^1.0.6",
@@ -24,16 +27,17 @@
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.20",
     "md5": "^2.3.0",
-    "merge": "^1.2.1",
+    "repropose": "^1.0.2",
+    "ramda": "^0.26.1",
     "@commodo/fields": "beta",
     "@commodo/fields-storage": "beta",
-    "@commodo/fields-storage-dynamodb": "beta",
     "@commodo/hooks": "beta",
     "@commodo/name": "beta"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5"
+    "@babel/core": "^7.5.5",
+    "@shelf/jest-dynamodb": "^1.7.0"
   },
   "publishConfig": {
     "access": "public",

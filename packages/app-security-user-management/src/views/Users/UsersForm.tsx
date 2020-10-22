@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { plugins } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
@@ -8,7 +8,6 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { UserManagementUserFormPlugin } from "@webiny/app-security-user-management/types";
-import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -17,21 +16,94 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import AccountTokens from "../Account/AccountTokens";
-import GroupsAutocomplete from "./../Components/GroupsAutocomplete";
+import GroupAutocomplete from "../Components/GroupAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/settings-24px.svg";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
+import { CREATE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useMutation, useQuery } from "react-apollo";
+
+import { pick } from "lodash";
 
 const t = i18n.ns("app-security-user-management/admin/users-form");
 
+const formatData = data =>
+    pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled", "group"]);
+
 const UsersForm = () => {
     const [formIsLoading, setFormIsLoading] = useState(false);
-    const { form: crudForm } = useCrud();
+    const { location, history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+
+    const id = new URLSearchParams(location.search).get("id");
+
+    const getQuery = useQuery(READ_USER, {
+        variables: { id },
+        skip: !id,
+        onCompleted: data => {
+            const error = data?.security?.user?.error;
+            if (error) {
+                history.push("/security/users");
+                showSnackbar(error.message);
+            }
+        }
+    });
+
+    const [create, createMutation] = useMutation(CREATE_USER, {
+        refetchQueries: [{ query: LIST_USERS }]
+    });
+
+    const [update, updateMutation] = useMutation(UPDATE_USER, {
+        refetchQueries: [{ query: LIST_USERS }]
+    });
+
+    const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
+
+    const onSubmit = useCallback(
+        async data => {
+            const isUpdate = data.createdOn;
+            const [operation, args] = isUpdate
+                ? [
+                      update,
+                      {
+                          variables: {
+                              id: data.id,
+                              data: formatData(data)
+                          }
+                      }
+                  ]
+                : [
+                      create,
+                      {
+                          variables: {
+                              data: formatData(data)
+                          }
+                      }
+                  ];
+
+            const response = await operation(args);
+
+            const error = response?.data?.security?.user?.error;
+            if (error) {
+                return showSnackbar(error.message);
+            }
+
+            const id = response?.data?.security?.user?.data?.id;
+
+            !isUpdate && history.push(`/security/users?id=${id}`);
+            showSnackbar(t`User saved successfully.`);
+        },
+        [id]
+    );
+
+    const data = getQuery?.data?.security?.user?.data || {};
 
     const uiPlugins = plugins.byType<UserManagementUserFormPlugin>("user-management-user-form");
 
     return (
-        <Form {...crudForm}>
+        <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind, setValue }) => (
                 <>
                     <div style={{ marginBottom: "32px", marginTop: "24px" }}>
@@ -40,7 +112,7 @@ const UsersForm = () => {
                         </Bind>
                     </div>
                     <SimpleForm>
-                        {(formIsLoading || crudForm.loading) && <CircularProgress />}
+                        {(formIsLoading || loading) && <CircularProgress />}
                         <SimpleFormHeader title={data.fullName || t`New User`} />
                         <SimpleFormContent>
                             <Accordion elevation={0}>
@@ -88,7 +160,7 @@ const UsersForm = () => {
                                 >
                                     <Cell span={12} style={{ marginBottom: "8px" }}>
                                         <Bind name="group">
-                                            <GroupsAutocomplete label={t`Group`} />
+                                            <GroupAutocomplete label={t`Group`} />
                                         </Bind>
                                     </Cell>
                                 </AccordionItem>

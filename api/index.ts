@@ -1,4 +1,3 @@
-import * as pulumi from "@pulumi/pulumi";
 import getDatabase from "./stack/database";
 import Cognito from "./stack/cognito";
 import Security from "./stack/security";

@@ -1,53 +1,33 @@
 import React from "react";
-import { pick } from "lodash";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import UsersDataList from "./UsersDataList";
 import UsersForm from "./UsersForm";
-import { CREATE_USER, DELETE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
-import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
-
-const variables = data => {
-    return {
-        data: {
-            ...pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled"]),
-            group: data?.group
-        }
-    };
-};
+import { useRouter } from "@webiny/react-router";
 
 const Users = () => {
+    const { history } = useRouter();
     return (
-        <CrudProvider
-            delete={DELETE_USER}
-            read={READ_USER}
-            create={{ mutation: CREATE_USER, variables }}
-            update={{ mutation: UPDATE_USER, variables }}
-            list={{
-                query: LIST_USERS,
-                variables: { sort: { savedOn: -1 } }
-            }}
-        >
-            {({ actions }) => (
-                <>
-                    <SplitView>
-                        <LeftPanel>
-                            <UsersDataList />
-                        </LeftPanel>
-                        <RightPanel
-                            style={{
-                                marginLeft: "100px",
-                                marginRight: "100px",
-                                overflow: "hidden"
-                            }}
-                        >
-                            <UsersForm />
-                        </RightPanel>
-                    </SplitView>
-                    <FloatingActionButton onClick={actions.resetForm} />
-                </>
-            )}
-        </CrudProvider>
+        <>
+            <SplitView>
+                <LeftPanel>
+                    <UsersDataList />
+                </LeftPanel>
+                <RightPanel
+                    style={{
+                        marginLeft: "100px",
+                        marginRight: "100px",
+                        overflow: "hidden"
+                    }}
+                >
+                    <UsersForm />
+                </RightPanel>
+            </SplitView>
+            <FloatingActionButton
+                data-testid="new-record-button"
+                onClick={() => history.push("/security/users")}
+            />
+        </>
     );
 };
 

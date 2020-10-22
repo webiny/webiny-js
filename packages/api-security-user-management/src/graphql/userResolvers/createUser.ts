@@ -22,13 +22,13 @@ const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
             personalAccessTokens: data.personalAccessTokens
         });
 
-        await createSecurityUser({ Model, user });
-
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(
             "security-user-management"
         );
 
         await authPlugin.createUser({ data: data, user }, context);
+
+        await createSecurityUser({ Model, user });
 
         return new Response(user);
     } catch (e) {

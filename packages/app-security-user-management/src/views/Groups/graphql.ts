@@ -6,26 +6,18 @@ const fields = `
     slug
     description
     permissions
+    createdOn
 `;
 
 export const LIST_GROUPS: any = gql`
-    query listGroups($where: ListSecurityGroupWhereInput, $sort: Int) {
+    query listGroups {
         security {
-            groups: listGroups(where: $where, sort: $sort) {
+            groups: listGroups {
                 data {
                     id
                     name
                     description
                     createdOn
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
                 }
             }
         }

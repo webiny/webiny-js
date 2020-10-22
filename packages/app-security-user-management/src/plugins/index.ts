@@ -4,7 +4,6 @@ import routes from "./routes";
 import menus from "./menus";
 import secureRouteError from "./secureRouteError";
 import installation from "./installation";
-import scopesList from "./scopesList";
 import permissionRenderer from "./permissionRenderer";
 
 export default () => [
@@ -13,7 +12,6 @@ export default () => [
     globalSearchUsers,
     routes,
     menus,
-    scopesList,
     secureRouteError,
     installation,
     permissionRenderer()

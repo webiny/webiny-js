@@ -3,8 +3,9 @@ import { AdminGlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
 import routes from "./routes";
 import menus from "./menus";
 import richTextEditor from "./richTextEditor";
+import localeSelector from "./localeSelector";
 import install from "./install";
-import scopesList from "./scopesList";
+import permissionRenderer from "./permissionRenderer";
 
 /**
  * Prevents opening global search menu when pressing "/" inside of I18N Rich Text Editor.
@@ -23,7 +24,8 @@ const globalSearchHotkey: AdminGlobalSearchPreventHotkeyPlugin = {
 export default () => [
     routes,
     menus,
-    scopesList,
+    localeSelector,
+    permissionRenderer(),
     richTextEditor,
     i18nSitePlugins(),
     globalSearchHotkey,
