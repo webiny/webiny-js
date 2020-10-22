@@ -10,11 +10,12 @@ import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./CustomSection";
+
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
 const PAGE_BUILDER = "pb";
 const PAGE_BUILDER_FULL_ACCESS = "pb.*";
-
+const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
@@ -34,7 +35,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                 return;
             }
 
-            if (data.accessLevel === "full") {
+            if (data.accessLevel === FULL_ACCESS) {
                 newValue.push({ name: PAGE_BUILDER_FULL_ACCESS });
                 onChange(newValue);
                 return;
@@ -44,9 +45,9 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             // Categories, menus, and pages first.
             ENTITIES.forEach(entity => {
-                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
+                if (data[`${entity}AccessLevel`] && data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
-                        name: `page-builder.${entity}`,
+                        name: `${PAGE_BUILDER}.${entity}`,
                         own: false,
                         permissions: undefined
                     };
@@ -62,12 +63,12 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             // Settings second.
             if (data.settingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: "page-builder.settings" });
+                newValue.push({ name: PAGE_BUILDER_SETTINGS_ACCESS });
             }
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -75,10 +76,10 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             return { accessLevel: NO_ACCESS };
         }
 
-        const fullAccessPermission = value.find(
+        const hasFullAccess = value.find(
             item => item.name === PAGE_BUILDER_FULL_ACCESS || item.name === "*"
         );
-        if (fullAccessPermission) {
+        if (hasFullAccess) {
             return { accessLevel: FULL_ACCESS };
         }
 
@@ -96,7 +97,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             };
 
             const entityPermission = permissions.find(
-                item => item.name === `page-builder.${entity}`
+                item => item.name === `${PAGE_BUILDER}.${entity}`
             );
             if (entityPermission) {
                 data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
@@ -109,7 +110,9 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         });
 
         // Finally, let's prepare data for Page Builder settings.
-        const hasSettingsAccess = permissions.find(item => item.name === "page-builder.settings");
+        const hasSettingsAccess = permissions.find(
+            item => item.name === PAGE_BUILDER_SETTINGS_ACCESS
+        );
         if (hasSettingsAccess) {
             returnData.settingsAccessLevel = FULL_ACCESS;
         }

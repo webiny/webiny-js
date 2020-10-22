@@ -45,7 +45,7 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
             // Handling custom access level.
 
             // Files first.
-            if (data.filesAccessLevel !== NO_ACCESS) {
+            if (data.filesAccessLevel && data.filesAccessLevel !== NO_ACCESS) {
                 const permission = {
                     name: FILE_MANAGER_ACCESS_FILE,
                     own: false,
@@ -66,7 +66,7 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -74,10 +74,10 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
             return { accessLevel: NO_ACCESS };
         }
 
-        const fullAccessPermission = value.find(
+        const hasFullAccess = value.find(
             item => item.name === FILE_MANAGER_FULL_ACCESS || item.name === "*"
         );
-        if (fullAccessPermission) {
+        if (hasFullAccess) {
             return { accessLevel: FULL_ACCESS };
         }
 

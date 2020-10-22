@@ -48,7 +48,7 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
 
             // Content models, content model groups, content entries and environments first.
             ENTITIES.forEach(entity => {
-                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
+                if (data[`${entity}AccessLevel`] && data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
                         name: `${CMS_MANAGE}.${entity}`,
                         own: false,
@@ -76,7 +76,7 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -84,10 +84,10 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
             return { accessLevel: NO_ACCESS };
         }
 
-        const fullAccessPermission = value.find(
+        const hasFullAccess = value.find(
             item => item.name === CMS_MANAGE_FULL_ACCESS || item.name === "*"
         );
-        if (fullAccessPermission) {
+        if (hasFullAccess) {
             return { accessLevel: FULL_ACCESS };
         }
 

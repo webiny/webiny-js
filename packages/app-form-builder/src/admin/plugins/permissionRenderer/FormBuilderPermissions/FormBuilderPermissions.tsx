@@ -48,7 +48,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             // Forms and submissions first.
             ENTITIES.forEach(entity => {
-                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
+                if (data[`${entity}AccessLevel`] && data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
                         name: `${FORM_BUILDER}.${entity}`,
                         own: false,
@@ -71,7 +71,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -79,10 +79,10 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
             return { accessLevel: NO_ACCESS };
         }
 
-        const fullAccessPermission = value.find(
+        const hasFullAccess = value.find(
             item => item.name === FORM_BUILDER_FULL_ACCESS || item.name === "*"
         );
-        if (fullAccessPermission) {
+        if (hasFullAccess) {
             return { accessLevel: FULL_ACCESS };
         }
 

@@ -42,7 +42,7 @@ export const I18NPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -50,13 +50,16 @@ export const I18NPermissions = ({ securityGroup, value, onChange }) => {
             return { level: NO_ACCESS };
         }
 
-        const permission = value.find(item => item.name.startsWith(I18N) || item.name === "*");
-        if (!permission) {
-            return { level: NO_ACCESS };
+        const hasFullAccess = value.find(
+            item => item.name === I18N_FULL_ACCESS || item.name === "*"
+        );
+        if (hasFullAccess) {
+            return { level: FULL_ACCESS };
         }
 
-        if (permission.name === I18N_FULL_ACCESS || permission.name === "*") {
-            return { level: FULL_ACCESS };
+        const permission = value.find(item => item.name.startsWith(I18N));
+        if (!permission) {
+            return { level: NO_ACCESS };
         }
 
         // It's either "i18n.*" or "i18n.locales", that's why `locales: true`.
