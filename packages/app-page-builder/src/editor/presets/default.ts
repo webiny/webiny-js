@@ -19,7 +19,8 @@ import {
     saveRevisionPlugin,
     dropElementPlugin,
     deleteElementPlugin,
-    deactivatePluginPlugin
+    deactivatePluginPlugin,
+    updateRevisionPlugin
 } from "../recoil/actions/plugins";
 
 export default () => [
@@ -37,11 +38,13 @@ export default () => [
     slateEditorPlugins,
     pageSettingsPlugins,
     icons,
+    // action registration
     createElementPlugin(),
     updateElementPlugin(),
     togglePluginPlugin(),
     saveRevisionPlugin(),
     dropElementPlugin(),
     deactivatePluginPlugin(),
-    deleteElementPlugin()
+    deleteElementPlugin(),
+    updateRevisionPlugin()
 ];
