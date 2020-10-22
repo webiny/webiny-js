@@ -67,7 +67,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         setUiAtomValue(prev => activateElementMutation(prev, elementId));
     }, [elementId]);
 
-    const onMouseOver = React.useCallback(
+    const onMouseEnter = React.useCallback(
         (ev): void => {
             if (element.type === "document") {
                 return;
@@ -76,17 +76,18 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
+            console.log("MOUSING OVER");
             setUiAtomValue(prev => highlightElementMutation(prev, elementId));
         },
         [elementId]
     );
-    const onMouseOut = React.useCallback(
+    const onMouseLeave = React.useCallback(
         ev => {
             if (element.type === "document") {
                 return;
             }
             ev.stopPropagation();
-            if (isHighlighted) {
+            if (!isHighlighted) {
                 return;
             }
             setUiAtomValue(unHighlightElementMutation);
@@ -121,8 +122,8 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             {state => (
                 <ElementContainer
                     id={element.id}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
+                    onMouseEnter={onMouseEnter}
+                    onMouseLeave={onMouseLeave}
                     highlight={isHighlighted}
                     active={isActive}
                     style={{ ...defaultStyle, ...transitionStyles[state] }}

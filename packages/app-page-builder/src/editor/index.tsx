@@ -23,4 +23,4 @@ export const Editor = () => {
         </RecoilRoot>
     );
 };
-export { useEditor } from "./provider";
+export { useEventActionHandler } from "./provider";

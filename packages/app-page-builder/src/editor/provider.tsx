@@ -1,17 +1,20 @@
-import { registerDefaultEventActions } from "@webiny/app-page-builder/editor/provider/utils/registerDefaultEventActions";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
     elementsAtom,
+    ElementsAtomType,
     pageAtom,
+    PageAtomType,
     pluginsAtom,
-    uiAtom
+    PluginsAtomType,
+    uiAtom,
+    UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import {
     connectedAtomValue,
     updateConnectedValue
 } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import React, { createContext, useContext } from "react";
-import { RecoilState } from "recoil";
+import { RecoilState, useRecoilState } from "recoil";
 
 type ProviderType = {
     eventActionHandler: EventActionHandler;
@@ -22,25 +25,14 @@ export const EditorProvider: React.FunctionComponent<any> = props => {
     const provider: ProviderType = {
         eventActionHandler
     };
-    registerDefaultEventActions(eventActionHandler);
+    console.log("CONSTRUCTED EVENT ACTION HANDLER");
     return (
         <EditorContext.Provider value={provider} {...props}>
             {props.children}
         </EditorContext.Provider>
     );
 };
-export const useEditor = () => useContext<ProviderType>(EditorContext as any);
 
-const createUseEditorStateAtom = <T extends any>(atom: RecoilState<T>) => {
-    return {
-        set: (value: T): void => {
-            updateConnectedValue(atom, value);
-        },
-        get: (): T => {
-            return connectedAtomValue(atom);
-        }
-    };
-};
 export const getGlobalState = () => ({
     ui: connectedAtomValue(uiAtom),
     plugins: connectedAtomValue(pluginsAtom),
@@ -49,15 +41,6 @@ export const getGlobalState = () => ({
 });
 
 (window as any).getGlobalState = getGlobalState;
-
-export const useEditorState = () => {
-    return {
-        ui: createUseEditorStateAtom(uiAtom),
-        plugins: createUseEditorStateAtom(pluginsAtom),
-        elements: createUseEditorStateAtom(elementsAtom),
-        page: createUseEditorStateAtom(pageAtom)
-    };
-};
 
 export const useEventActionHandler = (): EventActionHandler => {
     const ctx = useContext<ProviderType>(EditorContext as any);
