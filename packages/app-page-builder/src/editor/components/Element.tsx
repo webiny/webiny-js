@@ -76,7 +76,6 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            console.log("MOUSING OVER");
             setUiAtomValue(prev => highlightElementMutation(prev, elementId));
         },
         [elementId]
