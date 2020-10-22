@@ -5,7 +5,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { useQuery } from "react-apollo";
 import { READ_MENU } from "../graphql";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
-import { useNavigation, Menu, Item, Section } from "./MenuDrawerComponents";
+import { useNavigation, Menu, Item, Section } from "./MenuNavigationComponents";
 import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
 import { ReactComponent as DocsIcon } from "@webiny/app-admin/assets/icons/icon-documentation.svg";
 import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/icon-community.svg";

@@ -17,6 +17,10 @@ declare global {
 
 const Menu = props => {
     //vara and theme currently not being used
+    if(!props?.data?.settings?.menu?.element){
+        return <span>No Menu Found.</span>
+    }
+    
     const {
         data: { 
             settings: {

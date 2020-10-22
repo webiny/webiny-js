@@ -15,7 +15,7 @@ import {
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 
-const MenuTemplate = ({menu}) => {
+const MenuForm = ({menu}) => {
     console.log("Menu Template:::::::::::")
     console.log(menu);
     const variables = {
@@ -68,4 +68,4 @@ const MenuTemplate = ({menu}) => {
         </Form>
     );
 }
-export default MenuTemplate;
+export default MenuForm;
