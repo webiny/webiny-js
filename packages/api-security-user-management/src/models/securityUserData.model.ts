@@ -1,9 +1,9 @@
-import KSUID from "ksuid";
 import { validation } from "@webiny/validation";
 import { compose } from "ramda";
 import { withName } from "@commodo/name";
 import { withHooks } from "@commodo/hooks";
 import { withFields, string, skipOnPopulate, setOnce, onSet } from "@commodo/fields";
+import { object } from "commodo-fields-object";
 import { withProps } from "repropose";
 import md5 from "md5";
 import { PK_GROUP, SK_GROUP } from "./securityGroupData.model";
@@ -18,12 +18,13 @@ export const SecurityUserData = ({ context }) =>
         withHooks(),
         withFields(dataInstance => ({
             __type: string({ value: PK_USER }),
-            id: string({ value: KSUID.randomSync().string }),
+            id: compose(setOnce())(string({ validation: validation.create("required") })),
             createdOn: compose(
                 skipOnPopulate(),
                 setOnce()
             )(string({ value: new Date().toISOString() })),
             savedOn: compose(skipOnPopulate())(string({ value: new Date().toISOString() })),
+            createdBy: object(),
             email: onSet(value => {
                 if (value === dataInstance.email) {
                     return value;
@@ -53,7 +54,7 @@ export const SecurityUserData = ({ context }) =>
             firstName: string(),
             lastName: string(),
             group: string(),
-            avatar: string(),
+            avatar: object(),
             personalAccessTokens: skipOnPopulate()(
                 string({
                     list: true,

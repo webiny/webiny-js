@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import {
     DataList,
     ScrollList,
@@ -10,57 +9,74 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
-
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { useCrud } from "@webiny/app-admin/hooks/useCrud";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useQuery, useMutation } from "react-apollo";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
 const GroupsDataList = () => {
-    const { actions, list } = useCrud();
+    const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const listQuery = useQuery(LIST_GROUPS);
+
+    const [deleteIt, deleteMutation] = useMutation(DELETE_GROUP, {
+        refetchQueries: [{ query: LIST_GROUPS }]
+    });
+
+    const { showConfirmation } = useConfirmationDialog();
+
+    const data = listQuery?.data?.security?.groups?.data || [];
+    const id = new URLSearchParams(location.search).get("id");
+
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.security?.deleteGroup?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
+
+                if (id === item.id) {
+                    history.push(`/security/groups`);
+                }
+            });
+        },
+        [id]
+    );
+
+    const loading = [listQuery, deleteMutation].find(item => item.loading);
+
     return (
         <DataList
-            {...list}
             title={t`Security Groups`}
-            sorters={[
-                {
-                    label: t`Newest to oldest`,
-                    sorters: { savedOn: -1 }
-                },
-                {
-                    label: t`Oldest to newest`,
-                    sorters: { savedOn: 1 }
-                },
-                {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
-                },
-                {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
-                }
-            ]}
+            data={data}
+            refresh={listQuery.refetch}
+            loading={Boolean(loading)}
         >
-            {({ data, select, isSelected }) => (
+            {({ data }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={isSelected(item)}>
-                            <ListItemText onClick={() => select(item)}>
+                        <ListItem key={item.id} selected={item.id === id}>
+                            <ListItemText
+                                onClick={() => history.push(`/security/groups?id=${item.id}`)}
+                            >
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() =>
-                                                    showConfirmation(() => actions.delete(item))
-                                                }
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                    <DeleteIcon onClick={() => deleteItem(item)} />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

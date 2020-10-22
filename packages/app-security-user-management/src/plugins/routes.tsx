@@ -18,7 +18,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/groups"}
+                path={"/security/groups"}
                 render={() => (
                     <SecureRoute permission={PERMISSION_SECURITY_GROUPS}>
                         <AdminLayout>
@@ -36,7 +36,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/users"}
+                path={"/security/users"}
                 render={() => (
                     <SecureRoute permission={PERMISSION_SECURITY_USERS}>
                         <AdminLayout>

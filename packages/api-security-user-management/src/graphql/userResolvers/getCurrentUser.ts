@@ -1,6 +1,9 @@
 import { Response, NotFoundResponse } from "@webiny/commodo-graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { PK_USER, SK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
+import {
+    PK_USER,
+    SK_USER
+} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const identity = context.security.getIdentity();

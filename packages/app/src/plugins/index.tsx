@@ -11,6 +11,7 @@ type RenderPluginOptions<T> = {
     wrapper?: boolean;
     fn?: string;
     filter?: (value: T, index: number, array: T[]) => boolean;
+    reverse?: boolean;
 };
 
 interface RenderPlugin {
@@ -54,11 +55,15 @@ export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
 };
 
 export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) => {
-    const { wrapper = true, fn = "render", filter = v => v } = options;
+    const { wrapper = true, fn = "render", filter = v => v, reverse } = options;
 
     const content = getPlugins(type)
         .filter(filter)
         .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }));
+
+    if (reverse) {
+        content.reverse();
+    }
 
     return wrapper ? (
         <PluginsComponent type={type} params={params} fn={fn}>

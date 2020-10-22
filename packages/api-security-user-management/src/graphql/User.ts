@@ -86,7 +86,7 @@ export default {
             email: String
             firstName: String
             lastName: String
-            avatar: RefInput
+            avatar: JSON
             enabled: Boolean
             group: ID
         }
@@ -96,7 +96,7 @@ export default {
             email: String
             firstName: String
             lastName: String
-            avatar: RefInput
+            avatar: JSON
         }
 
         type SecurityUserResponse {
@@ -180,14 +180,11 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
-            avatar({ avatar }) {
-                return avatar ? { __typename: "File", id: avatar } : null;
+            async group(user) {
+                return await user.groupData;
             },
-            async group(parent) {
-                return await parent.groupData;
-            },
-            async permissions(parent) {
-                return await parent.permissions;
+            async permissions(user) {
+                return await user.permissions;
             }
         },
         SecurityIdentity: {
@@ -202,7 +199,7 @@ export default {
                 });
 
                 const user = securityRecord.data;
-                return user.avatar ? { __typename: "File", id: user.avatar } : null;
+                return user.avatar;
             },
             permissions: (_, args, context) => {
                 return context.security.getPermissions();
