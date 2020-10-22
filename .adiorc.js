@@ -2,6 +2,7 @@ const get = require("lodash.get");
 const LOAD_COMPONENTS_PREFIX = ["@webiny/", "@serverless/"];
 
 module.exports = {
+
     parser: {
         plugins: ["jsx", "classProperties", "dynamicImport", "throwExpressions", "typescript"]
     },
