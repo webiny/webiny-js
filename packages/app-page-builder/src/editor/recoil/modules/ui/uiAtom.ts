@@ -6,6 +6,7 @@ export type UiAtomType = {
     slateFocused: boolean;
     activeElement: string | null;
     highlightElement: string | null;
+    isSaving: boolean;
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
@@ -14,6 +15,7 @@ export const uiAtom = connectedAtom<UiAtomType>({
         isResizing: false,
         slateFocused: false,
         activeElement: null,
-        highlightElement: null
+        highlightElement: null,
+        isSaving: false
     }
 });

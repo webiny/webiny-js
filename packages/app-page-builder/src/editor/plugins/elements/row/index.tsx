@@ -128,7 +128,7 @@ export default (): PbEditorPageElementPlugin => {
         },
 
         onChildDeleted({ element }) {
-            dispatch(updateElement({ element: distributeColumnWidths(element) }));
+            return distributeColumnWidths(element);
         }
     };
 };

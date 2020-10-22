@@ -1,20 +1,12 @@
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
     elementsAtom,
-    ElementsAtomType,
     pageAtom,
-    PageAtomType,
     pluginsAtom,
-    PluginsAtomType,
-    uiAtom,
-    UiAtomType
+    uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
-import {
-    connectedAtomValue,
-    updateConnectedValue
-} from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { connectedAtomValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import React, { createContext, useContext } from "react";
-import { RecoilState, useRecoilState } from "recoil";
 
 type ProviderType = {
     eventActionHandler: EventActionHandler;
@@ -25,7 +17,6 @@ export const EditorProvider: React.FunctionComponent<any> = props => {
     const provider: ProviderType = {
         eventActionHandler
     };
-    console.log("CONSTRUCTED EVENT ACTION HANDLER");
     return (
         <EditorContext.Provider value={provider} {...props}>
             {props.children}

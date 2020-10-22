@@ -4,5 +4,6 @@ export * from "./deleteElement";
 export * from "./dropElement";
 export * from "./togglePlugin";
 export * from "./updateElement";
+export * from "./updateRevision";
 export * from "./saveRevision";
 export * from "./plugins";

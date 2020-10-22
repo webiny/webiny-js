@@ -1,4 +1,3 @@
-import { getGlobalState } from "@webiny/app-page-builder/editor/provider";
 import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
 import {
     elementsAtom,
@@ -16,39 +15,38 @@ import {
     connectedBatchStart,
     updateConnectedValue
 } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { EventAction } from "./EventAction";
 
-export type EventActionHandlerActionStateType = {
-    ui: UiAtomType;
-    plugins: PluginsAtomType;
-    page: PageAtomType;
-    elements: ElementsAtomType;
+type CallableStateResponseType = {
+    ui?: UiAtomType;
+    plugins?: PluginsAtomType;
+    page?: PageAtomType;
+    elements?: ElementsAtomType;
 };
-export type EventActionHandlerActionStateResponseType = {
-    state?: {
-        ui?: UiAtomType;
-        plugins?: PluginsAtomType;
-        page?: PageAtomType;
-        elements?: ElementsAtomType;
-    };
+export type EventActionHandlerActionCallableResponseType = {
+    state?: CallableStateResponseType;
     actions?: BaseEventAction[];
 };
 export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
 
-type EventActionCallableArgsType = {
+type CallableArgsType = {
     [key: string]: any;
 };
-export type EventActionCallableType<T extends EventActionCallableArgsType = any> = (
-    state: EventActionHandlerActionStateType,
+export type EventActionCallableType<T extends CallableArgsType = any> = (
+    state: PbState,
     args?: T
-) => EventActionHandlerActionStateResponseType | Promise<EventActionHandlerActionStateResponseType>;
+) =>
+    | EventActionHandlerActionCallableResponseType
+    | Promise<EventActionHandlerActionCallableResponseType>;
 
 type ListType = Map<symbol, EventActionCallableType>;
 type RegistryType = Map<string, ListType>;
 
 type TargetType = { new (...args: any[]): EventAction<any> };
-type UnregisterType = () => void;
+type UnregisterType = () => boolean;
 
+const MAX_EVENT_ACTION_NESTING_LEVELS = 3;
 /**
  * Usages
  * subscribing to an event: handler.on(TargetEventClass, (args) => {your code})
@@ -75,52 +73,24 @@ export class EventActionHandler {
         const id = Symbol("eventActionCb");
         events.set(id, callable);
         return () => {
-            this.off(id);
+            return this.off(id);
         };
     }
 
-    public async trigger<T extends EventActionCallableArgsType>(ev: EventAction<T>): Promise<void> {
-        const name = ev.getName();
-        if (!this.has(ev.getName())) {
-            throw new Error(`There is no event action that is registered with name "${name}".`);
-        }
-        const targetCallables = this.get(name);
-        if (!targetCallables) {
-            return;
-        }
-
+    public async trigger<T extends CallableArgsType>(
+        ev: EventAction<T>
+    ): Promise<CallableStateResponseType> {
         const initialState = {
             elements: connectedAtomValue(elementsAtom),
             page: connectedAtomValue(pageAtom),
             plugins: connectedAtomValue(pluginsAtom),
             ui: connectedAtomValue(uiAtom)
         };
+        const results = await this.triggerEventAction(ev, initialState, []);
 
-        const args = ev.getArgs();
-        const callables = Array.from(targetCallables.values());
-        const results: EventActionHandlerActionStateResponseType = {
-            state: {},
-            actions: []
-        };
-        for (const cb of callables) {
-            const r = (await cb({ ...initialState, ...results.state }, args)) || ({} as any);
-            results.state = {
-                ...results.state,
-                ...(r.state || {})
-            };
-            results.actions.push(...(r.actions || []));
-        }
+        this.saveCallablesResults(results.state);
 
-        const hasResults = Object.values(results.state).length > 0;
-        if (hasResults) {
-            this.saveState(results);
-        }
-        if (results.actions.length === 0) {
-            return;
-        }
-        for (const action of results.actions) {
-            await this.trigger(action);
-        }
+        return results.state;
     }
 
     public clearRegistry(): void {
@@ -168,7 +138,10 @@ export class EventActionHandler {
         return name;
     }
 
-    private saveState({ state }: EventActionHandlerActionStateResponseType): void {
+    private saveCallablesResults(state: CallableStateResponseType): void {
+        if (Object.values(state).length === 0) {
+            return;
+        }
         connectedBatchStart();
         if (state.ui) {
             updateConnectedValue(uiAtom, state.ui);
@@ -184,5 +157,54 @@ export class EventActionHandler {
         }
 
         connectedBatchEnd();
+    }
+
+    private async triggerEventAction<T extends CallableArgsType>(
+        ev: EventAction<T>,
+        initialState: PbState,
+        initiator: string[]
+    ): Promise<EventActionHandlerActionCallableResponseType> {
+        if (initiator.length >= 3) {
+            throw new Error(
+                `Max (${MAX_EVENT_ACTION_NESTING_LEVELS}) allowed levels of nesting actions reached: ${initiator.join(
+                    " -> "
+                )}`
+            );
+        }
+        const name = ev.getName();
+        if (!this.has(ev.getName())) {
+            throw new Error(`There is no event action that is registered with name "${name}".`);
+        }
+        const targetCallables = this.get(name);
+        const results: EventActionHandlerActionCallableResponseType = {
+            state: {},
+            actions: []
+        };
+        if (!targetCallables) {
+            return results;
+        }
+        const args = ev.getArgs();
+        const callables = Array.from(targetCallables.values());
+        for (const cb of callables) {
+            const r = (await cb({ ...initialState, ...results.state }, args)) || ({} as any);
+            results.state = {
+                ...results.state,
+                ...(r.state || {})
+            };
+            results.actions.push(...(r.actions || []));
+        }
+
+        for (const action of results.actions) {
+            const r = await this.triggerEventAction(
+                action,
+                { ...initialState, ...results.state },
+                initiator.concat([name])
+            );
+            results.state = {
+                ...(results.state || {}),
+                ...(r.state || {})
+            };
+        }
+        return results;
     }
 }

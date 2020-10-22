@@ -25,22 +25,21 @@ const updateElementPaths = (element: PbElement): PbElement => {
     };
 };
 
-export const updateChildPathsUtil = (element: PbElement): PbElement => {
+export const updateChildPathsHelper = (element: PbElement): PbElement => {
     return updateElementPaths(element);
 };
 // eslint-disable-next-line
-export const saveEditorPageRevisionUtil = (_page: PageAtomType) => {
+export const saveEditorPageRevisionHelper = (_page: PageAtomType) => {
     // packages/app-page-builder/src/editor/actions/actions.ts:364
 };
 
-// Flatten page content
 type FlattenElementsType = {
     [id: string]: PbShallowElement;
 };
-export const flattenContentUtil = (el): FlattenElementsType => {
+export const flattenElementsHelper = (el): FlattenElementsType => {
     let els = {};
     el.elements = (el.elements || []).map(child => {
-        els = { ...els, ...flattenContentUtil(child) };
+        els = { ...els, ...flattenElementsHelper(child) };
         return child.id;
     });
 
@@ -60,7 +59,7 @@ const saveElementToPath = (target: PbElement, paths: number[], element: PbElemen
     return saveElementToPath(target.elements[path], paths, element);
 };
 
-export const saveElementToContentUtil = (
+export const saveElementToContentHelper = (
     target: PbElement,
     path: string,
     element: PbElement
@@ -82,10 +81,19 @@ const extrapolateTargetElement = (target: PbElement, paths: number[]): PbElement
     return extrapolateTargetElement(target.elements[path], paths);
 };
 
-export const extrapolateContentElementUtil = (
+export const extrapolateContentElementHelper = (
     target: PbElement,
-    path: string
+    paths: string | number[]
 ): PbElement | undefined => {
-    const paths = path.split(".").map(Number);
-    return extrapolateTargetElement(target, paths);
+    return extrapolateTargetElement(
+        target,
+        typeof paths === "string" ? paths.split(".").map(Number) : paths
+    );
+};
+
+export const removeElementHelper = (parent: PbElement, id: string): PbElement => {
+    return {
+        ...parent,
+        elements: parent.elements.filter(target => target.id !== id)
+    };
 };

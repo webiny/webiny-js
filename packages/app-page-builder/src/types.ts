@@ -282,7 +282,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         position: number | null;
     }) => void;
     // Executed when an immediate child element is deleted
-    onChildDeleted?: (params: { element: PbElement; child: PbElement }) => void;
+    onChildDeleted?: (params: { element: PbElement; child: PbElement }) => PbElement | undefined;
     // Executed after element was created
     onCreate?: string;
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation

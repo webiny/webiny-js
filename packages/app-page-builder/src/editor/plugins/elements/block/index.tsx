@@ -108,27 +108,20 @@ export default (): PbEditorPageElementPlugin => {
             if (element.elements.length > 0) {
                 return;
             }
-            const handler = useEventActionHandler();
-            const newElement = {
+            return {
                 ...element,
                 elements: [
-                    createRow({
-                        elements: [
-                            createColumn({
-                                data: {
-                                    width: 100
-                                }
-                            })
-                        ]
-                    })
+                    // createRow({
+                    //     elements: [
+                    //         createColumn({
+                    //             data: {
+                    //                 width: 100
+                    //             }
+                    //         })
+                    //     ]
+                    // })
                 ]
             };
-            // redux.store.dispatch(updateElement({ element }));
-            handler.trigger(
-                new UpdateElementActionEvent({
-                    element: newElement
-                })
-            );
         }
     };
 };
