@@ -7,7 +7,6 @@ import {
     gridNoPaddingClass
 } from "@webiny/app-security-user-management/components/permission";
 import { Form } from "@webiny/form";
-import { Switch } from "@webiny/ui/Switch";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 
@@ -16,7 +15,7 @@ const t = i18n.ns("app-security-user-management/plugins/permissionRenderer");
 const SECURITY = "security";
 const SECURITY_FULL_ACCESS = `${SECURITY}.*`;
 const SECURITY_GROUP_ACCESS = `${SECURITY}.group.manage`;
-const SECURITY_USER_ACCESS = `${SECURITY}.group.manage`;
+const SECURITY_USER_ACCESS = `${SECURITY}.user.manage`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
@@ -34,10 +33,10 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
             if (data.level === FULL_ACCESS) {
                 permissions.push({ name: SECURITY_FULL_ACCESS });
             } else if (data.level === CUSTOM_ACCESS) {
-                if (data.users) {
+                if (data.userAccessLevel === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_USER_ACCESS });
                 }
-                if (data.groups) {
+                if (data.groupAccessLevel === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_GROUP_ACCESS });
                 }
             }
@@ -48,7 +47,7 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id]
+        [securityGroup.id, value]
     );
 
     const formData = useMemo(() => {
@@ -56,10 +55,10 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
             return { level: NO_ACCESS };
         }
 
-        const fullAccess = value.find(
+        const hasFullAccess = value.find(
             item => item.name === SECURITY_FULL_ACCESS || item.name === "*"
         );
-        if (fullAccess) {
+        if (hasFullAccess) {
             return { level: FULL_ACCESS };
         }
 
@@ -68,10 +67,23 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
             return { level: NO_ACCESS };
         }
 
-        const group = permissions.find(item => item.name === SECURITY_GROUP_ACCESS);
-        const user = permissions.find(item => item.name === SECURITY_USER_ACCESS);
+        const data = {
+            level: CUSTOM_ACCESS,
+            groupAccessLevel: NO_ACCESS,
+            userAccessLevel: NO_ACCESS
+        };
 
-        return { level: CUSTOM_ACCESS, users: user, groups: group };
+        const hasGroupAccess = permissions.find(item => item.name === SECURITY_GROUP_ACCESS);
+        if (hasGroupAccess) {
+            data.groupAccessLevel = FULL_ACCESS;
+        }
+
+        const hasUserAccess = permissions.find(item => item.name === SECURITY_USER_ACCESS);
+        if (hasUserAccess) {
+            data.userAccessLevel = FULL_ACCESS;
+        }
+
+        return data;
     }, [securityGroup.id]);
 
     return (
@@ -105,8 +117,15 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
                                                 <PermissionInfo title={t`Manage users`} />
                                             </Cell>
                                             <Cell span={6} align={"middle"}>
-                                                <Bind name={"user"}>
-                                                    <Switch />
+                                                <Bind name={"userAccessLevel"}>
+                                                    <Select label={t`Access Level`}>
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`Full Access`}</option>
+                                                    </Select>
                                                 </Bind>
                                             </Cell>
                                         </Grid>
@@ -124,8 +143,15 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
                                                 <PermissionInfo title={t`Manage groups`} />
                                             </Cell>
                                             <Cell span={6} align={"middle"}>
-                                                <Bind name={"group"}>
-                                                    <Switch />
+                                                <Bind name={"groupAccessLevel"}>
+                                                    <Select label={t`Access Level`}>
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`Full Access`}</option>
+                                                    </Select>
                                                 </Bind>
                                             </Cell>
                                         </Grid>
