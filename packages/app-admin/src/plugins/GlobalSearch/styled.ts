@@ -37,7 +37,7 @@ export const searchBarInput = css({
         paddingTop: "5px !important",
         paddingLeft: "10px !important",
         borderBottom: "none !important",
-        height: "25px !important",
+        height: "28px !important",
         color: "var(--mdc-theme-surface)",
         "&::placeholder": {
             color: "var(--mdc-theme-surface) !important",
