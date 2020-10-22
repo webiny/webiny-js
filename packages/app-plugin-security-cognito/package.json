@@ -20,6 +20,7 @@
     "@webiny/app-security": "^4.13.0",
     "@webiny/validation": "^4.13.0",
     "@webiny/form": "^4.13.0",
+    "@webiny/plugins": "^4.13.0",
     "@webiny/ui": "^4.13.0",
     "apollo-client": "^2.6.10",
     "apollo-link-context": "^1.0.20",

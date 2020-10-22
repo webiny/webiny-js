@@ -4,6 +4,9 @@ import userManagement from "@webiny/app-security-user-management/plugins";
 import { getIdentityData } from "../components/getIdentityData";
 
 export default [
+    /**
+     * Configures Amplify, adds "app-installer-security" and "apollo-link" plugin.
+     */
     cognitoSecurity({
         region: process.env.REACT_APP_USER_POOL_REGION,
         userPoolId: process.env.REACT_APP_USER_POOL_ID,

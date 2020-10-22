@@ -17,12 +17,10 @@
     "chalk": "^4.0.0",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
-    "get-yarn-workspaces": "^1.0.2",
     "load-json-file": "^6.2.0",
     "lodash.get": "^4.4.2",
     "node-notifier": "^7.0.1",
     "write-json-file": "^4.3.0",
-    "progress": "^2.0.3",
     "ora": "^4.0.4"
   },
   "license": "MIT",
@@ -33,7 +31,6 @@
   "scripts": {},
   "adio": {
     "ignoreDirs": [
-      "/create/template/",
       "/node_modules/",
       "/dist/"
     ],
