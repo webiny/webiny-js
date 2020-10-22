@@ -1,4 +1,3 @@
-import * as pulumi from "@pulumi/pulumi";
 import getDatabase from "./stack/database";
 import Cognito from "./stack/cognito";
 import Security from "./stack/security";
@@ -12,10 +11,12 @@ import PageBuilder from "./stack/pageBuilder";
 import FormBuilder from "./stack/formBuilder";
 import HeadlessCms from "./stack/headlessCms";
 import GraphQLPlayground from "./stack/graphqlPlayground";
+import ElasticSearch from "./stack/elasticSearch";
+import ElasticDemo from "./stack/elasticDemo";
 
 const database = getDatabase();
-
 const cognito = new Cognito();
+const elasticSearch = new ElasticSearch();
 
 const settingsManager = new SettingsManager({
     dbProxy: database.databaseProxy
@@ -28,7 +29,8 @@ const graphqlServiceEnv: { [key: string]: any } = {
     DB_PROXY_FUNCTION: database.databaseProxy.arn,
     GRAPHQL_INTROSPECTION: String(process.env.GRAPHQL_INTROSPECTION),
     GRAPHQL_PLAYGROUND: String(process.env.GRAPHQL_PLAYGROUND),
-    SETTINGS_MANAGER_FUNCTION: settingsManager.functions.settings.arn
+    SETTINGS_MANAGER_FUNCTION: settingsManager.functions.settings.arn,
+    ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint
 };
 
 const security = new Security({
@@ -73,6 +75,12 @@ const headlessCms = new HeadlessCms({
     }
 });
 
+const elasticDemo = new ElasticDemo({
+    env: {
+        graphql: graphqlServiceEnv
+    }
+});
+
 const apolloGateway = new ApolloGateway({
     env: {
         ...graphqlServiceEnv,
@@ -81,7 +89,8 @@ const apolloGateway = new ApolloGateway({
         LAMBDA_SERVICE_FILE_MANAGER: fileManager.functions.graphql.arn,
         LAMBDA_SERVICE_PAGE_BUILDER: pageBuilder.functions.graphql.arn,
         LAMBDA_SERVICE_FORM_BUILDER: formBuilder.functions.graphql.arn,
-        LAMBDA_SERVICE_HEADLESS_CMS: headlessCms.functions.graphql.arn
+        LAMBDA_SERVICE_HEADLESS_CMS: headlessCms.functions.graphql.arn,
+        LAMBDA_SERVICE_ELASTIC_DEMO: elasticDemo.functions.graphql.arn
     }
 });
 
@@ -133,3 +142,4 @@ export const region = process.env.AWS_REGION;
 export const cdnDomain = cloudfront.cloudfront.domainName;
 export const cognitoUserPoolId = cognito.userPool.id;
 export const cognitoAppClientId = cognito.userPoolClient.id;
+export const elasticSearchURL = elasticSearch.domain.endpoint;

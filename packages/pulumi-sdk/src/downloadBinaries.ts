@@ -3,7 +3,7 @@ const tar = require("tar");
 const fs = require("fs");
 const download = require("download");
 const path = require("path");
-const extract = require("extract-zip");
+const decompress = require("decompress");
 
 const PULUMI_VERSION = "2.11.2";
 
@@ -60,7 +60,9 @@ async function setupWindows(downloadFolder) {
 
     await download(downloadUrl, downloadFolder);
 
-    await extractZip(path.join(downloadFolder, filename), filename);
+    const archive = path.join(downloadFolder, filename);
+    const destination = path.join(downloadFolder, "pulumi");
+    await decompress(archive, destination, { strip: 2 });
 
     fs.unlinkSync(path.join(downloadFolder, filename));
 }
@@ -77,16 +79,4 @@ async function setupLinux(downloadFolder) {
     });
 
     fs.unlinkSync(path.join(downloadFolder, filename));
-}
-
-function extractZip(zipPath, dir) {
-    return new Promise((resolve, reject) => {
-        extract(zipPath, { dir }, e => {
-            if (e) {
-                reject(e);
-                return;
-            }
-            resolve();
-        });
-    });
 }
