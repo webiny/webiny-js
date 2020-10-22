@@ -16,7 +16,7 @@ const edgeBars = css({
     width: "25%"
 });
 
-const Header = () => {
+export const Header = () => {
     return (
         <TopAppBarPrimary fixed>
             <TopAppBarSection className={edgeBars} alignStart>
@@ -31,5 +31,3 @@ const Header = () => {
         </TopAppBarPrimary>
     );
 };
-
-export default Header;

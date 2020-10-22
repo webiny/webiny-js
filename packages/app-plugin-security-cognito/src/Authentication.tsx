@@ -13,7 +13,7 @@ import RequireNewPassword from "./views/RequireNewPassword";
 import ForgotPassword from "./views/ForgotPassword";
 import SetNewPassword from "./views/SetNewPassword";
 
-const Authentication = ({ children, getIdentityData }) => {
+export const Authentication = ({ children, getIdentityData }) => {
     return (
         <Authenticator getIdentityData={getIdentityData}>
             {({ checkingUser, ...authProps }) =>
@@ -40,5 +40,3 @@ const Authentication = ({ children, getIdentityData }) => {
         </Authenticator>
     );
 };
-
-export default Authentication;

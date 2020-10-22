@@ -1,10 +1,9 @@
 import * as React from "react";
 import { DialogContainer } from "./Dialog";
 
-export default (type: string) => ({
-    name: "dialog-" + type,
-    type,
+export default {
+    type: "admin-layout-component",
     render() {
         return <DialogContainer />;
     }
-});
+};

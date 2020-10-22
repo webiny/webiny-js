@@ -2,19 +2,19 @@ import contentBackground from "@webiny/app-page-builder/editor/plugins/backgroun
 import blockEditing from "@webiny/app-page-builder/editor/plugins/blockEditing";
 // Elements
 import document from "@webiny/app-page-builder/editor/plugins/elements/document";
-import row from "@webiny/app-page-builder/editor/plugins/elements//row";
-import block from "@webiny/app-page-builder/editor/plugins/elements//block";
-import column from "@webiny/app-page-builder/editor/plugins/elements//column";
-import image from "@webiny/app-page-builder/editor/plugins/elements//image";
-import text from "@webiny/app-page-builder/editor/plugins/elements//text";
-import icon from "@webiny/app-page-builder/editor/plugins/elements//icon";
-import spacer from "@webiny/app-page-builder/editor/plugins/elements//spacer";
-import button from "@webiny/app-page-builder/editor/plugins/elements//button";
-import media from "@webiny/app-page-builder/editor/plugins/elements//media";
-import social from "@webiny/app-page-builder/editor/plugins/elements//social";
-import code from "@webiny/app-page-builder/editor/plugins/elements//code";
-import pagesList from "@webiny/app-page-builder/editor/plugins/elements//pagesList";
-import imagesList from "@webiny/app-page-builder/editor/plugins/elements//imagesList";
+import row from "@webiny/app-page-builder/editor/plugins/elements/row";
+import block from "@webiny/app-page-builder/editor/plugins/elements/block";
+import column from "@webiny/app-page-builder/editor/plugins/elements/column";
+import image from "@webiny/app-page-builder/editor/plugins/elements/image";
+import text from "@webiny/app-page-builder/editor/plugins/elements/text";
+import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
+import spacer from "@webiny/app-page-builder/editor/plugins/elements/spacer";
+import button from "@webiny/app-page-builder/editor/plugins/elements/button";
+import media from "@webiny/app-page-builder/editor/plugins/elements/media";
+import social from "@webiny/app-page-builder/editor/plugins/elements/social";
+import code from "@webiny/app-page-builder/editor/plugins/elements/code";
+import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
+import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 // Icons
 import icons from "@webiny/app-page-builder/editor/plugins/icons";
 // Element actions
@@ -90,16 +90,16 @@ export default [
     row(),
     block(),
     column(),
-    ...icon(),
-    ...image(),
-    ...imagesList(),
+    icon(),
+    image(),
+    imagesList(),
     text(),
     spacer(),
-    ...button(),
-    ...media,
-    ...social,
-    ...code,
-    ...pagesList(),
+    button(),
+    media,
+    social,
+    code,
+    pagesList(),
     // Icons
     icons,
     // Element Actions
@@ -115,7 +115,7 @@ export default [
     // Blocks
     emptyBlock,
     // Block categories
-    ...blocksCategories,
+    blocksCategories,
     // Toolbar
     addElement,
     preview,
@@ -133,7 +133,7 @@ export default [
     shadow,
     padding,
     margin,
-    ...align,
+    align,
     clone,
     deleteElement,
     width,
@@ -142,7 +142,7 @@ export default [
     save,
     link,
     // Default bar
-    ...defaultBarPlugins,
+    defaultBarPlugins,
     // Slate Menu plugins
     blockPlugins.menu,
     boldPlugins.menu,
@@ -162,7 +162,7 @@ export default [
     blockPlugins.editor,
     scrollPlugins.editor,
     // Page settings
-    ...pageSettingsPlugins,
+    pageSettingsPlugins,
     // Breadcrumbs
     breadcrumbs
 ];

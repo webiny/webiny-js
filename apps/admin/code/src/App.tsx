@@ -10,9 +10,10 @@ import { ThemeProvider } from "@webiny/app-admin/contexts/Theme";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
-import { createApolloClient } from "./apolloClient";
+import { Authentication } from "@webiny/app-plugin-security-cognito/Authentication";
+import { createApolloClient } from "./components/apolloClient";
 import { NetworkError } from "./components/NetworkError";
-import Authentication from "./components/Authentication";
+import { getIdentityData } from "./components/getIdentityData";
 
 // Import styles which include custom theme styles
 import "./App.scss";
@@ -21,7 +22,7 @@ export const App = () => (
     <ApolloProvider client={createApolloClient()}>
         <SecurityProvider>
             <NetworkError>
-                <Authentication>
+                <Authentication getIdentityData={getIdentityData}>
                     <BrowserRouter basename={process.env.PUBLIC_URL}>
                         <UiProvider>
                             <I18NProvider
