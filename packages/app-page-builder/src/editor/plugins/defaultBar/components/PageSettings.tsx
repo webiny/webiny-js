@@ -83,7 +83,10 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                 new UpdatePageRevisionActionEvent({
                     page: pageValue,
                     client: apolloClient,
-                    onFinish: () => showSnackbar("Settings saved")
+                    onFinish: () => {
+                        showSnackbar("Settings saved");
+                        deactivatePlugin();
+                    }
                 })
             );
         },

@@ -11,11 +11,17 @@ type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "url" | "settin
 
 let lastSavedRevisionData: any = {};
 
-const didDataChange = (data: PageRevisionType) => {
+const isDataEqualToLastSavedData = (data: PageRevisionType) => {
     const { content, ...restOfData } = data;
     const { content: lastContent, ...restOfLastRevisionData } = lastSavedRevisionData;
-
     return lodashIsEqual(restOfData, restOfLastRevisionData);
+};
+
+const triggerOnFinish = (args: SaveRevisionActionArgsType): void => {
+    if (!args.onFinish || typeof args.onFinish !== "function") {
+        return;
+    }
+    args.onFinish();
 };
 
 export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsType> = async (
@@ -34,8 +40,8 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
         content: state.page.content,
         category: state.page.category.id
     };
-
-    if (!didDataChange(data)) {
+    if (isDataEqualToLastSavedData(data)) {
+        triggerOnFinish(args);
         return {};
     }
 
@@ -69,9 +75,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
             data
         }
     });
-    if (args.onFinish && typeof args.onFinish === "function") {
-        args.onFinish();
-    }
+    triggerOnFinish(args);
 
     return {
         state: {

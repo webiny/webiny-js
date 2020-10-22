@@ -16,7 +16,8 @@ export const updateRevisionAction: EventActionCallableType<UpdatePageRevisionAct
         state: {
             page: {
                 ...state.page,
-                ...args.page
+                ...args.page,
+                content: state.page.content
             }
         },
         actions

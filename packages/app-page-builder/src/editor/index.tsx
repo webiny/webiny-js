@@ -7,17 +7,21 @@ import { RecoilUndoRoot } from "recoil-undo";
 import {
     elementsAtom,
     pageAtom,
+    PageAtomType,
     pluginsAtom,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 
-export const Editor = () => {
+type EditorPropsType = {
+    page: PageAtomType;
+};
+export const Editor: React.FunctionComponent<EditorPropsType> = ({ page }) => {
     return (
         <RecoilRoot>
             <ConnectedStoreComponent />
             <RecoilUndoRoot trackedAtoms={[uiAtom, elementsAtom, pageAtom, pluginsAtom]}>
                 <EditorProvider>
-                    <EditorComponent />
+                    <EditorComponent page={page} />
                 </EditorProvider>
             </RecoilUndoRoot>
         </RecoilRoot>

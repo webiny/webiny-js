@@ -58,7 +58,7 @@ const Editor = () => {
                 );
             }
 
-            if (!get(data, "pageBuilder.page.data")) {
+            if (!data?.pageBuilder?.page?.data) {
                 return null;
             }
 
@@ -82,10 +82,12 @@ const Editor = () => {
                 }
             }
 
+            const page = data.pageBuilder.page.data as any;
+
             return (
                 <React.Fragment>
                     <Provider store={redux.store}>
-                        <PbEditor />
+                        <PbEditor page={page} />
                     </Provider>
                     <div style={{ zIndex: 10, position: "absolute" }}>
                         <Snackbar />

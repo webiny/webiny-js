@@ -18,14 +18,14 @@ import {
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { EventAction } from "./EventAction";
 
-type CallableStateResponseType = {
+type CallableStateType = {
     ui?: UiAtomType;
     plugins?: PluginsAtomType;
     page?: PageAtomType;
     elements?: ElementsAtomType;
 };
 export type EventActionHandlerActionCallableResponseType = {
-    state?: CallableStateResponseType;
+    state?: CallableStateType;
     actions?: BaseEventAction[];
 };
 export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
@@ -79,14 +79,8 @@ export class EventActionHandler {
 
     public async trigger<T extends CallableArgsType>(
         ev: EventAction<T>
-    ): Promise<CallableStateResponseType> {
-        const initialState = {
-            elements: connectedAtomValue(elementsAtom),
-            page: connectedAtomValue(pageAtom),
-            plugins: connectedAtomValue(pluginsAtom),
-            ui: connectedAtomValue(uiAtom)
-        };
-        const results = await this.triggerEventAction(ev, initialState, []);
+    ): Promise<CallableStateType> {
+        const results = await this.triggerEventAction(ev, {} as any, []);
 
         this.saveCallablesResults(results.state);
 
@@ -138,7 +132,7 @@ export class EventActionHandler {
         return name;
     }
 
-    private saveCallablesResults(state: CallableStateResponseType): void {
+    private saveCallablesResults(state: CallableStateType): void {
         if (Object.values(state).length === 0) {
             return;
         }
@@ -157,6 +151,16 @@ export class EventActionHandler {
         }
 
         connectedBatchEnd();
+    }
+
+    private getCallableState(state: CallableStateType): PbState {
+        return {
+            elements: connectedAtomValue(elementsAtom),
+            page: connectedAtomValue(pageAtom),
+            plugins: connectedAtomValue(pluginsAtom),
+            ui: connectedAtomValue(uiAtom),
+            ...state
+        };
     }
 
     private async triggerEventAction<T extends CallableArgsType>(
@@ -186,7 +190,9 @@ export class EventActionHandler {
         const args = ev.getArgs();
         const callables = Array.from(targetCallables.values());
         for (const cb of callables) {
-            const r = (await cb({ ...initialState, ...results.state }, args)) || ({} as any);
+            const r =
+                (await cb(this.getCallableState({ ...initialState, ...results.state }), args)) ||
+                ({} as any);
             results.state = {
                 ...results.state,
                 ...(r.state || {})
@@ -197,7 +203,7 @@ export class EventActionHandler {
         for (const action of results.actions) {
             const r = await this.triggerEventAction(
                 action,
-                { ...initialState, ...results.state },
+                this.getCallableState({ ...initialState, ...results.state }),
                 initiator.concat([name])
             );
             results.state = {
