@@ -12,22 +12,30 @@ import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./CustomSection";
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
+const PAGE_BUILDER = "pb";
+const PAGE_BUILDER_FULL_ACCESS = "pb.*";
+
+const FULL_ACCESS = "full";
+const NO_ACCESS = "no";
+const CUSTOM_ACCESS = "custom";
+const ENTITIES = ["categories", "menus", "pages"];
+
 export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `page-builder*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith("page-builder"));
+                newValue = value.filter(item => !item.name.startsWith(PAGE_BUILDER));
             }
 
-            if (data.accessLevel === "no") {
+            if (data.accessLevel === NO_ACCESS) {
                 onChange(newValue);
                 return;
             }
 
             if (data.accessLevel === "full") {
-                newValue.push({ name: "page-builder.*" });
+                newValue.push({ name: PAGE_BUILDER_FULL_ACCESS });
                 onChange(newValue);
                 return;
             }
@@ -35,8 +43,8 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             // Handling custom access level.
 
             // Categories, menus, and pages first.
-            ["categories", "menus", "pages"].forEach(entity => {
-                if (data[`${entity}AccessLevel`] !== "no") {
+            ENTITIES.forEach(entity => {
+                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
                         name: `page-builder.${entity}`,
                         own: false,
@@ -53,7 +61,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             });
 
             // Settings second.
-            if (data.settingsAccessLevel === "full") {
+            if (data.settingsAccessLevel === FULL_ACCESS) {
                 newValue.push({ name: "page-builder.settings" });
             }
 
@@ -64,23 +72,26 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessLevel: "no" };
+            return { accessLevel: NO_ACCESS };
         }
 
-        const permissions = value.filter(item => item.name.startsWith("page-builder"));
+        const fullAccessPermission = value.find(
+            item => item.name === PAGE_BUILDER_FULL_ACCESS || item.name === "*"
+        );
+        if (fullAccessPermission) {
+            return { accessLevel: FULL_ACCESS };
+        }
+
+        const permissions = value.filter(item => item.name.startsWith(PAGE_BUILDER));
         if (!permissions.length) {
-            return { accessLevel: "no" };
-        }
-
-        if (permissions.length === 1 && permissions[0].name === "page-builder.*") {
-            return { accessLevel: "full" };
+            return { accessLevel: NO_ACCESS };
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const returnData = { accessLevel: "custom", settingsAccessLevel: "no" };
-        ["categories", "menus", "pages"].forEach(entity => {
+        const returnData = { accessLevel: CUSTOM_ACCESS, settingsAccessLevel: NO_ACCESS };
+        ENTITIES.forEach(entity => {
             const data = {
-                [`${entity}AccessLevel`]: "no",
+                [`${entity}AccessLevel`]: NO_ACCESS,
                 [`${entity}Permissions`]: "r"
             };
 
@@ -88,8 +99,8 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                 item => item.name === `page-builder.${entity}`
             );
             if (entityPermission) {
-                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : "full";
-                if (data[`${entity}AccessLevel`] === "full") {
+                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
+                if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
                     data[`${entity}Permissions`] = entityPermission.permissions;
                 }
             }
@@ -100,7 +111,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         // Finally, let's prepare data for Page Builder settings.
         const hasSettingsAccess = permissions.find(item => item.name === "page-builder.settings");
         if (hasSettingsAccess) {
-            returnData.settingsAccessLevel = "full";
+            returnData.settingsAccessLevel = FULL_ACCESS;
         }
 
         return returnData;
@@ -117,14 +128,14 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                         <Cell span={6}>
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
-                                    <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`Full Access`}</option>
-                                    <option value={"custom"}>{t`Custom Access`}</option>
+                                    <option value={NO_ACCESS}>{t`No access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
                     </Grid>
-                    {data.accessLevel === "custom" && (
+                    {data.accessLevel === CUSTOM_ACCESS && (
                         <Fragment>
                             <CustomSection
                                 data={data}
@@ -157,9 +168,11 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"settingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`Full Access`}</option>
                                                     </Select>
                                                 </Bind>

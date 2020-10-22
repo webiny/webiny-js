@@ -16,9 +16,13 @@ import { ContentEntryPermission } from "./components/ContentEntryPermission";
 import { EnvironmentPermission } from "./components/EnvironmentPermission";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
-
-const CMS = "cms";
-const CMS_FULL_ACCESS = "cms.*";
+// Here "manage" represents the "MANAGE API"
+const CMS_MANAGE = "cms.manage";
+const CMS_MANAGE_FULL_ACCESS = "cms.manage.*";
+const FULL_ACCESS = "full";
+const NO_ACCESS = "no";
+const CUSTOM_ACCESS = "custom";
+const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries", "environments"];
 
 export const CMSPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
@@ -26,16 +30,16 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
             let newValue = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `cms*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith(CMS));
+                newValue = value.filter(item => !item.name.startsWith(CMS_MANAGE));
             }
 
-            if (data.accessLevel === "no") {
+            if (data.accessLevel === NO_ACCESS) {
                 onChange(newValue);
                 return;
             }
 
-            if (data.accessLevel === "full") {
-                newValue.push({ name: CMS_FULL_ACCESS });
+            if (data.accessLevel === FULL_ACCESS) {
+                newValue.push({ name: CMS_MANAGE_FULL_ACCESS });
                 onChange(newValue);
                 return;
             }
@@ -43,32 +47,30 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
             // Handling custom access level.
 
             // Content models, content model groups, content entries and environments first.
-            ["contentModels", "contentModelGroups", "contentEntries", "environments"].forEach(
-                entity => {
-                    if (data[`${entity}AccessLevel`] !== "no") {
-                        const permission = {
-                            name: `${CMS}.${entity}`,
-                            own: false,
-                            permissions: undefined,
-                            props: undefined
-                        };
+            ENTITIES.forEach(entity => {
+                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
+                    const permission = {
+                        name: `${CMS_MANAGE}.${entity}`,
+                        own: false,
+                        permissions: undefined,
+                        props: undefined
+                    };
 
-                        if (data[`${entity}AccessLevel`] === "own") {
-                            permission.own = true;
-                        } else {
-                            permission.permissions = data[`${entity}Permissions`];
-                            permission.props = data[`${entity}Props`];
-                        }
-                        newValue.push(permission);
+                    if (data[`${entity}AccessLevel`] === "own") {
+                        permission.own = true;
+                    } else {
+                        permission.permissions = data[`${entity}Permissions`];
+                        permission.props = data[`${entity}Props`];
                     }
+                    newValue.push(permission);
                 }
-            );
+            });
 
             // Settings second.
-            if (data.aliasesSettingsAccessLevel === "full") {
+            if (data.aliasesSettingsAccessLevel === FULL_ACCESS) {
                 newValue.push({ name: "cms.settings.aliases" });
             }
-            if (data.environmentsSettingsAccessLevel === "full") {
+            if (data.environmentsSettingsAccessLevel === FULL_ACCESS) {
                 newValue.push({ name: "cms.settings.environments" });
             }
 
@@ -79,68 +81,71 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessLevel: "no" };
+            return { accessLevel: NO_ACCESS };
         }
 
-        const permissions = value.filter(item => item.name.startsWith(CMS));
+        const fullAccessPermission = value.find(
+            item => item.name === CMS_MANAGE_FULL_ACCESS || item.name === "*"
+        );
+        if (fullAccessPermission) {
+            return { accessLevel: FULL_ACCESS };
+        }
+
+        const permissions = value.filter(item => item.name.startsWith(CMS_MANAGE));
         if (!permissions.length) {
-            return { accessLevel: "no" };
-        }
-
-        if (permissions.length === 1 && permissions[0].name === CMS_FULL_ACCESS) {
-            return { accessLevel: "full" };
+            return { accessLevel: NO_ACCESS };
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "content models", "content model groups", "content entries" and "environments".
         const returnData = {
-            accessLevel: "custom",
-            environmentsSettingsAccessLevel: "no",
-            aliasesSettingsAccessLevel: "no"
+            accessLevel: CUSTOM_ACCESS,
+            environmentsSettingsAccessLevel: NO_ACCESS,
+            aliasesSettingsAccessLevel: NO_ACCESS
         };
-        ["contentModels", "contentModelGroups", "contentEntries", "environments"].forEach(
-            entity => {
-                const data = {
-                    [`${entity}AccessLevel`]: "no",
-                    [`${entity}Permissions`]: "r"
-                };
+        ENTITIES.forEach(entity => {
+            const data = {
+                [`${entity}AccessLevel`]: NO_ACCESS,
+                [`${entity}Permissions`]: "r"
+            };
 
-                const entityPermission = permissions.find(item => item.name === `${CMS}.${entity}`);
-                if (entityPermission) {
-                    data[`${entity}AccessLevel`] = entityPermission.own ? "own" : "full";
-                    if (data[`${entity}AccessLevel`] === "full") {
-                        data[`${entity}Permissions`] = entityPermission.permissions;
-                        data[`${entity}Props`] = entityPermission.props;
-                    }
-                    // If there are any non-empty props We'll set "AccessLevel" to that prop.
-                    if (entityPermission.props) {
-                        let accessLevel;
-                        Object.keys(entityPermission.props).forEach(key => {
-                            if (!isEmpty(entityPermission.props[key])) {
-                                accessLevel = key;
-                            }
-                        });
-                        if (accessLevel) {
-                            data[`${entity}AccessLevel`] = accessLevel;
+            const entityPermission = permissions.find(
+                item => item.name === `${CMS_MANAGE}.${entity}`
+            );
+            if (entityPermission) {
+                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
+                if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
+                    data[`${entity}Permissions`] = entityPermission.permissions;
+                    data[`${entity}Props`] = entityPermission.props;
+                }
+                // If there are any non-empty props We'll set "AccessLevel" to that prop.
+                if (entityPermission.props) {
+                    let accessLevel;
+                    Object.keys(entityPermission.props).forEach(key => {
+                        if (!isEmpty(entityPermission.props[key])) {
+                            accessLevel = key;
                         }
+                    });
+                    if (accessLevel) {
+                        data[`${entity}AccessLevel`] = accessLevel;
                     }
                 }
-
-                Object.assign(returnData, data);
             }
-        );
 
-        // Finally, let's prepare data for Headless CMS settings.
+            Object.assign(returnData, data);
+        });
+
+        // Finally, let's prepare data for Headless CMS_MANAGE settings.
         const hasAliasesSettingsAccess = permissions.find(
-            item => item.name === `${CMS}.settings.aliases`
+            item => item.name === `${CMS_MANAGE}.settings.aliases`
         );
         if (hasAliasesSettingsAccess) {
-            returnData.aliasesSettingsAccessLevel = "full";
+            returnData.aliasesSettingsAccessLevel = FULL_ACCESS;
         }
         const hasEnvironmentsSettingsAccess = permissions.find(
-            item => item.name === `${CMS}.settings.environments`
+            item => item.name === `${CMS_MANAGE}.settings.environments`
         );
         if (hasEnvironmentsSettingsAccess) {
-            returnData.environmentsSettingsAccessLevel = "full";
+            returnData.environmentsSettingsAccessLevel = FULL_ACCESS;
         }
 
         return returnData;
@@ -157,14 +162,14 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
                         <Cell span={6}>
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
-                                    <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`Full Access`}</option>
-                                    <option value={"custom"}>{t`Custom Access`}</option>
+                                    <option value={NO_ACCESS}>{t`No access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
                     </Grid>
-                    {data.accessLevel === "custom" && (
+                    {data.accessLevel === CUSTOM_ACCESS && (
                         <Fragment>
                             <ContentModelPermission
                                 data={data}
@@ -202,9 +207,11 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"environmentsSettingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`Full Access`}</option>
                                                     </Select>
                                                 </Bind>
@@ -219,9 +226,11 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"aliasesSettingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`Full Access`}</option>
                                                     </Select>
                                                 </Bind>

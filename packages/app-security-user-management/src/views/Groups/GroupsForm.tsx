@@ -120,7 +120,7 @@ const GroupForm = () => {
                                         {props => (
                                             <Accordion elevation={0}>
                                                 {permissionPlugins.map(pl => (
-                                                    <React.Fragment key={pl.name}>
+                                                    <React.Fragment key={pl.name + data.id}>
                                                         {pl.render({
                                                             id: get(
                                                                 props,

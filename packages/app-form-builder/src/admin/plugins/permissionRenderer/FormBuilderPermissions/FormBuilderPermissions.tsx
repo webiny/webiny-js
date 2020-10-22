@@ -16,9 +16,13 @@ import FormSubmissionPermission from "./FormSubmissionPermission";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
-const FORM_BUILDER = "form-builder";
+const FORM_BUILDER = "forms";
 const FORM_BUILDER_FULL_ACCESS = `${FORM_BUILDER}.*`;
 const FORM_BUILDER_SETTINGS = `${FORM_BUILDER}.settings`;
+const FULL_ACCESS = "full";
+const NO_ACCESS = "no";
+const CUSTOM_ACCESS = "custom";
+const ENTITIES = ["forms", "submissions"];
 
 export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
@@ -29,12 +33,12 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
                 newValue = value.filter(item => !item.name.startsWith(FORM_BUILDER));
             }
 
-            if (data.accessLevel === "no") {
+            if (data.accessLevel === NO_ACCESS) {
                 onChange(newValue);
                 return;
             }
 
-            if (data.accessLevel === "full") {
+            if (data.accessLevel === FULL_ACCESS) {
                 newValue.push({ name: FORM_BUILDER_FULL_ACCESS });
                 onChange(newValue);
                 return;
@@ -43,8 +47,8 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
             // Handling custom access level.
 
             // Forms and submissions first.
-            ["forms", "submissions"].forEach(entity => {
-                if (data[`${entity}AccessLevel`] !== "no") {
+            ENTITIES.forEach(entity => {
+                if (data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
                         name: `${FORM_BUILDER}.${entity}`,
                         own: false,
@@ -61,7 +65,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
             });
 
             // Settings second.
-            if (data.settingsAccessLevel === "full") {
+            if (data.settingsAccessLevel === FULL_ACCESS) {
                 newValue.push({ name: FORM_BUILDER_SETTINGS });
             }
 
@@ -72,23 +76,26 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessLevel: "no" };
+            return { accessLevel: NO_ACCESS };
+        }
+
+        const fullAccessPermission = value.find(
+            item => item.name === FORM_BUILDER_FULL_ACCESS || item.name === "*"
+        );
+        if (fullAccessPermission) {
+            return { accessLevel: FULL_ACCESS };
         }
 
         const permissions = value.filter(item => item.name.startsWith(FORM_BUILDER));
         if (!permissions.length) {
-            return { accessLevel: "no" };
-        }
-
-        if (permissions.length === 1 && permissions[0].name === FORM_BUILDER_FULL_ACCESS) {
-            return { accessLevel: "full" };
+            return { accessLevel: NO_ACCESS };
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "forms" and "submissions".
-        const returnData = { accessLevel: "custom", settingsAccessLevel: "no" };
-        ["forms", "submissions"].forEach(entity => {
+        const returnData = { accessLevel: CUSTOM_ACCESS, settingsAccessLevel: NO_ACCESS };
+        ENTITIES.forEach(entity => {
             const data = {
-                [`${entity}AccessLevel`]: "no",
+                [`${entity}AccessLevel`]: NO_ACCESS,
                 [`${entity}Permissions`]: "r"
             };
 
@@ -96,8 +103,8 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
                 item => item.name === `${FORM_BUILDER}.${entity}`
             );
             if (entityPermission) {
-                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : "full";
-                if (data[`${entity}AccessLevel`] === "full") {
+                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
+                if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
                     data[`${entity}Permissions`] = entityPermission.permissions;
                 }
             }
@@ -107,7 +114,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
         const hasSettingsAccess = permissions.find(item => item.name === FORM_BUILDER_SETTINGS);
         if (hasSettingsAccess) {
-            returnData.settingsAccessLevel = "full";
+            returnData.settingsAccessLevel = FULL_ACCESS;
         }
 
         return returnData;
@@ -124,14 +131,14 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
                         <Cell span={6}>
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
-                                    <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`Full Access`}</option>
-                                    <option value={"custom"}>{t`Custom Access`}</option>
+                                    <option value={NO_ACCESS}>{t`No access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
                     </Grid>
-                    {data.accessLevel === "custom" && (
+                    {data.accessLevel === CUSTOM_ACCESS && (
                         <Fragment>
                             <FormPermission
                                 Bind={Bind}
@@ -158,9 +165,11 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"settingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`Full Access`}</option>
                                                     </Select>
                                                 </Bind>

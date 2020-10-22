@@ -13,22 +13,31 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer");
 
+const FILE_MANAGER = "files";
+const FILE_MANAGER_FULL_ACCESS = `${FILE_MANAGER}.*`;
+const FILE_MANAGER_ACCESS_FILE = `${FILE_MANAGER}.file`;
+const FILE_MANAGER_ACCESS_SETTINGS = `${FILE_MANAGER}.settings`;
+
+const FULL_ACCESS = "full";
+const NO_ACCESS = "no";
+const CUSTOM_ACCESS = "custom";
+
 export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `file-manager*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith("file-manager"));
+                newValue = value.filter(item => !item.name.startsWith(FILE_MANAGER));
             }
 
-            if (data.accessLevel === "no") {
+            if (data.accessLevel === NO_ACCESS) {
                 onChange(newValue);
                 return;
             }
 
-            if (data.accessLevel === "full") {
-                newValue.push({ name: "file-manager.*" });
+            if (data.accessLevel === FULL_ACCESS) {
+                newValue.push({ name: FILE_MANAGER_FULL_ACCESS });
                 onChange(newValue);
                 return;
             }
@@ -36,9 +45,9 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
             // Handling custom access level.
 
             // Files first.
-            if (data.filesAccessLevel !== "no") {
+            if (data.filesAccessLevel !== NO_ACCESS) {
                 const permission = {
-                    name: "file-manager.files",
+                    name: FILE_MANAGER_ACCESS_FILE,
                     own: false,
                     permissions: undefined
                 };
@@ -51,8 +60,8 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
             }
 
             // Settings second.
-            if (data.settingsAccessLevel === "full") {
-                newValue.push({ name: "file-manager.settings" });
+            if (data.settingsAccessLevel === FULL_ACCESS) {
+                newValue.push({ name: FILE_MANAGER_ACCESS_SETTINGS });
             }
 
             onChange(newValue);
@@ -62,36 +71,41 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessLevel: "no" };
+            return { accessLevel: NO_ACCESS };
         }
 
-        const permissions = value.filter(item => item.name.startsWith("file-manager"));
+        const fullAccessPermission = value.find(
+            item => item.name === FILE_MANAGER_FULL_ACCESS || item.name === "*"
+        );
+        if (fullAccessPermission) {
+            return { accessLevel: FULL_ACCESS };
+        }
+
+        const permissions = value.filter(item => item.name.startsWith(FILE_MANAGER));
         if (!permissions.length) {
-            return { accessLevel: "no" };
-        }
-
-        if (permissions.length === 1 && permissions[0].name === "file-manager.*") {
-            return { accessLevel: "full" };
+            return { accessLevel: NO_ACCESS };
         }
 
         const data = {
-            accessLevel: "custom",
-            filesAccessLevel: "no",
-            settingsAccessLevel: "no",
+            accessLevel: CUSTOM_ACCESS,
+            filesAccessLevel: NO_ACCESS,
+            settingsAccessLevel: NO_ACCESS,
             filesPermissions: "r"
         };
 
-        const filesPermission = permissions.find(item => item.name === "file-manager.files");
+        const filesPermission = permissions.find(item => item.name === FILE_MANAGER_ACCESS_FILE);
         if (filesPermission) {
-            data.filesAccessLevel = filesPermission.own ? "own" : "full";
-            if (data.filesAccessLevel === "full") {
+            data.filesAccessLevel = filesPermission.own ? "own" : FULL_ACCESS;
+            if (data.filesAccessLevel === FULL_ACCESS) {
                 data.filesPermissions = filesPermission.permissions;
             }
         }
 
-        const hasSettingsAccess = permissions.find(item => item.name === "file-manager.settings");
+        const hasSettingsAccess = permissions.find(
+            item => item.name === FILE_MANAGER_ACCESS_SETTINGS
+        );
         if (hasSettingsAccess) {
-            data.settingsAccessLevel = "full";
+            data.settingsAccessLevel = FULL_ACCESS;
         }
 
         return data;
@@ -108,9 +122,9 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
                         <Cell span={6}>
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
-                                    <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`Full Access`}</option>
-                                    <option value={"custom"}>{t`Custom Access`}</option>
+                                    <option value={NO_ACCESS}>{t`No access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
@@ -130,9 +144,11 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"filesAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`All files`}</option>
                                                         <option
                                                             value={"own"}
@@ -176,9 +192,11 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
                                             <Cell span={6} align={"middle"}>
                                                 <Bind name={"settingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
                                                         <option
-                                                            value={"full"}
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
                                                         >{t`Full Access`}</option>
                                                     </Select>
                                                 </Bind>
