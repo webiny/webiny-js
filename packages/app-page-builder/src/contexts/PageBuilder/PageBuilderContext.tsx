@@ -1,7 +1,6 @@
 import * as React from "react";
-import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme, PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
-import { ReactElement } from "react";
+import { plugins } from "@webiny/plugins";
+import { PbThemePlugin, PbTheme } from "@webiny/app-page-builder/types";
 
 export const PageBuilderContext = React.createContext(null);
 
@@ -16,40 +15,18 @@ export type PageBuilderContextValue = {
 };
 
 export type PageBuilderProviderProps = {
-    /**
-     * DEPRECATED: this prop will be removed in future releases. Use `pb-theme` plugin to register a theme.
-     */
-    theme?: PbTheme;
-    children?: ReactElement;
-    [key: string]: any;
+    children?: React.ReactChild | React.ReactChild[];
 };
 
-export const PageBuilderProvider = ({
-    theme: bcTheme = null,
-    children,
-    ...rest
-}: PageBuilderProviderProps) => {
+export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
     const value: PageBuilderContextValue = React.useMemo(() => {
         const theme = Object.assign(
             {},
-            bcTheme,
-            ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)
+            ...plugins.byType<PbThemePlugin>("pb-theme").map(pl => pl.theme)
         );
 
-        // For backwards compatibility, grab any page layouts defined in the theme and convert them to plugins
-        if (theme.layouts) {
-            registerPlugins(
-                theme.layouts.map(l => ({
-                    name: `pb-page-layout-${l.name}`,
-                    type: `pb-page-layout`,
-                    layout: l
-                })) as PbPageLayoutPlugin[]
-            );
-        }
-
         return {
-            theme,
-            ...rest
+            theme
         };
     }, []);
 

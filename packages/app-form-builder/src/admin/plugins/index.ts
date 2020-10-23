@@ -16,6 +16,7 @@ import scopesList from "./scopesList";
 import welcomeScreenWidget from "./welcomeScreenWidget";
 
 export default () => [
+    // Admin modules
     install,
     settings,
     routes,
@@ -25,12 +26,13 @@ export default () => [
     formRevisions,
     scopesList,
 
-    // Editor
+    // Form Editor
     fields,
     groups,
     validators,
     formEditorPlugins,
     formSitePlugins(),
-
+    
+    // Admin welcome screen widget
     welcomeScreenWidget
 ];
