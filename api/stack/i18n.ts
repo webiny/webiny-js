@@ -27,7 +27,11 @@ class I18N {
                 ".": new pulumi.asset.FileArchive("./code/i18n/graphql/build")
             }),
             environment: {
-                variables: { ...env, STORAGE_NAME: this.dynamoDbTable.name }
+                variables: {
+                    ...env,
+                    DB_TABLE: this.dynamoDbTable.name,
+                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+                }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -48,7 +52,8 @@ class I18N {
                 variables: {
                     DB_PROXY_FUNCTION: dbProxy.arn,
                     DEBUG: String(process.env.DEBUG),
-                    STORAGE_NAME: this.dynamoDbTable.name
+                    DB_TABLE: this.dynamoDbTable.name,
+                    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                 }
             },
             vpcConfig: {
