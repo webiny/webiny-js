@@ -17,15 +17,15 @@ export const handler = createHandler(
             playground: process.env.GRAPHQL_PLAYGROUND
         }
     }),
-    dbPlugins(
-        new DynamoDbDriver({
-            table: process.env.DB_TABLE,
+    dbPlugins({
+        table: process.env.DB_TABLE,
+        driver: new DynamoDbDriver({
             documentClient: new DocumentClient({
                 convertEmptyValues: true,
                 region: process.env.AWS_REGION
             })
         })
-    ),
+    }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
     // Adds a context plugin to process `security` plugins for authentication
     securityPlugins(),

@@ -6,7 +6,6 @@
 	},
 	"dependencies": {
 		"@webiny/handler": "^4.13.0",
-		"@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
 		"@webiny/api-i18n": "^4.13.0",
 		"@webiny/project-utils": "^4.13.0"
 	}

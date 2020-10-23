@@ -11,6 +11,7 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@webiny/handler": "^4.13.0",
     "@webiny/db": "^4.13.0"
   },
   "devDependencies": {

@@ -18,12 +18,14 @@
     "@webiny/handler-aws": "^4.13.0",
     "@webiny/handler-apollo-server": "^4.13.0",
     "@webiny/handler-client": "^4.13.0",
+    "@webiny/handler-db": "^4.13.0",
+    "@webiny/db-dynamodb": "^4.13.0",
+    "@webiny/commodo": "^4.13.0",
     "@webiny/validation": "^4.13.0",
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
-    "lodash": "^4.17.4",
-    "ramda": "^0.26.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
