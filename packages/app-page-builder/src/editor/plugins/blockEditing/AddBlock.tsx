@@ -1,3 +1,5 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "@emotion/styled";
@@ -12,15 +14,21 @@ const BottomRight = styled("div")({
     right: 20
 });
 
-const AddBlock = ({ togglePlugin }) => {
+const AddBlock = () => {
+    const handler = useEventActionHandler();
+
+    const onClickHandler = () => {
+        handler.trigger(
+            new TogglePluginActionEvent({
+                name: "pb-editor-search-blocks-bar"
+            })
+        );
+    };
     return (
         <BottomRight>
-            <ButtonFloating
-                onClick={() => togglePlugin({ name: "pb-editor-search-blocks-bar" })}
-                icon={<AddIcon />}
-            />
+            <ButtonFloating onClick={onClickHandler} icon={<AddIcon />} />
         </BottomRight>
     );
 };
 
-export default connect<any, any, any>(null, { togglePlugin })(AddBlock);
+export default React.memo(AddBlock);
