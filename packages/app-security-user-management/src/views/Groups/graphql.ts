@@ -6,6 +6,7 @@ const fields = `
     slug
     description
     permissions
+    createdOn
 `;
 
 export const LIST_GROUPS: any = gql`

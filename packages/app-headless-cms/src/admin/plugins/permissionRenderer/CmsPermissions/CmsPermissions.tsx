@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useMemo } from "react";
+import isEmpty from "lodash/isEmpty";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
@@ -9,25 +10,27 @@ import {
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
-import CustomSection from "./CustomSection";
+import CustomSection from "./components/CustomSection";
+import { ContentModelPermission } from "./components/ContentModelPermission";
+import { ContentEntryPermission } from "./components/ContentEntryPermission";
+import { EnvironmentPermission } from "./components/EnvironmentPermission";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
-
-const PAGE_BUILDER = "pb";
-const PAGE_BUILDER_FULL_ACCESS = "pb.*";
-const PAGE_BUILDER_SETTINGS_ACCESS = `${PAGE_BUILDER}.settings`;
+// Here "manage" represents the "MANAGE API"
+const CMS_MANAGE = "cms.manage";
+const CMS_MANAGE_FULL_ACCESS = "cms.manage.*";
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["categories", "menus", "pages"];
+const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries", "environments"];
 
-export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
+export const CMSPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
             if (Array.isArray(value)) {
-                // Let's just filter out the `page-builder*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith(PAGE_BUILDER));
+                // Let's just filter out the `cms*` permission objects, it's easier to build new ones from scratch.
+                newValue = value.filter(item => !item.name.startsWith(CMS_MANAGE));
             }
 
             if (data.accessLevel === NO_ACCESS) {
@@ -36,34 +39,39 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             }
 
             if (data.accessLevel === FULL_ACCESS) {
-                newValue.push({ name: PAGE_BUILDER_FULL_ACCESS });
+                newValue.push({ name: CMS_MANAGE_FULL_ACCESS });
                 onChange(newValue);
                 return;
             }
 
             // Handling custom access level.
 
-            // Categories, menus, and pages first.
+            // Content models, content model groups, content entries and environments first.
             ENTITIES.forEach(entity => {
                 if (data[`${entity}AccessLevel`] && data[`${entity}AccessLevel`] !== NO_ACCESS) {
                     const permission = {
-                        name: `${PAGE_BUILDER}.${entity}`,
+                        name: `${CMS_MANAGE}.${entity}`,
                         own: false,
-                        permissions: undefined
+                        permissions: undefined,
+                        props: undefined
                     };
 
                     if (data[`${entity}AccessLevel`] === "own") {
                         permission.own = true;
                     } else {
                         permission.permissions = data[`${entity}Permissions`];
+                        permission.props = data[`${entity}Props`];
                     }
                     newValue.push(permission);
                 }
             });
 
             // Settings second.
-            if (data.settingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: PAGE_BUILDER_SETTINGS_ACCESS });
+            if (data.aliasesSettingsAccessLevel === FULL_ACCESS) {
+                newValue.push({ name: "cms.settings.aliases" });
+            }
+            if (data.environmentsSettingsAccessLevel === FULL_ACCESS) {
+                newValue.push({ name: "cms.settings.environments" });
             }
 
             onChange(newValue);
@@ -77,19 +85,23 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         const hasFullAccess = value.find(
-            item => item.name === PAGE_BUILDER_FULL_ACCESS || item.name === "*"
+            item => item.name === CMS_MANAGE_FULL_ACCESS || item.name === "*"
         );
         if (hasFullAccess) {
             return { accessLevel: FULL_ACCESS };
         }
 
-        const permissions = value.filter(item => item.name.startsWith(PAGE_BUILDER));
+        const permissions = value.filter(item => item.name.startsWith(CMS_MANAGE));
         if (!permissions.length) {
             return { accessLevel: NO_ACCESS };
         }
 
-        // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const returnData = { accessLevel: CUSTOM_ACCESS, settingsAccessLevel: NO_ACCESS };
+        // We're dealing with custom permissions. Let's first prepare data for "content models", "content model groups", "content entries" and "environments".
+        const returnData = {
+            accessLevel: CUSTOM_ACCESS,
+            environmentsSettingsAccessLevel: NO_ACCESS,
+            aliasesSettingsAccessLevel: NO_ACCESS
+        };
         ENTITIES.forEach(entity => {
             const data = {
                 [`${entity}AccessLevel`]: NO_ACCESS,
@@ -97,24 +109,43 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
             };
 
             const entityPermission = permissions.find(
-                item => item.name === `${PAGE_BUILDER}.${entity}`
+                item => item.name === `${CMS_MANAGE}.${entity}`
             );
             if (entityPermission) {
                 data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
                 if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
                     data[`${entity}Permissions`] = entityPermission.permissions;
+                    data[`${entity}Props`] = entityPermission.props;
+                }
+                // If there are any non-empty props We'll set "AccessLevel" to that prop.
+                if (entityPermission.props) {
+                    let accessLevel;
+                    Object.keys(entityPermission.props).forEach(key => {
+                        if (!isEmpty(entityPermission.props[key])) {
+                            accessLevel = key;
+                        }
+                    });
+                    if (accessLevel) {
+                        data[`${entity}AccessLevel`] = accessLevel;
+                    }
                 }
             }
 
             Object.assign(returnData, data);
         });
 
-        // Finally, let's prepare data for Page Builder settings.
-        const hasSettingsAccess = permissions.find(
-            item => item.name === PAGE_BUILDER_SETTINGS_ACCESS
+        // Finally, let's prepare data for Headless CMS_MANAGE settings.
+        const hasAliasesSettingsAccess = permissions.find(
+            item => item.name === `${CMS_MANAGE}.settings.aliases`
         );
-        if (hasSettingsAccess) {
-            returnData.settingsAccessLevel = FULL_ACCESS;
+        if (hasAliasesSettingsAccess) {
+            returnData.aliasesSettingsAccessLevel = FULL_ACCESS;
+        }
+        const hasEnvironmentsSettingsAccess = permissions.find(
+            item => item.name === `${CMS_MANAGE}.settings.environments`
+        );
+        if (hasEnvironmentsSettingsAccess) {
+            returnData.environmentsSettingsAccessLevel = FULL_ACCESS;
         }
 
         return returnData;
@@ -140,23 +171,28 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                     </Grid>
                     {data.accessLevel === CUSTOM_ACCESS && (
                         <Fragment>
-                            <CustomSection
+                            <ContentModelPermission
                                 data={data}
                                 Bind={Bind}
-                                entity={"categories"}
-                                title={"Categories"}
+                                entity={"contentModels"}
+                                title={"Content Models"}
                             />
                             <CustomSection
                                 data={data}
                                 Bind={Bind}
-                                entity={"menus"}
-                                title={"Menus"}
+                                entity={"contentModelGroups"}
+                                title={"Content Model Groups"}
                             />
-                            <CustomSection
+                            <ContentEntryPermission
                                 data={data}
                                 Bind={Bind}
-                                entity={"pages"}
-                                title={"Pages"}
+                                entity={"contentEntries"}
+                                title={"Content Entries"}
+                            />
+                            <EnvironmentPermission
+                                data={data}
+                                Bind={Bind}
+                                entity={"environments"}
                             />
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
@@ -166,10 +202,29 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
                                             <Cell span={6}>
-                                                <PermissionInfo title={t`Manage settings`} />
+                                                <PermissionInfo title={t`Manage environments`} />
                                             </Cell>
                                             <Cell span={6} align={"middle"}>
-                                                <Bind name={"settingsAccessLevel"}>
+                                                <Bind name={"environmentsSettingsAccessLevel"}>
+                                                    <Select label={t`Access Level`}>
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`Full Access`}</option>
+                                                    </Select>
+                                                </Bind>
+                                            </Cell>
+                                        </Grid>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
+                                            <Cell span={6}>
+                                                <PermissionInfo title={t`Manage aliases`} />
+                                            </Cell>
+                                            <Cell span={6} align={"middle"}>
+                                                <Bind name={"aliasesSettingsAccessLevel"}>
                                                     <Select label={t`Access Level`}>
                                                         <option
                                                             value={NO_ACCESS}

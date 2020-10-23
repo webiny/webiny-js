@@ -12,8 +12,9 @@ import previewContent from "./formDetails/previewContent";
 import formRevisions from "./formDetails/formRevisions";
 import formSubmissions from "./formDetails/formSubmissions";
 import install from "./install";
-import scopesList from "./scopesList";
 import welcomeScreenWidget from "./welcomeScreenWidget";
+
+import permissionRenderer from "./permissionRenderer";
 
 export default () => [
     install,
@@ -23,7 +24,6 @@ export default () => [
     formSubmissions,
     previewContent,
     formRevisions,
-    scopesList,
 
     // Editor
     fields,
@@ -32,5 +32,6 @@ export default () => [
     formEditorPlugins,
     formSitePlugins(),
 
-    welcomeScreenWidget
+    welcomeScreenWidget,
+    permissionRenderer()
 ];

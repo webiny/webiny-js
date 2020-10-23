@@ -1,3 +1,4 @@
+import KSUID from "ksuid";
 import { createHandler } from "@webiny/handler-aws";
 import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
@@ -59,6 +60,7 @@ export default () => {
                 name: "security-user-management",
                 type: "security-user-management",
                 async createUser({ data, user, permanent = false }) {
+                    user.id = KSUID.randomSync().string;
                     return Promise.resolve();
                 },
                 async updateUser({ data, user }) {

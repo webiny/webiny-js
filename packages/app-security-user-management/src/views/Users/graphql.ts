@@ -20,6 +20,7 @@ const fields = /* GraphQL */ `
             name
             token
         }
+        createdOn
     }
 `;
 

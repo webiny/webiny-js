@@ -1,10 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
-import { useCrud } from "@webiny/app-admin/hooks/useCrud";
 
 import {
     DataList,
@@ -19,39 +17,67 @@ import {
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Avatar } from "@webiny/ui/Avatar";
+import { DELETE_USER, LIST_USERS } from "./graphql";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useMutation, useQuery } from "react-apollo";
+
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 
 const UsersDataList = () => {
     const { identity } = useSecurity();
-    const { actions, list } = useCrud();
+
+    const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const listQuery = useQuery(LIST_USERS);
+
+    const [deleteIt, deleteMutation] = useMutation(DELETE_USER, {
+        refetchQueries: [{ query: LIST_USERS }]
+    });
+
+    const { showConfirmation } = useConfirmationDialog();
+
+    const data = listQuery?.data?.security?.users?.data || [];
+
+    const id = new URLSearchParams(location.search).get("id");
+
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.security?.deleteUser?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
+
+                if (id === item.id) {
+                    history.push(`/security/users`);
+                }
+            });
+        },
+        [id]
+    );
+
+    const loading = [listQuery, deleteMutation].find(item => item.loading);
+
     return (
         <DataList
-            {...list}
             title={t`Security Users`}
-            sorters={[
-                {
-                    label: t`Newest to oldest`,
-                    sorters: { savedOn: -1 }
-                },
-                {
-                    label: t`Oldest to newest`,
-                    sorters: { savedOn: 1 }
-                },
-                {
-                    label: t`Name A-Z`,
-                    sorters: { lastName: 1 }
-                },
-                {
-                    label: t`Name Z-A`,
-                    sorters: { lastName: -1 }
-                }
-            ]}
+            data={data}
+            loading={Boolean(loading)}
+            refresh={listQuery.refetch}
         >
-            {({ data, isSelected, select }) => (
+            {({ data }) => (
                 <ScrollList twoLine avatarList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={isSelected(item)}>
+                        <ListItem key={item.id} selected={item.id === id}>
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
@@ -62,7 +88,9 @@ const UsersDataList = () => {
                                     alt={t`User's avatar.`}
                                 />
                             </ListItemGraphic>
-                            <ListItemText onClick={() => select(item)}>
+                            <ListItemText
+                                onClick={() => history.push(`/security/users?id=${item.id}`)}
+                            >
                                 {item.fullName}
                                 <ListItemTextSecondary>{item.email}</ListItemTextSecondary>
                             </ListItemText>
@@ -70,15 +98,7 @@ const UsersDataList = () => {
                             <ListItemMeta>
                                 <ListActions>
                                     {identity && identity.id !== item.id ? (
-                                        <ConfirmationDialog>
-                                            {({ showConfirmation }) => (
-                                                <DeleteIcon
-                                                    onClick={() =>
-                                                        showConfirmation(() => actions.delete(item))
-                                                    }
-                                                />
-                                            )}
-                                        </ConfirmationDialog>
+                                        <DeleteIcon onClick={() => deleteItem(item)} />
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
