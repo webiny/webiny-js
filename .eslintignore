@@ -1,6 +1,6 @@
-node_modules/**
-dist/**
-build/**
+**/node_modules/
+**/dist/
+**/build/
 **/.out/
 **/__tests__
 **/*.d.ts
