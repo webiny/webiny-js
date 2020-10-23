@@ -100,49 +100,6 @@ describe("CRUD Test", () => {
             }
         });
 
-        // Let's try searching using `codeBeginsWith` query operator.
-        [response] = await listI18NLocales({ where: { codeBeginsWith: "en" } });
-        expect(response).toEqual({
-            data: {
-                i18n: {
-                    listI18NLocales: {
-                        data: [
-                            {
-                                code: "en-GB",
-                                default: false
-                            },
-                            {
-                                code: "en-US",
-                                default: false
-                            }
-                        ],
-                        error: null
-                    }
-                }
-            }
-        });
-
-        [response] = await listI18NLocales({ where: { codeBeginsWith: "hr" } });
-        expect(response).toEqual({
-            data: {
-                i18n: {
-                    listI18NLocales: {
-                        data: [
-                            {
-                                code: "hr",
-                                default: false
-                            },
-                            {
-                                code: "hr-HR",
-                                default: true
-                            }
-                        ],
-                        error: null
-                    }
-                }
-            }
-        });
-
         // We should also be able to get the locale directly by providing the code.
         [response] = await getI18NLocale({ code: "en-GB" });
         expect(response).toEqual({

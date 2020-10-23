@@ -1,12 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    { "path": "../graphql" },
-    { "path": "../api-plugin-commodo-db-proxy" },
-    { "path": "../api-security" },
-    { "path": "../commodo" },
-    { "path": "../commodo-graphql" },
-    { "path": "../handler" },
-    { "path": "../validation" }
-  ]
+  "references": [{ "path": "../graphql" }, { "path": "../api-security" }, { "path": "../handler" }]
 }

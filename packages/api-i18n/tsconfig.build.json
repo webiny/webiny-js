@@ -1,16 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "../graphql",
-    "../api-plugin-commodo-db-proxy",
-    "../api-security",
-    "../commodo",
-    "../commodo-graphql",
-    "../handler",
-    "../validation"
-  ],
+  "exclude": ["node_modules", "../graphql", "../api-security", "../handler"],
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
@@ -18,10 +9,7 @@
   },
   "references": [
     { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../handler/tsconfig.build.json" }
   ]
 }

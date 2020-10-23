@@ -1,17 +1,10 @@
 import { hasScope } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
-import { LocaleData, PK_LOCALE } from "./../models/localeData.model";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
 
 export default {
     typeDefs: `
-        input I18NLocaleSearchInput {
-            query: String
-            fields: [String]
-            operator: String
-        }
-        
         type I18NLocale {
             code: String
             default: Boolean
@@ -24,10 +17,6 @@ export default {
             createdOn: DateTime
         }
         
-        input ListI18NLocalesWhereInput {
-            codeBeginsWith: String
-        }
-            
         type I18NLocaleResponse {
             data: I18NLocale
             error: I18NError
@@ -54,9 +43,7 @@ export default {
                 code: String! 
             ): I18NLocaleResponse
             
-            listI18NLocales(
-                where: ListI18NLocalesWhereInput
-            ): I18NLocaleListResponse   
+            listI18NLocales: I18NLocaleListResponse   
             
             getI18NInformation: I18NInformationResponse
             
@@ -82,96 +69,83 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
-                const { I18N } = context.models;
-                const locale = await I18N.findOne({
-                    query: { PK: PK_LOCALE, SK: args.code }
-                });
+            getI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+                const { locales } = context;
+                const locale = await locales.getByCode(args.code);
                 if (!locale) {
                     return new NotFoundResponse(`Locale "${args.code}" not found.`);
                 }
 
-                return new Response(locale.data);
+                return new Response(locale);
             }),
-            listI18NLocales: hasScope("i18n:locale:crud")(async (_, args, context) => {
-                const { I18N } = context.models;
-
-                const query = { PK: PK_LOCALE, SK: null };
-                if (typeof args?.where?.codeBeginsWith === "string") {
-                    query.SK = { $beginsWith: args.where.codeBeginsWith };
-                } else {
-                    query.SK = { $gt: " " };
-                }
-
-                const locales = await I18N.find({ query });
-                return new Response(locales.map(item => item.data));
+            listI18NLocales: hasScope("i18n.locale")(async (_, args, context) => {
+                const { locales } = context;
+                return new Response(await locales.list());
             }),
             searchLocaleCodes,
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
-                const { I18N } = context.models;
+            createI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+                const { locales } = context;
                 const { data } = args;
 
-                try {
-                    const locale = new I18N();
-                    locale.PK = PK_LOCALE;
-                    locale.SK = data.code;
-                    locale.data = new LocaleData().populate({
-                        default: data.default,
-                        code: data.code
-                    });
+                if (await locales.getByCode(data.code)) {
+                    return new NotFoundResponse(`Locale with key "${data.code}" already exists.`);
+                }
 
-                    await locale.save();
-                    return new Response(locale.data);
-                } catch (e) {
-                    return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data
-                    });
+                await locales.create(data);
+                if (data.default) {
+                    await locales.updateDefault(data.code);
                 }
-            }),
-            updateI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
-                const { I18N } = context.models;
-                try {
-                    const locale = await I18N.findOne({
-                        query: { PK: PK_LOCALE, SK: args.code }
-                    });
-                    if (!locale) {
-                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                    }
-                    locale.data.populate(args.data);
-                    await locale.save();
-                    return new Response(locale.data);
-                } catch (e) {
-                    return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data
-                    });
-                }
-            }),
-            deleteI18NLocale: hasScope("i18n:locale:crud")(async (_, args, context) => {
-                const { I18N } = context.models;
-                try {
-                    const locale = await I18N.findOne({
-                        query: { PK: PK_LOCALE, SK: args.code }
-                    });
-                    if (!locale) {
-                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                    }
 
-                    await locale.delete();
-                    return new Response(locale.data);
-                } catch (e) {
+                return new Response(data);
+            }),
+            updateI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+                const { locales } = context;
+                const { code } = args;
+
+                const locale = await locales.getByCode(code);
+                if (!locale) {
+                    return new NotFoundResponse(`Locale "${args.code}" not found.`);
+                }
+
+                await locales.update(code, {
+                    default: args.default
+                });
+
+                if (locale.default) {
+                    await locales.updateDefault(code);
+                }
+
+                return new Response(locale);
+            }),
+            deleteI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+                const { locales } = context;
+                const { code } = args;
+
+                const locale = await locales.getByCode(code);
+                if (!locale) {
+                    return new NotFoundResponse(`Locale "${args.code}" not found.`);
+                }
+
+                if (locale.default) {
                     return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data
+                        message:
+                            "Cannot delete default locale, please set another locale as default first."
                     });
                 }
+
+                const allLocales = await locales.list();
+                if (allLocales.length === 1) {
+                    return new ErrorResponse({
+                        message: "Cannot delete the last locale."
+                    });
+                }
+
+                await locales.delete(code);
+
+                return new Response(locale);
             })
         }
     }
