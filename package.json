@@ -117,19 +117,16 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
-    "eslint": "eslint \"packages/**/*.{ts,tsx}\" --quiet",
+    "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
-    "build:apps:pb": "lerna run build --scope=@webiny/app-page-builder --stream",
     "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
     "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
     "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
-    "watch:apps:pb": "lerna run watch --scope=@webiny/app-page-builder --stream --parallel",
     "watch:api": "lerna run watch --scope=@webiny/api* --stream --parallel",
     "watch:packages": "lerna run watch --scope=@webiny/* --ignore=@webiny/serv* --stream --parallel",
-    "watch:packages:pulumi": "lerna run watch --scope=@webiny/pulumi-sdk --stream --parallel",
     "clear-dist": "yarn rimraf packages/*/dist",
     "contributors:add": "contreebutors add --username",
     "contributors:generate": "contreebutors render",
@@ -142,7 +139,7 @@
     "lint-staged": "lint-staged",
     "postinstall": "node ./scripts/linkPackages.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
-    "prettier": "prettier \"packages/**/src/**/*.{js,ts,tsx}\" --config .prettierrc.js",
+    "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
     "setup-repo": "node scripts/setupRepo",
@@ -160,11 +157,10 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
-      "adio",
-      "yarn prettier:fix",
-      "eslint",
-      "git add"
+    "**/*.{js,ts,tsx}": [
+      "prettier --check",
+      "eslint --max-warnings=0",
+      "adio"
     ]
   },
   "yargs": {
