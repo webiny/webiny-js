@@ -357,6 +357,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Bhuwan Chandra</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/iamdarshshah">
+                        <img src="https://avatars2.githubusercontent.com/u/25670841?v=4" width="100px;" alt="Darsh Shah"/>
+                        <br />
+                        <sub><b>Darsh Shah</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
