@@ -1,17 +1,13 @@
-const apiI18n = require("./packages/api-i18n/jest-dynamodb-config");
-const apiSecurityUserManagement = require("./packages/api-security-user-management/jest-dynamodb-config");
-const merge = require("lodash/merge");
 const path = require("path");
 const os = require("os");
+const apiI18nTables = require("./packages/api-i18n/jest-dynamodb-tables");
+const apiSecurityUserManagementTables = require("./packages/api-security-user-management/jest-dynamodb-tables");
 
-module.exports = merge(
-    {
-        installerConfig: {
-            installPath: path.join(os.tmpdir(), "dynamodb_local_2020-05-19"),
-            downloadUrl:
-                "https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_2020-05-19.tar.gz"
-        }
-    },
-    apiI18n,
-    apiSecurityUserManagement
-);
+module.exports = {
+    tables: [...apiI18nTables, ...apiSecurityUserManagementTables],
+    installerConfig: {
+        installPath: path.join(os.tmpdir(), "dynamodb_local_2020-05-19"),
+        downloadUrl:
+            "https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_2020-05-19.tar.gz"
+    }
+};
