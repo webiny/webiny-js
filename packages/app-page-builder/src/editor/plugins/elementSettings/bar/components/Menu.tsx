@@ -1,10 +1,11 @@
-import React, { RefObject } from "react";
+import { isPluginActive } from "@webiny/app-page-builder/editor/recoil/modules/plugins/selectors/isPluginActiveSelector";
+import React, { useEffect, useState } from "react";
+import { pluginsAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { deactivatePluginMutation } from "@webiny/app-page-builder/editor/recoil/modules/plugins/mutations/deactivatePluginMutation";
 import { Transition } from "react-transition-group";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
-import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
+import { useRecoilState } from "recoil";
 
 const Overlay = styled("div")({
     position: "fixed",
@@ -90,52 +91,51 @@ const ToolbarBox = styled("div")(
     })
 );
 
-class Menu extends React.Component<any> {
-    ref: RefObject<any> = React.createRef();
+const Menu = ({ plugin, options }) => {
+    const ref = React.createRef<any>();
+    const [moveLeft, setMoveLeft] = useState<number>(null);
+    const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
+    const isActive = isPluginActive(pluginsAtomValue, plugin);
 
-    state = {
-        left: null
+    const deactivateCurrentPlugin = () => {
+        setPluginsAtomValue(prev => deactivatePluginMutation(prev, plugin));
     };
 
-    componentDidUpdate() {
-        if (this.ref.current && this.state.left === null) {
-            this.setState({ left: -(this.ref.current.offsetWidth - 48) / 2 }, () => {
-                /*eslint-env browser */
-                window.dispatchEvent(new Event("resize"));
-            });
+    useEffect(() => {
+        if (moveLeft === null) {
+            return;
         }
-    }
+        window.dispatchEvent(new Event("resize"));
+    }, [moveLeft]);
 
-    render() {
-        const { active, plugin, options, togglePlugin } = this.props;
+    useEffect(() => {
+        if (!ref.current) {
+            return;
+        }
+        setMoveLeft(-(ref.current.offsetWidth - 48) / 2);
+    }, [plugin.name, options, isActive]);
 
-        const content = plugin.renderMenu({ options });
+    const content = plugin.renderMenu({ options });
 
-        return (
-            <Transition in={active} timeout={125} appear={true} unmountOnExit={true}>
-                {state => (
-                    <React.Fragment>
-                        <ToolbarBox
-                            left={this.state.left}
-                            style={{ ...defaultStyle, ...transitionStyles[state] }}
-                        >
-                            <Elevation z={2} className={"elevationBox"}>
-                                <div ref={this.ref}>
-                                    <Wrapper>{content}</Wrapper>
-                                </div>
-                            </Elevation>
-                        </ToolbarBox>
-                        <Overlay onClick={() => togglePlugin({ name: plugin.name })} />
-                    </React.Fragment>
-                )}
-            </Transition>
-        );
-    }
-}
+    return (
+        <Transition in={isActive} timeout={125} appear={true} unmountOnExit={true}>
+            {state => (
+                <React.Fragment>
+                    <ToolbarBox
+                        left={moveLeft}
+                        style={{ ...defaultStyle, ...transitionStyles[state] }}
+                    >
+                        <Elevation z={2} className={"elevationBox"}>
+                            <div ref={ref}>
+                                <Wrapper>{content}</Wrapper>
+                            </div>
+                        </Elevation>
+                    </ToolbarBox>
+                    <Overlay onClick={deactivateCurrentPlugin} />
+                </React.Fragment>
+            )}
+        </Transition>
+    );
+};
 
-export default connect<any, any, any>(
-    (state, props) => ({
-        active: isPluginActive(props.plugin.name)(state)
-    }),
-    { togglePlugin }
-)(Menu);
+export default React.memo(Menu);

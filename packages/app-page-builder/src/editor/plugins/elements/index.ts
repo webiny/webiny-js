@@ -4,6 +4,7 @@ import block from "./block";
 import column from "./column";
 import image from "./image";
 import text from "./text";
+import gridBlock from "./grid";
 import icon from "./icon";
 import spacer from "./spacer";
 import button from "./button";
@@ -16,7 +17,8 @@ import imagesList from "./imagesList";
 export default [
     document(),
     // row(),
-    block()
+    block(),
+    gridBlock()
     // column()
     // ...icon(),
     // ...image(),

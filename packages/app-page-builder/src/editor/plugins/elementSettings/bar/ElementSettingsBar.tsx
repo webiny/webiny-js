@@ -84,6 +84,7 @@ const ElementSettingsBarContent = ({ plugin, deactivateElement }: ElementSetting
                     If no `settings` array is defined in an `element` plugin, all settings are shown.
                     */}
                     {actions.map(({ plugin, options }, index) => {
+                        console.log(`${plugin.name}: ${typeof plugin.renderMenu === "function"}`);
                         return (
                             <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
                                 {plugin.renderAction({ options })}

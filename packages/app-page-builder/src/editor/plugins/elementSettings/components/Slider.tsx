@@ -4,11 +4,11 @@ import { get } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Slider as SliderCmp } from "@webiny/ui/Slider";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 
 type SliderProps = {
     label: string;
-    value: string;
+    value?: string | number;
+    valueKey?: any;
     defaultValue?: any;
     updatePreview(value: any): void;
     updateValue(value: any): void;
@@ -46,8 +46,4 @@ const Slider = ({
     );
 };
 
-export default connect<any, any, any>((state, { valueKey }: { valueKey: string }) => {
-    return {
-        value: get(getActiveElement(state), valueKey, 0)
-    };
-})(React.memo(Slider));
+export default React.memo(Slider);
