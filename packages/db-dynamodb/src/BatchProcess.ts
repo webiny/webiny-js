@@ -1,5 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import Batch from "@webiny/db/Batch";
+import { Batch } from "@webiny/db";
 
 type BatchType = "batchWrite" | "batchGet";
 
@@ -49,7 +49,7 @@ class BatchProcess {
         return this.queryExecution;
     }
 
-    addBatchOperation(type: BatchType, args, meta = {}) {
+    addBatchOperation(type: BatchType, args, meta = {}): () => any {
         if (!this.batchType) {
             this.batchType = type;
         } else if (this.batchType !== type) {
