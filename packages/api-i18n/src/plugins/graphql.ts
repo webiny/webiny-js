@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 import gql from "graphql-tag";
-import i18nLocale from "./graphql/I18NLocale";
-import install from "./graphql/Install";
+import locales from "./graphql/locales";
+import installation from "./graphql/installation";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 const emptyResolver = () => ({});
@@ -54,8 +54,8 @@ const plugin: GraphQLSchemaPlugin = {
                 message: String
                 data: JSON
             }
-            ${install.typeDefs}
-            ${i18nLocale.typeDefs}
+            ${installation.typeDefs}
+            ${locales.typeDefs}
         `,
         resolvers: merge(
             {
@@ -66,8 +66,8 @@ const plugin: GraphQLSchemaPlugin = {
                     i18n: emptyResolver
                 }
             },
-            i18nLocale.resolvers,
-            install.resolvers
+            installation.resolvers,
+            locales.resolvers
         )
     }
 };
