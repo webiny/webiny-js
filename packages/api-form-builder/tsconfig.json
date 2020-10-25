@@ -3,6 +3,7 @@
   "references": [
     { "path": "../graphql" },
     { "path": "../api-i18n" },
+    { "path": "../api-plugin-commodo-db-proxy" },
     { "path": "../api-security" },
     { "path": "../api-settings-manager" },
     { "path": "../commodo" },

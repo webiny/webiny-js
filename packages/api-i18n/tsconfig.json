@@ -1,4 +1,15 @@
 {
   "extends": "../../tsconfig",
-  "references": [{ "path": "../graphql" }, { "path": "../api-security" }, { "path": "../handler" }]
+  "references": [
+    { "path": "../api-security" },
+    { "path": "../graphql" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-apollo-server" },
+    { "path": "../handler-client" },
+    { "path": "../handler-db" },
+    { "path": "../db-dynamodb" },
+    { "path": "../commodo" },
+    { "path": "../validation" }
+  ]
 }

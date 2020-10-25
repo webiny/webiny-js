@@ -1,11 +1,11 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../data"],
+  "exclude": ["node_modules", "./dist", "../db"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist"
   },
-  "references": [{ "path": "../data/tsconfig.build.json" }]
+  "references": [{ "path": "../db/tsconfig.build.json" }]
 }

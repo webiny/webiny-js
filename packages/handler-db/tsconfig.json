@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": [{ "path": "../db" }]
+  "references": [{ "path": "../db" }, { "path": "../handler" }]
 }

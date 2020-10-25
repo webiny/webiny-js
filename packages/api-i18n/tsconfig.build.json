@@ -1,15 +1,34 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "exclude": ["node_modules", "../graphql", "../api-security", "../handler"],
+  "exclude": [
+    "node_modules",
+    "../api-security",
+    "../graphql",
+    "../handler",
+    "../handler-aws",
+    "../handler-apollo-server",
+    "../handler-client",
+    "../handler-db",
+    "../db-dynamodb",
+    "../commodo",
+    "../validation"
+  ],
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist"
   },
   "references": [
-    { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" }
+    { "path": "../graphql/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../handler-apollo-server/tsconfig.build.json" },
+    { "path": "../handler-client/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
   ]
 }
