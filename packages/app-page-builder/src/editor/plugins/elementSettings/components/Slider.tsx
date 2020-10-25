@@ -1,6 +1,4 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import { get } from "lodash";
+import React from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Slider as SliderCmp } from "@webiny/ui/Slider";

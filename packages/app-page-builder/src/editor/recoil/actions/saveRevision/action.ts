@@ -12,7 +12,9 @@ type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "url" | "settin
 let lastSavedRevisionData: any = {};
 
 const isDataEqualToLastSavedData = (data: PageRevisionType) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { content, ...restOfData } = data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { content: lastContent, ...restOfLastRevisionData } = lastSavedRevisionData;
     return lodashIsEqual(restOfData, restOfLastRevisionData);
 };
@@ -68,7 +70,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
         }
     `;
 
-    const result = await args.client.mutate({
+    await args.client.mutate({
         mutation: updateRevision,
         variables: {
             id: state.page.id,

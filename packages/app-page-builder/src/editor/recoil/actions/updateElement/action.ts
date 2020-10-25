@@ -1,12 +1,6 @@
-import {
-    DeactivatePluginActionEvent,
-    SaveRevisionActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
+import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { UpdateElementActionArgsType } from "./types";
-import {
-    BaseEventAction,
-    EventActionCallableType
-} from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashMerge from "lodash/merge";

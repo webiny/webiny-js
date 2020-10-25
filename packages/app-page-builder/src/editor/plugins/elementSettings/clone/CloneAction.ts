@@ -2,7 +2,6 @@ import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider"
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     activeElementIdSelector,
-    contentSelector,
     elementParentWithChildrenByIdSelector,
     elementWithChildrenByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";

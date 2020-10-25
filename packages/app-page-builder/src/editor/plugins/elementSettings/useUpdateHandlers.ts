@@ -1,9 +1,32 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { useMemo } from "react";
 import { set } from "lodash";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 
-export default props => {
-    const updateSettings = useHandler(props, ({ element, updateElement, dataNamespace }) => {
+type UpdateHandlersPropsType = {
+    element: PbShallowElement | PbElement;
+    dataNamespace: string;
+};
+type UpdateElementCallableArgsType = {
+    targetElement: PbShallowElement | PbElement;
+    merge: boolean;
+    history?: boolean;
+};
+type UpdateElementCallableType = (props: UpdateElementCallableArgsType) => void;
+export default (props: UpdateHandlersPropsType) => {
+    const handler = useEventActionHandler();
+    const updateElement: UpdateElementCallableType = ({ targetElement, merge, history }) => {
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element: targetElement as PbElement,
+                history,
+                merge
+            })
+        );
+    };
+    const updateSettings = useHandler(props, ({ element, dataNamespace }) => {
         const historyUpdated = {};
         return (name: string, newValue: any, history = false) => {
             const propName = `${dataNamespace}.${name}`;
@@ -12,7 +35,7 @@ export default props => {
 
             if (!history) {
                 updateElement({
-                    element: newElement,
+                    targetElement: newElement,
                     history,
                     merge: true
                 });
@@ -21,7 +44,7 @@ export default props => {
 
             if (historyUpdated[propName] !== newValue) {
                 historyUpdated[propName] = newValue;
-                updateElement({ element: newElement, merge: true });
+                updateElement({ targetElement: newElement, merge: true });
             }
         };
     });

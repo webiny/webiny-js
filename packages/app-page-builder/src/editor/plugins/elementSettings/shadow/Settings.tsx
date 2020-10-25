@@ -12,10 +12,9 @@ const DATA_NAMESPACE = "data.settings.shadow";
 
 // TODO: need to figure out how to properly type the `connect` props and apply it to all `elementSettings` plugins.
 
-const Settings = ({ element, updateElement }: any) => {
+const Settings = ({ element }: any) => {
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        updateElement,
         dataNamespace: DATA_NAMESPACE
     });
 

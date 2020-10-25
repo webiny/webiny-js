@@ -48,8 +48,6 @@ const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}
     );
 };
 
-const excludedPageKeys = ["content"];
-
 type PageSettingsContentPropsType = {
     pluginsByType: PbEditorPageSettingsPlugin[];
     setActive: (name: string) => void;

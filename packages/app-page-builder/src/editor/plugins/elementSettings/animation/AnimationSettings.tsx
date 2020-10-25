@@ -15,10 +15,9 @@ import ElementAnimation from "@webiny/app-page-builder/render/components/Element
 
 const DATA_NAMESPACE = "data.settings.animation";
 
-const Settings = ({ element, updateElement, title, advanced }) => {
+const Settings = ({ element, title, advanced }) => {
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        updateElement,
         dataNamespace: DATA_NAMESPACE
     });
 

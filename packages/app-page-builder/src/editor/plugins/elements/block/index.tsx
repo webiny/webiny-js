@@ -8,8 +8,6 @@ import React from "react";
 import Block from "./Block";
 import {
     createElement,
-    createRow,
-    createColumn,
     cloneElement,
     addElementToParent
 } from "@webiny/app-page-builder/editor/utils";

@@ -1,1 +1,1 @@
-export * from "./deactivatePluginByNameMutation";
+export * from "./deactivatePluginMutation";
