@@ -1,11 +1,8 @@
 import gql from "graphql-tag";
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/graphql";
-import page from "./graphql/Page";
-import category from "./graphql/Category";
-import menu from "./graphql/Menu";
-import settings from "./graphql/Settings";
-import install from "./graphql/install";
+import menus from "./graphql/menus";
+import install from "./graphql/installation";
+const emptyResolver = () => ({});
 
 export default {
     type: "graphql-schema",
@@ -66,10 +63,7 @@ export default {
                 pageBuilder: PbMutation
             }
 
-            ${page.typeDefs}
-            ${category.typeDefs}
-            ${menu.typeDefs}
-            ${settings.typeDefs}
+            ${menus.typeDefs},
             ${install.typeDefs}
         `,
         resolvers: merge(
@@ -81,10 +75,10 @@ export default {
                     pageBuilder: emptyResolver
                 }
             },
-            page.resolvers,
-            category.resolvers,
-            menu.resolvers,
-            settings.resolvers,
+            // page.resolvers,
+            // category.resolvers,
+            menus.resolvers,
+            // settings.resolvers,
             install.resolvers
         )
     }
