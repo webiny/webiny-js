@@ -1,8 +1,8 @@
 import { Db } from "@webiny/db";
 import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { HandlerContextDb } from "./types";
 
-export default (args) => {
+export default args => {
     return [
         {
             type: "context",
