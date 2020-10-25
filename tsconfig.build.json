@@ -110,6 +110,8 @@
       "@webiny/handler-args/*": ["./packages/handler-args/src/*"],
       "@webiny/handler-aws": ["./packages/handler-aws/src"],
       "@webiny/handler-aws/*": ["./packages/handler-aws/src/*"],
+      "@webiny/handler-db": ["./packages/handler-db/src"],
+      "@webiny/handler-db/*": ["./packages/handler-db/src/*"],
       "@webiny/handler-aws-documentdb-proxy": ["./packages/handler-aws-documentdb-proxy/src"],
       "@webiny/handler-aws-documentdb-proxy/*": ["./packages/handler-aws-documentdb-proxy/src/*"],
       "@webiny/handler-client": ["./packages/handler-client/src"],
