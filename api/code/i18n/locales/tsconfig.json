@@ -2,6 +2,8 @@
   "extends": "../../../../tsconfig",
   "references": [
     { "path": "../../../../packages/api-i18n" },
-    { "path": "../../../../packages/handler" }
+    { "path": "../../../../packages/handler" },
+    { "path": "../../../../packages/handler-db" },
+    { "path": "../../../../packages/db-dynamodb" }
   ]
 }
