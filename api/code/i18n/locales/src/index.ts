@@ -5,14 +5,14 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 
 export const handler = createHandler(
-    dbPlugins(
-        new DynamoDbDriver({
-            table: process.env.DB_TABLE,
+    dbPlugins({
+        table: process.env.DB_TABLE,
+        driver: new DynamoDbDriver({
             documentClient: new DocumentClient({
                 convertEmptyValues: true,
                 region: process.env.AWS_REGION
             })
         })
-    ),
+    }),
     locales()
 );
