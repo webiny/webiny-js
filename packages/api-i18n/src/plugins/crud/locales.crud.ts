@@ -28,7 +28,7 @@ export default {
                 return locale;
             },
             async getDefault() {
-                const [[locale]] = await db.read({
+                const [[locale]] = await db.read<Locale>({
                     keys,
                     query: { PK: PK_DEFAULT_LOCALE, SK: "default" },
                     limit: 1
@@ -37,7 +37,7 @@ export default {
                 return locale;
             },
             async list(args) {
-                const [locales] = await db.read({
+                const [locales] = await db.read<Locale>({
                     keys,
                     query: { PK: PK_LOCALE, SK: { $gt: " " } },
                     ...args
@@ -60,8 +60,6 @@ export default {
                     keys,
                     query: { PK: PK_LOCALE, SK: code },
                     data: {
-                        PK: PK_LOCALE,
-                        SK: code,
                         default: data.default
                     }
                 });
