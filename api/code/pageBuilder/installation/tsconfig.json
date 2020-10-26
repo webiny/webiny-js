@@ -6,7 +6,6 @@
     { "path": "../../../packages/api-security-permissions-manager" },
     { "path": "../../../packages/api-settings-manager" },
     { "path": "../../../packages/api-page-builder" },
-    { "path": "../../../packages/api-plugin-page-builder-resolvers-mongodb" },
     { "path": "../../../packages/api-mailchimp" },
     { "path": "../../../packages/api-cookie-policy" },
     { "path": "../../../packages/api-google-tag-manager" },

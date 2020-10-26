@@ -15,7 +15,6 @@
 		"@webiny/api-google-tag-manager": "^4.13.0",
 		"@webiny/api-cookie-policy": "^4.13.0",
 		"@webiny/api-mailchimp": "^4.13.0",
-		"@webiny/api-plugin-page-builder-resolvers-mongodb": "^4.13.0",
 		"@webiny/api-page-builder": "^4.13.0",
 		"@webiny/project-utils": "^4.13.0"
 	}

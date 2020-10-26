@@ -13,7 +13,6 @@
     "@webiny/api-google-tag-manager": "^4.0.0-beta.0",
     "@webiny/api-cookie-policy": "^4.0.0-beta.0",
     "@webiny/api-mailchimp": "^4.0.0-beta.0",
-    "@webiny/api-plugin-page-builder-resolvers-mongodb": "^4.0.0-beta.0",
     "@webiny/api-page-builder": "^4.0.0-beta.0",
     "@webiny/project-utils": "^4.0.0-beta.4"
   }
