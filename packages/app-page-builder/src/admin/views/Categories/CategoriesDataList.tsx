@@ -72,7 +72,7 @@ const PageBuilderCategoriesDataList = () => {
                             <ListItemText
                                 onClick={() => history.push(`/page-builder/categories?slug=${item.slug}`)}
                             >
-                                <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
+                                {item.name}
                                 <ListItemTextSecondary>{item.url}</ListItemTextSecondary>
                             </ListItemText>
 
