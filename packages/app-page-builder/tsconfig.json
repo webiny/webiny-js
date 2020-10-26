@@ -4,7 +4,6 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-plugin-admin-welcome-screen" },
-    { "path": "../app-template" },
     { "path": "../app-security" },
     { "path": "../form" },
     { "path": "../plugins" },

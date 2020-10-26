@@ -1,3 +1,7 @@
+import pageBuilderRoute from "@webiny/app-page-builder/site/plugins/pageBuilderRoute";
+import addons from "@webiny/app-page-builder/site/plugins/addons";
+import linkPreload from "@webiny/app-page-builder/site/plugins/linkPreload";
+import useSsrCacheTags from "@webiny/app-page-builder/site/plugins/useSsrCacheTags";
 // Elements
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
 import row from "@webiny/app-page-builder/render/plugins/elements/row";
@@ -40,6 +44,10 @@ import padding from "@webiny/app-page-builder/render/plugins/elementSettings/pad
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 
 export default [
+    pageBuilderRoute(),
+    addons(),
+    linkPreload(),
+    useSsrCacheTags(), 
     // Elements
     document(),
     row(),
@@ -59,7 +67,7 @@ export default [
     twitter(),
     pinterest(),
     pagesList(),
-    imagesList(),
+    imagesList,
     // Slate
     bold(),
     italic(),

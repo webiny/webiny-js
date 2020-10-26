@@ -1,12 +1,12 @@
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { BrowserRouter } from "@webiny/react-router";
-import { Routes } from "./components/Routes";
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
+import { Routes } from "@webiny/app/components/Routes";
 
 // ApolloClient
-import { createApolloClient } from "./apolloClient";
+import { createApolloClient } from "./components/apolloClient";
 
 export const App = () => (
     <ApolloProvider client={createApolloClient()}>

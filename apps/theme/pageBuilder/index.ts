@@ -11,7 +11,7 @@ import {
     PbDefaultPagePlugin
 } from "@webiny/app-page-builder/types";
 
-export default () => [
+export default [
     {
         type: "pb-theme",
         theme: {

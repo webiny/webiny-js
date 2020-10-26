@@ -10,7 +10,6 @@ import header from "./contentDetails/header";
 import contentForm from "./contentDetails/contentForm";
 import contentRevisions from "./contentDetails/contentRevisions";
 import contentModelEditorPlugins from "./../editor/plugins";
-import appTemplateRenderer from "./appTemplatePlugins";
 import welcomeScreenWidget from "./welcomeScreenWidget";
 import scopesList from "./scopesList";
 import ApiInformationDialog from "./apiInformationDialog";
@@ -32,8 +31,7 @@ export default () => [
     fieldRenderers,
     validators,
     contentModelEditorPlugins,
-    appTemplateRenderer,
-
+    
     welcomeScreenWidget,
     scopesList,
     ApiInformationDialog,
