@@ -49,7 +49,6 @@ class PageBuilder {
             rangeKey: "SK"
         });
 
-
         this.functions = {
             graphql: new aws.lambda.Function("pb-graphql", {
                 runtime: "nodejs12.x",

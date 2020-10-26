@@ -1,7 +1,6 @@
 import { flow } from "lodash";
 import { onGet, string, fields, withFields, withProps } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { Context as I18NContext } from "@webiny/api-i18n/types";
 import onGetI18NValues from "./onGetI18NValues";
 
 export type I18NString = {
