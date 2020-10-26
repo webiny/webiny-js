@@ -1,11 +1,8 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
+import keys from "./keys";
 
 export const PK_MENU = "M";
-
-export const keys = [
-    { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-];
 
 export type Menu = {
     title: string;

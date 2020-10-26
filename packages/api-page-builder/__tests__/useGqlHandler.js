@@ -5,6 +5,14 @@ import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import {
+    CREATE_CATEGORY,
+    DELETE_CATEGORY,
+    LIST_CATEGORIES,
+    UPDATE_CATEGORY,
+    GET_CATEGORY
+} from "./graphql/categories";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
@@ -42,6 +50,7 @@ export default () => {
     return {
         handler,
         invoke,
+        // Menus
         async createMenu(variables) {
             return invoke({ body: { query: CREATE_MENU, variables } });
         },
@@ -56,78 +65,23 @@ export default () => {
         },
         async getMenu(variables) {
             return invoke({ body: { query: GET_MENU, variables } });
+        },
+
+        // Categories
+        async createCategory(variables) {
+            return invoke({ body: { query: CREATE_CATEGORY, variables } });
+        },
+        async updateCategory(variables) {
+            return invoke({ body: { query: UPDATE_CATEGORY, variables } });
+        },
+        async deleteCategory(variables) {
+            return invoke({ body: { query: DELETE_CATEGORY, variables } });
+        },
+        async listCategories(variables) {
+            return invoke({ body: { query: LIST_CATEGORIES, variables } });
+        },
+        async getCategory(variables) {
+            return invoke({ body: { query: GET_CATEGORY, variables } });
         }
     };
 };
-
-const DATA_FIELD = /* GraphQL */ `
-    {
-        slug
-        description
-        title
-        items
-    }
-`;
-
-const ERROR_FIELD = /* GraphQL */ `
-    {
-        code
-        data
-        message
-    }
-`;
-
-const CREATE_MENU = /* GraphQL */ `
-    mutation CreateMenu($data: PbMenuInput!) {
-        pageBuilder {
-            createMenu(data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-const UPDATE_MENU = /* GraphQL */ `
-    mutation UpdateMenu($slug: String!, $data: PbMenuInput!) {
-        pageBuilder {
-            updateMenu(slug: $slug, data: $data) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-const LIST_MENUS = /* GraphQL */ `
-    query ListMenus {
-        pageBuilder {
-            listMenus {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-const GET_MENU = /* GraphQL */ `
-    query GetMenu($slug: String!) {
-        pageBuilder {
-            getMenu(slug: $slug) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-const DELETE_MENU = /* GraphQL */ `
-    mutation DeleteMenu($slug: String!) {
-        pageBuilder {
-            deleteMenu(slug: $slug) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
