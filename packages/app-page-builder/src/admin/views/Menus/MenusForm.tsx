@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -50,7 +50,7 @@ const MenusForm = () => {
 
     const onSubmit = useCallback(
         async data => {
-            const isUpdate = data.createdOn;
+            const isUpdate = slug;
             const [operation, args] = isUpdate
                 ? [update, { variables: { slug: data.slug, data } }]
                 : [create, { variables: { data } }];
@@ -68,7 +68,14 @@ const MenusForm = () => {
         [slug]
     );
 
-    const data = getQuery?.data?.pageBuilder?.getMenu.data || {};
+    const data = useMemo(() => {
+        const data = getQuery.data?.pageBuilder?.getMenu.data || {};
+        if (!data.items) {
+            data.items = [];
+        }
+        return data;
+    }, [getQuery.data?.pageBuilder?.getMenu.data.slug]);
+
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (

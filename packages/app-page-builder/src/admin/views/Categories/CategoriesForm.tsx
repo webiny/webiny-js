@@ -58,7 +58,7 @@ const CategoriesForm = () => {
 
     const onSubmit = useCallback(
         async data => {
-            const isUpdate = data.createdOn;
+            const isUpdate = slug;
             const [operation, args] = isUpdate
                 ? [update, { variables: { slug: data.slug, data } }]
                 : [create, { variables: { data } }];
