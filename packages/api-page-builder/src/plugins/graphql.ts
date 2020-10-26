@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { merge } from "lodash";
 import menus from "./graphql/menus";
+import categories from "./graphql/categories";
 import install from "./graphql/installation";
 const emptyResolver = () => ({});
 
@@ -64,6 +65,7 @@ export default {
             }
 
             ${menus.typeDefs},
+            ${categories.typeDefs},
             ${install.typeDefs}
         `,
         resolvers: merge(
@@ -75,8 +77,7 @@ export default {
                     pageBuilder: emptyResolver
                 }
             },
-            // page.resolvers,
-            // category.resolvers,
+            categories.resolvers,
             menus.resolvers,
             // settings.resolvers,
             install.resolvers

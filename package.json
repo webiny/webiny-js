@@ -16,7 +16,7 @@
       "api/code/i18n/*",
       "api/code/settingsManager",
       "api/code/cms/*",
-      "api/code/pageBuilder",
+      "api/code/pageBuilder/*",
       "api/code/security/*",
       "api/code/elasticDemo"
     ],
@@ -160,7 +160,7 @@
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "prettier --check",
-      "eslint --max-warnings=0 --no-ignore",
+      "eslint --max-warnings=0",
       "adio"
     ]
   },

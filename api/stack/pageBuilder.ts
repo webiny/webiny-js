@@ -71,7 +71,7 @@ class PageBuilder {
                     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
                 }
             }),
-            installation: new aws.lambda.Function("pb-graphql", {
+            installation: new aws.lambda.Function("pb-installation", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
                 role: defaultLambdaRole.role.arn,
