@@ -1,77 +1,35 @@
 import gql from "graphql-tag";
 
-const fields = `
-    id
-    name
+const BASE_FIELDS = `
     slug
-    url
+    name
     layout
+    url
 `;
 
 export const LIST_CATEGORIES = gql`
-    query PbLoadCategories(
-        $where: JSON
-        $sort: JSON
-        $search: PbSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query listCategories {
         pageBuilder {
-            categories: listCategories(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            listCategories {
                 data {
-                    id
-                    name
-                    slug
-                    url
-                    createdOn
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
+                    ${BASE_FIELDS}
                 }
             }
         }
     }
 `;
 
-export const LIST_CATEGORIES_BY_NAME = gql`
-    query PbListCategoriesByName {
+export const GET_CATEGORY = gql`
+    query getCategory($slug: String!) {
         pageBuilder {
-            categories: listCategories(sort: { name: 1 }, limit: 100) {
+            getCategory(slug: $slug){
                 data {
-                    id
-                    name
-                    slug
-                    url
-                }
-            }
-        }
-    }
-`;
-
-export const READ_CATEGORY = gql`
-    query PbLoadCategory($id: ID!) {
-        pageBuilder {
-            category: getCategory(id: $id){
-                data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
                     message
+                    data
                 }
             }
         }
@@ -79,11 +37,11 @@ export const READ_CATEGORY = gql`
 `;
 
 export const CREATE_CATEGORY = gql`
-    mutation PbCreateCategory($data: PbCategoryInput!){
+    mutation createCategory($data: PbCategoryInput!){
         pageBuilder {
             category: createCategory(data: $data) {
                 data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
@@ -96,11 +54,11 @@ export const CREATE_CATEGORY = gql`
 `;
 
 export const UPDATE_CATEGORY = gql`
-    mutation PbUpdateCategory($id: ID!, $data: PbCategoryInput!){
+    mutation updateCategory($slug: String!, $data: PbCategoryInput!){
         pageBuilder {
-            category: updateCategory(id: $id, data: $data) {
+            category: updateCategory(slug: $slug, data: $data) {
                 data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
@@ -113,10 +71,9 @@ export const UPDATE_CATEGORY = gql`
 `;
 
 export const DELETE_CATEGORY = gql`
-    mutation PbDeleteCategory($id: ID!) {
+    mutation deleteCategory($slug: String!) {
         pageBuilder {
-            deleteCategory(id: $id) {
-                data
+            deleteCategory(slug: $slug) {
                 error {
                     code
                     message
