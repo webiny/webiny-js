@@ -49,17 +49,17 @@ import editorTriggerWebhook from "@webiny/app-form-builder/admin/plugins/editor/
 import pageBuilderPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
 
 /* Plugins performing input validation when a Form is rendered on a site or in preview mode */
-import fieldValidatorGte from "@webiny/app-form-builder/site/plugins/validators/gte";
-import fieldValidatorInValidator from "@webiny/app-form-builder/site/plugins/validators/in";
-import fieldValidatorLte from "@webiny/app-form-builder/site/plugins/validators/lte";
-import fieldValidatorMaxLength from "@webiny/app-form-builder/site/plugins/validators/maxLength";
-import fieldValidatorMinLength from "@webiny/app-form-builder/site/plugins/validators/minLength";
-import fieldValidatorPattern from "@webiny/app-form-builder/site/plugins/validators/pattern";
-import fieldValidatorRequired from "@webiny/app-form-builder/site/plugins/validators/required";
-import fieldValidatorEmail from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/email";
-import fieldValidatorUrl from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/url";
-import fieldValidatorLowerCase from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/lowerCase";
-import fieldValidatorUpperCase from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/upperCase";
+import fieldValidatorGte from "@webiny/app-form-builder/render/plugins/validators/gte";
+import fieldValidatorInValidator from "@webiny/app-form-builder/render/plugins/validators/in";
+import fieldValidatorLte from "@webiny/app-form-builder/render/plugins/validators/lte";
+import fieldValidatorMaxLength from "@webiny/app-form-builder/render/plugins/validators/maxLength";
+import fieldValidatorMinLength from "@webiny/app-form-builder/render/plugins/validators/minLength";
+import fieldValidatorPattern from "@webiny/app-form-builder/render/plugins/validators/pattern";
+import fieldValidatorRequired from "@webiny/app-form-builder/render/plugins/validators/required";
+import fieldValidatorEmail from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/email";
+import fieldValidatorUrl from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/url";
+import fieldValidatorLowerCase from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/lowerCase";
+import fieldValidatorUpperCase from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/upperCase";
 
 export default [
     formBuilderApp(),

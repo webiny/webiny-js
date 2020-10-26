@@ -1,5 +1,8 @@
-// Page Builder
+// Core Page Builder app plugins.
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
+
+// Welcome screen widget for Page Builder
+import welcomeScreenWidget from "@webiny/app-page-builder/admin/plugins/welcomeScreenWidget";
 
 // Other plugins to extend Page Builder
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
@@ -9,6 +12,7 @@ import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 
 export default [
     pageBuilderPlugins(),
+    welcomeScreenWidget,
     cookiePolicyPlugins(),
     googleTagManagerPlugins(),
     typeformPlugins(),

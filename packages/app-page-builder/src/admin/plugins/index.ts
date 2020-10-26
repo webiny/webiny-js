@@ -7,8 +7,7 @@ import globalSearch from "./globalSearch";
 import settings from "./settings";
 import routes from "./routes";
 import menus from "./menus";
-import install from "./install";
-import welcomeScreenWidget from "./welcomeScreenWidget";
+import installation from "./installation";
 
 export default () => [
     header,
@@ -20,6 +19,5 @@ export default () => [
     settings,
     routes,
     menus,
-    install,
-    welcomeScreenWidget
+    installation
 ];

@@ -19,7 +19,6 @@ const buttonStyle = css({
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
     name: "admin-welcome-screen-widget-page-builder",
-    scopes: ["pb:page:crud"],
     widget: {
         cta: (
             <Link to="/page-builder/pages" className={linkStyle}>

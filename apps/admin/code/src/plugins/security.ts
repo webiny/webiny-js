@@ -13,6 +13,12 @@ export default [
         userPoolWebClientId: process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID,
         getIdentityData
     }),
+    /**
+     * Add user management module to admin app.
+     */
     userManagement(),
+    /**
+     * Add Cognito password field to user management views.
+     */
     cognitoUserManagement()
 ];
