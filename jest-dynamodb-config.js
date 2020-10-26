@@ -1,4 +1,5 @@
 const apiI18n = require("./packages/api-i18n/jest-dynamodb-config");
+const apiSecurityUserManagement = require("./packages/api-security-user-management/jest-dynamodb-config");
 const merge = require("lodash/merge");
 const path = require("path");
 const os = require("os");
@@ -11,5 +12,6 @@ module.exports = merge(
                 "https://s3-us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_2020-05-19.tar.gz"
         }
     },
-    apiI18n
+    apiI18n,
+    apiSecurityUserManagement
 );

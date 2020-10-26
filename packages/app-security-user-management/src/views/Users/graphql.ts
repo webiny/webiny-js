@@ -11,7 +11,7 @@ const fields = /* GraphQL */ `
             id
             src
         }
-        groups {
+        group {
             id
             name
         }
@@ -20,6 +20,7 @@ const fields = /* GraphQL */ `
             name
             token
         }
+        createdOn
     }
 `;
 

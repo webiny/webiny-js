@@ -1,13 +1,9 @@
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
-
-const groupFetcher = ctx => ctx.models.SecurityGroup;
+import createGroup from "./groupResolvers/createGroup";
+import listGroup from "./groupResolvers/listGroup";
+import updateGroup from "./groupResolvers/updateGroup";
+import deleteGroup from "./groupResolvers/deleteGroup";
+import getGroup from "./groupResolvers/getGroup";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -17,7 +13,6 @@ export default {
             slug: String
             createdOn: DateTime
             description: String
-            #roles: [SecurityRole]
             permissions: [JSON]
         }
 
@@ -26,7 +21,6 @@ export default {
             name: String
             slug: String
             description: String
-            #roles: [ID]
             permissions: [JSON]
         }
 
@@ -57,17 +51,14 @@ export default {
             meta: SecurityListMeta
             error: SecurityGroupError
         }
-        extend type SecurityQuery {
-            getGroup(id: ID, where: JSON, sort: String): SecurityGroupResponse
 
-            listGroups(
-                where: JSON
-                sort: JSON
-                search: SecurityGroupSearchInput
-                limit: Int
-                after: String
-                before: String
-            ): SecurityGroupListResponse
+        input ListSecurityGroupWhereInput {
+            nameBeginsWith: String
+        }
+
+        extend type SecurityQuery {
+            getGroup(id: ID, slug: String): SecurityGroupResponse
+            listGroups(where: ListSecurityGroupWhereInput, sort: Int): SecurityGroupListResponse
         }
 
         extend type SecurityMutation {
@@ -78,13 +69,13 @@ export default {
     `,
     resolvers: {
         SecurityQuery: {
-            getGroup: hasScope("security.group.manage")(resolveGet(groupFetcher)),
-            listGroups: hasScope("security.group.manage")(resolveList(groupFetcher))
+            getGroup: hasScope("security.group.manage")(getGroup),
+            listGroups: hasScope("security.group.manage")(listGroup)
         },
         SecurityMutation: {
-            createGroup: hasScope("security.group.manage")(resolveCreate(groupFetcher)),
-            updateGroup: hasScope("security.group.manage")(resolveUpdate(groupFetcher)),
-            deleteGroup: hasScope("security.group.manage")(resolveDelete(groupFetcher))
+            createGroup: hasScope("security.group.manage")(createGroup),
+            updateGroup: hasScope("security.group.manage")(updateGroup),
+            deleteGroup: hasScope("security.group.manage")(deleteGroup)
         }
     }
 };

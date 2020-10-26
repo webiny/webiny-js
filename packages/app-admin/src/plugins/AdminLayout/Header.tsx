@@ -26,7 +26,9 @@ export const Header = () => {
                 {renderPlugins<AdminHeaderMiddlePlugin>("admin-header-middle")}
             </TopAppBarSection>
             <TopAppBarSection className={edgeBars} alignEnd>
-                {renderPlugins<AdminHeaderRightPlugin>("admin-header-right")}
+                {renderPlugins<AdminHeaderRightPlugin>("admin-header-right", null, {
+                    reverse: true
+                })}
             </TopAppBarSection>
         </TopAppBarPrimary>
     );

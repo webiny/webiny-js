@@ -8,4 +8,4 @@ export default {
     type: "route",
     name: "route-not-found",
     route: <Route path="*" render={() => <Redirect to={"/"} />} />
-}
+};

@@ -66,7 +66,7 @@ const setEnvironmentFromState = async ({ env, stack, map }, context) => {
             env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
         }
     });
-    
+
     // Check first if the stack exist, if not, throw an appropriate error.
     let stackExists = true;
     try {

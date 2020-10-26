@@ -1,9 +1,3 @@
-import securityPermissionRendererPlugin from "./SecurityPermissions";
-import securityGroupPermissionRendererPlugin from "./SecurityGroupPermission";
-import securityUserPermissionRendererPlugin from "./SecurityUserPermission";
+import securityPermissionRendererPlugin from "./SecurityPermission";
 
-export default () => [
-    securityGroupPermissionRendererPlugin(),
-    securityUserPermissionRendererPlugin(),
-    securityPermissionRendererPlugin()
-];
+export default () => [securityPermissionRendererPlugin()];

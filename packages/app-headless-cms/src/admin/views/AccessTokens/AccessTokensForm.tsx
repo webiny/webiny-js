@@ -59,12 +59,6 @@ function EnvironmentAliasesForm() {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                TODO: add permissions UI (or role selector)
-                                {/*<Bind name="scopes">
-                                    <ScopesMultiAutoComplete filter={filterReadScope} />
-                                </Bind>*/}
-                            </Cell>
-                            <Cell span={12}>
                                 <div>
                                     <div
                                         className={

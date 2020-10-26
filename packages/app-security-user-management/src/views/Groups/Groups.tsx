@@ -1,58 +1,28 @@
 import * as React from "react";
-import { pick } from "lodash";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import GroupsDataList from "./GroupsDataList";
 import GroupsForm from "./GroupsForm";
-import { READ_GROUP, LIST_GROUPS, CREATE_GROUP, UPDATE_GROUP, DELETE_GROUP } from "./graphql";
-import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
-import { createPermissionsArray } from "./utils";
+import { useRouter } from "@webiny/react-router";
 
 const Groups = ({ scopes, formProps, listProps }: any) => {
-    const variables = data => ({
-        data: {
-            ...pick(data, ["name", "slug", "description"]),
-            // From UI to API
-            permissions: createPermissionsArray(data.permissions) || []
-        }
-    });
+    const { history } = useRouter();
 
     return (
-        <React.Fragment>
-            <CrudProvider
-                delete={DELETE_GROUP}
-                read={READ_GROUP}
-                list={{
-                    query: LIST_GROUPS,
-                    variables: { sort: { savedOn: -1 } }
-                }}
-                update={{
-                    mutation: UPDATE_GROUP,
-                    variables
-                }}
-                create={{
-                    mutation: CREATE_GROUP,
-                    variables
-                }}
-            >
-                {({ actions }) => (
-                    <>
-                        <SplitView>
-                            <LeftPanel>
-                                <GroupsDataList {...listProps} />
-                            </LeftPanel>
-                            <RightPanel>
-                                <GroupsForm scopes={scopes} {...formProps} />
-                            </RightPanel>
-                        </SplitView>
-                        <FloatingActionButton
-                            data-testid="new-record-button"
-                            onClick={actions.resetForm}
-                        />
-                    </>
-                )}
-            </CrudProvider>
-        </React.Fragment>
+        <>
+            <SplitView>
+                <LeftPanel>
+                    <GroupsDataList {...listProps} />
+                </LeftPanel>
+                <RightPanel>
+                    <GroupsForm scopes={scopes} {...formProps} />
+                </RightPanel>
+            </SplitView>
+            <FloatingActionButton
+                data-testid="new-record-button"
+                onClick={() => history.push("/security/groups")}
+            />
+        </>
     );
 };
 

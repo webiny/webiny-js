@@ -12,7 +12,7 @@ module.exports = {
             require("@webiny/cli-plugin-scaffold-react-package"),
             require("@webiny/cli-plugin-scaffold-react-app"),
             require("@webiny/cli-plugin-build")(),
-            require("@webiny/cli-plugin-deploy-pulumi")(),
+            require("@webiny/cli-plugin-deploy-pulumi")()
         ]
     }
 };

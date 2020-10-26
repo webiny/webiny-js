@@ -118,7 +118,7 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
-    "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\"",
+    "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
@@ -158,11 +158,10 @@
     }
   },
   "lint-staged": {
-    "**/*.js": [
-      "adio",
-      "yarn prettier:fix",
-      "eslint",
-      "git add"
+    "**/*.{js,ts,tsx}": [
+      "prettier --check",
+      "eslint --max-warnings=0",
+      "adio"
     ]
   },
   "yargs": {

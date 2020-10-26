@@ -55,6 +55,6 @@ plugins.register([
 ]);
 
 /**
- * 
+ *
  */
-plugins.byType<WebinyInitPlugin>("webiny-init").forEach((plugin) => plugin.init());
+plugins.byType<WebinyInitPlugin>("webiny-init").forEach(plugin => plugin.init());
