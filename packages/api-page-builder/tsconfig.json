@@ -6,6 +6,9 @@
     { "path": "../api-settings-manager" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },
+    { "path": "../handler" },
+    { "path": "../handler-db" },
+    { "path": "../handler-http" },
     { "path": "../handler-ssr" },
     { "path": "../validation" }
   ]

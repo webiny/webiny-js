@@ -8,6 +8,9 @@
     "../api-settings-manager",
     "../commodo",
     "../commodo-graphql",
+    "../handler",
+    "../handler-db",
+    "../handler-http",
     "../handler-ssr",
     "../validation"
   ],
@@ -21,6 +24,9 @@
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-settings-manager/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../handler-http/tsconfig.build.json" },
     { "path": "../handler-ssr/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
