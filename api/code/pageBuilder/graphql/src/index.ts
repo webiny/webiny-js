@@ -1,16 +1,17 @@
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
-import dbProxy from "@webiny/api-plugin-commodo-db-proxy";
-import googleTagManagerPlugins from "@webiny/api-google-tag-manager";
-import cookiePolicyPlugins from "@webiny/api-cookie-policy";
-import mailchimpPlugins from "@webiny/api-mailchimp";
-import pageBuilderResolvers from "@webiny/api-plugin-page-builder-resolvers-mongodb";
+// import googleTagManagerPlugins from "@webiny/api-google-tag-manager";
+// import cookiePolicyPlugins from "@webiny/api-cookie-policy";
+// import mailchimpPlugins from "@webiny/api-mailchimp";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
-import useSsrCacheTagsPlugins from "@webiny/api-page-builder/plugins/useSsrCacheTags";
+// import useSsrCacheTagsPlugins from "@webiny/api-page-builder/plugins/useSsrCacheTags";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import securityPlugins from "@webiny/api-security/authenticator";
 import permissionsManager from "@webiny/api-security-permissions-manager/client";
 import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -20,7 +21,15 @@ export const handler = createHandler(
             playground: process.env.GRAPHQL_PLAYGROUND
         }
     }),
-    dbProxy({ functionName: process.env.DB_PROXY_FUNCTION }),
+    dbPlugins({
+        table: process.env.DB_TABLE,
+        driver: new DynamoDbDriver({
+            documentClient: new DocumentClient({
+                convertEmptyValues: true,
+                region: process.env.AWS_REGION
+            })
+        })
+    }),
     settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
     // Adds a context plugin to process `security` plugins for authentication
     securityPlugins(),
@@ -32,10 +41,9 @@ export const handler = createHandler(
         userPoolId: process.env.COGNITO_USER_POOL_ID,
         identityType: "admin"
     }),
-    pageBuilderPlugins(),
-    useSsrCacheTagsPlugins(),
-    pageBuilderResolvers(),
-    googleTagManagerPlugins(),
-    mailchimpPlugins(),
-    cookiePolicyPlugins()
+    pageBuilderPlugins()
+    // useSsrCacheTagsPlugins(),
+    // googleTagManagerPlugins(),
+    // mailchimpPlugins(),
+    //  cookiePolicyPlugins()
 );

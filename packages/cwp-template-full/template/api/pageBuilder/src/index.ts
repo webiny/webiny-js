@@ -5,7 +5,6 @@ import securityServicePlugins from "@webiny/api-security/plugins/service";
 import googleTagManagerPlugins from "@webiny/api-google-tag-manager";
 import cookiePolicyPlugins from "@webiny/api-cookie-policy";
 import mailchimpPlugins from "@webiny/api-mailchimp";
-import pageBuilderResolvers from "@webiny/api-plugin-page-builder-resolvers-mongodb";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import useSsrCacheTagsPlugins from "@webiny/api-page-builder/plugins/useSsrCacheTags";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
@@ -29,7 +28,6 @@ export const handler = createHandler(
     }),
     pageBuilderPlugins(),
     useSsrCacheTagsPlugins(),
-    pageBuilderResolvers(),
     googleTagManagerPlugins(),
     mailchimpPlugins(),
     cookiePolicyPlugins()
