@@ -11,8 +11,8 @@ const ROLE_CMS_SETTINGS = ["cms.settings"];
 const CmsMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    const contentModels = identity.getPermission("cms.content-model.crud");
-    const contentModelGroups = identity.getPermission("cms.content-model-group.crud");
+    const contentModels = identity.getPermission("cms.content-model");
+    const contentModelGroups = identity.getPermission("cms.content-model-group");
 
     if (!contentModels && !contentModelGroups) {
         return null;
