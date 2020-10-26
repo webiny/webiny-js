@@ -15,7 +15,7 @@
       "api/code/i18n/*",
       "api/code/settingsManager",
       "api/code/cms/*",
-      "api/code/pageBuilder",
+      "api/code/pageBuilder/*",
       "api/code/security/*"
     ],
     "nohoist": [
