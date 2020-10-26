@@ -116,6 +116,15 @@ const Navigation = () => {
                             </p>
                         </div>
                     </ListItem>
+                    <ListItem ripple={false} className={subFooter}>
+                        <div>
+                            <p>
+                                {t`Powered by Webiny v{version}`({
+                                    version: process.env.REACT_APP_WEBINY_VERSION
+                                })}
+                            </p>
+                        </div>
+                    </ListItem>
                 </List>
 
                 <ApiInformationDialog open={infoOpened} onClose={() => setInfoOpened(false)} />
