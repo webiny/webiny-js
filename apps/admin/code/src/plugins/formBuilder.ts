@@ -3,11 +3,11 @@ import formBuilderPageBuilderPlugins from "@webiny/app-form-builder/page-builder
 
 export default [
     /**
-     *
+     * Form Builder app.
      */
     formBuilderPlugins(),
     /**
-     *
+     * Plugins to add Forms to your pages using PB Editor.
      */
     formBuilderPageBuilderPlugins()
 ];

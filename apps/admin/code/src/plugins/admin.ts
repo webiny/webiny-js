@@ -19,23 +19,36 @@ import sendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
 import settingsMenu from "@webiny/app-admin/plugins/settingsMenu";
 
 export default [
-    // This plugin renders admin app layout when <AdminLayout> component is mounted.
+    /**
+     * Renders admin app layout when <AdminLayout> component is mounted.
+     */
     adminLayout,
-    // This plugin renders a snackbar container to be used with useSnackbar() hook.
+    /**
+     * Renders a snackbar container to be used with useSnackbar() hook.
+     */
     snackbar,
-    // This plugin renders a dialog container to be used with useDialog() hook.
+    /**
+     * Renders a dialog container to be used with useDialog() hook.
+     */
     dialog,
-    // Header plugins
+    /**
+     * Admin app header plugins.
+     */
     menu,
     logo,
     fileManager,
     userMenu,
     globalSearch,
     globalSearchHotkey,
-    // User menu plugins
+    /**
+     * User menu plugins
+     */
     darkMode,
     defaultHandle,
     help,
     sendFeedback,
+    /**
+     * A plugin that dynamically generates settings menu items registered by other apps.
+     */
     settingsMenu
 ];

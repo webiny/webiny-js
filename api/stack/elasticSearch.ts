@@ -7,9 +7,19 @@ class ElasticSearch {
     constructor() {
         const domainName = "webiny-js";
 
-        const esServiceLinkedRole = new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
-            awsServiceName: "es.amazonaws.com"
-        });
+        const dependsOn = aws.iam
+            .getRole({ name: "AWSServiceRoleForAmazonElasticsearchService" })
+            .then(role => {
+                if (!role) {
+                    return [
+                        new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
+                            awsServiceName: "es.amazonaws.com"
+                        })
+                    ];
+                }
+
+                return [];
+            });
 
         this.domain = new aws.elasticsearch.Domain(
             domainName,
@@ -37,9 +47,7 @@ class ElasticSearch {
                     Domain: "TestDomain"
                 }
             },
-            {
-                dependsOn: [esServiceLinkedRole]
-            }
+            { dependsOn }
         );
 
         new aws.elasticsearch.DomainPolicy(`${domainName}-policy`, {

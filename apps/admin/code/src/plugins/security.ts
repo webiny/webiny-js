@@ -5,7 +5,7 @@ import { getIdentityData } from "../components/getIdentityData";
 
 export default [
     /**
-     * Configures Amplify, adds "app-installer-security" and "apollo-link" plugin.
+     * Configures Amplify, adds "app-installer-security" and "apollo-link" plugins.
      */
     cognitoSecurity({
         region: process.env.REACT_APP_USER_POOL_REGION,
