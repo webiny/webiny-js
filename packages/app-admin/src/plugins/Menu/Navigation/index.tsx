@@ -15,7 +15,7 @@ import { ReactComponent as CommunityIcon } from "@webiny/app-admin/assets/icons/
 import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/github-brands.svg";
 import { ReactComponent as InfoIcon } from "@webiny/app-admin/assets/icons/info.svg";
 import ApiInformationDialog from "@webiny/app-admin/components/ApiInformationDialog";
-
+//Menu>
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
