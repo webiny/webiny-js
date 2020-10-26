@@ -68,7 +68,9 @@ export default {
                 const { data } = args;
 
                 if (await categories.get(data.slug)) {
-                    return new NotFoundResponse(`Category with slug "${data.slug}" already exists.`);
+                    return new NotFoundResponse(
+                        `Category with slug "${data.slug}" already exists.`
+                    );
                 }
 
                 await categories.create(data);
