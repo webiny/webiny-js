@@ -157,7 +157,7 @@ describe("Security Group CRUD Test", () => {
 
     test('should not allow creating a group with same "slug"', async () => {
         // Creating a group with same "slug" should not be allowed
-        let [response] = await securityGroup.create({ data: mocks.groupA });
+        const [response] = await securityGroup.create({ data: mocks.groupA });
 
         expect(response).toEqual({
             data: {

@@ -157,7 +157,7 @@ describe("Security User CRUD Test", () => {
 
     test('should not allow creating a user with same "email"', async () => {
         // Creating a user with same "email" should not be allowed
-        let [response] = await securityUser.create({ data: mocks.userA });
+        const [response] = await securityUser.create({ data: mocks.userA });
 
         expect(response).toEqual({
             data: {
@@ -180,7 +180,7 @@ describe(`"Login" test`, () => {
     const { securityUser } = useGqlHandler();
 
     test("Should be able to login", async () => {
-        let [response] = await securityUser.login();
+        const [response] = await securityUser.login();
 
         expect(response).toEqual({
             data: {
@@ -195,7 +195,7 @@ describe(`"Login" test`, () => {
     });
 
     test("Should be able to get current user", async () => {
-        let [response] = await securityUser.getCurrentUser();
+        const [response] = await securityUser.getCurrentUser();
 
         expect(response).toEqual({
             data: {

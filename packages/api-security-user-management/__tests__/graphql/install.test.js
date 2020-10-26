@@ -4,7 +4,7 @@ describe(`Test "Security" install`, () => {
     const { install } = useGqlHandler();
 
     test(`should return "isInstalled" false without running install`, async () => {
-        let [response] = await install.isInstalled();
+        const [response] = await install.isInstalled();
 
         expect(response).toEqual({
             data: {

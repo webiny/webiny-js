@@ -59,14 +59,14 @@ export default () => {
             {
                 name: "security-user-management",
                 type: "security-user-management",
-                async createUser({ data, user, permanent = false }) {
+                async createUser({ user }) {
                     user.id = KSUID.randomSync().string;
                     return Promise.resolve();
                 },
-                async updateUser({ data, user }) {
+                async updateUser() {
                     return Promise.resolve();
                 },
-                async deleteUser({ user }) {
+                async deleteUser() {
                     return Promise.resolve();
                 }
             }
