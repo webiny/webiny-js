@@ -7,7 +7,7 @@ const plugins: AppTemplateRendererPlugin[] = [
         type: "app-template-renderer",
         name: "app-template-renderer-page-builder",
         render(children) {
-            return <PageBuilderProvider isEditor>{children}</PageBuilderProvider>;
+            return <PageBuilderProvider>{children}</PageBuilderProvider>;
         }
     }
 ];
