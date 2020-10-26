@@ -11,7 +11,7 @@
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
-  "description": "A tool to bootstrap a Webiny project.",
+  "description": "A CLI plugin for building packages.",
   "dependencies": {
     "execa": "^4.0.0"
   },

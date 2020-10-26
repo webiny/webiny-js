@@ -7,42 +7,31 @@
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-i18n"
   },
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "description": "The API for the Webiny I18N (webiny-app-i18n) app.",
+  "author": "Webiny Ltd",
+  "description": "The API for the Webiny I18N app.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api-security": "^4.13.0",
-    "@webiny/commodo": "^4.13.0",
-    "@webiny/commodo-graphql": "^4.13.0",
     "@webiny/graphql": "^4.13.0",
     "@webiny/handler": "^4.13.0",
     "@webiny/handler-aws": "^4.13.0",
     "@webiny/handler-apollo-server": "^4.13.0",
-    "@webiny/api-plugin-commodo-dynamodb": "^4.13.0",
     "@webiny/handler-client": "^4.13.0",
+    "@webiny/handler-db": "^4.13.0",
+    "@webiny/db-dynamodb": "^4.13.0",
+    "@webiny/commodo": "^4.13.0",
     "@webiny/validation": "^4.13.0",
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
-    "lodash": "^4.17.4",
-    "@commodo/fields": "beta",
-    "@commodo/fields-storage": "beta",
-    "@commodo/hooks": "beta",
-    "@commodo/name": "beta",
-    "repropose": "^1.0.2",
-    "ramda": "^0.26.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
     "@shelf/jest-dynamodb": "^1.7.0"
   },
   "optionalDependencies": {

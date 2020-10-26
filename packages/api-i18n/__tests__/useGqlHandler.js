@@ -1,19 +1,23 @@
 import { createHandler } from "@webiny/handler-aws";
-import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import i18nPlugins from "@webiny/api-i18n/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dynamoDb({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                endpoint: "localhost:8000",
-                sslEnabled: false,
-                region: "local-env"
+        dbPlugins({
+            table: "I18N",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: "localhost:8000",
+                    sslEnabled: false,
+                    region: "local-env"
+                })
             })
         }),
         apolloServerPlugins(),
@@ -93,9 +97,9 @@ const UPDATE_LOCALE = /* GraphQL */ `
 `;
 
 const LIST_LOCALES = /* GraphQL */ `
-    query ListI18NLocales($where: ListI18NLocalesWhereInput) {
+    query ListI18NLocales {
         i18n {
-            listI18NLocales(where: $where) {
+            listI18NLocales {
                 data {
                     code
                     default

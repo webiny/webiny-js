@@ -1,14 +1,17 @@
 import { createHandler } from "@webiny/handler-aws";
-import locales from "@webiny/api-i18n/locales";
+import locales from "@webiny/api-i18n/handlers/locales";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
 
 export const handler = createHandler(
-    dynamoDb({
-        tableName: process.env.STORAGE_NAME,
-        documentClient: new DocumentClient({
-            convertEmptyValues: true,
-            region: process.env.AWS_REGION
+    dbPlugins({
+        table: process.env.DB_TABLE,
+        driver: new DynamoDbDriver({
+            documentClient: new DocumentClient({
+                convertEmptyValues: true,
+                region: process.env.AWS_REGION
+            })
         })
     }),
     locales()

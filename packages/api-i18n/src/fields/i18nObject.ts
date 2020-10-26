@@ -1,12 +1,10 @@
 import { flow } from "lodash";
 import { onGet, object, fields, withFields, withProps } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
-import { Context as I18NContext } from "@webiny/api-i18n/types";
 import onGetI18NValues from "./onGetI18NValues";
 
 export type I18NObject = {
-    context: CommodoContext & I18NContext;
+    context: any;
     [key: string]: any;
 };
 

@@ -1,12 +1,15 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../graphql" },
-    { "path": "../api-plugin-commodo-db-proxy" },
     { "path": "../api-security" },
-    { "path": "../commodo" },
-    { "path": "../commodo-graphql" },
+    { "path": "../graphql" },
     { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-apollo-server" },
+    { "path": "../handler-client" },
+    { "path": "../handler-db" },
+    { "path": "../db-dynamodb" },
+    { "path": "../commodo" },
     { "path": "../validation" }
   ]
 }
