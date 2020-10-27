@@ -22,6 +22,7 @@
     "@webiny/commodo-graphql": "^4.13.0",
     "@webiny/graphql": "^4.13.0",
     "@webiny/handler": "^4.13.0",
+    "@webiny/handler-db": "^4.13.0",
     "@webiny/validation": "^4.13.0",
     "@webiny/handler-client": "^4.13.0",
     "@webiny/project-utils": "^4.13.0",

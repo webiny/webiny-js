@@ -7,6 +7,7 @@
     { "path": "../graphql" },
     { "path": "../handler" },
     { "path": "../handler-client" },
+    { "path": "../handler-db" },
     { "path": "../validation" }
   ]
 }

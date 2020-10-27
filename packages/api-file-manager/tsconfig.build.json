@@ -10,6 +10,7 @@
     "../graphql",
     "../handler",
     "../handler-client",
+    "../handler-db",
     "../validation"
   ],
   "compilerOptions": {
@@ -24,6 +25,7 @@
     { "path": "../graphql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }
   ]
 }
