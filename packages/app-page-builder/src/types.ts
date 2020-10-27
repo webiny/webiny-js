@@ -459,3 +459,10 @@ export type PbEditorEventActionPlugin = Plugin & {
     // but dev can do what ever and then run unregister callable - or not
     onEditorUnmount?: (handler: EventActionHandler, cb: () => void) => void;
 };
+
+export type PbEditorGridPresetPluginType = Plugin & {
+    name: string;
+    type: "pb-editor-grid-preset";
+    cells: string;
+    icon: string;
+};

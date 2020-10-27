@@ -15,7 +15,7 @@ import align from "./align";
 import divider from "./divider";
 import save from "./save";
 import link from "./link";
-import cells from "./cells";
+import grid from "./grid";
 
 export default [
     advanced,
@@ -35,5 +35,5 @@ export default [
     height,
     save,
     link,
-    cells
+    grid
 ];

@@ -1,4 +1,5 @@
 import shortid from "shortid";
+import dotProp from "dot-prop-immutable";
 import { PageAtomType } from "./modules";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
@@ -47,48 +48,25 @@ export const flattenElementsHelper = (el): FlattenElementsType => {
     return els;
 };
 
-const saveElementToPath = (target: PbElement, paths: number[], element: PbElement): PbElement => {
-    if (paths.length === 0) {
-        throw new Error(`Cannot go in depths of "${target.path}".`);
-    }
-    const path = paths.shift();
-    if (paths.length === 0) {
-        target.elements[path] = element;
-        return target;
-    }
-    return saveElementToPath(target.elements[path], paths, element);
+const transformElementPathToContentPath = (path: string): string => {
+    return path.replace(/\./g, ".elements.").slice(2);
 };
 
 export const saveElementToContentHelper = (
-    target: PbElement,
+    content: PbElement,
     path: string,
     element: PbElement
 ): PbElement => {
-    const paths = path.split(".").map(Number);
-    return saveElementToPath(target, paths, element);
-};
-
-const extrapolateTargetElement = (target: PbElement, paths: number[]): PbElement | undefined => {
-    if (paths.length === 0) {
-        throw new Error(`Cannot go in depths of "${target.path}".`);
-    }
-    const path = paths.shift();
-    if (paths.length === 0) {
-        return target;
-    } else if (!target.elements || target.elements.length === 0) {
-        throw new Error(`It seems there is no elements in target on path "${target.path}"`);
-    }
-    return extrapolateTargetElement(target.elements[path], paths);
+    const p = transformElementPathToContentPath(path);
+    return dotProp.set(content, p, element);
 };
 
 export const extrapolateContentElementHelper = (
-    target: PbElement,
-    paths: string | number[]
+    content: PbElement,
+    path: string
 ): PbElement | undefined => {
-    return extrapolateTargetElement(
-        target,
-        typeof paths === "string" ? paths.split(".").map(Number) : paths
-    );
+    const p = transformElementPathToContentPath(path);
+    return dotProp.get(content, p);
 };
 
 export const removeElementHelper = (parent: PbElement, id: string): PbElement => {

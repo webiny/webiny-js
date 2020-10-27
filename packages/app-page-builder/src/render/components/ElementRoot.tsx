@@ -88,6 +88,4 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     );
 };
 
-const ElementRoot = React.memo(ElementRootComponent);
-
-export { ElementRoot };
+export const ElementRoot = React.memo(ElementRootComponent);

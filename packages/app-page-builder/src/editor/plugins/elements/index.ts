@@ -4,7 +4,8 @@ import block from "./block";
 // import column from "./column";
 // import image from "./image";
 // import text from "./text";
-import gridBlock from "./grid";
+import grid from "./grid";
+import cell from "./cell";
 // import icon from "./icon";
 // import spacer from "./spacer";
 // import button from "./button";
@@ -18,7 +19,8 @@ export default [
     document(),
     // row(),
     block(),
-    gridBlock()
+    grid(),
+    cell()
     // column()
     // ...icon(),
     // ...image(),

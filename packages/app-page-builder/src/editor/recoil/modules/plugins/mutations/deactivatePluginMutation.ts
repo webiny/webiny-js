@@ -18,17 +18,16 @@ export const deactivatePluginMutation: MutationActionCallable<PluginsAtomType, P
     state,
     target
 ) => {
-    const { type } = target;
+    const { type, name } = target;
     const allPluginsByType = state.get(type);
     if (!allPluginsByType || allPluginsByType.length === 0) {
         return state;
     }
-    const filtered = allPluginsByType.filter(pl => pl.name !== name);
-    if (filtered.length !== allPluginsByType.length) {
+    const filteredPluginsByType = allPluginsByType.filter(pl => pl.name !== name);
+    if (filteredPluginsByType.length === allPluginsByType.length) {
         return state;
     }
-    return {
-        ...state,
-        [type]: filtered
-    };
+    const newState = new Map(state);
+    newState.set(type, filteredPluginsByType);
+    return newState;
 };

@@ -12,6 +12,7 @@ import defaultBarPlugins from "./../plugins/defaultBar";
 import slateEditorPlugins from "./../plugins/slate";
 import pageSettingsPlugins from "./../plugins/pageSettings";
 import breadcrumbs from "./../plugins/breadcrumbs";
+import { gridPresets } from "./../plugins/gridPresets";
 import {
     createElementPlugin,
     updateElementPlugin,
@@ -38,6 +39,7 @@ export default () => [
     slateEditorPlugins,
     pageSettingsPlugins,
     icons,
+    ...gridPresets,
     // action registration
     createElementPlugin(),
     updateElementPlugin(),

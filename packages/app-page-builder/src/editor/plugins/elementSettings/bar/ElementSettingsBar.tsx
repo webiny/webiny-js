@@ -70,33 +70,30 @@ const ElementSettingsBarContent = ({ plugin, deactivateElement }: ElementSetting
     const actions = getElementActions(plugin);
 
     return (
-        <React.Fragment>
-            <TopAppBarSecondary fixed>
-                <TopAppBarSection alignStart>
-                    <ButtonDefault onClick={deactivateElement}>
-                        <ButtonIcon icon={<NavigateBeforeIcon />} /> Back
-                    </ButtonDefault>
-                </TopAppBarSection>
-                <TopAppBarSection>
-                    {/*
+        <TopAppBarSecondary fixed>
+            <TopAppBarSection alignStart>
+                <ButtonDefault onClick={deactivateElement}>
+                    <ButtonIcon icon={<NavigateBeforeIcon />} /> Back
+                </ButtonDefault>
+            </TopAppBarSection>
+            <TopAppBarSection>
+                {/*
                     Render an action button for each relevant action.
                     Each `element` can have different `element-settings` plugins.
                     If no `settings` array is defined in an `element` plugin, all settings are shown.
                     */}
-                    {actions.map(({ plugin, options }, index) => {
-                        console.log(`${plugin.name}: ${typeof plugin.renderMenu === "function"}`);
-                        return (
-                            <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                                {plugin.renderAction({ options })}
-                                {typeof plugin.renderMenu === "function" && (
-                                    <Menu plugin={plugin} options={options} />
-                                )}
-                            </div>
-                        );
-                    })}
-                </TopAppBarSection>
-            </TopAppBarSecondary>
-        </React.Fragment>
+                {actions.map(({ plugin, options }, index) => {
+                    return (
+                        <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
+                            {plugin.renderAction({ options })}
+                            {typeof plugin.renderMenu === "function" && (
+                                <Menu plugin={plugin} options={options} />
+                            )}
+                        </div>
+                    );
+                })}
+            </TopAppBarSection>
+        </TopAppBarSecondary>
     );
 };
 

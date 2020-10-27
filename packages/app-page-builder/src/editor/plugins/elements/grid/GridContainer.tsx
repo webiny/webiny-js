@@ -1,20 +1,20 @@
+import Element from "@webiny/app-page-builder/editor/components/Element";
 import React, { CSSProperties } from "react";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
+// import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import styled from "@emotion/styled";
-import { DropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+// import { DropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { css } from "emotion";
 import { PbElement } from "@webiny/app-page-builder/types";
 
 const StyledGridContainer = styled("div")({
     display: "flex",
     justifyItems: "center",
-    alignItems: "center"
+    alignItems: "center",
+    flexDirection: "row"
 });
-const StyledGridBlockCell = styled("div")({
-    flexGrow: 1,
-    padding: "10px"
-});
-
+const CellContainer = styled("div")(({ size }: any) => ({
+    width: `${(100 / 12) * size}%`
+}));
 type GridContainerPropsType = {
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
@@ -26,18 +26,18 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = props => 
     const { elementStyle, elementAttributes, customClasses, combineClassNames, element } = props;
     const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
 
-    const onDrop = (source, child: PbElement) => {
-        const { id, path, type } = child;
-        new DropElementActionEvent({
-            source: element,
-            target: {
-                id,
-                path,
-                type,
-                position: null
-            }
-        });
-    };
+    // const onDrop = (source, child: PbElement) => {
+    //     const { id, path, type } = child;
+    //     new DropElementActionEvent({
+    //         source: element,
+    //         target: {
+    //             id,
+    //             path,
+    //             type,
+    //             position: null
+    //         }
+    //     });
+    // };
     return (
         <StyledGridContainer
             className={combineClassNames(
@@ -51,20 +51,12 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = props => 
                 alignItems: alignItems
             }}
         >
-            {element.elements.map((child, index) => {
-                const childStyles = {
-                    width: child.data?.settings?.width?.value || "auto"
-                };
+            {element.elements.map(child => {
+                // console.log(JSON.stringify(child.data.settings));
                 return (
-                    <StyledGridBlockCell key={child.id || `child-${index}`} style={childStyles}>
-                        <DropZone.Center
-                            id={child.id}
-                            type={child.type}
-                            onDrop={source => onDrop(source, child)}
-                        >
-                            CELL
-                        </DropZone.Center>
-                    </StyledGridBlockCell>
+                    <CellContainer size={child.data.settings.size} key={`cell-${child.id}`}>
+                        <Element id={child.id} />
+                    </CellContainer>
                 );
             })}
         </StyledGridContainer>

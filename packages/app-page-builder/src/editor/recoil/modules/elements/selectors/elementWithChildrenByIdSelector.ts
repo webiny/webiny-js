@@ -10,15 +10,38 @@ export const elementWithChildrenByIdSelector = selectorFamily<PbElement | undefi
     get: id => {
         return ({ get }) => {
             const element = get(elementByIdSelector(id));
-            if (!element) {
+            const content = get(contentSelector);
+            if (!element || !content) {
                 return undefined;
             }
             const { path } = element;
-            const content = get(contentSelector);
             return extrapolateContentElementHelper(content, path);
         };
     }
 });
+export const elementWithChildrenByPathSelector = selectorFamily<PbElement | undefined, string>({
+    key: "elementWithChildrenByIdSelector",
+    get: path => {
+        return ({ get }) => {
+            const content = get(contentSelector);
+            if (!content) {
+                return undefined;
+            }
+            return extrapolateContentElementHelper(content, path);
+        };
+    }
+});
+
+export const getElementWithChildrenByPath = (
+    state: PbState,
+    path: string
+): PbElement | undefined => {
+    const content = state.page.content;
+    if (!content) {
+        return undefined;
+    }
+    return extrapolateContentElementHelper(content, path);
+};
 export const getElementWithChildrenById = (state: PbState, id: string): PbElement | undefined => {
     const element = state.elements[id];
     const content = state.page.content;

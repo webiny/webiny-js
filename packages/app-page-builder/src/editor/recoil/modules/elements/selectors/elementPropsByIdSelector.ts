@@ -12,6 +12,12 @@ export const elementPropsByIdSelector = selectorFamily<ActiveElementPropsByIdSel
     get: id => {
         return ({ get }) => {
             const element = get(elementByIdSelector(id));
+            if (!element) {
+                return {
+                    isActive: false,
+                    isHighlighted: false
+                };
+            }
             const { isDragging, isResizing, activeElement, highlightElement } = get(uiAtom);
 
             const active = activeElement && activeElement === element.id;

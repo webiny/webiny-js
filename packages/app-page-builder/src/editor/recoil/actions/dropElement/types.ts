@@ -5,7 +5,7 @@ export type DropElementActionArgsType = {
     target: {
         id: string;
         type: string;
-        path: string;
+        path?: string;
         position: number;
     };
 };

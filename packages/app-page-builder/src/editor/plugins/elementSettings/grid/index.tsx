@@ -5,10 +5,10 @@ import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/type
 import { ReactComponent as CellIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
 
 export default {
-    name: "pb-editor-page-element-settings-cells",
+    name: "pb-editor-page-element-settings-grid",
     type: "pb-editor-page-element-settings",
     renderAction() {
-        return <Action tooltip={"Cells"} plugin={this.name} icon={<CellIcon />} />;
+        return <Action tooltip={"Grid"} plugin={this.name} icon={<CellIcon />} />;
     },
     renderMenu() {
         return <Settings />;

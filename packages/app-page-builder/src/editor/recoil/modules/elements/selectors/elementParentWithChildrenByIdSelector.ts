@@ -14,7 +14,7 @@ const findElementParentWithChildrenById = (content: PbElement, element?: PbShall
     if (paths.length === 1) {
         return content;
     }
-    return extrapolateContentElementHelper(content, paths);
+    return extrapolateContentElementHelper(content, paths.join("."));
 };
 
 export const elementParentWithChildrenByIdSelector = selectorFamily<PbElement | undefined, string>({

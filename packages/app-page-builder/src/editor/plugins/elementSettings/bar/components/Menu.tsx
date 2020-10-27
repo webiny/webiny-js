@@ -1,11 +1,12 @@
-import { isPluginActive } from "@webiny/app-page-builder/editor/recoil/modules/plugins/selectors/isPluginActiveSelector";
 import React, { useEffect, useState } from "react";
+import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules/plugins/selectors/isPluginActiveSelector";
 import { pluginsAtom } from "@webiny/app-page-builder/editor/recoil/modules";
-import { deactivatePluginMutation } from "@webiny/app-page-builder/editor/recoil/modules/plugins/mutations/deactivatePluginMutation";
+import { deactivatePluginMutation } from "@webiny/app-page-builder/editor/recoil/modules/plugins";
 import { Transition } from "react-transition-group";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { useRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { Plugin } from "@webiny/plugins/types";
 
 const Overlay = styled("div")({
     position: "fixed",
@@ -91,11 +92,17 @@ const ToolbarBox = styled("div")(
     })
 );
 
-const Menu = ({ plugin, options }) => {
+type MenuPropsType = {
+    plugin: Plugin;
+    options: {
+        [key: string]: any;
+    };
+};
+const Menu: React.FunctionComponent<MenuPropsType> = ({ plugin, options }) => {
     const ref = React.createRef<any>();
     const [moveLeft, setMoveLeft] = useState<number>(null);
-    const [pluginsAtomValue, setPluginsAtomValue] = useRecoilState(pluginsAtom);
-    const isActive = isPluginActive(pluginsAtomValue, plugin);
+    const setPluginsAtomValue = useSetRecoilState(pluginsAtom);
+    const isActive = useRecoilValue(isPluginActiveSelector(plugin.name));
 
     const deactivateCurrentPlugin = () => {
         setPluginsAtomValue(prev => deactivatePluginMutation(prev, plugin));

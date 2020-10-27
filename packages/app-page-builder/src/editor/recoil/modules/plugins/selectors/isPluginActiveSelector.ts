@@ -8,10 +8,10 @@ export const isPluginActiveSelector = selectorFamily<boolean, string>({
     get: name => {
         return ({ get }) => {
             const target = plugins.byName(name);
+            const state = get(pluginsAtom);
             if (!target) {
                 return false;
             }
-            const state = get(pluginsAtom);
             return isPluginActive(state, target);
         };
     }

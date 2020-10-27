@@ -5,7 +5,7 @@ import { useRecoilValue } from "recoil";
 import GridContainer from "./GridContainer";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
 const GridStyle = styled("div")({
     position: "relative",
@@ -15,10 +15,9 @@ const GridStyle = styled("div")({
 });
 
 type GridBlockPropsType = {
-    element: PbShallowElement;
+    element: PbShallowElement | PbElement;
 };
-export const Grid: React.FunctionComponent<GridBlockPropsType> = ({ element: simpleElement }) => {
-    const { id } = simpleElement;
+const Grid: React.FunctionComponent<GridBlockPropsType> = ({ element: { id } }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));
     return (
         <GridStyle id={id}>
