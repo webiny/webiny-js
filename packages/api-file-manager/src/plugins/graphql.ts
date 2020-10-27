@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { hasPermission } from "@webiny/api-security";
 
 import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
@@ -185,6 +185,9 @@ export default [
                     __resolveReference(reference, context) {
                         return fileFetcher(context).findById(reference.id);
                     },
+                    id(file) {
+                        return file.id || file.SK;
+                    },
                     async src(file, args, context) {
                         const settings = context.filesSettings.get(SETTINGS_KEY);
                         return settings.srcPrefix + file.key;
@@ -197,21 +200,21 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: hasScope("files.file.list")(getFile),
-                    listFiles: hasScope("files.file.list")(listFiles),
+                    getFile: hasPermission("files.file")(getFile),
+                    listFiles: hasPermission("files.file")(listFiles),
                     listTags: listTags,
                     isInstalled,
-                    getSettings: hasScope("files.settings.manage")(getSettings)
+                    getSettings: hasPermission("files.settings")(getSettings)
                 },
                 FilesMutation: {
-                    uploadFile: hasScope("files.file.update")(uploadFile),
+                    uploadFile: hasPermission("files.file")(uploadFile),
                     uploadFiles,
-                    createFile: hasScope("files.file.update")(createFile),
-                    updateFile: hasScope("files.file.update")(updateFile),
-                    createFiles: hasScope("files.file.update")(createFiles),
-                    deleteFile: hasScope("files.file.delete")(deleteFile),
+                    createFile: hasPermission("files.file")(createFile),
+                    updateFile: hasPermission("files.file")(updateFile),
+                    createFiles: hasPermission("files.file")(createFiles),
+                    deleteFile: hasPermission("files.file")(deleteFile),
                     install,
-                    updateSettings: hasScope("files.settings.manage")(updateSettings)
+                    updateSettings: hasPermission("files.settings")(updateSettings)
                 }
             }
         }
