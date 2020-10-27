@@ -35,7 +35,7 @@ export default {
                 return menus;
             },
             create(data) {
-                const { title, slug, description, items } = data;
+                const { title, slug, description, items, createdBy } = data;
                 return db.create({
                     data: {
                         PK: PK_MENU,
@@ -43,7 +43,8 @@ export default {
                         title,
                         slug,
                         description,
-                        items
+                        items,
+                        createdBy
                     }
                 });
             },

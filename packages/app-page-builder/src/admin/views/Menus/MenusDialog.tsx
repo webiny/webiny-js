@@ -17,7 +17,7 @@ import {
     ListItemTextSecondary
 } from "@webiny/ui/List";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { LIST_CATEGORIES } from "./graphql";
+import { LIST_MENUS } from "./graphql";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -26,40 +26,35 @@ const narrowDialog = css({
     }
 });
 
-export type CategoriesDialogProps = {
+export type MenusDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
     onSelect: Function;
     children: any;
 };
 
-const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
-    open,
-    onClose,
-    onSelect,
-    children
-}) => {
+const MenusDialog: React.FC<MenusDialogProps> = ({ open, onClose, onSelect, children }) => {
     const { history } = useRouter();
     return (
         <Dialog
             open={open}
             onClose={onClose}
             className={narrowDialog}
-            data-testid="pb-new-page-category-modal"
+            data-testid="pb-new-page-menu-modal"
         >
             {children}
-            <DialogTitle>Select a category</DialogTitle>
+            <DialogTitle>Select a menu</DialogTitle>
             <DialogContent>
                 <List twoLine>
-                    <Query query={LIST_CATEGORIES}>
+                    <Query query={LIST_MENUS}>
                         {({ data, loading }) => {
                             if (loading) {
-                                return <span>Loading categories...</span>;
+                                return <span>Loading menus...</span>;
                             }
 
                             return (
                                 <React.Fragment>
-                                    {data.pageBuilder.categories.data.map(item => (
+                                    {data.pageBuilder.menus.data.map(item => (
                                         <ListItem key={item.id} onClick={() => onSelect(item)}>
                                             <ListItemText>
                                                 <ListItemTextPrimary>
@@ -78,12 +73,12 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({
                 </List>
             </DialogContent>
             <DialogActions>
-                <ButtonDefault onClick={() => history.push("/page-builder/categories")}>
-                    + Create new category
+                <ButtonDefault onClick={() => history.push("/page-builder/menus")}>
+                    + Create new menu
                 </ButtonDefault>
             </DialogActions>
         </Dialog>
     );
 };
 
-export default CategoriesDialog;
+export default MenusDialog;
