@@ -6,6 +6,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import { SecurityIdentity } from "@webiny/api-security";
 import {
     CREATE_CATEGORY,
     DELETE_CATEGORY,
@@ -37,7 +38,11 @@ export default ({ permissions, identity } = {}) => {
         },
         {
             type: "security-authentication",
-            authenticate: () => identity || null
+            authenticate: () =>
+                identity || new SecurityIdentity({
+                    id: "mocked",
+                    displayName: "m"
+                })
         }
     );
 

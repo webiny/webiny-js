@@ -4,6 +4,11 @@ export const DATA_FIELD = /* GraphQL */ `
         description
         title
         items
+        createdOn
+        createdBy {
+            id
+            displayName
+        }
     }
 `;
 

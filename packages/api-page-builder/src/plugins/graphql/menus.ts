@@ -11,9 +11,15 @@ const hasRwd = ({ pbMenuPermission, rwd }) => {
 
 export default {
     typeDefs: /* GraphQL */ `
+        type PbMenuCreatedBy {
+            id: ID
+            displayName: String
+        }
+
         type PbMenu {
             id: ID
             createdOn: DateTime
+            createdBy: PbMenuCreatedBy
             title: String
             slug: String
             description: String
@@ -115,14 +121,19 @@ export default {
                 }
 
                 const identity = context.security.getIdentity();
-                await menus.create({
+
+                const newData = {
                     ...data,
+                    createdOn: new Date().toISOString(),
                     createdBy: {
                         id: identity.id,
                         displayName: identity.displayName
                     }
-                });
-                return new Response(data);
+                };
+
+                await menus.create(newData);
+
+                return new Response(newData);
             }),
             updateMenu: hasPermission("pb.menu")(async (_, args, context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.

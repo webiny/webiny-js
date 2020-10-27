@@ -15,11 +15,18 @@ describe("Menus Test", () => {
             };
 
             let [response] = await createMenu({ data });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         createMenu: {
-                            data,
+                            data: {
+                                ...data,
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
+                            },
                             error: null
                         }
                     }
@@ -27,7 +34,7 @@ describe("Menus Test", () => {
             });
 
             [response] = await getMenu({ slug: data.slug });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         getMenu: {
@@ -46,11 +53,18 @@ describe("Menus Test", () => {
             };
 
             [response] = await updateMenu({ slug: data.slug, data });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updateMenu: {
-                            data,
+                            data: {
+                                ...data,
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
+                            },
                             error: null
                         }
                     }
@@ -60,7 +74,7 @@ describe("Menus Test", () => {
 
         // List should show three menus.
         let [response] = await listMenus();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {
@@ -71,7 +85,12 @@ describe("Menus Test", () => {
                                     "menu-0-items": "items-UPDATED"
                                 },
                                 slug: "menu-0-slug",
-                                title: "menu-0-title-UPDATED"
+                                title: "menu-0-title-UPDATED",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
                             },
                             {
                                 description: "menu-1-description-UPDATED",
@@ -79,7 +98,12 @@ describe("Menus Test", () => {
                                     "menu-1-items": "items-UPDATED"
                                 },
                                 slug: "menu-1-slug",
-                                title: "menu-1-title-UPDATED"
+                                title: "menu-1-title-UPDATED",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
                             },
                             {
                                 description: "menu-2-description-UPDATED",
@@ -87,7 +111,12 @@ describe("Menus Test", () => {
                                     "menu-2-items": "items-UPDATED"
                                 },
                                 slug: "menu-2-slug",
-                                title: "menu-2-title-UPDATED"
+                                title: "menu-2-title-UPDATED",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
+                                createdOn: /^20/
                             }
                         ],
                         error: null
@@ -107,7 +136,7 @@ describe("Menus Test", () => {
             };
 
             let [response] = await deleteMenu({ slug: data.slug });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         deleteMenu: {
@@ -121,7 +150,7 @@ describe("Menus Test", () => {
 
         // List should show zero menus.
         [response] = await listMenus();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {

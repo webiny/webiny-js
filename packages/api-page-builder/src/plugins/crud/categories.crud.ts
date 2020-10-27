@@ -19,6 +19,11 @@ export type Category = {
     slug: string;
     url: string;
     layout: string;
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
 };
 
 export default {
@@ -45,7 +50,7 @@ export default {
                 return categories;
             },
             create(data) {
-                const { name, slug, url, layout } = data;
+                const { name, slug, url, layout, createdOn, createdBy } = data;
                 return db.create({
                     data: {
                         PK: PK_CATEGORY,
@@ -53,7 +58,9 @@ export default {
                         name,
                         slug,
                         url,
-                        layout
+                        layout,
+                        createdOn,
+                        createdBy
                     }
                 });
             },

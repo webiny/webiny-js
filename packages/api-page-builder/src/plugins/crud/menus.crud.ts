@@ -9,6 +9,11 @@ export type Menu = {
     slug: string;
     description: string;
     items: Record<string, any>;
+    createdOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
 };
 
 export default {
@@ -34,8 +39,9 @@ export default {
 
                 return menus;
             },
-            create(data) {
-                const { title, slug, description, items, createdBy } = data;
+            async create(data) {
+                const { title, slug, description, items, createdBy, createdOn } = data;
+
                 return db.create({
                     data: {
                         PK: PK_MENU,
@@ -44,6 +50,7 @@ export default {
                         slug,
                         description,
                         items,
+                        createdOn,
                         createdBy
                     }
                 });

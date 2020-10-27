@@ -64,7 +64,7 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = insufficientPermissions[i];
             const { listMenus } = useGqlHandler({ permissions, identity });
             let [response] = await listMenus();
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("listMenus"));
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listMenus"));
         }
 
         const sufficientPermissionsAll = [
@@ -79,12 +79,17 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = sufficientPermissionsAll[i];
             const { listMenus } = useGqlHandler({ permissions, identity });
             let [response] = await listMenus();
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         listMenus: {
                             data: [
                                 {
+                                    createdBy: {
+                                        displayName: "Aa",
+                                        id: "a"
+                                    },
+                                    createdOn: /^20/,
                                     description: "list-menus-1-description",
                                     items: {
                                         "list-menus-1-items": "items"
@@ -93,6 +98,11 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-1-title"
                                 },
                                 {
+                                    createdBy: {
+                                        displayName: "Aa",
+                                        id: "a"
+                                    },
+                                    createdOn: /^20/,
                                     description: "list-menus-2-description",
                                     items: {
                                         "list-menus-2-items": "items"
@@ -101,6 +111,11 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-2-title"
                                 },
                                 {
+                                    createdBy: {
+                                        displayName: "Bb",
+                                        id: "b"
+                                    },
+                                    createdOn: /^20/,
                                     description: "list-menus-3-description",
                                     items: {
                                         "list-menus-3-items": "items"
@@ -109,6 +124,11 @@ describe("Menus Security Test", () => {
                                     title: "list-menus-3-title"
                                 },
                                 {
+                                    createdBy: {
+                                        displayName: "Bb",
+                                        id: "b"
+                                    },
+                                    createdOn: /^20/,
                                     description: "list-menus-4-description",
                                     items: {
                                         "list-menus-4-items": "items"
@@ -130,12 +150,17 @@ describe("Menus Security Test", () => {
         });
 
         let [response] = await identityAHandler.listMenus();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {
                         data: [
                             {
+                                createdBy: {
+                                    displayName: "Aa",
+                                    id: "a"
+                                },
+                                createdOn: /^20/,
                                 description: "list-menus-1-description",
                                 items: {
                                     "list-menus-1-items": "items"
@@ -144,6 +169,11 @@ describe("Menus Security Test", () => {
                                 title: "list-menus-1-title"
                             },
                             {
+                                createdBy: {
+                                    displayName: "Aa",
+                                    id: "a"
+                                },
+                                createdOn: /^20/,
                                 description: "list-menus-2-description",
                                 items: {
                                     "list-menus-2-items": "items"
@@ -164,12 +194,17 @@ describe("Menus Security Test", () => {
         });
 
         [response] = await identityAHandler.listMenus();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 pageBuilder: {
                     listMenus: {
                         data: [
                             {
+                                createdBy: {
+                                    displayName: "Bb",
+                                    id: "b"
+                                },
+                                createdOn: /^20/,
                                 description: "list-menus-3-description",
                                 items: {
                                     "list-menus-3-items": "items"
@@ -178,6 +213,11 @@ describe("Menus Security Test", () => {
                                 title: "list-menus-3-title"
                             },
                             {
+                                createdBy: {
+                                    displayName: "Bb",
+                                    id: "b"
+                                },
+                                createdOn: /^20/,
                                 description: "list-menus-4-description",
                                 items: {
                                     "list-menus-4-items": "items"
@@ -206,7 +246,7 @@ describe("Menus Security Test", () => {
             const { createMenu } = useGqlHandler({ permissions, identity });
 
             let [response] = await createMenu({ data: new Mock() });
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createMenu"));
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createMenu"));
         }
 
         const sufficientPermissions = [
@@ -223,7 +263,7 @@ describe("Menus Security Test", () => {
 
             const data = new Mock(`menu-create-${i}-`);
             let [response] = await createMenu({ data });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         createMenu: {
@@ -254,7 +294,7 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = insufficientPermissions[i];
             const { updateMenu } = useGqlHandler({ permissions, identity });
             let [response] = await updateMenu({ slug: mock.slug, data: mock });
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateMenu"));
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateMenu"));
         }
 
         let sufficientPermissions = [
@@ -269,7 +309,7 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = sufficientPermissions[i];
             const { updateMenu } = useGqlHandler({ permissions, identity });
             let [response] = await updateMenu({ slug: mock.slug, data: mock });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updateMenu: {
@@ -300,7 +340,7 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = insufficientPermissions[i];
             const { deleteMenu } = useGqlHandler({ permissions, identity });
             let [response] = await deleteMenu({ slug: mock.slug });
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("deleteMenu"));
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("deleteMenu"));
         }
 
         let sufficientPermissions = [
@@ -319,7 +359,7 @@ describe("Menus Security Test", () => {
             let [response] = await deleteMenu({
                 slug: mock.slug
             });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         deleteMenu: {
@@ -350,7 +390,7 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = insufficientPermissions[i];
             const { getMenu } = useGqlHandler({ permissions, identity });
             let [response] = await getMenu({ slug: mock.slug, data: mock });
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getMenu"));
+            expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getMenu"));
         }
 
         let sufficientPermissions = [
@@ -365,11 +405,18 @@ describe("Menus Security Test", () => {
             let [permissions, identity] = sufficientPermissions[i];
             const { getMenu } = useGqlHandler({ permissions, identity });
             let [response] = await getMenu({ slug: mock.slug, data: mock });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         getMenu: {
-                            data: mock,
+                            data: {
+                                ...mock,
+                                createdBy: {
+                                    displayName: "Aa",
+                                    id: "a"
+                                },
+                                createdOn: /^20/
+                            },
                             error: null
                         }
                     }
@@ -377,6 +424,4 @@ describe("Menus Security Test", () => {
             });
         }
     });
-
-
 });
