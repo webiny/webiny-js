@@ -1,8 +1,14 @@
+/**
+ * Plugins specific to our "site" app.
+ */
 import pageBuilderRoute from "@webiny/app-page-builder/site/plugins/pageBuilderRoute";
 import addons from "@webiny/app-page-builder/site/plugins/addons";
 import linkPreload from "@webiny/app-page-builder/site/plugins/linkPreload";
 import useSsrCacheTags from "@webiny/app-page-builder/site/plugins/useSsrCacheTags";
-// Elements
+
+/**
+ * Page element plugins to render page content.
+ */
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
 import row from "@webiny/app-page-builder/render/plugins/elements/row";
 import block from "@webiny/app-page-builder/render/plugins/elements/block";
@@ -22,7 +28,10 @@ import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twi
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
-// Slate
+
+/**
+ * Slate rich text editor plugins.
+ */
 import bold from "@webiny/app-page-builder/render/plugins/slate/bold";
 import italic from "@webiny/app-page-builder/render/plugins/slate/italic";
 import underline from "@webiny/app-page-builder/render/plugins/slate/underline";
@@ -30,9 +39,15 @@ import lists from "@webiny/app-page-builder/render/plugins/slate/lists";
 import code from "@webiny/app-page-builder/render/plugins/slate/code";
 import typography from "@webiny/app-page-builder/render/plugins/slate/typography";
 import link from "@webiny/app-page-builder/render/plugins/slate/link";
-// Page settings
+
+/**
+ * Page settings plugins (seo, social, etc.).
+ */
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
-// Element settings
+
+/**
+ * Page element settings plugins. 
+ */
 import align from "@webiny/app-page-builder/render/plugins/elementSettings/align";
 import animation from "@webiny/app-page-builder/render/plugins/elementSettings/animation";
 import background from "@webiny/app-page-builder/render/plugins/elementSettings/background";
@@ -44,11 +59,12 @@ import padding from "@webiny/app-page-builder/render/plugins/elementSettings/pad
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 
 export default [
+    // Site app plugins
     pageBuilderRoute(),
     addons(),
     linkPreload(),
     useSsrCacheTags(), 
-    // Elements
+    // Page elements
     document(),
     row(),
     block(),
@@ -78,7 +94,7 @@ export default [
     link(),
     // Page settings
     pageSettings(),
-    // Element settings
+    // Page element settings
     align,
     animation,
     background,

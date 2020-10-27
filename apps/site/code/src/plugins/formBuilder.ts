@@ -6,8 +6,11 @@ import formValidatorMaxLength from "@webiny/app-form-builder/site/plugins/valida
 import formValidatorMinLength from "@webiny/app-form-builder/site/plugins/validators/minLength";
 import formValidatorPattern from "@webiny/app-form-builder/site/plugins/validators/pattern";
 import formValidatorRequired from "@webiny/app-form-builder/site/plugins/validators/required";
-import formValidatorPatternPlugins from "@webiny/app-form-builder/site/plugins/validators/patternPlugins";
-import formElement from "@webiny/app-form-builder/page-builder/site/plugins/formElement";
+import formValidatorUpperCase from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/upperCase";
+import formValidatorLowerCase from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/lowerCase";
+import formValidatorEmail from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/email";
+import formValidatorUrl from "@webiny/app-form-builder/site/plugins/validators/patternPlugins/url";
+import formElement from "@webiny/app-form-builder/page-builder/render/plugins/formElement";
 
 export default [
     formsRedirectTrigger,
@@ -18,6 +21,9 @@ export default [
     formValidatorMinLength,
     formValidatorPattern,
     formValidatorRequired,
-    formValidatorPatternPlugins,
+    formValidatorUpperCase,
+    formValidatorLowerCase,
+    formValidatorEmail,
+    formValidatorUrl,
     formElement
 ];
