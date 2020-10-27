@@ -9,11 +9,11 @@ const t = i18n.ns("app-form-builder/admin/menus");
 const PageBuilderMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    const menus = identity.getPermission("pb.menus.crud");
-    const categories = identity.getPermission("pb.category.crud");
-    const editor = identity.getPermission("pb.page.crud");
+    const menus = identity.getPermission("pb.menu");
+    const categories = identity.getPermission("pb.category");
+    const pages = identity.getPermission("pb.page");
 
-    if (!menus && !categories && !editor) {
+    if (!menus && !categories && !pages) {
         return null;
     }
 
@@ -21,7 +21,7 @@ const PageBuilderMenu = ({ Menu, Section, Item }) => {
         <Menu name="app-page-builder" label={t`Page Builder`} icon={<PagesIcon />}>
             <Section label={t`Pages`}>
                 {categories && <Item label={t`Categories`} path="/page-builder/categories" />}
-                {editor && <Item label={t`Pages`} path="/page-builder/pages" />}
+                {pages && <Item label={t`Pages`} path="/page-builder/pages" />}
                 {menus && <Item label={t`Menus`} path="/page-builder/menus" />}
             </Section>
         </Menu>
