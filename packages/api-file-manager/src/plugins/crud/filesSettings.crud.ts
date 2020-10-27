@@ -68,7 +68,6 @@ export default {
                 return settingsList;
             },
             async create(data) {
-                const { key } = data;
                 // Use `WithFields` model for data validation and setting default value.
                 const filesSettings = new FilesSettings().populate(data);
                 await filesSettings.validate();
@@ -76,7 +75,7 @@ export default {
                 return db.create({
                     data: {
                         PK: PK_FILE_SETTINGS,
-                        SK: key,
+                        SK: filesSettings.key,
                         key: filesSettings.key,
                         installed: filesSettings.installed,
                         uploadMinFileSize: filesSettings.uploadMinFileSize,
