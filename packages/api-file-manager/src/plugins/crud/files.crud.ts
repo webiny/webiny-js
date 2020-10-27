@@ -44,7 +44,10 @@ const File = pipe(
                     }
                 }
             })
-        )
+        ),
+        createdBy: object(),
+        createdOn: setOnce()(string({ value: new Date().toISOString() })),
+        savedOn: string({ value: new Date().toISOString() })
     })
 )();
 
@@ -90,10 +93,16 @@ export default {
             },
             async create(data) {
                 const { id } = data;
+                const identity = context.security.getIdentity();
 
                 // Use `WithFields` model for data validation and setting default value.
                 const file = new File().populate(data);
                 await file.validate();
+                // Add "createdBy"
+                file.createdBy = {
+                    id: identity.id,
+                    displayName: identity.displayName
+                };
 
                 return db.create({
                     data: {
@@ -104,7 +113,10 @@ export default {
                         type: file.type,
                         name: file.name,
                         meta: file.meta,
-                        tags: file.tags
+                        tags: file.tags,
+                        createdBy: file.createdBy,
+                        createdOn: file.createdOn,
+                        savedOn: file.savedOn
                     }
                 });
             },
@@ -114,6 +126,8 @@ export default {
                 // Use `WithFields` model for data validation and setting default value.
                 const file = new File().populate(data);
                 await file.validate();
+                // Update meta data
+                file.savedOn = new Date().toISOString();
 
                 return db.update({
                     keys,
@@ -124,7 +138,8 @@ export default {
                         type: file.type,
                         name: file.name,
                         meta: file.meta,
-                        tags: file.tags
+                        tags: file.tags,
+                        savedOn: file.savedOn
                     }
                 });
             },
