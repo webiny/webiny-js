@@ -11,59 +11,9 @@ const identityA = new SecurityIdentity({
 const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 
 describe("Files CRUD test", () => {
-    const {
-        createFile,
-        updateFile,
-        createFiles,
-        getFile,
-        listFiles,
-        install,
-        isInstalled,
-        getSettings,
-        updateSettings
-    } = useGqlHandler({
+    const { createFile, updateFile, createFiles, getFile, listFiles } = useGqlHandler({
         permissions: [{ name: "*" }],
         identity: identityA
-    });
-
-    test("install File manager", async () => {
-        let [response] = await isInstalled({});
-        expect(response).toEqual({
-            data: {
-                files: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        [response] = await install({
-            srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
-        });
-        expect(response).toEqual({
-            data: {
-                files: {
-                    install: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        [response] = await isInstalled({});
-        expect(response).toEqual({
-            data: {
-                files: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
     });
 
     test("create, read, update and delete files", async () => {
@@ -173,79 +123,6 @@ describe("Files CRUD test", () => {
                 files: {
                     listFiles: {
                         data: [data],
-                        error: null
-                    }
-                }
-            }
-        });
-    });
-
-    test("File manager settings", async () => {
-        let [response] = await getSettings();
-        expect(response).toEqual({
-            data: {
-                files: {
-                    getSettings: {
-                        data: {
-                            uploadMinFileSize: 0,
-                            uploadMaxFileSize: 26214401
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        [response] = await updateSettings({ data: { uploadMinFileSize: -1111 } });
-        expect(response).toEqual({
-            data: {
-                files: {
-                    updateSettings: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            message: "Validation failed.",
-                            data: {
-                                invalidFields: {
-                                    uploadMinFileSize: {
-                                        code: "VALIDATION_FAILED_INVALID_FIELD",
-                                        data: null,
-                                        message: "Value needs to be greater than or equal to 0."
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        [response] = await updateSettings({
-            data: { uploadMinFileSize: 1024 }
-        });
-        expect(response).toEqual({
-            data: {
-                files: {
-                    updateSettings: {
-                        data: {
-                            uploadMinFileSize: 1024,
-                            uploadMaxFileSize: 26214401
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        [response] = await getSettings({});
-        expect(response).toEqual({
-            data: {
-                files: {
-                    getSettings: {
-                        data: {
-                            uploadMinFileSize: 1024,
-                            uploadMaxFileSize: 26214401
-                        },
                         error: null
                     }
                 }
