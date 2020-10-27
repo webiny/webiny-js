@@ -5,10 +5,10 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 const S3_BUCKET = process.env.S3_BUCKET;
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const { File } = context.models;
+    const files = context.files;
     const { id } = args;
 
-    const file = await File.findById(id);
+    const file = await files.get(id);
     // Logic for particular permission/resolver
     // We can move it somewhere else and pass it to "hasScope" like CMS
     const identity = context.security.getIdentity();
@@ -36,16 +36,17 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
         })
         .promise();
 
-    return file
-        .delete()
-        .then(() => new Response(true))
-        .catch(
-            e =>
-                new ErrorResponse({
-                    code: e.code,
-                    message: e.message
-                })
-        );
+    try {
+        await files.delete(id);
+
+        return new Response(true);
+    } catch (e) {
+        return new ErrorResponse({
+            code: e.code,
+            message: e.message,
+            data: e.data
+        });
+    }
 };
 
 export default resolver;
