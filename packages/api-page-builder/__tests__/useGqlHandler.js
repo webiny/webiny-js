@@ -14,8 +14,7 @@ import {
     GET_CATEGORY
 } from "./graphql/categories";
 
-export default () => {
-    // Creates the actual handler. Feel free to add additional plugins if needed.
+export default ({ permissions, identity } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
@@ -30,8 +29,16 @@ export default () => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
-        pageBuilderPlugins()
+        pageBuilderPlugins(),
+        {
+            type: "security-authorization",
+            name: "security-authorization",
+            getPermissions: () => permissions || [{ name: "*" }]
+        },
+        {
+            type: "security-authentication",
+            authenticate: () => identity || null
+        }
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

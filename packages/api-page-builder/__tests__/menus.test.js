@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("CRUD Test", () => {
+describe("Menus Test", () => {
     const { createMenu, deleteMenu, listMenus, getMenu, updateMenu } = useGqlHandler();
 
     test("create, read, update and delete menus", async () => {
