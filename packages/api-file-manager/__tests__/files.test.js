@@ -1,6 +1,14 @@
 import useGqlHandler from "./useGqlHandler";
+import { SecurityIdentity } from "@webiny/api-security";
 
-const LONGEST_WORD = "pneumonoultramicroscopicsilicovolcanoconiosis";
+const identityA = new SecurityIdentity({
+    id: "a",
+    login: "a",
+    type: "test",
+    displayName: "Aa"
+});
+
+const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
 
 describe("Files CRUD test", () => {
     const {
@@ -13,7 +21,10 @@ describe("Files CRUD test", () => {
         isInstalled,
         getSettings,
         updateSettings
-    } = useGqlHandler();
+    } = useGqlHandler({
+        permissions: [{ name: "*" }],
+        identity: identityA
+    });
 
     test("install File manager", async () => {
         let [response] = await isInstalled({});
@@ -82,7 +93,7 @@ describe("Files CRUD test", () => {
             id: data.id,
             data: {
                 ...data,
-                tags: [...data.tags, LONGEST_WORD + LONGEST_WORD]
+                tags: [...data.tags, LONG_STRING]
             }
         });
         expect(response).toEqual({
@@ -98,8 +109,7 @@ describe("Files CRUD test", () => {
                                     tags: {
                                         code: "VALIDATION_FAILED_INVALID_FIELD",
                                         data: null,
-                                        message: `Tag ${LONGEST_WORD +
-                                            LONGEST_WORD} is more than 50 characters long.`
+                                        message: `Tag ${LONG_STRING} is more than 50 characters long.`
                                     }
                                 }
                             }
