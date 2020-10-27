@@ -3,7 +3,6 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-file-manager/plugins";
 import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 import securityPlugins from "@webiny/api-security/authenticator";
-import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -14,14 +13,16 @@ import {
     UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
-    LIST_FILES,
+    LIST_FILES
+} from "./graphql/file";
+import {
     INSTALL,
     IS_INSTALLED,
     GET_SETTINGS,
     UPDATE_SETTINGS
-} from "./graphql/file";
+} from "./graphql/fileManagerSettings";
 
-export default () => {
+export default ({ permissions, identity }) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
@@ -37,18 +38,14 @@ export default () => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
-        // Add Cognito plugins for authentication
+        {
+            type: "security-authorization",
+            getPermissions: () => permissions || [{ name: "*", key: "*" }]
+        },
         {
             type: "security-authentication",
-            async authenticate() {
-                return new SecurityIdentity({
-                    id: "2iHCWANdxpy3cu5ES7GzjVMoVNx",
-                    login: "admin@webiny.com",
-                    type: "admin",
-                    firstName: "Admin",
-                    lastName: "Test"
-                });
+            authenticate() {
+                return identity || null;
             }
         },
         filesPlugins(),
@@ -68,11 +65,10 @@ export default () => {
         return [JSON.parse(response.body), response];
     };
 
-    // With the "handler" and "invoke" function, let's also return the "database", which will enable
-    // us to do some manual database updating, for example, preparing the initial test data.
     return {
         handler,
         invoke,
+        // Files
         async createFile(variables) {
             return invoke({ body: { query: CREATE_FILE, variables } });
         },
@@ -91,6 +87,7 @@ export default () => {
         async listFiles(variables) {
             return invoke({ body: { query: LIST_FILES, variables } });
         },
+        // File Manager settings
         async isInstalled(variables) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
         },
