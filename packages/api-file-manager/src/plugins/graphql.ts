@@ -1,18 +1,21 @@
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
 
+import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
+import createFile from "./resolvers/createFile";
+import updateFile from "./resolvers/updateFile";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
+import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
-const getFile = ({ models }): any => models.File;
+const fileFetcher = ({ models }): any => models.File;
 
 export default [
     {
@@ -180,7 +183,11 @@ export default [
             resolvers: {
                 File: {
                     __resolveReference(reference, context) {
-                        return getFile(context).findById(reference.id);
+                        return fileFetcher(context).findById(reference.id);
+                    },
+                    async src(file, args, context) {
+                        const settings = context.filesSettings.get(SETTINGS_KEY);
+                        return settings.srcPrefix + file.key;
                     }
                 },
                 Query: {
@@ -190,7 +197,7 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: hasScope("files.file.list")(resolveGet(getFile)),
+                    getFile: hasScope("files.file.list")(getFile),
                     listFiles: hasScope("files.file.list")(listFiles),
                     listTags: listTags,
                     isInstalled,
@@ -199,9 +206,9 @@ export default [
                 FilesMutation: {
                     uploadFile: hasScope("files.file.update")(uploadFile),
                     uploadFiles,
-                    createFile: hasScope("files.file.update")(resolveCreate(getFile)),
-                    updateFile: hasScope("files.file.update")(resolveUpdate(getFile)),
-                    createFiles,
+                    createFile: hasScope("files.file.update")(createFile),
+                    updateFile: hasScope("files.file.update")(updateFile),
+                    createFiles: hasScope("files.file.update")(createFiles),
                     deleteFile: hasScope("files.file.delete")(deleteFile),
                     install,
                     updateSettings: hasScope("files.settings.manage")(updateSettings)
