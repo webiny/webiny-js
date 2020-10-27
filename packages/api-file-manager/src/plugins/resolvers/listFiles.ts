@@ -1,48 +1,34 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { NotAuthorizedResponse } from "@webiny/api-security";
+import hasRwd from "./utils/hasRwd";
 
-const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
-    const { File } = context.models;
-    const { limit, after, before, sort = {}, search = "", types = [], tags = [], ids = [] } = args;
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
+    try {
+        // If permission has "rwd" property set, but "r" is not part of it, bail.
+        const filesFilePermission = await context.security.getPermission("files.file");
+        if (filesFilePermission && !hasRwd({ filesFilePermission, rwd: "r" })) {
+            return new NotAuthorizedResponse();
+        }
 
-    const findArgs = { query: null, limit, after, before, sort, totalCount: false };
+        const files = context.files;
 
-    const $and = [];
+        let list = await files.list();
 
-    $and.push({ "meta.private": { $ne: true } }); // Files created by the system, eg. installation files.
-    if (Array.isArray(types) && types.length) {
-        $and.push({ type: { $in: types } });
-    }
+        // If user can only manage own records, let's check if he owns the loaded one.
+        if (filesFilePermission?.own === true) {
+            const identity = context.security.getIdentity();
+            list = list.filter(file => file.createdBy.id === identity.id);
+        }
 
-    if (search) {
-        $and.push({
-            $or: [
-                { name: { $regex: `.*${search}.*`, $options: "i" } },
-                { tags: { $in: search.split(" ") } }
-            ]
+        return new Response(list);
+    } catch (e) {
+        return new ErrorResponse({
+            code: e.code,
+            message: e.message,
+            data: e.data
         });
     }
-
-    if (Array.isArray(tags) && tags.length > 0) {
-        $and.push({
-            tags: { $in: tags.map(tag => tag.toLowerCase()) }
-        });
-    }
-
-    if (Array.isArray(ids) && ids.length > 0) {
-        $and.push({
-            id: { $in: ids }
-        });
-    }
-
-    if ($and.length) {
-        findArgs.query = { $and };
-    }
-
-    findArgs.totalCount = requiresTotalCount(info);
-
-    const data = await File.find(findArgs);
-    return new ListResponse(data, data.getMeta());
 };
 
 export default resolver;
