@@ -16,7 +16,7 @@ const permissionRendererCmsManagePlugins: PermissionRendererCmsManage[] = [
     cmsSettingsPermissionPlugin
 ];
 
-export default () => [
+export default [
     permissionRendererCmsManagePlugins,
     cmsPermissionPlugin as AdminAppPermissionRendererPlugin
 ];
