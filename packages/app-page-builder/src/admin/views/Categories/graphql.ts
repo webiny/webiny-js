@@ -5,6 +5,10 @@ const BASE_FIELDS = `
     name
     layout
     url
+    createdBy {
+        id
+        displayName
+    }
 `;
 
 export const LIST_CATEGORIES = gql`

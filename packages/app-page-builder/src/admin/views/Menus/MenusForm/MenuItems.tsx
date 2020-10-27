@@ -36,6 +36,7 @@ const AddMenu = styled("div")({
 });
 
 type Props = {
+    canSave: boolean;
     menuForm: Form;
     onChange: Function;
     value: any;
@@ -47,7 +48,6 @@ type State = {
 
 class MenuItems extends React.Component<Props, State> {
     form = React.createRef();
-
     state = {
         currentMenuItem: null
     };
@@ -72,7 +72,7 @@ class MenuItems extends React.Component<Props, State> {
     };
 
     render() {
-        const { value: items, onChange } = this.props;
+        const { value: items, onChange, canSave } = this.props;
         const { currentMenuItem } = this.state;
         const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
 
@@ -81,45 +81,50 @@ class MenuItems extends React.Component<Props, State> {
                 <Grid>
                     <Cell span={7} className={leftPanel}>
                         <MenuItemsList
+                            canSave={canSave}
                             items={items}
                             onChange={onChange}
                             editItem={this.editItem}
                             deleteItem={this.deleteItem}
                         />
                     </Cell>
-                    <Cell span={5}>
-                        {!currentMenuItem && (
-                            <>
-                                <MenuHolder>
-                                    <Typography use={"body2"}>
-                                        To build your menu you need to create menu items! Begin by
-                                        clicking the &quot;Add menu item&quot; button
-                                    </Typography>
 
-                                    <AddMenu>
-                                        <Menu
-                                            handle={<ButtonPrimary>+ Add menu item</ButtonPrimary>}
-                                            anchor={"topEnd"}
-                                        >
-                                            <List className={menuItems}>
-                                                {plugins.map(pl => (
-                                                    <ListItem
-                                                        key={pl.name}
-                                                        onClick={() => this.addItem(pl)}
-                                                        style={{ whiteSpace: "nowrap" }}
-                                                    >
-                                                        <ListItemGraphic>
-                                                            <Icon icon={pl.menuItem.icon} />
-                                                        </ListItemGraphic>
-                                                        {pl.menuItem.title}
-                                                    </ListItem>
-                                                ))}
-                                            </List>
-                                        </Menu>
-                                    </AddMenu>
-                                </MenuHolder>
-                            </>
-                        )}
+                    <Cell span={5}>
+                        {!currentMenuItem &&
+                            canSave && (
+                                <>
+                                    <MenuHolder>
+                                        <Typography use={"body2"}>
+                                            To build your menu you need to create menu items! Begin
+                                            by clicking the &quot;Add menu item&quot; button
+                                        </Typography>
+
+                                        <AddMenu>
+                                            <Menu
+                                                handle={
+                                                    <ButtonPrimary>+ Add menu item</ButtonPrimary>
+                                                }
+                                                anchor={"topEnd"}
+                                            >
+                                                <List className={menuItems}>
+                                                    {plugins.map(pl => (
+                                                        <ListItem
+                                                            key={pl.name}
+                                                            onClick={() => this.addItem(pl)}
+                                                            style={{ whiteSpace: "nowrap" }}
+                                                        >
+                                                            <ListItemGraphic>
+                                                                <Icon icon={pl.menuItem.icon} />
+                                                            </ListItemGraphic>
+                                                            {pl.menuItem.title}
+                                                        </ListItem>
+                                                    ))}
+                                                </List>
+                                            </Menu>
+                                        </AddMenu>
+                                    </MenuHolder>
+                                </>
+                            )}
                         {currentMenuItem && (
                             <MenuItemForm
                                 currentMenuItem={currentMenuItem}

@@ -1,10 +1,11 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "react-apollo";
 import { LIST_MENUS, DELETE_MENU } from "./graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useSecurity } from "@webiny/app-security";
 
 import {
     DataList,
@@ -13,7 +14,6 @@ import {
     ListItemText,
     ListItemMeta,
     ListActions,
-    ListItemTextPrimary,
     ListItemTextSecondary
 } from "@webiny/ui/List";
 
@@ -56,6 +56,23 @@ const PageBuilderMenusDataList = () => {
         [slug]
     );
 
+    const { identity } = useSecurity();
+    const pbMenuPermission = useMemo(() => {
+        return identity.getPermission("pb.menu");
+    }, []);
+
+    const canDelete = useCallback(item => {
+        if (pbMenuPermission.own) {
+            return item.createdBy.id === identity.id;
+        }
+
+        if (typeof pbMenuPermission.rwd === "string") {
+            return pbMenuPermission.rwd.includes("d");
+        }
+
+        return true;
+    }, []);
+
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
     return (
@@ -70,7 +87,9 @@ const PageBuilderMenusDataList = () => {
                     {data.map(item => (
                         <ListItem key={item.slug} selected={item.slug === slug}>
                             <ListItemText
-                                onClick={() => history.push(`/page-builder/menus?slug=${item.slug}`)}
+                                onClick={() =>
+                                    history.push(`/page-builder/menus?slug=${item.slug}`)
+                                }
                             >
                                 {item.title}
                                 <ListItemTextSecondary>
@@ -78,11 +97,13 @@ const PageBuilderMenusDataList = () => {
                                 </ListItemTextSecondary>
                             </ListItemText>
 
-                            <ListItemMeta>
-                                <ListActions>
-                                    <DeleteIcon onClick={() => deleteItem(item)} />
-                                </ListActions>
-                            </ListItemMeta>
+                            {canDelete(item) && (
+                                <ListItemMeta>
+                                    <ListActions>
+                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                    </ListActions>
+                                </ListItemMeta>
+                            )}
                         </ListItem>
                     ))}
                 </ScrollList>

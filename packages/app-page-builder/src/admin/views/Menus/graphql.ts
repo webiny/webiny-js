@@ -5,6 +5,10 @@ const BASE_FIELDS = `
     slug
     description
     items
+    createdBy {
+        id
+        displayName
+    }
 `;
 
 export const LIST_MENUS = gql`

@@ -17,6 +17,8 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import MenuItems from "./MenusForm/MenuItems";
+import { useSecurity } from "@webiny/app-security";
+import pick from "object.pick";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 
@@ -46,14 +48,17 @@ const MenusForm = () => {
         refetchQueries: [{ query: LIST_MENUS }]
     });
 
+    const loadedMenu = getQuery.data?.pageBuilder?.getMenu?.data || {};
+
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            const isUpdate = slug;
+        async formData => {
+            const isUpdate = loadedMenu.slug;
+            const data = pick(formData, ["slug", "title", "description", "items"]);
             const [operation, args] = isUpdate
                 ? [update, { variables: { slug: data.slug, data } }]
-                : [create, { variables: { data } }];
+                : [create, { variables: { data: data } }];
 
             const response = await operation(args);
 
@@ -62,10 +67,10 @@ const MenusForm = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/page-builder/menus?slug=${data.slug}`);
+            !isUpdate && history.push(`/page-builder/menus?slug=${formData.slug}`);
             showSnackbar(t`Menu saved successfully.`);
         },
-        [slug]
+        [loadedMenu.slug]
     );
 
     const data = useMemo(() => {
@@ -74,7 +79,24 @@ const MenusForm = () => {
             data.items = [];
         }
         return data;
-    }, [getQuery.data?.pageBuilder?.getMenu.data.slug]);
+    }, [loadedMenu.slug]);
+
+    const { identity } = useSecurity();
+    const pbMenuPermission = useMemo(() => {
+        return identity.getPermission("pb.menu");
+    }, []);
+
+    const canSave = useMemo(() => {
+        if (pbMenuPermission.own) {
+            return loadedMenu?.createdBy?.id === identity.id;
+        }
+
+        if (typeof pbMenuPermission.rwd === "string") {
+            return pbMenuPermission.rwd.includes("w");
+        }
+
+        return true;
+    }, [loadedMenu.slug]);
 
     return (
         <Form data={data} onSubmit={onSubmit}>
@@ -101,11 +123,13 @@ const MenusForm = () => {
                             </Cell>
                         </Grid>
                         <Bind name="items">
-                            {props => <MenuItems menuForm={form} {...props} />}
+                            {props => <MenuItems menuForm={form} {...props} canSave={canSave} />}
                         </Bind>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={form.submit}>{t`Save menu`}</ButtonPrimary>
+                        {canSave && (
+                            <ButtonPrimary onClick={form.submit}>{t`Save menu`}</ButtonPrimary>
+                        )}
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

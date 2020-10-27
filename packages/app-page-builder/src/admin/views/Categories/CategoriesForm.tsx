@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -20,6 +20,8 @@ import { categoryUrlValidator } from "./validators";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { Select } from "@webiny/ui/Select";
+import { useSecurity } from "@webiny/app-security";
+import pick from "object.pick";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
@@ -46,6 +48,8 @@ const CategoriesForm = () => {
         }
     });
 
+    const loadedCategory = getQuery.data?.pageBuilder?.getCategory?.data || {};
+
     const [create, createMutation] = useMutation(CREATE_CATEGORY, {
         refetchQueries: [{ query: LIST_CATEGORIES }]
     });
@@ -57,10 +61,12 @@ const CategoriesForm = () => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            const isUpdate = slug;
+        async formData => {
+            const isUpdate = loadedCategory.slug;
+            const data = pick(formData, ["slug", "name", "url", "layout"]);
+
             const [operation, args] = isUpdate
-                ? [update, { variables: { slug: data.slug, data } }]
+                ? [update, { variables: { slug: formData.slug, data } }]
                 : [create, { variables: { data } }];
 
             const response = await operation(args);
@@ -70,13 +76,33 @@ const CategoriesForm = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/page-builder/categories?slug=${data.slug}`);
+            !isUpdate && history.push(`/page-builder/categories?slug=${formData.slug}`);
             showSnackbar(t`Category saved successfully.`);
         },
-        [slug]
+        [loadedCategory.slug]
     );
 
-    const data = getQuery?.data?.pageBuilder?.getCategory.data || {};
+    const data = useMemo(() => {
+        return getQuery.data?.pageBuilder?.getCategory.data || {};
+    }, [loadedCategory.slug]);
+
+    const { identity } = useSecurity();
+    const pbMenuPermission = useMemo(() => {
+        return identity.getPermission("pb.category");
+    }, []);
+
+    const canSave = useMemo(() => {
+        if (pbMenuPermission.own) {
+            return loadedCategory?.createdBy?.id === identity.id;
+        }
+
+        if (typeof pbMenuPermission.rwd === "string") {
+            return pbMenuPermission.rwd.includes("w");
+        }
+
+        return true;
+    }, [loadedCategory.slug]);
+
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
@@ -120,7 +146,9 @@ const CategoriesForm = () => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary onClick={form.submit}>{t`Save category`}</ButtonPrimary>
+                        {canSave && (
+                            <ButtonPrimary onClick={form.submit}>{t`Save category`}</ButtonPrimary>
+                        )}
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
