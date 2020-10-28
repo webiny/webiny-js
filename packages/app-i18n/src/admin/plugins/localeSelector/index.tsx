@@ -20,27 +20,23 @@ const buttonStyles = css({
 const plugin: AdminHeaderRightPlugin = {
     type: "admin-header-right",
     render() {
-        const { getLocale, getLocales } = useI18N();
+        const { setLocale, getCurrentLocale, getLocales } = useI18N();
 
+        const currentLocale = getCurrentLocale("content");
         return (
             <Menu
                 className={menuDialog}
                 handle={
                     <ButtonPrimary className={buttonStyles} flat>
                         <ButtonIcon icon={<TranslateIcon />} />
-                        Locale: {getLocale().code}
+                        Locale: {currentLocale}
                     </ButtonPrimary>
                 }
             >
                 {getLocales().map(locale => (
-                    <MenuItem
-                        key={locale.code}
-                        onClick={() => {
-                            console.log("Apple selected!");
-                        }}
-                    >
+                    <MenuItem key={locale.code} onClick={() => setLocale(locale.code, "content")}>
                         {locale.code}
-                        {getLocale().code === locale.code && <ButtonIcon icon={<DoneIcon />} />}
+                        {currentLocale === locale.code && <ButtonIcon icon={<DoneIcon />} />}
                     </MenuItem>
                 ))}
             </Menu>

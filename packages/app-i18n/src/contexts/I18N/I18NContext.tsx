@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery, QueryResult } from "react-apollo";
 import gql from "graphql-tag";
-import get from "lodash.get";
 
 export const GET_I18N_INFORMATION = gql`
     query GetI18NInformation {
         i18n {
             getI18NInformation {
-                currentLocale {
-                    code
+                currentLocales {
+                    context
+                    locale
                 }
                 locales {
                     code
@@ -20,18 +20,20 @@ export const GET_I18N_INFORMATION = gql`
 `;
 
 export const I18NContext = React.createContext(null);
-const defState = { initializing: false, currentLocale: null, locales: [] };
+const defaultState = { currentLocales: [], locales: [] };
+
+type I18NContextState = {
+    locales: { code: string; default: boolean }[];
+    currentLocales: {
+        context: string;
+        locale: string;
+    }[];
+};
 
 export type I18NContextValue = {
-    refetchLocales(variables?: { [key: string]: any }): Promise<QueryResult>;
-    state: {
-        initializing: boolean;
-        currentLocale?: {
-            id: string;
-            code: string;
-        };
-        locales: Array<{ id: string; code: string; default: boolean }>;
-    };
+    refetchLocales(variables?: Record<string, any>): Promise<QueryResult>;
+    state: I18NContextState;
+    setState: typeof useState;
 };
 
 export type I18NProviderProps = {
@@ -39,23 +41,52 @@ export type I18NProviderProps = {
     loader?: React.ReactElement;
 };
 
+const updateLocaleStorage = (currentLocales) => {
+    localStorage.setItem(
+        "wby_i18n_locale",
+        currentLocales.reduce(
+            (current, { context, locale }) => `${current}${context}:${locale};`,
+            ""
+        )
+    );
+}
+
 export const I18NProvider = (props: I18NProviderProps) => {
     const { children, loader } = props;
-    const { loading, data, refetch } = useQuery(GET_I18N_INFORMATION);
+    const [state, setState] = useState<I18NContextState>(defaultState);
+    const { loading, refetch } = useQuery(GET_I18N_INFORMATION, {
+        onCompleted(data) {
+            const { currentLocales: fetchedCurrentLocales, locales } =
+                data?.i18n?.getI18NInformation || {};
+
+            const currentLocales = [];
+            for (let i = 0; i < fetchedCurrentLocales.length; i++) {
+                const item = fetchedCurrentLocales[i];
+                const localeStorageKey = `x-i18n-locale-${item.context}`;
+                if (!localStorage.getItem(localeStorageKey)) {
+                    localStorage.setItem(localeStorageKey, item.locale);
+                }
+
+                currentLocales.push({
+                    context: item.context,
+                    locale: localStorage.getItem(localeStorageKey)
+                });
+            }
+
+            updateLocaleStorage(currentLocales)
+            setState({ locales, currentLocales });
+        }
+    });
 
     if (loading && loader) {
         return loader;
     }
 
-    const { currentLocale, locales } = get(data, "i18n.getI18NInformation", {});
-
     const value = {
         refetchLocales: refetch,
-        state: {
-            ...defState,
-            currentLocale,
-            locales
-        }
+        updateLocaleStorage,
+        state,
+        setState
     };
 
     return <I18NContext.Provider value={value}>{children}</I18NContext.Provider>;

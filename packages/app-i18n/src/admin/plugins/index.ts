@@ -6,6 +6,8 @@ import richTextEditor from "./richTextEditor";
 import localeSelector from "./localeSelector";
 import install from "./install";
 import permissionRenderer from "./permissionRenderer";
+import apolloLink from "./apolloLink";
+import localeTypes from "./localeTypes";
 
 /**
  * Prevents opening global search menu when pressing "/" inside of I18N Rich Text Editor.
@@ -29,5 +31,7 @@ export default () => [
     richTextEditor,
     i18nSitePlugins(),
     globalSearchHotkey,
-    install
+    install,
+    apolloLink,
+    localeTypes
 ];

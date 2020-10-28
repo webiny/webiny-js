@@ -28,3 +28,10 @@ export type I18NListValue<T = any> = {
     value?: T[];
     values: Array<{ locale: string; value: T[] }>;
 };
+
+export type I18NLocaleContextPlugin = Plugin<{
+    name: "api-i18n-locale-context";
+    context: {
+        name: string;
+    };
+}>;
