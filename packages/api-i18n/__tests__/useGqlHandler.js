@@ -56,9 +56,36 @@ export default () => {
         },
         async getI18NLocale(variables) {
             return invoke({ body: { query: GET_LOCALE, variables } });
+        },
+        async getI18NInformation(variables, rest = {}) {
+            return invoke({ body: { query: GET_I18N_INFORMATION, variables }, ...rest });
         }
     };
 };
+
+const GET_I18N_INFORMATION = /* GraphQL */ `
+    {
+        i18n {
+            getI18NInformation {
+                currentLocales {
+                    context
+                    locale {
+                        default
+                        code
+                    }
+                }
+                locales {
+                    default
+                    code
+                }
+                defaultLocale {
+                    default
+                    code
+                }
+            }
+        }
+    }
+`;
 
 const CREATE_LOCALE = /* GraphQL */ `
     mutation CreateI18NLocale($data: I18NLocaleInput!) {

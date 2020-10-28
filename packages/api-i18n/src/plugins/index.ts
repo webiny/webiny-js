@@ -1,9 +1,11 @@
 import graphql from "./graphql";
-import i18n from "./i18n";
+import i18n from "./i18nContext";
 import crud from "./crud";
+import localeContexts from "./localeContexts";
 
 export default () => [
     crud,
+    localeContexts,
     graphql,
     i18n,
     {
