@@ -44,7 +44,8 @@ const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPlugi
     } else if (total > max) {
         return resizeCells(target.elements.slice(0, max), cells);
     }
-    return resizeCells(target.elements.concat(createCells(max - total)), cells);
+    const created = target.elements.concat(createCells(max - total));
+    return resizeCells(created, cells);
 };
 
 export const Settings: React.FunctionComponent = () => {

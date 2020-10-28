@@ -1,15 +1,15 @@
 import React from "react";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
-import { disableDraggingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/disableDraggingMutation";
-import { enableDraggingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/enableDraggingMutation";
-import { unHighlightElementMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/unHighlightElementMutation";
 import {
     activateElementMutation,
+    disableDraggingMutation,
     elementByIdSelector,
+    enableDraggingMutation,
     getElementProps,
     highlightElementMutation,
-    uiAtom
+    uiAtom,
+    unHighlightElementMutation
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
@@ -81,9 +81,10 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     );
     const onMouseLeave = React.useCallback(
         ev => {
-            if (element.type !== "document") {
-                ev.stopPropagation();
+            if (element.type === "document") {
+                return;
             }
+            ev.stopPropagation();
             setUiAtomValue(unHighlightElementMutation);
         },
         [elementId]

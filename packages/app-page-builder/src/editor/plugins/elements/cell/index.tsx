@@ -36,11 +36,7 @@ const plugin: PbEditorPageElementPlugin = {
         return false;
     },
     create: options => {
-        const size = options.data?.settings?.size;
-        if (!size) {
-            throw new Error("There must be a size of the cell when creating it.");
-        }
-        const r = {
+        return {
             type: "cell",
             elements: [],
             data: {
@@ -54,12 +50,10 @@ const plugin: PbEditorPageElementPlugin = {
                         mobile: { all: 10 },
                         desktop: { all: 0 }
                     },
-                    size
+                    size: options.data?.settings?.size || 1
                 }
             }
         };
-        console.log(r);
-        return r;
     },
     render(props) {
         const { element } = props;
