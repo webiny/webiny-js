@@ -464,5 +464,5 @@ export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
     cells: string;
-    icon: string;
+    icon: React.FunctionComponent;
 };

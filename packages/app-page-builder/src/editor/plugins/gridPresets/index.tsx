@@ -1,5 +1,12 @@
 import { PbEditorGridPresetPluginType } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
+import { ReactComponent as GridIcon66 } from "../../assets/icons/grid-6-6.svg";
+import { ReactComponent as GridIcon633 } from "../../assets/icons/grid-6-3-3.svg";
+import { ReactComponent as GridIcon336 } from "../../assets/icons/grid-3-3-6.svg";
+import { ReactComponent as GridIcon3333 } from "../../assets/icons/grid-3-3-3-3.svg";
+import { ReactComponent as GridIcon48 } from "../../assets/icons/grid-4-8.svg";
+import { ReactComponent as GridIcon84 } from "../../assets/icons/grid-8-4.svg";
+import { ReactComponent as GridIcon22222 } from "../../assets/icons/grid-2-2-2-2-2-2.svg";
 
 const calculateCells = (cells: string): number[] => {
     return cells
@@ -44,36 +51,43 @@ export const gridPresets: PbEditorGridPresetPluginType[] = [
     {
         name: "pb-editor-grid-preset-6-6",
         type: "pb-editor-grid-preset",
-        cells: "6-6"
+        cells: "6-6",
+        icon: GridIcon66
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-8-4",
         type: "pb-editor-grid-preset",
-        cells: "8-4"
+        cells: "8-4",
+        icon: GridIcon84
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-4-8",
         type: "pb-editor-grid-preset",
-        cells: "4-8"
+        cells: "4-8",
+        icon: GridIcon48
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-6-3-3",
         type: "pb-editor-grid-preset",
-        cells: "6-3-3"
+        cells: "6-3-3",
+        icon: GridIcon633
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-3-3-6",
         type: "pb-editor-grid-preset",
-        cells: "3-3-6"
+        cells: "3-3-6",
+        icon: GridIcon336
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-3-3-3-3",
         type: "pb-editor-grid-preset",
-        cells: "3-3-3-3"
+        cells: "3-3-3-3",
+        icon: GridIcon3333
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-2-2-2-2-2-2",
         type: "pb-editor-grid-preset",
-        cells: "2-2-2-2-2-2"
+        cells: "2-2-2-2-2-2",
+        icon: GridIcon22222
     } as PbEditorGridPresetPluginType
 ];

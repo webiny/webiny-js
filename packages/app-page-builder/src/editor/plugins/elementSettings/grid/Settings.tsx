@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import React from "react";
 import {
     calculatePresetPluginCells,
@@ -13,6 +14,23 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { useRecoilValue } from "recoil";
+
+const StyledIconButton = styled("button")(({ active }: any) => ({
+    padding: "0",
+    margin: "0 2px 2px 0",
+    background: "transparent",
+    width: "auto",
+    height: "auto",
+    border: "0 none",
+    cursor: "pointer",
+    opacity: active ? 1 : 0.7,
+    ":hover": {
+        opacity: 1
+    },
+    ":focus": {
+        outline: "none"
+    }
+}));
 
 const createCells = (amount: number) => {
     return Array(amount)
@@ -52,12 +70,13 @@ export const Settings: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const id = useRecoilValue(activeElementIdSelector);
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));
+    const currentType = element.data.settings?.grid?.type;
 
     const presetPlugins = getPresetPlugins();
 
     const setPreset = (pl: PbEditorGridPresetPluginType) => {
         const type = pl.cells;
-        if (type === element.data.settings?.grid?.type) {
+        if (type === currentType) {
             return;
         }
         const newElement = {
@@ -83,15 +102,17 @@ export const Settings: React.FunctionComponent = () => {
         <Tabs>
             <Tab label={"Grid"}>
                 {presetPlugins.map(pl => {
-                    const name = pl.cells.replace(/\-/g, " + ");
+                    const Icon = pl.icon;
                     return (
-                        <button key={`preset-${pl.cells}`} onClick={() => setPreset(pl)}>
-                            {name}
-                        </button>
+                        <StyledIconButton
+                            key={`preset-${pl.cells}`}
+                            onClick={() => setPreset(pl)}
+                            active={pl.cells === currentType}
+                        >
+                            <Icon />
+                        </StyledIconButton>
                     );
                 })}
-
-                {/*<CellWidthSlider elements={element.elements} onDragEnd={(cells: number[]) => setPreset(...cells)} />*/}
             </Tab>
         </Tabs>
     );
