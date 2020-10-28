@@ -62,7 +62,6 @@ const PageBuilderCategoriesDataList = () => {
     }, []);
 
     const canDelete = useCallback(item => {
-        console.log('woah', item)
         if (pbMenuPermission.own) {
             return item.createdBy.id === identity.id;
         }
