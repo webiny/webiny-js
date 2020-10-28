@@ -9,7 +9,26 @@ import {
 import { HandlerHttpContext } from "@webiny/handler-http/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
 
-const LOCALE_CONTEXT_HEADER_PREFIX = "x-i18n-locale-";
+// Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
+const parseXI18NLocaleHeader = value => {
+    if (parseXI18NLocaleHeader.cache[value]) {
+        return parseXI18NLocaleHeader.cache[value];
+    }
+
+    // Parsing x-i18n-locale value (e.g. "default:en-US;content:hr-HR;").
+    parseXI18NLocaleHeader.cache[value] = value
+        .split(";")
+        .filter(Boolean)
+        .map(item => item.split(":"))
+        .reduce((current, [context, locale]) => {
+            current[context] = locale;
+            return current;
+        }, {});
+
+    return parseXI18NLocaleHeader.cache[value];
+};
+
+parseXI18NLocaleHeader.cache = {};
 
 const getLocaleFromHeaders = (http, localeContext = "default") => {
     if (!http) {
@@ -18,19 +37,16 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
 
     let acceptLanguageHeader, contextLocaleHeader;
     for (const key in http.headers) {
+        const lcKey = key.toLowerCase();
+        if (lcKey === "accept-language") {
+            acceptLanguageHeader = http.headers[key];
+        } else if (lcKey === "x-i18n-locale") {
+            const parsed = parseXI18NLocaleHeader(http.headers[key]);
+            contextLocaleHeader = parsed[localeContext];
+        }
+
         if (acceptLanguageHeader && contextLocaleHeader) {
             break;
-        }
-
-        const keyLc = key.toLowerCase();
-        if (keyLc === "accept-language") {
-            acceptLanguageHeader = http.headers[key];
-            continue;
-        }
-
-        const localeContextHeader = LOCALE_CONTEXT_HEADER_PREFIX + localeContext.toLowerCase();
-        if (keyLc === localeContextHeader) {
-            contextLocaleHeader = http.headers[key];
         }
     }
 
@@ -63,7 +79,7 @@ export default {
                 );
                 return localeContexts.map(plugin => ({
                     context: plugin.context.name,
-                    locale: self.getCurrentLocale(plugin.context.name)
+                    locale: self.getCurrentLocale(plugin.context.name).code
                 }));
             },
             getCurrentLocale(localeContext = "default") {

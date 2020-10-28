@@ -17,17 +17,11 @@ describe("getI18NInformation Test", () => {
                         currentLocales: [
                             {
                                 context: "default",
-                                locale: {
-                                    code: "hr-HR",
-                                    default: true
-                                }
+                                locale: "hr-HR"
                             },
                             {
                                 context: "content",
-                                locale: {
-                                    code: "hr-HR",
-                                    default: true
-                                }
+                                locale: "hr-HR"
                             }
                         ],
                         defaultLocale: {
@@ -66,17 +60,11 @@ describe("getI18NInformation Test", () => {
                         currentLocales: [
                             {
                                 context: "default",
-                                locale: {
-                                    code: "en-GB",
-                                    default: false
-                                }
+                                locale: "en-GB"
                             },
                             {
                                 context: "content",
-                                locale: {
-                                    code: "en-GB",
-                                    default: false
-                                }
+                                locale: "en-GB"
                             }
                         ]
                     }
@@ -84,11 +72,11 @@ describe("getI18NInformation Test", () => {
             }
         });
 
+        // We are also testing "not-all-lower-case" scenario.
         [response] = await getI18NInformation(null, {
             headers: {
-                "accept-language": "en-GB,en;q=0.9,hr-HR;q=0.8,hr;q=0.7,en-US;q=0.6",
-                "x-i18n-locale-default": "en-US",
-                "x-i18n-locale-content": "en-GB",
+                "Accept-Language": "en-GB,en;q=0.9,hr-HR;q=0.8,hr;q=0.7,en-US;q=0.6",
+                "X-I18N-LOCALE": "default:en-US;content:en-GB"
             }
         });
 
@@ -99,17 +87,11 @@ describe("getI18NInformation Test", () => {
                         currentLocales: [
                             {
                                 context: "default",
-                                locale: {
-                                    code: "en-US",
-                                    default: false
-                                }
+                                locale: "en-US"
                             },
                             {
                                 context: "content",
-                                locale: {
-                                    code: "en-GB",
-                                    default: false
-                                }
+                                locale: "en-GB"
                             }
                         ]
                     }
@@ -120,8 +102,7 @@ describe("getI18NInformation Test", () => {
         [response] = await getI18NInformation(null, {
             headers: {
                 "accept-language": "en-GB,en;q=0.9,hr-HR;q=0.8,hr;q=0.7,en-US;q=0.6",
-                "x-i18n-locale-default": "it-IT",
-                "x-i18n-locale-content": "ru",
+                "x-i18n-locale": "default:it-IT;content:ru"
             }
         });
 
@@ -132,17 +113,11 @@ describe("getI18NInformation Test", () => {
                         currentLocales: [
                             {
                                 context: "default",
-                                locale: {
-                                    code: "hr-HR",
-                                    default: true
-                                }
+                                locale: "hr-HR"
                             },
                             {
                                 context: "content",
-                                locale: {
-                                    code: "hr-HR",
-                                    default: true
-                                }
+                                locale: "hr-HR"
                             }
                         ]
                     }

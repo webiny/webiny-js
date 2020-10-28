@@ -69,10 +69,7 @@ const GET_I18N_INFORMATION = /* GraphQL */ `
             getI18NInformation {
                 currentLocales {
                     context
-                    locale {
-                        default
-                        code
-                    }
+                    locale
                 }
                 locales {
                     default

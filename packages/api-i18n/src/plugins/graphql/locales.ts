@@ -45,7 +45,7 @@ export default {
         
         type I18NInformationCurrentLocale {
             context: String
-            locale: I18NInformationLocale
+            locale: String
         }
 
         type I18NInformationResponse {

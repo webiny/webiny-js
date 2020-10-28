@@ -17,7 +17,7 @@ export type HandlerI18NContextObject = {
     defaultLocale?: string;
     acceptLanguage?: string;
     getCurrentLocale: (localeContext?: string) => I18NLocale;
-    getCurrentLocales: () => { context: string; locale: I18NLocale }[];
+    getCurrentLocales: () => { context: string; locale: string }[];
     getDefaultLocale: () => I18NLocale;
     getLocales: () => I18NLocale[];
 };
