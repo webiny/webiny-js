@@ -1,10 +1,12 @@
-import platform from "platform";
 import React from "react";
-import { dispatch } from "@webiny/app-page-builder/editor/redux";
-import { ActionCreators } from "redux-undo";
+import platform from "platform";
+import Action from "../Action";
+import {
+    connectedRedo,
+    connectedUndo
+} from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { ReactComponent as UndoIcon } from "@webiny/app-page-builder/editor/assets/icons/undo-icon.svg";
 import { ReactComponent as RedoIcon } from "@webiny/app-page-builder/editor/assets/icons/redo-icon.svg";
-import Action from "../Action";
 import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
 
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
@@ -16,7 +18,7 @@ export const undo: PbEditorToolbarBottomPlugin = {
         return (
             <Action
                 tooltip={`Undo (${metaKey}+Z)`}
-                onClick={() => dispatch(ActionCreators.undo())}
+                onClick={() => connectedUndo()}
                 icon={<UndoIcon />}
             />
         );
@@ -30,7 +32,7 @@ export const redo: PbEditorToolbarBottomPlugin = {
         return (
             <Action
                 tooltip={`Redo (${metaKey}+SHIFT+Z)`}
-                onClick={() => dispatch(ActionCreators.redo())}
+                onClick={() => connectedRedo()}
                 icon={<RedoIcon />}
             />
         );

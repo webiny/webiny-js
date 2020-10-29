@@ -1,11 +1,8 @@
 import React from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { DeleteElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    activeElementIdSelector,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import { getPlugins } from "@webiny/plugins";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 
@@ -14,8 +11,11 @@ type DeleteActionPropsType = {
 };
 const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
-    const elementId = useRecoilValue(activeElementIdSelector);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element = useRecoilValue(activeElementWithChildrenSelector);
+
+    if (!element) {
+        return null;
+    }
 
     const onClick = () => {
         eventActionHandler.trigger(
@@ -25,9 +25,9 @@ const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children
         );
     };
 
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
-        pl => pl.elementType === element.type
-    );
+    const plugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(pl => pl.elementType === element.type);
     if (!plugin) {
         return null;
     }

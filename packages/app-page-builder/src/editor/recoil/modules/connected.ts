@@ -80,26 +80,40 @@ class ConnectedStore {
 
         this._helpers.clear();
         const { startBatch, endBatch } = batching.apply(context);
+        const undoHook = useUndo.apply(context);
+        const redoHook = useRedo.apply(context);
         this._helpers.set("startBatch", startBatch);
         this._helpers.set("endBatch", endBatch);
-        this._helpers.set("undo", useUndo.apply(context));
-        this._helpers.set("redo", useRedo.apply(context));
+        this._helpers.set("undo", undoHook);
+        this._helpers.set("redo", redoHook);
     }
 
     public startBatch(): void {
-        this._helpers.get("startBatch");
+        this.runHelper("startBatch");
     }
 
     public endBatch(): void {
-        this._helpers.get("endBatch");
+        this.runHelper("endBatch");
     }
 
     public undo(): void {
-        this._helpers.get("undo");
+        this.runHelper("undo");
     }
 
     public redo(): void {
-        this._helpers.get("redo");
+        this.runHelper("redo");
+    }
+
+    private runHelper(name: HelpersType): void {
+        const helper = this._helpers.get(name);
+        if (!helper) {
+            throw new Error(`There is no helper "${name}".`);
+        } else if (typeof helper !== "function") {
+            throw new Error(
+                `Helper "${name}" is not a function, its a type of "${typeof helper}".`
+            );
+        }
+        helper();
     }
 
     private getStoreValues(): IterableIterator<ConnectedStoreType> {

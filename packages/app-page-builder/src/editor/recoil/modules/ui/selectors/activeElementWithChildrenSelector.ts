@@ -3,12 +3,12 @@ import { connectedReadSelector } from "@webiny/app-page-builder/editor/recoil/mo
 import { activeElementIdSelector } from "./activeElementIdSelector";
 import { PbElement } from "@webiny/app-page-builder/types";
 
-export const activeElementWithChildrenSelector = connectedReadSelector<PbElement>({
+export const activeElementWithChildrenSelector = connectedReadSelector<PbElement | undefined>({
     key: "activeElementWithChildrenSelector",
     get: ({ get }) => {
         const id = get(activeElementIdSelector);
         if (!id) {
-            return;
+            return undefined;
         }
         return get(elementWithChildrenByIdSelector(id));
     }
