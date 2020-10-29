@@ -127,6 +127,13 @@ export default [
                     error: FileError
                 }
 
+                enum ListFilesSort {
+                    CREATED_ON_ASC
+                    CREATED_ON_DESC
+                    SIZE_ASC
+                    SIZE_DESC
+                }
+
                 type FilesQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -138,6 +145,7 @@ export default [
                         tags: [String]
                         ids: [ID]
                         search: String
+                        sort: ListFilesSort
                     ): FileListResponse
 
                     listTags: [String]
