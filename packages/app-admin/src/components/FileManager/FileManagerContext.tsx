@@ -1,5 +1,12 @@
 import React from "react";
 
+enum ListFilesSort {
+    CREATED_ON_ASC,
+    CREATED_ON_DESC,
+    SIZE_ASC,
+    SIZE_DESC
+}
+
 function init({ accept }) {
     return {
         showingFileDetails: null,
@@ -8,7 +15,7 @@ function init({ accept }) {
         queryParams: {
             types: accept,
             limit: 50,
-            sort: { createdOn: -1 }
+            sort: ListFilesSort.CREATED_ON_DESC
         }
     };
 }
@@ -32,7 +39,7 @@ function fileManagerReducer(state, action) {
                 ...action.queryParams,
                 types: state.queryParams.types,
                 limit: 40,
-                sort: { createdOn: -1 }
+                sort: ListFilesSort.CREATED_ON_DESC
             };
             break;
         }
