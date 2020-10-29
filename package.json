@@ -116,6 +116,8 @@
     "fsevents": "^2.0.7"
   },
   "scripts": {
+    "awp": "yarn add-webiny-package",
+    "add-webiny-package": "node scripts/addWebinyPackage.js",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",

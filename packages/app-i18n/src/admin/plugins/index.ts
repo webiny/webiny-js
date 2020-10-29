@@ -3,7 +3,6 @@ import { AdminGlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
 import routes from "./routes";
 import menus from "./menus";
 import richTextEditor from "./richTextEditor";
-import localeSelector from "./localeSelector";
 import install from "./install";
 import permissionRenderer from "./permissionRenderer";
 import apolloLink from "./apolloLink";
@@ -26,7 +25,6 @@ const globalSearchHotkey: AdminGlobalSearchPreventHotkeyPlugin = {
 export default () => [
     routes,
     menus,
-    localeSelector,
     permissionRenderer,
     richTextEditor,
     i18nSitePlugins(),
