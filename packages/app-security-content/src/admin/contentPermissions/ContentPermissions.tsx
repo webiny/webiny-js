@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
-import { gridNoPaddingClass } from "@webiny/app-security-content-user-management/components/permission";
 import { Form } from "@webiny/form";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
@@ -52,7 +51,7 @@ export const ContentPermissions = ({ securityGroup, value, onChange }) => {
         <Form data={formData} onChange={onFormChange}>
             {({ data, Bind }) => (
                 <Fragment>
-                    <Grid className={gridNoPaddingClass}>
+                    <Grid style={{ padding: "0px !important" }}>
                         <Cell span={12}>
                             <Bind name={"level"}>
                                 <RadioGroup label={t`Content can be accessed on:`}>
