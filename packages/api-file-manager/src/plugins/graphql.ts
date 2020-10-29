@@ -24,7 +24,6 @@ export default [
         schema: {
             typeDefs: gql`
                 input FileInput {
-                    id: ID
                     key: String
                     name: String
                     size: Int
@@ -189,8 +188,8 @@ export default [
                         return file.id || file.SK;
                     },
                     async src(file, args, context) {
-                        const settings = context.filesSettings.get(SETTINGS_KEY);
-                        return settings.srcPrefix + file.key;
+                        const settings = await context.filesSettings.get(SETTINGS_KEY);
+                        return settings?.srcPrefix + file.key;
                     }
                 },
                 Query: {
