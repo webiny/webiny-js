@@ -5,8 +5,7 @@
 		"build": "webiny run build"
 	},
 	"dependencies": {
-		"@webiny/handler": "^4.13.0",
-		"@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
-		"@webiny/project-utils": "^4.13.0"
+		"@webiny/handler-aws": "^4.13.0",
+		"@webiny/handler-aws-documentdb-proxy": "^4.13.0"
 	}
 }

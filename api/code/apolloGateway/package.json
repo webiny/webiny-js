@@ -1,12 +1,11 @@
 {
-	"name": "api-apollo-gateway",
-	"version": "0.1.0",
-	"scripts": {
-		"build": "webiny run build"
-	},
-	"dependencies": {
-		"@webiny/handler": "^4.13.0",
-		"@webiny/handler-apollo-gateway": "^4.13.0",
-		"@webiny/project-utils": "^4.13.0"
-	}
+  "name": "api-apollo-gateway",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler-aws": "^4.13.0",
+    "@webiny/handler-apollo-gateway": "^4.13.0"
+  }
 }
