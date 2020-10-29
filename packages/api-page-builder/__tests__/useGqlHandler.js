@@ -3,6 +3,8 @@ import apolloServerPlugins from "@webiny/handler-apollo-server";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
+import i18nContext from "@webiny/api-i18n/plugins/context";
+import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
@@ -31,6 +33,8 @@ export default ({ permissions, identity } = {}) => {
         apolloServerPlugins(),
         securityPlugins(),
         pageBuilderPlugins(),
+        i18nContext,
+        mockLocalesPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",

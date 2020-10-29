@@ -38,7 +38,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "pb.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
 });
 
@@ -57,7 +57,11 @@ describe("Categories Security Test", () => {
             [[], identityA],
             [[{ name: "pb.category", rwd: "wd" }], identityA],
             [[{ name: "pb.category", rwd: "d" }], identityA],
-            [[{ name: "pb.category", rwd: "w" }], identityA]
+            [[{ name: "pb.category", rwd: "w" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -68,11 +72,15 @@ describe("Categories Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "pb.category" }], identityA],
-            [[{ name: "pb.category", rwd: "r" }], identityA],
-            [[{ name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "pb.category", rwd: "rwd" }], identityA],
-            [[{ name: "pb.*" }], identityA]
+            [
+                [{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.category" }],
+                identityA
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.*" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.category" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -137,7 +145,7 @@ describe("Categories Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "pb.category", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.category", own: true }],
             identity: identityA
         });
 
@@ -177,7 +185,7 @@ describe("Categories Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "pb.category", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.category", own: true }],
             identity: identityB
         });
 
@@ -222,7 +230,11 @@ describe("Categories Security Test", () => {
             [[], null],
             [[], identityA],
             [[{ name: "pb.category", own: false, rwd: "r" }], identityA],
-            [[{ name: "pb.category", own: false, rwd: "rd" }], identityA]
+            [[{ name: "pb.category", own: false, rwd: "rd" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -234,11 +246,12 @@ describe("Categories Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "pb.category" }], identityA],
-            [[{ name: "pb.category", own: true }], identityA],
-            [[{ name: "pb.category", rwd: "w" }], identityA],
-            [[{ name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "pb.category", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.category" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -271,7 +284,11 @@ describe("Categories Security Test", () => {
             [[], identityA],
             [[{ name: "pb.category", rwd: "r" }], identityA],
             [[{ name: "pb.category", rwd: "rd" }], identityA],
-            [[{ name: "pb.category", own: true }], identityB]
+            [[{ name: "pb.category", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -282,11 +299,12 @@ describe("Categories Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.category" }], identityA],
-            [[{ name: "pb.category", own: true }], identityA],
-            [[{ name: "pb.category", rwd: "w" }], identityA],
-            [[{ name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "pb.category", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.category" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -315,9 +333,13 @@ describe("Categories Security Test", () => {
         let insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.category", rwd: "r" }], identityA],
-            [[{ name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "pb.category", own: true }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -328,10 +350,18 @@ describe("Categories Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.category" }], identityA],
-            [[{ name: "pb.category", own: true }], identityA],
-            [[{ name: "pb.category", rwd: "wd" }], identityA],
-            [[{ name: "pb.category", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.category" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -365,9 +395,13 @@ describe("Categories Security Test", () => {
         let insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.category", rwd: "w" }], identityA],
-            [[{ name: "pb.category", rwd: "wd" }], identityA],
-            [[{ name: "pb.category", own: true }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -378,11 +412,19 @@ describe("Categories Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.category" }], identityA],
-            [[{ name: "pb.category", own: true }], identityA],
-            [[{ name: "pb.category", rwd: "r" }], identityA],
-            [[{ name: "pb.category", rwd: "rw" }], identityA],
-            [[{ name: "pb.category", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.category" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {

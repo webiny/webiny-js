@@ -1,5 +1,6 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { Response, NotFoundResponse } from "@webiny/graphql";
+import { hasContentLocalePermission } from "@webiny/api-security-content";
+import { pipe, Response, NotFoundResponse } from "@webiny/graphql";
 
 const hasRwd = ({ pbCategoryPermission, rwd }) => {
     if (typeof pbCategoryPermission.rwd !== "string") {
@@ -62,7 +63,10 @@ export default {
     `,
     resolvers: {
         PbQuery: {
-            getCategory: hasPermission("pb.category")(async (_, args, context) => {
+            getCategory: pipe(
+                pipe(hasPermission("pb.category"), hasContentLocalePermission()),
+                hasContentLocalePermission()
+            )(async (_, args, context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
@@ -85,7 +89,10 @@ export default {
 
                 return new Response(category);
             }),
-            listCategories: hasPermission("pb.category")(async (_, args, context) => {
+            listCategories: pipe(
+                hasPermission("pb.category"),
+                hasContentLocalePermission()
+            )(async (_, args, context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
@@ -106,7 +113,10 @@ export default {
             })
         },
         PbMutation: {
-            createCategory: hasPermission("pb.category")(async (_, args, context) => {
+            createCategory: pipe(
+                hasPermission("pb.category"),
+                hasContentLocalePermission()
+            )(async (_, args, context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
@@ -117,7 +127,9 @@ export default {
                 const { data } = args;
 
                 if (await categories.get(data.slug)) {
-                    return new NotFoundResponse(`Category with slug "${data.slug}" already exists.`);
+                    return new NotFoundResponse(
+                        `Category with slug "${data.slug}" already exists.`
+                    );
                 }
 
                 const identity = context.security.getIdentity();
@@ -135,7 +147,10 @@ export default {
 
                 return new Response(newData);
             }),
-            updateCategory: hasPermission("pb.category")(async (_, args, context) => {
+            updateCategory: pipe(
+                hasPermission("pb.category"),
+                hasContentLocalePermission()
+            )(async (_, args, context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
@@ -163,7 +178,10 @@ export default {
                 category = await categories.get(slug);
                 return new Response(category);
             }),
-            deleteCategory: hasPermission("pb.category")(async (_, args, context) => {
+            deleteCategory: pipe(
+                hasPermission("pb.category"),
+                hasContentLocalePermission()
+            )(async (_, args, context) => {
                 // If permission has "rwd" property set, but "d" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "d" })) {

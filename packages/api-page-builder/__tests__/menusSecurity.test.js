@@ -38,7 +38,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "pb.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
 });
 
@@ -57,7 +57,11 @@ describe("Menus Security Test", () => {
             [[], identityA],
             [[{ name: "pb.menu", rwd: "wd" }], identityA],
             [[{ name: "pb.menu", rwd: "d" }], identityA],
-            [[{ name: "pb.menu", rwd: "w" }], identityA]
+            [[{ name: "pb.menu", rwd: "w" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -68,11 +72,12 @@ describe("Menus Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "pb.menu" }], identityA],
-            [[{ name: "pb.menu", rwd: "r" }], identityA],
-            [[{ name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "pb.*" }], identityA]
+            [[{ name: "content.i18n" }, { name: "content.i18n" }, { name: "pb.menu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.*" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -145,7 +150,7 @@ describe("Menus Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "pb.menu", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.menu", own: true }],
             identity: identityA
         });
 
@@ -189,7 +194,7 @@ describe("Menus Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "pb.menu", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "pb.menu", own: true }],
             identity: identityB
         });
 
@@ -238,7 +243,11 @@ describe("Menus Security Test", () => {
             [[], null],
             [[], identityA],
             [[{ name: "pb.menu", own: false, rwd: "r" }], identityA],
-            [[{ name: "pb.menu", own: false, rwd: "rd" }], identityA]
+            [[{ name: "pb.menu", own: false, rwd: "rd" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -250,11 +259,12 @@ describe("Menus Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "pb.menu" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityA],
-            [[{ name: "pb.menu", rwd: "w" }], identityA],
-            [[{ name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "pb.menu", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -287,7 +297,11 @@ describe("Menus Security Test", () => {
             [[], identityA],
             [[{ name: "pb.menu", rwd: "r" }], identityA],
             [[{ name: "pb.menu", rwd: "rd" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityB]
+            [[{ name: "pb.menu", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -298,11 +312,12 @@ describe("Menus Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.menu" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityA],
-            [[{ name: "pb.menu", rwd: "w" }], identityA],
-            [[{ name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "pb.menu", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -331,9 +346,13 @@ describe("Menus Security Test", () => {
         let insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.menu", rwd: "r" }], identityA],
-            [[{ name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -344,10 +363,11 @@ describe("Menus Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.menu" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityA],
-            [[{ name: "pb.menu", rwd: "wd" }], identityA],
-            [[{ name: "pb.menu", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -381,9 +401,13 @@ describe("Menus Security Test", () => {
         let insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "pb.menu", rwd: "w" }], identityA],
-            [[{ name: "pb.menu", rwd: "wd" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -394,11 +418,12 @@ describe("Menus Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "pb.menu" }], identityA],
-            [[{ name: "pb.menu", own: true }], identityA],
-            [[{ name: "pb.menu", rwd: "r" }], identityA],
-            [[{ name: "pb.menu", rwd: "rw" }], identityA],
-            [[{ name: "pb.menu", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
