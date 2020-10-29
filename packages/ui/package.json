@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@editorjs/editorjs": "^2.19.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@rmwc/base": "^5.6.0",
