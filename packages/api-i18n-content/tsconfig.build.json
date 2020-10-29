@@ -5,7 +5,7 @@
     "node_modules",
     "./dist",
     "../graphql",
-    "../api-security-content",
+    "../api-security",
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -14,6 +14,6 @@
   },
   "references": [
     { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-security-content/tsconfig.build.json" }
+    { "path": "../api-security/tsconfig.build.json" }
   ]
 }

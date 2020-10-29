@@ -1,16 +1,12 @@
 {
-  "name": "@webiny/app-security-content",
+  "name": "@webiny/app-i18n-content",
   "version": "4.13.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
+  "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "^4.13.0",

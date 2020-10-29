@@ -1,6 +1,6 @@
-# @webiny/app-security-content
-[![](https://img.shields.io/npm/dw/@webiny/app-security-content.svg)](https://www.npmjs.com/package/@webiny/app-security-content) 
-[![](https://img.shields.io/npm/v/@webiny/app-security-content.svg)](https://www.npmjs.com/package/@webiny/app-security-content)
+# @webiny/app-i18n-content
+[![](https://img.shields.io/npm/dw/@webiny/app-i18n-content.svg)](https://www.npmjs.com/package/@webiny/app-i18n-content) 
+[![](https://img.shields.io/npm/v/@webiny/app-i18n-content.svg)](https://www.npmjs.com/package/@webiny/app-i18n-content)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -14,12 +14,12 @@ Use together with [@webiny/api-security](../api-security) package.
 
 ## Install
 ```
-npm install --save @webiny/app-security-content
+npm install --save @webiny/app-i18n-content
 ```
 
 Or if you prefer yarn: 
 ```
-yarn add @webiny/app-security-content
+yarn add @webiny/app-i18n-content
 ```
 
 ## Setup
@@ -29,7 +29,7 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 #### Admin
 ```
 import { registerPlugins } from "@webiny/plugins";
-import securityPlugins from "@webiny/app-security-content/admin/plugins";
+import securityPlugins from "@webiny/app-i18n-content/admin/plugins";
 
 registerPlugins(securityPlugins);
 ```
