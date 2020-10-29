@@ -88,7 +88,7 @@ Fortunately, our CLI is designed to be pluginable, so if you want to use other w
 
 #### Components
 
-To see what components we use to deploy infrastructure, look at the packages starting with `servelress-*` in `<webiny-js>/packages` folder.
+To see what components we use to deploy infrastructure, look at the packages starting with `serverless-*` in `<webiny-js>/packages` folder.
 
 Ideally, services/apps should only be deployed using atomic cloud resources to make it easy to create different deployment plugins. By `atomic resources` we mean things like `bucket`, `function`, `cdn`, etc. At this point we still have some complex components like `serverless-files`, but we'll hopefully get rid of those in the future.
 
