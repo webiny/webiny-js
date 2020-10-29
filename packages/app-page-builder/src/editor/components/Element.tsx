@@ -24,8 +24,7 @@ import {
 } from "./Element/ElementStyled";
 
 export type ElementPropsType = {
-    id?: string;
-    element?: PbElement;
+    id: string;
     className?: string;
 };
 
@@ -40,12 +39,9 @@ const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
 
 const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     id: elementId,
-    element: targetElement,
     className = ""
 }) => {
-    const element = targetElement
-        ? targetElement
-        : ((useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement);
+    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
     const { isActive, isHighlighted } = getElementProps(uiAtomValue, element);
 

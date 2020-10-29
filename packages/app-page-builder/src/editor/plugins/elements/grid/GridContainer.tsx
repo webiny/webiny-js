@@ -54,7 +54,7 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = props => 
             {element.elements.map(child => {
                 return (
                     <CellContainer size={child.data.settings.size} key={`cell-${child.id}`}>
-                        <Element element={child} />
+                        <Element id={child.id} />
                     </CellContainer>
                 );
             })}
