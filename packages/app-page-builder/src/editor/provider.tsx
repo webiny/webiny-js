@@ -1,5 +1,6 @@
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
+    contentAtom,
     elementsAtom,
     pageAtom,
     pluginsAtom,
@@ -28,7 +29,8 @@ export const getGlobalState = () => ({
     ui: connectedAtomValue(uiAtom),
     plugins: connectedAtomValue(pluginsAtom),
     elements: connectedAtomValue(elementsAtom),
-    page: connectedAtomValue(pageAtom)
+    page: connectedAtomValue(pageAtom),
+    content: connectedAtomValue(contentAtom)
 });
 
 (window as any).getGlobalState = getGlobalState;

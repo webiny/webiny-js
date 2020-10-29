@@ -4,7 +4,7 @@ import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/
 import { PbElement } from "@webiny/app-page-builder/types";
 import lodashCloneDeep from "lodash/cloneDeep";
 import lodashMerge from "lodash/merge";
-import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { ContentAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import {
     extrapolateContentElementHelper,
     flattenElementsHelper,
@@ -21,22 +21,19 @@ const createElementWithoutElementsAsString = (element: PbElement): PbElement => 
         elements: []
     };
 };
-const cloneAndMergePageContentState = (page: PageAtomType, element: PbElement, merge: boolean) => {
-    const newElement = updateChildPathsHelper(createElementWithoutElementsAsString(element));
-    if (!merge) {
-        return {
-            ...(page.content || {}),
-            ...newElement
-        };
-    }
-    return lodashMerge(page.content, newElement);
-};
-
-const buildNewPageContentState = (
-    { content }: PageAtomType,
+const cloneAndMergeContentState = (
+    content: ContentAtomType,
     element: PbElement,
     merge: boolean
 ) => {
+    const newContent = updateChildPathsHelper(createElementWithoutElementsAsString(element));
+    if (!merge) {
+        return newContent;
+    }
+    return lodashMerge(content, newContent);
+};
+
+const buildNewPageContentState = (content: ContentAtomType, element: PbElement, merge: boolean) => {
     const newElement = updateChildPathsHelper(createElementWithoutElementsAsString(element));
     const existingElement = extrapolateContentElementHelper(content, element.path);
     if (merge) {
@@ -48,18 +45,11 @@ const buildNewPageContentState = (
     }
     return saveElementToContentHelper(content, element.path, newElement);
 };
-const createNewPageState = (page: PageAtomType, element: PbElement, merge: boolean) => {
+const createContentState = (content: ContentAtomType, element: PbElement, merge: boolean) => {
     if (element.type === "document") {
-        const content = cloneAndMergePageContentState(page, element, merge);
-        return {
-            ...page,
-            content
-        };
+        return cloneAndMergeContentState(content, element, merge);
     }
-    return {
-        ...page,
-        content: buildNewPageContentState(page, element, merge)
-    };
+    return buildNewPageContentState(content, element, merge);
 };
 
 export const updateElementAction: EventActionCallableType<UpdateElementActionArgsType> = (
@@ -67,15 +57,15 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
     args
 ) => {
     const { element, merge, history } = args;
-    const page = createNewPageState(lodashCloneDeep(state.page), element, merge);
+    const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];
     if (history === true) {
         actions.push(new SaveRevisionActionEvent());
     }
     return {
         state: {
-            page,
-            elements: flattenElementsHelper(lodashCloneDeep(page.content))
+            content,
+            elements: flattenElementsHelper(lodashCloneDeep(content))
         },
         actions
     };

@@ -54,7 +54,7 @@ class ConnectedStore {
             );
         }
         const cs = this._store.get(state.key);
-        if (!cs.value) {
+        if (cs.value === undefined) {
             throw new Error(
                 "Attempting to get a connected value, that has no value attached yet. Using RecoilRootWithStore?"
             );

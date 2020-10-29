@@ -2,11 +2,13 @@ import { SaveRevisionActionArgsType } from "@webiny/app-page-builder/editor/reco
 import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { setIsNotSavingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/setIsNotSavingMutation";
+import { PbElement } from "@webiny/app-page-builder/types";
 import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
 
-type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "url" | "settings" | "content"> & {
+type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "url" | "settings"> & {
     category: string;
+    content: PbElement;
 };
 
 let lastSavedRevisionData: any = {};
@@ -39,7 +41,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
         snippet: state.page.snippet,
         url: state.page.url,
         settings: state.page.settings,
-        content: state.page.content,
+        content: state.content,
         category: state.page.category.id
     };
     if (isDataEqualToLastSavedData(data)) {

@@ -1,5 +1,7 @@
 import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
 import {
+    contentAtom,
+    ContentAtomType,
     elementsAtom,
     ElementsAtomType,
     pageAtom,
@@ -23,6 +25,7 @@ type CallableStateType = {
     plugins?: PluginsAtomType;
     page?: PageAtomType;
     elements?: ElementsAtomType;
+    content?: ContentAtomType;
 };
 export type EventActionHandlerActionCallableResponseType = {
     state?: CallableStateType;
@@ -149,6 +152,9 @@ export class EventActionHandler {
         if (state.page) {
             updateConnectedValue(pageAtom, state.page);
         }
+        if (state.content) {
+            updateConnectedValue(contentAtom, state.content);
+        }
 
         connectedBatchEnd();
     }
@@ -159,6 +165,7 @@ export class EventActionHandler {
             page: connectedAtomValue(pageAtom),
             plugins: connectedAtomValue(pluginsAtom),
             ui: connectedAtomValue(uiAtom),
+            content: connectedAtomValue(contentAtom),
             ...state
         };
     }

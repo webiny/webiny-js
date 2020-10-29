@@ -1,7 +1,7 @@
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
 import { selectorFamily } from "recoil";
-import { contentSelector } from "../../page/selectors/contentSelector";
+import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { elementByIdSelector } from "./elementByIdSelector";
 import { PbElement } from "@webiny/app-page-builder/types";
 
@@ -36,7 +36,7 @@ export const getElementWithChildrenByPath = (
     state: PbState,
     path: string
 ): PbElement | undefined => {
-    const content = state.page.content;
+    const content = state.content;
     if (!content) {
         return undefined;
     }
@@ -44,7 +44,7 @@ export const getElementWithChildrenByPath = (
 };
 export const getElementWithChildrenById = (state: PbState, id: string): PbElement | undefined => {
     const element = state.elements[id];
-    const content = state.page.content;
+    const content = state.content;
     if (!element || !content) {
         return undefined;
     }

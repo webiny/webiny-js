@@ -1,13 +1,11 @@
-import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
-import lodashCloneDeep from "lodash/cloneDeep";
 import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
-import { elementsAtom, pageAtom, PageAtomType, uiAtom } from "../../recoil/modules";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { uiAtom } from "../../recoil/modules";
+import { useRecoilValue } from "recoil";
 import { useRedo, useUndo } from "recoil-undo";
 import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -49,10 +47,7 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
     }
 };
 
-type EditorPropsType = {
-    page: PageAtomType;
-};
-export const Editor: React.FunctionComponent<EditorPropsType> = ({ page }) => {
+export const Editor: React.FunctionComponent = () => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing, slateFocused } = useRecoilValue(uiAtom);
@@ -60,17 +55,6 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page }) => {
     const redo = useRedo();
 
     const registeredPlugins = React.useRef<PluginRegistryType>();
-
-    const setElementsAtomValue = useSetRecoilState(elementsAtom);
-    const setPageAtomValue = useSetRecoilState(pageAtom);
-
-    useEffect(() => {
-        if (!page) {
-            return;
-        }
-        setPageAtomValue(page);
-        setElementsAtomValue(flattenElementsHelper(lodashCloneDeep(page.content)));
-    }, [page]);
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {

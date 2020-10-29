@@ -1,5 +1,4 @@
 import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
-import { PbElement } from "@webiny/app-page-builder/types";
 
 type PageCategoryType = {
     id: string;
@@ -11,7 +10,6 @@ export type PageAtomType = {
     id?: string;
     title?: string;
     url?: string;
-    content?: PbElement;
     settings?: {
         general?: {
             layout?: string;
@@ -19,7 +17,6 @@ export type PageAtomType = {
     };
     parent?: string;
     version: number;
-    elements: PbElement[];
     locked: boolean;
     published: boolean;
     isHomePage: boolean;
@@ -32,7 +29,6 @@ export type PageAtomType = {
 export const pageAtom = connectedAtom<PageAtomType>({
     key: "pageAtom",
     default: {
-        elements: [],
         locked: false,
         version: 1,
         published: false,

@@ -4,7 +4,7 @@ import {
     DeactivatePluginActionEvent,
     UpdatePageRevisionActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import { pageAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -25,7 +25,6 @@ import { useRecoilValue } from "recoil";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 import { useApolloClient } from "react-apollo";
-import lodashOmit from "lodash/omit";
 
 type PageSettingsPropsType = {
     [key: string]: any;
@@ -73,8 +72,6 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
         );
     }, []);
 
-    const page = lodashOmit<PageAtomType, "content">(pageAtomValue, ["content"]);
-
     const savePage = useCallback(
         pageValue => {
             eventActionHandler.trigger(
@@ -88,7 +85,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                 })
             );
         },
-        [page]
+        [pageAtomValue]
     );
 
     useEffect(() => {
@@ -123,7 +120,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                     </List>
                 </LeftPanel>
                 <RightPanel span={7}>
-                    <Form data={page} onSubmit={savePage}>
+                    <Form data={pageAtomValue} onSubmit={savePage}>
                         {({ Bind, submit, form, data }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title} />
