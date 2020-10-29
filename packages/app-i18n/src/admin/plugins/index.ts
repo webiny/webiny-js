@@ -27,7 +27,7 @@ export default () => [
     routes,
     menus,
     localeSelector,
-    permissionRenderer(),
+    permissionRenderer,
     richTextEditor,
     i18nSitePlugins(),
     globalSearchHotkey,
