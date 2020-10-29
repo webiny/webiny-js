@@ -38,6 +38,12 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
     try {
         await files.delete(id);
+        // Index file in "Elastic Search"
+        await context.elasticSearch.delete({
+            id,
+            index: "file-manager",
+            type: "_doc"
+        });
 
         return new Response(true);
     } catch (e) {

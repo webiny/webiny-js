@@ -31,6 +31,22 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
         const file = await context.files.create(fileData);
         data.push(file);
+        // Index file in "Elastic Search"
+        await context.elasticSearch.create({
+            id: file.id,
+            index: "file-manager",
+            type: "_doc",
+            body: {
+                id: file.id,
+                createdOn: file.createdOn,
+                key: file.key,
+                size: file.size,
+                type: file.type,
+                name: file.name,
+                tags: file.tags,
+                createdBy: file.createdBy
+            }
+        });
     }
 
     return new Response(data);
