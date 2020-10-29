@@ -7,10 +7,10 @@ import { css } from "emotion";
 import { ReactComponent as DoneIcon } from "./../../assets/icons/done-24px.svg";
 import { ReactComponent as TranslateIcon } from "./../../assets/icons/round-translate-24px.svg";
 
-const menuDialog = css({
-    "&.mdc-menu": {
-        minWidth: 125
-    }
+const menuList = css({
+    width: 160,
+    right: -220,
+    left: "auto !important"
 });
 
 const buttonStyles = css({
@@ -25,7 +25,7 @@ const plugin: AdminHeaderRightPlugin = {
         const currentLocale = getCurrentLocale("content");
         return (
             <Menu
-                className={menuDialog}
+                className={menuList}
                 handle={
                     <ButtonPrimary className={buttonStyles} flat>
                         <ButtonIcon icon={<TranslateIcon />} />
@@ -35,8 +35,17 @@ const plugin: AdminHeaderRightPlugin = {
             >
                 {getLocales().map(locale => (
                     <MenuItem key={locale.code} onClick={() => setLocale(locale.code, "content")}>
+                        <span style={{ minWidth: 35 }}>
+                            {currentLocale === locale.code && (
+                                <ButtonIcon
+                                    icon={
+                                        <DoneIcon style={{ color: "var(--mdc-theme-primary)" }} />
+                                    }
+                                />
+                            )}
+                        </span>
+
                         {locale.code}
-                        {currentLocale === locale.code && <ButtonIcon icon={<DoneIcon />} />}
                     </MenuItem>
                 ))}
             </Menu>
