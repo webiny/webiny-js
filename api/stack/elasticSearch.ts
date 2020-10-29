@@ -1,26 +1,12 @@
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
-
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
-
     constructor() {
         const domainName = "webiny-js";
-
-        const dependsOn = aws.iam
-            .getRole({ name: "AWSServiceRoleForAmazonElasticsearchService" })
-            .then(role => {
-                if (!role) {
-                    return [
-                        new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
-                            awsServiceName: "es.amazonaws.com"
-                        })
-                    ];
-                }
-
-                return [];
-            });
-
+        const esServiceLinkedRole = new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
+            awsServiceName: "es.amazonaws.com"
+        });
         this.domain = new aws.elasticsearch.Domain(
             domainName,
             {
@@ -47,9 +33,8 @@ class ElasticSearch {
                     Domain: "TestDomain"
                 }
             },
-            { dependsOn }
+            { dependsOn: esServiceLinkedRole }
         );
-
         new aws.elasticsearch.DomainPolicy(`${domainName}-policy`, {
             domainName: this.domain.domainName.apply(v => `${v}`),
             accessPolicies: {
@@ -68,5 +53,4 @@ class ElasticSearch {
         });
     }
 }
-
 export default ElasticSearch;
