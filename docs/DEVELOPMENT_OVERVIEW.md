@@ -12,7 +12,7 @@ First things first, we will fork and clone [webiny-js repo](https://github.com/w
 
   What happens when we run `yarn setup-repo`?
 
-The will set up the necessary environment config files and build packages to generate dist folders and TS declarations.
+This will set up the necessary environment config files and build packages to generate dist folders and TS declarations.
 
 This task is possible by `Lerna`, we will explain below the importance of using `Lerna`.
 
