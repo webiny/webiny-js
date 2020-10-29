@@ -28,6 +28,7 @@
     "@webiny/project-utils": "^4.13.0",
     "commodo-fields-object": "^1.0.6",
     "graphql-tag": "^2.10.1",
+    "ksuid": "^2.0.0",
     "mime": "^2.4.4",
     "sanitize-filename": "^1.6.3",
     "uniqid": "^5.0.3",
@@ -41,6 +42,8 @@
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.0.0",
+    "@elastic/elasticsearch": "^7.9.1",
+    "@elastic/elasticsearch-mock": "0.3.0",
     "@shelf/jest-dynamodb": "^1.7.0"
   },
   "optionalDependencies": {
