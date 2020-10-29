@@ -4,6 +4,17 @@ import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { withFields, string, number, setOnce, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
+import KSUID from "ksuid";
+
+const getJSON = instance => {
+    const output = {};
+    const fields = Object.keys(instance.getFields());
+    for (let i = 0; i < fields.length; i++) {
+        const field = fields[i];
+        output[field] = instance[field];
+    }
+    return output;
+};
 
 // A simple data model
 const File = pipe(
@@ -92,11 +103,11 @@ export default {
                 return files;
             },
             async create(data) {
-                const { id } = data;
                 const identity = context.security.getIdentity();
 
                 // Use `WithFields` model for data validation and setting default value.
                 const file = new File().populate(data);
+                file.id = KSUID.randomSync().string;
                 await file.validate();
                 // Add "createdBy"
                 file.createdBy = {
@@ -104,44 +115,36 @@ export default {
                     displayName: identity.displayName
                 };
 
-                return db.create({
+                await db.create({
                     data: {
                         PK: PK_FILE,
-                        SK: id,
-                        key: file.key,
-                        size: file.size,
-                        type: file.type,
-                        name: file.name,
-                        meta: file.meta,
-                        tags: file.tags,
-                        createdBy: file.createdBy,
-                        createdOn: file.createdOn,
-                        savedOn: file.savedOn
+                        SK: file.id,
+                        ...getJSON(file)
                     }
                 });
+
+                return file;
             },
-            async update(data) {
-                const { id } = data;
+            async update({ id, data, existingFile }) {
+                // Only update incoming props
+                const propsToUpdate = Object.keys(data);
+                propsToUpdate.forEach(key => {
+                    existingFile[key] = data[key];
+                });
 
                 // Use `WithFields` model for data validation and setting default value.
-                const file = new File().populate(data);
+                const file = new File().populate(existingFile);
                 await file.validate();
                 // Update meta data
                 file.savedOn = new Date().toISOString();
 
-                return db.update({
+                await db.update({
                     keys,
                     query: { PK: PK_FILE, SK: id },
-                    data: {
-                        key: file.key,
-                        size: file.size,
-                        type: file.type,
-                        name: file.name,
-                        meta: file.meta,
-                        tags: file.tags,
-                        savedOn: file.savedOn
-                    }
+                    data: getJSON(file)
                 });
+
+                return file;
             },
             delete(id: string) {
                 return db.delete({
