@@ -16,7 +16,17 @@ class FileManager {
         graphql: aws.lambda.Function;
         download: aws.lambda.Function;
     };
+    dynamoDbTable: aws.dynamodb.Table;
     constructor({ env }: { env: { graphql: { [key: string]: any } } }) {
+        this.dynamoDbTable = new aws.dynamodb.Table("FileManager", {
+            attributes: [
+                { name: "PK", type: "S" },
+                { name: "SK", type: "S" }
+            ],
+            billingMode: "PAY_PER_REQUEST",
+            hashKey: "PK",
+            rangeKey: "SK"
+        });
         this.bucket = new aws.s3.Bucket("fm-bucket", {
             forceDestroy: false,
             acl: "private",
@@ -42,7 +52,7 @@ class FileManager {
             }),
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
+                variables: { S3_BUCKET: this.bucket.id, DB_TABLE: this.dynamoDbTable.name }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -61,7 +71,7 @@ class FileManager {
                 ".": new pulumi.asset.FileArchive("./code/fileManager/manage/build")
             }),
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
+                variables: { S3_BUCKET: this.bucket.id, DB_TABLE: this.dynamoDbTable.name }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -80,7 +90,11 @@ class FileManager {
                 ".": new pulumi.asset.FileArchive("./code/fileManager/graphql/build")
             }),
             environment: {
-                variables: { ...env.graphql, S3_BUCKET: this.bucket.id }
+                variables: {
+                    ...env.graphql,
+                    S3_BUCKET: this.bucket.id,
+                    DB_TABLE: this.dynamoDbTable.name
+                }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -101,7 +115,8 @@ class FileManager {
             environment: {
                 variables: {
                     S3_BUCKET: this.bucket.id,
-                    IMAGE_TRANSFORMER_FUNCTION: transform.arn
+                    IMAGE_TRANSFORMER_FUNCTION: transform.arn,
+                    DB_TABLE: this.dynamoDbTable.name
                 }
             },
             vpcConfig: {
