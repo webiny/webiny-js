@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as PagesIcon } from "@webiny/app-page-builder/admin/assets/round-ballot-24px.svg";
+import { ReactComponent as PagesIcon } from "@webiny/app-page-builder/admin/assets/table_chart-24px.svg";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
 import { AdminMenuPlugin } from "@webiny/app-admin/types";

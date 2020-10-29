@@ -1,7 +1,7 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { ReactComponent as FileManagerIcon } from "@webiny/app-page-builder/admin/assets/round-ballot-24px.svg";
+import { ReactComponent as Icon } from "@webiny/app-page-builder/admin/assets/table_chart-24px.svg";
 import { PageBuilderPermissions } from "./PageBuilderPermissions";
 import { i18n } from "@webiny/app/i18n";
 
@@ -13,7 +13,7 @@ export default {
     render(props) {
         return (
             <AccordionItem
-                icon={<FileManagerIcon />}
+                icon={<Icon />}
                 title={t`Page Builder`}
                 description={t`Manage Page Builder app access permissions.`}
             >
