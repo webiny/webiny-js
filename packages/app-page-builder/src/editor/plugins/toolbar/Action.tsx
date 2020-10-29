@@ -1,10 +1,11 @@
 import React, { useCallback } from "react";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
-import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useRecoilValue } from "recoil";
 
 const activeStyle = css({
     ".mdc-icon-button__icon": {
@@ -12,21 +13,41 @@ const activeStyle = css({
     }
 });
 
-const Action = ({ icon, onClick, active, tooltip, togglePlugin, plugin }) => {
+const getButtonIcon = (icon: [string, string] | string, isActive: boolean): string => {
+    if (Array.isArray(icon)) {
+        return isActive ? icon[0] : icon[1];
+    }
+    return icon;
+};
+type ActionPropsType = {
+    icon: [string, string] | string;
+    onClick: () => any;
+    tooltip?: string;
+    plugin: string;
+};
+const Action: React.FunctionComponent<ActionPropsType> = ({ icon, onClick, tooltip, plugin }) => {
+    const handler = useEventActionHandler();
+    const isActive = useRecoilValue(isPluginActiveSelector(plugin));
+
+    const togglePlugin = useCallback(() => {
+        handler.trigger(
+            new TogglePluginActionEvent({
+                name: plugin
+            })
+        );
+    }, [plugin]);
+
     const clickHandler = useCallback(() => {
         if (typeof onClick === "function") {
             return onClick();
         }
-        togglePlugin({ name: plugin });
+        togglePlugin();
     }, [plugin]);
 
-    let btnIcon = icon;
-    if (Array.isArray(icon)) {
-        btnIcon = active ? icon[0] : icon[1];
-    }
+    const btnIcon = getButtonIcon(icon, isActive);
 
     const iconButton = (
-        <IconButton icon={btnIcon} onClick={clickHandler} className={active && activeStyle} />
+        <IconButton icon={btnIcon} onClick={clickHandler} className={isActive && activeStyle} />
     );
 
     if (tooltip) {
@@ -34,7 +55,7 @@ const Action = ({ icon, onClick, active, tooltip, togglePlugin, plugin }) => {
             <Tooltip
                 placement={"right"}
                 content={<span>{tooltip}</span>}
-                {...(active ? { visible: false } : {})}
+                {...(isActive ? { visible: false } : {})}
             >
                 {iconButton}
             </Tooltip>
@@ -44,9 +65,4 @@ const Action = ({ icon, onClick, active, tooltip, togglePlugin, plugin }) => {
     return iconButton;
 };
 
-export default connect<any, any, any>(
-    (state, props: any) => ({
-        active: isPluginActive(props.plugin)(state)
-    }),
-    { togglePlugin }
-)(React.memo(Action));
+export default React.memo(Action);

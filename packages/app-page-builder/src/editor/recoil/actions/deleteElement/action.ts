@@ -44,11 +44,8 @@ const runUpdateElementAction = (
     }) as EventActionHandlerActionCallableResponseType;
     const parentResult = updateParentElement({ ...state, ...result.state }, parent, child);
     return {
-        state: {
-            page: parentResult.state.page,
-            elements: parentResult.state.elements
-        },
-        actions: [].concat(result?.actions || []).concat(parentResult?.actions || [])
+        state: parentResult.state,
+        actions: (result?.actions || []).concat(parentResult?.actions || [])
     };
 };
 
@@ -59,20 +56,17 @@ export const deleteElementAction: EventActionCallableType<DeleteElementActionArg
     const { element } = args;
 
     const parent = getElementParentWithChildrenById(state, element.id);
-
     const newParent = removeElementHelper(parent, element.id);
-
     const result = runUpdateElementAction(state, newParent, element);
 
     return {
         state: {
+            ...result.state,
             ui: {
-                ...result.state.ui,
+                ...(result.state?.ui || state.ui),
                 highlightElement: undefined,
                 activeElement: undefined
-            },
-            page: result.state.page,
-            elements: result.state.elements
+            }
         },
         actions: result.actions
     };
