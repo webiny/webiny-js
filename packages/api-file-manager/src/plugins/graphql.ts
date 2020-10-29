@@ -184,9 +184,6 @@ export default [
                     __resolveReference(reference, context) {
                         return fileFetcher(context).findById(reference.id);
                     },
-                    id(file) {
-                        return file.id || file.SK;
-                    },
                     async src(file, args, context) {
                         const settings = await context.filesSettings.get(SETTINGS_KEY);
                         return settings?.srcPrefix + file.key;

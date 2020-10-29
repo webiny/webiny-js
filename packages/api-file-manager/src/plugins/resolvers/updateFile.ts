@@ -28,7 +28,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             }
         }
 
-        await files.update(data);
+        file = await files.update({ id, data, existingFile: file });
 
         file = await files.get(id);
 

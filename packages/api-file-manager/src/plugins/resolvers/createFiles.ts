@@ -27,18 +27,9 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
     const data = [];
     for (let i = 0; i < filesData.length; i++) {
-        const item = filesData[i];
-        let file = await context.files.get(item.id);
-        if (!file) {
-            file = {};
-        }
-        // Set fileData
-        const itemKeys = Object.keys(item);
-        itemKeys.forEach(key => {
-            file[key] = item[key];
-        });
+        const fileData = filesData[i];
 
-        await context.files.create(file);
+        const file = await context.files.create(fileData);
         data.push(file);
     }
 
