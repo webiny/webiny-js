@@ -9,38 +9,43 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-const createDefault = () => ({ name: "content-locales", level: "all", locales: [] });
-
 export const ContentPermissions = ({ securityGroup, value, onChange }) => {
     const { getLocales } = useI18N();
 
     const onFormChange = useCallback(
-        data => {
-            const newValue = Array.isArray(value) ? [...value] : [];
-            let permission = newValue.find(item => item.name === "content-locales");
-            if (!permission) {
-                newValue.push(createDefault());
-                permission = newValue[newValue.length - 1];
+        formData => {
+            let newValue = [];
+            if (Array.isArray(value)) {
+                // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
+                newValue = value.filter(item => !item.name.startsWith("content"));
             }
 
-            permission.locales = data.level === "locales" ? data.locales : [];
-            permission.level = data.level;
+            const permission = { name: "content.i18n", locales: undefined };
+            if (formData.level === "locales") {
+                permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
+            }
+            newValue.push(permission);
             onChange(newValue);
         },
         [securityGroup.id]
     );
 
     const formData = useMemo(() => {
+        const defaultData = { level: "all", locales: [] };
         if (!Array.isArray(value)) {
-            return createDefault();
+            return defaultData;
         }
 
-        const permission = value.find(item => item.name === "content-locales");
+        const permission = value.find(item => item.name === "content.i18n");
         if (!permission) {
-            return createDefault();
+            return defaultData;
         }
 
-        return permission;
+        if (Array.isArray(permission.locales)) {
+            return { level: "locales", locales: permission.locales };
+        }
+
+        return defaultData;
     }, [securityGroup.id]);
 
     return (
