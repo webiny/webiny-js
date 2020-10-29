@@ -5,6 +5,8 @@ import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Client } from "@elastic/elasticsearch";
+import Mock from "@elastic/elasticsearch-mock";
 // Graphql
 import {
     CREATE_FILE,
@@ -36,6 +38,45 @@ export default ({ permissions, identity }) => {
             })
         }),
         apolloServerPlugins(),
+        {
+            type: "context",
+            name: "context-elastic-search",
+            apply(context) {
+                const mock = new Mock();
+                const client = new Client({
+                    node: "http://localhost:9200",
+                    Connection: mock.getConnection()
+                });
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/file-manager/_doc/_search"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                mock.add(
+                    {
+                        method: "PUT",
+                        path: "/file-manager/_doc/:id/_create"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/file-manager/_doc/:id/_update"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                context.elasticSearch = client;
+            }
+        },
         securityPlugins(),
         {
             type: "security-authorization",
