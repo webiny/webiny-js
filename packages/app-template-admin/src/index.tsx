@@ -19,6 +19,7 @@ import cognito, { CognitoOptions } from "@webiny/app-plugin-security-cognito";
 import cognitoUserManagementPlugins from "@webiny/app-plugin-security-cognito/userManagement";
 import fileManagerPlugins from "@webiny/app-file-manager/admin";
 import userManagementPlugins from "@webiny/app-security-user-management/plugins";
+import contentSecurityPlugins from "@webiny/app-security-content/admin";
 
 // Webiny telemetry
 import { Telemetry } from "./telemetry/Telemetry";
@@ -124,6 +125,7 @@ export default createTemplate<AdminAppOptions>(opts => {
         fileManagerPlugins(),
         userManagementPlugins(),
         cognitoUserManagementPlugins(),
+        contentSecurityPlugins(),
         ...(opts.plugins || [])
     ];
 
