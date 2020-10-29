@@ -2,7 +2,6 @@ import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import filesPlugins from "@webiny/api-file-manager/plugins";
-import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 import securityPlugins from "@webiny/api-security/authenticator";
 import permissionsManager from "@webiny/api-security-permissions-manager/client";
 import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
@@ -40,6 +39,5 @@ export const handler = createHandler(
         userPoolId: process.env.COGNITO_USER_POOL_ID,
         identityType: "admin"
     }),
-    filesPlugins(),
-    filesResolvers()
+    filesPlugins()
 );

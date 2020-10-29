@@ -14,7 +14,6 @@
 		"@webiny/api-security-permissions-manager": "^4.13.0",
 		"@webiny/api-settings-manager": "^4.13.0",
 		"@webiny/api-file-manager": "^4.13.0",
-		"@webiny/api-plugin-files-resolvers-mongodb": "^4.13.0",
 		"@webiny/project-utils": "^4.13.0"
 	}
 }

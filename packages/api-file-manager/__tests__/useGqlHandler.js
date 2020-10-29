@@ -1,7 +1,6 @@
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-file-manager/plugins";
-import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -48,8 +47,7 @@ export default ({ permissions, identity }) => {
                 return identity || null;
             }
         },
-        filesPlugins(),
-        filesResolvers()
+        filesPlugins()
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
