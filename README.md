@@ -29,7 +29,7 @@ To get started with Webiny, simply [follow this link](https://docs.webiny.com) ð
 
 ## Webiny is the easiest way to adopt serverless!
 
-Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS).
+Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for the development of your next project in just a few moments. With the tools that come out of the box, you'll be able to immediately deploy your project to the cloud (for now only AWS).
 
 Our plugin-based approach to the whole system will make it easy for you to override, upgrade and tweak the system to fit your needs.
 
@@ -45,7 +45,7 @@ You can see all the currently available components in our [storybook](https://st
 
 We also provide a server-side render setup out of the box. It is also powered by Lambda!
 
-Our apps are also composed using plugins, and we're very happy to provide you with an easy-to-share mechanism of `app templates`. Out of the box Webiny provides several app templates to get you going. Following the same approach, you can easily create your own templates for your own projects and share them on `npm` for the community to use.
+Our apps are also composed using plugins, and we're very happy to provide you with an easy-to-share mechanism of `app templates`. Out of the box, Webiny provides several app templates to get you going. Following the same approach, you can easily create your own templates for your own projects and share them on `npm` for the community to use.
 
 ## Admin app
 
