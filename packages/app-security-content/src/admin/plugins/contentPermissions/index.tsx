@@ -14,7 +14,7 @@ export default {
         return (
             <AccordionItem
                 icon={<TranslateIcon />}
-                title={t`Content - Locales`}
+                title={t`Content`}
                 description={t`Per-locale content access permissions management.`}
             >
                 <ContentPermissions {...props} />

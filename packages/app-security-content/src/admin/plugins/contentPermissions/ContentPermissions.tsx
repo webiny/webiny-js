@@ -1,7 +1,7 @@
 import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
-import { gridNoPaddingClass } from "@webiny/app-security-user-management/components/permission";
+import { gridNoPaddingClass } from "@webiny/app-security-content-user-management/components/permission";
 import { Form } from "@webiny/form";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CheckboxGroup, Checkbox } from "@webiny/ui/Checkbox";
