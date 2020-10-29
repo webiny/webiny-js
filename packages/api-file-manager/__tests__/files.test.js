@@ -9,6 +9,20 @@ const identityA = new SecurityIdentity({
 });
 
 const LONG_STRING = "pneumonoultramicroscopicsilicovolcanoconiosispneumonoultramicroscopi";
+const fileAData = {
+    key: "/files/filenameA.png",
+    name: "filenameA.png",
+    size: 123456,
+    type: "image/png",
+    tags: ["sketch"]
+};
+const fileBData = {
+    key: "/files/filenameB.png",
+    name: "filenameB.png",
+    size: 123456,
+    type: "image/png",
+    tags: ["art"]
+};
 
 describe("Files CRUD test", () => {
     const { createFile, updateFile, createFiles, getFile, listFiles } = useGqlHandler({
@@ -17,33 +31,27 @@ describe("Files CRUD test", () => {
     });
 
     test("create, read, update and delete files", async () => {
-        const data = {
-            id: "1iHCWANdxpy3cu5ES7GzjVMoVMu",
-            key: "/files/filename.png",
-            name: "filename.png",
-            size: 123456,
-            type: "image/png",
-            tags: ["sketch"]
-        };
+        let fileAId, fileBId;
 
-        let [response] = await createFile({ data });
+        let [response] = await createFile({ data: fileAData });
         expect(response).toEqual({
             data: {
                 files: {
                     createFile: {
-                        data,
+                        data: { ...fileAData, id: response.data.files.createFile.data.id },
                         error: null
                     }
                 }
             }
         });
+        fileAId = response.data.files.createFile.data.id;
 
         // Let's update File tags with too long tag.
         [response] = await updateFile({
-            id: data.id,
+            id: fileAId,
             data: {
-                ...data,
-                tags: [...data.tags, LONG_STRING]
+                ...fileAData,
+                tags: [...fileAData.tags, LONG_STRING]
             }
         });
         expect(response).toEqual({
@@ -71,14 +79,29 @@ describe("Files CRUD test", () => {
 
         // Let's update File tags.
         [response] = await updateFile({
-            id: data.id,
-            data: { ...data, tags: [...data.tags, "design"] }
+            id: fileAId,
+            data: { tags: [...fileAData.tags, "design"] }
         });
         expect(response).toEqual({
             data: {
                 files: {
                     updateFile: {
-                        data: { ...data, tags: [...data.tags, "design"] },
+                        data: { ...fileAData, tags: [...fileAData.tags, "design"] },
+                        error: null
+                    }
+                }
+            }
+        });
+        // Only update "tags"
+        [response] = await updateFile({
+            id: fileAId,
+            data: { tags: ["sketch"] }
+        });
+        expect(response).toEqual({
+            data: {
+                files: {
+                    updateFile: {
+                        data: fileAData,
                         error: null
                     }
                 }
@@ -87,14 +110,15 @@ describe("Files CRUD test", () => {
 
         // Let's create multiple files
         [response] = await createFiles({
-            id: data.id,
-            data: [data]
+            data: [fileBData]
         });
+
+        fileBId = response.data.files.createFiles.data[0].id;
         expect(response).toEqual({
             data: {
                 files: {
                     createFiles: {
-                        data: [data],
+                        data: [{ ...fileBData, id: fileBId }],
                         error: null
                     }
                 }
@@ -103,13 +127,13 @@ describe("Files CRUD test", () => {
 
         // Let's get a file by ID
         [response] = await getFile({
-            id: data.id
+            id: fileAId
         });
         expect(response).toEqual({
             data: {
                 files: {
                     getFile: {
-                        data: data,
+                        data: fileAData,
                         error: null
                     }
                 }
@@ -122,7 +146,7 @@ describe("Files CRUD test", () => {
             data: {
                 files: {
                     listFiles: {
-                        data: [data],
+                        data: [fileAData, fileBData],
                         error: null
                     }
                 }

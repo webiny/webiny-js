@@ -1,5 +1,15 @@
 const DATA_FIELD = /* GraphQL */ `
     {
+        key
+        name
+        size
+        type
+        tags
+    }
+`;
+
+const DATA_FIELD_WITH_ID = /* GraphQL */ `
+    {
         id
         key
         name
@@ -21,7 +31,7 @@ export const CREATE_FILE = /* GraphQL */ `
     mutation CreateFile($data: FileInput!) {
         files {
             createFile(data: $data) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD_WITH_ID}
                 error ${ERROR_FIELD}
             }
         }
@@ -32,7 +42,7 @@ export const CREATE_FILES = /* GraphQL */ `
     mutation CreateFile($data: [FileInput]!) {
         files {
             createFiles(data: $data) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD_WITH_ID}
                 error ${ERROR_FIELD}
             }
         }
