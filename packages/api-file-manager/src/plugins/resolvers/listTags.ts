@@ -1,16 +1,19 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { FilesResolverListTagsPlugin } from "@webiny/api-file-manager/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const plugin = context.plugins.byName(
-        "files-resolver-list-tags"
-    ) as FilesResolverListTagsPlugin;
+    const response = await context.elasticSearch.search({
+        index: "file-manager",
+        body: {
+            size: 0,
+            aggs: {
+                listTags: {
+                    terms: { field: "tags.keyword" }
+                }
+            }
+        }
+    });
 
-    if (!plugin) {
-        throw Error(`Resolver plugin "files-resolver-list-tags" is not configured!`);
-    }
-
-    return await plugin.resolve({ context });
+    return response?.body?.aggregations?.listTags?.buckets.map(item => item.key);
 };
 
 export default resolver;
