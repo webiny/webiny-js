@@ -1,4 +1,4 @@
-import i18n from "./i18nContext";
+import i18nContext from "./context";
 import { ContextI18NGetLocales } from "@webiny/api-i18n/types";
 
 let localesCache;
@@ -11,7 +11,7 @@ export default (options: ServicePluginsOptions) => {
     }
 
     return [
-        i18n,
+        i18nContext,
         {
             name: "context-i18n-get-locales",
             type: "context-i18n-get-locales",
