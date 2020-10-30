@@ -4,14 +4,13 @@ import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSetting
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {
     // Start the download of initial Page Builder page / block images.
-    const filesSettings = context.filesSettings;
+    const { filesSettings } = context;
 
     try {
         let settings = await filesSettings.get(SETTINGS_KEY);
 
         if (!settings) {
-            await filesSettings.create();
-            settings = await filesSettings.get(SETTINGS_KEY);
+            settings = await filesSettings.create();
         }
 
         if (settings.installed) {
@@ -26,7 +25,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         }
         settings.installed = true;
 
-        await filesSettings.update(settings);
+        await filesSettings.update({ data: {}, existingSettings: settings });
         return new Response(true);
     } catch (e) {
         return new ErrorResponse({
@@ -38,7 +37,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 };
 
 export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
-    const filesSettings = context.filesSettings;
+    const { filesSettings } = context;
     const settings = await filesSettings.get(SETTINGS_KEY);
     return new Response(Boolean(settings?.installed));
 };
