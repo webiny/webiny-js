@@ -7,7 +7,6 @@ const emptyResolver = () => ({});
 
 export default {
     type: "graphql-schema",
-    name: "graphql-schema-page-builder",
     schema: {
         typeDefs: gql`
             extend type File @key(fields: "id") {
