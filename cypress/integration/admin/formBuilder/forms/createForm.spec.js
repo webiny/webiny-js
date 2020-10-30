@@ -14,9 +14,9 @@ context("Forms Creation", () => {
             .within(() => {
                 cy.findByPlaceholderText("Enter a name for your new form")
                     .type(newFormTitle)
-                    .findByText("+ Create");
+                    .findByText("+ Create")
+                    .click()
             })
-            .click()
             .wait(1000)
             .findByTestId("fb-editor-form-title")
             .click()
