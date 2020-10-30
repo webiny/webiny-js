@@ -52,7 +52,8 @@ const fileManager = new FileManager({
 const pageBuilder = new PageBuilder({
     bucket: fileManager.bucket,
     fileManagerFunction: fileManager.functions.graphql,
-    env: { graphql: graphqlServiceEnv }
+    env: { graphql: graphqlServiceEnv },
+    i18nLocalesFunction: i18n.functions.locales
 });
 
 const formBuilder = new FormBuilder({

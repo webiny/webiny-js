@@ -16,11 +16,13 @@ class PageBuilder {
     constructor({
         fileManagerFunction,
         bucket,
-        env
+        env,
+        i18nLocalesFunction
     }: {
         fileManagerFunction: aws.lambda.Function;
         bucket: aws.s3.Bucket;
         env: { graphql: { [key: string]: string } };
+        i18nLocalesFunction: aws.lambda.Function;
     }) {
         const pbInstallationZipPath = path.join(__dirname, "pbInstallation.zip");
         createInstallationZip(pbInstallationZipPath);
@@ -49,7 +51,6 @@ class PageBuilder {
             rangeKey: "SK"
         });
 
-
         this.functions = {
             graphql: new aws.lambda.Function("pb-graphql", {
                 runtime: "nodejs12.x",
@@ -64,7 +65,8 @@ class PageBuilder {
                     variables: {
                         ...env.graphql,
                         FILE_MANAGER_FUNCTION: fileManagerFunction.arn,
-                        DB_TABLE: this.dynamoDbTable.name
+                        DB_TABLE: this.dynamoDbTable.name,
+                        I18N_LOCALES_FUNCTION: i18nLocalesFunction.arn
                     }
                 },
                 vpcConfig: {
