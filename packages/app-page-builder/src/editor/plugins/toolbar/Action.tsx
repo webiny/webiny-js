@@ -13,23 +13,26 @@ const activeStyle = css({
     }
 });
 
-const getButtonIcon = (icon: [string, string] | string, isActive: boolean): string => {
+const getButtonIcon = (icon: Element | Element[], isActive: boolean): Element => {
     if (Array.isArray(icon)) {
         return isActive ? icon[0] : icon[1];
     }
     return icon;
 };
 type ActionPropsType = {
-    icon: [string, string] | string;
-    onClick: () => any;
+    icon: any;
+    onClick?: () => any;
     tooltip?: string;
-    plugin: string;
+    plugin?: string;
 };
 const Action: React.FunctionComponent<ActionPropsType> = ({ icon, onClick, tooltip, plugin }) => {
     const handler = useEventActionHandler();
     const isActive = useRecoilValue(isPluginActiveSelector(plugin));
 
     const togglePlugin = useCallback(() => {
+        if (!plugin) {
+            return;
+        }
         handler.trigger(
             new TogglePluginActionEvent({
                 name: plugin

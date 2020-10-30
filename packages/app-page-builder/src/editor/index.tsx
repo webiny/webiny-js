@@ -1,11 +1,11 @@
-import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
 import React, { useEffect } from "react";
 import lodashCloneDeep from "lodash/cloneDeep";
+import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
 import { ConnectedStoreComponent } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { Editor as EditorComponent } from "./components/Editor";
 import { EditorProvider } from "./provider";
 import { RecoilRoot, RecoilState, useSetRecoilState } from "recoil";
-import { RecoilUndoRoot } from "recoil-undo";
+import { RecoilUndoRoot, useRecoilHistory } from "recoil-undo";
 import {
     contentAtom,
     ContentAtomType,
@@ -22,6 +22,7 @@ type EditorRecoilUndoRoot = {
     page: PageAtomType;
 };
 const EditorRecoilUndoRoot: React.FunctionComponent<EditorRecoilUndoRoot> = props => {
+    const { startTrackingHistory, stopTrackingHistory } = useRecoilHistory();
     const { page, ...restOfProps } = props;
 
     const setPageAtomValue = useSetRecoilState(pageAtom);
@@ -35,11 +36,13 @@ const EditorRecoilUndoRoot: React.FunctionComponent<EditorRecoilUndoRoot> = prop
         };
         const contentAtomValue: ContentAtomType = (page as any).content;
         const elementsAtomValue = flattenElementsHelper(lodashCloneDeep(contentAtomValue));
+        stopTrackingHistory();
         setPageAtomValue(pageAtomValue);
         setContentAtomValue(contentAtomValue);
         setElementsAtomValue(elementsAtomValue);
+        startTrackingHistory();
     }, []);
-    return <RecoilUndoRoot {...restOfProps} />;
+    return <RecoilUndoRoot manualHistory={true} {...restOfProps} />;
 };
 export const Editor: React.FunctionComponent<EditorPropsType> = ({ page }) => {
     return (
