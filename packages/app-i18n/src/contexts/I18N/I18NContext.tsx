@@ -22,16 +22,19 @@ export const GET_I18N_INFORMATION = gql`
 export const I18NContext = React.createContext(null);
 const defaultState = { currentLocales: [], locales: [] };
 
+type CurrentLocale = {
+    context: string;
+    locale: string;
+};
+
 type I18NContextState = {
     locales: { code: string; default: boolean }[];
-    currentLocales: {
-        context: string;
-        locale: string;
-    }[];
+    currentLocales: CurrentLocale[];
 };
 
 export type I18NContextValue = {
     refetchLocales(variables?: Record<string, any>): Promise<QueryResult>;
+    updateLocaleStorage: (currentLocales: CurrentLocale[]) => void;
     state: I18NContextState;
     setState: typeof useState;
 };
@@ -41,7 +44,7 @@ export type I18NProviderProps = {
     loader?: React.ReactElement;
 };
 
-const updateLocaleStorage = (currentLocales) => {
+const updateLocaleStorage = currentLocales => {
     localStorage.setItem(
         "wby_i18n_locale",
         currentLocales.reduce(
@@ -49,7 +52,7 @@ const updateLocaleStorage = (currentLocales) => {
             ""
         )
     );
-}
+};
 
 export const I18NProvider = (props: I18NProviderProps) => {
     const { children, loader } = props;
@@ -73,7 +76,7 @@ export const I18NProvider = (props: I18NProviderProps) => {
                 });
             }
 
-            updateLocaleStorage(currentLocales)
+            updateLocaleStorage(currentLocales);
             setState({ locales, currentLocales });
         }
     });
