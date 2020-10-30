@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Features
+
+* show published version of webiny in admin app ([#1321](https://github.com/webiny/webiny-js/issues/1321)) ([439e642](https://github.com/webiny/webiny-js/commit/439e642af386b11b35ce570112ef011baf5cb698))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/project-utils

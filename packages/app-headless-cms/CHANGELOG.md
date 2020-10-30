@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Bug Fixes
+
+* content model validation message for name field ([#1303](https://github.com/webiny/webiny-js/issues/1303)) ([fe8bebc](https://github.com/webiny/webiny-js/commit/fe8bebcdece1b91e2ec3730b01e3ffbfb714058a))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
