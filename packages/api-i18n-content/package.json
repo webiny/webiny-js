@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/api-security",
+  "name": "@webiny/api-i18n-content",
   "version": "4.13.0",
   "main": "index.js",
   "repository": {
@@ -7,12 +7,14 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "author": "Webiny Ltd",
-  "description": "A small package that contains content-related security utilities.",
+  "description": "A small package that contains content-I18N-related security utilities.",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api-security": "^4.13.0",
-    "@webiny/graphql": "^4.13.0"
+    "@webiny/graphql": "^4.13.0",
+    "@webiny/handler": "^4.13.0",
+    "@webiny/api-i18n": "^4.13.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"
