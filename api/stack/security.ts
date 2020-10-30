@@ -11,7 +11,7 @@ class Security {
     };
     dynamoDbTable: aws.dynamodb.Table;
     constructor({ dbProxy, env }: { dbProxy: aws.lambda.Function; env: { [key: string]: any } }) {
-        this.dynamoDbTable = new aws.dynamodb.Table("SECURITY", {
+        this.dynamoDbTable = new aws.dynamodb.Table("Security", {
             attributes: [
                 { name: "PK", type: "S" },
                 { name: "SK", type: "S" },
