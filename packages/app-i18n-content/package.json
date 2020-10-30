@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/app": "^4.13.0",
-    "minimatch": "^3.0.4"
+    "minimatch": "^3.0.4",
+    "@webiny/app-i18n": "^4.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
