@@ -8,11 +8,7 @@
     "directory": "packages/api-page-builder"
   },
   "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
+  "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
@@ -40,7 +36,8 @@
     "mdbid": "^1.0.0",
     "request": "^2.88.0",
     "rimraf": "^2.6.2",
-    "zip-local": "^0.3.4"
+    "zip-local": "^0.3.4",
+    "@webiny/api-i18n-content": "^4.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

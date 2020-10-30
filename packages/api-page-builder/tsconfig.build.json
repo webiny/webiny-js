@@ -9,7 +9,8 @@
     "../commodo",
     "../commodo-graphql",
     "../handler-ssr",
-    "../validation"
+    "../validation",
+    "../api-i18n-content"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -17,11 +18,26 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../api-settings-manager/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../handler-ssr/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    {
+      "path": "../graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../api-settings-manager/tsconfig.build.json"
+    },
+    {
+      "path": "../commodo-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-ssr/tsconfig.build.json"
+    },
+    {
+      "path": "../validation/tsconfig.build.json"
+    },
+    {
+      "path": "../api-i18n-content/tsconfig.build.json"
+    }
   ]
 }
