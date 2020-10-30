@@ -1,39 +1,45 @@
 import KSUID from "ksuid";
 import { createHandler } from "@webiny/handler-aws";
-import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import securityPlugins from "@webiny/api-security/authenticator";
 import userManagement from "@webiny/api-security-user-management";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
+// Graphql
 import mocks from "./mocks/securityUser";
 import {
-    IS_INSTALLED,
+    UPDATE_SECURITY_GROUP,
+    CREATE_SECURITY_GROUP,
+    DELETE_SECURITY_GROUP,
+    GET_SECURITY_GROUP,
+    LIST_SECURITY_GROUPS
+} from "./graphql/group";
+import {
     GET_CURRENT_SECURITY_USER,
     UPDATE_CURRENT_SECURITY_USER,
     DELETE_SECURITY_USER,
     UPDATE_SECURITY_USER,
     CREATE_SECURITY_USER,
-    UPDATE_SECURITY_GROUP,
-    CREATE_SECURITY_GROUP,
-    DELETE_SECURITY_GROUP,
-    GET_SECURITY_GROUP,
-    GET_SECURITY_USER,
-    LIST_SECURITY_GROUPS,
     LIST_SECURITY_USERS,
-    LOGIN,
-    INSTALL
-} from "./graphql";
+    GET_SECURITY_USER,
+    LOGIN
+} from "./graphql/user";
+import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dynamoDb({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                endpoint: "localhost:8000",
-                sslEnabled: false,
-                region: "local-env"
+        dbPlugins({
+            table: "Security",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: "localhost:8000",
+                    sslEnabled: false,
+                    region: "local-env"
+                })
             })
         }),
         apolloServerPlugins(),
