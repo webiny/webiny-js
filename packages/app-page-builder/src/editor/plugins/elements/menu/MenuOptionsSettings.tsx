@@ -77,7 +77,7 @@ const MenuOptionsSettings = ({ Bind, data: settingsData }) => {
                                 >
                                     <Select
                                         label={"Component"}
-                                        description={"Select a component to render the list"}
+                                        description={"Select a component to render Menu data"}
                                     >
                                         {component.options.map(cmp => (
                                             <option key={cmp.name} value={cmp.componentName}>

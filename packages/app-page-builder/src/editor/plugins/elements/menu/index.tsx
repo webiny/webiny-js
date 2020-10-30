@@ -62,7 +62,7 @@ export default () => {
             elementType: "menu",
             render(props) {
                 return (
-                    <Tab icon={<MenuIcon />} label="Design">
+                    <Tab icon={<MenuIcon />} label="Menu Data and Component">
                         <MenuOptionsSettings {...props} />
                     </Tab>
                 );
