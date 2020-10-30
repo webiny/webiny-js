@@ -30,6 +30,7 @@ export default async function findEntries<T = CmsContext>({
     const { CmsContentEntrySearch } = context.models;
 
     parseBoolean(args);
+
     // eslint-disable-next-line prefer-const
     let { limit, after, before } = args;
     limit = isNaN(limit) || limit < 1 ? 200 : limit;
