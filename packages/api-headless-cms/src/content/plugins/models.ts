@@ -49,7 +49,7 @@ export default () => {
                         withFields({
                             id: context.commodo.fields.id()
                         }),
-                        withStorage({ driver }),
+                        withStorage({ driver, maxPerPage: 200 }),
                         withUser(context),
                         withSoftDelete(),
                         withCrudLogs()

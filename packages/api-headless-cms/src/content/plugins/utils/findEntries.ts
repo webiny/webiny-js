@@ -32,7 +32,7 @@ export default async function findEntries<T = CmsContext>({
     parseBoolean(args);
     // eslint-disable-next-line prefer-const
     let { limit, after, before } = args;
-    limit = isNaN(limit) || limit < 1 ? 100 : limit;
+    limit = isNaN(limit) || limit < 1 ? 200 : limit;
 
     const { query, sort } = createFindParameters({
         context,
@@ -80,8 +80,8 @@ export default async function findEntries<T = CmsContext>({
         const locales = context.i18n.getLocales();
         const newLimit = limit * locales.length;
 
-        // cap max limit to 100, to avoid `MAX_PER_PAGE_EXCEEDED` error
-        limit = Math.min(newLimit, 100);
+        // cap max limit to 200, to avoid `MAX_PER_PAGE_EXCEEDED` error
+        limit = Math.min(newLimit, 200);
     }
 
     // Find IDs using search collection
