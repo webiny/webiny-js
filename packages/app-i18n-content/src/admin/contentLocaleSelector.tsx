@@ -34,7 +34,13 @@ const plugin: AdminHeaderRightPlugin = {
                 }
             >
                 {getLocales().map(locale => (
-                    <MenuItem key={locale.code} onClick={() => setCurrentLocale(locale.code, "content")}>
+                    <MenuItem
+                        key={locale.code}
+                        onClick={() => {
+                            setCurrentLocale(locale.code, "content");
+                            window.location.reload();
+                        }}
+                    >
                         <span style={{ minWidth: 35 }}>
                             {currentLocale === locale.code && (
                                 <ButtonIcon
