@@ -136,6 +136,7 @@ export const LOGIN = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -156,6 +157,7 @@ export const CREATE_SECURITY_USER = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -176,6 +178,7 @@ export const UPDATE_SECURITY_USER = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -211,6 +214,7 @@ export const LIST_SECURITY_USERS = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -231,6 +235,7 @@ export const GET_SECURITY_USER = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -251,6 +256,7 @@ export const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
@@ -271,6 +277,7 @@ export const UPDATE_CURRENT_SECURITY_USER = /* GraphQL */ `
                     email
                     firstName
                     lastName
+                    avatar
                 }
                 error {
                     message
