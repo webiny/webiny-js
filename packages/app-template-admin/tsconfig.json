@@ -8,7 +8,7 @@
     { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-plugin-security-cognito" },
     { "path": "../app-file-manager" },
-    { "path": "../app-security-content" },
+    { "path": "../app-i18n-content" },
     { "path": "../app-template" },
     { "path": "../react-router" },
     { "path": "../ui" }

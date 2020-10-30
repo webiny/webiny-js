@@ -11,7 +11,7 @@
     "../app-security",
     "../app-plugin-admin-welcome-screen",
     "../app-plugin-security-cognito",
-    "../app-security-content",
+    "../app-i18n-content",
     "../app-template",
     "../react-router",
     "../ui"
@@ -29,7 +29,7 @@
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
     { "path": "../app-plugin-security-cognito/tsconfig.build.json" },
-    { "path": "../app-security-content/tsconfig.build.json" },
+    { "path": "../app-i18n-content/tsconfig.build.json" },
     { "path": "../app-template/tsconfig.build.json" },
     { "path": "../react-router/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" }
