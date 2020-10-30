@@ -4,6 +4,7 @@ import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/plugins/context";
+import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -32,9 +33,10 @@ export default ({ permissions, identity } = {}) => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        pageBuilderPlugins(),
         i18nContext,
+        i18nContentPlugins(),
         mockLocalesPlugins(),
+        pageBuilderPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -43,7 +45,8 @@ export default ({ permissions, identity } = {}) => {
         {
             type: "security-authentication",
             authenticate: () =>
-                identity || new SecurityIdentity({
+                identity ||
+                new SecurityIdentity({
                     id: "mocked",
                     displayName: "m"
                 })
