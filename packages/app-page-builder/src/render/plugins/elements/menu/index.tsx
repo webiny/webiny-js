@@ -2,10 +2,12 @@ import React from "react";
 import Menu from "./Menu";
 import MenuNavigation from "./components/MenuNavigation";
 import MenuForm from "./components/MenuForm";
-
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
+//Menu Navigation is basic template for a render comoponent taking in menu data
+//After migrating these changes, users custom components and 
+//other ready made components should be able to be exported from here
 export default [
     {
         name: "pb-render-page-element-menu",

@@ -18,13 +18,8 @@ const Overlay = styled("div")({
 });
 
 const Menu = ({ element, isActive }) => {
-    console.log("MENU ELEMENT isActive ::::;;;;");
-    console.log(element);
-    console.log(isActive);
  
     const data = element?.data || {};
-    console.log(data);
-
    
     if (!data?.settings) {
         return <div>Selected menu component not found!</div>

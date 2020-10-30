@@ -19,12 +19,9 @@ const getOptions = ({ gqlData, settingsData }) => {
     const menuID = settingsData?.settings?.menu?.element;
     const selectedComponent = settingsData?.settings?.menu?.component?.componentName;
     
-    console.log("components from MenuOptionsSettings:::::");
-    console.log(selectedComponent);
     const components = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
-    console.log(components);
 
     const menusList = gqlData?.pageBuilder?.menus?.data || [];
     
@@ -44,43 +41,8 @@ const getOptions = ({ gqlData, settingsData }) => {
     }
 };
 
-/*
-<Bind
-                                    name={"settings.menu.component"}
-                                    validators={validation.create("required")}
-                                >
-                                    {({ onChange }) => (
-                                        <AutoComplete
-                                            options={component.options}
-                                            value={component.value}
-                                            onChange={onChange}
-                                            label={"Component"}
-                                        />
-                                    )}
-                                </Bind>
-                    <Bind
-                        name={"settings.menu.component"}
-                        defaultValue={component.options[0] ? component.options[0].componentName : null}
-                        validators={validation.create("required")}
-                    >
-                        <Select
-                            label={"Component"}
-                            description={"Select a component to render the list"}
-                        >
-                            {component.options.map(cmp => (
-                                <option key={cmp.name} value={cmp.componentName}>
-                                    {cmp.title}
-                                </option>
-                            ))}
-                        </Select>
-                    </Bind>
-*/
-
 
 const MenuOptionsSettings = ({ Bind, data: settingsData }) => {
-    console.log("MenuOptionsSettings::::::settings data::::");
-    console.log(settingsData);
-    
     return (
         <FormOptionsWrapper>
             <Query query={LIST_MENUS} fetchPolicy="network-only">
@@ -89,7 +51,7 @@ const MenuOptionsSettings = ({ Bind, data: settingsData }) => {
                         return <div>Loading...</div>;
                     }
                     const { menu, component } = getOptions({ gqlData, settingsData });
-                    console.log(menu);console.log(component);
+        
                     return (
                         <Grid>
                             <Cell span={12}>

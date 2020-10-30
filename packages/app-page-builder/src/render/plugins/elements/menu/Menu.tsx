@@ -3,6 +3,7 @@ import warning from "warning";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageElementMenuComponentPlugin } from "@webiny/app-page-builder/types";
 
+//this file should be migrated to version 5 once released
 declare global {
     // eslint-disable-next-line
     namespace JSX {
@@ -35,17 +36,11 @@ const Menu = props => {
     } = props;
 
 
-    console.log("PLUGINS FROM RENDER:::::::props, menuId::::::::::");
-    console.log(props);
-    console.log(menuID);
-
     const plugins = getPlugins<PbPageElementMenuComponentPlugin>(
         "pb-page-element-menu-component"
     );
-    console.log(plugins);
-    console.log(component)
+
     const menuPlugin = plugins.find(cmp => cmp.componentName === component);
-    console.log(menuPlugin);
 
     if (!menuPlugin) {
         warning(false, `Menu component "${component}" is missing!`);
@@ -65,7 +60,7 @@ const Menu = props => {
         }
         return <MenuComponent menu={menuId} preview={true} />;
     }
-    console.log("rendering:::::::")
+
     return (
         <>
             <ssr-cache data-class="pb-menu" />
