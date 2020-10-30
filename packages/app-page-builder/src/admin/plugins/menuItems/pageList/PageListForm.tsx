@@ -16,7 +16,7 @@ const menuPageFormStyle = {
     backgroundColor: "var(--mdc-theme-background) !important"
 };
 
-const LinkForm = ({ data, onSubmit, onCancel, canSave }) => {
+const LinkForm = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuPageFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
