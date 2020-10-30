@@ -1,6 +1,9 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { hasContentLocalePermission } from "@webiny/api-security-content";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { pipe, Response, NotFoundResponse } from "@webiny/graphql";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 const hasRwd = ({ pbCategoryPermission, rwd }) => {
     if (typeof pbCategoryPermission.rwd !== "string") {
@@ -9,6 +12,8 @@ const hasRwd = ({ pbCategoryPermission, rwd }) => {
 
     return pbCategoryPermission.rwd.includes(rwd);
 };
+
+type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -64,9 +69,9 @@ export default {
     resolvers: {
         PbQuery: {
             getCategory: pipe(
-                pipe(hasPermission("pb.category"), hasContentLocalePermission()),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasPermission("pb.category"),
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
@@ -91,8 +96,8 @@ export default {
             }),
             listCategories: pipe(
                 hasPermission("pb.category"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
@@ -115,8 +120,8 @@ export default {
         PbMutation: {
             createCategory: pipe(
                 hasPermission("pb.category"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
@@ -149,8 +154,8 @@ export default {
             }),
             updateCategory: pipe(
                 hasPermission("pb.category"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
@@ -180,8 +185,8 @@ export default {
             }),
             deleteCategory: pipe(
                 hasPermission("pb.category"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "d" is not part of it, bail.
                 const pbCategoryPermission = await context.security.getPermission("pb.category");
                 if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "d" })) {

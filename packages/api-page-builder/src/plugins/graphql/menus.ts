@@ -1,6 +1,9 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { hasContentLocalePermission } from "@webiny/api-security-content";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { pipe, Response, NotFoundResponse } from "@webiny/graphql";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 const hasRwd = ({ pbMenuPermission, rwd }) => {
     if (typeof pbMenuPermission.rwd !== "string") {
@@ -9,6 +12,8 @@ const hasRwd = ({ pbMenuPermission, rwd }) => {
 
     return pbMenuPermission.rwd.includes(rwd);
 };
+
+type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -65,8 +70,8 @@ export default {
         PbQuery: {
             getMenu: pipe(
                 hasPermission("pb.menu"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbMenuPermission = await context.security.getPermission("pb.menu");
                 if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "r" })) {
@@ -91,8 +96,8 @@ export default {
             }),
             listMenus: pipe(
                 hasPermission("pb.menu"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const pbMenuPermission = await context.security.getPermission("pb.menu");
                 if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "r" })) {
@@ -115,8 +120,8 @@ export default {
         PbMutation: {
             createMenu: pipe(
                 hasPermission("pb.menu"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbMenuPermission = await context.security.getPermission("pb.menu");
                 if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "w" })) {
@@ -134,6 +139,7 @@ export default {
 
                 const newData = {
                     ...data,
+                    locale: context.i18nContent.locale,
                     createdOn: new Date().toISOString(),
                     createdBy: {
                         id: identity.id,
@@ -147,8 +153,8 @@ export default {
             }),
             updateMenu: pipe(
                 hasPermission("pb.menu"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbMenuPermission = await context.security.getPermission("pb.menu");
                 if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "w" })) {
@@ -178,8 +184,8 @@ export default {
             }),
             deleteMenu: pipe(
                 hasPermission("pb.menu"),
-                hasContentLocalePermission()
-            )(async (_, args, context) => {
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
                 // If permission has "rwd" property set, but "d" is not part of it, bail.
                 const pbMenuPermission = await context.security.getPermission("pb.menu");
                 if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "d" })) {
