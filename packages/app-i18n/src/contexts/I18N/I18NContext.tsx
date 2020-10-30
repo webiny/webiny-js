@@ -62,17 +62,25 @@ export const I18NProvider = (props: I18NProviderProps) => {
             const { currentLocales: fetchedCurrentLocales, locales } =
                 data?.i18n?.getI18NInformation || {};
 
+            // wby_i18n_locale: "default:en-US;content:en-US;"
+            const parsedLocales = {};
+            if (localStorage.getItem("wby_i18n_locale")) {
+                localStorage
+                    .getItem("wby_i18n_locale")
+                    .split(";")
+                    .filter(Boolean)
+                    .forEach(item => {
+                        const [context, locale] = item.split(":");
+                        parsedLocales[context] = locale;
+                    });
+            }
+
             const currentLocales = [];
             for (let i = 0; i < fetchedCurrentLocales.length; i++) {
                 const item = fetchedCurrentLocales[i];
-                const localeStorageKey = `x-i18n-locale-${item.context}`;
-                if (!localStorage.getItem(localeStorageKey)) {
-                    localStorage.setItem(localeStorageKey, item.locale);
-                }
-
                 currentLocales.push({
                     context: item.context,
-                    locale: localStorage.getItem(localeStorageKey)
+                    locale: parsedLocales[item.context] || item.locale
                 });
             }
 
