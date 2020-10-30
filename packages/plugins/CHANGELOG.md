@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Bug Fixes
+
+* correct behavior of plugins retrieval functions ([#1316](https://github.com/webiny/webiny-js/issues/1316)) ([2291eab](https://github.com/webiny/webiny-js/commit/2291eab5a36ce6ec4e81add3972ae7ccd17af9f9))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/plugins
