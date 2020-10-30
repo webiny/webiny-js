@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import { ButtonDefault } from "@webiny/ui/Button";

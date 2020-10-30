@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback } from "react";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
