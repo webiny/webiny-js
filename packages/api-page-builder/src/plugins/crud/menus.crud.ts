@@ -1,8 +1,7 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import keys from "./keys";
-
-export const PK_MENU = "M";
+import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 
 export type Menu = {
     title: string;
@@ -19,7 +18,9 @@ export type Menu = {
 export default {
     type: "context",
     apply(context) {
-        const { db } = context;
+        const { db, i18nContent } = context;
+        const PK_MENU = `M#${i18nContent.locale.code}`;
+
         context.menus = {
             async get(slug: string) {
                 const [[menu]] = await db.read<Menu>({
@@ -76,4 +77,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as HandlerContextPlugin<HandlerContextDb, HandlerI18NContentContext>;

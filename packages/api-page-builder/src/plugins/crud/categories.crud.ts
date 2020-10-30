@@ -1,6 +1,7 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import keys from "./keys";
+import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 
 export const PK_CATEGORY = "C";
 
@@ -29,7 +30,9 @@ export type Category = {
 export default {
     type: "context",
     apply(context) {
-        const { db } = context;
+        const { db, i18nContent } = context;
+        const PK_CATEGORY = `C#${i18nContent.locale.code}`;
+
         context.categories = {
             async get(slug: string) {
                 const [[category]] = await db.read<Category>({
@@ -85,4 +88,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as HandlerContextPlugin<HandlerI18NContentContext, HandlerContextDb>;
