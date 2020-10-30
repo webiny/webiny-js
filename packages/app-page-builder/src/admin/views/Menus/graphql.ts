@@ -5,6 +5,7 @@ const BASE_FIELDS = `
     slug
     description
     items
+    createdOn
     createdBy {
         id
         displayName

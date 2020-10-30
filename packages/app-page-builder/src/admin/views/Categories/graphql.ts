@@ -5,6 +5,7 @@ const BASE_FIELDS = `
     name
     layout
     url
+    createdOn
     createdBy {
         id
         displayName

@@ -118,7 +118,7 @@ const CategoriesForm = () => {
                             </Cell>
                             <Cell span={6}>
                                 <Bind name="slug" validators={validation.create("required")}>
-                                    <Input disabled={data.id} label={t`Slug`} />
+                                    <Input disabled={data.createdOn} label={t`Slug`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
