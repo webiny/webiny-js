@@ -72,6 +72,7 @@ const Content = ({ richText, onClose, values, onSubmit }: ContentProps) => {
                             <List twoLine className={listStyle}>
                                 {getLocales().map((locale, localeIndex) => (
                                     <ListItem
+                                        // @ts-ignore
                                         key={locale.id}
                                         className={listItem}
                                         onClick={() => setActiveLocaleIndex(localeIndex)}
