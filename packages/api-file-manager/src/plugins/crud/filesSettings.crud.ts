@@ -2,6 +2,7 @@ import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
+import { getJSON } from "./files.crud";
 
 export const SETTINGS_KEY = "file-manager";
 // A simple data model
@@ -72,35 +73,34 @@ export default {
                 const filesSettings = new FilesSettings().populate(data);
                 await filesSettings.validate();
 
-                return db.create({
+                await db.create({
                     data: {
                         PK: PK_FILE_SETTINGS,
                         SK: filesSettings.key,
-                        key: filesSettings.key,
-                        installed: filesSettings.installed,
-                        uploadMinFileSize: filesSettings.uploadMinFileSize,
-                        uploadMaxFileSize: filesSettings.uploadMaxFileSize,
-                        srcPrefix: filesSettings.srcPrefix
+                        ...getJSON(filesSettings)
                     }
                 });
+
+                return filesSettings;
             },
-            async update(data) {
-                const { key } = data;
+            async update({ data, existingSettings }) {
+                // Only update incoming props
+                const propsToUpdate = Object.keys(data);
+                propsToUpdate.forEach(key => {
+                    existingSettings[key] = data[key];
+                });
+
                 // Use `WithFields` model for data validation and setting default value.
-                const filesSettings = new FilesSettings().populate(data);
+                const filesSettings = new FilesSettings().populate(existingSettings);
                 await filesSettings.validate();
 
-                return db.update({
+                await db.update({
                     keys,
-                    query: { PK: PK_FILE_SETTINGS, SK: key },
-                    data: {
-                        key: filesSettings.key,
-                        installed: filesSettings.installed,
-                        uploadMinFileSize: filesSettings.uploadMinFileSize,
-                        uploadMaxFileSize: filesSettings.uploadMaxFileSize,
-                        srcPrefix: filesSettings.srcPrefix
-                    }
+                    query: { PK: PK_FILE_SETTINGS, SK: filesSettings.key },
+                    data: getJSON(filesSettings)
                 });
+
+                return filesSettings;
             },
             delete(key: string) {
                 return db.delete({

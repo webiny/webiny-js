@@ -18,8 +18,11 @@ export const getSettings: GraphQLFieldResolver = async (root, args, context) => 
 export const updateSettings: GraphQLFieldResolver = async (root, args, context) => {
     try {
         const { data } = args;
-        await context.filesSettings.update({ ...data, key: SETTINGS_KEY });
-        const updatedSettings = await context.filesSettings.get(SETTINGS_KEY);
+        const existingSettings = await context.filesSettings.get(SETTINGS_KEY);
+        const updatedSettings = await context.filesSettings.update({
+            data: { ...data, key: SETTINGS_KEY },
+            existingSettings
+        });
         return new Response(updatedSettings);
     } catch (e) {
         return new ErrorResponse({

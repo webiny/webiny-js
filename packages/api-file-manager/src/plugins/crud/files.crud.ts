@@ -6,7 +6,7 @@ import { withFields, string, number, setOnce, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import KSUID from "ksuid";
 
-const getJSON = instance => {
+export const getJSON = instance => {
     const output = {};
     const fields = Object.keys(instance.getFields());
     for (let i = 0; i < fields.length; i++) {
