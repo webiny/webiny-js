@@ -1,15 +1,7 @@
 import minimatch from "minimatch";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { ErrorResponse } from "@webiny/commodo-graphql";
-
-export class NotAuthorizedResponse extends ErrorResponse {
-    constructor() {
-        super({
-            message: "Not authorized!",
-            code: "SECURITY_NOT_AUTHORIZED"
-        });
-    }
-}
+import NotAuthorizedResponse from "./NotAuthorizedResponse";
 
 const checkPermission = (permission: any) => {
     return (resolver: GraphQLFieldResolver) => {
