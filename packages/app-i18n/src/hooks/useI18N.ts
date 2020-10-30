@@ -7,10 +7,7 @@ type I18NValueObject = {
 };
 
 export function useI18N() {
-    const context = useContext(I18NContext) as I18NContextValue;
-    if (!context) {
-        return null;
-    }
+    const context = useContext<I18NContextValue>(I18NContext);
 
     const { state, setState, refetchLocales, updateLocaleStorage } = context;
     const self = {
@@ -24,7 +21,10 @@ export function useI18N() {
         getCurrentLocale(localeContext = "default") {
             return state.currentLocales.find(locale => locale.context === localeContext)?.locale;
         },
-        setLocale(code, localeContext = "default") {
+        getLocale(...args) {
+            return self.getCurrentLocale(...args);
+        },
+        setCurrentLocale(code, localeContext = "default") {
             const newCurrentLocales = [...self.getCurrentLocales()];
             for (let i = 0; i < newCurrentLocales.length; i++) {
                 const item = newCurrentLocales[i];
@@ -35,7 +35,6 @@ export function useI18N() {
             }
 
             updateLocaleStorage(newCurrentLocales);
-            console.log("nc", newCurrentLocales);
 
             setState(prev => {
                 const next = { ...prev };
