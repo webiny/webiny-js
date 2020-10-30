@@ -12,6 +12,8 @@ import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentic
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import i18nServicePlugins from "@webiny/api-i18n/plugins/service";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -41,6 +43,10 @@ export const handler = createHandler(
         userPoolId: process.env.COGNITO_USER_POOL_ID,
         identityType: "admin"
     }),
+    i18nServicePlugins({
+        localesFunction: process.env.I18N_LOCALES_FUNCTION
+    }),
+    i18nContentPlugins(),
     pageBuilderPlugins()
     // useSsrCacheTagsPlugins(),
     // googleTagManagerPlugins(),
