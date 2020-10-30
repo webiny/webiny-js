@@ -56,7 +56,7 @@ export default {
             firstName: String
             lastName: String
             fullName: String
-            avatar: File
+            avatar: JSON
             gravatar: String
         }
 
@@ -67,7 +67,7 @@ export default {
             lastName: String
             fullName: String
             gravatar: String
-            avatar: File
+            avatar: JSON
             enabled: Boolean
             group: SecurityGroup
             permissions: [JSON]
@@ -180,6 +180,17 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
+            async avatar(securityUser, args, context) {
+                const Model = context.models.SECURITY;
+                const id = securityUser.id;
+
+                const securityRecord = await Model.findOne({
+                    query: { PK: `${PK_USER}#${id}`, SK: SK_USER }
+                });
+                const user = securityRecord.data;
+
+                return user.avatar;
+            },
             async group(user) {
                 return await user.groupData;
             },
@@ -191,14 +202,15 @@ export default {
             login: (_, args, context) => {
                 return context.security.getIdentity().login;
             },
-            async avatar(_, args, context) {
+            async avatar(securityIdentity, args, context) {
                 const Model = context.models.SECURITY;
-                const identityId = context.security.getIdentity().id;
-                const securityRecord = await Model.findOne({
-                    query: { PK: `${PK_USER}#${identityId}`, SK: SK_USER }
-                });
+                const id = securityIdentity.id;
 
+                const securityRecord = await Model.findOne({
+                    query: { PK: `${PK_USER}#${id}`, SK: SK_USER }
+                });
                 const user = securityRecord.data;
+
                 return user.avatar;
             },
             permissions: (_, args, context) => {

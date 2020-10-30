@@ -34,7 +34,8 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                 id: identity.id,
                 email: identity.login,
                 firstName: identity.firstName || "",
-                lastName: identity.lastName || ""
+                lastName: identity.lastName || "",
+                avatar: identity.avatar
             });
 
             const PK = `${PK_USER}#${user.id}`;
