@@ -21,12 +21,5 @@ export default [
         title: "Menu Navigation",
         componentName: "default",
         component: MenuNavigation
-    } as PbPageElementMenuComponentPlugin,
-    {   
-        name: "pb-page-element-menu-component-form",
-        type: "pb-page-element-menu-component",
-        title: "Menu Form",
-        componentName: "Menu Form",
-        component: MenuForm
     } as PbPageElementMenuComponentPlugin
 ];
