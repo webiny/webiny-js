@@ -10,10 +10,6 @@ import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 import listUsers from "./userResolvers/listUsers";
 import getUser from "./userResolvers/getUser";
-import {
-    PK_USER,
-    SK_USER
-} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
@@ -181,15 +177,12 @@ export default {
                 return userFetcher(context).findById(reference.id);
             },
             async avatar(securityUser, args, context) {
-                const Model = context.models.SECURITY;
+                const { users } = context;
                 const id = securityUser.id;
 
-                const securityRecord = await Model.findOne({
-                    query: { PK: `${PK_USER}#${id}`, SK: SK_USER }
-                });
-                const user = securityRecord.data;
-
-                return user.avatar;
+                const user = await users.get(id);
+                // All the user's data is inside "data" field.
+                return user.data.avatar;
             },
             async group(user) {
                 return await user.groupData;
@@ -203,15 +196,12 @@ export default {
                 return context.security.getIdentity().login;
             },
             async avatar(securityIdentity, args, context) {
-                const Model = context.models.SECURITY;
+                const { users } = context;
                 const id = securityIdentity.id;
 
-                const securityRecord = await Model.findOne({
-                    query: { PK: `${PK_USER}#${id}`, SK: SK_USER }
-                });
-                const user = securityRecord.data;
-
-                return user.avatar;
+                const user = await users.get(id);
+                // All the user's data is inside "data" field.
+                return user.data.avatar;
             },
             permissions: (_, args, context) => {
                 return context.security.getPermissions();
