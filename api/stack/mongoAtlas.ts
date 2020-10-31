@@ -17,8 +17,7 @@ class MongoAtlas {
             environment: {
                 variables: {
                     MONGODB_SERVER: String(process.env.MONGODB_SERVER),
-                    MONGODB_NAME: String(process.env.MONGODB_NAME),
-                    LOG_COLLECTION: String(true)
+                    MONGODB_NAME: String(process.env.MONGODB_NAME)
                 }
             }
         });
