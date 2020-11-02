@@ -4,9 +4,10 @@ import { HandlerContextDb } from "@webiny/handler-db/types";
 export const PK_LOCALE = "L";
 export const PK_DEFAULT_LOCALE = "L#D";
 
-export const keys = [
-    { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-];
+export const dbArgs = {
+    table: process.env.DB_TABLE_I18N,
+    keys: [{ primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }]
+};
 
 export type Locale = {
     code: string;
@@ -20,7 +21,7 @@ export default {
         context.locales = {
             async getByCode(code: string) {
                 const [[locale]] = await db.read<Locale>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_LOCALE, SK: code },
                     limit: 1
                 });
@@ -29,7 +30,7 @@ export default {
             },
             async getDefault() {
                 const [[locale]] = await db.read<Locale>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_DEFAULT_LOCALE, SK: "default" },
                     limit: 1
                 });
@@ -38,7 +39,7 @@ export default {
             },
             async list(args) {
                 const [locales] = await db.read<Locale>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_LOCALE, SK: { $gt: " " } },
                     ...args
                 });
@@ -47,6 +48,7 @@ export default {
             },
             create(data) {
                 return db.create({
+                    ...dbArgs,
                     data: {
                         PK: PK_LOCALE,
                         SK: data.code,
@@ -57,7 +59,7 @@ export default {
             },
             update(code, data) {
                 return db.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_LOCALE, SK: code },
                     data: {
                         default: data.default
@@ -66,7 +68,7 @@ export default {
             },
             delete(code: string) {
                 return db.delete({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_LOCALE, SK: code },
                     limit: 1
                 });
@@ -83,7 +85,7 @@ export default {
                     }
 
                     batch.update({
-                        keys,
+                        ...dbArgs,
                         query: { PK: PK_DEFAULT_LOCALE, SK: "default" },
                         data: {
                             PK: PK_DEFAULT_LOCALE,
@@ -93,7 +95,7 @@ export default {
                     });
 
                     batch.update({
-                        keys,
+                        ...dbArgs,
                         query: { PK: PK_LOCALE, SK: defaultLocale.code },
                         data: {
                             PK: PK_LOCALE,
@@ -104,7 +106,7 @@ export default {
                     });
                 } else {
                     await db.create({
-                        keys,
+                        ...dbArgs,
                         data: {
                             PK: PK_DEFAULT_LOCALE,
                             SK: "default",
@@ -114,7 +116,7 @@ export default {
                 }
 
                 batch.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_LOCALE, SK: code },
                     data: {
                         PK: PK_LOCALE,
