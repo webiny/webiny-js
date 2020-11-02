@@ -44,7 +44,7 @@ class Security {
             }),
             environment: {
                 variables: {
-                    STORAGE_NAME: this.dynamoDbTable.name,
+                    DB_TABLE: this.dynamoDbTable.name,
                     DB_PROXY_FUNCTION: dbProxy.arn,
                     DEBUG: String(process.env.DEBUG)
                 }
@@ -66,7 +66,7 @@ class Security {
             }),
             environment: {
                 variables: {
-                    STORAGE_NAME: this.dynamoDbTable.name,
+                    DB_TABLE: this.dynamoDbTable.name,
                     DB_PROXY_FUNCTION: dbProxy.arn,
                     PERMISSIONS_MANAGER_FUNCTION: permissionsManager.arn,
                     DEBUG: String(process.env.DEBUG)
@@ -92,7 +92,7 @@ class Security {
                     ...env,
                     VALIDATE_ACCESS_TOKEN_FUNCTION: validateAccessToken.arn,
                     PERMISSIONS_MANAGER_FUNCTION: permissionsManager.arn,
-                    STORAGE_NAME: this.dynamoDbTable.name
+                    DB_TABLE: this.dynamoDbTable.name
                 }
             },
             vpcConfig: {
