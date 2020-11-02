@@ -1,5 +1,5 @@
-import useGqlHandler from "../useGqlHandler";
-import mocks from "../mocks/securityUser";
+import useGqlHandler from "./useGqlHandler";
+import mocks from "./mocks/securityUser";
 
 describe("Security User CRUD Test", () => {
     const { securityUser } = useGqlHandler();

@@ -28,23 +28,7 @@ const UserDataModel = pipe(
             if (value === dataInstance.email) {
                 return value;
             }
-
             value = value.toLowerCase().trim();
-            // TODO: Let's see how we'll going to manage this?
-            // const removeCallback = dataInstance.hook("beforeSave", async parentInstance => {
-            //     removeCallback();
-            //
-            //     const existingUser = await parentInstance.constructor.findOne({
-            //         query: { GSI1_PK: GSI1_PK_USER, GSI1_SK: `login#${value}` }
-            //     });
-            //     if (existingUser) {
-            //         throw {
-            //             message: "User with given e-mail already exists.",
-            //             code: "USER_EXISTS"
-            //         };
-            //     }
-            // });
-
             return value;
         })(
             string({
@@ -79,7 +63,7 @@ export type User = {
     savedOn: string;
     createdBy: Record<string, any>;
     email: string;
-    firstName: number;
+    firstName: string;
     lastName: string;
     group: Record<string, any>;
     avatar: Record<string, any>;
@@ -92,7 +76,7 @@ export default {
         const { db } = context;
         context.users = {
             async get(id: string) {
-                const [[user]] = await db.read<File>({
+                const [[user]] = await db.read<User>({
                     keys,
                     query: { PK: `${PK_USER}#${id}`, SK: SK_USER },
                     limit: 1
@@ -101,7 +85,7 @@ export default {
                 return user;
             },
             async getByLogin(login: string) {
-                const [[user]] = await db.read<File>({
+                const [[user]] = await db.read<User>({
                     keys,
                     query: { GSI1_PK: GSI1_PK_USER, GSI1_SK: `login#${login}` },
                     limit: 1
@@ -110,7 +94,7 @@ export default {
                 return user;
             },
             async list(args) {
-                const [users] = await db.read<File>({
+                const [users] = await db.read<User>({
                     keys,
                     query: { GSI1_PK: GSI1_PK_USER, GSI1_SK: { $beginsWith: "createdOn" } },
                     ...args
