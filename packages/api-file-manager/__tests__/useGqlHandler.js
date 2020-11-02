@@ -74,6 +74,15 @@ export default ({ permissions, identity }) => {
                         return { status: "ok" };
                     }
                 );
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/_bulk"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
                 context.elasticSearch = client;
             }
         },
