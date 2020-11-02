@@ -4,44 +4,32 @@ import { InvalidFieldsError } from "@webiny/commodo-graphql";
 import * as data from "./data";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
-import { createSecurityGroup } from "../groupResolvers/utils";
-import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
-import { GSI1_PK_USER } from "@webiny/api-security-user-management/models/securityUserData.model";
-import { createSecurityUser } from "../userResolvers/utils";
 
 const ensureFullAccessGroup = async context => {
-    const Model = context.models.SECURITY;
-    const { SecurityGroup } = context.models;
+    const { groups } = context;
 
-    let securityRecord = await Model.findOne({
-        query: { GSI1_PK: GSI1_PK_GROUP, GSI1_SK: `slug#security-full-access` }
-    });
+    const group = await groups.getBySlug("security-full-access");
+    let groupData = group?.GSI_DATA;
 
-    if (!securityRecord) {
-        const group = new SecurityGroup();
-        group.populate({
-            ...data.securityFullAccessGroup
-        });
-
-        securityRecord = await createSecurityGroup({ Model, group });
+    if (!groupData) {
+        groupData = await groups.create(data.securityFullAccessGroup);
     }
-    return securityRecord.GSI_DATA;
+    return groupData;
 };
 
 /**
  * We consider security to be installed if there are users in Webiny DB.
  */
 const isSecurityInstalled = async context => {
-    const Model = context.models.SECURITY;
+    const { users } = context;
 
     // Check if at least 1 user exists in the system
-    return !!(await Model.findOne({
-        query: { GSI1_PK: GSI1_PK_USER, GSI1_SK: { $beginsWith: "login#" } }
-    }));
+    const userList = await users.list();
+    return !!userList?.length;
 };
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {
-    const { SecurityUser } = context.models;
+    const { users } = context;
     const { data } = args;
 
     if (await isSecurityInstalled(context)) {
@@ -61,12 +49,9 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         const fullAccessGroup = await ensureFullAccessGroup(context);
 
         // Create new user
-        const user = new SecurityUser();
-        await user.populate({ ...data, group: fullAccessGroup.id });
+        const user = await users.create({ ...data, group: fullAccessGroup.id });
 
         await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
-
-        await createSecurityUser({ Model: context.models.SECURITY, user });
 
         return new Response(true);
     } catch (e) {
