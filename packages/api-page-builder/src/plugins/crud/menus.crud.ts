@@ -1,6 +1,6 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
-import keys from "./keys";
+import dbArgs from "./dbArgs";
 import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 
 export type Menu = {
@@ -19,12 +19,12 @@ export default {
     type: "context",
     apply(context) {
         const { db, i18nContent } = context;
-        const PK_MENU = `M#${i18nContent.locale.code}`;
+        const PK_MENU = `M#${i18nContent?.locale?.code}`;
 
         context.menus = {
             async get(slug: string) {
                 const [[menu]] = await db.read<Menu>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_MENU, SK: slug },
                     limit: 1
                 });
@@ -33,7 +33,7 @@ export default {
             },
             async list(args) {
                 const [menus] = await db.read<Menu>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_MENU, SK: { $gt: " " } },
                     ...args
                 });
@@ -44,6 +44,7 @@ export default {
                 const { title, slug, description, items, createdBy, createdOn } = data;
 
                 return db.create({
+                    ...dbArgs,
                     data: {
                         PK: PK_MENU,
                         SK: slug,
@@ -59,7 +60,7 @@ export default {
             update(data) {
                 const { title, slug, description, items } = data;
                 return db.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_MENU, SK: slug },
                     data: {
                         title,
@@ -71,7 +72,7 @@ export default {
             },
             delete(slug: string) {
                 return db.delete({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_MENU, SK: slug }
                 });
             }

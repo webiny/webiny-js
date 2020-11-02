@@ -1,6 +1,6 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
-import keys from "./keys";
+import dbArgs from "./dbArgs";
 import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 
 export const PK_CATEGORY = "C";
@@ -31,12 +31,12 @@ export default {
     type: "context",
     apply(context) {
         const { db, i18nContent } = context;
-        const PK_CATEGORY = `C#${i18nContent.locale.code}`;
+        const PK_CATEGORY = `C#${i18nContent?.locale?.code}`;
 
         context.categories = {
             async get(slug: string) {
                 const [[category]] = await db.read<Category>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_CATEGORY, SK: slug },
                     limit: 1
                 });
@@ -45,7 +45,7 @@ export default {
             },
             async list(args) {
                 const [categories] = await db.read<Category>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_CATEGORY, SK: { $gt: " " } },
                     ...args
                 });
@@ -55,6 +55,7 @@ export default {
             create(data) {
                 const { name, slug, url, layout, createdOn, createdBy } = data;
                 return db.create({
+                    ...dbArgs,
                     data: {
                         PK: PK_CATEGORY,
                         SK: slug,
@@ -70,7 +71,7 @@ export default {
             update(data) {
                 const { name, slug, url, layout } = data;
                 return db.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_CATEGORY, SK: slug },
                     data: {
                         name,
@@ -82,7 +83,7 @@ export default {
             },
             delete(slug: string) {
                 return db.delete({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_CATEGORY, SK: slug }
                 });
             }

@@ -9,10 +9,6 @@ export default {
     type: "graphql-schema",
     schema: {
         typeDefs: gql`
-            extend type File @key(fields: "id") {
-                id: ID @external
-            }
-
             input PbSearchInput {
                 query: String
                 fields: [String]
