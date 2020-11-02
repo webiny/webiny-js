@@ -52,13 +52,10 @@ export const dropElementAction: EventActionCallableType<DropElementActionArgsTyp
 
     const sourceElement = getSourceElement(state, source);
 
-    // TODO must accept state and then return what stuff to set
-    plugin.onReceived({
+    return plugin.onReceived({
         state,
         source: sourceElement,
         target: targetElement,
         position: position
     });
-
-    return {};
 };

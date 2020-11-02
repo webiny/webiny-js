@@ -1,6 +1,12 @@
+import invariant from "invariant";
 import shortid from "shortid";
 import lodashCloneDeep from "lodash/cloneDeep";
-import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
+import { plugins } from "@webiny/plugins";
+import {
+    PbEditorPageElementPlugin,
+    PbElement,
+    PbShallowElement
+} from "@webiny/app-page-builder/types";
 
 const updateElementsPaths = (elements: PbElement[], parentPath: string): PbElement[] => {
     return elements.map((element, index) => {
@@ -105,4 +111,49 @@ export const cloneElementHelper = (target: PbElement): PbElement => {
         path: undefined,
         elements: target.elements.map(cloneElementHelper)
     };
+};
+
+type CreateElementHelperType = (
+    type: string,
+    options?: { [key: string]: any },
+    parent?: PbElement
+) => PbElement;
+
+export const createElementHelper: CreateElementHelperType = (type, options = {}, parent) => {
+    const plugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(pl => pl.elementType === type);
+
+    invariant(plugin, `Missing element plugin for type "${type}"!`);
+
+    return {
+        id: shortid.generate(),
+        data: {},
+        elements: [],
+        path: "",
+        type,
+        ...plugin.create(options, parent)
+    };
+};
+
+export const addElementToParentHelper = (
+    element: PbElement,
+    parent: PbElement,
+    position?: number
+) => {
+    if (position === undefined || position === null) {
+        return updateChildPathsHelper({
+            ...parent,
+            elements: parent.elements.concat([element])
+        });
+    }
+
+    return updateChildPathsHelper({
+        ...parent,
+        elements: [
+            ...parent.elements.slice(0, position),
+            element,
+            ...parent.elements.slice(position)
+        ]
+    });
 };

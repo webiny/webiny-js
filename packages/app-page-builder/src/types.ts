@@ -1,5 +1,8 @@
 import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
-import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import {
+    EventActionHandler,
+    EventActionHandlerActionCallableResponseType
+} from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import React, { ComponentType, ReactElement, ReactNode } from "react";
@@ -282,7 +285,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         source: PbElement | DragObjectWithTypeWithTargetType;
         target: PbElement;
         position: number | null;
-    }) => void;
+    }) => EventActionHandlerActionCallableResponseType;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: { element: PbElement; child: PbElement }) => PbElement | undefined;
     // Executed after element was created

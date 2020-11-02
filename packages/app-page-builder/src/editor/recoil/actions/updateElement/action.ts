@@ -56,7 +56,7 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
     state,
     args
 ) => {
-    const { element, merge, history } = args;
+    const { element, merge, history = false } = args;
     const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];
     if (history === true) {
