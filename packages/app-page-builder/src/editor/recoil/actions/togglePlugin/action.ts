@@ -6,7 +6,7 @@ export const togglePluginAction: EventActionCallableType<TogglePluginActionArgsT
     state,
     args
 ) => {
-    const { name, params, closeOtherInGroup = false } = args;
+    const { name, params = {}, closeOtherInGroup = false } = args;
     const plugin = plugins.byName(name);
     if (!plugin) {
         throw new Error(`There is no plugin with name "${name}".`);

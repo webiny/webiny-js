@@ -1,6 +1,5 @@
 import React from "react";
 import { uiAtom } from "../recoil/modules";
-import { PbElement } from "@webiny/app-page-builder/types";
 import { ConnectDropTarget, DragObjectWithType, useDrop } from "react-dnd";
 import { useRecoilValue } from "recoil";
 
@@ -32,7 +31,13 @@ export type DroppableIsVisiblePropType = (params: {
     item: any;
     isDragging: boolean;
 }) => boolean;
-export type DroppableOnDropPropType = (item: DragObjectWithType & PbElement) => void;
+export type DragObjectWithTypeWithTargetType = DragObjectWithType & {
+    id?: string;
+    path?: string;
+    type: string;
+    target: string[];
+};
+export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTargetType) => void;
 export type DroppableProps = {
     type: string;
     children: DroppableChildrenFunction;

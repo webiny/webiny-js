@@ -1,5 +1,7 @@
+import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
@@ -276,8 +278,8 @@ export type PbEditorPageElementPlugin = Plugin & {
     canDelete?: (params: { element: PbElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        store?: Store;
-        source: PbElement | { type: string; path?: string };
+        state?: PbState;
+        source: PbElement | DragObjectWithTypeWithTargetType;
         target: PbElement;
         position: number | null;
     }) => void;

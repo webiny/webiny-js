@@ -1,7 +1,7 @@
-import { PbElement } from "@webiny/app-page-builder/types";
+import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 
 export type DropElementActionArgsType = {
-    source: PbElement;
+    source: DragObjectWithTypeWithTargetType;
     target: {
         id: string;
         type: string;
