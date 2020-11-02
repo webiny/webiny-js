@@ -125,6 +125,41 @@ export default {
 
                 return file;
             },
+            async createInBatch(data) {
+                const identity = context.security.getIdentity();
+
+                const createFileData = [];
+                const files = [];
+
+                for (let i = 0; i < data.length; i++) {
+                    const fileData = data[i];
+                    // Use `WithFields` model for data validation and setting default value.
+                    const file = new File().populate(fileData);
+                    file.id = KSUID.randomSync().string;
+                    await file.validate();
+                    // Add "createdBy"
+                    file.createdBy = {
+                        id: identity.id,
+                        displayName: identity.displayName
+                    };
+
+                    files.push(file);
+
+                    createFileData.push({
+                        data: {
+                            PK: PK_FILE,
+                            SK: file.id,
+                            ...getJSON(file)
+                        }
+                    });
+                }
+                // Use "Batch write"
+                const batch = db.batch();
+                batch.create(...createFileData);
+                await batch.execute();
+
+                return files;
+            },
             async update({ id, data, existingFile }) {
                 // Only update incoming props
                 const propsToUpdate = Object.keys(data);
