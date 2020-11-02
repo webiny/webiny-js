@@ -31,7 +31,18 @@ export type PbElement = {
     path: string;
     type: string;
     elements: Array<PbElement>;
-    data: { [key: string]: any };
+    data: {
+        image?: {
+            width?: string | number;
+            height?: string | number;
+            file?: string;
+        };
+        settings?: {
+            horizontalAlign?: string;
+            [key: string]: any;
+        };
+        [key: string]: any;
+    };
     [key: string]: any;
 };
 

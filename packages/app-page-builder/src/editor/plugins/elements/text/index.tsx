@@ -38,7 +38,7 @@ export default (): PbEditorPageElementPlugin => {
             "pb-editor-page-element-settings-delete",
             ""
         ],
-        target: ["column", "row", "list-item"],
+        target: ["column", "row", "list-item", "cell"],
         create({ content = {}, ...options }) {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 

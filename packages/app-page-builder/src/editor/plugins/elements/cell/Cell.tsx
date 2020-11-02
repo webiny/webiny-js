@@ -6,12 +6,13 @@ import {
     DropElementActionEvent,
     TogglePluginActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
+import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
 import React from "react";
 import Element from "@webiny/app-page-builder/editor/components/Element";
 import styled from "@emotion/styled";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
 const CellStyle = styled("div")({
     position: "relative",
@@ -37,10 +38,11 @@ const addIcon = css({
 });
 
 type CellPropsType = {
-    element: PbShallowElement;
+    elementId: string;
 };
-const Cell: React.FunctionComponent<CellPropsType> = ({ element }) => {
+const Cell: React.FunctionComponent<CellPropsType> = ({ elementId }) => {
     const handler = useEventActionHandler();
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const { id, path, elements, type } = element;
     const totalElements = elements.length;
 
@@ -82,25 +84,23 @@ const Cell: React.FunctionComponent<CellPropsType> = ({ element }) => {
             )}
             {elements.map((childId, index) => {
                 return (
-                    <>
+                    <React.Fragment key={`child-${childId}`}>
                         <DropZone.Above
                             type={type}
                             onDrop={source => dropElementAction(source, index)}
                         />
-                        <Element key={childId} id={childId} />
+                        <Element id={childId} />
                         {index === elements.length - 1 && (
                             <DropZone.Below
                                 type={type}
                                 onDrop={source => dropElementAction(source, totalElements)}
                             />
                         )}
-                    </>
+                    </React.Fragment>
                 );
             })}
         </CellStyle>
     );
 };
 
-export default React.memo(Cell, (prev, next) => {
-    return prev.element.id === next.element.id;
-});
+export default React.memo(Cell);

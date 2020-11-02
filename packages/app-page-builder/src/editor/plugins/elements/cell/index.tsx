@@ -11,23 +11,8 @@ import {
     createElementHelper
 } from "@webiny/app-page-builder/editor/recoil/helpers";
 import React from "react";
-import {
-    PbEditorPageElementPlugin,
-    PbElement,
-    PbShallowElement
-} from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import Cell from "./Cell";
-
-const transformToShallowElement = (element: PbShallowElement | PbElement): PbShallowElement => {
-    const isShallow = element.elements.some(child => typeof child === "string");
-    if (isShallow || element.elements.length === 0) {
-        return element as PbShallowElement;
-    }
-    return {
-        ...element,
-        elements: (element as PbElement).elements.map(child => child.id)
-    };
-};
 
 const createDroppedElement = (
     source: DragObjectWithTypeWithTargetType,
@@ -93,10 +78,10 @@ const plugin: PbEditorPageElementPlugin = {
             source as any,
             target
         );
-        const parentTarget = addElementToParentHelper(element, target, position);
+        const parent = addElementToParentHelper(element, target, position);
 
         const { state: stateResult, actions } = updateElementAction(state, {
-            element: parentTarget
+            element: parent
         }) as EventActionHandlerActionCallableResponseType;
         // if source has path it means that source is a PbElement or similar
         // so we can use path and id from the source to represent the element
@@ -124,6 +109,7 @@ const plugin: PbEditorPageElementPlugin = {
                 })
             );
         }
+        console.log({ state: stateResult, actions });
 
         return {
             state: stateResult,
@@ -131,8 +117,7 @@ const plugin: PbEditorPageElementPlugin = {
         };
     },
     render(props) {
-        const { element } = props;
-        return <Cell {...props} element={transformToShallowElement(element)} />;
+        return <Cell {...props} elementId={props.element.id} />;
     }
 };
 

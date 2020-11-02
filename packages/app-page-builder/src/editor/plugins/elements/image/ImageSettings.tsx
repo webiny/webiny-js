@@ -1,15 +1,18 @@
 import React, { useMemo, useCallback } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { set } from "dot-prop-immutable";
-import { get } from "lodash";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { set } from "dot-prop-immutable";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { useRecoilValue } from "recoil";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
-const ImageSettings = ({ element, updateElement }) => {
-    const { image = {} } = get(element, "data", {});
+const ImageSettings = () => {
+    const element = useRecoilValue(activeElementSelector);
+    const { image = {} } = element.data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const updateElement = ({ element }: any) => {
+        return;
+    };
 
     const setData = useMemo(() => {
         const historyUpdated = {};
@@ -58,7 +61,4 @@ const ImageSettings = ({ element, updateElement }) => {
         </Tabs>
     );
 };
-
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(ImageSettings);
+export default React.memo(ImageSettings);

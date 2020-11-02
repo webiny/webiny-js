@@ -1,6 +1,6 @@
-import * as React from "react";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import React from "react";
 import ImageContainer from "./ImageContainer";
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 
 const Image = ({ element }) => {
     return (
