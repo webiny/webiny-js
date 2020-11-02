@@ -79,7 +79,7 @@ export default {
                 );
                 return localeContexts.map(plugin => ({
                     context: plugin.context.name,
-                    locale: self.getCurrentLocale(plugin.context.name).code
+                    locale: self.getCurrentLocale(plugin.context.name)?.code
                 }));
             },
             getCurrentLocale(localeContext = "default") {
