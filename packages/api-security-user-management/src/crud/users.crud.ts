@@ -4,7 +4,6 @@ import { pipe } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { withFields, string, setOnce, onSet, skipOnPopulate } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import KSUID from "ksuid";
 
 export const getJSON = instance => {
     const output = {};
@@ -82,7 +81,7 @@ export default {
                     limit: 1
                 });
 
-                return user;
+                return user?.data;
             },
             async getByLogin(login: string) {
                 const [[user]] = await db.read<User>({
@@ -91,7 +90,7 @@ export default {
                     limit: 1
                 });
 
-                return user;
+                return user?.GSI_DATA;
             },
             async list(args) {
                 const [users] = await db.read<User>({
@@ -100,7 +99,7 @@ export default {
                     ...args
                 });
 
-                return users;
+                return users.map(user => user.GSI_DATA);
             },
             async create(data) {
                 const identity = context.security.getIdentity();
@@ -116,7 +115,7 @@ export default {
 
                 // Use `WithFields` model for data validation and setting default value.
                 const user = new UserDataModel().populate(data);
-                user.id = KSUID.randomSync().string;
+                user.id = data.id;
                 await user.validate();
                 // Add "createdBy"
                 user.createdBy = {
