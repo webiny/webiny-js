@@ -176,32 +176,30 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
-            async avatar(securityUser, args, context) {
-                const { users } = context;
-                const id = securityUser.id;
+            fullName(user) {
+                return `${user.firstName} ${user.lastName}`;
+            },
+            async avatar(user) {
+                return user.avatar;
+            },
+            async group(user, args, context) {
+                const group = await context.groups.get(user.group);
 
-                const user = await users.get(id);
-                // All the user's data is inside "data" field.
-                return user.data.avatar;
+                return group?.data;
             },
-            async group(user) {
-                return await user.groupData;
-            },
-            async permissions(user) {
-                return await user.permissions;
+            async permissions(_, args, context) {
+                return context.security.getPermissions();
             }
         },
         SecurityIdentity: {
+            fullName(user) {
+                return `${user.firstName} ${user.lastName}`;
+            },
             login: (_, args, context) => {
                 return context.security.getIdentity().login;
             },
-            async avatar(securityIdentity, args, context) {
-                const { users } = context;
-                const id = securityIdentity.id;
-
-                const user = await users.get(id);
-                // All the user's data is inside "data" field.
-                return user.data.avatar;
+            async avatar(user) {
+                return user.avatar;
             },
             permissions: (_, args, context) => {
                 return context.security.getPermissions();
