@@ -1,4 +1,4 @@
-import useGqlHandler from "../useGqlHandler";
+import useGqlHandler from "./useGqlHandler";
 
 describe(`Test "Security" install`, () => {
     const { install } = useGqlHandler();
