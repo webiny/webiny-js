@@ -96,19 +96,6 @@ export default {
         },
         PbMutation: {
             updateSettings: resolveUpdateSettings(ctx => ctx.models.PbSettings)
-        },
-        PbSocialMedia: {
-            image({ image }) {
-                return image ? { __typename: "File", id: image } : null;
-            }
-        },
-        PbSettings: {
-            favicon({ favicon }) {
-                return favicon ? { __typename: "File", id: favicon } : null;
-            },
-            logo({ logo }) {
-                return logo ? { __typename: "File", id: logo } : null;
-            }
         }
     }
 };
