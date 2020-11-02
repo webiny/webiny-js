@@ -1,23 +1,10 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
-import {
-    GSI1_PK_GROUP,
-    PK_GROUP,
-    SK_GROUP
-} from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { id, slug }, context) => {
-    const Model = context.models.SECURITY;
-
+    const { groups } = context;
     try {
         if (id) {
-            const PK = `${PK_GROUP}#${id}`;
-            // Load "Group" by "id"
-            const group = await Model.findOne({
-                query: {
-                    PK: PK,
-                    SK: SK_GROUP
-                }
-            });
+            const group = await groups.get(id);
 
             if (!group) {
                 return new NotFoundResponse(`Unable to find group with id: ${id}`);
@@ -26,15 +13,7 @@ export default async (_, { id, slug }, context) => {
         }
 
         if (slug) {
-            const GSI_PK = GSI1_PK_GROUP;
-            const GSI_SK = `slug#${slug}`;
-            // Load "Group" by "slug"
-            const group = await Model.findOne({
-                query: {
-                    GSI1_PK: GSI_PK,
-                    GSI1_SK: GSI_SK
-                }
-            });
+            const group = await groups.getBySlug(slug);
 
             if (!group) {
                 return new NotFoundResponse(`Unable to find group with slug: ${slug}`);
