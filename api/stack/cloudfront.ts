@@ -6,7 +6,7 @@ class Cloudfront {
     cloudfront: aws.cloudfront.Distribution;
     constructor({ apiGateway }: { apiGateway: awsx.apigateway.API }) {
         this.cloudfront = new aws.cloudfront.Distribution("api-cloudfront", {
-            waitForDeployment: false,
+            waitForDeployment: true,
             defaultCacheBehavior: {
                 allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
