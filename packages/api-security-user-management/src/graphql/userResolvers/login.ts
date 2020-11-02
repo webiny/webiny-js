@@ -12,15 +12,14 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
         const { users } = context;
 
-        const user = await users.get(identity.id);
+        let user = await users.get(identity.id);
 
         let firstLogin = false;
-        let userData = user?.data;
 
-        if (!userData) {
+        if (!user) {
             firstLogin = true;
             // Create a "Security User"
-            userData = await users.create({
+            user = await users.create({
                 id: identity.id,
                 email: identity.login,
                 firstName: identity.firstName || "",
@@ -34,10 +33,10 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
         );
 
         if (typeof authPlugin.onLogin === "function") {
-            await authPlugin.onLogin({ user: userData, firstLogin }, context);
+            await authPlugin.onLogin({ user, firstLogin }, context);
         }
 
-        return new Response(userData);
+        return new Response(user);
     } catch (e) {
         return new ErrorResponse({
             message: e.message,

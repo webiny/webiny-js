@@ -7,12 +7,10 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { data } = args;
 
     const identity = security.getIdentity();
-    const user = await users.get(identity.id);
+    let existingUserData = await users.get(identity.id);
 
-    if (user) {
+    if (existingUserData) {
         try {
-            let existingUserData = user.data;
-
             existingUserData = await users.update({ id: identity.id, data, existingUserData });
 
             const authPlugin = plugins.byName<SecurityUserManagementPlugin>(
@@ -20,7 +18,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             );
 
             if (authPlugin) {
-                await authPlugin.updateUser({ data: args.data, user: existingUserData }, context);
+                await authPlugin.updateUser({ data, user: existingUserData }, context);
             }
 
             return new Response(existingUserData);

@@ -10,7 +10,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
         if (!user) {
             return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
         }
-        return new Response(user.data);
+        return new Response(user);
     }
 
     return new Response(null);

@@ -15,8 +15,7 @@ export default async (_, args, context) => {
         if (!user) {
             return new NotFoundResponse("User not found!");
         }
-        const userData = user.GSI_DATA;
-        return new Response(userData);
+        return new Response(user);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
