@@ -15,7 +15,7 @@ import {
     DELETE_SECURITY_GROUP,
     GET_SECURITY_GROUP,
     LIST_SECURITY_GROUPS
-} from "./graphql/group";
+} from "./graphql/groups";
 import {
     GET_CURRENT_SECURITY_USER,
     UPDATE_CURRENT_SECURITY_USER,
@@ -25,7 +25,7 @@ import {
     LIST_SECURITY_USERS,
     GET_SECURITY_USER,
     LOGIN
-} from "./graphql/user";
+} from "./graphql/users";
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
 export default () => {
