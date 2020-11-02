@@ -87,6 +87,7 @@ const plugin: AdminInstallationPlugin = {
     dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
+        return true;
         const { data } = await client.query({ query: IS_INSTALLED });
         return data.forms.isInstalled.data;
     },
