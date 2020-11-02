@@ -14,7 +14,7 @@ type ProviderType = {
 };
 const EditorContext = createContext<ProviderType>(null);
 export const EditorProvider: React.FunctionComponent<any> = props => {
-    const handlerRef = React.useRef<EventActionHandler>(new EventActionHandler());
+    const handlerRef = React.useRef<EventActionHandler>(new EventActionHandler(["content"]));
     const provider: ProviderType = {
         eventActionHandler: handlerRef.current
     };

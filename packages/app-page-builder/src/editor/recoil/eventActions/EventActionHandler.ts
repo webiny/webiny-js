@@ -60,6 +60,11 @@ const MAX_EVENT_ACTION_NESTING_LEVELS = 3;
  */
 export class EventActionHandler {
     private readonly _registry: RegistryType = new Map();
+    private readonly _trackedStates: string[];
+
+    public constructor(trackedStates?: (keyof CallableStateType)[]) {
+        this._trackedStates = trackedStates || [];
+    }
 
     public on(target: TargetType, callable: EventActionCallableType): UnregisterType {
         const name = this.getEventActionClassName(target);
@@ -139,7 +144,13 @@ export class EventActionHandler {
         if (Object.values(state).length === 0) {
             return;
         }
-        connectedBatchStart();
+        // this is required because if we start the batch
+        // there will be extra state in the undo
+        // does not matter that tracked state did not change
+        const setInBatch = this.isTrackedStateChanged(state);
+        if (setInBatch) {
+            connectedBatchStart();
+        }
         if (state.ui) {
             updateConnectedValue(uiAtom, state.ui);
         }
@@ -156,7 +167,13 @@ export class EventActionHandler {
             updateConnectedValue(contentAtom, state.content);
         }
 
-        connectedBatchEnd();
+        if (setInBatch) {
+            connectedBatchEnd();
+        }
+    }
+
+    private isTrackedStateChanged(state: CallableStateType): boolean {
+        return this._trackedStates.some(key => state[key] !== undefined);
     }
 
     private getCallableState(state: CallableStateType): PbState {

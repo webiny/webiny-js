@@ -1,12 +1,14 @@
+import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import lodashCloneDeep from "lodash/cloneDeep";
 import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
-import { uiAtom } from "../../recoil/modules";
-import { useRecoilValue } from "recoil";
-import { useRedo, useUndo } from "recoil-undo";
+import { contentAtom, ContentAtomType, elementsAtom, pageAtom, uiAtom } from "../../recoil/modules";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useIsTrackingHistory, useRedo, useUndo } from "recoil-undo";
 import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
@@ -47,14 +49,22 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
     }
 };
 
-export const Editor: React.FunctionComponent = () => {
+export const Editor: React.FunctionComponent<any> = ({ page }) => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing, slateFocused } = useRecoilValue(uiAtom);
+    const setPageAtomValue = useSetRecoilState(pageAtom);
+    const setElementsAtomValue = useSetRecoilState(elementsAtom);
+    const [contentAtomValue, setContentAtomValue] = useRecoilState(contentAtom);
     const undo = useUndo();
     const redo = useRedo();
+    const { getIsTrackingHistory, setIsTrackingHistory } = useIsTrackingHistory();
 
     const registeredPlugins = React.useRef<PluginRegistryType>();
+
+    if (contentAtomValue && getIsTrackingHistory() === false) {
+        setIsTrackingHistory(true);
+    }
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {
@@ -72,6 +82,15 @@ export const Editor: React.FunctionComponent = () => {
             redo();
         });
         registeredPlugins.current = registerPlugins(eventActionHandler);
+        const pageAtomValue = {
+            ...page,
+            content: undefined
+        };
+        const contentAtomValue: ContentAtomType = (page as any).content;
+        const elementsAtomValue = flattenElementsHelper(lodashCloneDeep(contentAtomValue));
+        setPageAtomValue(pageAtomValue);
+        setContentAtomValue(contentAtomValue);
+        setElementsAtomValue(elementsAtomValue);
         return () => {
             removeKeyHandler("mod+z");
             removeKeyHandler("mod+shift+z");
@@ -79,6 +98,7 @@ export const Editor: React.FunctionComponent = () => {
             unregisterPlugins(eventActionHandler, registeredPlugins.current);
         };
     }, []);
+
     const classes = {
         "pb-editor": true,
         "pb-editor-dragging": isDragging,
