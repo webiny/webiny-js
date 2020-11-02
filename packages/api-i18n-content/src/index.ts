@@ -13,7 +13,7 @@ export const hasI18NContentPermission = () => {
 
             const hasLocaleAccess =
                 !Array.isArray(contentPermission.locales) ||
-                contentPermission.locales.includes(context.i18nContent.locale.code);
+                contentPermission.locales.includes(context?.i18nContent?.locale?.code);
             if (!hasLocaleAccess) {
                 return new NotAuthorizedResponse();
             }
