@@ -42,7 +42,7 @@ export const DELETE_SECURITY_GROUP = /* GraphQL */ `
     mutation DeleteGroup($id: ID!) {
         security {
             deleteGroup(id: $id) {
-                data ${DATA_FIELD}
+                data
                 error ${ERROR_FIELD}
             }
         }
