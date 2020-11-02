@@ -29,6 +29,14 @@ const avatars = {
 };
 
 const mocks = {
+    getUserWithGroup: ({ userData = {}, groupId }) => ({
+        ...userData,
+        group: groupId
+    }),
+    getUserWithGroupData: ({ userData = {}, groupData = {} }) => ({
+        ...userData,
+        group: groupData
+    }),
     userA: {
         email: "user_a@yahoo.com",
         firstName: "Arabella",
@@ -42,7 +50,7 @@ const mocks = {
         avatar: avatars.userB
     },
     admin: {
-        id: "1234567890",
+        id: "15521103-5fee-48c3-8247-17e73e18407a",
         login: "admin@webiny.com",
         type: "admin",
         firstName: "Admin",
@@ -50,11 +58,27 @@ const mocks = {
         avatar: avatars.admin
     },
     adminUser: {
-        id: "1234567890",
+        id: "15521103-5fee-48c3-8247-17e73e18407a",
         email: "admin@webiny.com",
         firstName: "Admin",
         lastName: "Test",
-        avatar: avatars.admin
+        avatar: avatars.admin,
+        group: null
+    },
+    adminUserWithPermissions: {
+        id: "15521103-5fee-48c3-8247-17e73e18407a",
+        email: "admin@webiny.com",
+        firstName: "Admin",
+        lastName: "Test",
+        avatar: avatars.admin,
+        permissions: [
+            {
+                name: "security.user.manage"
+            },
+            {
+                name: "security.group.manage"
+            }
+        ]
     }
 };
 

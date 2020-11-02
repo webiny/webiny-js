@@ -5,6 +5,25 @@ const DATA_FIELD = /* GraphQL */ `
         firstName
         lastName
         avatar
+        group {
+            id
+            name
+            description
+            slug
+            permissions
+        }
+    }
+`;
+
+const DATA_FIELD_SECURITY_IDENTITY = /* GraphQL */ `
+    {
+        id
+        email
+        firstName
+        lastName
+        fullName
+        avatar
+        permissions
     }
 `;
 
@@ -20,7 +39,7 @@ export const LOGIN = /* GraphQL */ `
     mutation login {
         security {
             login {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD_SECURITY_IDENTITY}
                 error ${ERROR_FIELD}
             }
         }
