@@ -9,7 +9,7 @@ export default async (_, { id, slug }, context) => {
             if (!group) {
                 return new NotFoundResponse(`Unable to find group with id: ${id}`);
             }
-            return new Response(group.data);
+            return new Response(group);
         }
 
         if (slug) {
@@ -18,7 +18,7 @@ export default async (_, { id, slug }, context) => {
             if (!group) {
                 return new NotFoundResponse(`Unable to find group with slug: ${slug}`);
             }
-            return new Response(group.GSI_DATA);
+            return new Response(group);
         }
     } catch (e) {
         return new ErrorResponse({

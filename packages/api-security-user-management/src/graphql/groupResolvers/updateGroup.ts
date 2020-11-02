@@ -4,16 +4,16 @@ export default async (_, { id, data }, context) => {
     const { groups } = context;
 
     try {
-        const existingGroup = await groups.get(id);
+        const existingGroupData = await groups.get(id);
 
-        if (!existingGroup) {
+        if (!existingGroupData) {
             return new NotFoundResponse(`Group with id: ${id} not found!`);
         }
 
         const updatedGroupData = await groups.update({
             id,
             data,
-            existingGroupData: existingGroup.data
+            existingGroupData
         });
 
         return new Response(updatedGroupData);

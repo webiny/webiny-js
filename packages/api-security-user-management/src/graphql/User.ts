@@ -183,9 +183,7 @@ export default {
                 return user.avatar;
             },
             async group(user, args, context) {
-                const group = await context.groups.get(user.group);
-
-                return group?.data;
+                return await context.groups.get(user.group);
             },
             async permissions(_, args, context) {
                 return context.security.getPermissions();

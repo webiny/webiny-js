@@ -12,9 +12,7 @@ export default async (_, { where, sort = 1 }, context) => {
         // Load "Groups"
         const groupList = await groups.list({ beginsWith, sort: { GSI1_SK: sort } });
 
-        const data = groupList.map(group => group.GSI_DATA);
-
-        return new ListResponse(data);
+        return new ListResponse(groupList);
     } catch (e) {
         return new ListErrorResponse({
             message: e.message,

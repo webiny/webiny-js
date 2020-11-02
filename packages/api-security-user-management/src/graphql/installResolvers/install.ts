@@ -8,8 +8,7 @@ import { SecurityUserManagementPlugin } from "../../types";
 const ensureFullAccessGroup = async context => {
     const { groups } = context;
 
-    const group = await groups.getBySlug("security-full-access");
-    let groupData = group?.GSI_DATA;
+    let groupData = await groups.getBySlug("security-full-access");
 
     if (!groupData) {
         groupData = await groups.create(data.securityFullAccessGroup);

@@ -68,7 +68,7 @@ export default {
                     limit: 1
                 });
 
-                return group;
+                return group?.data;
             },
             async getBySlug(slug: string) {
                 const [[group]] = await db.read<Group>({
@@ -77,7 +77,7 @@ export default {
                     limit: 1
                 });
 
-                return group;
+                return group?.GSI_DATA;
             },
             async list(args) {
                 const [groups] = await db.read<Group>({
@@ -86,7 +86,7 @@ export default {
                     ...args
                 });
 
-                return groups;
+                return groups.map(group => group?.GSI_DATA).filter(Boolean);
             },
             async create(data) {
                 const identity = context.security.getIdentity();
