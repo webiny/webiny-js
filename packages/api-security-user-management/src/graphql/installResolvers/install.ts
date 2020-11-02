@@ -49,9 +49,9 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         const fullAccessGroup = await ensureFullAccessGroup(context);
 
         // Create new user
-        const user = await users.create({ ...data, group: fullAccessGroup.id });
+        await authPlugin.createUser({ data, user: data, permanent: true }, context);
 
-        await authPlugin.createUser({ data: args.data, user, permanent: true }, context);
+        await users.create({ ...data, group: fullAccessGroup.id });
 
         return new Response(true);
     } catch (e) {
