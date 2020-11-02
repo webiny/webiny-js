@@ -7,13 +7,13 @@ const resolver: GraphQLFieldResolver = async (root, { data }, context) => {
     const { users } = context;
 
     try {
-        const user = await users.create(data);
-
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(
             "security-user-management"
         );
 
-        await authPlugin.createUser({ data: data, user }, context);
+        await authPlugin.createUser({ data, user: data }, context);
+
+        const user = await users.create(data);
 
         return new Response(user);
     } catch (e) {
