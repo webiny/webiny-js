@@ -79,16 +79,12 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         },
         [elementId]
     );
-    const onMouseLeave = React.useCallback(
-        ev => {
-            if (element.type === "document") {
-                return;
-            }
-            ev.stopPropagation();
-            setUiAtomValue(unHighlightElementMutation);
-        },
-        [elementId]
-    );
+    const onMouseLeave = React.useCallback(() => {
+        if (element.type === "document") {
+            return;
+        }
+        setUiAtomValue(unHighlightElementMutation);
+    }, [elementId]);
 
     const renderDraggable = ({ drag }): JSX.Element => {
         return (

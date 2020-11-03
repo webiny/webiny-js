@@ -1,16 +1,24 @@
 import React, { useMemo, useCallback } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { get, set } from "dot-prop-immutable";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
 import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { get, set } from "dot-prop-immutable";
+import { useRecoilValue } from "recoil";
 import { getSvg } from "./utils";
 
-const IconSettings = ({ element, updateElement }) => {
+const IconSettings = () => {
+    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const handler = useEventActionHandler();
     const { data: { icon = {} } = {} } = element;
+
+    const updateElement = (args: UpdateElementActionArgsType) => {
+        handler.trigger(new UpdateElementActionEvent(args));
+    };
 
     const setData = useMemo(() => {
         const historyUpdated = {};
@@ -32,7 +40,7 @@ const IconSettings = ({ element, updateElement }) => {
                 updateElement({ element: newElement });
             }
         };
-    }, [element, updateElement]);
+    }, [element.id]);
 
     const updateIcon = useCallback(value => setData("id", value.id), [setData]);
     const updateColor = useCallback(value => setData("color", value), [setData]);
@@ -40,33 +48,29 @@ const IconSettings = ({ element, updateElement }) => {
     const updateWidth = useCallback(value => setData("width", value), [setData]);
 
     return (
-        <React.Fragment>
-            <Tabs>
-                <Tab label={"Icon"}>
-                    <IconPicker
-                        label={"Icon"}
-                        value={icon.id}
-                        updateValue={updateIcon}
-                        removable={false}
-                    />
-                    <Input
-                        label={"Width"}
-                        value={icon.width}
-                        updateValue={updateWidth}
-                        placeholder="50"
-                    />
-                    <ColorPicker
-                        label={"Color"}
-                        value={icon.color}
-                        updateValue={updateColor}
-                        updatePreview={updateColorPreview}
-                    />
-                </Tab>
-            </Tabs>
-        </React.Fragment>
+        <Tabs>
+            <Tab label={"Icon"}>
+                <IconPicker
+                    label={"Icon"}
+                    value={icon.id}
+                    updateValue={updateIcon}
+                    removable={false}
+                />
+                <Input
+                    label={"Width"}
+                    value={icon.width}
+                    updateValue={updateWidth}
+                    placeholder="50"
+                />
+                <ColorPicker
+                    label={"Color"}
+                    value={icon.color}
+                    updateValue={updateColor}
+                    updatePreview={updateColorPreview}
+                />
+            </Tab>
+        </Tabs>
     );
 };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(IconSettings);
+export default React.memo(IconSettings);

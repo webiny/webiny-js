@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { css } from "emotion";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import ConnectedElement from "@webiny/app-page-builder/editor/components/ConnectedElement";
