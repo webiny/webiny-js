@@ -17,7 +17,6 @@ export class PermissionsManagerClient {
     }
 
     private async invoke(operation: PermissionManagerOperation) {
-        return [{ name: "*" }]; // TODO
         const { error, data } = await this.context.handlerClient.invoke({
             name: this.functionName,
             payload: operation
