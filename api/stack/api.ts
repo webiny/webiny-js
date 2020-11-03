@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-// import vpc from "./vpc";
+import vpc from "./vpc";
 
 class Api {
     dynamoDbTable: aws.dynamodb.Table;
@@ -66,14 +66,13 @@ class Api {
                 environment: {
                     variables: {
                         ...env,
-                        DB_TABLE: this.dynamoDbTable.name,
-                        STORAGE_NAME: this.dynamoDbTable.name
+                        DB_TABLE: this.dynamoDbTable.name
                     }
+                },
+                vpcConfig: {
+                    subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
                 }
-                // vpcConfig: {
-                //     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                //     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                // }
             }),
             graphqlPlayground: new aws.lambda.Function("graphql-playground", {
                 runtime: "nodejs12.x",
@@ -83,11 +82,11 @@ class Api {
                 memorySize: 128,
                 code: new pulumi.asset.AssetArchive({
                     ".": new pulumi.asset.FileArchive("./code/graphqlPlayground/build")
-                })
-                /*vpcConfig: {
+                }),
+                vpcConfig: {
                     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
                     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                }*/
+                }
             })
         };
     }

@@ -2,11 +2,14 @@ import Cognito from "./stack/cognito";
 import Api from "./stack/api";
 import ApiGateway from "./stack/apiGateway";
 import Cloudfront from "./stack/cloudfront";
+import ElasticSearch from "./stack/elasticSearch";
 
 const cognito = new Cognito();
+const elasticSearch = new ElasticSearch();
 
 const api = new Api({
     env: {
+        ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DEBUG: String(process.env.DEBUG)

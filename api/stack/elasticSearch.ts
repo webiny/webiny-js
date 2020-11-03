@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
+
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
     constructor() {
