@@ -11,7 +11,8 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
+import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import filesPlugins from "@webiny/api-file-manager/plugins";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -21,6 +22,7 @@ export const handler = createHandler(
             playground: process.env.GRAPHQL_PLAYGROUND
         }
     }),
+    elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,
         driver: new DynamoDbDriver({
@@ -28,13 +30,6 @@ export const handler = createHandler(
                 convertEmptyValues: true,
                 region: process.env.AWS_REGION
             })
-        })
-    }),
-    dynamoDb({
-        tableName: process.env.DB_TABLE,
-        documentClient: new DocumentClient({
-            convertEmptyValues: true,
-            region: process.env.AWS_REGION
         })
     }),
     // Adds a context plugin to process `security` plugins for authentication
@@ -60,5 +55,8 @@ export const handler = createHandler(
     }),
     i18nPlugins(),
     i18nContentPlugins(),
+
+    filesPlugins(),
+
     pageBuilderPlugins()
 );
