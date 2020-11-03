@@ -32,11 +32,19 @@ export default () => [
                     return null;
                 },
                 async getPermissions() {
-                    const authorizationPlugin = context.plugins
-                        .byType<SecurityAuthorizationPlugin>("security-authorization")
-                        .pop();
+                    const authorizationPlugins = context.plugins.byType<
+                        SecurityAuthorizationPlugin
+                    >("security-authorization");
 
-                    return await authorizationPlugin.getPermissions(context);
+                    for (let i = 0; i < authorizationPlugins.length; i++) {
+                        const result = await authorizationPlugins[i].getPermissions(context);
+                        if (Array.isArray(result)) {
+                            return result;
+                        }
+                    }
+
+                    // Returning an empty array since not a single plugin returned any permissions.
+                    return [];
                 }
             });
 
