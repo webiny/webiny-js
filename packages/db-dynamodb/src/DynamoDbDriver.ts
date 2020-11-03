@@ -107,7 +107,7 @@ class DynamoDbDriver implements DbDriver {
 
         const batchProcess = this.getBatchProcess(batch);
         batchProcess.addBatchDelete({
-            tableName: table,
+            table,
             query
         });
 
