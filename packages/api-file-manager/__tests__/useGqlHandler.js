@@ -16,7 +16,7 @@ export default ({ database } = {}) => {
         neDb({ database }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
+        { type: "security-authorization", getPermissions: () => [{ name: "*"}] },
         filesPlugins(),
         filesResolvers()
     );

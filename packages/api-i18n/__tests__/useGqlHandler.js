@@ -22,7 +22,7 @@ export default () => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
+        { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
         i18nPlugins()
     );
 
