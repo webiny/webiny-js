@@ -1,7 +1,5 @@
 import document from "./document";
-// import row from "./row";
 import block from "./block";
-// import column from "./column";
 import image from "./image";
 import text from "./text";
 import grid from "./grid";

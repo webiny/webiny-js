@@ -21,7 +21,8 @@ import {
     dropElementPlugin,
     deleteElementPlugin,
     deactivatePluginPlugin,
-    updateRevisionPlugin
+    updateRevisionPlugin,
+    resizePlugin
 } from "../recoil/actions/plugins";
 
 export default () => [
@@ -48,5 +49,6 @@ export default () => [
     dropElementPlugin(),
     deactivatePluginPlugin(),
     deleteElementPlugin(),
-    updateRevisionPlugin()
+    updateRevisionPlugin(),
+    ...resizePlugin()
 ];

@@ -26,33 +26,35 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-export type PbElement = {
-    id: string;
-    path: string;
-    type: string;
-    elements: Array<PbElement>;
-    data: {
-        image?: {
-            width?: string | number;
-            height?: string | number;
-            file?: string;
-        };
-        settings?: {
-            horizontalAlign?: string;
-            [key: string]: any;
+type PbElementData = {
+    image?: {
+        width?: string | number;
+        height?: string | number;
+        file?: string;
+        title?: string;
+    };
+    settings?: {
+        horizontalAlign?: string;
+        height?: {
+            value?: number;
         };
         [key: string]: any;
     };
     [key: string]: any;
 };
-
-export type PbShallowElement = {
+type PbBaseElement = {
     id: string;
     path: string;
     type: string;
-    elements: string[];
-    data: { [key: string]: any };
+    data: PbElementData;
     [key: string]: any;
+};
+export type PbElement = PbBaseElement & {
+    elements: PbElement[];
+};
+
+export type PbShallowElement = PbBaseElement & {
+    elements: string[];
 };
 
 export type PbTheme = {

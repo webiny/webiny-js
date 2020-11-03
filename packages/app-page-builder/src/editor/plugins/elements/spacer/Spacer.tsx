@@ -36,4 +36,4 @@ const Spacer = ({ element }) => {
     );
 };
 
-export default Spacer;
+export default React.memo(Spacer);

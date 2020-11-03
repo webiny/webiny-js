@@ -1,3 +1,4 @@
+import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import invariant from "invariant";
 import shortid from "shortid";
 import lodashCloneDeep from "lodash/cloneDeep";
@@ -156,4 +157,25 @@ export const addElementToParentHelper = (
             ...parent.elements.slice(position)
         ]
     });
+};
+
+export const createDroppedElementHelper = (
+    source: DragObjectWithTypeWithTargetType,
+    target: PbElement
+): { element: PbElement; dispatchCreateElementAction?: boolean } => {
+    if (source.path) {
+        return {
+            element: cloneElementHelper({
+                id: source.id,
+                path: source.path,
+                type: source.type as string,
+                elements: (source as any).elements || [],
+                data: (source as any).data || {}
+            })
+        };
+    }
+    return {
+        element: createElementHelper(source.type, {}, target),
+        dispatchCreateElementAction: true
+    };
 };

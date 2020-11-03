@@ -1,3 +1,5 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useMemo, useCallback } from "react";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -7,12 +9,9 @@ import { useRecoilValue } from "recoil";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
 const ImageSettings = () => {
+    const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementSelector);
     const { image = {} } = element.data;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const updateElement = ({ element }: any) => {
-        return;
-    };
 
     const setData = useMemo(() => {
         const historyUpdated = {};
@@ -23,10 +22,14 @@ const ImageSettings = () => {
 
             if (historyUpdated[name] !== value) {
                 historyUpdated[name] = value;
-                updateElement({ element: newElement });
+                handler.trigger(
+                    new UpdateElementActionEvent({
+                        element: newElement
+                    })
+                );
             }
         };
-    }, [element, updateElement]);
+    }, [element.id]);
 
     const updateTitle = useCallback(value => setData("title", value), [setData]);
     const updateWidth = useCallback(value => setData("width", value), [setData]);

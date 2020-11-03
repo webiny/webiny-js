@@ -1,17 +1,18 @@
+import React from "react";
+import Block from "./Block";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
+    updateElementAction,
     UpdateElementActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import React from "react";
-import Block from "./Block";
+import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
-    createElement,
-    cloneElement,
-    addElementToParent
-} from "@webiny/app-page-builder/editor/utils";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+    addElementToParentHelper,
+    createDroppedElementHelper
+} from "@webiny/app-page-builder/editor/recoil/helpers";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -65,18 +66,19 @@ export default (): PbEditorPageElementPlugin => {
             return <Block {...props} />;
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived({ source, target, position = null }: any) {
+        onReceived({ source, target, position = null, state }) {
             const handler = useEventActionHandler();
-            let dispatchNew = false;
-            let element;
-            if (source.path) {
-                element = cloneElement(source);
-            } else {
-                dispatchNew = true;
-                element = createElement(source.type, {}, target);
-            }
 
-            const block = addElementToParent(element, target, position);
+            const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
+                source as any,
+                target
+            );
+
+            const block = addElementToParentHelper(element, target, position);
+
+            const result = updateElementAction(state, {
+                element: block
+            }) as EventActionHandlerActionCallableResponseType;
 
             handler.trigger(
                 new UpdateElementActionEvent({
@@ -85,22 +87,23 @@ export default (): PbEditorPageElementPlugin => {
             );
 
             if (source.path) {
-                handler.trigger(
+                result.actions.push(
                     new DeleteElementActionEvent({
-                        element: source
+                        element: source as PbElement
                     })
                 );
             }
 
-            if (!dispatchNew) {
-                return;
+            if (!dispatchCreateElementAction) {
+                return result;
             }
-            handler.trigger(
+            result.actions.push(
                 new CreateElementActionEvent({
                     element,
-                    source
+                    source: source as PbElement
                 })
             );
+            return result;
         },
         onChildDeleted({ element }) {
             if (element.elements.length > 0) {

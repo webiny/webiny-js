@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
+import Slate from "@webiny/app-page-builder/editor/components/Slate";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useHandler } from "@webiny/app/hooks/useHandler";
@@ -46,6 +46,8 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props
         );
     });
 
+    const slateValue = element.data?.text || "";
+
     return (
         <div
             style={{
@@ -64,11 +66,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = props
                 )}
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-                <ConnectedSlate
-                    elementId={element.id}
-                    onChange={onChange}
-                    exclude={excludePlugins}
-                />
+                <Slate value={slateValue} onChange={onChange} exclude={excludePlugins} />
             </a>
         </div>
     );

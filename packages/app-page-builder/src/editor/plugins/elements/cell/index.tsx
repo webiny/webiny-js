@@ -1,4 +1,5 @@
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
+import React from "react";
+import CellContainer from "./CellContainer";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
@@ -7,33 +8,9 @@ import {
 import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
     addElementToParentHelper,
-    cloneElementHelper,
-    createElementHelper
+    createDroppedElementHelper
 } from "@webiny/app-page-builder/editor/recoil/helpers";
-import React from "react";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
-import Cell from "./Cell";
-
-const createDroppedElement = (
-    source: DragObjectWithTypeWithTargetType,
-    target: PbElement
-): { element: PbElement; dispatchCreateElementAction?: boolean } => {
-    if (source.path) {
-        return {
-            element: cloneElementHelper({
-                id: source.id,
-                path: source.path,
-                type: source.type as string,
-                elements: (source as any).elements || [],
-                data: (source as any).data || {}
-            })
-        };
-    }
-    return {
-        element: createElementHelper(source.type, {}, target),
-        dispatchCreateElementAction: true
-    };
-};
 
 const plugin: PbEditorPageElementPlugin = {
     type: "pb-editor-page-element",
@@ -74,20 +51,20 @@ const plugin: PbEditorPageElementPlugin = {
         };
     },
     onReceived({ source, position, target, state }) {
-        const { element, dispatchCreateElementAction = false } = createDroppedElement(
+        const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
             source as any,
             target
         );
         const parent = addElementToParentHelper(element, target, position);
 
-        const { state: stateResult, actions } = updateElementAction(state, {
+        const result = updateElementAction(state, {
             element: parent
         }) as EventActionHandlerActionCallableResponseType;
         // if source has path it means that source is a PbElement or similar
         // so we can use path and id from the source to represent the element
         // and execute the delete element action
         if (source.path) {
-            actions.push(
+            result.actions.push(
                 new DeleteElementActionEvent({
                     element: {
                         id: source.id as string,
@@ -101,23 +78,20 @@ const plugin: PbEditorPageElementPlugin = {
         }
         // at this point we think we know source is PbElement
         // so we can dispatch create element action to be ran after this
-        if (dispatchCreateElementAction) {
-            actions.push(
-                new CreateElementActionEvent({
-                    element,
-                    source: source as PbElement
-                })
-            );
+        if (!dispatchCreateElementAction) {
+            return result;
         }
-        console.log({ state: stateResult, actions });
+        result.actions.push(
+            new CreateElementActionEvent({
+                element,
+                source: source as PbElement
+            })
+        );
 
-        return {
-            state: stateResult,
-            actions
-        };
+        return result;
     },
     render(props) {
-        return <Cell {...props} elementId={props.element.id} />;
+        return <CellContainer {...props} elementId={props.element.id} />;
     }
 };
 
