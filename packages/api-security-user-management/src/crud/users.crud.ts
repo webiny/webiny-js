@@ -104,7 +104,7 @@ export default {
             async create(data) {
                 const identity = context.security.getIdentity();
 
-                // TODO: We'll see where to put this
+                // Don't allow creating user with same "email".
                 const existingUser = await this.getByLogin(data.email);
                 if (existingUser) {
                     throw {
@@ -160,7 +160,7 @@ export default {
                     existingUserData[key] = data[key];
                 });
 
-                // TODO: We'll see where to put this
+                // Don't allow updating user with existing "email".
                 if (data.email) {
                     const existingUser = await this.getByLogin(data.email);
                     if (existingUser) {

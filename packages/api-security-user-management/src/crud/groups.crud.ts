@@ -91,7 +91,7 @@ export default {
             async create(data) {
                 const identity = context.security.getIdentity();
 
-                // TODO: We'll see where to put this
+                // Don't allow creating group with same "slug".
                 const existingGroup = await this.getBySlug(data.slug);
                 if (existingGroup) {
                     throw {
@@ -147,7 +147,7 @@ export default {
                     existingGroupData[key] = data[key];
                 });
 
-                // TODO: We'll see where to put this
+                // Don't allow updating group with existing "slug".
                 if (data.slug) {
                     const existingGroup = await this.getBySlug(data.slug);
                     if (existingGroup) {
