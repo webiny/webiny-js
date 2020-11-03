@@ -32,18 +32,18 @@ class Db {
     }
 
     async create(args: Args): Promise<Result<true>> {
-        return this.driver.create({ table: this.table, ...args });
+        return this.driver.create({ ...args, table: args.table || this.table });
     }
 
     async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
-        return this.driver.read({ table: this.table, ...args });
+        return this.driver.read({ ...args, table: args.table || this.table });
     }
 
     async update(args: Args): Promise<Result<true>> {
-        return this.driver.update({ table: this.table, ...args });
+        return this.driver.update({ ...args, table: args.table || this.table });
     }
     async delete(args: Args): Promise<Result<true>> {
-        return this.driver.delete({ table: this.table, ...args });
+        return this.driver.delete({ ...args, table: args.table || this.table });
     }
 
     batch() {
