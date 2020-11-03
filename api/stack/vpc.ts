@@ -94,5 +94,5 @@ class Vpc {
     }
 }
 
-const vpc = new Vpc();
-export default vpc;
+// const vpc = new Vpc();
+// export default vpc;

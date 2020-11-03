@@ -2,7 +2,6 @@ import Cognito from "./stack/cognito";
 import Api from "./stack/api";
 import ApiGateway from "./stack/apiGateway";
 import Cloudfront from "./stack/cloudfront";
-import GraphQlPlayground from "./stack/graphqlPlayground";
 
 const cognito = new Cognito();
 
@@ -14,29 +13,54 @@ const api = new Api({
     }
 });
 
-const graphqlPlayground = new GraphQlPlayground();
-
 const apiGateway = new ApiGateway({
     routes: [
         {
+            name: "graphql-post",
             path: "/graphql",
             method: "POST",
-            eventHandler: api.functions.api
+            function: api.functions.api
         },
         {
+            name: "graphql-options",
             path: "/graphql",
             method: "OPTIONS",
-            eventHandler: api.functions.api
+            function: api.functions.api
         },
         {
+            name: "graphql-get",
             path: "/graphql",
             method: "GET",
-            eventHandler: graphqlPlayground.function
-        }
+            function: api.functions.graphqlPlayground,
+        },
+      /*  {
+            name: "files-any",
+            path: "/files/{path}",
+            method: "ANY",
+            function: fileManager.functions.download
+        },
+        {
+            name: "cms-get",
+            path: "/cms/{key+}",
+            method: "GET",
+            function: graphqlPlayground.function
+        },
+        {
+            name: "cms-post",
+            path: "/cms/{key+}",
+            method: "POST",
+            function: headlessCms.functions.content
+        },
+        {
+            name: "cms-options",
+            path: "/cms/{key+}",
+            method: "OPTIONS",
+            function: headlessCms.functions.content
+        }*/
     ]
 });
 
-const cloudfront = new Cloudfront({ apiGateway: apiGateway.gateway });
+const cloudfront = new Cloudfront({ apiGateway });
 
 export const region = process.env.AWS_REGION;
 export const cdnDomain = cloudfront.cloudfront.domainName;

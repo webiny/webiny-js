@@ -1,59 +1,63 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
-import defaultLambdaRole from "./defaultLambdaRole";
+// import vpc from "./vpc";
 
 class Api {
-    dynamoDbTables: Record<string, aws.dynamodb.Table>;
-    functions: Record<string, aws.lambda.Function>;
+    dynamoDbTable: aws.dynamodb.Table;
+    functions: {
+        api: aws.lambda.Function;
+        graphqlPlayground: aws.lambda.Function;
+    };
+    role: aws.iam.Role;
+    policy: aws.iam.RolePolicyAttachment;
     constructor({ env }: { env: Record<string, any> }) {
-        this.dynamoDbTables = {
-            security: new aws.dynamodb.Table("SECURITY", {
-                attributes: [
-                    { name: "PK", type: "S" },
-                    { name: "SK", type: "S" },
-                    { name: "GSI1_PK", type: "S" },
-                    { name: "GSI1_SK", type: "S" }
-                ],
-                billingMode: "PAY_PER_REQUEST",
-                hashKey: "PK",
-                rangeKey: "SK",
-                globalSecondaryIndexes: [
+        this.dynamoDbTable = new aws.dynamodb.Table("webiny", {
+            attributes: [
+                { name: "PK", type: "S" },
+                { name: "SK", type: "S" },
+                { name: "GSI1_PK", type: "S" },
+                { name: "GSI1_SK", type: "S" }
+            ],
+            billingMode: "PAY_PER_REQUEST",
+            hashKey: "PK",
+            rangeKey: "SK",
+            globalSecondaryIndexes: [
+                {
+                    name: "GSI1",
+                    hashKey: "GSI1_PK",
+                    rangeKey: "GSI1_SK",
+                    projectionType: "ALL",
+                    readCapacity: 1,
+                    writeCapacity: 1
+                }
+            ]
+        });
+
+        this.role = new aws.iam.Role("default-lambda-role", {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
                     {
-                        name: "GSI1",
-                        hashKey: "GSI1_PK",
-                        rangeKey: "GSI1_SK",
-                        projectionType: "ALL",
-                        readCapacity: 1,
-                        writeCapacity: 1
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
                     }
                 ]
-            }),
-            i18n: new aws.dynamodb.Table("I18N", {
-                attributes: [
-                    { name: "PK", type: "S" },
-                    { name: "SK", type: "S" }
-                ],
-                billingMode: "PAY_PER_REQUEST",
-                hashKey: "PK",
-                rangeKey: "SK"
-            }),
-            pageBuilder: new aws.dynamodb.Table("PageBuilder", {
-                attributes: [
-                    { name: "PK", type: "S" },
-                    { name: "SK", type: "S" }
-                ],
-                billingMode: "PAY_PER_REQUEST",
-                hashKey: "PK",
-                rangeKey: "SK"
-            })
-        };
+            }
+        });
+
+        this.policy = new aws.iam.RolePolicyAttachment("default-lambda-role-policy", {
+            role: this.role,
+            policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
+        });
 
         this.functions = {
             api: new aws.lambda.Function("api", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
-                role: defaultLambdaRole.role.arn,
+                role: this.role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
@@ -62,16 +66,28 @@ class Api {
                 environment: {
                     variables: {
                         ...env,
-                        DB_TABLE_I18N: this.dynamoDbTables.i18n.name,
-                        DB_TABLE_PAGE_BUILDER: this.dynamoDbTables.pageBuilder.name,
-                        DB_TABLE_SECURITY: this.dynamoDbTables.security.name,
-                        STORAGE_NAME: this.dynamoDbTables.security.name
+                        DB_TABLE: this.dynamoDbTable.name,
+                        STORAGE_NAME: this.dynamoDbTable.name
                     }
-                },
-                vpcConfig: {
+                }
+                // vpcConfig: {
+                //     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                //     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+                // }
+            }),
+            graphqlPlayground: new aws.lambda.Function("graphql-playground", {
+                runtime: "nodejs12.x",
+                handler: "handler.handler",
+                role: this.role.arn,
+                timeout: 30,
+                memorySize: 128,
+                code: new pulumi.asset.AssetArchive({
+                    ".": new pulumi.asset.FileArchive("./code/graphqlPlayground/build")
+                })
+                /*vpcConfig: {
                     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
                     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                }
+                }*/
             })
         };
     }
