@@ -4,10 +4,9 @@ import { withFields, string, fields, boolean, withProps } from "@webiny/commodo"
 import { flow } from "lodash";
 import { Context as APIContext } from "@webiny/graphql/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
-import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 
 export type CreateSettingsModel = {
-    context: APIContext & HandlerI18NContext & CommodoContext;
+    context: APIContext & HandlerI18NContext;
     FormSettings: any;
 };
 

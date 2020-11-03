@@ -5,7 +5,6 @@
     "node_modules",
     "../graphql",
     "../api-i18n",
-    "../api-plugin-commodo-db-proxy",
     "../api-security",
     "../api-settings-manager",
     "../commodo",
@@ -21,9 +20,9 @@
   "references": [
     { "path": "../graphql/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
-    { "path": "../api-plugin-commodo-db-proxy/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-settings-manager/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
     { "path": "../handler-ssr/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }

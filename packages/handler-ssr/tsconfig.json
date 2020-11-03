@@ -3,8 +3,6 @@
   "references": [
     {"path": "../handler"},
     {"path": "../handler-client"},
-    {"path": "../handler-http"},
-    {"path": "../commodo"},
-    {"path": "../commodo-fields-storage-db-proxy"}
+    {"path": "../handler-http"}
   ]
 }

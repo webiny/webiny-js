@@ -1,8 +1,8 @@
+// @ts-nocheck
 import { resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
 import { Context } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
-type SettingsContext = Context & SettingsManagerContext;
+type SettingsContext = Context;
 
 export default {
     name: "graphql-schema-settings-page-builder",

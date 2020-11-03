@@ -43,7 +43,6 @@
     "@babel/preset-flow": "^7.0.0",
     "@commodo/fields-storage-nedb": "^2.0.0-next.15",
     "@shelf/jest-mongodb": "^1.1.3",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
     "@webiny/api-plugin-commodo-mongodb": "^4.13.0",
     "@webiny/api-plugin-commodo-nedb": "^4.13.0",
     "@webiny/api-settings-manager": "^4.13.0",

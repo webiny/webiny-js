@@ -2,7 +2,7 @@ import qs from "querystringify";
 import mime from "mime-types";
 import { parseBody } from "./functions";
 import { HandlerPlugin } from "@webiny/handler/types";
-import { getName } from "@webiny/commodo";
+import { getName } from "@commodo/name";
 
 const API_ACTION = {
     INVALIDATE_SSR_CACHE_BY_PATH: "invalidateSsrCacheByPath",

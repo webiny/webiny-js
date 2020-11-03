@@ -1,6 +1,6 @@
+// @ts-nocheck
 import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
 import isEqual from "fast-deep-equal";
 
@@ -11,7 +11,7 @@ const getRawData = value => {
 export type I18NField = {
     field?: any;
     createField?: (valuesInstance: any) => any;
-    context: CommodoContext & HandlerI18NContext;
+    context: HandlerI18NContext;
     [key: string]: any;
 };
 
