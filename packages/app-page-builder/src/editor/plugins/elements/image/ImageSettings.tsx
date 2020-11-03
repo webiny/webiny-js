@@ -1,7 +1,7 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useMemo, useCallback } from "react";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { set } from "dot-prop-immutable";
 import { Tabs, Tab } from "@webiny/ui/Tabs";

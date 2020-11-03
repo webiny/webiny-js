@@ -33,7 +33,7 @@ export type EventActionHandlerActionCallableResponseType = {
 };
 export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
 
-type CallableArgsType = {
+export type CallableArgsType = {
     [key: string]: any;
 };
 export type EventActionCallableType<T extends CallableArgsType = any> = (
@@ -50,6 +50,47 @@ type TargetType = { new (...args: any[]): EventAction<any> };
 type UnregisterType = () => boolean;
 
 const MAX_EVENT_ACTION_NESTING_LEVELS = 3;
+
+export const executeAction = <T extends CallableArgsType = any>(
+    state: PbState,
+    action: EventActionCallableType<T>,
+    args: T,
+    previousResult?: EventActionHandlerActionCallableResponseType
+): EventActionHandlerActionCallableResponseType => {
+    const previousState = previousResult?.state || {};
+    console.log(JSON.stringify(previousState));
+    const previousActions = previousResult?.actions || [];
+    const result = action(
+        { ...state, ...previousState },
+        args
+    ) as EventActionHandlerActionCallableResponseType;
+
+    return {
+        state: {
+            ...previousState,
+            ...result.state
+        },
+        actions: previousActions.concat(result.actions || [])
+    };
+};
+export const executeAsyncAction = async <T extends CallableArgsType = any>(
+    state: PbState,
+    action: EventActionCallableType<T>,
+    args: T,
+    previousResult?: EventActionHandlerActionCallableResponseType
+): Promise<EventActionHandlerActionCallableResponseType> => {
+    const previousState = previousResult?.state || {};
+    const previousActions = previousResult?.actions || [];
+    const result = await action({ ...state, ...previousState }, args);
+
+    return {
+        state: {
+            ...previousState,
+            ...result.state
+        },
+        actions: previousActions.concat(result.actions || [])
+    };
+};
 /**
  * Usages
  * subscribing to an event: handler.on(TargetEventClass, (args) => {your code})

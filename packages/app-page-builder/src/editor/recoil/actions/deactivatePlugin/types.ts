@@ -1,3 +1,5 @@
 export type DeactivatePluginActionArgsType = {
-    name: string;
+    name?: string;
+    type?: string;
+    names?: string[];
 };

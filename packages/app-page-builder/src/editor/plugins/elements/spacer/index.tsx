@@ -30,7 +30,7 @@ export default (): PbEditorPageElementPlugin => {
             }
         },
         settings: ["pb-editor-page-element-settings-delete"],
-        target: ["block", "column"],
+        target: ["cell", "block"],
         create(options = {}) {
             return {
                 type: "spacer",

@@ -51,7 +51,7 @@ export default () => {
                 "pb-editor-page-element-settings-delete",
                 ""
             ],
-            target: ["column", "row"],
+            target: ["cell", "block"],
             create(options) {
                 return {
                     type: "icon",

@@ -1,11 +1,9 @@
 import React from "react";
 import Block from "./Block";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
-    updateElementAction,
-    UpdateElementActionEvent
+    updateElementAction
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
@@ -40,11 +38,7 @@ export default (): PbEditorPageElementPlugin => {
         create(options = {}) {
             return {
                 type: "block",
-                elements: [
-                    // createRow({
-                    //     elements: [createColumn({ data: { width: 100 } })]
-                    // })
-                ],
+                elements: [],
                 data: {
                     settings: {
                         width: { value: "1000px" },
@@ -67,8 +61,6 @@ export default (): PbEditorPageElementPlugin => {
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position = null, state }) {
-            const handler = useEventActionHandler();
-
             const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
                 source as any,
                 target
@@ -79,12 +71,6 @@ export default (): PbEditorPageElementPlugin => {
             const result = updateElementAction(state, {
                 element: block
             }) as EventActionHandlerActionCallableResponseType;
-
-            handler.trigger(
-                new UpdateElementActionEvent({
-                    element: block
-                })
-            );
 
             if (source.path) {
                 result.actions.push(
@@ -104,25 +90,6 @@ export default (): PbEditorPageElementPlugin => {
                 })
             );
             return result;
-        },
-        onChildDeleted({ element }) {
-            if (element.elements.length > 0) {
-                return;
-            }
-            return {
-                ...element,
-                elements: [
-                    // createRow({
-                    //     elements: [
-                    //         createColumn({
-                    //             data: {
-                    //                 width: 100
-                    //             }
-                    //         })
-                    //     ]
-                    // })
-                ]
-            };
         }
     };
 };

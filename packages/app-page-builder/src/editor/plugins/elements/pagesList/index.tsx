@@ -39,7 +39,7 @@ export default () => {
                 }
             },
             settings: ["pb-editor-page-element-settings-delete"],
-            target: ["row", "column"],
+            target: ["cell", "block"],
             onCreate: "open-settings",
             create(options = {}) {
                 return {

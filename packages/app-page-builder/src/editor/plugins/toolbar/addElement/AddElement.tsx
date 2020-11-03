@@ -1,15 +1,17 @@
+import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import React, { useCallback, useState } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import {
-    dragStart,
-    dragEnd,
-    deactivatePlugin,
-    dropElement
-} from "@webiny/app-page-builder/editor/actions";
+    DeactivatePluginActionEvent,
+    DragEndActionEvent,
+    DragStartActionEvent,
+    DropElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
+import { DropElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/dropElement/types";
+import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
 import { getPlugins } from "@webiny/plugins";
-import { getActivePluginParams } from "@webiny/app-page-builder/editor/selectors";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { useRecoilValue } from "recoil";
 import * as Styled from "./StyledComponents";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
@@ -43,7 +45,30 @@ const categoriesList = css({
     }
 });
 
-const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd }) => {
+const AddElement: React.FunctionComponent = () => {
+    const handler = useEventActionHandler();
+    const plugin = useRecoilValue(
+        activePluginParamsByNameSelector("pb-editor-toolbar-add-element")
+    );
+
+    const { params } = plugin || {};
+
+    const dragStart = () => {
+        handler.trigger(new DragStartActionEvent());
+    };
+    const dragEnd = () => {
+        handler.trigger(new DragEndActionEvent());
+    };
+    const deactivatePlugin = () => {
+        handler.trigger(
+            new DeactivatePluginActionEvent({
+                name: ADD_ELEMENT
+            })
+        );
+    };
+    const dropElement = (args: DropElementActionArgsType) => {
+        handler.trigger(new DropElementActionEvent(args));
+    };
     const getGroups = useCallback(() => {
         return getPlugins<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
     }, []);
@@ -54,7 +79,7 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
         );
     }, []);
 
-    const [group, setGroup] = useState(getGroups()[0].name);
+    const [group, setGroup] = useState<string>(getGroups()[0].name);
 
     const { theme } = usePageBuilder();
 
@@ -85,18 +110,12 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                     key={plugin.name}
                     target={plugin.target}
                     beginDrag={props => {
-                        dragStart({ element: { type: elementType } });
-                        setTimeout(
-                            () =>
-                                deactivatePlugin({
-                                    name: ADD_ELEMENT
-                                }),
-                            20
-                        );
+                        dragStart();
+                        setTimeout(deactivatePlugin, 20);
                         return { type: elementType, target: props.target };
                     }}
-                    endDrag={(props, monitor) => {
-                        dragEnd({ element: monitor.getItem() });
+                    endDrag={() => {
+                        dragEnd();
                     }}
                 >
                     {({ drag }) => (
@@ -138,12 +157,10 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                 element,
                 () => {
                     dropElement({
-                        source: { type: plugin.elementType },
+                        source: { type: plugin.elementType } as any,
                         target: { ...params }
                     });
-                    deactivatePlugin({
-                        name: ADD_ELEMENT
-                    });
+                    deactivatePlugin();
                 },
                 "Click to Add",
                 plugin
@@ -201,12 +218,4 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     );
 };
 
-export default connect<any, any, any>(
-    state => {
-        const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
-        return {
-            params: getParams ? getParams(state) : null
-        };
-    },
-    { dragStart, dragEnd, deactivatePlugin, dropElement }
-)(AddElement);
+export default React.memo(AddElement);

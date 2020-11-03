@@ -1,11 +1,12 @@
 import React from "react";
 import CellContainer from "./CellContainer";
+import { executeAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
     updateElementAction
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
     addElementToParentHelper,
     createDroppedElementHelper
@@ -57,9 +58,10 @@ const plugin: PbEditorPageElementPlugin = {
         );
         const parent = addElementToParentHelper(element, target, position);
 
-        const result = updateElementAction(state, {
+        const result = executeAction<UpdateElementActionArgsType>(state, updateElementAction, {
             element: parent
-        }) as EventActionHandlerActionCallableResponseType;
+        });
+
         // if source has path it means that source is a PbElement or similar
         // so we can use path and id from the source to represent the element
         // and execute the delete element action
