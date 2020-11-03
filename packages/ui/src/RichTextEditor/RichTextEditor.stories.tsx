@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { storiesOf } from "@storybook/react";
-import { FileManager } from "@webiny/app-admin/components/FileManager";
+
 import {
     Story,
     StoryReadme,

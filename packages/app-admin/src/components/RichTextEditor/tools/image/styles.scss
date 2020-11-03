@@ -2,11 +2,15 @@
   --bg-color: #cdd1e0;
   --front-color: #388ae5;
   --border-color: #e8e8eb;
-  
+
   &--stretched {
     .image-tool__image {
       max-width: 1032px;
       margin: 0 auto 10px;
+
+      img {
+        width: 100%;
+      }
     }
   }
 
@@ -30,9 +34,9 @@
       max-width: 100%;
       vertical-align: bottom;
       display: block;
+      margin: 0 auto;
     }
   }
-  
 
   &__caption {
     &[contentEditable="true"][data-placeholder]::before {
@@ -57,13 +61,13 @@
   }
 
   &--empty {
-    &__image {
+    .image-tool__caption {
       display: none;
     }
-  }
 
-  &--empty {
-    display: none;
+    .image-tool__image {
+      display: none;
+    }
   }
 
   &--filled {

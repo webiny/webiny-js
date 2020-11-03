@@ -1,11 +1,17 @@
-// @ts-nocheck
+import { API } from "@editorjs/editorjs";
 import { make } from "./ui";
 import svgs from "./svgs";
+
+type Tune = { name: string; icon: string; title: string; action?: Function };
 
 /**
  * Working with Block Tunes
  */
 export default class Tunes {
+    private api: API;
+    private actions: any;
+    private onChange: Function;
+    private buttons: Array<HTMLElement>;
     /**
      * @param {object} tune - image tool Tunes managers
      * @param {object} tune.api - Editor API
@@ -24,7 +30,7 @@ export default class Tunes {
      *
      * @returns {{name: string, icon: string, title: string}[]}
      */
-    static get tunes() {
+    static get tunes(): Tune[] {
         return [
             {
                 name: "stretched",

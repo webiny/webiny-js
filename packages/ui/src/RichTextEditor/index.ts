@@ -1,1 +1,2 @@
-export { default as RichTextEditor } from "./RichTextEditor";
+export * from "./RichTextEditor";
+export { createPropsFromConfig  } from "./createPropsFromConfig";

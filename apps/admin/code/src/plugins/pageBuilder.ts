@@ -1,14 +1,15 @@
-// Core Page Builder app plugins.
+/* Core Page Builder app plugins */
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 
-// Welcome screen widget for Page Builder
+/* Welcome screen widget for Page Builder */
 import welcomeScreenWidget from "@webiny/app-page-builder/admin/plugins/welcomeScreenWidget";
 
-// Other plugins to extend Page Builder
+/* Other plugins to extend Page Builder */
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
 import typeformPlugins from "@webiny/app-typeform/admin";
 import mailchimpPlugins from "@webiny/app-mailchimp/admin";
+import richTextEditor from "./pageBuilder/richTextEditor";
 
 export default [
     pageBuilderPlugins(),
@@ -17,6 +18,7 @@ export default [
     googleTagManagerPlugins(),
     typeformPlugins(),
     mailchimpPlugins(),
+    richTextEditor,
     /**
      * This plugin is responsible for lazy-loading plugin presets for page builder editor and list views.
      * Since Editor is quite heavy, we don't want to include it in the main app bundle.
@@ -26,10 +28,10 @@ export default [
     {
         type: "pb-plugins-loader",
         async loadEditorPlugins() {
-            return (await import("./pageBuilder/editorPreset")).default;
+            return (await import("./pageBuilder/editorPlugins")).default;
         },
         async loadRenderPlugins() {
-            return (await import("./pageBuilder/renderPreset")).default;
+            return (await import("./pageBuilder/renderPlugins")).default;
         }
     }
 ];

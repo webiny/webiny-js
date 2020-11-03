@@ -1,4 +1,5 @@
-// @ts-nocheck
+import { API } from "@editorjs/editorjs";
+import svgs from "./svgs";
 
 /**
  * Class for working with UI:
@@ -7,6 +8,19 @@
  *  - apply tune view
  */
 export default class Ui {
+    private api: API;
+    private config: any;
+    private readOnly: boolean;
+    private onSelectFile: Function;
+
+    nodes: {
+        wrapper: HTMLElement;
+        imageContainer: HTMLElement;
+        fileButton: HTMLElement;
+        imageEl: HTMLElement;
+        caption: HTMLElement;
+    };
+
     /**
      * @param {object} ui - image tool Ui module
      * @param {object} ui.api - Editor.js API
@@ -22,6 +36,7 @@ export default class Ui {
         this.nodes = {
             wrapper: make("div", [this.CSS.baseClass, this.CSS.wrapper]),
             imageContainer: make("div", [this.CSS.imageContainer]),
+            fileButton: this.createFileButton(),
             imageEl: undefined,
             caption: make("div", [this.CSS.input, this.CSS.caption], {
                 contentEditable: !this.readOnly
@@ -38,6 +53,7 @@ export default class Ui {
         this.nodes.caption.dataset.placeholder = this.config.captionPlaceholder;
         this.nodes.wrapper.appendChild(this.nodes.imageContainer);
         this.nodes.wrapper.appendChild(this.nodes.caption);
+        this.nodes.wrapper.appendChild(this.nodes.fileButton);
     }
 
     /**
@@ -90,6 +106,23 @@ export default class Ui {
     }
 
     /**
+     * Creates upload-file button
+     *
+     * @returns {Element}
+     */
+    createFileButton() {
+        const button = make("div", [this.CSS.button]);
+
+        button.innerHTML = this.api.i18n.t("Select an Image");
+
+        button.addEventListener("click", () => {
+            this.onSelectFile();
+        });
+
+        return button;
+    }
+
+    /**
      * Shows an image
      *
      * @param {string} url - image source
@@ -101,7 +134,7 @@ export default class Ui {
          */
         const tag = /\.mp4$/.test(url) ? "VIDEO" : "IMG";
 
-        const attributes = {
+        const attributes: any = {
             src: url
         };
 

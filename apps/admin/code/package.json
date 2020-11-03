@@ -8,7 +8,6 @@
 		"@editorjs/list": "^1.6.0",
 		"@editorjs/underline": "^1.0.0",
 		"@editorjs/quote": "^2.4.0",
-		"@webiny/app-template-admin-full": "^4.13.0",
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1"
 	},

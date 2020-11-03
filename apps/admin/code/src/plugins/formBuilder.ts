@@ -61,6 +61,9 @@ import fieldValidatorUrl from "@webiny/app-form-builder/render/plugins/validator
 import fieldValidatorLowerCase from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/lowerCase";
 import fieldValidatorUpperCase from "@webiny/app-form-builder/render/plugins/validators/patternPlugins/upperCase";
 
+/* RichTextEditor config for Form Builder */
+import richTextEditor from "./formBuilder/richTextEditor";
+
 export default [
     formBuilderApp(),
     pageBuilderPlugins(),
@@ -108,5 +111,6 @@ export default [
     fieldValidatorEmail,
     fieldValidatorUrl,
     fieldValidatorLowerCase,
-    fieldValidatorUpperCase
+    fieldValidatorUpperCase,
+    richTextEditor
 ];

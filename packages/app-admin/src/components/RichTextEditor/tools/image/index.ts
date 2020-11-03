@@ -1,11 +1,16 @@
-// @ts-nocheck
-
-import "./index.scss";
+import { API } from "@editorjs/editorjs";
 import Ui from "./ui";
 import Tunes from "./tunes";
 import svgs from "./svgs";
 
 export default class ImageTool {
+    private api: API;
+    private readOnly: boolean;
+    private config: any;
+    private tunes: Tunes;
+    private ui: Ui;
+    private _data: any;
+
     /**
      * Notify core that read-only mode is supported
      *
@@ -35,7 +40,7 @@ export default class ImageTool {
 
         this.config = {
             actions: config.actions || [],
-            showFileManager: config.showFileManager
+            context: config.context
         };
 
         /**
@@ -45,7 +50,7 @@ export default class ImageTool {
             api,
             config: this.config,
             onSelectFile: () => {
-                this.config.showFileManager(file => {
+                this.config.context.showFileManager(file => {
                     this.image = file;
                 });
             },
@@ -180,7 +185,6 @@ export default class ImageTool {
         this.ui.applyTune(tuneName, value);
 
         if (tuneName === "stretched") {
-
             /**
              * Wait until the API is ready
              */

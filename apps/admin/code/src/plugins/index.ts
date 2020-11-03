@@ -9,10 +9,6 @@ import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
-import rteImage from "./richTextEditor/image";
-import rteHeader from "./richTextEditor/header";
-import rteQuote from "./richTextEditor/quote";
-import rteList from "./richTextEditor/list";
 import theme from "theme";
 
 plugins.register([
@@ -55,14 +51,10 @@ plugins.register([
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */
-    theme(),
-    rteImage,
-    rteHeader,
-    rteQuote,
-    rteList,
+    theme()
 ]);
 
 /**
- * 
+ *
  */
-plugins.byType<WebinyInitPlugin>("webiny-init").forEach((plugin) => plugin.init());
+plugins.byType<WebinyInitPlugin>("webiny-init").forEach(plugin => plugin.init());

@@ -17,8 +17,7 @@ import { plugins } from "@webiny/plugins";
 
 // Import styles which include custom theme styles
 import "./App.scss";
-import { RichTextEditor } from "@webiny/ui/RichTextEditor";
-import { FileManager } from "@webiny/app-admin/components";
+import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 
 const defaultValue = [
     {
@@ -59,11 +58,8 @@ export const App = () => {
         setValue(data);
     }, []);
 
-    const tools = useMemo(() => {
-        return plugins.byType("rich-text-editor-tool").reduce((tools, pl) => {
-            tools[pl.toolName] = pl.tool;
-            return tools;
-        }, {});
+    const rteProps = useMemo(() => {
+        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
     }, []);
 
     const [value, setValue] = useState(defaultValue);
@@ -93,17 +89,7 @@ export const App = () => {
                         */}
                         <UiProvider>
                             <Authentication getIdentityData={getIdentityData}>
-                                <FileManager>
-                                    {({ showFileManager }) => (
-                                        <RichTextEditor
-                                            placeholder={"Enter some text..."}
-                                            value={value}
-                                            onChange={onChange}
-                                            showFileManager={showFileManager}
-                                            tools={tools}
-                                        />
-                                    )}
-                                </FileManager>
+                                <RichTextEditor value={value} onChange={onChange} {...rteProps} />
                             </Authentication>
                         </UiProvider>
                     </BrowserRouter>
