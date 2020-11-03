@@ -3,8 +3,8 @@
   "workspaces": {
     "packages": [
       "packages/*",
-      "apps/admin/code/app",
-      "apps/site/code/app",
+      "apps/admin/code",
+      "apps/site/code",
       "apps/theme",
       "api/code/graphqlPlayground",
       "api/code/api"
