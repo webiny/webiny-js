@@ -1,16 +1,41 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    { "path": "../graphql" },
-    { "path": "../api-i18n-content" },
-    { "path": "../api-security" },
-    { "path": "../api-settings-manager" },
-    { "path": "../commodo" },
-    { "path": "../commodo-graphql" },
-    { "path": "../handler" },
-    { "path": "../handler-db" },
-    { "path": "../handler-http" },
-    { "path": "../handler-ssr" },
-    { "path": "../validation" }
-  ]
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../graphql"
+		},
+		{
+			"path": "../api-i18n-content"
+		},
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../api-settings-manager"
+		},
+		{
+			"path": "../commodo"
+		},
+		{
+			"path": "../commodo-graphql"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-db"
+		},
+		{
+			"path": "../handler-http"
+		},
+		{
+			"path": "../handler-ssr"
+		},
+		{
+			"path": "../validation"
+		},
+		{
+			"path": "../api-i18n"
+		}
+	]
 }

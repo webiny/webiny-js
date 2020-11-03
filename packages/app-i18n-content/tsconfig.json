@@ -1,11 +1,17 @@
 {
-  "extends": "../../tsconfig.json",
-  "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-i18n"
-    }
-  ]
+	"extends": "../../tsconfig.json",
+	"references": [
+		{
+			"path": "../app"
+		},
+		{
+			"path": "../app-i18n"
+		},
+		{
+			"path": "../app-admin"
+		},
+		{
+			"path": "../form"
+		}
+	]
 }

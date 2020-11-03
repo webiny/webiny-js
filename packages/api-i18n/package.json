@@ -25,7 +25,8 @@
     "accept-language-parser": "^1.5.0",
     "graphql-tag": "^2.10.1",
     "i18n-locales": "^0.0.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "@webiny/handler-http": "^4.13.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
