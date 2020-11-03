@@ -123,40 +123,40 @@ describe("Security User CRUD Test", () => {
                 }
             }
         });
-        // TODO: Undo this later.
-        // Let's delete  "userB"
-        // [response] = await securityUser.delete({
-        //     id: userBId
-        // });
 
-        // expect(response).toEqual({
-        //     data: {
-        //         security: {
-        //             deleteUser: {
-        //                 data: true,
-        //                 error: null
-        //             }
-        //         }
-        //     }
-        // });
+        // Let's delete  "userB"
+        [response] = await securityUser.delete({
+            id: userBId
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    deleteUser: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
 
         // Should not contain "userB"
-        // [response] = await securityUser.get({ id: userBId });
+        [response] = await securityUser.get({ id: userBId });
 
-        // expect(response).toEqual({
-        //     data: {
-        //         security: {
-        //             getUser: {
-        //                 data: null,
-        //                 error: {
-        //                     code: "NOT_FOUND",
-        //                     data: null,
-        //                     message: `User not found!`
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getUser: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `User not found!`
+                        }
+                    }
+                }
+            }
+        });
 
         // Should contain "userA"
         [response] = await securityUser.get({ id: userAId });

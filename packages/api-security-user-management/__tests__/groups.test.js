@@ -85,40 +85,40 @@ describe("Security Group CRUD Test", () => {
                 }
             }
         });
-        // TODO: We'll see how to handle this.
-        // // Let's delete  "groupB"
-        // [response] = await securityGroup.delete({
-        //     id: groupBId
-        // });
-        //
-        // expect(response).toEqual({
-        //     data: {
-        //         security: {
-        //             deleteGroup: {
-        //                 data: true,
-        //                 error: null
-        //             }
-        //         }
-        //     }
-        // });
-        //
-        // // Should not contain "groupB"
-        // [response] = await securityGroup.get({ id: groupBId });
-        //
-        // expect(response).toEqual({
-        //     data: {
-        //         security: {
-        //             getGroup: {
-        //                 data: null,
-        //                 error: {
-        //                     code: "NOT_FOUND",
-        //                     data: null,
-        //                     message: `Unable to find group with id: ${groupBId}`
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
+
+        // Let's delete  "groupB"
+        [response] = await securityGroup.delete({
+            id: groupBId
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    deleteGroup: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Should not contain "groupB"
+        [response] = await securityGroup.get({ id: groupBId });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getGroup: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `Unable to find group with id: ${groupBId}`
+                        }
+                    }
+                }
+            }
+        });
 
         // Should contain "groupA"
         [response] = await securityGroup.get({ id: groupAId });
@@ -176,14 +176,12 @@ describe("Security Group CRUD Test", () => {
     });
 
     test('should filter and sort by "name"', async () => {
-        // TODO: We'll see how to handle this.
         // Add "Group-B
-        // let [response] = await securityGroup.create({ data: mocks.groupB });
-        // console.log(JSON.stringify(response, null, 2));
-        // groupBId = response.data.security.createGroup.data.id;
+        let [response] = await securityGroup.create({ data: mocks.groupB });
+        groupBId = response.data.security.createGroup.data.id;
 
         // should return empty array for group name begins with "cms"
-        let [response] = await securityGroup.list({ where: { nameBeginsWith: "cms" }, sort: 1 });
+        [response] = await securityGroup.list({ where: { nameBeginsWith: "cms" }, sort: 1 });
 
         expect(response).toEqual({
             data: {
@@ -210,10 +208,9 @@ describe("Security Group CRUD Test", () => {
                             },
                             {
                                 ...mocks.groupB,
-                                name: "Group B - updated",
                                 id: groupBId
                             }
-                        ].reverse(),
+                        ],
                         error: null
                     }
                 }
@@ -230,14 +227,13 @@ describe("Security Group CRUD Test", () => {
                         data: [
                             {
                                 ...mocks.groupB,
-                                name: "Group B - updated",
                                 id: groupBId
                             },
                             {
                                 ...mocks.groupA,
                                 id: groupAId
                             }
-                        ].reverse(),
+                        ],
                         error: null
                     }
                 }
