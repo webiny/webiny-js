@@ -5,6 +5,7 @@ import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
 import adminPlugins from "./admin";
 import i18nPlugins from "./i18n";
+import i18nContentPlugins from "./i18nContent";
 import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
@@ -32,6 +33,10 @@ plugins.register([
      * Internationalization app.
      */
     i18nPlugins,
+    /**
+     * Enables storing content (pages, forms, content, ...) in multiple locales.
+     */
+    i18nContentPlugins,
     /**
      * Security app and authentication plugins.
      */
