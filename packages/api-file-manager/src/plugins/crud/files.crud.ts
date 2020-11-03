@@ -5,6 +5,7 @@ import { validation } from "@webiny/validation";
 import { withFields, string, number, setOnce, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import KSUID from "ksuid";
+import dbArgs from "./dbArgs";
 
 export const getJSON = instance => {
     const output = {};
@@ -62,10 +63,6 @@ const File = pipe(
     })
 )();
 
-const keys = [
-    { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-];
-
 export const PK_FILE = "F";
 
 export type File = {
@@ -86,7 +83,7 @@ export default {
         context.files = {
             async get(id: string) {
                 const [[file]] = await db.read<File>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE, SK: id },
                     limit: 1
                 });
@@ -95,7 +92,7 @@ export default {
             },
             async list(args) {
                 const [files] = await db.read<File>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE, SK: { $gt: " " } },
                     ...args
                 });
@@ -174,7 +171,7 @@ export default {
                 file.savedOn = new Date().toISOString();
 
                 await db.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE, SK: id },
                     data: getJSON(file)
                 });
@@ -183,7 +180,7 @@ export default {
             },
             delete(id: string) {
                 return db.delete({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE, SK: id }
                 });
             }

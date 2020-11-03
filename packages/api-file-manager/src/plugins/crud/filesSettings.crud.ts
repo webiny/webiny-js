@@ -3,6 +3,7 @@ import { HandlerContextDb } from "@webiny/handler-db/types";
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { getJSON } from "./files.crud";
+import dbArgs from "./dbArgs";
 
 export const SETTINGS_KEY = "file-manager";
 // A simple data model
@@ -31,10 +32,6 @@ const FilesSettings = withFields({
     )
 })();
 
-const keys = [
-    { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-];
-
 export const PK_FILE_SETTINGS = "S";
 
 export type FileSettings = {
@@ -52,7 +49,7 @@ export default {
         context.filesSettings = {
             async get(key: string) {
                 const [[settings]] = await db.read<FileSettings>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE_SETTINGS, SK: key },
                     limit: 1
                 });
@@ -61,7 +58,7 @@ export default {
             },
             async list(args) {
                 const [settingsList] = await db.read<FileSettings>({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE_SETTINGS, SK: { $gt: " " } },
                     ...args
                 });
@@ -95,7 +92,7 @@ export default {
                 await filesSettings.validate();
 
                 await db.update({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE_SETTINGS, SK: filesSettings.key },
                     data: getJSON(filesSettings)
                 });
@@ -104,7 +101,7 @@ export default {
             },
             delete(key: string) {
                 return db.delete({
-                    keys,
+                    ...dbArgs,
                     query: { PK: PK_FILE_SETTINGS, SK: key }
                 });
             }
