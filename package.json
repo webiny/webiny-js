@@ -5,6 +5,7 @@
       "packages/*",
       "apps/admin/code/app",
       "apps/site/code/app",
+      "apps/theme",
       "api/code/graphqlPlayground",
       "api/code/api"
     ],
@@ -150,7 +151,7 @@
   "lint-staged": {
     "**/*.{js,ts,tsx}": [
       "prettier --check",
-      "eslint --max-warnings=0",
+      "eslint --max-warnings=0 --no-ignore",
       "adio"
     ]
   },

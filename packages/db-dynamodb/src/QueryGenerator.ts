@@ -12,7 +12,7 @@ class QueryGenerator {
         // 2. Now that we know the key, let's separate the key attributes from the rest.
         const keyAttributesValues = {},
             nonKeyAttributesValues = {};
-        for (let queryKey in query) {
+        for (const queryKey in query) {
             if (key.fields.find(item => item.name === queryKey)) {
                 keyAttributesValues[queryKey] = query[queryKey];
             } else {
@@ -31,10 +31,10 @@ class QueryGenerator {
 
     findQueryKey(query = {}, keys = []) {
         for (let i = 0; i < keys.length; i++) {
-            let key = keys[i];
+            const key = keys[i];
             let hasAllFields = true;
             for (let j = 0; j < key.fields.length; j++) {
-                let field = key.fields[j];
+                const field = key.fields[j];
                 if (!query[field.name]) {
                     hasAllFields = false;
                     break;

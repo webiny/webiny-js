@@ -1,23 +1,12 @@
 import { Response, ErrorResponse } from "@webiny/graphql";
-import { createSecurityGroup } from "./utils";
 
 export default async (_, { data }, context) => {
-    const Model = context.models.SECURITY;
-    const { SecurityGroup } = context.models;
+    const { groups } = context;
 
     try {
-        const identity = context.security.getIdentity();
-        const group = new SecurityGroup().populate({
-            createdBy: identity,
-            description: data.description,
-            name: data.name,
-            slug: data.slug,
-            permissions: data.permissions
-        });
+        const groupData = await groups.create(data);
 
-        const securityRecordPrimary = await createSecurityGroup({ Model, group });
-
-        return new Response(securityRecordPrimary.data);
+        return new Response(groupData);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,

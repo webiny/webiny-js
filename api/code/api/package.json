@@ -6,6 +6,7 @@
 	},
 	"dependencies": {
 		"@webiny/handler": "^4.13.0",
+		"@webiny/handler-db": "^4.13.0",
 		"@webiny/handler-apollo-server": "^4.13.0",
 		"@webiny/api-plugin-commodo-db-proxy": "^4.13.0",
 		"@webiny/api-security": "^4.13.0",

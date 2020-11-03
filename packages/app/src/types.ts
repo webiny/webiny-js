@@ -12,6 +12,11 @@ export type UploadOptions = {
     apolloClient: ApolloClient<object>;
 };
 
+export type UiStatePlugin = Plugin & {
+    type: "ui-state";
+    render(): React.ReactElement;
+};
+
 export type FileUploaderPlugin = Plugin & {
     type: "file-uploader";
     // TODO: @adrian define type for the returned object

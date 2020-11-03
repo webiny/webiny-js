@@ -1,6 +1,6 @@
 module.exports = [
     {
-        TableName: `SECURITY`,
+        TableName: `Security`,
         KeySchema: [
             { AttributeName: "PK", KeyType: "HASH" },
             { AttributeName: "SK", KeyType: "RANGE" }

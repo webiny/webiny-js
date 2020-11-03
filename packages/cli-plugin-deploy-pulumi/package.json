@@ -28,7 +28,6 @@
   "scripts": {},
   "adio": {
     "ignoreDirs": [
-      "/create/template/",
       "/node_modules/",
       "/dist/"
     ],

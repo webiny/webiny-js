@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ErrorResponse, Response } from "@webiny/graphql";
 import downloadInstallationFiles from "./utils/downloadInstallationFiles";
@@ -134,7 +135,6 @@ export default () => [
                 });
             }
 */
-
         }
     } as HandlerPlugin
 ];

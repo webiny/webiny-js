@@ -33,12 +33,7 @@ export type MenusDialogProps = {
     children: any;
 };
 
-const MenusDialog: React.FC<MenusDialogProps> = ({
-    open,
-    onClose,
-    onSelect,
-    children
-}) => {
+const MenusDialog: React.FC<MenusDialogProps> = ({ open, onClose, onSelect, children }) => {
     const { history } = useRouter();
     return (
         <Dialog

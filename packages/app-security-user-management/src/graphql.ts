@@ -11,6 +11,7 @@ export const LOGIN = gql`
                     permissions
                     # user-management specific fields
                     fullName
+                    avatar
                 }
                 error {
                     code

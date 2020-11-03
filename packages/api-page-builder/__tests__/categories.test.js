@@ -103,7 +103,7 @@ describe("CRUD Test", () => {
                 slug: `${prefix}slug`,
                 name: `${prefix}name-UPDATED`,
                 url: `${prefix}url-UPDATED`,
-                layout: `${prefix}layout-UPDATED`,
+                layout: `${prefix}layout-UPDATED`
             };
 
             let [response] = await deleteCategory({ slug: data.slug });

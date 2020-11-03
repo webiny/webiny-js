@@ -67,38 +67,33 @@ const setEnvironmentFromState = async ({ env, stack, map }, context) => {
         }
     });
 
-    {
-        // Check first if the stack exist, if not, throw an appropriate error.
-        let stackExists = true;
-        try {
-            const { process } = await pulumi.run({ command: ["stack", "select", env] });
-            await process;
-        } catch (e) {
-            stackExists = false;
-        }
-
-        if (!stackExists) {
-            console.log(
-                red(
-                    `❗ Trying to pull deployment state information from the "${stack}" stack (environment "${env}"), but it seems state files are missing. Did you deploy it yet?`
-                )
-            );
-            process.exit(1);
-        }
-
-        const { process: runProcess } = await pulumi.run({
-            command: ["stack", "output"],
-            args: {
-                stack: env,
-                json: true
-            }
-        });
-
-        const { stdout } = await runProcess;
-
-        const state = JSON.parse(stdout);
-        Object.assign(process.env, getStateValues(state, map));
+    // Check first if the stack exist, if not, throw an appropriate error.
+    let stackExists = true;
+    try {
+        await pulumi.run({ command: ["stack", "select", env] });
+    } catch (e) {
+        stackExists = false;
     }
+
+    if (!stackExists) {
+        console.log(
+            red(
+                `❗ Trying to pull deployment state information from the "${stack}" stack (environment "${env}"), but it seems state files are missing. Did you deploy it yet?`
+            )
+        );
+        process.exit(1);
+    }
+
+    const { stdout } = await pulumi.run({
+        command: ["stack", "output"],
+        args: {
+            stack: env,
+            json: true
+        }
+    });
+
+    const state = JSON.parse(stdout);
+    Object.assign(process.env, getStateValues(state, map));
 };
 
 module.exports = { getStateValues, updateEnvValues, setEnvironmentFromState };

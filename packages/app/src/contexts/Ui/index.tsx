@@ -1,4 +1,6 @@
 import React from "react";
+import { UiStatePlugin } from "@webiny/app/types";
+import { plugins } from "@webiny/plugins";
 
 export const UiContext = React.createContext({});
 
@@ -32,7 +34,13 @@ export class UiProvider extends React.Component<Props, State> {
 
     render() {
         const value: UiContextValue = { ...this.state.ui, setState: this.setData };
-        return <UiContext.Provider value={value}>{this.props.children}</UiContext.Provider>;
+        const uiStatePlugins = plugins.byType<UiStatePlugin>("ui-state");
+        return (
+            <UiContext.Provider value={value}>
+                {uiStatePlugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
+                {this.props.children}
+            </UiContext.Provider>
+        );
     }
 }
 

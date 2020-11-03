@@ -17,6 +17,7 @@ import welcomeScreenWidget from "./welcomeScreenWidget";
 import permissionRenderer from "./permissionRenderer";
 
 export default () => [
+    // Admin modules
     install,
     settings,
     routes,
@@ -24,14 +25,15 @@ export default () => [
     formSubmissions,
     previewContent,
     formRevisions,
+    permissionRenderer(),
 
-    // Editor
+    // Form Editor
     fields,
     groups,
     validators,
     formEditorPlugins,
     formSitePlugins(),
 
-    welcomeScreenWidget,
-    permissionRenderer()
+    // Admin welcome screen widget
+    welcomeScreenWidget
 ];

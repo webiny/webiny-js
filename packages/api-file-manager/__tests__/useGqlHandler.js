@@ -1,24 +1,103 @@
 import { createHandler } from "@webiny/handler-aws";
-import neDb from "@webiny/api-plugin-commodo-nedb";
-import { Database } from "@commodo/fields-storage-nedb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-file-manager/plugins";
-import filesResolvers from "@webiny/api-plugin-files-resolvers-mongodb";
 import securityPlugins from "@webiny/api-security/authenticator";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { Client } from "@elastic/elasticsearch";
+import Mock from "@elastic/elasticsearch-mock";
+// Graphql
+import {
+    CREATE_FILE,
+    CREATE_FILES,
+    UPDATE_FILE,
+    DELETE_FILE,
+    GET_FILE,
+    LIST_FILES
+} from "./graphql/file";
+import {
+    INSTALL,
+    IS_INSTALLED,
+    GET_SETTINGS,
+    UPDATE_SETTINGS
+} from "./graphql/fileManagerSettings";
 
-export default ({ database } = {}) => {
-    if (!database) {
-        database = new Database();
-    }
-
+export default ({ permissions, identity }) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        neDb({ database }),
+        dbPlugins({
+            table: "FileManager",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: "localhost:8000",
+                    sslEnabled: false,
+                    region: "local-env"
+                })
+            })
+        }),
         apolloServerPlugins(),
+        {
+            type: "context",
+            name: "context-elastic-search",
+            apply(context) {
+                const mock = new Mock();
+                const client = new Client({
+                    node: "http://localhost:9200",
+                    Connection: mock.getConnection()
+                });
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/file-manager/_doc/_search"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                mock.add(
+                    {
+                        method: "PUT",
+                        path: "/file-manager/_doc/:id/_create"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/file-manager/_doc/:id/_update"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                mock.add(
+                    {
+                        method: "POST",
+                        path: "/_bulk"
+                    },
+                    () => {
+                        return { status: "ok" };
+                    }
+                );
+                context.elasticSearch = client;
+            }
+        },
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*"}] },
-        filesPlugins(),
-        filesResolvers()
+        {
+            type: "security-authorization",
+            getPermissions: () => permissions || [{ name: "*", key: "*" }]
+        },
+        {
+            type: "security-authentication",
+            authenticate() {
+                return identity || null;
+            }
+        },
+        filesPlugins()
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -34,11 +113,40 @@ export default ({ database } = {}) => {
         return [JSON.parse(response.body), response];
     };
 
-    // With the "handler" and "invoke" function, let's also return the "database", which will enable
-    // us to do some manual database updating, for example, preparing the initial test data.
     return {
-        database,
         handler,
-        invoke
+        invoke,
+        // Files
+        async createFile(variables) {
+            return invoke({ body: { query: CREATE_FILE, variables } });
+        },
+        async updateFile(variables) {
+            return invoke({ body: { query: UPDATE_FILE, variables } });
+        },
+        async createFiles(variables) {
+            return invoke({ body: { query: CREATE_FILES, variables } });
+        },
+        async deleteFile(variables) {
+            return invoke({ body: { query: DELETE_FILE, variables } });
+        },
+        async getFile(variables) {
+            return invoke({ body: { query: GET_FILE, variables } });
+        },
+        async listFiles(variables) {
+            return invoke({ body: { query: LIST_FILES, variables } });
+        },
+        // File Manager settings
+        async isInstalled(variables) {
+            return invoke({ body: { query: IS_INSTALLED, variables } });
+        },
+        async install(variables) {
+            return invoke({ body: { query: INSTALL, variables } });
+        },
+        async getSettings(variables) {
+            return invoke({ body: { query: GET_SETTINGS, variables } });
+        },
+        async updateSettings(variables) {
+            return invoke({ body: { query: UPDATE_SETTINGS, variables } });
+        }
     };
 };

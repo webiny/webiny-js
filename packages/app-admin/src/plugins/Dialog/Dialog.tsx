@@ -17,23 +17,21 @@ export const DialogContainer: React.FC = () => {
     }, [ui]);
 
     return (
-        <Dialog>
-            <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId}>
-                {title && <DialogTitle>{title}</DialogTitle>}
-                <DialogContent>{message}</DialogContent>
-                <DialogActions>
-                    {actions.cancel && (
-                        <DialogAccept onClick={actions.cancel.onClick}>
-                            {actions.cancel.label}
-                        </DialogAccept>
-                    )}
-                    {actions.accept && (
-                        <DialogAccept onClick={actions.accept.onClick}>
-                            {actions.accept.label}
-                        </DialogAccept>
-                    )}
-                </DialogActions>
-            </Dialog>
+        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId}>
+            {title && <DialogTitle>{title}</DialogTitle>}
+            <DialogContent>{message}</DialogContent>
+            <DialogActions>
+                {actions.cancel && (
+                    <DialogAccept onClick={actions.cancel.onClick}>
+                        {actions.cancel.label}
+                    </DialogAccept>
+                )}
+                {actions.accept && (
+                    <DialogAccept onClick={actions.accept.onClick}>
+                        {actions.accept.label}
+                    </DialogAccept>
+                )}
+            </DialogActions>
         </Dialog>
     );
 };

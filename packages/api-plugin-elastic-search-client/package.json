@@ -1,0 +1,40 @@
+{
+  "name": "@webiny/api-plugin-elastic-search-client",
+  "version": "4.13.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-settings-manager"
+  },
+  "description": "A client to work with Elastic Search domain.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.9.1",
+    "@webiny/graphql": "^4.13.0",
+    "aws-elasticsearch-connector": "^9.0.0",
+    "aws-sdk": "^2.539.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
+  }
+}

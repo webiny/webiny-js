@@ -7,6 +7,7 @@
     { "path": "../../../../packages/api-security-user-management" },
     { "path": "../../../../packages/api-settings-manager" },
     { "path": "../../../../packages/handler" },
+    { "path": "../../../../packages/handler-db" },
     { "path": "../../../../packages/handler-apollo-server" }
   ]
 }

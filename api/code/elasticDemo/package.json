@@ -1,0 +1,21 @@
+{
+  "name": "api-elastic-demo",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler": "^4.13.0",
+    "@webiny/handler-apollo-server": "^4.13.0",
+    "@webiny/api-plugin-commodo-dynamodb": "^4.13.0",
+    "@webiny/api-plugin-security-cognito": "^4.13.0",
+    "@webiny/api-plugin-elastic-search-client": "^4.13.0",
+    "@webiny/api-security": "^4.13.0",
+    "@webiny/api-security-permissions-manager": "^4.13.0",
+    "@webiny/api-settings-manager": "^4.13.0",
+    "@webiny/api-i18n": "^4.13.0",
+    "@webiny/graphql": "^4.13.0",
+    "@webiny/project-utils": "^4.13.0",
+    "ksuid": "^2.0.0"
+  }
+}
