@@ -15,7 +15,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             }
         });
 
-        return response?.body?.aggregations?.listTags?.buckets.map(item => item.key) || [];
+        return response?.body?.aggregations?.listTags?.buckets?.map(item => item.key) || [];
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
