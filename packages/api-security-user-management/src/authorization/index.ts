@@ -1,37 +1,28 @@
-import {
-    PK_USER,
-    SK_USER
-} from "@webiny/api-security-user-management/models/securityUserData.model";
-import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
-
 export default () => [
     {
         type: "security-authorization",
-        async getPermissions({ identity, models }) {
-            const Model = models.SECURITY;
+        async getPermissions(context) {
+            const { security, users, groups } = context;
+            const identity = security.getIdentity();
             if (identity) {
-                const securityRecord = await Model.findOne({
-                    query: { PK: `${PK_USER}#${identity}`, SK: SK_USER }
-                });
-                const user = securityRecord.data;
+                const user = await users.get(identity.id);
+
                 if (!user) {
-                    throw Error(`User "${identity}" was not found!`);
+                    throw Error(`User "${identity.id}" was not found!`);
                 }
 
-                return user.permissions;
+                const group = await groups.get(user.group);
+                return group?.permissions;
             }
 
             // Identity is "anonymous", and we need to load permissions from the "anonymous" group.
-            const securityRecord = await Model.findOne({
-                query: { GSI1_PK: GSI1_PK_GROUP, GSI1_SK: `slug#anonymous` }
-            });
+            const group = await groups.getBySlug("anonymous");
 
-            const group = securityRecord?.data;
             if (!group) {
                 return [];
             }
 
-            return group.permissions;
+            return group?.permissions;
         }
     }
 ];
