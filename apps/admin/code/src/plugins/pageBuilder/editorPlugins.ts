@@ -2,9 +2,9 @@ import contentBackground from "@webiny/app-page-builder/editor/plugins/backgroun
 import blockEditing from "@webiny/app-page-builder/editor/plugins/blockEditing";
 // Elements
 import document from "@webiny/app-page-builder/editor/plugins/elements/document";
-import row from "@webiny/app-page-builder/editor/plugins/elements/row";
+import grid from "@webiny/app-page-builder/editor/plugins/elements/grid";
+import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import block from "@webiny/app-page-builder/editor/plugins/elements/block";
-import column from "@webiny/app-page-builder/editor/plugins/elements/column";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
 import text from "@webiny/app-page-builder/editor/plugins/elements/text";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
@@ -87,9 +87,9 @@ export default [
     blockEditing,
     // Elements
     document(),
-    row(),
+    grid(),
     block(),
-    column(),
+    cell(),
     icon(),
     image(),
     imagesList(),
