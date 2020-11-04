@@ -20,9 +20,7 @@ class Cognito {
             emailConfiguration: {
                 emailSendingAccount: "COGNITO_DEFAULT"
             },
-            lambdaConfig: {
-                // preTokenGeneration
-            },
+            lambdaConfig: {},
             mfaConfiguration: "OFF",
             userPoolAddOns: {
                 advancedSecurityMode: "OFF" /* required */
