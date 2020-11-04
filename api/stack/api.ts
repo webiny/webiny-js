@@ -66,7 +66,8 @@ class Api {
                 environment: {
                     variables: {
                         ...env,
-                        DB_TABLE: this.dynamoDbTable.name
+                        DB_TABLE: this.dynamoDbTable.name,
+                        AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
                 vpcConfig: {
