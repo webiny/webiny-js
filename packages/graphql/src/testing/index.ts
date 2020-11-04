@@ -2,7 +2,7 @@ import { createSchema } from "../index";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 
 // TODO: probably can go to trash.
-const applyContextPlugins = async (context) => {
+const applyContextPlugins = async context => {
     const ctxPlugins = context.plugins.byType("context");
     for (let i = 0; i < ctxPlugins.length; i++) {
         if (typeof ctxPlugins[i].apply === "function") {

@@ -6,7 +6,9 @@ export const PK_DEFAULT_LOCALE = "L#D";
 
 export const dbArgs = {
     table: process.env.DB_TABLE_I18N,
-    keys: [{ primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }]
+    keys: [
+        { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
+    ]
 };
 
 export type Locale = {

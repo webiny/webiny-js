@@ -61,7 +61,7 @@ module.exports = async (inputs, context) => {
 
     const stacksDir = path.join(".", stack);
 
-    let spinner = new ora();
+    const spinner = new ora();
     const pulumi = new Pulumi({
         execa: {
             cwd: stacksDir,

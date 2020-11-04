@@ -1,2 +1,2 @@
 export * from "./RichTextEditor";
-export { createPropsFromConfig  } from "./createPropsFromConfig";
+export { createPropsFromConfig } from "./createPropsFromConfig";

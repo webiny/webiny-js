@@ -46,7 +46,7 @@ import link from "@webiny/app-page-builder/render/plugins/slate/link";
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 
 /**
- * Page element settings plugins. 
+ * Page element settings plugins.
  */
 import align from "@webiny/app-page-builder/render/plugins/elementSettings/align";
 import animation from "@webiny/app-page-builder/render/plugins/elementSettings/animation";
@@ -63,7 +63,7 @@ export default [
     pageBuilderRoute(),
     addons(),
     linkPreload(),
-    useSsrCacheTags(), 
+    useSsrCacheTags(),
     // Page elements
     document(),
     row(),
