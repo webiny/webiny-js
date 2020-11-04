@@ -33,7 +33,7 @@ class Api {
             ]
         });
 
-        this.role = new aws.iam.Role("default-lambda-role", {
+        this.role = new aws.iam.Role("api-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -48,7 +48,7 @@ class Api {
             }
         });
 
-        this.policy = new aws.iam.RolePolicyAttachment("default-lambda-role-policy", {
+        this.policy = new aws.iam.RolePolicyAttachment("api-lambda-role-policy", {
             role: this.role,
             policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
         });
