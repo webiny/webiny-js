@@ -8,8 +8,8 @@ import i18nPlugins from "./i18n";
 import i18nContentPlugins from "./i18nContent";
 import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
-import formBuilderPlugins from "./formBuilder";
-import headlessCmsPlugins from "./headlessCms";
+// import formBuilderPlugins from "./formBuilder";
+// import headlessCmsPlugins from "./headlessCms";
 import theme from "theme";
 
 plugins.register([
@@ -48,11 +48,11 @@ plugins.register([
     /**
      * Form Builder app.
      */
-    formBuilderPlugins,
+    // TODO: formBuilderPlugins,
     /**
      * Headless CMS app.
      */
-    headlessCmsPlugins,
+    // TODO: headlessCmsPlugins,
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */

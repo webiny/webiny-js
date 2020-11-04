@@ -1,13 +1,13 @@
 {
   "extends": "../../../tsconfig",
   "references": [
-    { "path": "../../../../packages/api-plugin-commodo-db-proxy" },
-    { "path": "../../../../packages/api-security" },
-    { "path": "../../../../packages/api-security-permissions-manager" },
-    { "path": "../../../../packages/api-security-user-management" },
-    { "path": "../../../../packages/api-settings-manager" },
-    { "path": "../../../../packages/handler" },
-    { "path": "../../../../packages/handler-db" },
-    { "path": "../../../../packages/handler-apollo-server" }
+    { "path": "../../../packages/api-security" },
+    { "path": "../../../packages/api-security-permissions-manager" },
+    { "path": "../../../packages/api-security-user-management" },
+    { "path": "../../../packages/api-settings-manager" },
+    { "path": "../../../packages/handler" },
+    { "path": "../../../packages/handler-aws" },
+    { "path": "../../../packages/handler-db" },
+    { "path": "../../../packages/handler-apollo-server" }
   ]
 }

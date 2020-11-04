@@ -3,14 +3,11 @@ import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import {
-    PermissionSelector,
-    PermissionSelectorWrapper
-} from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/CmsPermissions/components/PermissionSelector";
-
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo } from "@webiny/app-security-user-management/components/permission";
 import { Elevation } from "@webiny/ui/Elevation";
+import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
+
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 export const EnvironmentPermission = ({ Bind, data, entity }) => {

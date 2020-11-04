@@ -6,17 +6,14 @@ import { LIST_CONTENT_MODEL_GROUPS } from "@webiny/app-headless-cms/admin/views/
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import {
-    PermissionSelector,
-    PermissionSelectorWrapper
-} from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/CmsPermissions/components/PermissionSelector";
+import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo } from "@webiny/app-security-user-management/components/permission";
 import { Elevation } from "@webiny/ui/Elevation";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export const ContentModelPermission = ({ Bind, data, entity, title }) => {
+export const ContentEntryPermission = ({ Bind, data, entity, title }) => {
     // TODO: We'll revisit "locale" based data fetching later.
     // Data fetching
     const {
@@ -59,10 +56,10 @@ export const ContentModelPermission = ({ Bind, data, entity, title }) => {
                                     <option value={"own"}>{t`Only the one they created`}</option>
                                     <option
                                         value={"models"}
-                                    >{t`Only specific content models`}</option>
+                                    >{t`Only entries in specific content models`}</option>
                                     <option
                                         value={"groups"}
-                                    >{t`Only content models in specific groups`}</option>
+                                    >{t`Only entries in specific groups`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
