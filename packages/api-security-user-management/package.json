@@ -7,11 +7,10 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "description": "Security authentication plugin for AWS Cognito",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>"
-  ],
+  "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
+    "@ramda/pipe": "^0.26.1",
     "@webiny/api-security": "^4.11.0-beta.1",
     "@webiny/commodo": "^4.11.0-beta.1",
     "@webiny/commodo-graphql": "^4.11.0-beta.1",
@@ -27,14 +26,8 @@
     "commodo-fields-object": "^1.0.6",
     "ksuid": "^2.0.0",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.20",
-    "md5": "^2.3.0",
-    "repropose": "^1.0.2",
-    "ramda": "^0.26.1",
-    "@commodo/fields": "beta",
-    "@commodo/fields-storage": "beta",
-    "@commodo/hooks": "beta",
-    "@commodo/name": "beta"
+    "lodash.merge": "^4.6.2",
+    "@commodo/fields": "beta"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
