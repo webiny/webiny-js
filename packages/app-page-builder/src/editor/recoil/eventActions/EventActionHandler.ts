@@ -8,6 +8,7 @@ import {
     PageAtomType,
     pluginsAtom,
     PluginsAtomType,
+    revisionsAtom,
     uiAtom,
     UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -224,6 +225,7 @@ export class EventActionHandler {
             plugins: connectedAtomValue(pluginsAtom),
             ui: connectedAtomValue(uiAtom),
             content: connectedAtomValue(contentAtom),
+            revisions: connectedAtomValue(revisionsAtom),
             ...state
         };
     }

@@ -1,12 +1,21 @@
-import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
 import lodashCloneDeep from "lodash/cloneDeep";
 import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
-import { contentAtom, ContentAtomType, elementsAtom, pageAtom, uiAtom } from "../../recoil/modules";
+import {
+    contentAtom,
+    ContentAtomType,
+    elementsAtom,
+    pageAtom,
+    PageAtomType,
+    revisionsAtom,
+    RevisionsAtomType,
+    uiAtom
+} from "../../recoil/modules";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { useIsTrackingHistory, useRedo, useUndo } from "recoil-undo";
 import { DndProvider } from "react-dnd";
@@ -49,12 +58,17 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
     }
 };
 
-export const Editor: React.FunctionComponent<any> = ({ page }) => {
+type EditorPropsType = {
+    page: PageAtomType;
+    revisions: RevisionsAtomType;
+};
+export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { isDragging, isResizing, slateFocused } = useRecoilValue(uiAtom);
     const setPageAtomValue = useSetRecoilState(pageAtom);
     const setElementsAtomValue = useSetRecoilState(elementsAtom);
+    const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
     const [contentAtomValue, setContentAtomValue] = useRecoilState(contentAtom);
     const undo = useUndo();
     const redo = useRedo();
@@ -89,8 +103,9 @@ export const Editor: React.FunctionComponent<any> = ({ page }) => {
         const contentAtomValue: ContentAtomType = (page as any).content;
         const elementsAtomValue = flattenElementsHelper(lodashCloneDeep(contentAtomValue));
         setPageAtomValue(pageAtomValue);
-        setContentAtomValue(contentAtomValue);
         setElementsAtomValue(elementsAtomValue);
+        setRevisionsAtomValue(revisions);
+        setContentAtomValue(contentAtomValue);
         return () => {
             removeKeyHandler("mod+z");
             removeKeyHandler("mod+shift+z");

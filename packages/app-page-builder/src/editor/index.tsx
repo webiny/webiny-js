@@ -4,19 +4,24 @@ import { Editor as EditorComponent } from "./components/Editor";
 import { EditorProvider } from "./provider";
 import { RecoilRoot } from "recoil";
 import { RecoilUndoRoot } from "recoil-undo";
-import { contentAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    contentAtom,
+    PageAtomType,
+    RevisionsAtomType
+} from "@webiny/app-page-builder/editor/recoil/modules";
 
 type EditorPropsType = {
     page: PageAtomType;
+    revisions: RevisionsAtomType;
 };
 
-export const Editor: React.FunctionComponent<EditorPropsType> = ({ page }) => {
+export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
     return (
         <RecoilRoot>
             <RecoilUndoRoot trackingByDefault={false} trackedAtoms={[contentAtom]}>
                 <ConnectedStoreComponent />
                 <EditorProvider>
-                    <EditorComponent page={page} />
+                    <EditorComponent page={page} revisions={revisions} />
                 </EditorProvider>
             </RecoilUndoRoot>
         </RecoilRoot>

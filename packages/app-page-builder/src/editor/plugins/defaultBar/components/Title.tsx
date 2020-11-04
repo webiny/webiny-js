@@ -29,8 +29,8 @@ const extractPageInfo = (page: PageAtomType): any => {
         pageTitle: title,
         pageVersion: version,
         pageLocked: locked,
-        pageCategory: category.name,
-        pageCategoryUrl: category.url
+        pageCategory: category?.name,
+        pageCategoryUrl: category?.url
     };
 };
 
