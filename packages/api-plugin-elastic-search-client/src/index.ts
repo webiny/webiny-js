@@ -1,13 +1,13 @@
 import { Client } from "@elastic/elasticsearch";
 import AWS from "aws-sdk";
 import createAwsElasticsearchConnector from "aws-elasticsearch-connector";
-import { ContextPlugin } from "@webiny/graphql/types";
+import { HandlerContextPlugin } from "@webiny/handler/types";
 
 interface Params {
     endpoint: string;
 }
 
-export default ({ endpoint }: Params): ContextPlugin => {
+export default ({ endpoint }: Params): HandlerContextPlugin => {
     return {
         type: "context",
         name: "context-elastic-search",
