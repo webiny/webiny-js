@@ -3,7 +3,7 @@ import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
 
 export default (): ReactRouterOnLinkPlugin => {
     const preloadedLinks = [];
-    
+
     return {
         name: "react-router-on-link-pb",
         type: "react-router-on-link",

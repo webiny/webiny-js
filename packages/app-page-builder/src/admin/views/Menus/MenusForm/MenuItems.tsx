@@ -90,41 +90,38 @@ class MenuItems extends React.Component<Props, State> {
                     </Cell>
 
                     <Cell span={5}>
-                        {!currentMenuItem &&
-                            canSave && (
-                                <>
-                                    <MenuHolder>
-                                        <Typography use={"body2"}>
-                                            To build your menu you need to create menu items! Begin
-                                            by clicking the &quot;Add menu item&quot; button
-                                        </Typography>
+                        {!currentMenuItem && canSave && (
+                            <>
+                                <MenuHolder>
+                                    <Typography use={"body2"}>
+                                        To build your menu you need to create menu items! Begin by
+                                        clicking the &quot;Add menu item&quot; button
+                                    </Typography>
 
-                                        <AddMenu>
-                                            <Menu
-                                                handle={
-                                                    <ButtonPrimary>+ Add menu item</ButtonPrimary>
-                                                }
-                                                anchor={"topEnd"}
-                                            >
-                                                <List className={menuItems}>
-                                                    {plugins.map(pl => (
-                                                        <ListItem
-                                                            key={pl.name}
-                                                            onClick={() => this.addItem(pl)}
-                                                            style={{ whiteSpace: "nowrap" }}
-                                                        >
-                                                            <ListItemGraphic>
-                                                                <Icon icon={pl.menuItem.icon} />
-                                                            </ListItemGraphic>
-                                                            {pl.menuItem.title}
-                                                        </ListItem>
-                                                    ))}
-                                                </List>
-                                            </Menu>
-                                        </AddMenu>
-                                    </MenuHolder>
-                                </>
-                            )}
+                                    <AddMenu>
+                                        <Menu
+                                            handle={<ButtonPrimary>+ Add menu item</ButtonPrimary>}
+                                            anchor={"topEnd"}
+                                        >
+                                            <List className={menuItems}>
+                                                {plugins.map(pl => (
+                                                    <ListItem
+                                                        key={pl.name}
+                                                        onClick={() => this.addItem(pl)}
+                                                        style={{ whiteSpace: "nowrap" }}
+                                                    >
+                                                        <ListItemGraphic>
+                                                            <Icon icon={pl.menuItem.icon} />
+                                                        </ListItemGraphic>
+                                                        {pl.menuItem.title}
+                                                    </ListItem>
+                                                ))}
+                                            </List>
+                                        </Menu>
+                                    </AddMenu>
+                                </MenuHolder>
+                            </>
+                        )}
                         {currentMenuItem && (
                             <MenuItemForm
                                 currentMenuItem={currentMenuItem}

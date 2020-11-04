@@ -1,5 +1,4 @@
 import { API } from "@editorjs/editorjs";
-import svgs from "./svgs";
 
 /**
  * Class for working with UI:

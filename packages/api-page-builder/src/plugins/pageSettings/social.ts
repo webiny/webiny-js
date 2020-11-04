@@ -60,7 +60,7 @@ export default [
                 extend input PbPageSettingsInput {
                     social: PbSocialSettingsInput
                 }
-            `,
+            `
         }
     }
 ];
