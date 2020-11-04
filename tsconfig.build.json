@@ -48,7 +48,6 @@
       "@webiny/app-template": ["./packages/app-template/src"],
       "@webiny/app-template-site": ["./packages/app-template-site/src"],
       "@webiny/app-template-admin": ["./packages/app-template-admin/src"],
-      "@webiny/app-template-admin-full": ["./packages/app-template-admin-full/src"],
       "@webiny/app-admin/*": ["./packages/app-admin/src/*"],
       "@webiny/app-admin": ["./packages/app-admin/src"],
       "@webiny/app-cookie-policy/*": ["./packages/app-cookie-policy/src/*"],

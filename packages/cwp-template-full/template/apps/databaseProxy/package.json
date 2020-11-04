@@ -6,6 +6,5 @@
   },
   "dependencies": {
     "@webiny/handler": "^4.0.0-beta.0",
-    "@webiny/api-plugin-commodo-db-proxy": "^4.0.0-beta.0"
   }
 }
