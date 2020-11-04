@@ -12,6 +12,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
+		"@ramda/pipe": "^0.26.1",
 		"@webiny/api-security": "^4.13.0",
 		"@webiny/commodo": "^4.13.0",
 		"@webiny/commodo-graphql": "^4.13.0",
