@@ -12,6 +12,7 @@ import { BrowserRouter } from "@webiny/react-router";
 import { Authentication } from "@webiny/app-plugin-security-cognito/Authentication";
 import { createApolloClient } from "./components/apolloClient";
 import { NetworkError } from "./components/NetworkError";
+import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
 
 // Import styles which include custom theme styles
@@ -33,6 +34,10 @@ export const App = () => (
                     <BrowserRouter> is an enhanced version of "react-router" to add some capabilities specific to Webiny.
                 */}
                 <BrowserRouter basename={process.env.PUBLIC_URL}>
+                    {/* 
+                        This is the Webiny telemetry system, for more information please visit: https://docs.webiny.com/docs/webiny-telemetry
+                    */}
+                    <Telemetry />
                     {/* 
                         <UiProvider> is a centralized state handler for UI related things. When you need to render
                         dialogs, snackbars, handle dark mode, you can use the "useUi()" hook to set/unset UI information
@@ -70,12 +75,12 @@ export const App = () => (
                                             that points to the /manage GraphQL API.   
                                         */}
                                         {/*<CmsProvider>*/}
-                                            {/*
+                                        {/*
                                                 <Routes/> is a helper component that loads all "route" plugins, sorts them
                                                 in the correct "path" order and renders using the <Switch> component, 
                                                 so only the matching route is rendered.   
                                             */}
-                                            <Routes />
+                                        <Routes />
                                         {/*</CmsProvider>*/}
                                     </PageBuilderProvider>
                                 </Authentication>
