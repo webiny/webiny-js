@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { flow } from "lodash";
 import { withUser } from "@webiny/api-security";
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { withUser } from "@webiny/api-security";
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { ContextPlugin } from "@webiny/graphql/types";

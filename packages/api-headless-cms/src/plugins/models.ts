@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import { withUser } from "@webiny/api-security";
 import cmsEnvironment from "./models/environment.model";
