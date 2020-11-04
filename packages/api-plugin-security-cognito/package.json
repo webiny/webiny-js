@@ -15,11 +15,12 @@
     "@webiny/api-security": "^4.13.0",
     "@webiny/api-security-user-management": "^4.11.0-beta.1",
     "@webiny/graphql": "^4.13.0",
+    "@webiny/handler": "^4.13.0",
     "@webiny/handler-http": "^4.13.0",
     "graphql-tag": "^2.10.1",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
-    "request-promise": "^4.2.4"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

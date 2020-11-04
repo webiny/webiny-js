@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
 import jwkToPem from "jwk-to-pem";
-import request from "request-promise";
+import fetch from "node-fetch";
 import util from "util";
-import { Context } from "@webiny/graphql/types";
 import { SecurityIdentity } from "@webiny/api-security";
 import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HandlerContext } from "@webiny/handler/types";
 const verify = util.promisify(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
@@ -17,7 +17,7 @@ type CognitoAuthOptions = {
     identityType: string;
     getIdentity?(
         params: { identityType: string; token: { [key: string]: any } },
-        context: Context
+        context: HandlerContext
     ): SecurityIdentity;
 };
 
@@ -27,8 +27,8 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
 
     const getJWKs = async () => {
         if (!jwksCache) {
-            const body = await request({ url, json: true });
-            jwksCache = body.keys;
+            const response = await fetch(url).then(res => res.json());
+            jwksCache = response.keys;
         }
 
         return jwksCache;
@@ -37,7 +37,7 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
     return [
         {
             type: "security-authentication",
-            async authenticate(context: Context & HandlerHttpContext) {
+            async authenticate(context: HandlerContext<HandlerHttpContext>) {
                 const { method: httpMethod, headers = {} } = context.http;
                 let idToken = headers["Authorization"] || headers["authorization"] || "";
 
