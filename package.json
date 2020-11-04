@@ -110,6 +110,7 @@
   "scripts": {
     "awp": "yarn add-webiny-package",
     "add-webiny-package": "node scripts/addWebinyPackage.js",
+    "check-ts-configs": "node scripts/checkTsConfigs.js",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
@@ -126,7 +127,6 @@
     "commit": "node ./scripts/commitizen.js",
     "commit:no-verify": "yarn commit --no-verify",
     "commit:verify": "yarn lint-staged",
-    "commodo-versions": "node ./scripts/commodoVersions.js",
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "release-latest": "node ./scripts/releaseLatest.js",
     "lint-staged": "lint-staged",
