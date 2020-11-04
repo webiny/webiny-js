@@ -1,12 +1,8 @@
-import * as React from "react";
-import { addReducer } from "@webiny/app-page-builder/editor/redux";
-import { ELEMENT_DROPPED } from "@webiny/app-page-builder/editor/actions";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add_circle_outline.svg";
-import AddElement from "./AddElement";
+import React from "react";
 import Action from "../Action";
+import AddElement from "./AddElement";
+import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add_circle_outline.svg";
 import { PbEditorToolbarTopPlugin } from "@webiny/app-page-builder/types";
-
-addReducer([ELEMENT_DROPPED], "ui.activeElement", () => null);
 
 export default {
     name: "pb-editor-toolbar-add-element",

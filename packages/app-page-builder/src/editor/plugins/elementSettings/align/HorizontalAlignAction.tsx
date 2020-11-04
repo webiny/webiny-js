@@ -1,56 +1,89 @@
-import React from "react";
-import { useHandler } from "@webiny/app/hooks/useHandler";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { getPlugins } from "@webiny/plugins";
-import { set } from "dot-prop-immutable";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { get } from "dot-prop-immutable";
+import React, { useCallback } from "react";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { plugins } from "@webiny/plugins";
 import { ReactComponent as AlignCenterIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_center.svg";
 import { ReactComponent as AlignLeftIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_left.svg";
 import { ReactComponent as AlignJustifyIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_justify.svg";
 import { ReactComponent as AlignRightIcon } from "@webiny/app-page-builder/editor/assets/icons/format_align_right.svg";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
+type IconsType = {
+    [key: string]: React.ReactElement;
+};
 // Icons map for dynamic render
-const icons = {
+const icons: IconsType = {
     left: <AlignLeftIcon />,
     center: <AlignCenterIcon />,
     right: <AlignRightIcon />,
     justify: <AlignJustifyIcon />
 };
 
-const defaultOptions = { alignments: ["left", "center", "right", "justify"] };
+const defaultOptions = { alignments: Object.keys(icons) };
 
-const HorizontalAlignAction = props => {
-    const { element, children, options: { alignments } = defaultOptions } = props;
-    const align = get(element, "data.settings.horizontalAlign") || "left";
+const defaultAlignValue = "left";
 
-    const onClick = useHandler(props, ({ element, updateElement }) => () => {
-        const align = get(element, "data.settings.horizontalAlign") || "left";
+const getAlignValue = (element: PbElement): string => {
+    return element.data?.settings?.horizontalAlign || defaultAlignValue;
+};
+
+type HorizontalAlignActionPropsType = {
+    children: React.ReactElement;
+    options: {
+        alignments: string[];
+    };
+};
+const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsType> = ({
+    children,
+    options: { alignments } = defaultOptions
+}) => {
+    const handler = useEventActionHandler();
+    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const defaultAlign = getAlignValue(element);
+
+    const updateElement = (element: PbElement) => {
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element
+            })
+        );
+    };
+
+    const onClick = useCallback(() => {
+        const align = getAlignValue(element);
 
         const types = Object.keys(icons).filter(key =>
             alignments ? alignments.includes(key) : true
         );
 
-        const nextAlign = types[types.indexOf(align) + 1] || "left";
+        const nextAlign = types[types.indexOf(align) + 1] || defaultAlignValue;
 
         updateElement({
-            element: set(element, "data.settings.horizontalAlign", nextAlign)
+            ...element,
+            data: {
+                ...element.data,
+                settings: {
+                    ...element.data.settings,
+                    horizontalAlign: nextAlign
+                }
+            }
         });
-    });
+    }, [element.id]);
 
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
-        pl => pl.elementType === element.type
-    );
+    const plugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(pl => pl.elementType === element.type);
 
     if (!plugin) {
         return null;
     }
 
-    return React.cloneElement(children, { onClick, icon: icons[align] });
+    return React.cloneElement(children as React.ReactElement, {
+        onClick,
+        icon: icons[defaultAlign]
+    });
 };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(HorizontalAlignAction);
+export default React.memo(HorizontalAlignAction);

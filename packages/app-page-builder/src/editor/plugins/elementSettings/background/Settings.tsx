@@ -1,17 +1,17 @@
 import React, { useCallback } from "react";
-import { get } from "lodash";
-import { set } from "dot-prop-immutable";
-import { css } from "emotion";
-import { useHandlers } from "@webiny/app/hooks/useHandlers";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
+import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import ColorPicker from "@webiny/app-page-builder/editor/components/ColorPicker";
-import { Cell, Grid } from "@webiny/ui/Grid";
 import Select from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Select";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import BackgroundPositionSelector from "./BackgroundPositionSelector";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { set } from "dot-prop-immutable";
+import { css } from "emotion";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { useRecoilValue } from "recoil";
 
 const imageSelect = css({
     width: "100%"
@@ -19,102 +19,106 @@ const imageSelect = css({
 
 const root = "data.settings.background";
 
-const Settings = props => {
-    const { setImage, setScaling, setPosition, setColor } = useHandlers(props, {
-        setImage: ({ element, updateElement }) => image => {
-            if (!image) {
-                updateElement({
-                    element: set(element, `${root}.image.file`, null),
-                    history: true
-                });
-            } else {
-                updateElement({
-                    element: set(element, `${root}.image.file`, image),
-                    history: true
-                });
-            }
-        },
-        setScaling: ({ element, updateElement }) => (value: string) => {
+type SettingsPropsType = {
+    options: {
+        [key: string]: any;
+    };
+};
+const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
+    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const handler = useEventActionHandler();
+    const updateElement = (args: UpdateElementActionArgsType) => {
+        handler.trigger(new UpdateElementActionEvent(args));
+    };
+    const setImage = image => {
+        if (!image) {
             updateElement({
-                element: set(element, `${root}.image.scaling`, value),
+                element: set(element, `${root}.image.file`, null),
                 history: true
             });
-        },
-        setPosition: ({ element, updateElement }) => (position: string) => {
-            updateElement({
-                element: set(element, `${root}.image.position`, position),
-                history: true
-            });
-        },
-        setColor: ({ element, updateElement }) => (value, history) => {
-            updateElement({
-                element: set(element, `${root}.color`, value),
-                history
-            });
+            return;
         }
-    });
+        updateElement({
+            element: set(element, `${root}.image.file`, image),
+            history: true
+        });
+    };
+    const setScaling = (value: string) => {
+        updateElement({
+            element: set(element, `${root}.image.scaling`, value),
+            history: true
+        });
+    };
+    const setPosition = (position: string) => {
+        updateElement({
+            element: set(element, `${root}.image.position`, position),
+            history: true
+        });
+    };
+    const setColor = (value: string, history = false) => {
+        updateElement({
+            element: set(element, `${root}.color`, value),
+            history
+        });
+    };
 
-    const onColorChange = useCallback(value => setColor(value, false), [setColor]);
-    const onColorChangeComplete = useCallback(value => setColor(value), [setColor]);
+    const onColorChange = useCallback(value => setColor(value, false), []);
+    const onColorChangeComplete = useCallback(value => setColor(value), []);
 
-    const { element, options } = props;
-    const bg = get(element, "data.settings.background");
-    const imageSrc = get(bg, "image.file.src");
+    const { background: bg } = element.data.settings || {};
+    const { src: imageSrc, color: bgColor = "#fff" } = bg.image?.file || {};
+    const { scaling: imageScaling, position: imagePosition } = bg.image || {};
 
     return (
-        <React.Fragment>
-            <Tabs>
-                <Tab label={"Color"}>
+        <Tabs>
+            <Tab label={"Color"}>
+                <Grid>
+                    <Cell span={12}>
+                        <ColorPicker
+                            value={bgColor}
+                            onChange={onColorChange}
+                            onChangeComplete={onColorChangeComplete}
+                        />
+                    </Cell>
+                </Grid>
+            </Tab>
+            {options.image !== false && (
+                <Tab label={"Image"}>
                     <Grid>
                         <Cell span={12}>
-                            <ColorPicker
-                                value={get(bg, "color", "#fff")}
-                                onChange={onColorChange}
-                                onChangeComplete={onColorChangeComplete}
+                            <SingleImageUpload
+                                className={imageSelect}
+                                onChange={setImage}
+                                value={{ src: imageSrc }}
+                            />
+                        </Cell>
+                    </Grid>
+                    <Select
+                        disabled={!imageSrc}
+                        label="Scaling"
+                        value={imageScaling}
+                        updateValue={setScaling}
+                    >
+                        <option value="cover">Cover</option>
+                        <option value="contain">Contain</option>
+                        <option value="originalSize">Original size</option>
+                        <option value="tile">Tile</option>
+                        <option value="tileHorizontally">Tile Horizontally</option>
+                        <option value="tileVertically">Tile Vertically</option>
+                    </Select>
+                    <Grid>
+                        <Cell span={12}>
+                            <BackgroundPositionSelector
+                                disabled={!imageSrc}
+                                value={imagePosition}
+                                onChange={setPosition}
                             />
                         </Cell>
                     </Grid>
                 </Tab>
-                {options.image !== false && (
-                    <Tab label={"Image"}>
-                        <Grid>
-                            <Cell span={12}>
-                                <SingleImageUpload
-                                    className={imageSelect}
-                                    onChange={setImage}
-                                    value={{ src: imageSrc }}
-                                />
-                            </Cell>
-                        </Grid>
-                        <Select
-                            disabled={!imageSrc}
-                            label="Scaling"
-                            value={get(bg, "image.scaling")}
-                            updateValue={setScaling}
-                        >
-                            <option value="cover">Cover</option>
-                            <option value="contain">Contain</option>
-                            <option value="originalSize">Original size</option>
-                            <option value="tile">Tile</option>
-                            <option value="tileHorizontally">Tile Horizontally</option>
-                            <option value="tileVertically">Tile Vertically</option>
-                        </Select>
-                        <Grid>
-                            <Cell span={12}>
-                                <BackgroundPositionSelector
-                                    disabled={!imageSrc}
-                                    value={get(bg, "image.position")}
-                                    onChange={setPosition}
-                                />
-                            </Cell>
-                        </Grid>
-                    </Tab>
-                )}
-            </Tabs>
-        </React.Fragment>
+            )}
+        </Tabs>
     );
 };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(Settings);
+export default React.memo(Settings);

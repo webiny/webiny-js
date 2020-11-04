@@ -1,5 +1,6 @@
-import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import React, { useCallback, useState } from "react";
+import * as Styled from "./StyledComponents";
+import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import {
     DeactivatePluginActionEvent,
@@ -9,10 +10,9 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import { DropElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/dropElement/types";
 import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { useRecoilValue } from "recoil";
-import * as Styled from "./StyledComponents";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -53,30 +53,30 @@ const AddElement: React.FunctionComponent = () => {
 
     const { params } = plugin || {};
 
-    const dragStart = () => {
+    const dragStart = useCallback(() => {
         handler.trigger(new DragStartActionEvent());
-    };
-    const dragEnd = () => {
+    }, []);
+    const dragEnd = useCallback(() => {
         handler.trigger(new DragEndActionEvent());
-    };
-    const deactivatePlugin = () => {
+    }, []);
+    const deactivatePlugin = useCallback(() => {
         handler.trigger(
             new DeactivatePluginActionEvent({
                 name: ADD_ELEMENT
             })
         );
-    };
-    const dropElement = (args: DropElementActionArgsType) => {
+    }, []);
+    const dropElement = useCallback((args: DropElementActionArgsType) => {
         handler.trigger(new DropElementActionEvent(args));
-    };
+    }, []);
     const getGroups = useCallback(() => {
-        return getPlugins<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
+        return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
     }, []);
 
     const getGroupElements = useCallback(group => {
-        return getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").filter(
-            el => el.toolbar && el.toolbar.group === group
-        );
+        return plugins
+            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .filter(el => el.toolbar && el.toolbar.group === group);
     }, []);
 
     const [group, setGroup] = useState<string>(getGroups()[0].name);
@@ -89,43 +89,42 @@ const AddElement: React.FunctionComponent = () => {
 
     const enableDragOverlay = useCallback(() => {
         const el = document.querySelector(".pb-editor");
-        if (el) {
-            el.classList.add("pb-editor-dragging");
+        if (!el) {
+            return;
         }
+        el.classList.add("pb-editor-dragging");
     }, []);
 
     const disableDragOverlay = useCallback(() => {
         const el = document.querySelector(".pb-editor");
-        if (el) {
-            el.classList.remove("pb-editor-dragging");
+        if (!el) {
+            return;
         }
+        el.classList.remove("pb-editor-dragging");
     }, []);
 
-    const renderDraggable = useCallback(
-        (element, plugin) => {
-            const { elementType } = plugin;
+    const renderDraggable = useCallback((element, plugin) => {
+        const { elementType } = plugin;
 
-            return (
-                <Draggable
-                    key={plugin.name}
-                    target={plugin.target}
-                    beginDrag={props => {
-                        dragStart();
-                        setTimeout(deactivatePlugin, 20);
-                        return { type: elementType, target: props.target };
-                    }}
-                    endDrag={() => {
-                        dragEnd();
-                    }}
-                >
-                    {({ drag }) => (
-                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
-                    )}
-                </Draggable>
-            );
-        },
-        [dragStart, deactivatePlugin, dragEnd]
-    );
+        return (
+            <Draggable
+                key={plugin.name}
+                target={plugin.target}
+                beginDrag={props => {
+                    dragStart();
+                    setTimeout(deactivatePlugin, 20);
+                    return { type: elementType, target: props.target };
+                }}
+                endDrag={() => {
+                    dragEnd();
+                }}
+            >
+                {({ drag }) => (
+                    <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
+                )}
+            </Draggable>
+        );
+    }, []);
 
     const renderOverlay = useCallback(
         (element, onClick = null, label, plugin) => {

@@ -1,4 +1,4 @@
-import { DragStartActionEvent } from "./event";
+import { DragEndActionEvent, DragStartActionEvent } from "./event";
 import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 
 export const dragStartAction: EventActionCallableType<DragStartActionEvent> = state => {
@@ -12,12 +12,12 @@ export const dragStartAction: EventActionCallableType<DragStartActionEvent> = st
     };
 };
 
-export const dragEndAction: EventActionCallableType<DragStartActionEvent> = state => {
+export const dragEndAction: EventActionCallableType<DragEndActionEvent> = state => {
     return {
         state: {
             ui: {
                 ...state.ui,
-                isDragging: true
+                isDragging: false
             }
         }
     };

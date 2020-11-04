@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-import isNumeric from "isnumeric";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
@@ -27,11 +26,11 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId
     const imgStyle = { width: null, height: null };
     if (image.width) {
         const { width } = image;
-        imgStyle.width = isNumeric(width) ? parseInt(width as string) : width;
+        imgStyle.width = parseInt(width as string);
     }
     if (image.height) {
         const { height } = image;
-        imgStyle.height = isNumeric(height) ? parseInt(height as string) : height;
+        imgStyle.height = parseInt(height as string);
     }
 
     const onChange = useCallback(

@@ -1,12 +1,12 @@
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { revisionsAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { getRevisions } from "@webiny/app-page-builder/editor/selectors";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+import { useRecoilValue } from "recoil";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
 
 const buttonStyle = css({
@@ -24,7 +24,18 @@ const menuList = css({
     }
 });
 
-const Revisions = ({ revisions }) => {
+type RevisionStatusType = "published" | "locked" | "draft";
+const getStatus = (rev: any): RevisionStatusType => {
+    if (rev.published) {
+        return "published";
+    } else if (rev.locked && !rev.published) {
+        return "locked";
+    }
+    return "draft";
+};
+
+const Revisions: React.FunctionComponent = () => {
+    const revisions = useRecoilValue(revisionsAtom);
     const { history } = useRouter();
     return (
         <Menu
@@ -39,14 +50,7 @@ const Revisions = ({ revisions }) => {
             }
         >
             {revisions.map(rev => {
-                let status = "draft";
-                if (rev.published) {
-                    status = "published";
-                }
-                if (rev.locked && !rev.published) {
-                    status = "locked";
-                }
-
+                const status = getStatus(rev);
                 return (
                     <MenuItem key={rev.id} disabled={status !== "draft"}>
                         <Typography use={"body2"}>v{rev.version}</Typography>
@@ -58,6 +62,4 @@ const Revisions = ({ revisions }) => {
     );
 };
 
-export default connect<any, any, any>(state => ({ revisions: getRevisions(state) }))(
-    React.memo(Revisions)
-);
+export default Revisions;

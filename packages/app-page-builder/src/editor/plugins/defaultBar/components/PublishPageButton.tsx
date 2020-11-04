@@ -1,15 +1,15 @@
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { getPage } from "@webiny/app-page-builder/editor/selectors";
-import { omit, isEqual } from "lodash";
 import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
+import { useRecoilValue } from "recoil";
 import { PUBLISH_REVISION } from "./PublishPageButton/graphql";
 
-const PublishPageButton = ({ page }) => {
+const PublishPageButton: React.FunctionComponent = () => {
+    const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     return (
@@ -53,9 +53,4 @@ const PublishPageButton = ({ page }) => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({ page: omit(getPage(state), ["content"]) }),
-    null,
-    null,
-    { areStatePropsEqual: isEqual }
-)(PublishPageButton);
+export default PublishPageButton;
