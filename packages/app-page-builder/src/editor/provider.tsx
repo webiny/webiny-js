@@ -4,9 +4,11 @@ import {
     elementsAtom,
     pageAtom,
     pluginsAtom,
+    revisionsAtom,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { connectedAtomValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import React, { createContext, useContext } from "react";
 
 type ProviderType = {
@@ -25,12 +27,13 @@ export const EditorProvider: React.FunctionComponent<any> = props => {
     );
 };
 
-export const getGlobalState = () => ({
+export const getGlobalState = (): PbState => ({
     ui: connectedAtomValue(uiAtom),
     plugins: connectedAtomValue(pluginsAtom),
     elements: connectedAtomValue(elementsAtom),
     page: connectedAtomValue(pageAtom),
-    content: connectedAtomValue(contentAtom)
+    content: connectedAtomValue(contentAtom),
+    revisions: connectedAtomValue(revisionsAtom)
 });
 
 (window as any).getGlobalState = getGlobalState;

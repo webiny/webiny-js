@@ -53,7 +53,6 @@ const deactivatePluginsByName = (
     for (const name of names) {
         removePluginFromStateReference(newPluginState, name);
     }
-    console.log(newPluginState);
     return {
         state: {
             plugins: newPluginState

@@ -108,9 +108,6 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         })
     );
 
-    if (isHighlighted) {
-        console.log(`should higlight: ${elementId}`);
-    }
     return (
         <Transition in={true} timeout={250} appear={true}>
             {state => (

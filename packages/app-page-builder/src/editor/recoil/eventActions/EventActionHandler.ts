@@ -59,7 +59,6 @@ export const executeAction = <T extends CallableArgsType = any>(
     previousResult?: EventActionHandlerActionCallableResponseType
 ): EventActionHandlerActionCallableResponseType => {
     const previousState = previousResult?.state || {};
-    console.log(JSON.stringify(previousState));
     const previousActions = previousResult?.actions || [];
     const result = action(
         { ...state, ...previousState },
