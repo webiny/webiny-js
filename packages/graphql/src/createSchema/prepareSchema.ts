@@ -8,14 +8,11 @@ import { RefInput } from "./RefInputScalar";
 import { Number } from "./NumberScalar";
 import { Any } from "./AnyScalar";
 import { GraphQLSchemaPlugin, GraphQLScalarPlugin, Context } from "../types";
-import { applyContextPlugins } from "@webiny/graphql";
 
 /**
  * @return {schema, context}
  */
 export async function prepareSchema(context: Context) {
-    await applyContextPlugins(context);
-
     // This allows developers to register more plugins dynamically, before the graphql schema is instantiated.
     const gqlPlugins = context.plugins.byType<GraphQLSchemaPlugin>("graphql-schema");
 
