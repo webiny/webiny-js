@@ -12,7 +12,7 @@ import userMenu from "@webiny/app-admin/plugins/UserMenu";
 import { globalSearch, globalSearchHotkey } from "@webiny/app-admin/plugins/GlobalSearch";
 
 // User menu plugins
-import darkMode from "@webiny/app-admin/plugins/UserMenu/plugins/darkMode";
+import darkMode from "@webiny/app-admin/plugins/UserMenu/plugins/DarkMode";
 import defaultHandle from "@webiny/app-admin/plugins/UserMenu/plugins/DefaultHandle";
 import help from "@webiny/app-admin/plugins/UserMenu/plugins/Help";
 import sendFeedback from "@webiny/app-admin/plugins/UserMenu/plugins/Feedback";
