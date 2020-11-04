@@ -1,4 +1,4 @@
-import { ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/graphql";
 
 class NotAuthorizedResponse extends ErrorResponse {
     constructor() {
