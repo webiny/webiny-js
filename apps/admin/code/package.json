@@ -3,7 +3,11 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
-		"@webiny/app-template-admin-full": "^4.13.0",
+		"@editorjs/delimiter": "^1.2.0",
+		"@editorjs/header": "^2.6.0",
+		"@editorjs/list": "^1.6.0",
+		"@editorjs/underline": "^1.0.0",
+		"@editorjs/quote": "^2.4.0",
 		"react": "^16.13.1",
 		"react-dom": "^16.13.1"
 	},

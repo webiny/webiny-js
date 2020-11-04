@@ -2,7 +2,6 @@ import i18nSitePlugins from "@webiny/app-i18n/site/plugins";
 import { AdminGlobalSearchPreventHotkeyPlugin } from "@webiny/app-admin/types";
 import routes from "./routes";
 import menus from "./menus";
-import richTextEditor from "./richTextEditor";
 import install from "./install";
 import permissionRenderer from "./permissionRenderer";
 import apolloLink from "./apolloLink";
@@ -26,7 +25,6 @@ export default () => [
     routes,
     menus,
     permissionRenderer,
-    richTextEditor,
     i18nSitePlugins(),
     globalSearchHotkey,
     install,

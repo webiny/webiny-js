@@ -1,7 +1,7 @@
 import React from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import { DndProvider } from "react-dnd";
-import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
+import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
 import { FormEditorApp } from "@webiny/app-form-builder/admin/components/FormEditor";
 
 export default function EditorView() {

@@ -1,6 +1,6 @@
 import DefaultFormLayout from "./layouts/DefaultFormLayout";
 
-export default () => [
+export default [
     {
         name: "form-layout-default",
         type: "form-layout",

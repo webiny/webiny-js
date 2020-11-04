@@ -1,5 +1,13 @@
-import install from "./install";
+import installation from "./installation";
 import menus from "./menus";
-import permissionRenderer from "./permissionRenderer";
+import fileManagerPermission from "./permissionRenderer/fileManagerPermission";
+import filesPermission from "./permissionRenderer/filesPermission";
+import settingsPermission from "./permissionRenderer/settingsPermission";
 
-export default [install, menus, permissionRenderer()];
+export default () => [
+    installation,
+    menus,
+    fileManagerPermission,
+    filesPermission,
+    settingsPermission
+];

@@ -22,6 +22,6 @@ export default [
     spacer(),
     button(),
     ...embeds,
-    ...pagesList,
-    ...imagesList
+    ...pagesList(),
+    ...imagesList()
 ];
