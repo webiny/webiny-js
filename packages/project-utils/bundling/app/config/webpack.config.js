@@ -354,7 +354,15 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             loader: require.resolve("eslint-loader")
                         }
                     ],
-                    include: paths.appSrc
+                    //include: paths.appSrc
+                    include: file => {
+                        if (file.includes("dist")) {
+                            return false;
+                        }
+
+                        return paths.allPackages.some(p => file.includes(p));
+                    },
+                    exclude: /node_modules/
                 },
                 {
                     // "oneOf" will traverse all following loaders until one will
@@ -376,7 +384,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
-                            include: [paths.appSrc, paths.appIndexJs],
+                            include: [paths.appSrc, paths.appIndexJs, ...paths.allPackages],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 presets: [require.resolve("babel-preset-react-app")],

@@ -1,10 +1,10 @@
 import * as aws from "@pulumi/aws";
+import ApiGateway from "./apiGateway";
 import { parse } from "url";
-import * as awsx from "@pulumi/awsx";
 
 class Cloudfront {
     cloudfront: aws.cloudfront.Distribution;
-    constructor({ apiGateway }: { apiGateway: awsx.apigateway.API }) {
+    constructor({ apiGateway }: { apiGateway: ApiGateway }) {
         this.cloudfront = new aws.cloudfront.Distribution("api-cloudfront", {
             waitForDeployment: false,
             defaultCacheBehavior: {
@@ -21,7 +21,7 @@ class Cloudfront {
                 compress: true,
                 maxTtl: 86400,
                 minTtl: 0,
-                targetOriginId: apiGateway.restAPI.name,
+                targetOriginId: apiGateway.api.name,
                 viewerProtocolPolicy: "allow-all"
             },
             isIpv6Enabled: true,
@@ -39,7 +39,7 @@ class Cloudfront {
                     },
                     pathPattern: "/cms*",
                     viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.restAPI.name
+                    targetOriginId: apiGateway.api.name
                 },
                 {
                     defaultTtl: 2592000,
@@ -54,14 +54,18 @@ class Cloudfront {
                     },
                     pathPattern: "/files/*",
                     viewerProtocolPolicy: "allow-all",
-                    targetOriginId: apiGateway.restAPI.name
+                    targetOriginId: apiGateway.api.name
                 }
             ],
             origins: [
                 {
-                    domainName: apiGateway.url.apply((url: string) => String(parse(url).hostname)),
-                    originPath: "/default",
-                    originId: apiGateway.restAPI.name,
+                    domainName: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
+                        String(parse(url).hostname)
+                    ),
+                    originPath: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
+                        String(parse(url).pathname)
+                    ),
+                    originId: apiGateway.api.name,
                     customOriginConfig: {
                         httpPort: 80,
                         httpsPort: 443,

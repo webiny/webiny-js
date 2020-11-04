@@ -1,7 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
-import defaultLambdaRole from "./defaultLambdaRole";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
@@ -10,13 +9,14 @@ class FileManager {
     bucket: aws.s3.Bucket;
     manageS3LambdaPermission?: aws.lambda.Permission;
     bucketNotification?: aws.s3.BucketNotification;
+    role: aws.iam.Role;
+    policy: aws.iam.RolePolicyAttachment;
     functions: {
         manage: aws.lambda.Function;
         transform: aws.lambda.Function;
-        graphql: aws.lambda.Function;
         download: aws.lambda.Function;
     };
-    constructor({ env }: { env: { graphql: { [key: string]: any } } }) {
+    constructor() {
         this.bucket = new aws.s3.Bucket("fm-bucket", {
             forceDestroy: false,
             acl: "private",
@@ -30,12 +30,32 @@ class FileManager {
             ]
         });
 
+        this.role = new aws.iam.Role("fm-lambda-role", {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        this.policy = new aws.iam.RolePolicyAttachment("fm-lambda-role-policy", {
+            role: this.role,
+            policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
+        });
+
         const transform = new aws.lambda.Function("fm-image-transformer", {
             handler: "handler.handler",
             timeout: 30,
             runtime: "nodejs10.x", // Because of the "sharp" library (built for Node10).
             memorySize: 1600,
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/fileManager/transform/build")
@@ -51,7 +71,7 @@ class FileManager {
         });
 
         const manage = new aws.lambda.Function("fm-manage", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -69,27 +89,8 @@ class FileManager {
             }
         });
 
-        const graphql = new aws.lambda.Function("fm-graphql", {
-            role: defaultLambdaRole.role.arn,
-            runtime: "nodejs12.x",
-            handler: "handler.handler",
-            timeout: 30,
-            memorySize: 512,
-            description: "Files GraphQL API",
-            code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/fileManager/graphql/build")
-            }),
-            environment: {
-                variables: { ...env.graphql, S3_BUCKET: this.bucket.id }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-            }
-        });
-
         const download = new aws.lambda.Function("fm-download", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -113,7 +114,6 @@ class FileManager {
         this.functions = {
             transform,
             manage,
-            graphql,
             download
         };
 
@@ -127,21 +127,15 @@ class FileManager {
             }
         );
 
-        this.bucketNotification = new aws.s3.BucketNotification(
-            "bucketNotification",
-            {
-                bucket: this.bucket.id,
-                lambdaFunctions: [
-                    {
-                        lambdaFunctionArn: this.functions.manage.arn,
-                        events: ["s3:ObjectRemoved:*"]
-                    }
-                ]
-            },
-            {
-                dependsOn: [this.manageS3LambdaPermission]
-            }
-        );
+        this.bucketNotification = new aws.s3.BucketNotification("bucketNotification", {
+            bucket: this.bucket.id,
+            lambdaFunctions: [
+                {
+                    lambdaFunctionArn: this.functions.manage.arn,
+                    events: ["s3:ObjectRemoved:*"]
+                }
+            ]
+        });
     }
 }
 

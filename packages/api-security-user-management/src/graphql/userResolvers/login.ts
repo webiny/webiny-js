@@ -1,11 +1,5 @@
-import { Batch } from "@commodo/fields-storage";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import {
-    GSI1_PK_USER,
-    PK_USER,
-    SK_USER
-} from "@webiny/api-security-user-management/models/securityUserData.model";
 import { SecurityUserManagementPlugin } from "../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
@@ -16,54 +10,22 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             throw new Error("Not authorized!");
         }
 
-        const Model: any = context.models.SECURITY;
-        const { SecurityUser } = context.models;
+        const { users } = context;
 
-        const securityRecord = await Model.findOne({
-            query: { PK: `${PK_USER}#${identity.id}`, SK: SK_USER }
-        });
+        let user = await users.get(identity.id);
 
         let firstLogin = false;
-        let user = securityRecord?.data;
 
-        if (!securityRecord) {
+        if (!user) {
             firstLogin = true;
             // Create a "Security User"
-            user = new SecurityUser();
-            await user.populate({
+            user = await users.create({
                 id: identity.id,
                 email: identity.login,
                 firstName: identity.firstName || "",
-                lastName: identity.lastName || ""
+                lastName: identity.lastName || "",
+                avatar: identity.avatar
             });
-
-            const PK = `${PK_USER}#${user.id}`;
-
-            const securityRecordPrimary = new Model();
-            securityRecordPrimary.PK = PK;
-            securityRecordPrimary.SK = SK_USER;
-            securityRecordPrimary.GSI1_PK = GSI1_PK_USER;
-            securityRecordPrimary.GSI1_SK = `login#${user.email}`;
-            securityRecordPrimary.GSI_DATA = user;
-            securityRecordPrimary.data = user;
-
-            const securityRecordSecondary = new Model();
-            securityRecordSecondary.PK = PK;
-            securityRecordSecondary.SK = "createdOn";
-            securityRecordSecondary.GSI1_PK = GSI1_PK_USER;
-            securityRecordSecondary.GSI1_SK = `createdOn#${user.createdOn}`;
-            securityRecordSecondary.GSI_DATA = user;
-            securityRecordSecondary.data = user;
-
-            // Here we can't use the "SecurityUser" because "Batch" operation works with "Model" and not "instance"
-            const batch = new Batch(
-                // User item - A
-                [securityRecordPrimary, "save"],
-                // User item - createdOn
-                [securityRecordSecondary, "save"]
-            );
-
-            await batch.execute();
         }
 
         const authPlugin = context.plugins.byName<SecurityUserManagementPlugin>(

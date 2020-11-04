@@ -8,6 +8,7 @@ import { LIST_ENVIRONMENT_ALIASES } from "@webiny/app-headless-cms/admin/views/E
 import { Typography } from "@webiny/ui/Typography";
 import { toLower } from "lodash";
 import get from "lodash/get";
+import { useSecurity } from "@webiny/app-security";
 
 const style = {
     apiUrl: css({
@@ -23,6 +24,13 @@ const style = {
 };
 
 const HeadlessCmsApiUrls = function({ name = null, type = null }) {
+    const { identity } = useSecurity();
+
+    const hasPermission = identity.getPermission("cms.environment-alias");
+    if (!hasPermission) {
+        return null;
+    }
+
     const { showSnackbar } = useSnackbar();
     const graphqlApiUrl = process.env.REACT_APP_API_URL;
     const [totalAliases, setTotalAliases] = useState([]);

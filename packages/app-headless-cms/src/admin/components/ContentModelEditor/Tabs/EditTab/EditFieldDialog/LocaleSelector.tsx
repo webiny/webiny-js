@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { Select } from "@webiny/ui/Select";

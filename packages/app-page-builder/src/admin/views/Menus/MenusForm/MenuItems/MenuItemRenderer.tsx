@@ -24,7 +24,8 @@ class NodeRendererDefault extends React.Component<any> {
         draggedNode: null,
         canDrop: false,
         title: null,
-        subtitle: null
+        subtitle: null,
+        canSave: false
     };
 
     render() {
@@ -45,7 +46,8 @@ class NodeRendererDefault extends React.Component<any> {
             deleteItem,
             className,
             style,
-            didDrop
+            didDrop,
+            canSave
         } = this.props;
 
         const nodeTitle = title || node.title;
@@ -105,7 +107,7 @@ class NodeRendererDefault extends React.Component<any> {
                     {/* Set the row preview to be used during drag and drop */}
                     {connectDragPreview(
                         <div>
-                            {handle}
+                            {canSave && handle}
                             <Row
                                 className={classnames(
                                     "rst__row",
@@ -135,18 +137,20 @@ class NodeRendererDefault extends React.Component<any> {
                                         </span>
                                     </div>
 
-                                    <div className="rst__rowToolbar">
-                                        <IconButton
-                                            data-testid={"pb-edit-icon-button"}
-                                            icon={<EditIcon />}
-                                            onClick={() => editItem(node)}
-                                        />
-                                        <IconButton
-                                            data-testid={"pb-delete-icon-button"}
-                                            icon={<DeleteIcon />}
-                                            onClick={() => deleteItem(node)}
-                                        />
-                                    </div>
+                                    {canSave && (
+                                        <div className="rst__rowToolbar">
+                                            <IconButton
+                                                data-testid={"pb-edit-icon-button"}
+                                                icon={<EditIcon />}
+                                                onClick={() => editItem(node)}
+                                            />
+                                            <IconButton
+                                                data-testid={"pb-delete-icon-button"}
+                                                icon={<DeleteIcon />}
+                                                onClick={() => deleteItem(node)}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </Row>
                         </div>

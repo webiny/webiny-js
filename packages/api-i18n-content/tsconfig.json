@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../graphql"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../api-i18n"
+    }
+  ]
+}

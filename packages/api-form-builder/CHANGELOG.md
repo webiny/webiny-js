@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/api-form-builder
+
+
+
+
+
+# [4.14.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.0...v4.14.0-beta.1) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/api-form-builder
+
+
+
+
+
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Bug Fixes
+
+* add short description ([a200542](https://github.com/webiny/webiny-js/commit/a200542c0e14dca178508ca5e6b43d4a6b98dc7c))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/api-form-builder

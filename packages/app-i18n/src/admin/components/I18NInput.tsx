@@ -86,6 +86,7 @@ export const I18NInput = ({
 
     let inputValue = "";
     if (value && Array.isArray(value.values)) {
+        // @ts-ignore
         const foundValue = value.values.find(item => item.locale === getLocale().id);
         if (foundValue) {
             inputValue = foundValue.value;
@@ -94,10 +95,12 @@ export const I18NInput = ({
 
     const inputOnChange = inputValue => {
         const newValue = cloneDeep({ values: [], ...value });
+        // @ts-ignore
         const index = value ? value.values.findIndex(item => item.locale === getLocale().id) : -1;
         if (index >= 0) {
             newValue.values[index].value = inputValue;
         } else {
+            // @ts-ignore
             newValue.values.push({ locale: getLocale().id, value: inputValue });
         }
 

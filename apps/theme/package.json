@@ -1,0 +1,31 @@
+{
+  "name": "theme",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/app": "^4.12.1",
+    "@webiny/app-page-builder": "^4.12.1",
+    "@webiny/plugins": "^4.12.1",
+    "@webiny/react-router": "^4.12.1",
+    "classnames": "^2.2.6",
+    "emotion": "^10.0.17",
+    "graphql-tag": "2.10.1",
+    "lodash.get": "^4.4.2",
+    "react-apollo": "^3.1.0",
+    "react-hamburger-menu": "^1.1.1",
+    "react-helmet": "^5.2.0"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE dist/ && tsc -p tsconfig.build.json"
+  }
+}

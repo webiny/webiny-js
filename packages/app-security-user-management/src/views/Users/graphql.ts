@@ -7,10 +7,7 @@ const fields = /* GraphQL */ `
         firstName
         lastName
         fullName
-        avatar {
-            id
-            src
-        }
+        avatar
         group {
             id
             name
@@ -48,10 +45,7 @@ export const LIST_USERS: any = gql`
                     firstName
                     lastName
                     fullName
-                    avatar {
-                        id
-                        src
-                    }
+                    avatar
                     createdOn
                 }
                 meta {

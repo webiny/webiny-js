@@ -1,4 +1,3 @@
-import { applyContextPlugins } from "@webiny/graphql";
 import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
 import headlessPlugins from "../../content/plugins";
 import { generateContentModelIndexes } from "./generateContentModelIndexes";
@@ -14,7 +13,7 @@ import { HandlerHttpContext } from "@webiny/handler-http/types";
 // Setup plugins for given environment
 async function setupEnvironment(context, environment) {
     context.plugins.register(await headlessPlugins({ type: "manage", environment }));
-    await applyContextPlugins(context);
+    // await applyContextPlugins(context);
 }
 
 const processEntryHooks = async (payload, context: HandlerContext) => {
@@ -103,12 +102,12 @@ export default () => [
                             );
                         }
 
-                        await applyContextPlugins(context);
+                        // await applyContextPlugins(context);
 
                         result = await copyEnvironment({ context, ...params });
                         break;
                     case "deleteEnvironment":
-                        await applyContextPlugins(context);
+                        // await applyContextPlugins(context);
 
                         result = await deleteEnvironmentData({ context, environment });
                         break;

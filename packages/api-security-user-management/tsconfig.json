@@ -2,8 +2,10 @@
   "extends": "../../tsconfig",
   "references": [
     { "path": "../api-security" },
+    { "path": "../db-dynamodb" },
     { "path": "../graphql" },
     { "path": "../handler" },
+    { "path": "../handler-db" },
     { "path": "../handler-client" },
     { "path": "../handler-http" }
   ]

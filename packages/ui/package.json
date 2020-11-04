@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@editorjs/editorjs": "^2.19.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@rmwc/base": "^5.6.0",
@@ -72,9 +73,9 @@
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
-    "@webiny/form": "^4.13.0",
-    "@webiny/storybook-utils": "^4.13.0",
-    "@webiny/validation": "^4.13.0",
+    "@webiny/form": "^4.14.0",
+    "@webiny/storybook-utils": "^4.14.0",
+    "@webiny/validation": "^4.14.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import { Menu, Item, Section } from "./plugins/Menu/Navigation/components";
+import { Menu, Item, Section } from "./plugins/menu/Navigation/components";
 import { ReactElement } from "react";
 
 type RenderParams = {
@@ -26,6 +26,11 @@ export type AdminGlobalSearchPlugin = Plugin & {
 export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     type: "admin-global-search-prevent-hotkey";
     preventOpen(e: React.KeyboardEvent): boolean | void;
+};
+
+export type AdminDrawerFooterMenuPlugin = Plugin & {
+    type: "admin-drawer-footer-menu";
+    render(): React.ReactElement;
 };
 
 export type AdminMenuLogoPlugin = Plugin & {

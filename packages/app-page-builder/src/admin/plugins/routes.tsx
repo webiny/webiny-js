@@ -16,9 +16,9 @@ const Menus = lazy(() => import("@webiny/app-page-builder/admin/views/Menus/Menu
 const Pages = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Pages"));
 const Editor = lazy(() => import("@webiny/app-page-builder/admin/views/Pages/Editor"));
 
-const ROLE_PB_CATEGORY = ["pb:category:crud"];
-const ROLE_PB_MENUS = ["pb:menu:crud"];
-const ROLE_PB_PAGES = ["pb:page:crud"];
+const ROLE_PB_CATEGORY = "pb.category";
+const ROLE_PB_MENUS = "pb.menu";
+const ROLE_PB_PAGES = "pb.page";
 
 const plugins: RoutePlugin[] = [
     {
@@ -29,7 +29,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/page-builder/categories"
                 render={() => (
-                    <SecureRoute scopes={ROLE_PB_CATEGORY}>
+                    <SecureRoute permission={ROLE_PB_CATEGORY}>
                         <AdminLayout>
                             <Helmet title={"Page Builder - Categories"} />
                             <Loader>
@@ -49,7 +49,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/page-builder/menus"
                 render={() => (
-                    <SecureRoute scopes={ROLE_PB_MENUS}>
+                    <SecureRoute permission={ROLE_PB_MENUS}>
                         <AdminLayout>
                             <Helmet title={"Page Builder - Menus"} />
                             <Loader>
@@ -69,7 +69,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/page-builder/pages"
                 render={({ location }) => (
-                    <SecureRoute scopes={ROLE_PB_PAGES}>
+                    <SecureRoute permission={ROLE_PB_PAGES}>
                         <EditorPluginsLoader location={location}>
                             <AdminLayout>
                                 <Helmet title={"Page Builder - Pages"} />
@@ -91,7 +91,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/page-builder/editor/:id"
                 render={({ location }) => (
-                    <SecureRoute scopes={ROLE_PB_PAGES}>
+                    <SecureRoute permission={ROLE_PB_PAGES}>
                         <EditorPluginsLoader location={location}>
                             <Helmet title={"Page Builder - Edit page"} />
                             <Loader>

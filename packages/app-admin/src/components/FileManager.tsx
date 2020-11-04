@@ -18,7 +18,7 @@ type FileManagerProps = {
 
 type FileManagerPortalProps = Omit<FileManagerProps, "children">;
 
-const { useState } = React;
+const { useState, useRef, useCallback } = React;
 
 class FileManagerPortal extends React.Component<FileManagerPortalProps> {
     container: Element;
@@ -86,12 +86,25 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
 export function FileManager({ children, ...rest }: FileManagerProps) {
     const [show, setShow] = useState(false);
+    const onChangeRef = useRef(rest.onChange);
+
+    const showFileManager = useCallback(onChange => {
+        if (typeof onChange === "function") {
+            onChangeRef.current = onChange;
+        }
+        setShow(true);
+    }, []);
+
     return (
         <>
-            {show && <FileManagerPortal onClose={() => setShow(false)} {...rest} />}
-            {children({
-                showFileManager: () => setShow(true)
-            })}
+            {show && (
+                <FileManagerPortal
+                    onClose={() => setShow(false)}
+                    {...rest}
+                    onChange={onChangeRef.current}
+                />
+            )}
+            {children({ showFileManager })}
         </>
     );
 }

@@ -1,0 +1,41 @@
+{
+	"name": "admin",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@editorjs/delimiter": "^1.2.0",
+		"@editorjs/header": "^2.6.0",
+		"@editorjs/list": "^1.6.0",
+		"@editorjs/underline": "^1.0.0",
+		"@editorjs/quote": "^2.4.0",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1"
+	},
+	"devDependencies": {
+		"env-cmd": "^10.1.0",
+		"@webiny/cli": "^4.13.0",
+		"@webiny/project-utils": "^4.13.0"
+	},
+	"scripts": {
+		"analyze": "source-map-explorer build/static/js/main.*",
+		"start": "webiny run start --env=local",
+		"build": "webiny run build"
+	},
+	"browserslist": {
+		"development": [
+			"last 2 chrome versions",
+			"last 2 firefox versions",
+			"last 2 edge versions"
+		],
+		"production": [
+			">0.25%",
+			"not op_mini all",
+			"ie 11"
+		]
+	},
+	"svgo": {
+		"plugins": {
+			"removeViewBox": false
+		}
+	}
+}

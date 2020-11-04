@@ -45,12 +45,12 @@ export class PluginsContainer {
         return this.plugins[name] as T;
     }
 
-    byType<T extends Plugin>(type?: string): T[] {
-        if (!type) {
-            return Object.values(this.plugins) as T[];
-        }
-
+    byType<T extends Plugin>(type: string): T[] {
         return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
+    }
+
+    all<T extends Plugin>(): T[] {
+        return Object.values(this.plugins) as T[];
     }
 
     register(...args: any): void {

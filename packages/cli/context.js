@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { green } = require("chalk");
+const { green, yellow } = require("chalk");
 const { GetEnvVars } = require("env-cmd");
 const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
@@ -125,11 +125,13 @@ class Context {
 
                 Object.assign(process.env, envConfig);
                 if (debug) {
-                    console.log(`💡 Loaded ${green(env)} environment from ${green(envFile)}.`);
+                    console.log(`💡 Loaded ${green(env)} environment from ${envFile}.`);
                 }
             } catch (err) {
                 if (debug) {
-                    console.log(`💡 No environments were found in ${green(envFile)}. Skipping.`);
+                    console.log(yellow(`⚠️ Could not load environment from ${envFile}:`));
+                    console.log(yellow(`   ${err.message}`));
+                    console.log();
                 }
             } finally {
                 console.error = consoleError;

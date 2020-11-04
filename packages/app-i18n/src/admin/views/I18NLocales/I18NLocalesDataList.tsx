@@ -14,7 +14,6 @@ import {
     ListItemText,
     ListItemMeta,
     ListActions,
-    ListItemTextPrimary,
     ListItemTextSecondary
 } from "@webiny/ui/List";
 
@@ -76,7 +75,7 @@ const I18NLocalesDataList = () => {
                             <ListItemText
                                 onClick={() => history.push(`/i18n/locales?code=${item.code}`)}
                             >
-                                <ListItemTextPrimary>{item.code}</ListItemTextPrimary>
+                                {item.code}
                                 <ListItemTextSecondary>
                                     {item.default && t`Default locale`}
                                 </ListItemTextSecondary>

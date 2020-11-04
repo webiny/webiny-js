@@ -1,11 +1,11 @@
 import flow from "lodash.flow";
 import getSsrCacheTags from "./ssrCache/getSsrCacheTags";
-import { withFields, string, number, fields, skipOnPopulate } from "@webiny/commodo/fields";
-import { withProps, withStaticProps } from "@webiny/commodo/repropose";
-import { date } from "@webiny/commodo/fields-date";
-import { object } from "@webiny/commodo/fields-object";
-import { withName } from "@webiny/commodo/name";
-import { withHooks } from "@webiny/commodo/hooks";
+import { withFields, string, number, fields, skipOnPopulate } from "@commodo/fields";
+import { withProps, withStaticProps } from "repropose";
+import { date } from "commodo-fields-date";
+import { object } from "commodo-fields-object";
+import { withName } from "@commodo/name";
+import { withHooks } from "@commodo/hooks";
 import { getSsrHtml } from "@webiny/handler-ssr/functions";
 
 export default ({ createBase, options = {}, context }: any = {}) =>

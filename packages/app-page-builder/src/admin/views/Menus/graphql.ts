@@ -1,62 +1,40 @@
 import gql from "graphql-tag";
 
-const fields = `
-    id
+const BASE_FIELDS = `
     title
     slug
     description
     items
+    createdOn
+    createdBy {
+        id
+        displayName
+    }
 `;
 
 export const LIST_MENUS = gql`
-    query listMenus(
-        $where: JSON
-        $sort: JSON
-        $search: PbSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query listMenus {
         pageBuilder {
-            menus: listMenus(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            listMenus {
                 data {
-                    id
-                    title
-                    slug
-                    description
-                    createdOn
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
+                    ${BASE_FIELDS}
                 }
             }
         }
     }
 `;
 
-export const READ_MENU = gql`
-    query getMenu($id: ID!) {
+export const GET_MENU = gql`
+    query getMenu($slug: String!) {
         pageBuilder {
-            menu: getMenu(id: $id){
+            getMenu(slug: $slug){
                 data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
                     message
+                    data
                 }
             }
         }
@@ -68,7 +46,7 @@ export const CREATE_MENU = gql`
         pageBuilder {
             menu: createMenu(data: $data) {
                 data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
@@ -81,11 +59,11 @@ export const CREATE_MENU = gql`
 `;
 
 export const UPDATE_MENU = gql`
-    mutation updateMenu($id: ID!, $data: PbMenuInput!){
+    mutation updateMenu($slug: String!, $data: PbMenuInput!){
         pageBuilder {
-            menu: updateMenu(id: $id, data: $data) {
+            menu: updateMenu(slug: $slug, data: $data) {
                 data {
-                    ${fields}
+                    ${BASE_FIELDS}
                 }
                 error {
                     code
@@ -98,10 +76,9 @@ export const UPDATE_MENU = gql`
 `;
 
 export const DELETE_MENU = gql`
-    mutation deleteMenu($id: ID!) {
+    mutation deleteMenu($slug: String!) {
         pageBuilder {
-            deleteMenu(id: $id) {
-                data
+            deleteMenu(slug: $slug) {
                 error {
                     code
                     message

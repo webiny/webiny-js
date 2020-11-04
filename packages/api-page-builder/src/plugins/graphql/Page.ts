@@ -258,11 +258,6 @@ export default {
                 return { __typename: "SecurityUser", id: page.updatedBy };
             }
         },
-        PbElement: {
-            preview({ preview }) {
-                return preview ? { __typename: "File", id: preview } : null;
-            }
-        },
         PbQuery: {
             getPage: resolveGet(pageFetcher),
             listPages: hasScope("pb:page:crud")(listPages),

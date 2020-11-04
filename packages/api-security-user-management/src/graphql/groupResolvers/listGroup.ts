@@ -1,8 +1,7 @@
 import { ListResponse, ListErrorResponse } from "@webiny/graphql";
-import { GSI1_PK_GROUP } from "@webiny/api-security-user-management/models/securityGroupData.model";
 
 export default async (_, { where, sort = 1 }, context) => {
-    const Model = context.models.SECURITY;
+    const { groups } = context;
 
     let beginsWith = "name#";
     if (where?.nameBeginsWith) {
@@ -11,17 +10,9 @@ export default async (_, { where, sort = 1 }, context) => {
 
     try {
         // Load "Groups"
-        const groups = await Model.find({
-            query: {
-                GSI1_PK: GSI1_PK_GROUP,
-                GSI1_SK: { $beginsWith: beginsWith }
-            },
-            sort: { GSI1_SK: sort }
-        });
+        const groupList = await groups.list({ beginsWith, sort: { GSI1_SK: sort } });
 
-        const data = groups.map(group => group.GSI_DATA);
-
-        return new ListResponse(data);
+        return new ListResponse(groupList);
     } catch (e) {
         return new ListErrorResponse({
             message: e.message,

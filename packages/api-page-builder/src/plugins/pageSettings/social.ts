@@ -60,14 +60,7 @@ export default [
                 extend input PbPageSettingsInput {
                     social: PbSocialSettingsInput
                 }
-            `,
-            resolvers: {
-                PbSocialSettings: {
-                    image: ({ image }) => {
-                        return image ? { __typename: "File", id: image } : null;
-                    }
-                }
-            }
+            `
         }
     }
 ];

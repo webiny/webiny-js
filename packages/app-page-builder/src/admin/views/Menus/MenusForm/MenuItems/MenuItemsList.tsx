@@ -31,7 +31,7 @@ class MenuItemsList extends React.Component<any> {
     }
 
     render() {
-        const { items, onChange, editItem, deleteItem } = this.props;
+        const { items, onChange, editItem, deleteItem, canSave } = this.props;
         const data = Array.isArray(items) ? [...items] : [];
 
         let dom = (
@@ -47,11 +47,12 @@ class MenuItemsList extends React.Component<any> {
                     canNodeHaveChildren={MenuItemsList.canHaveChildren}
                     nodeContentRenderer={MenuItemRenderer}
                     rowHeight={80}
+                    getNodeKey={({ node }) => node.id}
                     generateNodeProps={() => ({
                         editItem,
-                        deleteItem
+                        deleteItem,
+                        canSave
                     })}
-                    getNodeKey={({ node }) => node.id}
                 />
             );
         }

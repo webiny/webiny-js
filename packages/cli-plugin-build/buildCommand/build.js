@@ -17,7 +17,9 @@ module.exports = async (inputs, context) => {
         await context.loadEnv(resolve(projectRoot, path, ".env.json"), env, { debug });
     }
 
-    const packages = getPackages().filter(item => item.includes(join(process.cwd(), path)));
+    const workingPath = join(process.cwd(), path).replace(/\\/g, "/");
+
+    const packages = getPackages().filter(item => item.includes(workingPath));
 
     console.log(
         `⏳  Building ${packages.length} package(s) in ${green(join(process.cwd(), path))}...`

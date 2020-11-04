@@ -61,7 +61,7 @@ module.exports = async (inputs, context) => {
 
     const stacksDir = path.join(".", stack);
 
-    let spinner = new ora();
+    const spinner = new ora();
     const pulumi = new Pulumi({
         execa: {
             cwd: stacksDir,
@@ -86,15 +86,13 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        const { process } = await pulumi.run({ command: ["stack", "select", env] });
-        await process;
+        await pulumi.run({ command: ["stack", "select", env] });
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        const { process: pulumiProcess } = await pulumi.run({ command: ["stack", "init", env] });
-        await pulumiProcess;
+        await pulumi.run({ command: ["stack", "init", env] });
 
         // We need to add an arbitrary "aws:region" config value, just because Pulumi needs something to be there.
         // @sse https://github.com/pulumi/pulumi-aws/issues/1153
@@ -105,10 +103,9 @@ module.exports = async (inputs, context) => {
             }
         });
 
-        const { process: configProcess } = await pulumiConfig.run({
+        await pulumiConfig.run({
             command: ["config", "set", "aws:region", process.env.AWS_REGION]
         });
-        await configProcess;
     }
 
     const isFirstDeploy = !stackExists;
@@ -118,36 +115,35 @@ module.exports = async (inputs, context) => {
     if (inputs.preview) {
         console.log(`Skipped "hook-before-deploy" hook.`);
     } else {
-        spinner = spinner.start(`Running "hook-before-deploy" hook...`);
+        console.log(`💡 Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
         await sleep();
 
         const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
-        spinner.stopAndPersist({
-            symbol: green("✔"),
-            text: `Hook "hook-before-deploy" completed. ${continuing}\n`
-        });
+        console.log(`${green("✔")} Hook "hook-before-deploy" completed. ${continuing}\n`);
     }
 
     if (inputs.preview) {
         const pulumi = new Pulumi();
-        const { toConsole } = await pulumi.run({
+        await pulumi.run({
             command: "preview",
             execa: {
                 cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE },
+                stdio: "inherit"
             }
         });
-        await toConsole();
     } else {
-        const { toConsole } = await pulumi.run({
+        await pulumi.run({
             command: "up",
             args: {
                 yes: true,
                 skipPreview: true
+            },
+            execa: {
+                stdio: "inherit"
             }
         });
-        await toConsole();
     }
 
     const duration = getDuration();
@@ -161,12 +157,9 @@ module.exports = async (inputs, context) => {
     if (inputs.preview) {
         console.log(`Skipped "hook-after-deploy" hook.`);
     } else {
-        spinner = spinner.start(`Running "hook-after-deploy" hook...`);
+        console.log(`💡 Running "hook-after-deploy" hook...`);
         await processHooks("hook-after-deploy", hookDeployArgs);
         await sleep();
-        spinner.stopAndPersist({
-            symbol: green("✔"),
-            text: `Hook "hook-after-deploy" completed.`
-        });
+        console.log(`${green("✔")} Hook "hook-after-deploy" completed.\n`);
     }
 };

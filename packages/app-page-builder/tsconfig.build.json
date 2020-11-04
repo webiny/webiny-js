@@ -23,7 +23,6 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" },
-    { "path": "../app-template/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-security-user-management/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },

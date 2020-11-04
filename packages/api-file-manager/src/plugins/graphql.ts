@@ -1,18 +1,21 @@
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
-import { resolveCreate, resolveGet, resolveUpdate } from "@webiny/commodo-graphql";
+import { hasPermission } from "@webiny/api-security";
 
+import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
 import uploadFile from "./resolvers/uploadFile";
 import uploadFiles from "./resolvers/uploadFiles";
+import createFile from "./resolvers/createFile";
+import updateFile from "./resolvers/updateFile";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
+import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
-const getFile = ({ models }): any => models.File;
+const fileFetcher = ({ models }): any => models.File;
 
 export default [
     {
@@ -21,7 +24,6 @@ export default [
         schema: {
             typeDefs: gql`
                 input FileInput {
-                    id: ID
                     key: String
                     name: String
                     size: Int
@@ -125,6 +127,13 @@ export default [
                     error: FileError
                 }
 
+                enum ListFilesSort {
+                    CREATED_ON_ASC
+                    CREATED_ON_DESC
+                    SIZE_ASC
+                    SIZE_DESC
+                }
+
                 type FilesQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
@@ -136,6 +145,7 @@ export default [
                         tags: [String]
                         ids: [ID]
                         search: String
+                        sort: ListFilesSort
                     ): FileListResponse
 
                     listTags: [String]
@@ -180,7 +190,11 @@ export default [
             resolvers: {
                 File: {
                     __resolveReference(reference, context) {
-                        return getFile(context).findById(reference.id);
+                        return fileFetcher(context).findById(reference.id);
+                    },
+                    async src(file, args, context) {
+                        const settings = await context.filesSettings.get(SETTINGS_KEY);
+                        return settings?.srcPrefix + file.key;
                     }
                 },
                 Query: {
@@ -190,21 +204,21 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: hasScope("files.file.list")(resolveGet(getFile)),
-                    listFiles: hasScope("files.file.list")(listFiles),
+                    getFile: hasPermission("files.file")(getFile),
+                    listFiles: hasPermission("files.file")(listFiles),
                     listTags: listTags,
                     isInstalled,
-                    getSettings: hasScope("files.settings.manage")(getSettings)
+                    getSettings: hasPermission("files.settings")(getSettings)
                 },
                 FilesMutation: {
-                    uploadFile: hasScope("files.file.update")(uploadFile),
+                    uploadFile: hasPermission("files.file")(uploadFile),
                     uploadFiles,
-                    createFile: hasScope("files.file.update")(resolveCreate(getFile)),
-                    updateFile: hasScope("files.file.update")(resolveUpdate(getFile)),
-                    createFiles,
-                    deleteFile: hasScope("files.file.delete")(deleteFile),
+                    createFile: hasPermission("files.file")(createFile),
+                    updateFile: hasPermission("files.file")(updateFile),
+                    createFiles: hasPermission("files.file")(createFiles),
+                    deleteFile: hasPermission("files.file")(deleteFile),
                     install,
-                    updateSettings: hasScope("files.settings.manage")(updateSettings)
+                    updateSettings: hasPermission("files.settings")(updateSettings)
                 }
             }
         }

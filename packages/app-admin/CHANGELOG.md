@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.14.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.0...v4.14.0-beta.1) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Features
+
+* fixed admin app navigation issue ([#1298](https://github.com/webiny/webiny-js/issues/1298)) ([460de7c](https://github.com/webiny/webiny-js/commit/460de7c5a88fe76f6bf23de2e292c4b9c7c78206))
+* show published version of webiny in admin app ([#1321](https://github.com/webiny/webiny-js/issues/1321)) ([439e642](https://github.com/webiny/webiny-js/commit/439e642af386b11b35ce570112ef011baf5cb698))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/app-admin

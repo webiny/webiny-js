@@ -1,0 +1,90 @@
+.image-tool {
+  --bg-color: #cdd1e0;
+  --front-color: #388ae5;
+  --border-color: #e8e8eb;
+
+  &--stretched {
+    .image-tool__image {
+      max-width: 1032px;
+      margin: 0 auto 10px;
+
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  .cdx-input {
+    box-shadow: none;
+    border: none;
+    text-align: center;
+
+    &:before {
+      text-align: center;
+      width: inherit;
+    }
+  }
+
+  &__image {
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+
+    &-picture {
+      max-width: 100%;
+      vertical-align: bottom;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
+  &__caption {
+    &[contentEditable="true"][data-placeholder]::before {
+      position: absolute !important;
+      content: "Add caption for image (optional)";
+      color: #707684;
+      font-weight: normal;
+      display: none;
+      text-align: center;
+      width: inherit;
+    }
+
+    &[contentEditable="true"][data-placeholder]:empty {
+      &::before {
+        display: block;
+      }
+
+      &:focus::before {
+        display: none;
+      }
+    }
+  }
+
+  &--empty {
+    .image-tool__caption {
+      display: none;
+    }
+
+    .image-tool__image {
+      display: none;
+    }
+  }
+
+  &--filled {
+    .cdx-button {
+      display: none;
+    }
+  }
+
+  /**
+   * Tunes
+   * ----------------
+   */
+  &--stretched {
+    &__image {
+      &-picture {
+        width: 100%;
+      }
+    }
+  }
+}

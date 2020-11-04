@@ -34,9 +34,10 @@ context("Headless CMS - Smoke Test", () => {
                 cy.findByText("Ungrouped")
                     .findByLabelText("Name")
                     .type(newModel2)
-                    .findByText("+ Create");
+                    .findByText("+ Create")
+                    .click();
             })
-            .click()
+
             .wait(1000);
 
         // Drag and drop a "text" and "ref" fields.

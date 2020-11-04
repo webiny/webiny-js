@@ -1,4 +1,4 @@
-import models from "./models";
+import crud from "./crud";
 import graphql from "./graphql";
 
-export default () => [models(), graphql()];
+export default () => [crud(), graphql()];

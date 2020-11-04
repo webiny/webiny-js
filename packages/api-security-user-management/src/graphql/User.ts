@@ -10,10 +10,6 @@ import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
 import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 import listUsers from "./userResolvers/listUsers";
 import getUser from "./userResolvers/getUser";
-import {
-    PK_USER,
-    SK_USER
-} from "@webiny/api-security-user-management/models/securityUserData.model";
 
 const userFetcher = ctx => ctx.models.SecurityUser;
 
@@ -56,7 +52,7 @@ export default {
             firstName: String
             lastName: String
             fullName: String
-            avatar: File
+            avatar: JSON
             gravatar: String
         }
 
@@ -67,7 +63,7 @@ export default {
             lastName: String
             fullName: String
             gravatar: String
-            avatar: File
+            avatar: JSON
             enabled: Boolean
             group: SecurityGroup
             permissions: [JSON]
@@ -180,25 +176,27 @@ export default {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
             },
-            async group(user) {
-                return await user.groupData;
+            fullName(user) {
+                return `${user.firstName} ${user.lastName}`;
             },
-            async permissions(user) {
-                return await user.permissions;
+            async avatar(user) {
+                return user.avatar;
+            },
+            async group(user, args, context) {
+                return await context.groups.get(user.group);
+            },
+            async permissions(_, args, context) {
+                return context.security.getPermissions();
             }
         },
         SecurityIdentity: {
+            fullName(user) {
+                return `${user.firstName} ${user.lastName}`;
+            },
             login: (_, args, context) => {
                 return context.security.getIdentity().login;
             },
-            async avatar(_, args, context) {
-                const Model = context.models.SECURITY;
-                const identityId = context.security.getIdentity().id;
-                const securityRecord = await Model.findOne({
-                    query: { PK: `${PK_USER}#${identityId}`, SK: SK_USER }
-                });
-
-                const user = securityRecord.data;
+            async avatar(user) {
                 return user.avatar;
             },
             permissions: (_, args, context) => {

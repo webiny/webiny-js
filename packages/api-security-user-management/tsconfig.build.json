@@ -4,7 +4,9 @@
   "exclude": [
     "node_modules",
     "dist",
+    "../db-dynamodb",
     "../handler",
+    "../handler-db",
     "../handler-client",
     "../handler-http",
     "../graphql",
@@ -19,8 +21,10 @@
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../commodo/tsconfig.build.json" },
     { "path": "../commodo-graphql/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../graphql/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../handler-http/tsconfig.build.json" }
   ]

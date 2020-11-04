@@ -1,31 +1,21 @@
 import React from "react";
 import Auth from "@aws-amplify/auth";
-import { setContext } from "apollo-link-context";
-import Authentication from "./Authentication";
+import { PluginCollection } from "@webiny/plugins/types";
 import { ApolloClient } from "apollo-client";
-import { LOGIN } from "@webiny/app-security-user-management/graphql";
+import { setContext } from "apollo-link-context";
+import { Authentication } from "./Authentication";
 
 export type CognitoOptions = {
     region: string;
     userPoolId: string;
     userPoolWebClientId: string;
-    getIdentityData?(params: {
+    getIdentityData(params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
     }): Promise<{ [key: string]: any }>;
 };
 
-export const defaultGetIdentityData = async ({ client }) => {
-    const { data } = await client.mutate({ mutation: LOGIN });
-    const identity = data.security.login.data;
-
-    return {
-        ...identity,
-        avatar: identity.avatar ? identity.avatar : { src: identity.gravatar }
-    };
-};
-
-export default ({ getIdentityData = defaultGetIdentityData, ...amplify }: CognitoOptions) => {
+export default ({ getIdentityData, ...amplify }: CognitoOptions): PluginCollection => {
     Auth.configure(amplify);
 
     const authentication = children => {
@@ -58,10 +48,6 @@ export default ({ getIdentityData = defaultGetIdentityData, ...amplify }: Cognit
                     };
                 });
             }
-        },
-        {
-            type: "app-template-renderer",
-            render: authentication
         },
         {
             type: "app-installer-security",

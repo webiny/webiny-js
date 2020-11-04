@@ -1,5 +1,4 @@
 import { HandlerPlugin } from "@webiny/handler/types";
-import { applyContextPlugins } from "@webiny/graphql";
 import { Action } from "../types";
 
 interface ExecuteAction {
@@ -37,10 +36,8 @@ export default (): HandlerPlugin => ({
     async handle(context) {
         const event = context.invocationArgs;
 
-        await applyContextPlugins(context);
-
         try {
-            const data = await executeAction(event, context.commodo.driver);
+            const data = await executeAction(event, context.db);
             return { error: false, data };
         } catch (err) {
             console.log(err);

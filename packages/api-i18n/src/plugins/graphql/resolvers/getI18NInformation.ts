@@ -1,10 +1,10 @@
-import { Context } from "../../../types";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
 
-const resolver: GraphQLFieldResolver<any, any, Context> = (_, args, context) => {
+const resolver: GraphQLFieldResolver<any, any, HandlerI18NContext> = (_, args, context) => {
     const { i18n } = context;
     return {
-        currentLocale: i18n.getLocale(),
+        currentLocales: i18n.getCurrentLocales(),
         defaultLocale: i18n.getDefaultLocale(),
         locales: i18n.getLocales()
     };

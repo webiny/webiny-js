@@ -4,8 +4,6 @@
   "references": [
     { "path": "../graphql" },
     { "path": "../api-i18n" },
-    { "path": "../api-plugin-commodo-db-proxy" },
-    { "path": "../api-plugin-commodo-nedb" },
     { "path": "../api-security" },
     { "path": "../commodo" },
     { "path": "../commodo-graphql" },

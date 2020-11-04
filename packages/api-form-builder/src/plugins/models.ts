@@ -1,5 +1,5 @@
+// @ts-nocheck
 import { flow } from "lodash";
-import { withUser } from "@webiny/api-security";
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 
 import formModel from "./models/form.model";
@@ -25,7 +25,6 @@ export default (): ContextPlugin => ({
                     id: context.commodo.fields.id()
                 }),
                 withStorage({ driver, maxPerPage }),
-                withUser(context),
                 withSoftDelete(),
                 withCrudLogs()
             )();
