@@ -17,8 +17,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "beta",
+    "@ramda/pipe": "^0.26.1",
     "@webiny/api-security": "^4.13.0",
-    "@webiny/commodo": "^4.13.0",
     "@webiny/commodo-graphql": "^4.13.0",
     "@webiny/graphql": "^4.13.0",
     "@webiny/handler": "^4.13.0",

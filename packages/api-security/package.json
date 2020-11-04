@@ -15,11 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^4.13.0",
-    "@webiny/commodo-graphql": "^4.13.0",
     "@webiny/graphql": "^4.13.0",
     "jsonwebtoken": "^8.2.2",
-    "lodash": "^4.17.4",
     "minimatch": "^3.0.4"
   },
   "devDependencies": {
@@ -27,15 +24,9 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@commodo/fields-storage-nedb": "^2.0.1",
-    "@shelf/jest-mongodb": "^1.1.5",
-    "@webiny/api-plugin-commodo-mongodb": "^4.13.0",
-    "@webiny/api-plugin-commodo-nedb": "^4.13.0",
     "@webiny/handler": "^4.13.0",
     "@webiny/handler-apollo-server": "^4.13.0",
-    "eslint-plugin-jest": "^22.17.0",
-    "mdbid": "^1.0.0",
-    "mongodb": "^3.5.7"
+    "eslint-plugin-jest": "^22.17.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"
