@@ -1,6 +1,6 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
-import { pipe } from "@webiny/commodo";
+import pipe from "@ramda/pipe";
 import { validation } from "@webiny/validation";
 import { withFields, string, number, setOnce, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
