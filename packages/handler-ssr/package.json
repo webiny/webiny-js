@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-ssr",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -15,9 +15,9 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/handler-client": "^4.13.0",
-    "@webiny/handler-http": "^4.13.0",
+    "@webiny/handler": "^4.14.0",
+    "@webiny/handler-client": "^4.14.0",
+    "@webiny/handler-http": "^4.14.0",
     "@commodo/hooks": "beta",
     "@commodo/fields": "beta",
     "@commodo/name": "beta",

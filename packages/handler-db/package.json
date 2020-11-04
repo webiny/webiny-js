@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-db",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "main": "index.js",
   "license": "MIT",
   "repository": {
@@ -11,14 +11,14 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/db": "^4.13.0"
+    "@webiny/handler": "^4.14.0",
+    "@webiny/db": "^4.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@webiny/graphql": "^4.13.0"
+    "@webiny/graphql": "^4.14.0"
   },
   "publishConfig": {
     "access": "public",

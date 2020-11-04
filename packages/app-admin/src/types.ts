@@ -28,6 +28,11 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
     preventOpen(e: React.KeyboardEvent): boolean | void;
 };
 
+export type AdminDrawerFooterMenuPlugin = Plugin & {
+    type: "admin-drawer-footer-menu";
+    render(): React.ReactElement;
+};
+
 export type AdminMenuLogoPlugin = Plugin & {
     name: "admin-menu-logo";
     type: "admin-menu-logo";

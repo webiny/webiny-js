@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.14.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.0...v4.14.0-beta.1) (2020-10-30)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Bug Fixes
+
+* increase limit to 200 ([947a5f6](https://github.com/webiny/webiny-js/commit/947a5f60a6c40543f440fae3a24a95356b54a36d))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

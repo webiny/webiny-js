@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { withUser } from "@webiny/api-security";
 import cmsEnvironment from "./models/environment.model";
 import cmsEnvironmentAlias from "./models/environmentAlias.model";
 import cmsSettings from "./models/cmsSettings.model";
@@ -26,7 +25,6 @@ export default () => ({
                     id: context.commodo.fields.id()
                 }),
                 withStorage({ driver }),
-                withUser(context),
                 withSoftDelete(),
                 withCrudLogs()
             )();

@@ -1,6 +1,5 @@
 // @ts-ignore
 import { withStorage, withCrudLogs, withSoftDelete, withFields, pipe } from "@webiny/commodo";
-import { withUser } from "@webiny/api-security";
 import entity from "./models/entity.model";
 
 /**
@@ -38,9 +37,6 @@ export default () => ({
                 // With the appropriate driver, this enables storing our models to a database.
                 // @see https://github.com/webiny/commodo/tree/next/packages/fields-storage
                 withStorage({ driver }),
-
-                // Adds "createdBy", "updatedBy", and "deletedBy" fields, which are automatically populated.
-                withUser(context),
 
                 // Instead of physically deleting entries from a database, this introduces the "deleted" flag,
                 // and updates it accordingly. Note that the "withSoftDelete" HOF also upgrades the base "find",
