@@ -63,8 +63,6 @@ const File = pipe(
     })
 )();
 
-export const PK_FILE = "F";
-
 export type File = {
     id: string;
     key: string;
@@ -79,7 +77,9 @@ export type File = {
 export default {
     type: "context",
     apply(context) {
-        const { db } = context;
+        const { db, i18nContent } = context;
+        const PK_FILE = `F#${i18nContent?.locale?.code}`;
+
         context.files = {
             async get(id: string) {
                 const [[file]] = await db.read<File>({
