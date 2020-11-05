@@ -11,7 +11,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             return new NotAuthorizedResponse();
         }
 
-        const { files } = context;
+        const { files, i18nContent } = context;
         const { data } = args;
 
         // Save file in DB.
@@ -29,7 +29,8 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                 type: file.type,
                 name: file.name,
                 tags: file.tags,
-                createdBy: file.createdBy
+                createdBy: file.createdBy,
+                locale: i18nContent?.locale?.code
             }
         });
 
