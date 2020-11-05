@@ -1,9 +1,9 @@
 const readJson = require("load-json-file");
-const getWorkspaces = require("get-yarn-workspaces");
+const getPackages = require("get-yarn-workspaces");
 const { yellow } = require("chalk");
 
 module.exports = () => {
-    return getWorkspaces()
+    return getPackages()
         .map(path => {
             const packageJsonPath = path + "/package.json";
             const tsConfigJsonPath = path + "/tsconfig.json";
