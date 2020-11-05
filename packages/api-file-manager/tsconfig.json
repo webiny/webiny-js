@@ -1,13 +1,32 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["./src"],
-  "references": [
-    { "path": "../api-security" },
-    { "path": "../commodo-graphql" },
-    { "path": "../graphql" },
-    { "path": "../handler" },
-    { "path": "../handler-client" },
-    { "path": "../handler-db" },
-    { "path": "../validation" }
-  ]
+	"extends": "../../tsconfig",
+	"include": [
+		"./src"
+	],
+	"references": [
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../commodo-graphql"
+		},
+		{
+			"path": "../graphql"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../project-utils"
+		},
+		{
+			"path": "../handler-client"
+		},
+		{
+			"path": "../handler-db"
+		},
+		{
+			"path": "../validation"
+		}
+	]
 }

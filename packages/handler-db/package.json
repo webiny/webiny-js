@@ -1,32 +1,32 @@
 {
-  "name": "@webiny/handler-db",
-  "version": "4.13.0",
-  "main": "index.js",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "description": "Webiny API plugin that provides a db driver for DynamoDB.",
-  "author": "Webiny Ltd.",
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/db": "^4.13.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@webiny/graphql": "^4.13.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  }
+	"name": "@webiny/handler-db",
+	"version": "4.13.0",
+	"main": "index.js",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"description": "Webiny API plugin that provides a db driver for DynamoDB.",
+	"author": "Webiny Ltd.",
+	"dependencies": {
+		"@babel/runtime": "^7.5.5",
+		"@webiny/handler": "^4.13.0",
+		"@webiny/db": "^4.13.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@webiny/graphql": "^4.13.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	}
 }

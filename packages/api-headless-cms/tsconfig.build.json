@@ -1,34 +1,61 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "../graphql",
-    "../api-i18n",
-    "../api-security",
-    "../commodo",
-    "../commodo-graphql",
-    "../handler",
-    "../handler-apollo-server",
-    "../handler-client",
-    "../handler-http",
-    "../validation",
-    "./jest.config.js"
-  ],
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist"
-  },
-  "references": [
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-apollo-server/tsconfig.build.json" },
-    { "path": "../handler-client/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules",
+		"../graphql",
+		"../api-i18n",
+		"../api-security",
+		"../commodo",
+		"../commodo-graphql",
+		"../handler",
+		"../handler-apollo-server",
+		"../handler-client",
+		"../handler-http",
+		"../validation",
+		"./jest.config.js",
+		"../api-settings-manager"
+	],
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"declarationDir": "dist"
+	},
+	"references": [
+		{
+			"path": "../graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../api-i18n/tsconfig.build.json"
+		},
+		{
+			"path": "../api-security/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo-graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../handler/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-apollo-server/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-client/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-http/tsconfig.build.json"
+		},
+		{
+			"path": "../validation/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo/tsconfig.build.json"
+		},
+		{
+			"path": "../api-settings-manager/tsconfig.build.json"
+		}
+	]
 }

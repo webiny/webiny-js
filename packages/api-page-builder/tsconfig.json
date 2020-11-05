@@ -1,41 +1,44 @@
 {
-	"extends": "../../tsconfig",
-	"references": [
-		{
-			"path": "../graphql"
-		},
-		{
-			"path": "../api-i18n-content"
-		},
-		{
-			"path": "../api-security"
-		},
-		{
-			"path": "../api-settings-manager"
-		},
-		{
-			"path": "../commodo"
-		},
-		{
-			"path": "../commodo-graphql"
-		},
-		{
-			"path": "../handler"
-		},
-		{
-			"path": "../handler-db"
-		},
-		{
-			"path": "../handler-http"
-		},
-		{
-			"path": "../handler-ssr"
-		},
-		{
-			"path": "../validation"
-		},
-		{
-			"path": "../api-i18n"
-		}
-	]
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../graphql"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../commodo-graphql"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler-ssr"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../handler-apollo-server"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../db-dynamodb"
+    }
+  ]
 }

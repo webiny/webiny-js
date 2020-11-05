@@ -1,42 +1,42 @@
 {
-  "name": "@webiny/api-mailchimp",
-  "version": "4.13.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-mailchimp"
-  },
-  "description": "The API for the Webiny Mailchimp (webiny-app-mailchimp) app.",
-  "author": "Adrian Smijulj",
-  "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.13.0",
-    "@webiny/commodo": "^4.13.0",
-    "@webiny/commodo-graphql": "^4.13.0",
-    "@webiny/graphql": "^4.13.0",
-    "got": "^9.6.0",
-    "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.4"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.8.3",
-    "@svgr/webpack": "^4.3.2",
-    "@webiny/api-settings-manager": "^4.13.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+	"name": "@webiny/api-mailchimp",
+	"version": "4.13.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git",
+		"directory": "packages/api-mailchimp"
+	},
+	"description": "The API for the Webiny Mailchimp (webiny-app-mailchimp) app.",
+	"author": "Adrian Smijulj",
+	"license": "MIT",
+	"dependencies": {
+		"@babel/runtime": "^7.5.5",
+		"@webiny/api-security": "^4.13.0",
+		"@webiny/commodo": "^4.13.0",
+		"@webiny/commodo-graphql": "^4.13.0",
+		"@webiny/graphql": "^4.13.0",
+		"got": "^9.6.0",
+		"graphql-tag": "^2.10.1",
+		"lodash": "^4.17.4"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@babel/preset-react": "^7.0.0",
+		"@babel/preset-typescript": "^7.8.3",
+		"@svgr/webpack": "^4.3.2",
+		"@webiny/api-settings-manager": "^4.13.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

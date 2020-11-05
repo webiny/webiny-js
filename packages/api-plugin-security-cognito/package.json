@@ -1,46 +1,46 @@
 {
-  "name": "@webiny/api-plugin-security-cognito",
-  "version": "4.13.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "description": "Security authentication plugin for AWS Cognito",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>"
-  ],
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/api-security": "^4.13.0",
-    "@webiny/api-security-user-management": "^4.11.0-beta.1",
-    "@webiny/graphql": "^4.13.0",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/handler-http": "^4.13.0",
-    "graphql-tag": "^2.10.1",
-    "jsonwebtoken": "^8.5.1",
-    "jwk-to-pem": "^2.0.1",
-    "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-sdk"
-      ]
-    }
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+	"name": "@webiny/api-plugin-security-cognito",
+	"version": "4.13.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"description": "Security authentication plugin for AWS Cognito",
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"@webiny/api-security": "^4.13.0",
+		"@webiny/api-security-user-management": "^4.11.0-beta.1",
+		"@webiny/graphql": "^4.13.0",
+		"@webiny/handler": "^4.13.0",
+		"@webiny/handler-http": "^4.13.0",
+		"graphql-tag": "^2.10.1",
+		"jsonwebtoken": "^8.5.1",
+		"jwk-to-pem": "^2.0.1",
+		"node-fetch": "^2.6.1"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"adio": {
+		"ignore": {
+			"src": [
+				"aws-sdk"
+			]
+		}
+	},
+	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

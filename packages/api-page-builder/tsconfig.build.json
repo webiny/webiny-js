@@ -8,15 +8,16 @@
 		"../graphql",
 		"../api-i18n-content",
 		"../api-security",
-		"../api-settings-manager",
 		"../commodo",
 		"../commodo-graphql",
 		"../handler",
 		"../handler-db",
-		"../handler-http",
 		"../handler-ssr",
 		"../validation",
-		"../api-i18n"
+		"../api-i18n",
+		"../handler-apollo-server",
+		"../handler-aws",
+		"../db-dynamodb"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -40,9 +41,6 @@
 			"path": "../handler-db/tsconfig.build.json"
 		},
 		{
-			"path": "../handler-http/tsconfig.build.json"
-		},
-		{
 			"path": "../handler-ssr/tsconfig.build.json"
 		},
 		{
@@ -53,6 +51,18 @@
 		},
 		{
 			"path": "../api-i18n/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-apollo-server/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-aws/tsconfig.build.json"
+		},
+		{
+			"path": "../db-dynamodb/tsconfig.build.json"
 		}
 	]
 }

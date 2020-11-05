@@ -1,24 +1,44 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../app",
-    "../app-security",
-    "../app-security-user-management",
-    "../plugins",
-    "../ui"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../app-security-user-management/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"../app",
+		"../app-security",
+		"../app-security-user-management",
+		"../plugins",
+		"../ui",
+		"../validation",
+		"../form"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../app/tsconfig.build.json"
+		},
+		{
+			"path": "../app-security/tsconfig.build.json"
+		},
+		{
+			"path": "../app-security-user-management/tsconfig.build.json"
+		},
+		{
+			"path": "../plugins/tsconfig.build.json"
+		},
+		{
+			"path": "../ui/tsconfig.build.json"
+		},
+		{
+			"path": "../validation/tsconfig.build.json"
+		},
+		{
+			"path": "../form/tsconfig.build.json"
+		}
+	]
 }

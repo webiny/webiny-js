@@ -1,25 +1,41 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../graphql",
-    "../handler",
-    "../handler-args",
-    "../handler-client",
-    "../handler-http"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-args/tsconfig.build.json" },
-    { "path": "../handler-client/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"./dist",
+		"../graphql",
+		"../handler",
+		"../handler-args",
+		"../handler-client",
+		"../handler-http",
+		"../plugins"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../handler/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-args/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-client/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-http/tsconfig.build.json"
+		},
+		{
+			"path": "../plugins/tsconfig.build.json"
+		}
+	]
 }

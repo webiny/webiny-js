@@ -1,16 +1,42 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    { "path": "../graphql" },
-    { "path": "../api-i18n" },
-    { "path": "../api-security" },
-    { "path": "../commodo" },
-    { "path": "../commodo-graphql" },
-    { "path": "../handler" },
-    { "path": "../handler-apollo-server" },
-    { "path": "../handler-client" },
-    { "path": "../handler-http" },
-    { "path": "../validation" }
-  ]
+	"extends": "../../tsconfig",
+	"include": [
+		"src",
+		"__tests__/**/*.ts"
+	],
+	"references": [
+		{
+			"path": "../graphql"
+		},
+		{
+			"path": "../api-i18n"
+		},
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../commodo"
+		},
+		{
+			"path": "../commodo-graphql"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-apollo-server"
+		},
+		{
+			"path": "../handler-client"
+		},
+		{
+			"path": "../handler-http"
+		},
+		{
+			"path": "../validation"
+		},
+		{
+			"path": "../api-settings-manager"
+		}
+	]
 }

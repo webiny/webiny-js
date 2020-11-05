@@ -1,13 +1,68 @@
 {
-  "extends": "../../../tsconfig",
-  "references": [
-    { "path": "../../../../packages/api-plugin-commodo-db-proxy" },
-    { "path": "../../../../packages/api-security" },
-    { "path": "../../../../packages/api-security-permissions-manager" },
-    { "path": "../../../../packages/api-security-user-management" },
-    { "path": "../../../../packages/api-settings-manager" },
-    { "path": "../../../../packages/handler" },
-    { "path": "../../../../packages/handler-db" },
-    { "path": "../../../../packages/handler-apollo-server" }
-  ]
+	"extends": "../../../tsconfig",
+	"references": [
+		{
+			"path": "../../../../packages/api-security"
+		},
+		{
+			"path": "../../../../packages/api-security-permissions-manager"
+		},
+		{
+			"path": "../../../../packages/api-security-user-management"
+		},
+		{
+			"path": "../../../../packages/api-settings-manager"
+		},
+		{
+			"path": "../../../../packages/handler"
+		},
+		{
+			"path": "../../../../packages/handler-db"
+		},
+		{
+			"path": "../../../../packages/handler-aws"
+		},
+		{
+			"path": "../../../../packages/handler-apollo-server"
+		},
+		{
+			"path": "../../../packages/api-i18n"
+		},
+		{
+			"path": "../../../packages/api-i18n-content"
+		},
+		{
+			"path": "../../../packages/api-page-builder"
+		},
+		{
+			"path": "../../../packages/api-security-user-management"
+		},
+		{
+			"path": "../../../packages/db-dynamodb"
+		},
+		{
+			"path": "../../../packages/handler-aws"
+		},
+		{
+			"path": "../../../packages/handler-db"
+		},
+		{
+			"path": "../../../packages/api-file-manager"
+		},
+		{
+			"path": "../../../packages/api-plugin-elastic-search-client"
+		},
+		{
+			"path": "../../../packages/api-plugin-security-cognito"
+		},
+		{
+			"path": "../../../packages/api-security"
+		},
+		{
+			"path": "../../../packages/handler-apollo-server"
+		},
+		{
+			"path": "../../../packages/project-utils"
+		}
+	]
 }

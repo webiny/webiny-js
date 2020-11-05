@@ -1,52 +1,52 @@
 {
-  "name": "@webiny/api-security-user-management",
-  "version": "4.13.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "description": "Security authentication plugin for AWS Cognito",
-  "author": "Webiny LTD",
-  "license": "MIT",
-  "dependencies": {
-    "@ramda/pipe": "^0.26.1",
-    "@webiny/api-security": "^4.11.0-beta.1",
-    "@webiny/commodo": "^4.11.0-beta.1",
-    "@webiny/commodo-graphql": "^4.11.0-beta.1",
-    "@webiny/db-dynamodb": "^4.13.0",
-    "@webiny/graphql": "^4.11.0-beta.1",
-    "@webiny/validation": "^4.11.0-beta.1",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/handler-aws": "^4.13.0",
-    "@webiny/handler-db": "^4.13.0",
-    "@webiny/handler-apollo-server": "^4.13.0",
-    "commodo-fields-object": "^1.0.6",
-    "ksuid": "^2.0.0",
-    "graphql-tag": "^2.10.1",
-    "lodash.merge": "^4.6.2",
-    "@commodo/fields": "beta"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@shelf/jest-dynamodb": "^1.7.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "adio": {
-    "ignore": {
-      "src": [
-        "aws-sdk"
-      ]
-    }
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+	"name": "@webiny/api-security-user-management",
+	"version": "4.13.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"description": "Security authentication plugin for AWS Cognito",
+	"author": "Webiny LTD",
+	"license": "MIT",
+	"dependencies": {
+		"@ramda/pipe": "^0.26.1",
+		"@webiny/api-security": "^4.11.0-beta.1",
+		"@webiny/commodo": "^4.13.0",
+		"@webiny/commodo-graphql": "^4.13.0",
+		"@webiny/db-dynamodb": "^4.13.0",
+		"@webiny/graphql": "^4.11.0-beta.1",
+		"@webiny/validation": "^4.13.0",
+		"@webiny/handler": "^4.13.0",
+		"@webiny/handler-aws": "^4.13.0",
+		"@webiny/handler-db": "^4.13.0",
+		"@webiny/handler-apollo-server": "^4.13.0",
+		"commodo-fields-object": "^1.0.6",
+		"ksuid": "^2.0.0",
+		"graphql-tag": "^2.10.1",
+		"lodash.merge": "^4.6.2",
+		"@commodo/fields": "beta"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@shelf/jest-dynamodb": "^1.7.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"adio": {
+		"ignore": {
+			"src": [
+				"aws-sdk"
+			]
+		}
+	},
+	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

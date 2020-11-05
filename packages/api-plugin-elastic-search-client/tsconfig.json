@@ -1,8 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    { "path": "../handler" },
-    { "path": "../handler-client" },
-    { "path": "../graphql" }
-  ]
+  "references": [{ "path": "../handler" }]
 }

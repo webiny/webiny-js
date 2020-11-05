@@ -16,7 +16,6 @@
 		"@webiny/api-security": "^4.13.0",
 		"@webiny/commodo": "^4.13.0",
 		"@webiny/commodo-graphql": "^4.13.0",
-		"@webiny/db-dynamodb": "^4.13.0",
 		"@webiny/graphql": "^4.13.0",
 		"@webiny/handler": "^4.13.0",
 		"@webiny/handler-apollo-server": "^4.13.0",
@@ -42,7 +41,8 @@
 		"rimraf": "^2.6.2",
 		"zip-local": "^0.3.4",
 		"@webiny/api-i18n-content": "^4.13.0",
-		"@webiny/api-i18n": "^4.13.0"
+		"@webiny/api-i18n": "^4.13.0",
+		"@webiny/db-dynamodb": "^4.13.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",
@@ -52,7 +52,7 @@
 		"@babel/preset-typescript": "^7.8.3",
 		"@shelf/jest-dynamodb": "^1.7.0",
 		"flow-copy-source": "^2.0.2",
-		"@webiny/api-settings-manager": "^4.13.0"
+		"@webiny/db-dynamodb": "^4.13.0"
 	},
 	"publishConfig": {
 		"access": "public",

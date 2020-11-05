@@ -10,7 +10,8 @@
 		"../app",
 		"../app-i18n",
 		"../app-admin",
-		"../form"
+		"../form",
+		"../ui"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -29,6 +30,9 @@
 		},
 		{
 			"path": "../form/tsconfig.build.json"
+		},
+		{
+			"path": "../ui/tsconfig.build.json"
 		}
 	]
 }
