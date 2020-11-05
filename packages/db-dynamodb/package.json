@@ -1,6 +1,6 @@
 {
   "name": "@webiny/db-dynamodb",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -11,7 +11,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/db": "^4.13.0"
+    "@webiny/db": "^4.14.0"
   },
   "publishConfig": {
     "access": "public",

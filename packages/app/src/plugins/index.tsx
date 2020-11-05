@@ -2,8 +2,8 @@ import React, { ReactNode, FunctionComponentElement } from "react";
 import warning from "warning";
 import { getPlugin, getPlugins } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
-import fileUploadPlugin from "./fileUploaderPlugin";
-import imagePlugin from "./imagePlugin";
+import fileUploadPlugin from "./fileUploader";
+import imagePlugin from "./image";
 
 export { fileUploadPlugin, imagePlugin };
 

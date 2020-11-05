@@ -40,7 +40,7 @@ export default [
                 extend input PbPageSettingsInput {
                     general: PbGeneralPageSettingsInput
                 }
-            `,
+            `
         }
     }
 ];

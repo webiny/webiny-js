@@ -1,44 +1,44 @@
 {
-	"name": "@webiny/app-typeform",
-	"version": "4.13.0",
-	"main": "index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git"
-	},
-	"description": "Enables embedding TypeForm forms via the Webiny Page Builder.",
-	"author": "Adrian Smijulj",
-	"license": "MIT",
-	"dependencies": {
-		"@babel/runtime": "^7.5.5",
-		"@emotion/styled": "^10.0.17",
-		"@webiny/app": "^4.13.0",
-		"@webiny/app-page-builder": "^4.13.0",
-		"@webiny/ui": "^4.13.0",
-		"@webiny/validation": "^4.13.0",
-		"lodash": "^4.17.4"
-	},
-	"devDependencies": {
-		"@babel/cli": "^7.5.5",
-		"@babel/core": "^7.5.5",
-		"@babel/preset-env": "^7.5.5",
-		"@babel/preset-react": "^7.0.0",
-		"@babel/preset-typescript": "^7.8.3",
-		"@svgr/webpack": "^4.3.2",
-		"babel-plugin-emotion": "^9.2.8",
-		"babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
-	},
-	"peerDependencies": {
-		"react": "^16.8.6"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "dist"
-	},
-	"scripts": {
-		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
-		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-	},
-	"gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
+  "name": "@webiny/app-typeform",
+  "version": "4.14.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Enables embedding TypeForm forms via the Webiny Page Builder.",
+  "author": "Adrian Smijulj",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@emotion/styled": "^10.0.17",
+    "@webiny/app": "^4.14.0",
+    "@webiny/app-page-builder": "^4.14.0",
+    "@webiny/ui": "^4.14.0",
+    "@webiny/validation": "^4.14.0",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3",
+    "@svgr/webpack": "^4.3.2",
+    "babel-plugin-emotion": "^9.2.8",
+    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

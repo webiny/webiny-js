@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.14.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.0...v4.14.0-beta.1) (2020-10-30)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
+
+
+### Bug Fixes
+
+* "not authorised" page style ([#1279](https://github.com/webiny/webiny-js/issues/1279)) ([d56aa5a](https://github.com/webiny/webiny-js/commit/d56aa5ab7fc4a66b50ea315f43b749c8c783e45b))
+* add short description ([a200542](https://github.com/webiny/webiny-js/commit/a200542c0e14dca178508ca5e6b43d4a6b98dc7c))
+* allow relative paths in page builder links ([#1280](https://github.com/webiny/webiny-js/issues/1280)) ([deb9970](https://github.com/webiny/webiny-js/commit/deb99705c9157eb59f9706daed21694b69248be3))
+* content model validation message for name field ([#1303](https://github.com/webiny/webiny-js/issues/1303)) ([fe8bebc](https://github.com/webiny/webiny-js/commit/fe8bebcdece1b91e2ec3730b01e3ffbfb714058a))
+* correct behavior of plugins retrieval functions ([#1316](https://github.com/webiny/webiny-js/issues/1316)) ([2291eab](https://github.com/webiny/webiny-js/commit/2291eab5a36ce6ec4e81add3972ae7ccd17af9f9))
+* increase limit to 200 ([947a5f6](https://github.com/webiny/webiny-js/commit/947a5f60a6c40543f440fae3a24a95356b54a36d))
+* update messages ([f24404d](https://github.com/webiny/webiny-js/commit/f24404dfc56111968f6ec42d89d3869896d7518f))
+* use `GH_TOKEN` ([578cbea](https://github.com/webiny/webiny-js/commit/578cbeae93d198033f333918e10a80dc3678676e))
+* use `GH_TOKEN` ([281da5d](https://github.com/webiny/webiny-js/commit/281da5d5aecec6c79e8f1afaddabf782cc632d06))
+
+
+### Features
+
+* Added Greetins Action ([b8df671](https://github.com/webiny/webiny-js/commit/b8df671c0da15163b4019b45306065d2784d9bd8))
+* added Stale action ([b39adab](https://github.com/webiny/webiny-js/commit/b39adabfd6d3975d84e4cfe9346f04b46d6ad172))
+* added Stalebot config file ([de1dbe2](https://github.com/webiny/webiny-js/commit/de1dbe2a43a99114f80c7059dd287608c5b2fa5c))
+* fixed admin app navigation issue ([#1298](https://github.com/webiny/webiny-js/issues/1298)) ([460de7c](https://github.com/webiny/webiny-js/commit/460de7c5a88fe76f6bf23de2e292c4b9c7c78206))
+* show published version of webiny in admin app ([#1321](https://github.com/webiny/webiny-js/issues/1321)) ([439e642](https://github.com/webiny/webiny-js/commit/439e642af386b11b35ce570112ef011baf5cb698))
+
+
+
+
+
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
 **Note:** Version bump only for package webiny-js

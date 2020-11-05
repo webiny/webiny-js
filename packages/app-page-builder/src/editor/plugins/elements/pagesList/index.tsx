@@ -11,8 +11,9 @@ import PagesList from "./PagesList";
 import PagesListFilterSettings from "./PagesListFilterSettings";
 import PagesListDesignSettings from "./PagesListDesignSettings";
 import styled from "@emotion/styled";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export default () => {
+export default (): PluginCollection => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         margin: "0 auto",

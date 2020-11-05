@@ -5,7 +5,6 @@ import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-secur
 
 const t = i18n.ns("app-security/admin/menus");
 
-// TODO: Update to  more fine grained scopes
 const PERMISSION_SECURITY_GROUPS = "security.group.manage";
 const PERMISSION_SECURITY_USERS = "security.user.manage";
 

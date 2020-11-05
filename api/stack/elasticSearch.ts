@@ -3,39 +3,35 @@ import vpc from "./vpc";
 
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
+
     constructor() {
         const domainName = "webiny-js";
-        const esServiceLinkedRole = new aws.iam.ServiceLinkedRole("esServiceLinkedRole", {
-            awsServiceName: "es.amazonaws.com"
-        });
-        this.domain = new aws.elasticsearch.Domain(
-            domainName,
-            {
-                elasticsearchVersion: "7.7",
-                clusterConfig: {
-                    instanceType: "t3.small.elasticsearch"
-                },
-                vpcOptions: {
-                    subnetIds: [vpc.subnets.private[0].id],
-                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                },
-                ebsOptions: {
-                    ebsEnabled: true,
-                    volumeSize: 10,
-                    volumeType: "gp2"
-                },
-                advancedOptions: {
-                    "rest.action.multi.allow_explicit_index": "true"
-                },
-                snapshotOptions: {
-                    automatedSnapshotStartHour: 23
-                },
-                tags: {
-                    Domain: "TestDomain"
-                }
+
+        this.domain = new aws.elasticsearch.Domain(domainName, {
+            elasticsearchVersion: "7.7",
+            clusterConfig: {
+                instanceType: "t3.small.elasticsearch"
             },
-            { dependsOn: esServiceLinkedRole }
-        );
+            vpcOptions: {
+                subnetIds: [vpc.subnets.private[0].id],
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+            },
+            ebsOptions: {
+                ebsEnabled: true,
+                volumeSize: 10,
+                volumeType: "gp2"
+            },
+            advancedOptions: {
+                "rest.action.multi.allow_explicit_index": "true"
+            },
+            snapshotOptions: {
+                automatedSnapshotStartHour: 23
+            },
+            tags: {
+                Domain: "TestDomain"
+            }
+        });
+
         new aws.elasticsearch.DomainPolicy(`${domainName}-policy`, {
             domainName: this.domain.domainName.apply(v => `${v}`),
             accessPolicies: {
@@ -54,4 +50,5 @@ class ElasticSearch {
         });
     }
 }
+
 export default ElasticSearch;

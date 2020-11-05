@@ -61,7 +61,7 @@ module.exports = async (inputs, context) => {
 
     const stacksDir = path.join(".", stack);
 
-    let spinner = new ora();
+    const spinner = new ora();
     const pulumi = new Pulumi({
         execa: {
             cwd: stacksDir,
@@ -115,15 +115,12 @@ module.exports = async (inputs, context) => {
     if (inputs.preview) {
         console.log(`Skipped "hook-before-deploy" hook.`);
     } else {
-        spinner = spinner.start(`Running "hook-before-deploy" hook...`);
+        console.log(`💡 Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
         await sleep();
 
         const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
-        spinner.stopAndPersist({
-            symbol: green("✔"),
-            text: `Hook "hook-before-deploy" completed. ${continuing}\n`
-        });
+        console.log(`${green("✔")} Hook "hook-before-deploy" completed. ${continuing}\n`);
     }
 
     if (inputs.preview) {
@@ -160,12 +157,9 @@ module.exports = async (inputs, context) => {
     if (inputs.preview) {
         console.log(`Skipped "hook-after-deploy" hook.`);
     } else {
-        spinner = spinner.start(`Running "hook-after-deploy" hook...`);
+        console.log(`💡 Running "hook-after-deploy" hook...`);
         await processHooks("hook-after-deploy", hookDeployArgs);
         await sleep();
-        spinner.stopAndPersist({
-            symbol: green("✔"),
-            text: `Hook "hook-after-deploy" completed.`
-        });
+        console.log(`${green("✔")} Hook "hook-after-deploy" completed.\n`);
     }
 };

@@ -1,56 +1,60 @@
 {
-  "name": "@webiny/app-i18n-content",
-  "version": "4.13.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "author": "Webiny Ltd",
-  "license": "MIT",
-  "dependencies": {
-    "@webiny/app": "^4.13.0",
-    "@webiny/app-i18n": "^4.13.0",
-    "@webiny/app-admin": "^4.13.0",
-    "@webiny/form": "^4.13.0",
-    "@webiny/ui": "^4.13.0",
-    "emotion": "^10.0.17"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/plugin-proposal-class-properties": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.8.3",
-    "babel-plugin-emotion": "^9.2.8",
-    "babel-plugin-lodash": "^3.3.4",
-    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448"
-  },
-  "peerDependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
-  },
-  "adio": {
-    "ignore": {
-      "peerDependencies": [
-        "react-dom"
-      ]
-    }
-  },
-  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
+	"name": "@webiny/app-i18n-content",
+	"version": "4.14.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"author": "Webiny Ltd",
+	"license": "MIT",
+	"dependencies": {
+		"@webiny/app": "^4.14.0",
+		"@webiny/app-i18n": "^4.14.0",
+		"@webiny/app-admin": "^4.14.0",
+		"@webiny/form": "^4.14.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@babel/plugin-proposal-class-properties": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@babel/preset-react": "^7.0.0",
+		"@babel/preset-typescript": "^7.8.3",
+		"@emotion/styled": "^10.0.27",
+		"@webiny/ui": "^4.14.0",
+		"@webiny/react-router": "^4.14.0",
+		"@webiny/plugins": "^4.14.0",
+		"babel-plugin-emotion": "^9.2.8",
+		"babel-plugin-lodash": "^3.3.4",
+		"babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
+		"emotion": "^10.0.17",
+		"react-helmet": "^5.2.0"
+	},
+	"peerDependencies": {
+		"react": "^16.8.6",
+		"react-dom": "^16.8.6"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"svgo": {
+		"plugins": {
+			"removeViewBox": false
+		}
+	},
+	"adio": {
+		"ignore": {
+			"peerDependencies": [
+				"react-dom"
+			]
+		}
+	},
+	"gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
 }

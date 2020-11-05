@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-elastic-search-client",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
-    "@webiny/handler": "^4.13.0",
+    "@webiny/handler": "^4.14.0",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.539.0"
   },

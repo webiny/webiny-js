@@ -1,5 +1,5 @@
 import { fileUploadPlugin, imagePlugin } from "@webiny/app/plugins";
-import fileManagerPlugins from "@webiny/app-file-manager/admin";
+import fileManagerPlugins from "@webiny/app-file-manager/admin/plugins";
 
 export default [
     /**
@@ -11,7 +11,7 @@ export default [
      */
     imagePlugin(),
     /**
-     * FileManager settings module to control file size limits.
+     * FileManager app plugins
      */
     fileManagerPlugins()
 ];

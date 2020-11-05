@@ -42,7 +42,7 @@ export default {
             code: String
             default: Boolean
         }
-        
+
         type I18NInformationCurrentLocale {
             context: String
             locale: String

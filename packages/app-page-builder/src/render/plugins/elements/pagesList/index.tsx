@@ -3,8 +3,9 @@ import PagesList from "./PagesList";
 import GridPageList from "./components/GridPageList";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PluginCollection } from "@webiny/plugins/types";
 
-export default [
+export default (): PluginCollection => [
     {
         name: "pb-render-page-element-pages-list",
         type: "pb-render-page-element",

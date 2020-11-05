@@ -5,13 +5,14 @@ import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { AppInstaller } from "@webiny/app-admin/components/Install/AppInstaller";
-import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
+import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
+// TODO: import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
 import { Authentication } from "@webiny/app-plugin-security-cognito/Authentication";
 import { createApolloClient } from "./components/apolloClient";
 import { NetworkError } from "./components/NetworkError";
+import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
 
 // Import styles which include custom theme styles
@@ -33,6 +34,10 @@ export const App = () => (
                     <BrowserRouter> is an enhanced version of "react-router" to add some capabilities specific to Webiny.
                 */}
                 <BrowserRouter basename={process.env.PUBLIC_URL}>
+                    {/* 
+                        This is the Webiny telemetry system, for more information please visit: https://docs.webiny.com/docs/webiny-telemetry
+                    */}
+                    <Telemetry />
                     {/* 
                         <UiProvider> is a centralized state handler for UI related things. When you need to render
                         dialogs, snackbars, handle dark mode, you can use the "useUi()" hook to set/unset UI information
@@ -69,14 +74,14 @@ export const App = () => (
                                             <CmsProvider> handles CMS environments and provides an Apollo Client instance
                                             that points to the /manage GraphQL API.   
                                         */}
-                                        <CmsProvider>
-                                            {/*
+                                        {/*<CmsProvider>*/}
+                                        {/*
                                                 <Routes/> is a helper component that loads all "route" plugins, sorts them
                                                 in the correct "path" order and renders using the <Switch> component, 
                                                 so only the matching route is rendered.   
                                             */}
-                                            <Routes />
-                                        </CmsProvider>
+                                        <Routes />
+                                        {/*</CmsProvider>*/}
                                     </PageBuilderProvider>
                                 </Authentication>
                             </AppInstaller>

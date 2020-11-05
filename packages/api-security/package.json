@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security",
-  "version": "4.13.0",
+  "version": "4.14.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/graphql": "^4.13.0",
+    "@webiny/graphql": "^4.14.0",
     "jsonwebtoken": "^8.2.2",
     "minimatch": "^3.0.4"
   },
@@ -24,8 +24,8 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/handler": "^4.13.0",
-    "@webiny/handler-apollo-server": "^4.13.0",
+    "@webiny/handler": "^4.14.0",
+    "@webiny/handler-apollo-server": "^4.14.0",
     "eslint-plugin-jest": "^22.17.0"
   },
   "optionalDependencies": {

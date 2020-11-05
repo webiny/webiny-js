@@ -65,9 +65,9 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { listMenus } = useGqlHandler({ permissions, identity });
-            let [response] = await listMenus();
+            const [response] = await listMenus();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listMenus"));
         }
 
@@ -81,9 +81,9 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            let [permissions, identity] = sufficientPermissionsAll[i];
+            const [permissions, identity] = sufficientPermissionsAll[i];
             const { listMenus } = useGqlHandler({ permissions, identity });
-            let [response] = await listMenus();
+            const [response] = await listMenus();
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -251,10 +251,10 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { createMenu } = useGqlHandler({ permissions, identity });
 
-            let [response] = await createMenu({ data: new Mock() });
+            const [response] = await createMenu({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createMenu"));
         }
 
@@ -268,11 +268,11 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createMenu } = useGqlHandler({ permissions, identity });
 
             const data = new Mock(`menu-create-${i}-`);
-            let [response] = await createMenu({ data });
+            const [response] = await createMenu({ data });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -292,7 +292,7 @@ describe("Menus Security Test", () => {
 
         await createMenu({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.menu", rwd: "r" }], identityA],
@@ -305,13 +305,13 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { updateMenu } = useGqlHandler({ permissions, identity });
-            let [response] = await updateMenu({ slug: mock.slug, data: mock });
+            const [response] = await updateMenu({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateMenu"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
@@ -321,9 +321,9 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { updateMenu } = useGqlHandler({ permissions, identity });
-            let [response] = await updateMenu({ slug: mock.slug, data: mock });
+            const [response] = await updateMenu({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -343,7 +343,7 @@ describe("Menus Security Test", () => {
 
         await createMenu({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
@@ -356,27 +356,34 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { deleteMenu } = useGqlHandler({ permissions, identity });
-            let [response] = await deleteMenu({ slug: mock.slug });
+            const [response] = await deleteMenu({ slug: mock.slug });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("deleteMenu"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.menu" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createMenu, deleteMenu } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`delete-menu-${i}-`);
 
             await createMenu({ data: mock });
-            let [response] = await deleteMenu({
+            const [response] = await deleteMenu({
                 slug: mock.slug
             });
             expect(response).toMatchObject({
@@ -398,7 +405,7 @@ describe("Menus Security Test", () => {
 
         await createMenu({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
@@ -411,25 +418,32 @@ describe("Menus Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { getMenu } = useGqlHandler({ permissions, identity });
-            let [response] = await getMenu({ slug: mock.slug, data: mock });
+            const [response] = await getMenu({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getMenu"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.menu" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { getMenu } = useGqlHandler({ permissions, identity });
-            let [response] = await getMenu({ slug: mock.slug, data: mock });
+            const [response] = await getMenu({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {

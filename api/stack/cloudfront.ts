@@ -59,8 +59,12 @@ class Cloudfront {
             ],
             origins: [
                 {
-                    domainName: apiGateway.defaultStage.invokeUrl.apply((url: string) => String(parse(url).hostname)),
-                    originPath: apiGateway.defaultStage.invokeUrl.apply((url: string) => String(parse(url).pathname)),
+                    domainName: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
+                        String(parse(url).hostname)
+                    ),
+                    originPath: apiGateway.defaultStage.invokeUrl.apply((url: string) =>
+                        String(parse(url).pathname)
+                    ),
                     originId: apiGateway.api.name,
                     customOriginConfig: {
                         httpPort: 80,
