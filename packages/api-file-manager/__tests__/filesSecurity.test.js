@@ -39,7 +39,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "files.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "files.*" }],
     identity: identityA
 });
 
@@ -66,7 +66,11 @@ describe("Files Security Test", () => {
             [[], identityA],
             [[{ name: "files.file", rwd: "wd" }], identityA],
             [[{ name: "files.file", rwd: "d" }], identityA],
-            [[{ name: "files.file", rwd: "w" }], identityA]
+            [[{ name: "files.file", rwd: "w" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "files.file" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -77,11 +81,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "files.file" }], identityA],
-            [[{ name: "files.file", rwd: "r" }], identityA],
-            [[{ name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "files.file", rwd: "rwd" }], identityA],
-            [[{ name: "files.*" }], identityA]
+            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.*" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -134,7 +138,7 @@ describe("Files Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "files.file", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "files.file", own: true }],
             identity: identityA
         });
 
@@ -168,7 +172,7 @@ describe("Files Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "files.file", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "files.file", own: true }],
             identity: identityB
         });
 
@@ -207,7 +211,11 @@ describe("Files Security Test", () => {
             [[], null],
             [[], identityA],
             [[{ name: "files.file", own: false, rwd: "r" }], identityA],
-            [[{ name: "files.file", own: false, rwd: "rd" }], identityA]
+            [[{ name: "files.file", own: false, rwd: "rd" }], identityA],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "files.file" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -219,11 +227,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "files.file" }], identityA],
-            [[{ name: "files.file", own: true }], identityA],
-            [[{ name: "files.file", rwd: "w" }], identityA],
-            [[{ name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -257,7 +265,11 @@ describe("Files Security Test", () => {
             [[], identityA],
             [[{ name: "files.file", rwd: "r" }], identityA],
             [[{ name: "files.file", rwd: "rd" }], identityA],
-            [[{ name: "files.file", own: true }], identityB]
+            [[{ name: "files.file", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "files.file" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -268,11 +280,11 @@ describe("Files Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "files.file" }], identityA],
-            [[{ name: "files.file", own: true }], identityA],
-            [[{ name: "files.file", rwd: "w" }], identityA],
-            [[{ name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -297,6 +309,7 @@ describe("Files Security Test", () => {
         const mock = new Mock("get-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
+        console.log(JSON.stringify(createFileResponse, null, 2));
         const fileId = createFileResponse.data.files.createFile.data.id;
 
         let insufficientPermissions = [
@@ -304,7 +317,11 @@ describe("Files Security Test", () => {
             [[], identityA],
             [[{ name: "files.file", rwd: "w" }], identityA],
             [[{ name: "files.file", rwd: "wd" }], identityA],
-            [[{ name: "files.file", own: true }], identityB]
+            [[{ name: "files.file", own: true }], identityB],
+            [
+                [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "files.file" }],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -315,11 +332,11 @@ describe("Files Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "files.file" }], identityA],
-            [[{ name: "files.file", own: true }], identityA],
-            [[{ name: "files.file", rwd: "r" }], identityA],
-            [[{ name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {

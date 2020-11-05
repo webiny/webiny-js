@@ -2,6 +2,9 @@ import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import filesPlugins from "@webiny/api-file-manager/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
+import i18nPlugins from "@webiny/api-i18n/plugins";
+import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -97,6 +100,9 @@ export default ({ permissions, identity }) => {
                 return identity || null;
             }
         },
+        i18nPlugins(),
+        i18nContentPlugins(),
+        mockLocalesPlugins(),
         filesPlugins()
     );
 

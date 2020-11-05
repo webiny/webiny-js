@@ -146,7 +146,10 @@ describe("Files CRUD test", () => {
             data: {
                 files: {
                     listFiles: {
-                        data: [fileAData, fileBData],
+                        data: [
+                            { ...fileAData, id: fileAId },
+                            { ...fileBData, id: fileBId }
+                        ],
                         error: null
                     }
                 }
