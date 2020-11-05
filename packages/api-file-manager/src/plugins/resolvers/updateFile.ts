@@ -30,13 +30,21 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
         file = await files.update({ id, data, existingFile: file });
 
+        // Prepare data for Elasticsearch update.
+        const sanitizedData = {};
+        // Only update incoming props
+        const propsToUpdate = Object.keys(data);
+        propsToUpdate.forEach(key => {
+            sanitizedData[key] = file[key];
+        });
+
         // Index file in "Elastic Search"
         await context.elasticSearch.update({
             id,
             index: "file-manager",
             type: "_doc",
             body: {
-                doc: data
+                doc: sanitizedData
             }
         });
 
