@@ -115,7 +115,6 @@
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
-    "build:app-templates": "lerna run build --scope=@webiny/app-template* --stream",
     "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
     "watch:apps": "lerna run watch --scope=@webiny/app* --stream --parallel",
