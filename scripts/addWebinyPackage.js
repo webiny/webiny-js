@@ -1,10 +1,9 @@
 #!/usr/bin/env node
-const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const getWorkspaces = require("get-yarn-workspaces");
-const { yellow, green, cyan, gray } = require("chalk");
+const { green, cyan, gray } = require("chalk");
 const argv = require("yargs").argv;
 const { relative, join } = require("path");
+const getPackages = require("./utils/getPackages");
 
 /**
  * This is a small tool that adds Webiny package as a dependency to another Webiny package.
@@ -13,41 +12,6 @@ const { relative, join } = require("path");
  * The following line will add "@webiny-i18n" and "@webiny-security" as dependencies of "@webiny/api-i18n-content":
  * yarn add-webiny-package @webiny/api-i18n-content @webiny-i18n @webiny-security
  */
-
-const getPackages = () => {
-    return getWorkspaces()
-        .map(path => {
-            const packageJsonPath = path + "/package.json";
-            const tsConfigJsonPath = path + "/tsconfig.json";
-            const tsConfigBuildJsonPath = path + "/tsconfig.build.json";
-
-            let packageJson, tsConfigJson, tsConfigBuildJson;
-            packageJson = readJson.sync(packageJsonPath);
-
-            try {
-                tsConfigJson = readJson.sync(tsConfigJsonPath);
-                tsConfigBuildJson = readJson.sync(tsConfigBuildJsonPath);
-            } catch {
-                // Do nothing.
-            }
-
-            try {
-                return {
-                    packageFolder: path,
-                    packageJsonPath,
-                    tsConfigJsonPath,
-                    tsConfigBuildJsonPath,
-                    packageJson,
-                    tsConfigJson,
-                    tsConfigBuildJson
-                };
-            } catch {
-                console.log(yellow(`Ignoring ${path}/package.json`));
-                return null;
-            }
-        })
-        .filter(Boolean);
-};
 
 (async () => {
     const [targetPackageName, ...dependencyPackageNames] = argv._;
