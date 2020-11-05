@@ -11,9 +11,6 @@
 			"path": "../app-plugin-admin-welcome-screen"
 		},
 		{
-			"path": "../app-template"
-		},
-		{
 			"path": "../app-security"
 		},
 		{
@@ -30,9 +27,6 @@
 		},
 		{
 			"path": "../ui"
-		},
-		{
-			"path": "../tracking"
 		},
 		{
 			"path": "../validation"

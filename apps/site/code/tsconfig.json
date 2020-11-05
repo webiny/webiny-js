@@ -1,59 +1,48 @@
 {
-	"extends": "../../../tsconfig",
-	"references": [
-		{
-			"path": "../../../packages/app"
-		},
-		{
-			"path": "../../../packages/app-cookie-policy"
-		},
-		{
-			"path": "../../../packages/app-form-builder"
-		},
-		{
-			"path": "../../../packages/app-form-builder-theme"
-		},
-		{
-			"path": "../../../packages/app-google-tag-manager"
-		},
-		{
-			"path": "../../../packages/app-i18n"
-		},
-		{
-			"path": "../../../packages/app-mailchimp"
-		},
-		{
-			"path": "../../../packages/app-page-builder"
-		},
-		{
-			"path": "../../../packages/app-page-builder-theme"
-		},
-		{
-			"path": "../../../packages/app-template"
-		},
-		{
-			"path": "../../../packages/app-typeform"
-		},
-		{
-			"path": "../../../packages/plugins"
-		},
-		{
-			"path": "../../../packages/cli-plugin-deploy-pulumi"
-		},
-		{
-			"path": "../../../packages/project-utils"
-		},
-		{
-			"path": "../../../packages/react-router"
-		},
-		{
-			"path": "../../theme"
-		}
-	],
-	"include": [
-		"src"
-	],
-	"compilerOptions": {
-		"composite": false
-	}
+  "extends": "../../../tsconfig",
+  "references": [
+    {
+      "path": "../../../packages/app"
+    },
+    {
+      "path": "../../../packages/app-cookie-policy"
+    },
+    {
+      "path": "../../../packages/app-form-builder"
+    },
+    {
+      "path": "../../../packages/app-form-builder-theme"
+    },
+    {
+      "path": "../../../packages/app-google-tag-manager"
+    },
+    {
+      "path": "../../../packages/app-i18n"
+    },
+    {
+      "path": "../../../packages/app-mailchimp"
+    },
+    {
+      "path": "../../../packages/app-page-builder"
+    },
+    {
+      "path": "../../../packages/app-page-builder-theme"
+    },
+    {
+      "path": "../../../packages/app-template"
+    },
+    {
+      "path": "../../../packages/app-typeform"
+    },
+    {
+      "path": "../../../packages/plugins"
+    },
+    {
+      "path": "../../../packages/react-router"
+    }
+  ],
+  "include": ["src"],
+  "compilerOptions": {
+    "composite": false
+  }
 }

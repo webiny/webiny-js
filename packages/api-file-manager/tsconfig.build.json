@@ -10,8 +10,7 @@
     "../handler",
     "../handler-client",
     "../handler-db",
-    "../validation",
-    "../project-utils"
+    "../validation"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -39,9 +38,6 @@
     },
     {
       "path": "../validation/tsconfig.build.json"
-    },
-    {
-      "path": "../project-utils/tsconfig.build.json"
     }
   ]
 }

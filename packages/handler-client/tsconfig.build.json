@@ -9,6 +9,6 @@
   },
   "references": [
     { "path": "../handler/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" }
   ]
 }

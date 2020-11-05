@@ -17,9 +17,6 @@
 			"path": "../handler"
 		},
 		{
-			"path": "../project-utils"
-		},
-		{
 			"path": "../handler-client"
 		},
 		{
