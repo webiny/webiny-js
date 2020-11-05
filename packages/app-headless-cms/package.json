@@ -28,7 +28,6 @@
     "@webiny/app-plugin-admin-welcome-screen": "^4.13.0",
     "@webiny/app-security": "^4.13.0",
     "@webiny/app-security-user-management": "^4.13.0",
-    "@webiny/app-template": "^4.13.0",
     "@webiny/form": "^4.13.0",
     "@webiny/plugins": "^4.13.0",
     "@webiny/react-router": "^4.13.0",

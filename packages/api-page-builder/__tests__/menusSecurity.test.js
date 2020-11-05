@@ -367,7 +367,14 @@ describe("Menus Security Test", () => {
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.menu" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -423,7 +430,14 @@ describe("Menus Security Test", () => {
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "r" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "content.i18n", locales: ["en-US"] },
+                    { name: "pb.menu" }
+                ],
+                identityA
+            ]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
