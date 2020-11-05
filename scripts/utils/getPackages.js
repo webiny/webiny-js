@@ -63,6 +63,12 @@ module.exports.getPackages = () => {
     return packagesCache;
 };
 
-module.exports.getPackage = name => {
-    return module.exports.getPackages().find(item => item.packageJson.name === name);
+module.exports.getPackage = nameOrPackageFolder => {
+    return module.exports
+        .getPackages()
+        .find(
+            item =>
+                item.packageJson.name === nameOrPackageFolder ||
+                item.packageFolder === nameOrPackageFolder
+        );
 };
