@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-const { relative, join } = require("path");
-const getPackages = require("./utils/getWorkspaces");
+const { parse, resolve, relative, join } = require("path");
+const getPackages = require("./utils/getPackages");
 const { cyan, gray, red, green } = require("chalk");
+const get = require("lodash.get");
 
 const TSCONFIG = {
     DEV: "tsconfig.json",
@@ -15,131 +16,213 @@ const TSCONFIG = {
 
 (async () => {
     const workspacesPackages = getPackages();
-    const errors = {};
+    const workspacePackagesErrors = {};
 
     for (let i = 0; i < workspacesPackages.length; i++) {
-        const workspacePackage = workspacesPackages[i];
         const workspacePackageObject = workspacesPackages[i];
 
-        const workspacePackageDeps = workspacePackageObject.packageJson.dependencies || {};
-        for (let workspacePackageDepName in workspacePackageDeps) {
-            if (typeof workspacePackageDepName !== "string") {
-                continue;
-            }
+        const workspacePackageErrors = [];
 
-            if (!workspacePackageDepName.startsWith("@webiny")) {
-                continue;
-            }
+        // Checking for missing packages in TS configs.
+        // Only examine packages that are registered as workspaces.
+        const workspacePackageWbyDepsNames = Object.keys({
+            ...workspacePackageObject.packageJson.dependencies,
+            ...workspacePackageObject.packageJson.devDependencies
+        }).filter(packageName =>
+            workspacesPackages.find(wp => wp.packageJson.name === packageName)
+        );
 
-            let dependencyPackageObject;
+        for (let j = 0; j < workspacePackageWbyDepsNames.length; j++) {
+            let workspacePackageWbyDepName = workspacePackageWbyDepsNames[j];
+
+            let workspacePackageWbyDepObject;
 
             for (let i = 0; i < workspacesPackages.length; i++) {
                 let p = workspacesPackages[i];
-                if (p.packageJson.name === workspacePackageDepName) {
-                    dependencyPackageObject = p;
+                if (p.packageJson.name === workspacePackageWbyDepName) {
+                    workspacePackageWbyDepObject = p;
                     break;
                 }
             }
 
-            if (!dependencyPackageObject) {
-                console.log("Missing dependency...", workspacePackageDepName);
-                throw Error("!depPckg");
+            if (!workspacePackageWbyDepObject) {
+                workspacePackageErrors.push({
+                    message: `Dependency package "${workspacePackageWbyDepName}" not found.`
+                });
+                continue;
             }
 
-            try {
-                const depPackageRelativePath = relative(
-                    workspacePackage.packageFolder,
-                    dependencyPackageObject.packageFolder
+            const depPackageRelativePath = relative(
+                workspacePackageObject.packageFolder,
+                workspacePackageWbyDepObject.packageFolder
+            );
+
+            if (workspacePackageObject.tsConfigJson) {
+                const tsConfigJsonReferences = workspacePackageObject.tsConfigJson.references || [];
+                const exists = tsConfigJsonReferences.find(
+                    item => item.path === depPackageRelativePath
                 );
 
-                if (workspacePackage.tsConfigJson) {
-                    if (!Array.isArray(workspacePackage.tsConfigJson.references)) {
-                        throw {
-                            message: `"references" property missing in "${TSCONFIG.DEV}".`,
-                            file: TSCONFIG.DEV
-                        };
-                    }
-
-                    const exists = workspacePackage.tsConfigJson.references.find(
-                        item => item.path === depPackageRelativePath
-                    );
-
-                    if (!exists) {
-                        throw {
-                            message: `Missing "${dependencyPackageObject.packageJson.name}".`,
-                            file: TSCONFIG.DEV
-                        };
-                    }
+                if (!exists) {
+                    workspacePackageErrors.push({
+                        package: workspacePackageObject,
+                        message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
+                        file: TSCONFIG.DEV
+                    });
                 }
 
-                if (workspacePackage.tsConfigBuildJson) {
-                    if (!Array.isArray(workspacePackage.tsConfigBuildJson.exclude)) {
-                        throw {
-                            message: `"exclude" property missing.`,
-                            file: TSCONFIG.BUILD
-                        };
-                    }
-
-                    let exists = workspacePackage.tsConfigBuildJson.exclude.includes(
-                        depPackageRelativePath
-                    );
-                    if (!exists) {
-                        throw {
-                            message: `Missing "${dependencyPackageObject.packageJson.name}".`,
-                            file: TSCONFIG.BUILD
-                        };
-                    }
-
-                    if (!Array.isArray(workspacePackage.tsConfigBuildJson.references)) {
-                        throw {
-                            message: `"references" property missing.`,
-                            file: TSCONFIG.BUILD
-                        };
-                    }
-
-                    const path = join(depPackageRelativePath, "tsconfig.build.json");
-                    exists = workspacePackage.tsConfigBuildJson.references.find(
-                        item => item.path === path
-                    );
-                    if (!exists) {
-                        throw {
-                            message: `Missing "${dependencyPackageObject.packageJson.name}".`,
-                            file: TSCONFIG.BUILD
-                        };
-                    }
-                }
-            } catch (e) {
-                if (!e.file) {
-                    throw e;
-                }
-
-                if (!errors[workspacePackageObject.packageJson.name]) {
-                    errors[workspacePackageObject.packageJson.name] = {
-                        [TSCONFIG.DEV]: [],
-                        [TSCONFIG.BUILD]: []
-                    };
-                }
-
-                errors[workspacePackageObject.packageJson.name][e.file].push(e);
             }
+
+            if (workspacePackageObject.tsConfigBuildJson) {
+                const tsConfigBuildJsonExclude =
+                    workspacePackageObject.tsConfigBuildJson.exclude || [];
+
+                let exists = tsConfigBuildJsonExclude.includes(depPackageRelativePath);
+                if (!exists) {
+                    workspacePackageErrors.push({
+                        package: workspacePackageObject,
+                        message: `missing package "${workspacePackageWbyDepObject.packageJson.name}" in "exclude" property`,
+                        file: TSCONFIG.BUILD
+                    });
+                }
+
+                const tsConfigBuildJsonReferences =
+                    workspacePackageObject.tsConfigBuildJson.references || [];
+                const path = join(depPackageRelativePath, "tsconfig.build.json");
+                exists = tsConfigBuildJsonReferences.find(item => item.path === path);
+                if (!exists) {
+                    workspacePackageErrors.push({
+                        package: workspacePackageObject,
+                        message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
+                        file: TSCONFIG.BUILD
+                    });
+                }
+            }
+        }
+
+        if (workspacePackageObject.tsConfigJson && workspacePackageObject.tsConfigJson.references) {
+            // Check if a package is defined in TS config, but not listed in package.json.
+            for (let j = 0; j < workspacePackageObject.tsConfigJson.references.length; j++) {
+                let ref = workspacePackageObject.tsConfigJson.references[j];
+                const referencePath = resolve(
+                    join(workspacePackageObject.packageFolder, ref.path)
+                );
+                const refPackageObject = workspacesPackages.find(
+                    item => item.packageFolder === referencePath
+                );
+
+                if (refPackageObject) {
+                    let exists = workspacePackageWbyDepsNames.includes(
+                        refPackageObject.packageJson.name
+                    );
+
+
+                    if (!exists) {
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.DEV,
+                            message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.DEV} ("references" property), but missing in package.json.`
+                        });
+                    }
+                }
+            }
+        }
+
+        if (workspacePackageObject.tsConfigBuildJson && workspacePackageObject.tsConfigBuildJson.references) {
+            // Check if a package is defined in TS config, but not listed in package.json.
+            for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.references.length; j++) {
+                let ref = workspacePackageObject.tsConfigBuildJson.references[j];
+                const referencePath = resolve(
+                    join(workspacePackageObject.packageFolder, parse(ref.path).dir)
+                );
+
+                const refPackageObject = workspacesPackages.find(
+                    item => item.packageFolder === referencePath
+                );
+
+                if (refPackageObject) {
+                    let exists = workspacePackageWbyDepsNames.includes(
+                        refPackageObject.packageJson.name
+                    );
+
+
+                    if (!exists) {
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.BUILD,
+                            message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("references" property), but missing in package.json.`
+                        });
+                    }
+                }
+            }
+        }
+
+        if (workspacePackageObject.tsConfigBuildJson && workspacePackageObject.tsConfigBuildJson.exclude) {
+            // Check if a package is defined in TS config, but not listed in package.json.
+            for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.exclude.length; j++) {
+                let ref = workspacePackageObject.tsConfigBuildJson.exclude[j];
+                const referencePath = resolve(
+                    join(workspacePackageObject.packageFolder, ref)
+                );
+                const refPackageObject = workspacesPackages.find(
+                    item => item.packageFolder === referencePath
+                );
+
+                if (refPackageObject) {
+                    let exists = workspacePackageWbyDepsNames.includes(
+                        refPackageObject.packageJson.name
+                    );
+
+
+                    if (!exists) {
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.BUILD,
+                            message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("exclude" property), but missing in package.json.`
+                        });
+                    }
+                }
+            }
+        }
+
+        if (workspacePackageErrors.length) {
+            workspacePackagesErrors[workspacePackageObject.packageJson.name] = {
+                package: workspacePackageObject,
+                errors: workspacePackageErrors
+            };
         }
     }
 
-    if (!Object.keys(errors).length) {
-        console.log(green("✅  All configs in order!"))
+    if (!Object.keys(workspacePackagesErrors).length) {
+        console.log(green("✅  All configs in order!"));
         process.exit(0);
     }
 
-    for (let packageName in errors) {
-        console.log(cyan(packageName));
-        const files = errors[packageName];
-        for (let file in files) {
-            const fileErrors = files[file];
+    for (let workspacePackageName in workspacePackagesErrors) {
+        const {
+            package: workspacePackageObject,
+            errors: workspacePackageErrors
+        } = workspacePackagesErrors[workspacePackageName];
+
+        console.log(
+            cyan(
+                `${workspacePackageObject.packageJson.name} (${workspacePackageObject.packageFolder})`
+            )
+        );
+
+        const errorsByFiles = workspacePackageErrors.reduce((current, item) => {
+            if (!current[item.file]) {
+                current[item.file] = [];
+            }
+
+            current[item.file].push(item);
+            return current;
+        }, {});
+
+        for (let file in errorsByFiles) {
+            const fileErrors = errorsByFiles[file];
             if (fileErrors.length) {
-                console.log(`  ${gray(file)}`);
+                console.log(` ${gray(file)}`);
                 for (let i = 0; i < fileErrors.length; i++) {
                     let fileError = fileErrors[i];
-                    console.log(`    ${red(fileError.message)}`);
+                    console.log(`  ${red(`${i + 1}. ${fileError.message}`)}`);
                 }
             }
         }
@@ -149,3 +232,77 @@ const TSCONFIG = {
 
     process.exit(1);
 })();
+
+// 2. tsconfig.build.json
+/* json = workspacePackageObject.tsConfigBuildJson;
+if (json) {
+    if (Array.isArray(json.references)) {
+        for (let j = 0; j < json.references.length; j++) {
+            let ref = json.references[j];
+            const refPackagePath = resolve(
+                join(workspacePackageObject.packageFolder, parse(ref.path).dir)
+            );
+            const refPackage = workspacesPackages.find(
+                item => item.packageFolder === refPackagePath
+            );
+
+            if (refPackage) {
+                let exists =
+                    workspacePackageObject.packageJson.dependencies &&
+                    workspacePackageObject.packageJson.dependencies[
+                        refPackage.packageJson.name
+                    ];
+
+                if (!exists) {
+                    exists =
+                        workspacePackageObject.packageJson.devDependencies &&
+                        workspacePackageObject.packageJson.devDependencies[
+                            refPackage.packageJson.name
+                        ];
+                }
+
+                if (!exists) {
+                    throw {
+                        file: TSCONFIG.BUILD,
+                        message: `package "${refPackage.packageJson.name}" defined in ${TSCONFIG.DEV} ("references" property), but missing in package.json.`
+                    };
+                }
+            }
+        }
+    }
+
+    if (Array.isArray(json.exclude)) {
+        for (let j = 0; j < json.exclude.length; j++) {
+            let ref = json.exclude[j];
+            const refPackagePath = resolve(
+                join(workspacePackageObject.packageFolder, ref)
+            );
+            const refPackage = workspacesPackages.find(
+                item => item.packageFolder === refPackagePath
+            );
+
+            if (refPackage) {
+                let exists =
+                    workspacePackageObject.packageJson.dependencies &&
+                    workspacePackageObject.packageJson.dependencies[
+                        refPackage.packageJson.name
+                    ];
+
+                if (!exists) {
+                    exists =
+                        workspacePackageObject.packageJson.devDependencies &&
+                        workspacePackageObject.packageJson.devDependencies[
+                            refPackage.packageJson.name
+                        ];
+                }
+
+                if (!exists) {
+                    throw {
+                        file: TSCONFIG.BUILD,
+                        message: `package "${refPackage.packageJson.name}" defined in ${TSCONFIG.DEV} ("exclude" property), but missing in package.json.`
+                    };
+                }
+            }
+        }
+    }
+}*/
