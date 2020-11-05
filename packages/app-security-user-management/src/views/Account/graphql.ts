@@ -1,5 +1,13 @@
 import gql from "graphql-tag";
 
+const ERROR_FIELDS = gql`
+    {
+        message
+        code
+        data
+    }
+`;
+
 export const CREATE_PAT = gql`
     mutation createPat($name: String!, $userId: ID) {
         security {
@@ -12,9 +20,7 @@ export const CREATE_PAT = gql`
                     }
                     token
                 }
-                error {
-                    message
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -29,9 +35,7 @@ export const UPDATE_PAT = gql`
                     name
                     token
                 }
-                error {
-                    message
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -42,9 +46,7 @@ export const DELETE_PAT = gql`
         security {
             deletePAT(id: $id) {
                 data
-                error {
-                    message
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -66,10 +68,7 @@ export const GET_CURRENT_USER = gql`
                         token
                     }
                 }
-                error {
-                    code
-                    message
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -84,6 +83,7 @@ export const UPDATE_CURRENT_USER = gql`
                     email
                     avatar
                 }
+                error ${ERROR_FIELDS}
             }
         }
     }
