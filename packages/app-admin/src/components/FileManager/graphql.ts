@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const fileFields = /* GraphQL */ `
+const FILE_FIELDS = /* GraphQL */ `
     {
         __typename
         id
@@ -14,11 +14,19 @@ const fileFields = /* GraphQL */ `
     }
 `;
 
+const ERROR_FIELDS = /* GraphQL */ `
+    {
+        code
+        message
+        data
+    }
+`;
+
 export const LIST_FILES = gql`
      query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String, $before: String) {
         files {
             listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after, before: $before) {
-                data ${fileFields}
+                data ${FILE_FIELDS}
                 meta {
                     cursors {
                         next
@@ -45,10 +53,8 @@ export const CREATE_FILE = gql`
     mutation CreateFile($data: FileInput!) {
         files {
             createFile(data: $data) {
-                error {
-                    message
-                }
-                data ${fileFields}
+                error ${ERROR_FIELDS}
+                data ${FILE_FIELDS}
             }
         }
     }
@@ -64,11 +70,7 @@ export const UPDATE_FILE = gql`
                     name
                     tags
                 }
-                error {
-                    code
-                    message
-                    data
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -79,6 +81,7 @@ export const DELETE_FILE = gql`
         files {
             deleteFile(id: $id) {
                 data
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -92,6 +95,7 @@ export const GET_FILE_SETTINGS = gql`
                     uploadMinFileSize
                     uploadMaxFileSize
                 }
+                error ${ERROR_FIELDS}
             }
         }
     }

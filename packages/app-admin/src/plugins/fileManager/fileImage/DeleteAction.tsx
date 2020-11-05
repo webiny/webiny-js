@@ -13,6 +13,11 @@ const DELETE_FILE = gql`
         files {
             deleteFile(id: $id) {
                 data
+                error {
+                    message
+                    code
+                    data
+                }
             }
         }
     }
