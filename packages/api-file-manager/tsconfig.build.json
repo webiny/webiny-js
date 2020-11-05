@@ -4,6 +4,7 @@
   "exclude": [
     "node_modules",
     "./dist",
+    "../api-i18n-content",
     "../api-security",
     "../commodo",
     "../commodo-graphql",
@@ -19,13 +20,32 @@
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../commodo/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../handler/tsconfig.build.json" },
-    { "path": "../handler-client/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    {
+      "path": "../api-i18n-content/tsconfig.build.json"
+    },
+    {
+      "path": "../api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../commodo/tsconfig.build.json"
+    },
+    {
+      "path": "../commodo-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../handler/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-client/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-db/tsconfig.build.json"
+    },
+    {
+      "path": "../validation/tsconfig.build.json"
+    }
   ]
 }
