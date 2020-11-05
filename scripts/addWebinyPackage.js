@@ -3,7 +3,7 @@ const writeJson = require("write-json-file");
 const { green, cyan, gray } = require("chalk");
 const argv = require("yargs").argv;
 const { relative, join } = require("path");
-const getPackages = require("./utils/getPackages");
+const { getPackages } = require("./utils/getPackages");
 
 /**
  * This is a small tool that adds Webiny package as a dependency to another Webiny package.
