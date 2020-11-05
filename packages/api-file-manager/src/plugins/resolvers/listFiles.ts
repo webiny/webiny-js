@@ -50,6 +50,15 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             });
         }
 
+        const { i18nContent } = context;
+        if (i18nContent?.locale?.code) {
+            must.push({
+                term: {
+                    "locale.keyword": i18nContent.locale.code
+                }
+            });
+        }
+
         const response = await context.elasticSearch.search({
             index: "file-manager",
             type: "_doc",

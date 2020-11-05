@@ -3,9 +3,24 @@ import { ErrorResponse } from "@webiny/graphql";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {
+        const must = [];
+        const { i18nContent } = context;
+        if (i18nContent?.locale?.code) {
+            must.push({
+                term: {
+                    "locale.keyword": i18nContent.locale.code
+                }
+            });
+        }
+
         const response = await context.elasticSearch.search({
             index: "file-manager",
             body: {
+                query: {
+                    bool: {
+                        must
+                    }
+                },
                 size: 0,
                 aggs: {
                     listTags: {
