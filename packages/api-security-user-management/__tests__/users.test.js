@@ -103,7 +103,7 @@ describe("Security User CRUD Test", () => {
         const updatedName = "User B";
         [response] = await securityUser.update({
             id: userBId,
-            data: { lastName: updatedName }
+            data: { ...mocks.userB, lastName: updatedName }
         });
 
         expect(response).toEqual({
