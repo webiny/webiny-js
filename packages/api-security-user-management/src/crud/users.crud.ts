@@ -162,7 +162,7 @@ export default {
                 });
 
                 // Don't allow updating user with existing "email".
-                if (data.email) {
+                if (data.email && data.email !== existingUserData.email) {
                     const existingUser = await this.getByLogin(data.email);
                     if (existingUser) {
                         throw {

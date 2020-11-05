@@ -149,7 +149,7 @@ export default {
                 });
 
                 // Don't allow updating group with existing "slug".
-                if (data.slug) {
+                if (data.slug && data.slug !== existingGroupData.slug) {
                     const existingGroup = await this.getBySlug(data.slug);
                     if (existingGroup) {
                         throw {
