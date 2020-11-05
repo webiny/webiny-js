@@ -51,8 +51,7 @@
 		"@babel/preset-env": "^7.5.5",
 		"@babel/preset-typescript": "^7.8.3",
 		"@shelf/jest-dynamodb": "^1.7.0",
-		"flow-copy-source": "^2.0.2",
-		"@webiny/api-settings-manager": "^4.14.0"
+		"flow-copy-source": "^2.0.2"
 	},
 	"publishConfig": {
 		"access": "public",

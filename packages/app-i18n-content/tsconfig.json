@@ -15,6 +15,12 @@
     },
     {
       "path": "../ui"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../plugins"
     }
   ]
 }
