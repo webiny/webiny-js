@@ -133,7 +133,7 @@ export const AppInstaller = ({ children }) => {
                             setFinished(true);
                         }}
                     >
-                        Open Webiny CMS Administration
+                        Open Admin Area
                     </ButtonPrimary>
                 </SuccessDialog>
             </Elevation>
