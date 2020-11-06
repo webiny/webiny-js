@@ -49,7 +49,14 @@ export const InnerContent = styled("div")({
     position: "relative"
 });
 
+const markInstallerAsCompleted = () => (localStorage["wby_installer_status"] = "completed");
+const installerCompleted = localStorage["wby_installer_status"] === "completed";
+
 export const AppInstaller = ({ children }) => {
+    if (installerCompleted) {
+        return children;
+    }
+
     const [finished, setFinished] = useState(false);
     const { identity } = useSecurity();
     const { loading, installers, installer, showNextInstaller, showLogin, onUser } = useInstaller();
@@ -103,6 +110,7 @@ export const AppInstaller = ({ children }) => {
 
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
+        markInstallerAsCompleted();
         return children;
     }
 
@@ -120,7 +128,10 @@ export const AppInstaller = ({ children }) => {
                     <p>You have successfully installed all new applications!</p>
                     <ButtonPrimary
                         data-testid={"open-webiny-cms-admin-button"}
-                        onClick={() => setFinished(true)}
+                        onClick={() => {
+                            markInstallerAsCompleted();
+                            setFinished(true);
+                        }}
                     >
                         Open Webiny CMS Administration
                     </ButtonPrimary>
