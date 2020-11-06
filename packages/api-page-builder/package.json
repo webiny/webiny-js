@@ -1,73 +1,72 @@
 {
-	"name": "@webiny/api-page-builder",
-	"version": "4.14.0",
-	"main": "index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git",
-		"directory": "packages/api-page-builder"
-	},
-	"description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
-	"author": "Webiny Ltd",
-	"license": "MIT",
-	"dependencies": {
-		"@babel/runtime": "^7.5.5",
-		"@ramda/pipe": "^0.26.1",
-		"@webiny/api-security": "^4.14.0",
-		"@webiny/commodo": "^4.14.0",
-		"@webiny/commodo-graphql": "^4.14.0",
-		"@webiny/db-dynamodb": "^4.14.0",
-		"@webiny/graphql": "^4.14.0",
-		"@webiny/handler": "^4.14.0",
-		"@webiny/handler-apollo-server": "^4.14.0",
-		"@webiny/handler-aws": "^4.14.0",
-		"@webiny/handler-db": "^4.14.0",
-		"@webiny/handler-ssr": "^4.14.0",
-		"@webiny/validation": "^4.14.0",
-		"download": "^5.0.3",
-		"extract-zip": "^1.6.7",
-		"form-data": "^2.5.0",
-		"fs-extra": "^7.0.0",
-		"got": "^9.6.0",
-		"graphql": "^14.4.2",
-		"graphql-tag": "^2.10.1",
-		"load-json-file": "^6.2.0",
-		"lodash": "^4.17.11",
-		"lodash.chunk": "^4.2.0",
-		"lodash.clonedeep": "^4.5.0",
-		"lodash.get": "^4.4.0",
-		"lodash.pick": "^4.4.0",
-		"mdbid": "^1.0.0",
-		"request": "^2.88.0",
-		"rimraf": "^2.6.2",
-		"zip-local": "^0.3.4",
-		"@webiny/api-i18n-content": "^4.14.0",
-		"@webiny/api-i18n": "^4.14.0"
-	},
-	"devDependencies": {
-		"@babel/cli": "^7.5.5",
-		"@babel/core": "^7.5.5",
-		"@babel/plugin-proposal-export-default-from": "^7.5.2",
-		"@babel/preset-env": "^7.5.5",
-		"@babel/preset-typescript": "^7.8.3",
-		"@shelf/jest-dynamodb": "^1.7.0",
-		"flow-copy-source": "^2.0.2"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "dist"
-	},
-	"scripts": {
-		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-	},
-	"adio": {
-		"ignore": {
-			"src": [
-				"aws-sdk"
-			]
-		}
-	},
-	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "name": "@webiny/api-page-builder",
+  "version": "4.14.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-page-builder"
+  },
+  "description": "The API for the Webiny Page Builder (webiny-app-page-builder) app.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@ramda/pipe": "^0.26.1",
+    "@webiny/api-security": "^4.14.0",
+    "@webiny/commodo": "^4.14.0",
+    "@webiny/commodo-graphql": "^4.14.0",
+    "@webiny/db-dynamodb": "^4.14.0",
+    "@webiny/graphql": "^4.14.0",
+    "@webiny/handler": "^4.14.0",
+    "@webiny/handler-apollo-server": "^4.14.0",
+    "@webiny/handler-aws": "^4.14.0",
+    "@webiny/handler-db": "^4.14.0",
+    "@webiny/handler-ssr": "^4.14.0",
+    "@webiny/validation": "^4.14.0",
+    "download": "^5.0.3",
+    "extract-zip": "^1.6.7",
+    "form-data": "^2.5.0",
+    "fs-extra": "^7.0.0",
+    "got": "^9.6.0",
+    "graphql": "^14.4.2",
+    "graphql-tag": "^2.10.1",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.11",
+    "lodash.chunk": "^4.2.0",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.get": "^4.4.0",
+    "lodash.pick": "^4.4.0",
+    "mdbid": "^1.0.0",
+    "request": "^2.88.0",
+    "rimraf": "^2.6.2",
+    "zip-local": "^0.3.4",
+    "@webiny/api-i18n-content": "^4.14.0",
+    "@webiny/api-i18n": "^4.14.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.8.3",
+    "flow-copy-source": "^2.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

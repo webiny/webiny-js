@@ -21,11 +21,15 @@ describe("CRUD Test", () => {
             };
 
             let [response] = await createCategory({ data });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         createCategory: {
-                            data,
+                            data: {
+                                ...data,
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
+                            },
                             error: null
                         }
                     }
@@ -33,11 +37,15 @@ describe("CRUD Test", () => {
             });
 
             [response] = await getCategory({ slug: data.slug });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         getCategory: {
-                            data,
+                            data: {
+                                ...data,
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
+                            },
                             error: null
                         }
                     }
@@ -52,11 +60,15 @@ describe("CRUD Test", () => {
             };
 
             [response] = await updateCategory({ slug: data.slug, data });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         updateCategory: {
-                            data,
+                            data: {
+                                ...data,
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
+                            },
                             error: null
                         }
                     }
@@ -66,7 +78,7 @@ describe("CRUD Test", () => {
 
         // List should show three categories.
         let [response] = await listCategories();
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 pageBuilder: {
                     listCategories: {
@@ -75,19 +87,25 @@ describe("CRUD Test", () => {
                                 url: "category-0-url-UPDATED",
                                 layout: "category-0-layout-UPDATED",
                                 slug: "category-0-slug",
-                                name: "category-0-name-UPDATED"
+                                name: "category-0-name-UPDATED",
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
                             },
                             {
                                 url: "category-1-url-UPDATED",
                                 layout: "category-1-layout-UPDATED",
                                 slug: "category-1-slug",
-                                name: "category-1-name-UPDATED"
+                                name: "category-1-name-UPDATED",
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
                             },
                             {
                                 url: "category-2-url-UPDATED",
                                 layout: "category-2-layout-UPDATED",
                                 slug: "category-2-slug",
-                                name: "category-2-name-UPDATED"
+                                name: "category-2-name-UPDATED",
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
                             }
                         ],
                         error: null
@@ -107,11 +125,15 @@ describe("CRUD Test", () => {
             };
 
             let [response] = await deleteCategory({ slug: data.slug });
-            expect(response).toEqual({
+            expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
                         deleteCategory: {
-                            data,
+                            data: {
+                                ...data,
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
+                            },
                             error: null
                         }
                     }
