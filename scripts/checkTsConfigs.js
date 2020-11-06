@@ -21,7 +21,7 @@ const TSCONFIG = {
 
 (async () => {
     const workspacePackagesErrors = {};
-    const workspacesPackages = getPackages();
+    const workspacesPackages = getPackages({ includes: "/packages/" });
 
     for (let i = 0; i < workspacesPackages.length; i++) {
         const workspacePackageObject = workspacesPackages[i];

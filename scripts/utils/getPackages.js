@@ -4,13 +4,19 @@ const { yellow } = require("chalk");
 const fs = require("fs-extra");
 
 let packagesCache;
-module.exports.getPackages = () => {
+module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
         return packagesCache;
     }
 
     packagesCache = getPackages()
         .map(path => {
+            if (args.includes) {
+                if (!path.includes(args.includes)) {
+                    return null;
+                }
+            }
+
             const packageJsonPath = path + "/package.json";
             const tsConfigJsonPath = path + "/tsconfig.json";
             const tsConfigBuildJsonPath = path + "/tsconfig.build.json";
