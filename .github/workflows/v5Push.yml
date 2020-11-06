@@ -1,4 +1,4 @@
-name: Pull Request Actions
+name: Push (v5)
 
 on:
   pull_request_target:
