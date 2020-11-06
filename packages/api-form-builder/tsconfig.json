@@ -1,13 +1,47 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../graphql" },
-    { "path": "../api-i18n" },
-    { "path": "../api-security" },
-    { "path": "../api-settings-manager" },
-    { "path": "../commodo" },
-    { "path": "../commodo-graphql" },
-    { "path": "../handler-ssr" },
-    { "path": "../validation" }
+    {
+      "path": "../graphql"
+    },
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-settings-manager"
+    },
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../commodo-graphql"
+    },
+    {
+      "path": "../handler-ssr"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../handler-apollo-server"
+    },
+    {
+      "path": "../handler-aws"
+    }
   ]
 }

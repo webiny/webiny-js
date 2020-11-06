@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@commodo/fields": "^1.2.1",
     "@webiny/api-i18n": "^4.14.0",
     "@webiny/api-security": "^4.14.0",
     "@webiny/commodo": "^4.14.0",
@@ -30,13 +31,20 @@
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "slugify": "^1.2.9",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "@webiny/handler-db": "^4.14.0",
+    "@webiny/handler": "^4.14.0",
+    "@webiny/db-dynamodb": "^4.14.0",
+    "@webiny/api-i18n-content": "^4.14.0",
+    "@webiny/handler-apollo-server": "^4.14.0",
+    "@webiny/handler-aws": "^4.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
+    "@shelf/jest-dynamodb": "^1.7.0",
     "@webiny/api-settings-manager": "^4.14.0",
     "flow-copy-source": "^2.0.2"
   },
