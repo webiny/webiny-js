@@ -12,27 +12,27 @@ export const togglePluginAction: EventActionCallableType<TogglePluginActionArgsT
         throw new Error(`There is no plugin with name "${name}".`);
     }
     const { plugins: pluginsAtomValue } = state;
-    const activePluginsByType = pluginsAtomValue.get(plugin.type) || [];
+    const activePluginsByType = pluginsAtomValue[plugin.type] || [];
     const isAlreadyActive = activePluginsByType.some(
         activePlugin => activePlugin.name === plugin.name
     );
 
-    const newPluginMap = new Map(pluginsAtomValue);
+    const newPluginState = {
+        ...pluginsAtomValue
+    };
     if (isAlreadyActive) {
-        const newPluginsByType = activePluginsByType.filter(
+        newPluginState[plugin.type] = activePluginsByType.filter(
             activePlugin => activePlugin.name !== plugin.name
         );
-        newPluginMap.set(plugin.type, newPluginsByType);
     } else if (closeOtherInGroup) {
-        newPluginMap.set(plugin.type, [{ name, params }]);
+        newPluginState[plugin.type] = [{ name, params }];
     } else {
-        activePluginsByType.push({ name, params });
-        newPluginMap.set(plugin.type, activePluginsByType);
+        newPluginState[plugin.type] = activePluginsByType.concat([{ name, params }]);
     }
 
     return {
         state: {
-            plugins: newPluginMap
+            plugins: newPluginState
         }
     };
 };

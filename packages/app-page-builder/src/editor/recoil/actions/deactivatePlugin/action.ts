@@ -6,28 +6,28 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { plugins } from "@webiny/plugins";
 
-const removePluginFromStateReference = (state: PluginsAtomType, name: string): void => {
+const removePlugin = (state: PluginsAtomType, name: string): PluginsAtomType => {
     const plugin = plugins.byName(name);
     if (!plugin) {
         throw new Error(`There is no plugin with name "${name}".`);
     }
-    const activePluginsByType = state.get(plugin.type) || [];
-    const newPluginsByType = activePluginsByType.filter(
-        activePlugin => activePlugin.name !== plugin.name
-    );
-    state.set(plugin.type, newPluginsByType);
+    const activePluginsByType = state[plugin.type] || [];
+
+    return {
+        ...state,
+        [plugin.type]: activePluginsByType.filter(activePlugin => activePlugin.name !== plugin.name)
+    };
 };
 
 const deactivatePluginByName = (
     state: PluginsAtomType,
     name: string
 ): EventActionHandlerActionCallableResponseType => {
-    const newPluginState = new Map(state);
-    removePluginFromStateReference(newPluginState, name);
+    const newState = removePlugin(state, name);
 
     return {
         state: {
-            plugins: newPluginState
+            plugins: newState
         }
     };
 };
@@ -36,11 +36,12 @@ const deactivatePluginByType = (
     state: PluginsAtomType,
     type: string
 ): EventActionHandlerActionCallableResponseType => {
-    const newPluginMap = new Map(state);
-    newPluginMap.set(type, []);
     return {
         state: {
-            plugins: newPluginMap
+            plugins: {
+                ...state,
+                [type]: []
+            }
         }
     };
 };
@@ -49,13 +50,15 @@ const deactivatePluginsByName = (
     state: PluginsAtomType,
     names: string[]
 ): EventActionHandlerActionCallableResponseType => {
-    const newPluginState = new Map(state);
+    let newState = {
+        ...state
+    };
     for (const name of names) {
-        removePluginFromStateReference(newPluginState, name);
+        newState = removePlugin(newState, name);
     }
     return {
         state: {
-            plugins: newPluginState
+            plugins: newState
         }
     };
 };

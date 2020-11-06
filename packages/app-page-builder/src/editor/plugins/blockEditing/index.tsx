@@ -23,7 +23,7 @@ export default [
         name: "pb-editor-search-blocks-bar",
         type: "pb-editor-bar",
         shouldRender({ plugins }) {
-            const active = plugins.get("pb-editor-bar");
+            const active = plugins["pb-editor-bar"];
             if (!active || active.length === 0) {
                 return false;
             }

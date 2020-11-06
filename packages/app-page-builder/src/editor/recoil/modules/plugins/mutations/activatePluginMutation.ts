@@ -10,12 +10,13 @@ export const activatePluginByNameMutation: MutationActionCallable<PluginsAtomTyp
     if (!type) {
         return state;
     }
-    const allPluginsByType = state.get(type) || [];
+    const allPluginsByType = state[type] || [];
     const exists = allPluginsByType.some(pl => pl.name === name);
     if (exists) {
         return state;
     }
-    const newState = new Map(state);
-    newState.set(type, allPluginsByType.concat([{ name }]));
-    return newState;
+    return {
+        ...state,
+        [type]: allPluginsByType.concat([{ name }])
+    };
 };

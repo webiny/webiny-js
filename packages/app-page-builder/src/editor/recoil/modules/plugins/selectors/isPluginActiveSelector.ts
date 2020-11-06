@@ -19,10 +19,10 @@ export const isPluginActiveSelector = selectorFamily<boolean, string>({
 
 export const isPluginActive = (state: PluginsAtomType, target: Plugin): boolean => {
     const { type } = target;
-    if (!state.has(type)) {
+    if (!state[type]) {
         return false;
     }
-    const list = state.get(type);
+    const list = state[type];
     return list.some(({ name }) => {
         return name === target.name;
     });

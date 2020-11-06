@@ -19,7 +19,7 @@ export const deactivatePluginMutation: MutationActionCallable<PluginsAtomType, P
     target
 ) => {
     const { type, name } = target;
-    const allPluginsByType = state.get(type);
+    const allPluginsByType = state[type];
     if (!allPluginsByType || allPluginsByType.length === 0) {
         return state;
     }
@@ -27,7 +27,8 @@ export const deactivatePluginMutation: MutationActionCallable<PluginsAtomType, P
     if (filteredPluginsByType.length === allPluginsByType.length) {
         return state;
     }
-    const newState = new Map(state);
-    newState.set(type, filteredPluginsByType);
-    return newState;
+    return {
+        ...state,
+        [type]: filteredPluginsByType
+    };
 };

@@ -7,7 +7,7 @@ export const activePluginsByTypeNamesSelector = selectorFamily<string[], string>
     get: type => {
         return ({ get }) => {
             const activePlugins = get(pluginsAtom);
-            const pluginsByType = activePlugins.get(type);
+            const pluginsByType = activePlugins[type];
             if (!pluginsByType || pluginsByType.length === 0) {
                 return [];
             }
@@ -18,7 +18,7 @@ export const activePluginsByTypeNamesSelector = selectorFamily<string[], string>
 
 export const x = (type: string) => {
     const activePlugins = connectedAtomValue(pluginsAtom);
-    const pluginsByType = activePlugins.get(type);
+    const pluginsByType = activePlugins[type];
     if (!pluginsByType || pluginsByType.length === 0) {
         return [];
     }

@@ -17,7 +17,7 @@ export const activePluginParamsByNameSelector = selectorFamily<
                 return null;
             }
             const pluginsAtomValue = get(pluginsAtom);
-            const pluginsByType = pluginsAtomValue.get(type) || [];
+            const pluginsByType = pluginsAtomValue[type] || [];
             const activePlugin = pluginsByType.find(pl => pl.name === name);
             if (!activePlugin) {
                 return null;

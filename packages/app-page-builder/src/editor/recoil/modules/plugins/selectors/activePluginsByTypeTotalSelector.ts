@@ -6,7 +6,7 @@ export const activePluginsByTypeTotalSelector = selectorFamily<number, string>({
     get: type => {
         return ({ get }) => {
             const activePlugins = get(pluginsAtom);
-            return (activePlugins.get(type) || []).length;
+            return (activePlugins[type] || []).length;
         };
     }
 });

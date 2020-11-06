@@ -7,8 +7,8 @@ export type PluginsAtomPluginType = {
     name: string;
     params?: PluginsAtomPluginParamsType;
 };
-export type PluginsAtomType = Map<string, PluginsAtomPluginType[]>;
+export type PluginsAtomType = Record<string, PluginsAtomPluginType[]>;
 export const pluginsAtom = connectedAtom<PluginsAtomType>({
     key: "pluginsAtom",
-    default: new Map()
+    default: {}
 });
