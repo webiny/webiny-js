@@ -1,11 +1,9 @@
-import { resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import { Context } from "@webiny/graphql/types";
 import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
 type SettingsContext = Context & SettingsManagerContext;
-
-const getFormSettings = ctx => ctx.models.FormSettings;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -49,15 +47,33 @@ export default {
         FormsQuery: {
             getSettings: hasScope("forms:settings")(async (_, args, context: SettingsContext) => {
                 try {
-                    const data = await context.settingsManager.getSettings("forms");
-                    return { data };
+                    const data = await context.formBuilderSettings.get();
+                    return new Response(data);
                 } catch (err) {
                     return new ErrorResponse(err);
                 }
             })
         },
         FormsMutation: {
-            updateSettings: hasScope("forms:settings")(resolveUpdateSettings(getFormSettings))
+            updateSettings: hasScope("forms:settings")(
+                async (_, args, context: SettingsContext) => {
+                    try {
+                        const existingSettings = await context.formBuilderSettings.get();
+
+                        if (!existingSettings) {
+                            return new NotFoundResponse(`"Form Builder" settings not found!`);
+                        }
+
+                        const data = await context.formBuilderSettings.update({
+                            data: args.data,
+                            existingSettings
+                        });
+                        return new Response(data);
+                    } catch (err) {
+                        return new ErrorResponse(err);
+                    }
+                }
+            )
         }
     }
 };
