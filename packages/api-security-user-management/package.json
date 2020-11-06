@@ -29,7 +29,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5"
+    "@babel/core": "^7.5.5",
+    "jest-dynalite": "^3.0.0"
   },
   "publishConfig": {
     "access": "public",

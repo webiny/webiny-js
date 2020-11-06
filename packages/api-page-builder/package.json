@@ -50,7 +50,8 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "flow-copy-source": "^2.0.2"
+    "flow-copy-source": "^2.0.2",
+    "jest-dynalite": "^3.0.0"
   },
   "publishConfig": {
     "access": "public",

@@ -32,7 +32,8 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3"
+    "@babel/preset-typescript": "^7.8.3",
+    "jest-dynalite": "^3.0.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"

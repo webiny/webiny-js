@@ -43,7 +43,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.0.0",
     "@elastic/elasticsearch": "^7.9.1",
-    "@elastic/elasticsearch-mock": "0.3.0"
+    "@elastic/elasticsearch-mock": "0.3.0",
+    "jest-dynalite": "^3.0.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"
