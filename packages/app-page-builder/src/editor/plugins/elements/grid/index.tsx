@@ -1,19 +1,42 @@
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import React from "react";
 import Grid from "./Grid";
+import styled from "@emotion/styled";
+import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/grid-6-6.svg";
+import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { getDefaultPresetPluginCells } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
+        height: 50,
+        width: 75
+    }
+});
 
 const plugin: PbEditorPageElementPlugin = {
     type: "pb-editor-page-element",
     name: "pb-editor-page-element-grid",
     elementType: "grid",
+    toolbar: {
+        title: "Grid",
+        group: "pb-editor-element-group-layout",
+        preview() {
+            return (
+                <PreviewBox>
+                    <GridIcon />
+                </PreviewBox>
+            );
+        }
+    },
     settings: [
         "pb-editor-page-element-settings-grid",
         "",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ],
+    target: ["cell", "block"],
     canDelete: () => {
         return true;
     },

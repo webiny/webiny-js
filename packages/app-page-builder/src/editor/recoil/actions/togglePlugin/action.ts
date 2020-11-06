@@ -13,26 +13,23 @@ export const togglePluginAction: EventActionCallableType<TogglePluginActionArgsT
     }
     const { plugins: pluginsAtomValue } = state;
     const activePluginsByType = pluginsAtomValue[plugin.type] || [];
-    const isAlreadyActive = activePluginsByType.some(
-        activePlugin => activePlugin.name === plugin.name
-    );
+    const isAlreadyActive = activePluginsByType.some(pl => pl.name === name);
 
-    const newPluginState = {
-        ...pluginsAtomValue
-    };
+    let newPluginsList;
     if (isAlreadyActive) {
-        newPluginState[plugin.type] = activePluginsByType.filter(
-            activePlugin => activePlugin.name !== plugin.name
-        );
+        newPluginsList = activePluginsByType.filter(pl => pl.name !== name);
     } else if (closeOtherInGroup) {
-        newPluginState[plugin.type] = [{ name, params }];
+        newPluginsList = [{ name, params }];
     } else {
-        newPluginState[plugin.type] = activePluginsByType.concat([{ name, params }]);
+        newPluginsList = activePluginsByType.concat([{ name, params }]);
     }
 
     return {
         state: {
-            plugins: newPluginState
+            plugins: {
+                ...pluginsAtomValue,
+                [plugin.type]: newPluginsList
+            }
         }
     };
 };

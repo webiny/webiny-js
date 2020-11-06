@@ -7,7 +7,7 @@ import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockP
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useApolloClient } from "react-apollo";
 import { cloneDeep } from "lodash";
-import { plugins, getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/graphql/pages";
@@ -47,15 +47,7 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-// these props are not being used anywhere
-// TODO check if actually required
-type SaveActionPropsType = {
-    isDialogOpened?: boolean;
-    showDialog?: Function;
-    hideDialog?: Function;
-    onSubmit?: Function;
-};
-const SaveAction: React.FunctionComponent<SaveActionPropsType> = ({ children }) => {
+const SaveAction: React.FunctionComponent = ({ children }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { showSnackbar } = useSnackbar();
@@ -69,7 +61,7 @@ const SaveAction: React.FunctionComponent<SaveActionPropsType> = ({ children }) 
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-        const fileUploaderPlugin = getPlugin<FileUploaderPlugin>("file-uploader");
+        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
         previewImage.meta = meta;
         previewImage.meta.private = true;
