@@ -1,3 +1,4 @@
+import { PbIcon } from "@webiny/app-page-builder/types";
 import React from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell } from "@webiny/ui/Grid";
@@ -5,8 +6,8 @@ import IconPickerComponent from "@webiny/app-page-builder/editor/components/Icon
 
 type IconPickerProps = {
     label: string;
-    value: string;
-    updateValue: Function;
+    value: [string, string];
+    updateValue: (item: PbIcon) => void;
 };
 
 const IconPicker: React.FunctionComponent<IconPickerProps> = ({ label, value, updateValue }) => {

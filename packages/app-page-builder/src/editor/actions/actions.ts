@@ -14,7 +14,6 @@ import {
     getElementWithChildren,
     getParentElementWithChildren
 } from "@webiny/app-page-builder/editor/selectors";
-import { updateChildPaths } from "@webiny/app-page-builder/editor/utils";
 import undoable from "./history";
 import { Action, PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
@@ -183,7 +182,7 @@ addReducer(
         if (element.elements && typeof element.elements[0] === "string") {
             delete element["elements"];
         }
-        updateChildPaths(element);
+        // updateChildPaths(element);
         if (!merge) {
             return { ...state, ...element };
         }

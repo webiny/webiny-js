@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import React from "react";
 import {
     calculatePresetPluginCells,
@@ -6,7 +7,6 @@ import {
 } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { createElement } from "@webiny/app-page-builder/editor/utils";
 import { PbEditorGridPresetPluginType, PbElement } from "@webiny/app-page-builder/types";
 import {
     activeElementIdSelector,
@@ -35,7 +35,7 @@ const StyledIconButton = styled("button")(({ active }: any) => ({
 const createCells = (amount: number) => {
     return Array(amount)
         .fill(0)
-        .map(() => createElement("cell", {}));
+        .map(() => createElementHelper("cell", {}));
 };
 
 const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {

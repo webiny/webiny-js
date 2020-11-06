@@ -1,42 +1,41 @@
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { useMemo } from "react";
-import { set } from "lodash";
+import { useApolloClient } from "react-apollo";
+import lodashSet from "lodash/set";
+import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 
 type UpdateHandlersPropsType = {
     element: PbShallowElement | PbElement;
     dataNamespace: string;
 };
-type UpdateElementCallableArgsType = {
-    targetElement: PbShallowElement | PbElement;
-    merge: boolean;
-    history?: boolean;
+type HandlerUpdateCallableType = (name: string) => (value: any) => void;
+type UseUpdateHandlersType = (
+    props: UpdateHandlersPropsType
+) => {
+    getUpdateValue: HandlerUpdateCallableType;
+    getUpdatePreview: HandlerUpdateCallableType;
 };
-type UpdateElementCallableType = (props: UpdateElementCallableArgsType) => void;
-export default (props: UpdateHandlersPropsType) => {
+const useUpdateHandlers: UseUpdateHandlersType = props => {
     const handler = useEventActionHandler();
-    const updateElement: UpdateElementCallableType = ({ targetElement, merge, history }) => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: targetElement as PbElement,
-                history,
-                merge
-            })
-        );
+    const apolloClient = useApolloClient();
+    const updateElement = (args: UpdateElementActionArgsType) => {
+        handler.trigger(new UpdateElementActionEvent(args));
     };
     const updateSettings = useHandler(props, ({ element, dataNamespace }) => {
         const historyUpdated = {};
         return (name: string, newValue: any, history = false) => {
             const propName = `${dataNamespace}.${name}`;
 
-            const newElement = set(element, propName, newValue);
+            const newElement = lodashMerge({}, element, lodashSet({}, propName, newValue));
 
             if (!history) {
                 updateElement({
-                    targetElement: newElement,
-                    history,
+                    element: newElement,
+                    history: false,
                     merge: true
                 });
                 return;
@@ -44,7 +43,12 @@ export default (props: UpdateHandlersPropsType) => {
 
             if (historyUpdated[propName] !== newValue) {
                 historyUpdated[propName] = newValue;
-                updateElement({ targetElement: newElement, merge: true });
+                updateElement({
+                    element: newElement,
+                    merge: true,
+                    history: true,
+                    client: apolloClient
+                });
             }
         };
     });
@@ -73,3 +77,5 @@ export default (props: UpdateHandlersPropsType) => {
 
     return { getUpdateValue, getUpdatePreview };
 };
+
+export default useUpdateHandlers;

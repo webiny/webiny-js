@@ -3,4 +3,8 @@ import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventAct
 
 export class UpdatePageRevisionActionEvent extends BaseEventAction<
     UpdatePageRevisionActionArgsType
-> {}
+> {
+    public getName(): string {
+        return "UpdatePageRevisionActionEvent";
+    }
+}

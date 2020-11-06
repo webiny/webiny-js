@@ -9,7 +9,7 @@ import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-b
 import {
     addElementToParentHelper,
     createDroppedElementHelper
-} from "@webiny/app-page-builder/editor/recoil/helpers";
+} from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {

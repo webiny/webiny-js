@@ -11,7 +11,7 @@ import { Select } from "@webiny/ui/Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
+import { PbElement, PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
@@ -54,7 +54,7 @@ const ButtonSettings = () => {
         return (name, value, history = true) => {
             const attrKey = `data.${name}`;
 
-            const newElement = set(element, attrKey, value);
+            const newElement = set(element, attrKey, value) as PbElement;
             const isIcon = name.startsWith("icon");
             if (isIcon) {
                 const { id, width, color } = newElement.data?.icon || {};

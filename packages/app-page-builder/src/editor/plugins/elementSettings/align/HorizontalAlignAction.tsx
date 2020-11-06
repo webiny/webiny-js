@@ -25,9 +25,11 @@ const defaultOptions = { alignments: Object.keys(icons) };
 
 const defaultAlignValue = "left";
 
-const getAlignValue = (element: PbElement): string => {
-    return element.data?.settings?.horizontalAlign || defaultAlignValue;
+const getAlignValue = (element: PbElement, defaultAlign: string): string => {
+    return element.data.settings?.horizontalAlign || defaultAlign;
 };
+
+type AlignTypesType = "left" | "center" | "right" | "justify";
 
 type HorizontalAlignActionPropsType = {
     children: React.ReactElement;
@@ -41,7 +43,7 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
 }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const defaultAlign = getAlignValue(element);
+    const align = getAlignValue(element, defaultAlignValue);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
@@ -52,14 +54,10 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
     };
 
     const onClick = useCallback(() => {
-        const align = getAlignValue(element);
-
         const types = Object.keys(icons).filter(key =>
             alignments ? alignments.includes(key) : true
         );
-
-        const nextAlign = types[types.indexOf(align) + 1] || defaultAlignValue;
-
+        const nextAlign = (types[types.indexOf(align) + 1] || defaultAlignValue) as AlignTypesType;
         updateElement({
             ...element,
             data: {
@@ -70,7 +68,7 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
                 }
             }
         });
-    }, [element.id]);
+    }, [element.id, align]);
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
@@ -82,7 +80,7 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
 
     return React.cloneElement(children as React.ReactElement, {
         onClick,
-        icon: icons[defaultAlign]
+        icon: icons[align]
     });
 };
 

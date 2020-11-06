@@ -14,8 +14,8 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallableType 
     if (!sourcePlugin) {
         return {};
     }
-    const { onCreate } = sourcePlugin;
-    if (!onCreate || onCreate !== "skip") {
+    const { onCreate: sourceOnCreate } = sourcePlugin;
+    if (!sourceOnCreate || sourceOnCreate !== "skip") {
         // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
         const plugin = plugins
             .byType<PbEditorPageElementPlugin>("pb-editor-page-element")

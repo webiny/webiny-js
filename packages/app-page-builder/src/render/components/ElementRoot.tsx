@@ -3,7 +3,8 @@ import { plugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
     PbRenderElementAttributesPlugin,
-    PbElement
+    PbElement,
+    PbShallowElement
 } from "@webiny/app-page-builder/types";
 
 type CombineClassNamesType = (...styles) => string;
@@ -21,7 +22,7 @@ type ElementRootChildrenFunctionParamsType = {
 type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
 type ElementRootProps = {
-    element: PbElement;
+    element: PbElement | PbShallowElement;
     style?: CSSProperties;
     className?: string;
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;
@@ -34,9 +35,9 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     className = null
 }) => {
     const shallowElement = {
-        id: element.id,
-        type: element.type,
-        data: element.data,
+        id: element?.id,
+        type: element?.type,
+        data: element?.data,
         elements: []
     };
 
@@ -51,6 +52,11 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
             "pb-render-page-element-attributes"
         );
     }, []);
+
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
 
     const finalStyle = stylePlugins.current.reduce((accumulatedStyles, plugin) => {
         return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });

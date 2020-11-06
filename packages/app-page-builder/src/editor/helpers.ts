@@ -4,7 +4,9 @@ import shortid from "shortid";
 import lodashCloneDeep from "lodash/cloneDeep";
 import { plugins } from "@webiny/plugins";
 import {
+    PbEditorBlockPlugin,
     PbEditorPageElementPlugin,
+    PbEditorPageElementSettingsPlugin,
     PbElement,
     PbShallowElement
 } from "@webiny/app-page-builder/types";
@@ -81,6 +83,8 @@ const findElementByPath = (elements: PbElement[], paths: number[]): PbElement =>
     const path = paths.shift();
     if (paths.length === 0) {
         return elements[path];
+    } else if (!elements[path]) {
+        return undefined;
     }
     return findElementByPath(elements[path].elements, paths);
 };
@@ -129,9 +133,11 @@ export const createElementHelper: CreateElementHelperType = (type, options = {},
 
     return {
         id: shortid.generate(),
-        data: {},
+        data: {
+            settings: {}
+        },
         elements: [],
-        path: "",
+        path: undefined,
         type,
         ...plugin.create(options, parent)
     };
@@ -177,5 +183,54 @@ export const createDroppedElementHelper = (
     return {
         element: createElementHelper(source.type, {}, target),
         dispatchCreateElementAction: true
+    };
+};
+
+export const createBlockElementsHelper = (name: string) => {
+    const plugin = plugins.byName<PbEditorBlockPlugin>(name);
+
+    invariant(plugin, `Missing block plugin "${name}"!`);
+
+    return {
+        id: shortid.generate(),
+        data: {},
+        elements: [],
+        path: "",
+        ...plugin.create()
+    };
+};
+
+export const userSettingsPluginsHelper = (elementType: string) => {
+    return plugins
+        .byType<PbEditorPageElementSettingsPlugin>("pb-editor-page-element-settings")
+        .filter(pl => {
+            if (typeof pl.elements === "boolean") {
+                return pl.elements === true;
+            }
+            if (Array.isArray(pl.elements)) {
+                return pl.elements.includes(elementType);
+            }
+
+            return false;
+        })
+        .map(pl => pl.name);
+};
+
+type CreateEmptyElementHelperCallableType = (
+    args: Pick<PbElement, "id" | "path" | "type">
+) => PbElement;
+export const createEmptyElementHelper: CreateEmptyElementHelperCallableType = ({
+    id,
+    path,
+    type
+}) => {
+    return {
+        id,
+        path,
+        type,
+        data: {
+            settings: {}
+        },
+        elements: []
     };
 };

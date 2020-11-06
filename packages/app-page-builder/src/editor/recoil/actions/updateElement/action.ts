@@ -10,7 +10,7 @@ import {
     flattenElementsHelper,
     saveElementToContentHelper,
     updateChildPathsHelper
-} from "@webiny/app-page-builder/editor/recoil/helpers";
+} from "@webiny/app-page-builder/editor/helpers";
 
 const createElementWithoutElementsAsString = (element: PbElement): PbElement => {
     if (!element.elements || typeof element.elements[0] !== "string") {
@@ -56,11 +56,20 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
     state,
     args
 ) => {
-    const { element, merge, history = false } = args;
+    const { element, merge, history = false, client } = args;
     const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];
     if (history === true) {
-        actions.push(new SaveRevisionActionEvent());
+        if (!client) {
+            throw new Error(
+                "You cannot save revision while updating if you do not pass client arg."
+            );
+        }
+        actions.push(
+            new SaveRevisionActionEvent({
+                client
+            })
+        );
     }
     return {
         state: {

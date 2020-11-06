@@ -119,7 +119,7 @@ export class EventActionHandler {
             );
         }
 
-        const id = Symbol("eventActionCb");
+        const id = Symbol(`eventActionCb:${name}`);
         events.set(id, callable);
         return () => {
             return this.off(id);
@@ -174,7 +174,7 @@ export class EventActionHandler {
 
     private getEventActionClassName(target: TargetType): string {
         const cls = new target();
-        const name = cls.getName() || cls.constructor.name;
+        const name = cls.getName();
         if (!name) {
             throw new Error("Could not find class name.");
         }
@@ -242,7 +242,7 @@ export class EventActionHandler {
             );
         }
         const name = ev.getName();
-        if (!this.has(ev.getName())) {
+        if (!this.has(name)) {
             throw new Error(`There is no event action that is registered with name "${name}".`);
         }
         const targetCallables = this.get(name);

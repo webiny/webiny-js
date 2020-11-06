@@ -1,15 +1,15 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     DeactivatePluginActionEvent,
     UpdateElementActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { createBlockElementsHelper } from "@webiny/app-page-builder/editor/helpers";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Mutation } from "react-apollo";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
-import { createBlockElements } from "@webiny/app-page-builder/editor/utils";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
@@ -67,7 +67,7 @@ const SearchBar = () => {
     const content = useRecoilValue(contentSelector);
     const eventActionHandler = useEventActionHandler();
 
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState<string>("");
     const [editingBlock, setEditingBlock] = useState(null);
     const [activeCategory, setActiveCategory] = useState("all");
 
@@ -104,7 +104,7 @@ const SearchBar = () => {
         plugin => {
             const element = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, createBlockElementsHelper(plugin.name)]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({

@@ -20,7 +20,7 @@ type ImageContainerType = {
 const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const handler = useEventActionHandler();
-    const { image = {}, settings = {} } = element.data;
+    const { image = {}, settings = {} } = element?.data || {};
     const { horizontalAlign = "center" } = settings;
 
     const imgStyle = { width: null, height: null };
@@ -34,7 +34,7 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId
     }
 
     const onChange = useCallback(
-        async (data: string) => {
+        async (data: { [key: string]: string }) => {
             handler.trigger(
                 new UpdateElementActionEvent({
                     element: {
@@ -53,6 +53,10 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId
         },
         [elementId]
     );
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
 
     return (
         <AlignImage align={horizontalAlign}>

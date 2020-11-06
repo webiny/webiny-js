@@ -85,7 +85,16 @@ const searchInput = css({
     }
 });
 
-const IconPicker = ({ value, onChange, removable = true }) => {
+type IconPickerPropsType = {
+    value: [string, string];
+    onChange: (item: PbIcon) => void;
+    removable?: boolean;
+};
+const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
+    value,
+    onChange,
+    removable = true
+}) => {
     const [filter, setFilter] = useState<string>("");
 
     const onFilterChange = useCallback(
@@ -209,7 +218,7 @@ const IconPicker = ({ value, onChange, removable = true }) => {
         <Menu
             handle={
                 <div className={pickIcon}>
-                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
+                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             }
         >

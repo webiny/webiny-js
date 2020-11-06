@@ -27,7 +27,7 @@ type SettingsPropsType = {
 const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const handler = useEventActionHandler();
-    const updateElement = (args: UpdateElementActionArgsType) => {
+    const updateElement = (args: UpdateElementActionArgsType): void => {
         handler.trigger(new UpdateElementActionEvent(args));
     };
     const setImage = image => {
@@ -65,9 +65,11 @@ const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
     const onColorChange = useCallback(value => setColor(value, false), []);
     const onColorChangeComplete = useCallback(value => setColor(value), []);
 
-    const { background: bg } = element.data.settings || {};
-    const { src: imageSrc, color: bgColor = "#fff" } = bg.image?.file || {};
-    const { scaling: imageScaling, position: imagePosition } = bg.image || {};
+    const background = element.data.settings?.background;
+    const { color: backgroundColor = "#fff", image: backgroundImage } = background || {};
+    const { scaling: backgroundImageScaling, position: backgroundImagePosition } =
+        backgroundImage || {};
+    const { src: backgroundImageSrc } = backgroundImage?.file || {};
 
     return (
         <Tabs>
@@ -75,7 +77,7 @@ const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
                 <Grid>
                     <Cell span={12}>
                         <ColorPicker
-                            value={bgColor}
+                            value={backgroundColor}
                             onChange={onColorChange}
                             onChangeComplete={onColorChangeComplete}
                         />
@@ -89,14 +91,14 @@ const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
                             <SingleImageUpload
                                 className={imageSelect}
                                 onChange={setImage}
-                                value={{ src: imageSrc }}
+                                value={{ src: backgroundImageSrc }}
                             />
                         </Cell>
                     </Grid>
                     <Select
-                        disabled={!imageSrc}
+                        disabled={!backgroundImageSrc}
                         label="Scaling"
-                        value={imageScaling}
+                        value={backgroundImageScaling}
                         updateValue={setScaling}
                     >
                         <option value="cover">Cover</option>
@@ -109,8 +111,8 @@ const Settings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
                     <Grid>
                         <Cell span={12}>
                             <BackgroundPositionSelector
-                                disabled={!imageSrc}
-                                value={imagePosition}
+                                disabled={!backgroundImageSrc}
+                                value={backgroundImagePosition}
                                 onChange={setPosition}
                             />
                         </Cell>

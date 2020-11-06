@@ -9,8 +9,9 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     addElementToParentHelper,
-    createDroppedElementHelper
-} from "@webiny/app-page-builder/editor/recoil/helpers";
+    createDroppedElementHelper,
+    createEmptyElementHelper
+} from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 
 const plugin: PbEditorPageElementPlugin = {
@@ -68,13 +69,11 @@ const plugin: PbEditorPageElementPlugin = {
         if (source.path) {
             result.actions.push(
                 new DeleteElementActionEvent({
-                    element: {
+                    element: createEmptyElementHelper({
                         id: source.id as string,
                         path: source.path as string,
-                        type: source.type,
-                        elements: [],
-                        data: {}
-                    }
+                        type: source.type
+                    })
                 })
             );
         }

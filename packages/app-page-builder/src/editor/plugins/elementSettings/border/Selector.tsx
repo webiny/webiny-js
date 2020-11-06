@@ -1,11 +1,8 @@
 import React from "react";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { get } from "lodash";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { IconButton } from "@webiny/ui/Button";
-import { useRecoilValue } from "recoil";
 import { ReactComponent as TopIcon } from "./icons/round-border_top-24px.svg";
 import { ReactComponent as RightIcon } from "./icons/round-border_right-24px.svg";
 import { ReactComponent as BottomIcon } from "./icons/round-border_bottom-24px.svg";
@@ -24,18 +21,10 @@ const getValue = (value, side) => {
 
 type SelectorPropsType = {
     label: string;
-    valueKey: string;
-    defaultValue: any;
-    updateValue: Function;
+    value: object;
+    updateValue: (value: any) => void;
 };
-const Selector: React.FunctionComponent<SelectorPropsType> = ({
-    label,
-    valueKey,
-    updateValue,
-    defaultValue = 0
-}) => {
-    const element = useRecoilValue(activeElementSelector);
-    const value = get(element, valueKey, defaultValue);
+const Selector: React.FunctionComponent<SelectorPropsType> = ({ label, value, updateValue }) => {
     const top = getValue(value, "top");
     const right = getValue(value, "right");
     const bottom = getValue(value, "bottom");

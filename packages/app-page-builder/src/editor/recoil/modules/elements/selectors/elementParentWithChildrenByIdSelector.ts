@@ -1,6 +1,6 @@
 import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { selectorFamily } from "recoil";
 import { elementByIdSelector, getElementById } from "./elementByIdSelector";

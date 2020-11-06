@@ -72,21 +72,18 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
         );
     }, []);
 
-    const savePage = useCallback(
-        pageValue => {
-            eventActionHandler.trigger(
-                new UpdatePageRevisionActionEvent({
-                    page: pageValue,
-                    client: apolloClient,
-                    onFinish: () => {
-                        showSnackbar("Settings saved");
-                        deactivatePlugin();
-                    }
-                })
-            );
-        },
-        [pageAtomValue]
-    );
+    const savePage = useCallback(pageValue => {
+        eventActionHandler.trigger(
+            new UpdatePageRevisionActionEvent({
+                page: pageValue,
+                client: apolloClient,
+                onFinish: () => {
+                    showSnackbar("Settings saved");
+                    deactivatePlugin();
+                }
+            })
+        );
+    }, []);
 
     useEffect(() => {
         addKeyHandler("escape", e => {

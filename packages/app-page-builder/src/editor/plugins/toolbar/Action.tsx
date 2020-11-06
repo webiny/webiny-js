@@ -20,12 +20,19 @@ const getButtonIcon = (icon: Element | Element[], isActive: boolean): Element =>
     return icon;
 };
 type ActionPropsType = {
+    id?: string;
     icon: any;
     onClick?: () => any;
     tooltip?: string;
     plugin?: string;
 };
-const Action: React.FunctionComponent<ActionPropsType> = ({ icon, onClick, tooltip, plugin }) => {
+const Action: React.FunctionComponent<ActionPropsType> = ({
+    id,
+    icon,
+    onClick,
+    tooltip,
+    plugin
+}) => {
     const handler = useEventActionHandler();
     const isActive = useRecoilValue(isPluginActiveSelector(plugin));
 
@@ -50,7 +57,12 @@ const Action: React.FunctionComponent<ActionPropsType> = ({ icon, onClick, toolt
     const btnIcon = getButtonIcon(icon, isActive);
 
     const iconButton = (
-        <IconButton icon={btnIcon} onClick={clickHandler} className={isActive && activeStyle} />
+        <IconButton
+            id={id}
+            icon={btnIcon}
+            onClick={clickHandler}
+            className={isActive && activeStyle}
+        />
     );
 
     if (tooltip) {

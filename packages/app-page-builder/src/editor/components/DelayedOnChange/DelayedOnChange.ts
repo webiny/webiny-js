@@ -25,35 +25,25 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
 
     const localTimeout = React.useRef<number>(undefined);
 
-    const applyValue = React.useCallback((value: any, callback: Function = emptyFunction) => {
-        return () => {
-            localTimeout.current && clearTimeout(localTimeout.current);
-            localTimeout.current = null;
-            onChange(value, callback);
-        };
-    }, []);
+    const applyValue = (value: any, callback: Function = emptyFunction) => {
+        localTimeout.current && clearTimeout(localTimeout.current);
+        localTimeout.current = null;
+        onChange(value, callback);
+    };
 
     const onChangeLocal = React.useCallback((value: string) => {
-        return () => {
-            setValue(() => {
-                return value;
-            });
-            // class component could have fired callback on setState - there is no such thing in function component
-            // we have useEffect that fires on value change and if value is not undefined
-        };
+        setValue(value);
     }, []);
 
     // this is fired upon change value state
-    const onValueStateChanged = React.useCallback(() => {
-        return () => {
-            localTimeout.current && clearTimeout(localTimeout.current);
-            localTimeout.current = null;
-            localTimeout.current = (setTimeout(
-                () => applyValue(value),
-                delay
-            ) as unknown) as number;
-        };
-    }, []);
+    const onValueStateChanged = (nextValue: string) => {
+        localTimeout.current && clearTimeout(localTimeout.current);
+        localTimeout.current = null;
+        localTimeout.current = (setTimeout(
+            () => applyValue(nextValue),
+            delay
+        ) as unknown) as number;
+    };
 
     // need to clear the timeout when unmounting the component
     useEffect(() => {
@@ -64,16 +54,10 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
             clearTimeout(localTimeout.current);
             localTimeout.current = null;
         };
-    });
+    }, []);
 
-    // must not fire on first render of the component
-    // we will know that if localTimeout is undefined
-    // at every other point it will be null or a number
     useEffect(() => {
-        if (localTimeout.current === undefined) {
-            return;
-        }
-        onValueStateChanged();
+        onValueStateChanged(value);
     }, [value]);
 
     const newProps = {
@@ -92,13 +76,13 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
     const realOnBlur = props.onBlur || emptyFunction;
 
     // Need to apply value if input lost focus
-    props.onBlur = e => {
+    const onBlur = e => {
         e.persist();
         applyValue(e.target.value, () => realOnBlur(e));
     };
 
     // Need to listen for TAB key to apply new value immediately, without delay. Otherwise validation will be triggered with old value.
-    props.onKeyDown = e => {
+    const onKeyDown = e => {
         e.persist();
         if (e.key === "Tab") {
             applyValue(e.target.value, () => realOnKeyDown(e));
@@ -109,7 +93,7 @@ export const DelayedOnChange: React.FunctionComponent<Props> = ({ children, ...o
         }
     };
 
-    return React.cloneElement(child, props);
+    return React.cloneElement(child, { ...props, onBlur, onKeyDown });
 };
 
 export default DelayedOnChange;

@@ -1,9 +1,9 @@
-import lodashCloneDeep from "lodash/cloneDeep";
 import React, { useEffect } from "react";
+import lodashCloneDeep from "lodash/cloneDeep";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { flattenElementsHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import { flattenElementsHelper } from "@webiny/app-page-builder/editor/helpers";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
 import {
@@ -17,7 +17,7 @@ import {
     uiAtom
 } from "../../recoil/modules";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { useIsTrackingHistory, useRedo, useUndo } from "recoil-undo";
+import { useIsTrackingHistory } from "recoil-undo";
 import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
@@ -58,6 +58,16 @@ const unregisterPlugins = (handler: EventActionHandler, registered: PluginRegist
     }
 };
 
+const triggerActionButtonClick = (name: string): void => {
+    const id = `#action-${name}`;
+    const element = document.querySelector<HTMLElement | null>(id);
+    if (!element) {
+        console.warn(`There is no html element "${id}"`);
+        return;
+    }
+    element.click();
+};
+
 type EditorPropsType = {
     page: PageAtomType;
     revisions: RevisionsAtomType;
@@ -70,10 +80,9 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
     const setElementsAtomValue = useSetRecoilState(elementsAtom);
     const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
     const [contentAtomValue, setContentAtomValue] = useRecoilState(contentAtom);
-    const undo = useUndo();
-    const redo = useRedo();
     const { getIsTrackingHistory, setIsTrackingHistory } = useIsTrackingHistory();
 
+    const firstRender = React.useRef<boolean>(true);
     const registeredPlugins = React.useRef<PluginRegistryType>();
 
     if (contentAtomValue && getIsTrackingHistory() === false) {
@@ -86,26 +95,26 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 return;
             }
             e.preventDefault();
-            undo();
+            triggerActionButtonClick("undo");
         });
         addKeyHandler("mod+shift+z", e => {
             if (slateFocused) {
                 return;
             }
             e.preventDefault();
-            redo();
+            triggerActionButtonClick("redo");
         });
         registeredPlugins.current = registerPlugins(eventActionHandler);
         const pageAtomValue = {
             ...page,
             content: undefined
         };
-        const contentAtomValue: ContentAtomType = (page as any).content;
-        const elementsAtomValue = flattenElementsHelper(lodashCloneDeep(contentAtomValue));
+        const content: ContentAtomType = (page as any).content;
+        const flattened = flattenElementsHelper(lodashCloneDeep(content));
         setPageAtomValue(pageAtomValue);
-        setElementsAtomValue(elementsAtomValue);
+        setElementsAtomValue(flattened);
         setRevisionsAtomValue(revisions);
-        setContentAtomValue(contentAtomValue);
+        setContentAtomValue(content);
         return () => {
             removeKeyHandler("mod+z");
             removeKeyHandler("mod+shift+z");
@@ -113,6 +122,15 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
             unregisterPlugins(eventActionHandler, registeredPlugins.current);
         };
     }, []);
+
+    useEffect(() => {
+        if (!contentAtomValue || firstRender.current === true) {
+            firstRender.current = false;
+            return;
+        }
+        const flattened = flattenElementsHelper(lodashCloneDeep(contentAtomValue));
+        setElementsAtomValue(flattened);
+    }, [contentAtomValue]);
 
     const classes = {
         "pb-editor": true,

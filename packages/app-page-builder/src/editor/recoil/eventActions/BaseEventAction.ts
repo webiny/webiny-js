@@ -9,9 +9,7 @@ export abstract class BaseEventAction<T extends object = any> implements EventAc
         this._options = options;
     }
 
-    public getName(): string {
-        return this.constructor.name;
-    }
+    abstract getName(): string;
 
     public getArgs(): T {
         return this._args;

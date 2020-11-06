@@ -73,8 +73,8 @@ const OEmbedComponent = (props: OEmbedProps) => {
         appendSDK(props).then(() => initEmbed(props));
     });
 
-    const source = element.data?.source || {};
-    const oembed = element.data?.oembed || {};
+    const source = element.data.source || {};
+    const oembed = element.data.oembed || {};
     const sourceUrl = source.url;
     const oembedSourceUrl = oembed.source?.url;
 
@@ -92,7 +92,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
                 const newElement: PbElement = {
                     ...element,
                     data: {
-                        ...(element?.data || {}),
+                        ...element.data,
                         oembed: onData(oembed)
                     }
                 };

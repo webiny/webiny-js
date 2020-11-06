@@ -1,3 +1,4 @@
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import React from "react";
 import Cell from "./Cell";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
@@ -68,33 +69,37 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
         );
     };
     return (
-        <CellContainerStyle>
-            {totalElements === 0 && (
-                <DropZone.Center
-                    id={id}
-                    type={type}
-                    onDrop={source => dropElementAction(source, 0)}
-                >
-                    <IconButton
-                        className={addIcon + " addIcon"}
-                        icon={<AddCircleOutline />}
-                        onClick={onAddClick}
-                    />
-                </DropZone.Center>
+        <ElementRoot element={element}>
+            {({ getAllClasses, elementStyle }) => (
+                <CellContainerStyle style={elementStyle} className={getAllClasses()}>
+                    {totalElements === 0 && (
+                        <DropZone.Center
+                            id={id}
+                            type={type}
+                            onDrop={source => dropElementAction(source, 0)}
+                        >
+                            <IconButton
+                                className={addIcon + " addIcon"}
+                                icon={<AddCircleOutline />}
+                                onClick={onAddClick}
+                            />
+                        </DropZone.Center>
+                    )}
+                    {elements.map((childId, index) => {
+                        return (
+                            <Cell
+                                key={childId}
+                                dropElement={dropElementAction}
+                                index={index}
+                                type={type}
+                                isLast={index === totalElements - 1}
+                                id={childId}
+                            />
+                        );
+                    })}
+                </CellContainerStyle>
             )}
-            {elements.map((childId, index) => {
-                return (
-                    <Cell
-                        key={childId}
-                        dropElement={dropElementAction}
-                        index={index}
-                        type={type}
-                        isLast={index === totalElements - 1}
-                        id={childId}
-                    />
-                );
-            })}
-        </CellContainerStyle>
+        </ElementRoot>
     );
 };
 

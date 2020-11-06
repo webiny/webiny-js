@@ -10,10 +10,7 @@ export const activatePluginByNameMutation: MutationActionCallable<PluginsAtomTyp
     if (!type) {
         return state;
     }
-    const allPluginsByType = state.get(type);
-    if (!allPluginsByType || allPluginsByType.length === 0) {
-        return state;
-    }
+    const allPluginsByType = state.get(type) || [];
     const exists = allPluginsByType.some(pl => pl.name === name);
     if (exists) {
         return state;

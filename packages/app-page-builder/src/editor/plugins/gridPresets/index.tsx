@@ -7,6 +7,7 @@ import { ReactComponent as GridIcon3333 } from "../../assets/icons/grid-3-3-3-3.
 import { ReactComponent as GridIcon48 } from "../../assets/icons/grid-4-8.svg";
 import { ReactComponent as GridIcon84 } from "../../assets/icons/grid-8-4.svg";
 import { ReactComponent as GridIcon22222 } from "../../assets/icons/grid-2-2-2-2-2-2.svg";
+import { ReactComponent as GridIcon444 } from "../../assets/icons/grid-4-4-4.svg";
 
 const calculateCells = (cells: string): number[] => {
     return cells
@@ -89,5 +90,11 @@ export const gridPresets: PbEditorGridPresetPluginType[] = [
         type: "pb-editor-grid-preset",
         cells: "2-2-2-2-2-2",
         icon: GridIcon22222
+    } as PbEditorGridPresetPluginType,
+    {
+        name: "pb-editor-grid-preset-4-4-4",
+        type: "pb-editor-grid-preset",
+        cells: "4-4-4",
+        icon: GridIcon444
     } as PbEditorGridPresetPluginType
 ];

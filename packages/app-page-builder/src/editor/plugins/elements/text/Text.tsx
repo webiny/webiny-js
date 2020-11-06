@@ -15,13 +15,17 @@ type TextType = Omit<SlateEditorProps, "value"> & {
 const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
     const onChange = value => {
         handler.trigger(
             new UpdateElementActionEvent({
                 element: {
                     ...element,
                     data: {
-                        ...(element.data || {}),
+                        ...element.data,
                         text: value
                     }
                 }

@@ -25,6 +25,10 @@ const ConnectedElement: React.FunctionComponent<Props> = ({
     withChildElements
 }) => {
     const target = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!target) {
+        return null;
+    }
     const element = flattenElement(target, withChildElements);
 
     if (typeof children === "function") {

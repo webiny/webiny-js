@@ -1,7 +1,7 @@
 import React from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { cloneElementHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import { cloneElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import {
     activeElementWithChildrenSelector,
     elementParentWithChildrenByIdSelector

@@ -26,19 +26,84 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-type PbElementData = {
-    image?: {
-        width?: string | number;
-        height?: string | number;
-        file?: string;
-        title?: string;
-    };
-    settings?: {
-        horizontalAlign?: string;
+type PbElementDataSettingsMarginPaddingType = {
+    all?: number;
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+};
+type PbElementDataType = {
+    settings: {
+        horizontalAlign?: "left" | "center" | "right" | "justify";
+        horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
+        verticalAlign?: "start" | "center" | "end";
+        margin?: {
+            advanced?: boolean;
+            mobile?: PbElementDataSettingsMarginPaddingType;
+            desktop?: PbElementDataSettingsMarginPaddingType;
+        };
+        padding?: {
+            advanced?: boolean;
+            mobile?: PbElementDataSettingsMarginPaddingType;
+            desktop?: PbElementDataSettingsMarginPaddingType;
+        };
         height?: {
             value?: number;
         };
+        background?: {
+            color?: string;
+            image?: {
+                scaling?: string;
+                position?: string;
+                file?: {
+                    src?: string;
+                };
+            };
+        };
+        border?: {
+            width?: number;
+            style?: "none" | "solid" | "dashed" | "dotted";
+            radius?: number;
+            borders?: {
+                top?: boolean;
+                right?: boolean;
+                bottom?: boolean;
+                left?: boolean;
+            };
+        };
         [key: string]: any;
+    };
+    text?: string;
+    image?: {
+        width?: string | number;
+        height?: string | number;
+        file?: {
+            id?: string;
+            src?: string;
+        };
+        title?: string;
+    };
+    link?: {
+        href?: string;
+        newTab?: boolean;
+    };
+    type?: string;
+    icon?: {
+        id?: [string, string];
+        width?: number;
+        color?: string;
+        svg?: string;
+        position?: string;
+    };
+    source?: {
+        url?: string;
+    };
+    oembed?: {
+        source?: {
+            url?: string;
+        };
+        html?: string;
     };
     [key: string]: any;
 };
@@ -46,7 +111,7 @@ type PbBaseElement = {
     id: string;
     path: string;
     type: string;
-    data: PbElementData;
+    data: PbElementDataType;
     [key: string]: any;
 };
 export type PbElement = PbBaseElement & {

@@ -1,11 +1,25 @@
 import { CreateElementEventActionCallableType } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 
-export const imageCreatedEditorAction: CreateElementEventActionCallableType = (
-    state,
-    { element, source }
-) => {
+const MAX_ELEMENT_FIND_RETRIES = 10;
+const ELEMENT_FIND_RETRY_TIMEOUT = 100;
+const clickOnImageWithRetries = (element: PbElement, retryNumber: number) => {
+    const image: HTMLElement = document.querySelector(
+        `#${window.CSS.escape(element.id)} [data-role="select-image"]`
+    );
+
+    if (image) {
+        image.click();
+        return;
+    } else if (retryNumber >= MAX_ELEMENT_FIND_RETRIES) {
+        return;
+    }
+    setTimeout(() => clickOnImageWithRetries(element, retryNumber + 1), ELEMENT_FIND_RETRY_TIMEOUT);
+};
+
+export const imageCreatedEditorAction: CreateElementEventActionCallableType = (state, args) => {
+    const { element, source } = args;
     if (element.type !== "image") {
         return {};
     }
@@ -21,17 +35,7 @@ export const imageCreatedEditorAction: CreateElementEventActionCallableType = (
 
     const { onCreate } = imagePlugin;
     if (!onCreate || onCreate !== "skip") {
-        // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-        // TODO: this isn't an ideal approach, implement a retry mechanism which polls for DOM element
-        setTimeout(() => {
-            const image: HTMLElement = document.querySelector(
-                `#${window.CSS.escape(element.id)} [data-role="select-image"]`
-            );
-
-            if (image) {
-                image.click();
-            }
-        }, 100);
+        clickOnImageWithRetries(element, 0);
     }
     return {};
 };

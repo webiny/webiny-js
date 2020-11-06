@@ -4,7 +4,7 @@ import {
     EventActionCallableType,
     EventActionHandlerActionCallableResponseType
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { removeElementHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import { removeElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { getElementParentWithChildrenById } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";

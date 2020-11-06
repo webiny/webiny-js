@@ -8,11 +8,11 @@ import {
 import { TopAppBarSecondary, TopAppBarSection } from "@webiny/ui/TopAppBar";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
+import { userSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { ReactComponent as NavigateBeforeIcon } from "@webiny/app-page-builder/editor/assets/icons/navigate_before.svg";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { userSettingsPlugins } from "@webiny/app-page-builder/editor/utils";
 
 const divider = "pb-editor-page-element-settings-divider";
 
@@ -21,7 +21,7 @@ const getElementActions = plugin => {
         return [];
     }
 
-    const pluginSettings = [...userSettingsPlugins(plugin.elementType), ...plugin.settings];
+    const pluginSettings = [...userSettingsPluginsHelper(plugin.elementType), ...plugin.settings];
 
     const actions = pluginSettings.map(pl => {
         if (typeof pl === "string") {

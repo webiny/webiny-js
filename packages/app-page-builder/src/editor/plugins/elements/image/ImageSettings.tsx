@@ -3,7 +3,6 @@ import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/compo
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { set } from "dot-prop-immutable";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { useRecoilValue } from "recoil";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
@@ -11,36 +10,46 @@ import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 const ImageSettings = () => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementSelector);
-    const { image = {} } = element.data;
+    const {
+        id,
+        data: { image }
+    } = element;
 
     const setData = useMemo(() => {
         const historyUpdated = {};
-
         return (name, value) => {
-            const attrKey = `data.image.${name}`;
-            const newElement = set(element, attrKey, value);
-
-            if (historyUpdated[name] !== value) {
-                historyUpdated[name] = value;
-                handler.trigger(
-                    new UpdateElementActionEvent({
-                        element: newElement
-                    })
-                );
+            if (historyUpdated[name] === value) {
+                return;
             }
+            historyUpdated[name] = value;
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        elements: [],
+                        data: {
+                            ...element.data,
+                            image: {
+                                ...(element.data.image || {}),
+                                [name]: value
+                            }
+                        }
+                    }
+                })
+            );
         };
-    }, [element.id]);
+    }, [id, image]);
 
-    const updateTitle = useCallback(value => setData("title", value), [setData]);
-    const updateWidth = useCallback(value => setData("width", value), [setData]);
-    const updateHeight = useCallback(value => setData("height", value), [setData]);
+    const updateTitle = useCallback(value => setData("title", value), [id, image]);
+    const updateWidth = useCallback(value => setData("width", value), [id, image]);
+    const updateHeight = useCallback(value => setData("height", value), [id, image]);
 
     return (
         <Tabs>
             <Tab icon={<ImageIcon />} label="Image">
                 <Input
                     label="Title"
-                    value={image.title || ""}
+                    value={image?.title || ""}
                     updateValue={updateTitle}
                     inputWidth={"max-content"}
                 />
@@ -48,7 +57,7 @@ const ImageSettings = () => {
                     label="Width"
                     placeholder="auto"
                     description="eg. 300 or 50%"
-                    value={image.width || ""}
+                    value={image?.width || ""}
                     updateValue={updateWidth}
                     inputWidth={80}
                 />
@@ -56,7 +65,7 @@ const ImageSettings = () => {
                     label="Height"
                     placeholder="auto"
                     description="eg. 300 or 50%"
-                    value={image.height || ""}
+                    value={image?.height || ""}
                     updateValue={updateHeight}
                     inputWidth={80}
                 />

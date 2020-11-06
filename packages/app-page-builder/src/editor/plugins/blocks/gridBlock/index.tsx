@@ -1,7 +1,7 @@
+import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import React from "react";
 import preview from "./preview.png";
 import { plugins } from "@webiny/plugins";
-import { createElement } from "@webiny/app-page-builder/editor/utils";
 import { PbEditorBlockPlugin, PbEditorGridPresetPluginType } from "@webiny/app-page-builder/types";
 
 const getDefaultPreset = () => {
@@ -18,7 +18,7 @@ export default {
     category: "general",
     title: "Grid block",
     create(options = {}) {
-        return createElement("grid", {
+        return createElementHelper("grid", {
             ...options,
             preset: getDefaultPreset()
         });

@@ -1,5 +1,5 @@
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/recoil/helpers";
+import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { selectorFamily } from "recoil";
 import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { elementByIdSelector } from "./elementByIdSelector";

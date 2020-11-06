@@ -5,7 +5,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 
 type IconPickerProps = {
     label: string;
-    value: string;
+    value: [string, string];
     updateValue: (value: any) => void;
     removable?: boolean;
 };

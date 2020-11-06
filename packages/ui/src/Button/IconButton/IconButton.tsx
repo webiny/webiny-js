@@ -8,6 +8,7 @@ import { FormComponentProps } from "../../types";
 
 export type IconButtonProps = FormComponentProps &
     RmwcIconButtonProps & {
+        id?: string;
         /**
          * Icon should be provided as an SvgComponent.
          */
@@ -47,10 +48,11 @@ export type IconButtonProps = FormComponentProps &
  * @constructor
  */
 const IconButton = (props: IconButtonProps) => {
-    const { icon, label, onClick, className, disabled, ripple = true } = props;
+    const { id, icon, label, onClick, className, disabled, ripple = true } = props;
 
     return (
         <RIconButton
+            id={id}
             data-testid={props["data-testid"]}
             onClick={onClick}
             disabled={disabled}

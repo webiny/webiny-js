@@ -1,6 +1,6 @@
+import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import React from "react";
 import Grid from "./Grid";
-import { createElement } from "@webiny/app-page-builder/editor/utils";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { getDefaultPresetPluginCells } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
@@ -23,7 +23,7 @@ const plugin: PbEditorPageElementPlugin = {
         return {
             type: "grid",
             elements: cells.map(size => {
-                return createElement("cell", {
+                return createElementHelper("cell", {
                     data: {
                         settings: {
                             size
