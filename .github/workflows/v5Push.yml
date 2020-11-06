@@ -1,7 +1,7 @@
 name: Push (v5)
 
 on:
-  pull_request_target:
+  push:
     branches: [v5]
 
 env:
