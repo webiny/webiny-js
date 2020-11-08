@@ -1,7 +1,13 @@
-import { hasScope } from "@webiny/api-security";
+import { hasPermission } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
+import {HandlerI18NContext } from "@webiny/api-i18n/types";
+
+// TODO: WTF?!
+type I18NContext = HandlerI18NContext & {
+    locales: any;
+}
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -69,7 +75,7 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+            getI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
                 const { locales } = context;
                 const locale = await locales.getByCode(args.code);
                 if (!locale) {
@@ -78,7 +84,7 @@ export default {
 
                 return new Response(locale);
             }),
-            listI18NLocales: hasScope("i18n.locale")(async (_, args, context) => {
+            listI18NLocales: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
                 const { locales } = context;
                 return new Response(await locales.list());
             }),
@@ -86,7 +92,7 @@ export default {
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+            createI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
                 const { locales } = context;
                 const { data } = args;
 
@@ -101,7 +107,7 @@ export default {
 
                 return new Response(data);
             }),
-            updateI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+            updateI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
                 const { locales } = context;
                 const { code } = args;
 
@@ -120,7 +126,7 @@ export default {
 
                 return new Response(locale);
             }),
-            deleteI18NLocale: hasScope("i18n.locale")(async (_, args, context) => {
+            deleteI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
                 const { locales } = context;
                 const { code } = args;
 
