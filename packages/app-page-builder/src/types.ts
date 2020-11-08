@@ -122,7 +122,7 @@ type PbElementDataType = {
         };
         html?: string;
     };
-    [key: string]: any;
+    width?: number;
 };
 type PbBaseElement = {
     id: string;
