@@ -19,7 +19,13 @@ export default (options: SecurityOptions) => [
 
             const securityPlugins = context.plugins.byType<SecurityPlugin>("graphql-security");
             for (let i = 0; i < securityPlugins.length; i++) {
-                await securityPlugins[i].authenticate(context);
+                try {
+                    await securityPlugins[i].authenticate(context);
+                } catch (e) {
+                    // Authentication errors should not exposed to the client,
+                    // and should be treated as an authentication failure
+                    continue;
+                }
             }
 
             if (options.public === false && !context.user) {
