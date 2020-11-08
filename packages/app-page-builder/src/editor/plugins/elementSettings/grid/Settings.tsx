@@ -42,8 +42,10 @@ const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
             data: {
                 ...(element.data || {}),
                 settings: {
-                    ...(element.data?.settings || {}),
-                    size: cells[index]
+                    ...element.data.settings,
+                    grid: {
+                        size: cells[index]
+                    }
                 }
             }
         };

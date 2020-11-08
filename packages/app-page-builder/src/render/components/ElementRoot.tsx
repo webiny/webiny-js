@@ -69,7 +69,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         });
     }, {});
 
-    const classNames = element.data?.settings?.className || "";
+    const classNames = element.data.settings.className || "";
 
     const getAllClasses = (...extraClasses) => {
         return [className, ...extraClasses, ...classNames.split(" ")]

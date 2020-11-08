@@ -24,7 +24,9 @@ const createDefaultCells = (cellsType: string) => {
         return createElementHelper("cell", {
             data: {
                 settings: {
-                    size
+                    grid: {
+                        size
+                    }
                 }
             }
         });

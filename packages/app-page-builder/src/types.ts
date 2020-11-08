@@ -33,79 +33,86 @@ type PbElementDataSettingsMarginPaddingType = {
     bottom?: number;
     left?: number;
 };
-type PbElementDataType = {
-    settings: {
-        horizontalAlign?: "left" | "center" | "right" | "justify";
-        horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
-        verticalAlign?: "start" | "center" | "end";
-        margin?: {
-            advanced?: boolean;
-            mobile?: PbElementDataSettingsMarginPaddingType;
-            desktop?: PbElementDataSettingsMarginPaddingType;
-        };
-        padding?: {
-            advanced?: boolean;
-            mobile?: PbElementDataSettingsMarginPaddingType;
-            desktop?: PbElementDataSettingsMarginPaddingType;
-        };
-        height?: {
-            value?: number;
-        };
-        background?: {
-            color?: string;
-            image?: {
-                scaling?: string;
-                position?: string;
-                file?: {
-                    src?: string;
-                };
-            };
-        };
-        border?: {
-            width?: number;
-            style?: "none" | "solid" | "dashed" | "dotted";
-            radius?: number;
-            borders?: {
-                top?: boolean;
-                right?: boolean;
-                bottom?: boolean;
-                left?: boolean;
-            };
-        };
-        grid?: {
-            cellsType?: string;
-            size?: number;
-        };
-        columnWidth?: {
-            value?: string;
-        };
-        width?: {
-            value?: string;
-        };
-        className?: string;
-    };
-    text?: string;
+type PbElementDataSettingsBackgroundType = {
+    color?: string;
     image?: {
-        width?: string | number;
-        height?: string | number;
+        scaling?: string;
+        position?: string;
         file?: {
-            id?: string;
             src?: string;
         };
-        title?: string;
     };
+};
+type PbElementDataSettingsMarginType = {
+    advanced?: boolean;
+    mobile?: PbElementDataSettingsMarginPaddingType;
+    desktop?: PbElementDataSettingsMarginPaddingType;
+};
+type PbElementDataSettingsPaddingType = {
+    advanced?: boolean;
+    mobile?: PbElementDataSettingsMarginPaddingType;
+    desktop?: PbElementDataSettingsMarginPaddingType;
+};
+type PbElementDataSettingsBorderType = {
+    width?: number;
+    style?: "none" | "solid" | "dashed" | "dotted";
+    radius?: number;
+    borders?: {
+        top?: boolean;
+        right?: boolean;
+        bottom?: boolean;
+        left?: boolean;
+    };
+};
+type PbElementDataImageType = {
+    width?: string | number;
+    height?: string | number;
+    file?: {
+        id?: string;
+        src?: string;
+    };
+    title?: string;
+};
+type PbElementDataIconType = {
+    id?: [string, string];
+    width?: number;
+    color?: string;
+    svg?: string;
+    position?: string;
+};
+type PbElementDataSettingsType = {
+    horizontalAlign?: "left" | "center" | "right" | "justify";
+    horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
+    verticalAlign?: "start" | "center" | "end";
+    margin?: PbElementDataSettingsMarginType;
+    padding?: PbElementDataSettingsPaddingType;
+    height?: {
+        value?: number;
+    };
+    background?: PbElementDataSettingsBackgroundType;
+    border?: PbElementDataSettingsBorderType;
+    grid?: {
+        cellsType?: string;
+        size?: number;
+    };
+    columnWidth?: {
+        value?: string;
+    };
+    width?: {
+        value?: string;
+    };
+    className?: string;
+};
+type PbElementDataType = {
+    settings: PbElementDataSettingsType;
+    text?: string;
+    image?: PbElementDataImageType;
     link?: {
         href?: string;
         newTab?: boolean;
     };
     type?: string;
-    icon?: {
-        id?: [string, string];
-        width?: number;
-        color?: string;
-        svg?: string;
-        position?: string;
-    };
+    icon?: PbElementDataIconType;
     source?: {
         url?: string;
     };
