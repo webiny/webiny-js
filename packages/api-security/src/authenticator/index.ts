@@ -53,10 +53,16 @@ export default () => [
             );
 
             for (let i = 0; i < authenticationPlugins.length; i++) {
-                const identity = await authenticationPlugins[i].authenticate(context);
-                if (identity instanceof SecurityIdentity) {
-                    context.security.identity = identity;
-                    return;
+                try {
+                    const identity = await authenticationPlugins[i].authenticate(context);
+                    if (identity instanceof SecurityIdentity) {
+                        context.security.identity = identity;
+                        return;
+                    }
+                } catch (e) {
+                    // Authentication errors should not exposed to the client,
+                    // and should be treated as an authentication failure
+                    continue;
                 }
             }
         }
