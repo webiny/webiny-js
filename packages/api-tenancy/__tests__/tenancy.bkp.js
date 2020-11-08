@@ -1,37 +1,46 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("Tenancy context test", () => {
-    const { createTenant, listTenants } = useGqlHandler();
+    const { createTenant, getTenantById, listTenants } = useGqlHandler();
+    let defaultTenant;
 
-    test("create default and child tenants", async () => {
+    beforeAll(async () => {
         // Create default tenant
-        let [{ data }] = await createTenant({ data: { id: "default", name: "Default" } });
-        const defaultTenant = data.tenants.createTenant.data;
+        const [{ data }] = await createTenant({ data: { name: "Default" } });
+        defaultTenant = data.tenants.createTenant.data;
+    });
 
-        expect(defaultTenant).toMatchObject({
-            name: "Default",
-            parent: null
+    test("get default tenant", async () => {
+        let [{ data }] = await getTenantById({ id: defaultTenant.id });
+        expect(data.tenants.getTenant.data).toMatchObject({
+            name: "Default"
         });
+    });
 
-        // Create tenant as a child of top-level tenant
-        [{ data }] = await createTenant({ data: { name: "Restaurant 0" } });
-
+    test("second test", async () => {
+        let [{ data }] = await createTenant(
+            { data: { name: "Restaurant 0" } },
+            { "X-Tenant": defaultTenant.id }
+        );
+        
         const tenant1 = data.tenants.createTenant.data;
 
         expect(tenant1).toMatchObject({
-            name: "Restaurant 0"
+            name: "Restaurant 0",
+            parent: defaultTenant.id
         });
 
         // Create another tenant as a child of top-level tenant
-        [{ data }] = await createTenant(
-            { data: { name: "Restaurant 1" } }
+        await createTenant(
+            { data: { name: "Restaurant 1" } },
+            { "X-Tenant": defaultTenant.id }
         );
 
         // Create tenant as a child of tenant1
         await createTenant({ data: { name: "Restaurant 2" } }, { "X-Tenant": tenant1.id });
 
         // Load tenants that are direct children of top-level tenant
-        [{ data }] = await listTenants();
+        [{ data }] = await listTenants({}, { "X-Tenant": defaultTenant.id });
         let tenants = data.tenants.listTenants.data;
         expect(tenants.length).toBe(2);
         expect(tenants[0].name).toBe("Restaurant 1");

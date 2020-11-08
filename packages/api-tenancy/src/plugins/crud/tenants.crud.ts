@@ -15,6 +15,15 @@ export default (context: HandlerContextDb) => {
     const { db } = context;
 
     return {
+        async getDefault() {
+            const [[tenant]] = await db.read<Tenant>({
+                ...dbArgs,
+                query: { PK: PK_TENANT, SK: "default" },
+                limit: 1
+            });
+
+            return tenant;
+        },
         async getById(id: string) {
             const [[tenant]] = await db.read<Tenant>({
                 ...dbArgs,
@@ -31,7 +40,12 @@ export default (context: HandlerContextDb) => {
             });
 
             if (parent) {
-                return tenants.filter(t => t.parent === parent);
+                return tenants
+                    .filter(t => t.parent === parent)
+                    // Sort by ID in descending order
+                    .sort((a, b) => {
+                        return a.id < b.id;
+                    });
             }
 
             return tenants;
@@ -39,7 +53,7 @@ export default (context: HandlerContextDb) => {
         async create(data) {
             const tenant = {
                 ...data,
-                id: KSUID.randomSync().string
+                id: data.id ?? KSUID.randomSync().string
             };
 
             await db.create({

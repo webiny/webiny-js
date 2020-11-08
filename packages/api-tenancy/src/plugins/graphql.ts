@@ -44,6 +44,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             input TenantInput {
+                id: String
                 name: String!
                 parent: ID
             }

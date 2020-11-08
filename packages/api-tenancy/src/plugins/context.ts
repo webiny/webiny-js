@@ -7,13 +7,9 @@ import tenantsCrud from "./crud/tenants.crud";
 const tenantCache = {};
 
 const getCurrentTenant = async (context): Promise<Tenant> => {
-    const { headers } = context.http;
+    const { headers = {} } = context.http;
 
-    if (!headers || !headers["X-Tenant"]) {
-        return null;
-    }
-
-    const tenantId = headers["X-Tenant"];
+    const tenantId = headers["X-Tenant"] ?? "default";
 
     if (!tenantCache[tenantId]) {
         tenantCache[tenantId] = await context.tenancy.crud.getById(tenantId);
