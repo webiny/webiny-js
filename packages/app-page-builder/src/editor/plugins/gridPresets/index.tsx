@@ -18,27 +18,35 @@ const calculateCells = (cells: string): number[] => {
 };
 
 export const calculatePresetPluginCells = (pl: PbEditorGridPresetPluginType): number[] => {
-    if (!pl.cells) {
+    if (!pl.cellsType) {
         throw new Error(`There is no cells definition in preset plugin "${pl.name}".`);
     }
-    const cells = calculateCells(pl.cells);
+    const cells = calculateCells(pl.cellsType);
     if (cells.length === 0) {
         throw new Error(`There are no cells in preset plugin "${pl.name}".`);
     }
     return cells;
 };
 
+export const getDefaultPresetCellsTypePluginType = () => {
+    return getDefaultPresetPlugin().cellsType;
+};
+
 export const getDefaultPresetPluginCells = (cells?: string): number[] => {
     if (!cells) {
         const pl = getDefaultPresetPlugin();
-        return calculatePresetPluginCells(pl);
+        return calculateCells(pl.cellsType);
     }
     return calculateCells(cells);
 };
 
 export const getDefaultPresetPlugin = (): PbEditorGridPresetPluginType => {
     const pluginsByType = getPresetPlugins();
-    return pluginsByType.find(() => true);
+    const pl = pluginsByType.find(() => true);
+    if (!pl) {
+        throw new Error("There is no default grid preset plugin.");
+    }
+    return pl;
 };
 
 export const getPresetPlugins = (): PbEditorGridPresetPluginType[] => {
@@ -53,55 +61,55 @@ export const gridPresets: PbEditorGridPresetPluginType[] = [
     {
         name: "pb-editor-grid-preset-6-6",
         type: "pb-editor-grid-preset",
-        cells: "6-6",
+        cellsType: "6-6",
         icon: GridIcon66
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-8-4",
         type: "pb-editor-grid-preset",
-        cells: "8-4",
+        cellsType: "8-4",
         icon: GridIcon84
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-4-8",
         type: "pb-editor-grid-preset",
-        cells: "4-8",
+        cellsType: "4-8",
         icon: GridIcon48
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-6-3-3",
         type: "pb-editor-grid-preset",
-        cells: "6-3-3",
+        cellsType: "6-3-3",
         icon: GridIcon633
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-3-3-6",
         type: "pb-editor-grid-preset",
-        cells: "3-3-6",
+        cellsType: "3-3-6",
         icon: GridIcon336
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-3-3-3-3",
         type: "pb-editor-grid-preset",
-        cells: "3-3-3-3",
+        cellsType: "3-3-3-3",
         icon: GridIcon3333
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-2-2-2-2-2-2",
         type: "pb-editor-grid-preset",
-        cells: "2-2-2-2-2-2",
+        cellsType: "2-2-2-2-2-2",
         icon: GridIcon22222
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-4-4-4",
         type: "pb-editor-grid-preset",
-        cells: "4-4-4",
+        cellsType: "4-4-4",
         icon: GridIcon444
     } as PbEditorGridPresetPluginType,
     {
         name: "pb-editor-grid-preset-12",
         type: "pb-editor-grid-preset",
-        cells: "12",
+        cellsType: "12",
         icon: GridIcon12
     } as PbEditorGridPresetPluginType
 ];

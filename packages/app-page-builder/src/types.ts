@@ -72,7 +72,17 @@ type PbElementDataType = {
                 left?: boolean;
             };
         };
-        [key: string]: any;
+        grid?: {
+            cellsType?: string;
+            size?: number;
+        };
+        columnWidth?: {
+            value?: string;
+        };
+        width?: {
+            value?: string;
+        };
+        className?: string;
     };
     text?: string;
     image?: {
@@ -546,6 +556,12 @@ export type PbEditorEventActionPlugin = Plugin & {
 export type PbEditorGridPresetPluginType = Plugin & {
     name: string;
     type: "pb-editor-grid-preset";
-    cells: string;
+    cellsType: string;
     icon: React.FunctionComponent;
+};
+// this will run when saving the element for later use
+export type PbEditorPageElementSaveActionPlugin = Plugin & {
+    type: "pb-editor-page-element-save-action";
+    elementType: string;
+    onSave: (element: PbElement) => PbElement;
 };

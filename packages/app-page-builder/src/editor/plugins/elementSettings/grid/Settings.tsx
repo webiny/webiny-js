@@ -8,10 +8,7 @@ import {
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { PbEditorGridPresetPluginType, PbElement } from "@webiny/app-page-builder/types";
-import {
-    activeElementIdSelector,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { useRecoilValue } from "recoil";
 
@@ -68,9 +65,8 @@ const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPlugi
 
 export const Settings: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
-    const id = useRecoilValue(activeElementIdSelector);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(id));
-    const currentType = element.data.settings?.grid?.type;
+    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const currentType = element.data.settings.grid?.cellsType;
 
     const presetPlugins = getPresetPlugins();
 

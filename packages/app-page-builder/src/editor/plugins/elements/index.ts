@@ -17,7 +17,7 @@ export default [
     document(),
     block(),
     grid(),
-    cell(),
+    ...cell(),
     ...icon(),
     ...image(),
     ...imagesList(),

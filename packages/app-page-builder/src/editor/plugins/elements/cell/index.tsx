@@ -10,11 +10,17 @@ import {
 import {
     addElementToParentHelper,
     createDroppedElementHelper,
+    createElementHelper,
     createEmptyElementHelper
 } from "@webiny/app-page-builder/editor/helpers";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSaveActionPlugin,
+    PbElement
+} from "@webiny/app-page-builder/types";
+import { Plugin } from "@webiny/plugins/types";
 
-const plugin: PbEditorPageElementPlugin = {
+const cellPlugin: PbEditorPageElementPlugin = {
     type: "pb-editor-page-element",
     name: "pb-editor-page-element-cell",
     elementType: "cell",
@@ -32,7 +38,7 @@ const plugin: PbEditorPageElementPlugin = {
     canDelete: () => {
         return false;
     },
-    create: options => {
+    create: (options = {}) => {
         return {
             type: "cell",
             elements: [],
@@ -47,7 +53,9 @@ const plugin: PbEditorPageElementPlugin = {
                         mobile: { all: 10 },
                         desktop: { all: 0 }
                     },
-                    size: options.data?.settings?.size || 1
+                    grid: {
+                        size: options.data?.settings?.grid?.size || 1
+                    }
                 }
             }
         };
@@ -95,5 +103,36 @@ const plugin: PbEditorPageElementPlugin = {
         return <CellContainer {...props} elementId={props.element.id} />;
     }
 };
+// this is required because when saving cell element it cannot be without grid element
+const saveActionPlugin = {
+    type: "pb-editor-page-element-save-action",
+    name: "pb-editor-page-element-save-action-cell",
+    elementType: "cell",
+    onSave(element) {
+        return createElementHelper("grid", {
+            data: {
+                settings: {
+                    grid: {
+                        cellsType: "12"
+                    }
+                }
+            },
+            elements: [
+                {
+                    ...element,
+                    data: {
+                        ...element.data,
+                        settings: {
+                            ...element.data.settings,
+                            grid: {
+                                size: "12"
+                            }
+                        }
+                    }
+                }
+            ]
+        });
+    }
+} as PbEditorPageElementSaveActionPlugin;
 
-export default () => plugin;
+export default (): Plugin[] => [cellPlugin, saveActionPlugin];

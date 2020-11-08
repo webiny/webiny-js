@@ -14,7 +14,11 @@ import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/g
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbEditorPageElementSaveActionPlugin,
+    PbElement
+} from "@webiny/app-page-builder/types";
 
 const removeIdsAndPaths = el => {
     delete el.id;
@@ -47,6 +51,16 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
+const pluginOnSave = (element: PbElement): PbElement => {
+    const plugin = plugins
+        .byType<PbEditorPageElementSaveActionPlugin>("pb-editor-page-element-save-action")
+        .find(pl => pl.elementType === element.type);
+    if (!plugin) {
+        return element;
+    }
+    return plugin.onSave(element);
+};
+
 const SaveAction: React.FunctionComponent = ({ children }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
@@ -55,7 +69,7 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
     const client = useApolloClient();
 
     const onSubmit = async formData => {
-        formData.content = removeIdsAndPaths(cloneDeep(element));
+        formData.content = pluginOnSave(removeIdsAndPaths(cloneDeep(element)));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);

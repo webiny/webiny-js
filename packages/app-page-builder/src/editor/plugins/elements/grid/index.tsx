@@ -4,7 +4,10 @@ import styled from "@emotion/styled";
 import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/grid-6-6.svg";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { getDefaultPresetPluginCells } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+import {
+    getDefaultPresetPluginCells,
+    getDefaultPresetCellsTypePluginType
+} from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -14,6 +17,19 @@ const PreviewBox = styled("div")({
         width: 75
     }
 });
+
+const createDefaultCells = (cellsType: string) => {
+    const cells = getDefaultPresetPluginCells(cellsType);
+    return cells.map(size => {
+        return createElementHelper("cell", {
+            data: {
+                settings: {
+                    size
+                }
+            }
+        });
+    });
+};
 
 const plugin: PbEditorPageElementPlugin = {
     type: "pb-editor-page-element",
@@ -40,20 +56,14 @@ const plugin: PbEditorPageElementPlugin = {
     canDelete: () => {
         return true;
     },
-    create: options => {
-        const { preset, ...optionsRest } = options;
-        const cells = getDefaultPresetPluginCells(preset);
+    create: (options = {}) => {
+        const { elements, data = {} } = options;
+        const { cellsType = getDefaultPresetCellsTypePluginType() } =
+            data.settings?.cellsType || {};
+
         return {
             type: "grid",
-            elements: cells.map(size => {
-                return createElementHelper("cell", {
-                    data: {
-                        settings: {
-                            size
-                        }
-                    }
-                });
-            }),
+            elements: elements || createDefaultCells(cellsType),
             data: {
                 settings: {
                     width: { value: "100%" },
@@ -65,10 +75,13 @@ const plugin: PbEditorPageElementPlugin = {
                     padding: {
                         mobile: { all: 10 },
                         desktop: { all: 0 }
+                    },
+                    grid: {
+                        cellsType
                     }
                 }
             },
-            ...optionsRest
+            ...options
         };
     },
     render({ element }) {
