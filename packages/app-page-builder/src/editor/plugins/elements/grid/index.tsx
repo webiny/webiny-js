@@ -50,6 +50,18 @@ const plugin: PbEditorPageElementPlugin = {
     },
     settings: [
         "pb-editor-page-element-settings-grid",
+        "pb-editor-page-element-settings-background",
+        "pb-editor-page-element-settings-animation",
+        "",
+        "pb-editor-page-element-settings-border",
+        "pb-editor-page-element-settings-shadow",
+        "",
+        "pb-editor-page-element-settings-padding",
+        "pb-editor-page-element-settings-margin",
+        "pb-editor-page-element-settings-width",
+        "pb-editor-page-element-settings-height",
+        "pb-editor-page-element-settings-horizontal-align-flex",
+        "pb-editor-page-element-settings-vertical-align",
         "",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"

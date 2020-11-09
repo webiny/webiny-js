@@ -1,3 +1,4 @@
+import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import {
     EventActionHandler,
@@ -5,12 +6,10 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import React, { ComponentType, ReactElement, ReactNode } from "react";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
-import { Reducer as ReduxReducer, Store as ReduxStore } from "redux";
 import {
     PbPageDetailsContextValue,
     PbPageRevision
@@ -18,7 +17,6 @@ import {
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { Form } from "@webiny/form/Form";
-export { Redux } from "@webiny/app-page-builder/editor/redux";
 import { Item } from "@webiny/app-admin/plugins/Menu/Navigation/components";
 
 export type PbMenuSettingsItemPlugin = Plugin & {
@@ -247,47 +245,6 @@ export type PbRenderSlateEditorPlugin = Plugin & {
 export type PbAddonRenderPlugin = Plugin & {
     type: "addon-render";
     component: ReactElement;
-};
-
-export type Action = {
-    type: string;
-    payload: { [key: string]: any };
-    meta: { [key: string]: any };
-};
-
-export type ActionOptions = {
-    log?: boolean;
-};
-
-export type StatePathGetter = (action: Action) => string;
-
-export type StatePath = null | string | StatePathGetter;
-export type Reducer = ReduxReducer;
-
-export type ReducerFactory = () => Reducer;
-
-export type Store = ReduxStore;
-
-export type State = {
-    elements?: { [key: string]: PbShallowElement };
-    page?: { [key: string]: any };
-    revisions?: Array<{ [key: string]: any }>;
-    ui?: { [key: string]: any };
-};
-
-export type MiddlewareParams = {
-    store: Store;
-    next: Function;
-    action: Action;
-};
-
-export type MiddlewareFunction = (params: MiddlewareParams) => any;
-export type ActionCreator = (payload?: any, meta?: { [key: string]: any }) => Action;
-
-export type PbEditorReduxMiddlewarePlugin = Plugin & {
-    type: "pb-editor-redux-middleware";
-    actions: string[];
-    middleware: MiddlewareFunction;
 };
 
 export { PbPageDetailsContextValue, PbPageRevision };
