@@ -4,8 +4,7 @@ import styled from "@emotion/styled";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import {
     ResizeEndActionEvent,
-    ResizeStartActionEvent,
-    UpdateElementActionEvent
+    ResizeStartActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
@@ -47,57 +46,59 @@ const SpacerContainer: React.FunctionComponent<SpacerContainerPropsType> = ({
 }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-    const elementHeight = element.data?.settings?.height?.value || MIN_HEIGHT;
-
-    const [localHeight, setHeight] = useState<number>(null);
     const { initialHeight = MIN_HEIGHT, ...spacerStyle } = elementStyle;
-    let height = initialHeight;
-    if (localHeight) {
-        height = localHeight;
+    const [localHeight, setLocalHeight] = useState<number>(
+        element.data?.settings?.height?.value || initialHeight
+    );
+    if (!element) {
+        return null;
     }
 
-    const onResizeStart = () => {
+    const onResizeStart = (height: number) => {
         handler.trigger(new ResizeStartActionEvent());
-        setHeight(elementHeight);
+        setLocalHeight(height);
     };
 
-    const onResizeStop = () => {
-        handler.trigger(new ResizeEndActionEvent());
+    const onResizeStop = (height: number) => {
         handler.trigger(
-            new UpdateElementActionEvent({
+            new ResizeEndActionEvent({
                 element: {
                     ...element,
                     data: {
                         ...element.data,
                         settings: {
-                            ...element.data.settings,
+                            ...(element.data?.settings || {}),
                             height: {
-                                ...element.data.settings.height,
-                                value: MIN_HEIGHT
+                                ...(element.data?.settings?.height || {}),
+                                value: height
                             }
                         }
                     }
                 }
             })
         );
-        setHeight(null);
     };
     const onResize = (diff: number) => {
-        setHeight(Math.max(MIN_HEIGHT, localHeight - diff));
+        setLocalHeight(previousHeight => {
+            return Math.max(MIN_HEIGHT, previousHeight - diff);
+        });
     };
 
     return (
-        <div style={{ height }} className={combineClassNames(css(spacerStyle), ...customClasses)}>
+        <div
+            style={{ height: localHeight }}
+            className={combineClassNames(css(spacerStyle), ...customClasses)}
+        >
             <Resizer
                 axis={"y"}
-                onResizeStart={onResizeStart}
-                onResizeStop={onResizeStop}
+                onResizeStart={() => onResizeStart(localHeight)}
+                onResizeStop={() => onResizeStop(localHeight)}
                 onResize={onResize}
             >
                 {({ ...otherProps }) => (
                     <React.Fragment>
                         <SpacerHeight>
-                            {height}
+                            {localHeight}
                             px
                         </SpacerHeight>
 

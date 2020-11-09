@@ -68,7 +68,7 @@ const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPlugi
 export const Settings: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const currentType = element.data.settings.grid?.cellsType;
+    const currentType = element.data.settings?.grid?.cellsType;
 
     const presetPlugins = getPresetPlugins();
 

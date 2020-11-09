@@ -1,7 +1,8 @@
-import { ResizeStartActionEvent } from "./event";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { ResizeEndActionArgsType, ResizeStartActionArgsType } from "./types";
 import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 
-export const resizeStartAction: EventActionCallableType<ResizeStartActionEvent> = state => {
+export const resizeStartAction: EventActionCallableType<ResizeStartActionArgsType> = state => {
     return {
         state: {
             ui: {
@@ -12,13 +13,21 @@ export const resizeStartAction: EventActionCallableType<ResizeStartActionEvent> 
     };
 };
 
-export const resizeEndAction: EventActionCallableType<ResizeStartActionEvent> = state => {
+export const resizeEndAction: EventActionCallableType<ResizeEndActionArgsType> = (
+    state,
+    { element }
+) => {
+    const actions = [];
+    if (element) {
+        actions.push(new UpdateElementActionEvent({ element }));
+    }
     return {
         state: {
             ui: {
                 ...state.ui,
-                isResizing: true
+                isResizing: false
             }
-        }
+        },
+        actions
     };
 };

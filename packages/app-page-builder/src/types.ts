@@ -105,7 +105,7 @@ type PbElementDataSettingsType = {
     [key: string]: any;
 };
 type PbElementDataType = {
-    settings: PbElementDataSettingsType;
+    settings?: PbElementDataSettingsType;
     text?: string;
     image?: PbElementDataImageType;
     link?: {
