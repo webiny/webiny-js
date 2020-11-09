@@ -40,7 +40,7 @@
     "react-google-recaptcha": "^1.1.0",
     "react-helmet": "^5.2.0",
     "react-hotkeyz": "^1.0.4",
-    "react-redux": "^7.1.1",
+    "recoil": "^0.1.2",
     "react-router": "^5.1.2",
     "react-sortable-hoc": "^1.9.1",
     "shortid": "^2.2.14",

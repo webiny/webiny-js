@@ -1,11 +1,10 @@
-import * as React from "react";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { get } from "lodash";
-import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
+import React from "react";
 import styled from "@emotion/styled";
-import { connect } from "react-redux";
-import { getActiveElementId } from "@webiny/app-page-builder/editor/selectors";
+import { uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
 import { PbElement } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
 const Overlay = styled("div")({
     background: "black",
@@ -16,16 +15,16 @@ const Overlay = styled("div")({
     opacity: 0.25
 });
 
-export type FormElementProps = {
-    isActive: boolean;
+export type FormElementPropsType = {
     element: PbElement;
 };
 
-const FormElement = (props: FormElementProps) => {
-    const { element, isActive } = props;
+const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element }) => {
+    const { activeElement } = useRecoilValue(uiAtom);
+    const isActive = activeElement === element.id;
     let render = <span>Form not selected.</span>;
 
-    const form = get(element, "data.settings.form") || {};
+    const form = element.data?.settings?.form || {};
 
     if (form.revision) {
         const props = {
@@ -57,8 +56,4 @@ const FormElement = (props: FormElementProps) => {
     );
 };
 
-export default connect((state, props: any) => {
-    return {
-        isActive: getActiveElementId(state) === props.element.id
-    };
-})(FormElement);
+export default React.memo(FormElement);
