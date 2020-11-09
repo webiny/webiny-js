@@ -16,7 +16,8 @@
     "@webiny/app-page-builder": "^4.13.0",
     "@webiny/ui": "^4.13.0",
     "@webiny/validation": "^4.13.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "recoil": "^0.1.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
