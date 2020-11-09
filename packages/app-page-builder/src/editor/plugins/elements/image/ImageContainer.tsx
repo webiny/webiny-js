@@ -1,26 +1,27 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import { PbElement } from "@webiny/app-page-builder/types";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { useRecoilValue } from "recoil";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
-        alignSelf: position[props.align]
+        alignSelf: position[props.align] || "center"
     }
 }));
 
 type ImageContainerType = {
-    elementId: string;
+    element: PbElement;
 };
-const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId }) => {
-    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
     const handler = useEventActionHandler();
-    const { image = {}, settings = {} } = element?.data || {};
+    const {
+        id,
+        data: { image = {}, settings = {} }
+    } = element || {};
     const { horizontalAlign = "center" } = settings;
 
     const imgStyle = { width: null, height: null };
@@ -51,7 +52,7 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ elementId
                 })
             );
         },
-        [elementId]
+        [id]
     );
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {

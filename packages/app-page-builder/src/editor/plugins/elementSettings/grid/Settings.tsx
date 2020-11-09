@@ -40,7 +40,7 @@ const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
         return {
             ...element,
             data: {
-                ...(element.data || {}),
+                ...element.data,
                 settings: {
                     ...element.data.settings,
                     grid: {
@@ -73,7 +73,7 @@ export const Settings: React.FunctionComponent = () => {
     const presetPlugins = getPresetPlugins();
 
     const setPreset = (pl: PbEditorGridPresetPluginType) => {
-        const type = pl.cells;
+        const type = pl.cellsType;
         if (type === currentType) {
             return;
         }
@@ -103,9 +103,9 @@ export const Settings: React.FunctionComponent = () => {
                     const Icon = pl.icon;
                     return (
                         <StyledIconButton
-                            key={`preset-${pl.cells}`}
+                            key={`preset-${pl.cellsType}`}
                             onClick={() => setPreset(pl)}
-                            active={pl.cells === currentType}
+                            active={pl.cellsType === currentType}
                         >
                             <Icon />
                         </StyledIconButton>

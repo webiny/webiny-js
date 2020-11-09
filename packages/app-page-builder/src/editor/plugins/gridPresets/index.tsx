@@ -10,18 +10,20 @@ import { ReactComponent as GridIcon22222 } from "../../assets/icons/grid-2-2-2-2
 import { ReactComponent as GridIcon444 } from "../../assets/icons/grid-4-4-4.svg";
 import { ReactComponent as GridIcon12 } from "../../assets/icons/grid-12.svg";
 
-const calculateCells = (cells: string): number[] => {
-    return cells
-        .split("-")
-        .map(Number)
-        .filter(c => !!c);
+export const calculatePresetCells = (cellsType: string): number[] => {
+    const calculated = cellsType.split("-").map(Number);
+    const emptyExists = calculated.some(c => c <= 0 || isNaN(c));
+    if (!emptyExists) {
+        return calculated;
+    }
+    throw new Error(`Cell type ${cellsType} has an empty or less than zero size cell.`);
 };
 
 export const calculatePresetPluginCells = (pl: PbEditorGridPresetPluginType): number[] => {
     if (!pl.cellsType) {
         throw new Error(`There is no cells definition in preset plugin "${pl.name}".`);
     }
-    const cells = calculateCells(pl.cellsType);
+    const cells = calculatePresetCells(pl.cellsType);
     if (cells.length === 0) {
         throw new Error(`There are no cells in preset plugin "${pl.name}".`);
     }
@@ -32,12 +34,12 @@ export const getDefaultPresetCellsTypePluginType = () => {
     return getDefaultPresetPlugin().cellsType;
 };
 
-export const getDefaultPresetPluginCells = (cells?: string): number[] => {
-    if (!cells) {
+export const getDefaultPresetPluginCells = (cellsType?: string): number[] => {
+    if (!cellsType) {
         const pl = getDefaultPresetPlugin();
-        return calculateCells(pl.cellsType);
+        return calculatePresetCells(pl.cellsType);
     }
-    return calculateCells(cells);
+    return calculatePresetCells(cellsType);
 };
 
 export const getDefaultPresetPlugin = (): PbEditorGridPresetPluginType => {

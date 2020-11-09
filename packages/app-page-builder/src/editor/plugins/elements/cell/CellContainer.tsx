@@ -1,8 +1,8 @@
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import React from "react";
 import Cell from "./Cell";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import styled from "@emotion/styled";
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
 import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";

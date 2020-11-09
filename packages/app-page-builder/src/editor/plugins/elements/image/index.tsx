@@ -11,17 +11,18 @@ import {
     PbEditorPageElementSettingsPlugin,
     PbEditorEventActionPlugin
 } from "@webiny/app-page-builder/types";
+import { Plugin } from "@webiny/plugins/types";
 
-export default () => {
-    const PreviewBox = styled("div")({
-        textAlign: "center",
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
         height: 50,
-        svg: {
-            height: 50,
-            width: 50
-        }
-    });
+        width: 50
+    }
+});
 
+export default (): Plugin[] => {
     return [
         {
             name: "pb-editor-page-element-image",

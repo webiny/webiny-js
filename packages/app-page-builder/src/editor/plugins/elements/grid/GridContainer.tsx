@@ -1,50 +1,46 @@
-import React, { CSSProperties } from "react";
+import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import React from "react";
+import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
+import Grid from "./Grid";
 import styled from "@emotion/styled";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import { css } from "emotion";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 
-const StyledGridContainer = styled("div")({
-    display: "flex",
-    justifyItems: "center",
-    alignItems: "center",
-    flexDirection: "row"
+const GridContainerStyle = styled("div")({
+    position: "relative",
+    color: "#666",
+    padding: 5,
+    boxSizing: "border-box"
 });
-const CellContainer = styled("div")(({ size }: any) => ({
-    width: `${(100 / 12) * size}%`
-}));
-type GridContainerPropsType = {
-    combineClassNames: (...classes: string[]) => string;
-    elementStyle: CSSProperties;
-    elementAttributes: { [key: string]: string };
-    customClasses: string[];
-    element: PbElement;
-};
-const GridContainer: React.FunctionComponent<GridContainerPropsType> = props => {
-    const { elementStyle, elementAttributes, customClasses, combineClassNames, element } = props;
-    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
 
+type GridContainerPropsType = {
+    element: PbShallowElement | PbElement;
+};
+const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ element: { id } }) => {
+    const element = useRecoilValue(elementWithChildrenByIdSelector(id));
     return (
-        <StyledGridContainer
-            className={combineClassNames(
-                ...customClasses,
-                "webiny-pb-layout-grid-container " + css(containerStyle as any)
-            )}
-            {...elementAttributes}
-            style={{
-                width: width ? width : "100%",
-                alignSelf: justifyContent,
-                alignItems: alignItems
-            }}
-        >
-            {element.elements.map(child => {
-                return (
-                    <CellContainer size={child.data.settings.grid?.size} key={`cell-${child.id}`}>
-                        <Element id={child.id} />
-                    </CellContainer>
-                );
-            })}
-        </StyledGridContainer>
+        <GridContainerStyle id={id}>
+            <ElementAnimation>
+                <ElementRoot element={element}>
+                    {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
+                        <Grid
+                            element={element}
+                            elementStyle={elementStyle}
+                            elementAttributes={elementAttributes}
+                            customClasses={[
+                                "webiny-pb-layout-grid webiny-pb-base-page-element-style",
+                                ...customClasses
+                            ]}
+                            combineClassNames={combineClassNames}
+                        />
+                    )}
+                </ElementRoot>
+            </ElementAnimation>
+        </GridContainerStyle>
     );
 };
-export default React.memo(GridContainer);
+
+export default React.memo(GridContainer, (current, next) => {
+    return current.element.id === next.element.id;
+});

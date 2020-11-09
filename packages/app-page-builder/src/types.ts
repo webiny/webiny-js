@@ -102,6 +102,7 @@ type PbElementDataSettingsType = {
         value?: string;
     };
     className?: string;
+    [key: string]: any;
 };
 type PbElementDataType = {
     settings: PbElementDataSettingsType;
@@ -123,6 +124,7 @@ type PbElementDataType = {
         html?: string;
     };
     width?: number;
+    [key: string]: any;
 };
 type PbBaseElement = {
     id: string;

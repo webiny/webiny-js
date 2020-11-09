@@ -1,12 +1,12 @@
 import React from "react";
-import Grid from "./Grid";
+import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
 import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/grid-6-6.svg";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import {
-    getDefaultPresetPluginCells,
-    getDefaultPresetCellsTypePluginType
+    getDefaultPresetCellsTypePluginType,
+    calculatePresetCells
 } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 
 const PreviewBox = styled("div")({
@@ -19,7 +19,7 @@ const PreviewBox = styled("div")({
 });
 
 const createDefaultCells = (cellsType: string) => {
-    const cells = getDefaultPresetPluginCells(cellsType);
+    const cells = calculatePresetCells(cellsType);
     return cells.map(size => {
         return createElementHelper("cell", {
             data: {
@@ -87,7 +87,7 @@ const plugin: PbEditorPageElementPlugin = {
         };
     },
     render({ element }) {
-        return <Grid element={element} />;
+        return <GridContainer element={element} />;
     }
 };
 

@@ -1,7 +1,11 @@
 import React from "react";
+import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { PbShallowElement } from "@webiny/app-page-builder/types";
 import {
     activateElementMutation,
-    activeElementWithChildrenSelector,
+    activeElementSelector,
+    contentAtom,
+    ContentAtomType,
     highlightElementMutation,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -36,11 +40,36 @@ const breadcrumbs = css({
         }
     }
 });
-// TODO verify that connect logic was correctly transfered
+
+const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) => {
+    const path = element.path;
+    const list = [
+        {
+            id: element.id,
+            type: element.type
+        }
+    ];
+    const paths = path.split(".");
+    paths.pop();
+    while (paths.length > 0) {
+        const el = extrapolateContentElementHelper(content, paths.join("."));
+        if (!el) {
+            return list.reverse();
+        }
+        list.push({
+            id: el.id,
+            type: el.type
+        });
+        paths.pop();
+    }
+    return list.reverse();
+};
+
 const Breadcrumbs: React.FunctionComponent = () => {
     const setUiAtomValue = useSetRecoilState(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
-    if (!element || element.elements.length === 0) {
+    const element = useRecoilValue(activeElementSelector);
+    const contentAtomValue = useRecoilValue(contentAtom);
+    if (!element) {
         return null;
     }
     const highlightElement = (id: string) => {
@@ -49,24 +78,20 @@ const Breadcrumbs: React.FunctionComponent = () => {
     const activateElement = (id: string) => {
         setUiAtomValue(prev => activateElementMutation(prev, id));
     };
-    const elements = element.elements.map(({ id, type }) => ({
-        id,
-        type,
-        active: id === element.id
-    }));
+
+    const breadcrumbsList = createBreadcrumbs(contentAtomValue, element);
+    breadcrumbsList.shift();
 
     return (
         <ul className={breadcrumbs}>
-            {elements.map((el, index) => (
+            {breadcrumbsList.map(({ id, type }, index) => (
                 <li
-                    key={el.id}
-                    onMouseOver={() => highlightElement(el.id)}
-                    onClick={() => activateElement(el.id)}
+                    key={id}
+                    onMouseOver={() => highlightElement(id)}
+                    onClick={() => activateElement(id)}
                 >
-                    <span className={"element"}>
-                        {el.type.replace("pb-editor-page-element-", "")}
-                    </span>
-                    {elements.length - 1 > index ? (
+                    <span className={"element"}>{type}</span>
+                    {breadcrumbsList.length - 1 > index ? (
                         <span className={"divider"}>&nbsp;&gt;&nbsp;</span>
                     ) : null}
                 </li>
