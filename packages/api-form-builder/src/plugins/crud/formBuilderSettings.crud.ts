@@ -2,6 +2,7 @@ import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { withFields, string, boolean, fields, setOnce } from "@commodo/fields";
+import merge from "merge";
 
 // TODO: Use `toJSON` function from "@commodo/fields"
 export const getJSON = instance => {
@@ -59,7 +60,13 @@ export default {
     type: "context",
     apply(context) {
         const { db } = context;
-        context.formBuilderSettings = {
+
+        if (!context?.formBuilder?.crud) {
+            context.formBuilder = merge({}, context.formBuilder);
+            context.formBuilder.crud = {};
+        }
+
+        context.formBuilder.crud.formBuilderSettings = {
             async get(key = FB_SETTINGS_KEY) {
                 const [[settings]] = await db.read<FormBuilderSettingsType>({
                     ...dbArgs,

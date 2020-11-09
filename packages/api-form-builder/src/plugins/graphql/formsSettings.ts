@@ -47,7 +47,9 @@ export default {
         FormsQuery: {
             getSettings: hasScope("forms:settings")(async (_, args, context: SettingsContext) => {
                 try {
-                    const data = await context.formBuilderSettings.get();
+                    const formBuilderSettings = context?.formBuilder?.crud?.formBuilderSettings;
+
+                    const data = await formBuilderSettings.get();
                     return new Response(data);
                 } catch (err) {
                     return new ErrorResponse(err);
@@ -58,13 +60,15 @@ export default {
             updateSettings: hasScope("forms:settings")(
                 async (_, args, context: SettingsContext) => {
                     try {
-                        const existingSettings = await context.formBuilderSettings.get();
+                        const formBuilderSettings = context?.formBuilder?.crud?.formBuilderSettings;
+
+                        const existingSettings = await formBuilderSettings.get();
 
                         if (!existingSettings) {
                             return new NotFoundResponse(`"Form Builder" settings not found!`);
                         }
 
-                        const data = await context.formBuilderSettings.update({
+                        const data = await formBuilderSettings.update({
                             data: args.data,
                             existingSettings
                         });
