@@ -24,14 +24,14 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-type PbElementDataSettingsMarginPaddingType = {
+export type PbElementDataSettingsMarginPaddingType = {
     all?: number;
     top?: number;
     right?: number;
     bottom?: number;
     left?: number;
 };
-type PbElementDataSettingsBackgroundType = {
+export type PbElementDataSettingsBackgroundType = {
     color?: string;
     image?: {
         scaling?: string;
@@ -41,17 +41,17 @@ type PbElementDataSettingsBackgroundType = {
         };
     };
 };
-type PbElementDataSettingsMarginType = {
+export type PbElementDataSettingsMarginType = {
     advanced?: boolean;
     mobile?: PbElementDataSettingsMarginPaddingType;
     desktop?: PbElementDataSettingsMarginPaddingType;
 };
-type PbElementDataSettingsPaddingType = {
+export type PbElementDataSettingsPaddingType = {
     advanced?: boolean;
     mobile?: PbElementDataSettingsMarginPaddingType;
     desktop?: PbElementDataSettingsMarginPaddingType;
 };
-type PbElementDataSettingsBorderType = {
+export type PbElementDataSettingsBorderType = {
     width?: number;
     style?: "none" | "solid" | "dashed" | "dotted";
     radius?: number;
@@ -62,7 +62,7 @@ type PbElementDataSettingsBorderType = {
         left?: boolean;
     };
 };
-type PbElementDataImageType = {
+export type PbElementDataImageType = {
     width?: string | number;
     height?: string | number;
     file?: {
@@ -71,14 +71,18 @@ type PbElementDataImageType = {
     };
     title?: string;
 };
-type PbElementDataIconType = {
+export type PbElementDataIconType = {
     id?: [string, string];
     width?: number;
     color?: string;
     svg?: string;
     position?: string;
 };
-type PbElementDataSettingsType = {
+export type PbElementDataSettingsFormType = {
+    parent?: string;
+    revision?: string;
+};
+export type PbElementDataSettingsType = {
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
     verticalAlign?: "start" | "center" | "end";
@@ -100,9 +104,10 @@ type PbElementDataSettingsType = {
         value?: string;
     };
     className?: string;
+    form?: PbElementDataSettingsFormType;
     [key: string]: any;
 };
-type PbElementDataType = {
+export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     text?: string;
     image?: PbElementDataImageType;
