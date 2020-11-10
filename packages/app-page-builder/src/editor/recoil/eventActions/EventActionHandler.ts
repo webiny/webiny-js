@@ -198,14 +198,14 @@ export class EventActionHandler {
         if (state.plugins) {
             updateConnectedValue(pluginsAtom, state.plugins);
         }
-        if (state.elements) {
-            updateConnectedValue(elementsAtom, state.elements);
-        }
         if (state.page) {
             updateConnectedValue(pageAtom, state.page);
         }
         if (state.content) {
             updateConnectedValue(contentAtom, state.content);
+        }
+        if (state.elements) {
+            updateConnectedValue(elementsAtom, state.elements);
         }
 
         if (setInBatch) {

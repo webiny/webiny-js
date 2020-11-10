@@ -6,7 +6,7 @@ export abstract class BaseEventAction<T extends object = any> implements EventAc
 
     public constructor(args?: T, options?: EventActionOptionsType) {
         this._args = args;
-        this._options = options;
+        this._options = options || {};
     }
 
     abstract getName(): string;

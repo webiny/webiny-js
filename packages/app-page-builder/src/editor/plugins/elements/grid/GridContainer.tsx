@@ -19,6 +19,10 @@ type GridContainerPropsType = {
 };
 const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ element: { id } }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));
+    // TODO remove when state is fully switched to use content instead of flat elements
+    if (!element) {
+        return null;
+    }
     return (
         <GridContainerStyle id={id}>
             <ElementAnimation>

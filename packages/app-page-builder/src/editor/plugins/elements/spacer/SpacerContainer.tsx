@@ -48,7 +48,7 @@ const SpacerContainer: React.FunctionComponent<SpacerContainerPropsType> = ({
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const { initialHeight = MIN_HEIGHT, ...spacerStyle } = elementStyle;
     const [localHeight, setLocalHeight] = useState<number>(
-        element.data?.settings?.height?.value || initialHeight
+        element?.data?.settings?.height?.value || initialHeight
     );
     if (!element) {
         return null;

@@ -44,6 +44,10 @@ type CellPropsType = {
 const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
+    // TODO remove when state is fully switched to use content instead of flat elements
+    if (!element) {
+        return null;
+    }
     const { id, path, elements, type } = element;
     const totalElements = elements.length;
 
