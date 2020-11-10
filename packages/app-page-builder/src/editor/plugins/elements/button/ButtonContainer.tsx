@@ -1,4 +1,5 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
+import SimpleEditableText from "./SimpleEditableText";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
@@ -34,15 +35,8 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     const { svg = null, position = "left" } = icon || {};
 
     const onChange = useCallback(
-        (ev: InputEvent) => {
-            const target = ev.target as HTMLElement;
-            const elementValue = target.innerHTML || "";
-            ev.preventDefault();
-            ev.stopPropagation();
-            if (elementValue === value.current) {
-                return false;
-            }
-            value.current = elementValue;
+        (received: string) => {
+            value.current = received;
         },
         [element.id, textEditorActive]
     );
@@ -89,16 +83,12 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
                 )}
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-                {React.createElement("div", {
-                    contentEditable: true,
-                    onInput: onChange,
-                    onBlur: onBlur,
-                    onFocus: onFocus,
-                    "data-texteditor": true,
-                    dangerouslySetInnerHTML: {
-                        __html: value.current
-                    }
-                })}
+                <SimpleEditableText
+                    value={value.current}
+                    onChange={onChange}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
+                />
             </a>
         </div>
     );
