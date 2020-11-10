@@ -6,21 +6,28 @@ const keyStack = {};
 let listener = false;
 const filter = ["TEXTAREA", "INPUT"];
 
+type KeyboardTargetEventType = KeyboardEvent & {
+    target: HTMLElement;
+};
 const setupListener = () => {
     if (!listener && document.body) {
-        document.body.addEventListener("keydown", (e: KeyboardEvent) => {
+        document.body.addEventListener("keydown", (ev: KeyboardTargetEventType) => {
+            const target = ev.target;
             // We ignore all keyboard events coming from within `slateEditor` element and inputs.
-            // @ts-ignore
-            if (e.srcElement.dataset.slateEditor || filter.includes(e.srcElement.nodeName)) {
+            if (
+                target.dataset.slateEditor ||
+                filter.includes(target.nodeName) ||
+                target.dataset.texteditor
+            ) {
                 return;
             }
 
-            const matchedKey = Object.keys(keyStack).find(key => isHotkey(key, e));
+            const matchedKey = Object.keys(keyStack).find(key => isHotkey(key, ev));
 
             if (matchedKey && keyStack[matchedKey].length > 0) {
                 const item = keyStack[matchedKey][0];
-                item.handler(e);
-                e.stopPropagation();
+                item.handler(ev);
+                ev.stopPropagation();
             }
         });
 

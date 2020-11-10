@@ -21,6 +21,9 @@ export const elementParentWithChildrenByIdSelector = selectorFamily<PbElement | 
     key: "elementParentWithChildrenByIdSelector",
     get: id => {
         return ({ get }) => {
+            if (!id) {
+                return undefined;
+            }
             const element = get(elementByIdSelector(id));
             const content = get(contentSelector);
             return findElementParentWithChildrenById(content, element);
@@ -33,5 +36,8 @@ export const getElementParentWithChildrenById = (
     id: string
 ): PbElement | undefined => {
     const element = getElementById(state, id);
+    if (!element) {
+        return undefined;
+    }
     return findElementParentWithChildrenById(state.content, element);
 };

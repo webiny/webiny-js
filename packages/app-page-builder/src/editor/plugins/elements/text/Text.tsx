@@ -1,6 +1,6 @@
-import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import React from "react";
 import Slate from "@webiny/app-page-builder/editor/components/Slate";
+import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
@@ -19,19 +19,22 @@ const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
     if (!element) {
         return null;
     }
-    const onChange = value => {
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: {
-                    ...element,
-                    data: {
-                        ...element.data,
-                        text: value
+    const onChange = React.useCallback(
+        value => {
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        data: {
+                            ...element.data,
+                            text: value
+                        }
                     }
-                }
-            })
-        );
-    };
+                })
+            );
+        },
+        [element.id]
+    );
 
     const text = element.data.text;
     return (

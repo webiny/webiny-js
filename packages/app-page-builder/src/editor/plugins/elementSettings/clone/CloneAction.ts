@@ -16,7 +16,7 @@ type CloneActionPropsType = {
 const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const parent = useRecoilValue(elementParentWithChildrenByIdSelector(element.id));
+    const parent = useRecoilValue(elementParentWithChildrenByIdSelector(element?.id));
 
     if (!element || !parent) {
         return null;

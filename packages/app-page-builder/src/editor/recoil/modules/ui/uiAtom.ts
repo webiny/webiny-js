@@ -3,19 +3,19 @@ import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/co
 export type UiAtomType = {
     isDragging: boolean;
     isResizing: boolean;
-    slateFocused: boolean;
     activeElement: string | null;
     highlightElement: string | null;
     isSaving: boolean;
+    textEditorActive: boolean;
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
     default: {
         isDragging: false,
         isResizing: false,
-        slateFocused: false,
         activeElement: null,
         highlightElement: null,
-        isSaving: false
+        isSaving: false,
+        textEditorActive: false
     }
 });

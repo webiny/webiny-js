@@ -4,15 +4,22 @@ import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementR
 import { Image as WebinyImage } from "@webiny/app/components";
 import { Link as RouterLink } from "@webiny/react-router";
 
-const Link = ({ link, children }) => {
-    if (link && link.href) {
-        return (
-            <RouterLink to={link.href} target={link.newTab ? "_blank" : "_self"}>
-                {children}
-            </RouterLink>
-        );
+type LinkPropsType = {
+    link?: {
+        href?: string;
+        newTab?: boolean;
+    };
+    children: React.ReactElement;
+};
+const Link: React.FunctionComponent<LinkPropsType> = ({ link, children }) => {
+    if (!link || !link.href) {
+        return children;
     }
-    return children;
+    return (
+        <RouterLink to={link.href} target={link.newTab ? "_blank" : "_self"}>
+            {children}
+        </RouterLink>
+    );
 };
 
 type ImagePropsType = {

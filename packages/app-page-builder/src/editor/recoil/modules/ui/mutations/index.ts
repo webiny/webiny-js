@@ -5,3 +5,4 @@ export * from "./highlightElementMutation";
 export * from "./unHighlightElementMutation";
 export * from "./enableDraggingMutation";
 export * from "./disableDraggingMutation";
+export * from "./textEditorActiveMutation";

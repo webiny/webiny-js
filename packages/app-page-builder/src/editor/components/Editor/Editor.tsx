@@ -75,7 +75,7 @@ type EditorPropsType = {
 export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
     const eventActionHandler = useEventActionHandler();
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-    const { isDragging, isResizing, slateFocused } = useRecoilValue(uiAtom);
+    const { isDragging, isResizing, textEditorActive } = useRecoilValue(uiAtom);
     const setPageAtomValue = useSetRecoilState(pageAtom);
     const setElementsAtomValue = useSetRecoilState(elementsAtom);
     const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
@@ -91,14 +91,14 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {
-            if (slateFocused) {
+            if (textEditorActive) {
                 return;
             }
             e.preventDefault();
             triggerActionButtonClick("undo");
         });
         addKeyHandler("mod+shift+z", e => {
-            if (slateFocused) {
+            if (textEditorActive) {
                 return;
             }
             e.preventDefault();

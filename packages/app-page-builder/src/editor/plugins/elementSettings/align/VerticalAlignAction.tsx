@@ -25,11 +25,7 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
     const eventActionHandler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
 
-    const align = element.data.settings?.verticalAlign || "start";
-
-    const plugin = plugins
-        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
-        .find(pl => pl.elementType === element.type);
+    const align = element?.data?.settings?.verticalAlign || "start";
 
     const alignElement = React.useCallback(() => {
         const alignments = Object.keys(icons);
@@ -50,6 +46,13 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
             })
         );
     }, [align]);
+
+    if (!element) {
+        return null;
+    }
+    const plugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(pl => pl.elementType === element.type);
 
     if (!plugin) {
         return null;

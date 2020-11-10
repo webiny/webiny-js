@@ -30,21 +30,19 @@ type ActionProps = {
     "data-testid"?: string;
 };
 
-const Action = ({
+const Action: React.FunctionComponent<ActionProps> = ({
     plugin,
     icon,
     tooltip,
     onClick,
-    shortcut: shortcutProp,
+    shortcut = [],
     ...props
-}: ActionProps) => {
+}) => {
     const eventActionHandler = useEventActionHandler();
     const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
-    const { slateFocused } = useRecoilValue(uiAtom);
+    const { textEditorActive } = useRecoilValue(uiAtom);
     const settingsActive =
         useRecoilValue(activePluginsByTypeTotalSelector(editorPageElementSettingsPluginType)) > 0;
-
-    const shortcut = typeof shortcutProp === "string" ? [shortcutProp] : shortcutProp || [];
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -63,7 +61,7 @@ const Action = ({
     useEffect(() => {
         shortcut.map(short => {
             addKeyHandler(short, e => {
-                if (slateFocused || settingsActive) {
+                if (textEditorActive || settingsActive) {
                     return;
                 }
 
@@ -94,4 +92,5 @@ const Action = ({
         </Tooltip>
     );
 };
-export default React.memo(Action);
+
+export default Action;
