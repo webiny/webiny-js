@@ -1,5 +1,5 @@
 import React from "react";
-import { get } from "lodash";
+import { PbElement } from "@webiny/app-page-builder/types";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Image as WebinyImage } from "@webiny/app/components";
 import { Link as RouterLink } from "@webiny/react-router";
@@ -15,8 +15,11 @@ const Link = ({ link, children }) => {
     return children;
 };
 
-const Image = props => {
-    const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
+type ImagePropsType = {
+    element: PbElement;
+};
+const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
+    const { image = {}, link = {}, settings = {} } = element.data || {};
     if (!image || !image.file) {
         return null;
     }
@@ -27,20 +30,20 @@ const Image = props => {
 
     const style = { width, height };
     if (!style.width) {
-        style.width = "100%";
+        style.width = "auto";
     } else {
-        style.width += style.width.endsWith("px") ? "" : "px";
+        style.width += (style.width as string).endsWith("px") ? "" : "px";
     }
 
     if (!style.height) {
-        style.height = "100%";
+        style.height = "auto";
     } else {
-        style.height += style.height.endsWith("px") ? "" : "px";
+        style.height += (style.height as string).endsWith("px") ? "" : "px";
     }
 
     return (
         <ElementRoot
-            element={props.element}
+            element={element}
             style={{ textAlign: horizontalAlign }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >

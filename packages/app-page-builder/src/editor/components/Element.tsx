@@ -60,7 +60,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     }, [elementId]);
 
     const onClick = React.useCallback((): void => {
-        if (element.type === "document" || isActive) {
+        if (!element || element.type === "document" || isActive) {
             return;
         }
         setUiAtomValue(prev => activateElementMutation(prev, elementId));
@@ -68,7 +68,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
 
     const onMouseEnter = React.useCallback(
         (ev): void => {
-            if (element.type === "document") {
+            if (!element || element.type === "document") {
                 return;
             }
             ev.stopPropagation();
@@ -80,7 +80,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         [elementId]
     );
     const onMouseLeave = React.useCallback(() => {
-        if (element.type === "document") {
+        if (!element || element.type === "document") {
             return;
         }
         setUiAtomValue(unHighlightElementMutation);

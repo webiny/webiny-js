@@ -8,11 +8,15 @@ type GridPropsType = {
     element: PbElement;
 };
 const Cell: React.FunctionComponent<GridPropsType> = ({ element }) => {
+    const { size } = element.data.settings?.grid;
+    if (!size) {
+        throw new Error(`Cell with id "${element.id}" does not have size defined.`);
+    }
     return (
         <ElementAnimation>
             <ElementRoot
                 element={element}
-                className={"webiny-pb-base-page-element-style webiny-pb-layout-cell"}
+                className={`webiny-pb-base-page-element-style webiny-pb-layout-grid-cell webiny-pb-layout-grid-cell-${size}`}
             >
                 {element.elements.map(element => (
                     <Element key={element.id} element={element} />

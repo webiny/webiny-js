@@ -17,6 +17,28 @@
   }
 }
 
+
+.webiny-pb-layout-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  &-cell {
+    flex-grow: 1;
+
+    @for $current from 1 to 12 {
+      &-#{$current} {
+        width: percentage(100 / $current);
+      }
+    }
+
+    & img {
+      width: auto;
+      height: auto;
+    }
+  }
+}
+
 .webiny-pb-layout-row{
   position: relative;
   display: flex;
