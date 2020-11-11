@@ -2,7 +2,6 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReCaptchaComponent } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
 import { TermsOfServiceComponent } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
-import { I18NStringValue } from "@webiny/app-i18n/types";
 import {
     BindComponent,
     FormChildrenFunctionParams,
@@ -14,7 +13,7 @@ import { DataListProps } from "@webiny/app/hooks/useDataList/useDataList";
 
 export type FbBuilderFieldValidator = {
     name: string;
-    message: I18NStringValue;
+    message: string;
     settings: any;
 };
 
@@ -133,11 +132,11 @@ export type FbFormModelField = {
     type: string;
     name: string;
     fieldId?: FieldIdType;
-    label?: I18NStringValue;
-    helpText?: I18NStringValue;
-    placeholderText?: I18NStringValue;
+    label?: string;
+    helpText?: string;
+    placeholderText?: string;
     validation?: FbBuilderFieldValidator[];
-    options?: Array<{ value: string; label: I18NStringValue }>;
+    options?: Array<{ value: string; label: string }>;
     settings: { [key: string]: any };
 };
 
