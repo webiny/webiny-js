@@ -9,6 +9,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES, UPDATE_PAGE, GET_PAGE } from "./graphql/pages";
 import { SecurityIdentity } from "@webiny/api-security";
 import {
     CREATE_CATEGORY,
@@ -114,6 +115,22 @@ export default ({ permissions, identity } = {}) => {
         },
         async getCategory(variables) {
             return invoke({ body: { query: GET_CATEGORY, variables } });
+        },
+
+        async createPage(variables) {
+            return invoke({ body: { query: CREATE_PAGE, variables } });
+        },
+        async updatePage(variables) {
+            return invoke({ body: { query: UPDATE_PAGE, variables } });
+        },
+        async deletePage(variables) {
+            return invoke({ body: { query: DELETE_PAGE, variables } });
+        },
+        async listPages(variables) {
+            return invoke({ body: { query: LIST_PAGES, variables } });
+        },
+        async getPage(variables) {
+            return invoke({ body: { query: GET_PAGE, variables } });
         }
     };
 };
