@@ -44,7 +44,7 @@
     "@babel/preset-typescript": "^7.0.0",
     "@elastic/elasticsearch": "^7.9.1",
     "@elastic/elasticsearch-mock": "0.3.0",
-    "@shelf/jest-dynamodb": "^1.7.0"
+    "jest-dynalite": "^3.0.0"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3"

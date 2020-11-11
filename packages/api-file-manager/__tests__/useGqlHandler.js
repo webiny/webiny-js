@@ -23,7 +23,7 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 
-export default ({ permissions, identity }) => {
+export default ({ permissions, identity } = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
@@ -31,9 +31,9 @@ export default ({ permissions, identity }) => {
             driver: new DynamoDbDriver({
                 documentClient: new DocumentClient({
                     convertEmptyValues: true,
-                    endpoint: "localhost:8000",
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
                     sslEnabled: false,
-                    region: "local-env"
+                    region: "local"
                 })
             })
         }),

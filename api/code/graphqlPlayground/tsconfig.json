@@ -1,17 +1,14 @@
 {
-	"extends": "../../../tsconfig",
-	"references": [
-		{
-			"path": "../../../packages/handler"
-		},
-		{
-			"path": "../../../packages/handler-aws"
-		},
-		{
-			"path": "../../../packages/handler-graphql-playground"
-		},
-		{
-			"path": "../../../packages/project-utils"
-		}
-	]
+  "extends": "../../../tsconfig",
+  "references": [
+    {
+      "path": "../../../packages/handler"
+    },
+    {
+      "path": "../../../packages/handler-aws"
+    },
+    {
+      "path": "../../../packages/handler-graphql-playground"
+    }
+  ]
 }

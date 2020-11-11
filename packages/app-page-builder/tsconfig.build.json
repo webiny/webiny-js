@@ -11,14 +11,12 @@
 		"../app",
 		"../app-admin",
 		"../app-plugin-admin-welcome-screen",
-		"../app-template",
 		"../app-security",
 		"../app-security-user-management",
 		"../plugins",
 		"../react-router",
 		"../form",
 		"../ui",
-		"../tracking",
 		"../validation"
 	],
 	"compilerOptions": {
@@ -37,9 +35,6 @@
 			"path": "../app-plugin-admin-welcome-screen/tsconfig.build.json"
 		},
 		{
-			"path": "../app-template/tsconfig.build.json"
-		},
-		{
 			"path": "../app-security/tsconfig.build.json"
 		},
 		{
@@ -56,9 +51,6 @@
 		},
 		{
 			"path": "../ui/tsconfig.build.json"
-		},
-		{
-			"path": "../tracking/tsconfig.build.json"
 		},
 		{
 			"path": "../validation/tsconfig.build.json"

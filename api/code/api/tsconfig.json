@@ -61,11 +61,8 @@
     {
       "path": "../../../packages/handler-apollo-server"
     },
-    {
-      "path": "../../../packages/project-utils"
-    },
-    {
-      "path": "../../../packages/api-form-builder"
-    }
+	  {
+		  "path": "../../../packages/api-form-builder"
+	  }
   ]
 }

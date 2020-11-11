@@ -25,9 +25,9 @@ export default ({ permissions, identity } = {}) => {
             driver: new DynamoDbDriver({
                 documentClient: new DocumentClient({
                     convertEmptyValues: true,
-                    endpoint: "localhost:8000",
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
                     sslEnabled: false,
-                    region: "local-env"
+                    region: "local"
                 })
             })
         }),

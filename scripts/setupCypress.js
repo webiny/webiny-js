@@ -5,6 +5,7 @@ const fs = require("fs");
 const { green } = require("chalk");
 const getState = require("./getState");
 const { argv } = require("yargs");
+const { Pulumi } = require("@webiny/pulumi-sdk");
 
 const PROJECT_FOLDER = ".";
 

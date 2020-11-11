@@ -22,8 +22,7 @@
     "apollo-server-core": "2.17.0",
     "apollo-server-env": "^2.4.3",
     "boolean": "^3.0.1",
-    "graphql": "^14.4.2",
-    "graphql-tag": "^2.10.1"
+    "graphql": "^14.4.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

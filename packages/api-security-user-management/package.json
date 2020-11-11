@@ -30,7 +30,7 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@shelf/jest-dynamodb": "^1.7.0"
+    "jest-dynalite": "^3.0.0"
   },
   "publishConfig": {
     "access": "public",

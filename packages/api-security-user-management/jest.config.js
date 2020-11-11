@@ -1,4 +1,4 @@
-const dynamoDbPreset = require("@shelf/jest-dynamodb/jest-preset");
+const dynamoDbPreset = require("jest-dynalite/jest-preset");
 const base = require("../../jest.config.base");
 
 module.exports = {
