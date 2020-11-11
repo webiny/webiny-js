@@ -274,6 +274,48 @@ export default {
         }
     `,
     resolvers: {
+        Form: {
+            overallStats: async (form, args, context) => {
+                // Prepare SK and do a batch read
+                const forms = context?.formBuilder?.crud?.forms;
+                const allForms = await forms.listFormsWithId({ id: form.id });
+                // Then calculate the stats
+
+                const stats = {
+                    submissions: 0,
+                    views: 0,
+                    conversionRate: 0
+                };
+
+                for (let i = 0; i < allForms.length; i++) {
+                    const form = allForms[i];
+                    stats.views += form.stats.views;
+                    stats.submissions += form.stats.submissions;
+                }
+
+                let conversionRate = 0;
+                if (stats.views > 0) {
+                    conversionRate = parseFloat(
+                        ((stats.submissions / stats.views) * 100).toFixed(2)
+                    );
+                }
+
+                return {
+                    ...stats,
+                    conversionRate
+                };
+            },
+            revisions: async (form, args, context) => {
+                // Prepare SK and do a batch read
+                const forms = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsWithId({ id: form.id, sort: { SK: -1 } });
+            },
+            publishedRevisions: async (form, args, context) => {
+                // Prepare SK and do a batch read
+                const forms = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsWithId({ id: form.id });
+            }
+        },
         FormsQuery: {
             getForm: hasScope("forms:form:crud")(async (_, args, context: Context) => {
                 try {
