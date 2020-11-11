@@ -13,30 +13,15 @@ const plugin: FbBuilderFieldPlugin = {
         description: "Email address",
         // TODO: validators: validation.create("required"), // Editable validators.
         createField(props) {
-            const { i18n } = props;
             return {
                 ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "email",
-                label: {
-                    values: [
-                        {
-                            locale: i18n.getDefaultLocale().id,
-                            value: "Email"
-                        }
-                    ]
-                },
+                label: "Email",
                 validation: [
                     {
                         name: "pattern",
-                        message: {
-                            values: [
-                                {
-                                    locale: i18n.getDefaultLocale().id,
-                                    value: "Please enter a valid e-mail."
-                                }
-                            ]
-                        },
+                        message: "Please enter a valid e-mail.",
                         settings: {
                             preset: "email",
                             regex: null,
