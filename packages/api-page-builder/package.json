@@ -24,6 +24,7 @@
     "@webiny/handler-db": "^4.14.0",
     "@webiny/handler-ssr": "^4.14.0",
     "@webiny/validation": "^4.14.0",
+    "@commodo/fields": "beta",
     "download": "^5.0.3",
     "extract-zip": "^1.6.7",
     "form-data": "^2.5.0",
@@ -51,7 +52,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
     "flow-copy-source": "^2.0.2",
-    "jest-dynalite": "^3.0.0"
+    "jest-dynalite": "^3.0.0",
+    "@shelf/jest-elasticsearch": "^1.0.0"
   },
   "publishConfig": {
     "access": "public",
