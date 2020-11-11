@@ -2,29 +2,80 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("CRUD Test", () => {
     const {
+        elasticSearch,
         createCategory,
-        deleteCategory,
-        listCategories,
-        getCategory,
-        updateCategory
+        createPage,
+        deletePage,
+        listPages,
+        getPage,
+        updatePage,
+        sleep
     } = useGqlHandler();
 
-    test("create, read, update and delete categories", async () => {
-        // Test creating, getting and updating three categories.
+    beforeAll(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: "page-builder" });
+        } catch {}
+    });
+
+    test("create, read, update and delete pages", async () => {
+        let [response] = await createPage({ data: { category: "unknown" } });
+        expect(response).toEqual({
+            data: {
+                pageBuilder: {
+                    createPage: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: 'Category with slug "unknown" not found.'
+                        }
+                    }
+                }
+            }
+        });
+
+        const [category] = await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
-            const prefix = `category-${i}-`;
             let data = {
-                slug: `${prefix}slug`,
-                name: `${prefix}name`,
-                url: `${prefix}url`,
-                layout: `${prefix}layout`
+                category: category.data.pageBuilder.createCategory.data.slug
             };
 
-            let [response] = await createCategory({ data });
+            let [response] = await createPage({ data });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        createCategory: {
+                        createPage: {
+                            data: {
+                                ...data,
+                                title: "Untitled",
+                                url: /^\/some-url\/untitled-*/,
+                                published: null,
+                                locked: null,
+                                version: 1,
+                                createdOn: /^20/,
+                                createdBy: { displayName: "m", id: "mocked" }
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            [response] = await getPage({ id: response.data.pageBuilder.createPage.data.id });
+            expect(response).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getPage: {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
@@ -36,34 +87,22 @@ describe("CRUD Test", () => {
                 }
             });
 
-            [response] = await getCategory({ slug: data.slug });
-            expect(response).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        getCategory: {
-                            data: {
-                                ...data,
-                                createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
-                            },
-                            error: null
-                        }
-                    }
-                }
-            });
-
+            const { id } = response.data.pageBuilder.getPage.data;
             data = {
-                slug: data.slug, // Slug cannot be changed.
-                name: data.name + "-UPDATED",
-                url: data.url + "-UPDATED",
-                layout: data.layout + "-UPDATED"
+                title: "title-UPDATED-" + i,
+                url: "url-UPDATED-" + i,
+                snippet: "snippet-UPDATED-" + i
             };
 
-            [response] = await updateCategory({ slug: data.slug, data });
+            [response] = await updatePage({
+                id,
+                data
+            });
+
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
-                        updateCategory: {
+                        updatePage: {
                             data: {
                                 ...data,
                                 createdOn: /^20/,
@@ -76,36 +115,58 @@ describe("CRUD Test", () => {
             });
         }
 
-        // List should show three categories.
-        let [response] = await listCategories();
+        // List should show three pages.
+        while (true) {
+            await sleep();
+            [response] = await listPages();
+            if (response.data.pageBuilder.listPages.data.length) {
+                break;
+            }
+        }
+
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
-                    listCategories: {
+                    listPages: {
                         data: [
                             {
-                                url: "category-0-url-UPDATED",
-                                layout: "category-0-layout-UPDATED",
-                                slug: "category-0-slug",
-                                name: "category-0-name-UPDATED",
+                                category: "slug",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                id: /^[a-zA-Z0-9]{15}$/,
+                                published: false,
+                                status: "draft",
+                                title: "title-UPDATED-2",
+                                url: "url-UPDATED-2"
                             },
                             {
-                                url: "category-1-url-UPDATED",
-                                layout: "category-1-layout-UPDATED",
-                                slug: "category-1-slug",
-                                name: "category-1-name-UPDATED",
+                                category: "slug",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                id: /^[a-zA-Z0-9]{15}$/,
+                                published: false,
+                                status: "draft",
+                                title: "title-UPDATED-1",
+                                url: "url-UPDATED-1"
                             },
                             {
-                                url: "category-2-url-UPDATED",
-                                layout: "category-2-layout-UPDATED",
-                                slug: "category-2-slug",
-                                name: "category-2-name-UPDATED",
+                                category: "slug",
+                                createdBy: {
+                                    displayName: "m",
+                                    id: "mocked"
+                                },
                                 createdOn: /^20/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                id: /^[a-zA-Z0-9]{15}$/,
+                                published: false,
+                                status: "draft",
+                                title: "title-UPDATED-0",
+                                url: "url-UPDATED-0"
                             }
                         ],
                         error: null
@@ -114,23 +175,16 @@ describe("CRUD Test", () => {
             }
         });
 
-        // After deleting all categories, list should be empty.
-        for (let i = 0; i < 3; i++) {
-            const prefix = `category-${i}-`;
-            let data = {
-                slug: `${prefix}slug`,
-                name: `${prefix}name-UPDATED`,
-                url: `${prefix}url-UPDATED`,
-                layout: `${prefix}layout-UPDATED`
-            };
-
-            let [response] = await deleteCategory({ slug: data.slug });
-            expect(response).toMatchObject({
+        // After deleting all pages, list should be empty.
+        for (let i = 0; i < response.data.pageBuilder.listPages.data.length; i++) {
+            const { id } = response.data.pageBuilder.listPages.data[i];
+            const [deleteResponse] = await deletePage({ id });
+            expect(deleteResponse).toMatchObject({
                 data: {
                     pageBuilder: {
-                        deleteCategory: {
+                        deletePage: {
                             data: {
-                                ...data,
+                                id,
                                 createdOn: /^20/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -141,12 +195,17 @@ describe("CRUD Test", () => {
             });
         }
 
-        // List should show zero categories.
-        [response] = await listCategories();
+        // List should show zero pages.
+        while (response.data.pageBuilder.listPages.data.length !== 0) {
+            await sleep();
+            [response] = await listPages();
+        }
+
+        [response] = await listPages();
         expect(response).toEqual({
             data: {
                 pageBuilder: {
-                    listCategories: {
+                    listPages: {
                         data: [],
                         error: null
                     }
