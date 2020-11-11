@@ -124,13 +124,9 @@ export const LIST_FORM_SUBMISSIONS = gql`
                                 _id
                                 fieldId
                                 type
-                                label {
-                                    value
-                                }
+                                label
                                 options {
-                                    label {
-                                        value
-                                    }
+                                    label
                                     value
                                 }
                             }
