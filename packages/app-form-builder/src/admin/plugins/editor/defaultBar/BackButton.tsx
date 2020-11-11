@@ -17,12 +17,13 @@ const BackButton = React.memo(() => {
     }> = router.match;
 
     const { id } = matched.params;
+    const { hash } = router.location;
 
     return (
         <IconButton
             data-testid="fb-editor-back-button"
             className={backStyles}
-            onClick={() => router.history.push(`/forms?id=${id}`)}
+            onClick={() => router.history.push(`/forms?id=${id}${hash}`)}
             icon={<BackIcon />}
         />
     );

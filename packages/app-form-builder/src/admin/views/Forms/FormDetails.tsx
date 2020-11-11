@@ -52,7 +52,7 @@ export type FormDetailsProps = {
 const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const query = new URLSearchParams(location.search);
+    const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
 
     if (!formId) {
