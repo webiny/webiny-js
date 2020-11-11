@@ -18,15 +18,10 @@ type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL */ `
-        type PbMenuCreatedBy {
-            id: ID
-            displayName: String
-        }
-
         type PbMenu {
             id: ID
             createdOn: DateTime
-            createdBy: PbMenuCreatedBy
+            createdBy: PbCreatedBy
             title: String
             slug: String
             description: String
