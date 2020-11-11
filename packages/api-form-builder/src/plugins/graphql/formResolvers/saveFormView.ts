@@ -1,16 +1,21 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
-export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
-    const { Form } = context.models;
-    const form = await Form.findById(args.id);
-
-    if (!form) {
-        return new NotFoundResponse(`Form with id "${args.id}" was not found!`);
-    }
-
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {
-        form.stats.incrementViews();
-        await form.save();
+        const forms = context?.formBuilder?.crud?.forms;
+        const form = await forms.get(args.id);
+
+        if (!form) {
+            return new NotFoundResponse(`Form with id "${args.id}" was not found!`);
+        }
+
+        // Increment views
+        form.stats.views = form.stats.views + 1;
+
+        await forms.update({ data: {}, existingForm: form });
+
+        return new Response(null);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
@@ -18,5 +23,6 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             data: e.data
         });
     }
-    return new Response(null);
 };
+
+export default resolver;
