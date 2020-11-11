@@ -1,19 +1,20 @@
-import { GraphQLFieldResolver } from "graphql";
-import { resolveCreate, resolveUpdate, resolveDelete, resolveGet } from "@webiny/commodo-graphql";
+import createForm from "./formResolvers/createForm";
+import deleteForm from "./formResolvers/deleteForm";
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
+import updateRevision from "./formResolvers/updateForm";
+import deleteRevision from "./formResolvers/deleteRevision";
+import { publishRevision, unPublishRevision } from "./formResolvers/publishRevision";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
 import { hasScope } from "@webiny/api-security";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
-const getForm = ctx => ctx.models.Form;
-
-const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
-    args.data = { published: true };
-
-    return resolveUpdate(getForm)(_, args, ctx, info);
-};
+type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -54,24 +55,24 @@ export default {
         }
         
         type FieldOptionsType {
-            label: I18NStringValue
+            label: String
             value: String
         }        
         
         input FieldOptionsInput {
-            label: I18NStringValueInput
+            label: String
             value: String
         }
         
         input FieldValidationInput {
             name: String!
-            message: I18NStringValueInput
+            message: String
             settings: JSON
         }
         
         type FieldValidationType {
             name: String!
-            message: I18NStringValue
+            message: String
             settings: JSON
         }
         
@@ -80,9 +81,9 @@ export default {
             fieldId: String!
             type: String!
             name: String!
-            label: I18NStringValue
-            placeholderText: I18NStringValue
-            helpText: I18NStringValue
+            label: String
+            placeholderText: String
+            helpText: String
             options: [FieldOptionsType]
             validation: [FieldValidationType]
             settings: JSON
@@ -93,9 +94,9 @@ export default {
             fieldId: String!
             type: String!
             name: String!
-            label: I18NStringValueInput
-            placeholderText: I18NStringValueInput
-            helpText: I18NStringValueInput
+            label: String
+            placeholderText: String
+            helpText: String
             options: [FieldOptionsInput]
             validation: [FieldValidationInput]
             settings: JSON
@@ -107,8 +108,8 @@ export default {
         
         type TermsOfServiceMessage {
             enabled: Boolean
-            message: I18NJSONValue
-            errorMessage: I18NStringValue
+            message: JSON
+            errorMessage: String
         }
         
         type FormReCaptchaSettings {
@@ -119,14 +120,14 @@ export default {
          
         type ReCaptcha {
             enabled: Boolean
-            errorMessage: I18NJSONValue
+            errorMessage: JSON
             settings: FormReCaptchaSettings
         }
         
         type FormSettingsType {
             layout: FormSettingsLayoutType
-            submitButtonLabel: I18NStringValue
-            successMessage: I18NJSONValue
+            submitButtonLabel: String
+            successMessage: JSON
             termsOfServiceMessage: TermsOfServiceMessage
             reCaptcha: ReCaptcha
         }      
@@ -145,14 +146,14 @@ export default {
         
         input ReCaptchaInput {
             enabled: Boolean
-            errorMessage: I18NJSONValueInput
+            errorMessage: JSON
             settings: FormReCaptchaSettingsInput
         }
         
         input TermsOfServiceMessageInput {
             enabled: Boolean
-            message: I18NJSONValueInput
-            errorMessage: I18NStringValueInput
+            message: JSON
+            errorMessage: String
         }
         
         input FormSettingsLayoutInput {
@@ -161,8 +162,8 @@ export default {
         
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
-            submitButtonLabel: I18NStringValueInput
-            successMessage: I18NJSONValueInput
+            submitButtonLabel: String
+            successMessage: JSON
             termsOfServiceMessage: TermsOfServiceMessageInput
             reCaptcha: ReCaptchaInput
         }
@@ -274,25 +275,42 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getForm: hasScope("forms:form:crud")(resolveGet(getForm)),
+            getForm: hasScope("forms:form:crud")(async (_, args, context: Context) => {
+                try {
+                    const forms = context?.formBuilder?.crud?.forms;
+                    const form = await forms.get(args.id);
+
+                    if (!form) {
+                        return new NotFoundResponse(`Form with id: "${args.id}" not found!`);
+                    }
+
+                    return new Response(form);
+                } catch (e) {
+                    return new ErrorResponse({
+                        message: e.message,
+                        code: e.code,
+                        data: e.data
+                    });
+                }
+            }),
             listForms: hasScope("forms:form:crud")(listForms),
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: hasScope("forms:form:crud")(resolveCreate(getForm)),
+            createForm: hasScope("forms:form:crud")(createForm),
             // Deletes the entire form
-            deleteForm: hasScope("forms:form:crud")(resolveDelete(getForm)),
+            deleteForm: hasScope("forms:form:crud")(deleteForm),
             // Creates a revision from the given revision
             createRevisionFrom: hasScope("forms:form:crud")(createRevisionFrom),
             // Updates revision
-            updateRevision: hasScope("forms:form:crud")(resolveUpdate(getForm)),
+            updateRevision: hasScope("forms:form:crud")(updateRevision),
             // Publish revision (must be given an exact revision ID to publish)
             publishRevision: hasScope("forms:form:revision:publish")(publishRevision),
-            unpublishRevision: hasScope("forms:form:revision:unpublish")(publishRevision),
+            unpublishRevision: hasScope("forms:form:revision:unpublish")(unPublishRevision),
             // Delete a revision
-            deleteRevision: hasScope("forms:form:crud")(resolveDelete(getForm)),
+            deleteRevision: hasScope("forms:form:crud")(deleteRevision),
             saveFormView
         }
     }
