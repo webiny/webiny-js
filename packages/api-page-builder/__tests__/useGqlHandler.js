@@ -17,6 +17,8 @@ import {
     UPDATE_CATEGORY,
     GET_CATEGORY
 } from "./graphql/categories";
+import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import { Client } from "@elastic/elasticsearch";
 
 export default ({ permissions, identity } = {}) => {
     const handler = createHandler(
@@ -31,12 +33,14 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
+        elasticSearch({ endpoint: `http://localhost:9201` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
+
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -67,6 +71,15 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        elasticSearch: new Client({
+            hosts: [`http://localhost:9201`],
+            node: "http://localhost:9201"
+        }),
+        sleep: (ms = 100) => {
+            return new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        },
         handler,
         invoke,
         // Menus
