@@ -5,6 +5,7 @@ import { plugins } from "@webiny/plugins";
 
 export const advancedSettingsEditorAction: CreateElementEventActionCallableType = (
     state,
+    meta,
     { element, source }
 ) => {
     // Check the source of the element (could be `saved` element which behaves differently from other elements)

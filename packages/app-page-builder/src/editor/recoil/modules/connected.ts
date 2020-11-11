@@ -10,7 +10,7 @@ import {
     useRecoilValue,
     useSetRecoilState
 } from "recoil";
-import { useBatching, useRedo, useUndo } from "recoil-undo";
+import { useBatching } from "recoil-undo";
 
 type ConnectedStoreType = {
     setter: SetterOrUpdater<any> | null;
@@ -80,12 +80,8 @@ class ConnectedStore {
 
         this._helpers.clear();
         const { startBatch, endBatch } = batching.apply(context);
-        const undoHook = useUndo.apply(context);
-        const redoHook = useRedo.apply(context);
         this._helpers.set("startBatch", startBatch);
         this._helpers.set("endBatch", endBatch);
-        this._helpers.set("undo", undoHook);
-        this._helpers.set("redo", redoHook);
     }
 
     public startBatch(): void {
@@ -94,14 +90,6 @@ class ConnectedStore {
 
     public endBatch(): void {
         this.runHelper("endBatch");
-    }
-
-    public undo(): void {
-        this.runHelper("undo");
-    }
-
-    public redo(): void {
-        this.runHelper("redo");
     }
 
     private runHelper(name: HelpersType): void {
@@ -136,8 +124,12 @@ export const connectedRecoilState = <T>(atom: RecoilState<T>): [T, SetterOrUpdat
         }
     ];
 };
-
-export const updateConnectedValue = <T>(state: RecoilState<T>, val: T): void => {
+type UpdateConnectedValueFunctionType<T> = (prev: T) => T;
+type UpdateConnectedValueType<T> = T | UpdateConnectedValueFunctionType<T>;
+export const updateConnectedValue = <T>(
+    state: RecoilState<T>,
+    val: UpdateConnectedValueType<T>
+): void => {
     connectedStore.updateRecoilState(state, val);
 };
 
@@ -163,12 +155,4 @@ export const connectedBatchStart = (): void => {
 
 export const connectedBatchEnd = (): void => {
     connectedStore.endBatch();
-};
-
-export const connectedUndo = (): void => {
-    connectedStore.undo();
-};
-
-export const connectedRedo = (): void => {
-    connectedStore.redo();
 };

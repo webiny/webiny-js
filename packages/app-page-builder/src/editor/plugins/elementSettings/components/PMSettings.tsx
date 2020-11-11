@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import SliderWithInput from "./SliderWithInput";
 import Footer from "./Footer";
-import { useApolloClient } from "react-apollo";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -28,7 +27,6 @@ type PMSettingsPropsType = {
 
 const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribute }) => {
     const handler = useEventActionHandler();
-    const apolloClient = useApolloClient();
 
     const valueKey = `data.settings.${styleAttribute}`;
     const element = useRecoilValue(activeElementWithChildrenSelector);
@@ -60,8 +58,7 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
             new UpdateElementActionEvent({
                 element: newElement,
                 history,
-                merge: true,
-                client: apolloClient
+                merge: true
             })
         );
     };

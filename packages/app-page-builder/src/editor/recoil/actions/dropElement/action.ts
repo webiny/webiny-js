@@ -36,6 +36,7 @@ const getSourceElement = (
 
 export const dropElementAction: EventActionCallableType<DropElementActionArgsType> = (
     state,
+    meta,
     args
 ) => {
     const { source, target } = args;
@@ -54,6 +55,7 @@ export const dropElementAction: EventActionCallableType<DropElementActionArgsTyp
 
     return plugin.onReceived({
         state,
+        meta,
         source: sourceElement,
         target: targetElement,
         position: position

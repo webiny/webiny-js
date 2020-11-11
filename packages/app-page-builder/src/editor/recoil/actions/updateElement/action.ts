@@ -54,9 +54,9 @@ const createContentState = (content: ContentAtomType, element: PbElement, merge:
 
 export const updateElementAction: EventActionCallableType<UpdateElementActionArgsType> = (
     state,
-    args
+    { client },
+    { element, merge, history = false }
 ) => {
-    const { element, merge, history = false, client } = args;
     const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];
     if (history === true) {
@@ -65,11 +65,7 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
                 "You cannot save revision while updating if you do not pass client arg."
             );
         }
-        actions.push(
-            new SaveRevisionActionEvent({
-                client
-            })
-        );
+        actions.push(new SaveRevisionActionEvent());
     }
     return {
         state: {

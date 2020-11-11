@@ -18,8 +18,11 @@ const clickOnImageWithRetries = (element: PbElement, retryNumber: number) => {
     setTimeout(() => clickOnImageWithRetries(element, retryNumber + 1), ELEMENT_FIND_RETRY_TIMEOUT);
 };
 
-export const imageCreatedEditorAction: CreateElementEventActionCallableType = (state, args) => {
-    const { element, source } = args;
+export const imageCreatedEditorAction: CreateElementEventActionCallableType = (
+    state,
+    meta,
+    { element, source }
+) => {
     if (element.type !== "image") {
         return {};
     }

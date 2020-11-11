@@ -15,6 +15,7 @@ export const resizeStartAction: EventActionCallableType<ResizeStartActionArgsTyp
 
 export const resizeEndAction: EventActionCallableType<ResizeEndActionArgsType> = (
     state,
+    meta,
     { element }
 ) => {
     const actions = [];

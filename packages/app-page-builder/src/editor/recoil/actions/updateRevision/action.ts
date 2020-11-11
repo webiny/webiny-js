@@ -4,11 +4,11 @@ import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/
 
 export const updateRevisionAction: EventActionCallableType<UpdatePageRevisionActionArgsType> = (
     state,
+    meta,
     args
 ) => {
     const actions = [
         new SaveRevisionActionEvent({
-            client: args.client,
             onFinish: args.onFinish
         })
     ];

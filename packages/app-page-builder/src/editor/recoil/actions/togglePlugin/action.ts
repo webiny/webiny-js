@@ -4,6 +4,7 @@ import { plugins } from "@webiny/plugins";
 
 export const togglePluginAction: EventActionCallableType<TogglePluginActionArgsType> = (
     state,
+    meta,
     args
 ) => {
     const { name, params = {}, closeOtherInGroup = false } = args;

@@ -10,13 +10,20 @@ import {
 import { connectedAtomValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import React, { createContext, useContext } from "react";
+import { useApolloClient } from "react-apollo";
 
 type ProviderType = {
     eventActionHandler: EventActionHandler;
 };
 const EditorContext = createContext<ProviderType>(null);
 export const EditorProvider: React.FunctionComponent<any> = props => {
-    const handlerRef = React.useRef<EventActionHandler>(new EventActionHandler(["content"]));
+    const apolloClient = useApolloClient();
+    const handlerRef = React.useRef<EventActionHandler>(null);
+    if (!handlerRef.current) {
+        handlerRef.current = new EventActionHandler(["content"], {
+            client: apolloClient
+        });
+    }
     const provider: ProviderType = {
         eventActionHandler: handlerRef.current
     };

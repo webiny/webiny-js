@@ -3,7 +3,6 @@ import slugify from "slugify";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdatePageRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { pageAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import { useApolloClient } from "react-apollo";
 import { useRecoilValue } from "recoil";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -37,7 +36,6 @@ const extractPageInfo = (page: PageAtomType): any => {
 const Title: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
-    const apolloClient = useApolloClient();
     const { pageTitle, pageVersion, pageLocked, pageCategory, pageCategoryUrl } = extractPageInfo(
         page
     );
@@ -48,8 +46,7 @@ const Title: React.FunctionComponent = () => {
     const updateRevision = ({ title, pageTitle, pageCategoryUrl }) => {
         handler.trigger(
             new UpdatePageRevisionActionEvent({
-                page: getRevData({ title, pageTitle, pageCategoryUrl }) as any,
-                client: apolloClient
+                page: getRevData({ title, pageTitle, pageCategoryUrl }) as any
             })
         );
     };

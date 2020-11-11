@@ -1,5 +1,8 @@
 import React from "react";
-import { revisionsAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    RevisionItemAtomType,
+    revisionsAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
@@ -24,14 +27,18 @@ const menuList = css({
     }
 });
 
-type RevisionStatusType = "published" | "locked" | "draft";
-const getStatus = (rev: any): RevisionStatusType => {
-    if (rev.published) {
-        return "published";
-    } else if (rev.locked && !rev.published) {
-        return "locked";
+enum RevisionStatusEnum {
+    PUBLISHED = "published",
+    LOCKED = "locked",
+    DRAFT = "draft"
+}
+const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
+    if (revision.published) {
+        return RevisionStatusEnum.PUBLISHED;
+    } else if (revision.locked && !revision.published) {
+        return RevisionStatusEnum.LOCKED;
     }
-    return "draft";
+    return RevisionStatusEnum.DRAFT;
 };
 
 const Revisions: React.FunctionComponent = () => {
@@ -52,7 +59,7 @@ const Revisions: React.FunctionComponent = () => {
             {revisions.map(rev => {
                 const status = getStatus(rev);
                 return (
-                    <MenuItem key={rev.id} disabled={status !== "draft"}>
+                    <MenuItem key={rev.id} disabled={status !== RevisionStatusEnum.DRAFT}>
                         <Typography use={"body2"}>v{rev.version}</Typography>
                         <Typography use={"caption"}>({status}) </Typography>
                     </MenuItem>

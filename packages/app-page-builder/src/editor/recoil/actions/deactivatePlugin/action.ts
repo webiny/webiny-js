@@ -65,6 +65,7 @@ const deactivatePluginsByName = (
 
 export const deactivatePluginAction: EventActionCallableType<DeactivatePluginActionArgsType> = (
     { plugins: pluginsState },
+    meta,
     { name, names, type }
 ) => {
     if (name) {

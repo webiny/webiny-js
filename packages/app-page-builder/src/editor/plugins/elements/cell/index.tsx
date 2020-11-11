@@ -60,16 +60,21 @@ const cellPlugin: PbEditorPageElementPlugin = {
             }
         };
     },
-    onReceived({ source, position, target, state }) {
+    onReceived({ source, position, target, state, meta }) {
         const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
             source as any,
             target
         );
         const parent = addElementToParentHelper(element, target, position);
 
-        const result = executeAction<UpdateElementActionArgsType>(state, updateElementAction, {
-            element: parent
-        });
+        const result = executeAction<UpdateElementActionArgsType>(
+            state,
+            meta,
+            updateElementAction,
+            {
+                element: parent
+            }
+        );
 
         // if source has path it means that source is a PbElement or similar
         // so we can use path and id from the source to represent the element

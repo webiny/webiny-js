@@ -24,7 +24,6 @@ import {
 import { useRecoilValue } from "recoil";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
 import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
-import { useApolloClient } from "react-apollo";
 
 type PageSettingsPropsType = {
     [key: string]: any;
@@ -59,7 +58,6 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
 }) => {
     const eventActionHandler = useEventActionHandler();
     const pageAtomValue = useRecoilValue(pageAtom);
-    const apolloClient = useApolloClient();
 
     const { showSnackbar } = useSnackbar();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
@@ -76,7 +74,6 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
         eventActionHandler.trigger(
             new UpdatePageRevisionActionEvent({
                 page: pageValue,
-                client: apolloClient,
                 onFinish: () => {
                     showSnackbar("Settings saved");
                     deactivatePlugin();

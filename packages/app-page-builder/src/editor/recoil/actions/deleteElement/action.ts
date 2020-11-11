@@ -2,7 +2,8 @@ import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/acti
 import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
 import {
     EventActionCallableType,
-    EventActionHandlerActionCallableResponseType
+    EventActionHandlerActionCallableResponseType,
+    EventActionHandlerMetaType
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { removeElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { getElementParentWithChildrenById } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -12,6 +13,7 @@ import { plugins } from "@webiny/plugins";
 
 const updateParentElement = (
     state: PbState,
+    meta: EventActionHandlerMetaType,
     parent: PbElement,
     child: PbElement
 ): EventActionHandlerActionCallableResponseType => {
@@ -30,19 +32,20 @@ const updateParentElement = (
             actions: []
         };
     }
-    return updateElementAction(state, {
+    return updateElementAction(state, meta, {
         element: mutatedParent
     }) as EventActionHandlerActionCallableResponseType;
 };
 const runUpdateElementAction = (
     state: PbState,
+    meta: EventActionHandlerMetaType,
     parent: PbElement,
     child: PbElement
 ): EventActionHandlerActionCallableResponseType => {
-    const result = updateElementAction(state, {
+    const result = updateElementAction(state, meta, {
         element: parent
     }) as EventActionHandlerActionCallableResponseType;
-    const parentResult = updateParentElement({ ...state, ...result.state }, parent, child);
+    const parentResult = updateParentElement({ ...state, ...result.state }, meta, parent, child);
     return {
         state: parentResult.state,
         actions: (result?.actions || []).concat(parentResult?.actions || [])
@@ -51,13 +54,14 @@ const runUpdateElementAction = (
 
 export const deleteElementAction: EventActionCallableType<DeleteElementActionArgsType> = (
     state,
+    meta,
     args
 ) => {
     const { element } = args;
 
     const parent = getElementParentWithChildrenById(state, element.id);
     const newParent = removeElementHelper(parent, element.id);
-    const result = runUpdateElementAction(state, newParent, element);
+    const result = runUpdateElementAction(state, meta, newParent, element);
 
     return {
         state: {

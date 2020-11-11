@@ -60,7 +60,7 @@ export default (): PbEditorPageElementPlugin => {
             return <Block {...props} />;
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
-        onReceived({ source, target, position = null, state }) {
+        onReceived({ source, target, position = null, state, meta }) {
             const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
                 source as any,
                 target
@@ -68,7 +68,7 @@ export default (): PbEditorPageElementPlugin => {
 
             const block = addElementToParentHelper(element, target, position);
 
-            const result = updateElementAction(state, {
+            const result = updateElementAction(state, meta, {
                 element: block
             }) as EventActionHandlerActionCallableResponseType;
 

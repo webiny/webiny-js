@@ -3,7 +3,6 @@ import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil
 import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
 import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { useMemo } from "react";
-import { useApolloClient } from "react-apollo";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
@@ -21,7 +20,6 @@ type UseUpdateHandlersType = (
 };
 const useUpdateHandlers: UseUpdateHandlersType = props => {
     const handler = useEventActionHandler();
-    const apolloClient = useApolloClient();
     const updateElement = (args: UpdateElementActionArgsType) => {
         handler.trigger(new UpdateElementActionEvent(args));
     };
@@ -46,8 +44,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
                 updateElement({
                     element: newElement,
                     merge: true,
-                    history: true,
-                    client: apolloClient
+                    history: true
                 });
             }
         };

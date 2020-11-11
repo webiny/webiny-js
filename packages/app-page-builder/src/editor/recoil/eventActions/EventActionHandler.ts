@@ -21,6 +21,9 @@ import {
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { EventAction } from "./EventAction";
 
+export type EventActionHandlerMetaType = {
+    client: any;
+};
 type CallableStateType = {
     ui?: UiAtomType;
     plugins?: PluginsAtomType;
@@ -39,6 +42,7 @@ export type CallableArgsType = {
 };
 export type EventActionCallableType<T extends CallableArgsType = any> = (
     state: PbState,
+    meta: EventActionHandlerMetaType,
     args?: T
 ) =>
     | EventActionHandlerActionCallableResponseType
@@ -54,6 +58,7 @@ const MAX_EVENT_ACTION_NESTING_LEVELS = 3;
 
 export const executeAction = <T extends CallableArgsType = any>(
     state: PbState,
+    meta: EventActionHandlerMetaType,
     action: EventActionCallableType<T>,
     args: T,
     previousResult?: EventActionHandlerActionCallableResponseType
@@ -62,6 +67,7 @@ export const executeAction = <T extends CallableArgsType = any>(
     const previousActions = previousResult?.actions || [];
     const result = action(
         { ...state, ...previousState },
+        meta,
         args
     ) as EventActionHandlerActionCallableResponseType;
 
@@ -75,13 +81,14 @@ export const executeAction = <T extends CallableArgsType = any>(
 };
 export const executeAsyncAction = async <T extends CallableArgsType = any>(
     state: PbState,
+    meta: EventActionHandlerMetaType,
     action: EventActionCallableType<T>,
     args: T,
     previousResult?: EventActionHandlerActionCallableResponseType
 ): Promise<EventActionHandlerActionCallableResponseType> => {
     const previousState = previousResult?.state || {};
     const previousActions = previousResult?.actions || [];
-    const result = await action({ ...state, ...previousState }, args);
+    const result = await action({ ...state, ...previousState }, meta, args);
 
     return {
         state: {
@@ -102,9 +109,18 @@ export const executeAsyncAction = async <T extends CallableArgsType = any>(
 export class EventActionHandler {
     private readonly _registry: RegistryType = new Map();
     private readonly _trackedStates: string[];
+    private readonly _meta: EventActionHandlerMetaType;
 
-    public constructor(trackedStates?: (keyof CallableStateType)[]) {
-        this._trackedStates = trackedStates || [];
+    public get meta(): EventActionHandlerMetaType {
+        return this._meta;
+    }
+
+    public constructor(
+        trackedStates: (keyof CallableStateType)[] = [],
+        meta: EventActionHandlerMetaType
+    ) {
+        this._trackedStates = trackedStates;
+        this._meta = meta;
     }
 
     public on(target: TargetType, callable: EventActionCallableType): UnregisterType {
@@ -257,8 +273,11 @@ export class EventActionHandler {
         const callables = Array.from(targetCallables.values());
         for (const cb of callables) {
             const r =
-                (await cb(this.getCallableState({ ...initialState, ...results.state }), args)) ||
-                ({} as any);
+                (await cb(
+                    this.getCallableState({ ...initialState, ...results.state }),
+                    this.meta,
+                    args
+                )) || ({} as any);
             results.state = {
                 ...results.state,
                 ...(r.state || {})
