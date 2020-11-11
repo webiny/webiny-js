@@ -1,26 +1,12 @@
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
+    const forms = context?.formBuilder?.crud?.forms;
+    const { data } = args;
+
     try {
-        const forms = context?.formBuilder?.crud?.forms;
-
-        const sourceRev = await forms.get(args.revision);
-        if (!sourceRev) {
-            return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
-        }
-
-        const form = await forms.create({
-            id: sourceRev.id,
-            name: sourceRev.name,
-            slug: sourceRev.slug,
-            settings: sourceRev.settings,
-            layout: sourceRev.layout,
-            fields: sourceRev.fields,
-            triggers: sourceRev.triggers,
-            parent: sourceRev.parent
-        });
-
+        const form = await forms.create(data);
         // Index form in "Elastic Search"
         await context.elasticSearch.create({
             id: form.id,
