@@ -10,12 +10,11 @@ export default {
     type: "graphql-schema",
     schema: {
         typeDefs: gql`
-            input PbSearchInput {
-                query: String
-                fields: [String]
-                operator: String
+            type PbCreatedBy {
+                id: ID
+                displayName: String
             }
-
+            
             type PbError {
                 code: String
                 message: String
