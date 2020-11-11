@@ -44,16 +44,7 @@
       "path": "../../../packages/plugins"
     },
     {
-      "path": "../../../packages/cli-plugin-deploy-pulumi"
-    },
-    {
-      "path": "../../../packages/project-utils"
-    },
-    {
       "path": "../../../packages/react-router"
-    },
-    {
-      "path": "../../theme"
     },
     {
       "path": "../../../packages/app-plugin-security-cognito"
@@ -62,16 +53,10 @@
       "path": "../../../packages/app-security-user-management"
     },
     {
-      "path": "../../../packages/cli"
-    },
-    {
       "path": "../../../packages/ui"
     },
     {
       "path": "../../../packages/app-security"
-    },
-    {
-      "path": "../../../packages/tracking"
     }
   ],
   "include": ["src"],
