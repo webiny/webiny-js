@@ -17,9 +17,6 @@
       "path": "../commodo"
     },
     {
-      "path": "../commodo-graphql"
-    },
-    {
       "path": "../handler-ssr"
     },
     {
