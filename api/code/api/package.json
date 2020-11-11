@@ -1,22 +1,23 @@
 {
-	"name": "api",
-	"version": "0.1.0",
-	"scripts": {
-		"build": "webiny run build"
-	},
-	"dependencies": {
-		"@webiny/handler-aws": "^4.13.0",
-		"@webiny/api-security-user-management": "^4.13.0",
-		"@webiny/api-i18n": "^4.13.0",
-		"@webiny/api-i18n-content": "^4.13.0",
-		"@webiny/api-page-builder": "^4.13.0",
-		"@webiny/handler-db": "^4.13.0",
-		"@webiny/db-dynamodb": "^4.13.0",
-		"@webiny/api-plugin-elastic-search-client": "^4.13.0",
-		"@webiny/api-file-manager": "^4.13.0",
-		"@webiny/handler-apollo-server": "^4.13.0",
-		"@webiny/api-security": "^4.13.0",
-		"@webiny/api-plugin-security-cognito": "^4.13.0",
-		"@webiny/project-utils": "^4.13.0"
-	}
+  "name": "api",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler-aws": "^4.13.0",
+    "@webiny/api-security-user-management": "^4.13.0",
+    "@webiny/api-i18n": "^4.13.0",
+    "@webiny/api-i18n-content": "^4.13.0",
+    "@webiny/api-page-builder": "^4.13.0",
+    "@webiny/handler-db": "^4.13.0",
+    "@webiny/db-dynamodb": "^4.13.0",
+    "@webiny/api-plugin-elastic-search-client": "^4.13.0",
+    "@webiny/api-file-manager": "^4.13.0",
+    "@webiny/handler-apollo-server": "^4.13.0",
+    "@webiny/api-security": "^4.13.0",
+    "@webiny/api-plugin-security-cognito": "^4.13.0",
+    "@webiny/project-utils": "^4.13.0",
+    "@webiny/api-form-builder": "^4.14.0"
+  }
 }
