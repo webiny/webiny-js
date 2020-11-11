@@ -1,6 +1,7 @@
 import gql from "graphql-tag";
 import { merge } from "lodash";
 import menus from "./graphql/menus";
+import pages from "./graphql/pages";
 import categories from "./graphql/categories";
 import install from "./graphql/installation";
 const emptyResolver = () => ({});
@@ -9,12 +10,11 @@ export default {
     type: "graphql-schema",
     schema: {
         typeDefs: gql`
-            input PbSearchInput {
-                query: String
-                fields: [String]
-                operator: String
+            type PbCreatedBy {
+                id: ID
+                displayName: String
             }
-
+            
             type PbError {
                 code: String
                 message: String
@@ -61,6 +61,7 @@ export default {
 
             ${menus.typeDefs},
             ${categories.typeDefs},
+            ${pages.typeDefs},
             ${install.typeDefs}
         `,
         resolvers: merge(
@@ -74,6 +75,7 @@ export default {
             },
             categories.resolvers,
             menus.resolvers,
+            pages.resolvers,
             // settings.resolvers,
             install.resolvers
         )
