@@ -13,6 +13,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import filesPlugins from "@webiny/api-file-manager/plugins";
+import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 
 export const handler = createHandler(
     apolloServerPlugins({
@@ -58,5 +59,6 @@ export const handler = createHandler(
 
     filesPlugins(),
 
-    pageBuilderPlugins()
+    pageBuilderPlugins(),
+    formBuilderPlugins()
 );
