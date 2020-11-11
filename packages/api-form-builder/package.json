@@ -51,7 +51,8 @@
     "@elastic/elasticsearch-mock": "^0.3.0",
     "@shelf/jest-dynamodb": "^1.7.0",
     "@webiny/api-settings-manager": "^4.14.0",
-    "flow-copy-source": "^2.0.2"
+    "flow-copy-source": "^2.0.2",
+    "jest-dynalite": "^3.0.0"
   },
   "publishConfig": {
     "access": "public",
