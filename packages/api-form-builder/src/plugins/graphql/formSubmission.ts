@@ -1,12 +1,11 @@
-import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
-
-const getFormSubmission = ctx => ctx.models.FormSubmission;
+import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
 
 export default {
-    typeDefs: /* GraphQL*/ `type FormSubmission {
+    typeDefs: /* GraphQL*/ `
+        type FormSubmission {
             id: ID
             data: JSON
             meta: FormMeta
@@ -79,12 +78,49 @@ export default {
         }
     `,
     resolvers: {
+        FormSubmission: {
+            form: async (formSubmission, args, context) => {
+                const forms = context?.formBuilder?.crud?.forms;
+                const formData = await forms.get(formSubmission.formId);
+                const parentData = await forms.get(formSubmission.formId.split("#")[0] + "#" + 1);
+
+                return {
+                    parent: parentData,
+                    revision: formData
+                };
+            }
+        },
         FormsQuery: {
-            listFormSubmissions: hasScope("forms:form:crud")(resolveList(getFormSubmission)),
-            getFormSubmission: resolveGet(getFormSubmission)
+            listFormSubmissions: hasScope("forms:form:crud")(async (_, args, context) => {
+                try {
+                    const formSubmission = context?.formBuilder?.crud?.formSubmission;
+                    const { where } = args;
+
+                    const data = await formSubmission.list({
+                        id: where.form.parent
+                    });
+                    return new ListResponse(data);
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+            }),
+            getFormSubmission: hasScope("forms:form")(async (_, args, context) => {
+                try {
+                    const formSubmission = context?.formBuilder?.crud?.formSubmission;
+                    const { id, where } = args;
+                    const data = await formSubmission.get({
+                        submissionId: id,
+                        formId: where.formId
+                    });
+                    return new Response(data);
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+            })
         },
         FormsMutation: {
             createFormSubmission,
+            // Note: We'll test it manually using admin app.
             exportFormSubmissions: hasScope("forms:form:submissions:export")(exportFormSubmissions)
         }
     }
