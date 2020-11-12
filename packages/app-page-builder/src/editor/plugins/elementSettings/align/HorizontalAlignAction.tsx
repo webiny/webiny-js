@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -53,7 +53,7 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
         );
     };
 
-    const onClick = useCallback(() => {
+    const onClick = () => {
         const types = Object.keys(icons).filter(key =>
             alignments ? alignments.includes(key) : true
         );
@@ -68,7 +68,7 @@ const HorizontalAlignAction: React.FunctionComponent<HorizontalAlignActionPropsT
                 }
             }
         });
-    }, [element.id, align]);
+    };
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")

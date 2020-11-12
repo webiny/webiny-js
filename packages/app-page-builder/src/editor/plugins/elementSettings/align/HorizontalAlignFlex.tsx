@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -34,7 +34,7 @@ const HorizontalAlignActionFlex: React.FunctionComponent<HorizontalAlignActionFl
 
     const align = element.data?.settings?.horizontalAlignFlex || AlignmentsTypeEnum.CENTER;
 
-    const onClick = useCallback(() => {
+    const onClick = () => {
         const nextAlign = (alignments[alignments.indexOf(align) + 1] ||
             AlignmentsTypeEnum.FLEX_START) as AlignmentsTypeEnum;
 
@@ -52,7 +52,7 @@ const HorizontalAlignActionFlex: React.FunctionComponent<HorizontalAlignActionFl
                 }
             })
         );
-    }, [align, element.id]);
+    };
 
     const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
         pl => pl.elementType === element.type

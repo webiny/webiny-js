@@ -32,7 +32,7 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
 
     const align = element?.data?.settings?.verticalAlign || AlignTypesEnum.START;
 
-    const alignElement = React.useCallback(() => {
+    const alignElement = () => {
         const nextAlign = (alignments[alignments.indexOf(align) + 1] ||
             AlignTypesEnum.START) as AlignTypesEnum;
 
@@ -50,7 +50,7 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
                 }
             })
         );
-    }, [align]);
+    };
 
     if (!element) {
         return null;
