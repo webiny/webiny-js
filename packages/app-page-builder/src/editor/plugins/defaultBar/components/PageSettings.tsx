@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { omit } from "lodash";
 import { getPlugins } from "@webiny/plugins";
-import { deactivatePlugin, updateRevision } from "@webiny/app-page-builder/editor/actions";
+import { deactivatePlugin, updatePage } from "@webiny/app-page-builder/editor/actions";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -46,14 +46,14 @@ const PageSettingsContent = ({
     setActive,
     activePlugin,
     deactivatePlugin,
-    updateRevision
+    updatePage
 }) => {
     const { showSnackbar } = useSnackbar();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
 
     const savePage = useCallback(
         page => {
-            updateRevision(page, {
+            updatePage(page, {
                 onFinish: () => showSnackbar("Settings saved")
             });
         },
@@ -118,5 +118,5 @@ const PageSettingsContent = ({
 
 export default connect<any, any, any>(state => ({ page: omit(getPage(state), ["content"]) }), {
     deactivatePlugin,
-    updateRevision
+    updatePage
 })(PageSettings);
