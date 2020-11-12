@@ -2,7 +2,6 @@ import { Plugin } from "@webiny/graphql/types";
 import { HandlerClientContext } from "@webiny/handler-client/types";
 
 export type I18NLocale = {
-    id: string;
     code: string;
     default: boolean;
 };
