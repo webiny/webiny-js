@@ -14,6 +14,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             type: "_doc",
             body: {
                 id: form.id,
+                parent: form.parent,
                 createdOn: form.createdOn,
                 savedOn: form.savedOn,
                 name: form.name,

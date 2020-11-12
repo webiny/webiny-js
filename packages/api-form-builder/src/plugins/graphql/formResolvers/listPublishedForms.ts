@@ -43,9 +43,9 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
     if (parent) {
         // Question: Can "parent" will ever be an array?
         if (Array.isArray(parent)) {
-            must.push({ terms: { parent: parent } });
+            must.push({ terms: { "parent.keyword": parent } });
         } else {
-            must.push({ term: { parent: parent } });
+            must.push({ term: { "parent.keyword": parent } });
         }
     }
 
