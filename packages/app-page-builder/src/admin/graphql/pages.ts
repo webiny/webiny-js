@@ -26,7 +26,10 @@ export const DATA_FIELDS = `
 export const LIST_DATA_FIELDS = `
     status
     title
-    category
+    category {
+        name
+        slug
+    }
     createdBy {
         displayName
     }
@@ -67,11 +70,6 @@ export const LIST_PAGES = gql`
                             .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
                             .join("\n")}
                     }
- category {
-                        id
-                        name
-                        url
-                    }
  revisions {
                         ${sharedFields}
                     }
@@ -84,7 +82,10 @@ export const GET_PAGE = gql`
                 data {
                     ${DATA_FIELDS}
                     snippet
-                    category
+                    category {
+                        name
+                        slug
+                    } 
                     content
 
                 }
