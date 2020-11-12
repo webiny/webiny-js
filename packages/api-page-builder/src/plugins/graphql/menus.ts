@@ -3,7 +3,7 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Response, NotFoundResponse } from "@webiny/graphql";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
+import { HandlerSecurityContext } from "@webiny/api-security/types";
 import pipe from "@ramda/pipe";
 
 const hasRwd = ({ pbMenuPermission, rwd }) => {
@@ -14,7 +14,7 @@ const hasRwd = ({ pbMenuPermission, rwd }) => {
     return pbMenuPermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type Context = HandlerContext<HandlerI18NContext, HandlerSecurityContext>;
 
 export default {
     typeDefs: /* GraphQL */ `

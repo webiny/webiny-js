@@ -4,7 +4,7 @@ import { Response, NotFoundResponse } from "@webiny/graphql";
 import pipe from "@ramda/pipe";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
+import { HandlerSecurityContext } from "@webiny/api-security/types";
 
 const hasRwd = ({ pbCategoryPermission, rwd }) => {
     if (typeof pbCategoryPermission.rwd !== "string") {
@@ -14,7 +14,7 @@ const hasRwd = ({ pbCategoryPermission, rwd }) => {
     return pbCategoryPermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type Context = HandlerContext<HandlerI18NContext, HandlerSecurityContext>;
 
 export default {
     typeDefs: /* GraphQL */ `
