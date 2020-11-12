@@ -66,7 +66,7 @@ export default connect<any, any, any>(
             return { elements: null };
         }
 
-        const paths = element.path.split(".").slice(1);
+        const paths = element?.path?.split(".").slice(1) ?? [];
         const elements = paths.map((path, index) => {
             const elPath = [0, ...paths.slice(0, index + 1)].join(".");
             const el = getElement(state, elPath);
