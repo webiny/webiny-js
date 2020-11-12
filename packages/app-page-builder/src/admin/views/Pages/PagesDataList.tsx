@@ -86,7 +86,7 @@ const PageBuilderPagesDataList = () => {
                                 }}
                             >
                                 {page.title}
-                                <ListTextOverline>{page.category.name}</ListTextOverline>
+                                <ListTextOverline>{page?.category?.name}</ListTextOverline>
                                 {page.createdBy && (
                                     <ListItemTextSecondary>
                                         Created by: {page.createdBy.firstName || "N/A"}. Last
