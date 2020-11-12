@@ -1,72 +1,105 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { ErrorResponse, ListResponse } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {
-    const { Form } = context.models;
+    const forms = context?.formBuilder?.crud?.forms;
 
     const {
-        after,
-        before,
         search,
-        limit = 10,
-        parent = null,
         id = null,
+        parent = null,
         slug = null,
         version = null,
-        latestVersion = null,
-        sort = null
+        tags = null,
+        // sort
+        limit = 10
+        // after
+        // before
     } = args;
 
-    const query: any = { published: true };
+    const must: any = [{ term: { published: true } }];
 
-    if (version) {
-        query.version = version;
+    if (search) {
+        must.push({
+            bool: {
+                should: [
+                    { wildcard: { "name.keyword": `*${search}*` } },
+                    { wildcard: { name: `*${search}*` } },
+                    { wildcard: { "slug.keyword": `*${search}*` } },
+                    { wildcard: { slug: `*${search}*` } }
+                ]
+            }
+        });
     }
-
-    if (latestVersion !== null) {
-        query.latestVersion = latestVersion;
-    }
-
-    if (parent) {
-        if (Array.isArray(parent)) {
-            query.parent = { $in: parent };
+    if (id) {
+        // Question: Can "parent" will ever be an array?
+        if (Array.isArray(id)) {
+            must.push({ terms: { "id.keyword": id } });
         } else {
-            query.parent = parent;
+            must.push({ term: { "id.keyword": id } });
         }
     }
 
-    if (id) {
-        if (Array.isArray(id)) {
-            query.id = { $in: id };
+    if (parent) {
+        // Question: Can "parent" will ever be an array?
+        if (Array.isArray(parent)) {
+            must.push({ terms: { parent: parent } });
         } else {
-            query.id = id;
+            must.push({ term: { parent: parent } });
         }
     }
 
     if (slug) {
-        if (Array.isArray(slug)) {
-            query.slug = { $in: slug };
-        } else {
-            query.slug = slug;
-        }
+        must.push({ term: { "slug.keyword": slug } });
     }
 
-    const findArgs = {
-        after,
-        before,
-        limit,
-        search,
-        sort,
-        query,
-        totalCount: requiresTotalCount(info)
-    };
+    if (version) {
+        must.push({ term: { version } });
+    }
 
-    return await Form.find(findArgs);
+    if (tags) {
+        must.push({ terms: { tags: tags } });
+    }
+
+    // Get "published" forms from Elasticsearch.
+    const response = await context.elasticSearch.search({
+        index: "form-builder",
+        type: "_doc",
+        body: {
+            query: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                constant_score: {
+                    filter: {
+                        bool: {
+                            must
+                        }
+                    }
+                }
+            },
+            size: limit
+        }
+    });
+
+    let list = response?.body?.hits?.hits?.map(item => item._source);
+    // Get complete form data for returned list.
+    if (list?.length) {
+        const formIds = list.map(item => item.id);
+        list = await forms.listFormsInBatch({ ids: formIds });
+    }
+    return list;
 };
 
 const resolver: GraphQLFieldResolver = async (...args) => {
-    const forms = await listPublishedForms(...args);
-    return new ListResponse(forms, forms.getMeta());
+    try {
+        const forms = await listPublishedForms(...args);
+        return new ListResponse(forms);
+    } catch (e) {
+        return new ErrorResponse({
+            message: e.message,
+            code: e.code,
+            data: e.data
+        });
+    }
 };
 
 export default resolver;
