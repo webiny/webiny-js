@@ -83,7 +83,12 @@ export default {
             async list(args) {
                 const { limit = 44, sort, search = "", types = [], tags = [], ids = [] } = args;
 
-                const must = [];
+                const must = [
+                   /* {
+                        terms: { "locale.keyword": i18nContent.locale.code }
+                    }*/
+                ];
+
                 if (Array.isArray(types) && types.length) {
                     must.push({ terms: { "type.keyword": types } });
                 }
@@ -176,8 +181,7 @@ export default {
                         status: data.status,
                         latest: true,
                         published: false,
-                        tags: [],
-
+                        tags: []
                     }
                 });
 
