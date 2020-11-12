@@ -18,7 +18,7 @@ export const useSavedElements = () => {
         return false;
     }
 
-    const elements = get(data, "pageBuilder.elements.data");
+    const elements = get(data, "pageBuilder.elements.data") || [];
     if (!ready) {
         elements.forEach(el => {
             if (el.type === "element") {
