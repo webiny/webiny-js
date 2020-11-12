@@ -51,7 +51,7 @@
     "lodash": "^4.17.11",
     "material-components-web": "^3.1.1",
     "nprogress": "^0.2.0",
-    "nuka-carousel": "^4.3.9",
+    "nuka-carousel": "4.3.9",
     "rc-tooltip": "^3.7.2",
     "react-ace": "^6.1.4",
     "react-butterfiles": "^1.3.0",
