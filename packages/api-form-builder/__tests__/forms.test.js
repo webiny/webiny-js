@@ -2,6 +2,8 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("Form Builder Settings Test", () => {
     const {
+        elasticSearch,
+        sleep,
         createForm,
         deleteForm,
         updateRevision,
@@ -10,8 +12,22 @@ describe("Form Builder Settings Test", () => {
         deleteRevision,
         createRevisionFrom,
         saveFormView,
-        getForm
+        getForm,
+        listForms,
+        listPublishedForms
     } = useGqlHandler();
+
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.create({ index: "form-builder" });
+        } catch (e) {}
+    });
+
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: "form-builder" });
+        } catch (e) {}
+    });
 
     test(`create, read, update, delete and publish "forms"`, async () => {
         // Let's create a form
@@ -133,13 +149,23 @@ describe("Form Builder Settings Test", () => {
             }
         });
 
-        [response] = await createForm({ data: { name: "sign-up" } });
+        [response] = await createForm({ data: { name: "login" } });
         formId = response?.data?.forms?.createForm?.data.id;
         formData = {
             ...response?.data?.forms?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    createForm: {
+                        data: formData,
+                        error: null
+                    }
+                }
+            }
+        });
 
         // Let's "delete" a revision
         [response] = await deleteRevision({
@@ -157,6 +183,27 @@ describe("Form Builder Settings Test", () => {
             }
         });
 
+        // List should be empty.
+        while (true) {
+            await sleep();
+            [response] = await listForms();
+            if (response.data.forms.listForms.data.length === 0) {
+                break;
+            }
+        }
+        // Should be empty.
+        [response] = await listForms();
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listForms: {
+                        data: [],
+                        error: null
+                    }
+                }
+            }
+        });
+        // Let's create a form again!
         [response] = await createForm({ data: { name: "register" } });
         formId = response?.data?.forms?.createForm?.data.id;
         formData = {
@@ -164,16 +211,63 @@ describe("Form Builder Settings Test", () => {
             createdOn: /^20/,
             savedOn: /^20/
         };
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    createForm: {
+                        data: formData,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's publish a form
+        [response] = await publishRevision({
+            id: formId
+        });
+        formData = {
+            ...response?.data?.forms?.publishRevision?.data,
+            createdOn: /^20/,
+            savedOn: /^20/,
+            publishedOn: /^20/
+        };
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    publishRevision: {
+                        data: formData,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // List should show one form.
+        while (true) {
+            await sleep();
+            [response] = await listForms();
+            if (response.data.forms.listForms.data.length === 1) {
+                break;
+            }
+        }
 
         // Let's create a new revision
         [response] = await createRevisionFrom({ revision: formId });
+        formId = response?.data?.forms?.createRevisionFrom?.data?.id;
+        formData = {
+            ...response?.data?.forms?.createRevisionFrom?.data,
+            createdOn: /^20/,
+            savedOn: /^20/
+        };
         expect(response).toMatchObject({
             data: {
                 forms: {
                     createRevisionFrom: {
                         data: {
                             ...formData,
-                            id: response?.data?.forms?.createRevisionFrom?.data?.id
+                            id: response?.data?.forms?.createRevisionFrom?.data?.id,
+                            version: 2
                         },
                         error: null
                     }
@@ -207,6 +301,163 @@ describe("Form Builder Settings Test", () => {
                                 views: formData.stats.views + 1
                             }
                         },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test(`List forms`, async () => {
+        const formIds = [];
+        const formDataArray = [];
+        // Let's create three forms.
+        for (let i = 0; i < 3; i++) {
+            // Let's create a form
+            const [response] = await createForm({ data: { name: `Test-${i}` } });
+            // Save to "id" fro later.
+            formIds.push(response?.data?.forms?.createForm?.data.id);
+
+            formDataArray.push({
+                ...response?.data?.forms?.createForm?.data,
+                createdOn: /^20/,
+                savedOn: /^20/
+            });
+
+            expect(response).toMatchObject({
+                data: {
+                    forms: {
+                        createForm: {
+                            data: formDataArray[i],
+                            error: null
+                        }
+                    }
+                }
+            });
+        }
+
+        // List should not be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listForms();
+            if (response.data.forms.listForms.data.length) {
+                break;
+            }
+        }
+
+        // Let's list all the forms
+        let [response] = await listForms();
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listForms: {
+                        data: formDataArray.map(formData => ({
+                            ...formData,
+                            savedOn: /^20/,
+                            createdOn: /^20/
+                        })),
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's publish two forms.
+        for (let i = 0; i < 2; i++) {
+            // Let's create a form
+            const [response] = await publishRevision({ id: formIds[i] });
+
+            formDataArray[i] = {
+                ...response?.data?.forms?.publishRevision?.data,
+                createdOn: /^20/,
+                savedOn: /^20/,
+                publishedOn: /^20/
+            };
+
+            expect(response).toMatchObject({
+                data: {
+                    forms: {
+                        publishRevision: {
+                            data: formDataArray[i],
+                            error: null
+                        }
+                    }
+                }
+            });
+        }
+
+        // List should not be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listPublishedForms();
+            if (response.data.forms.listPublishedForms.data.length) {
+                break;
+            }
+        }
+
+        // Let's list published revisions only.
+        [response] = await listPublishedForms({});
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listPublishedForms: {
+                        data: [formDataArray[0], formDataArray[1]].map(formData => ({
+                            ...formData,
+                            savedOn: /^20/,
+                            createdOn: /^20/
+                        })),
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's list published revisions only.
+        [response] = await listPublishedForms({ version: 2 });
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listPublishedForms: {
+                        data: [],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's list published revisions only.
+        [response] = await listPublishedForms({ search: "Test-1" });
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listPublishedForms: {
+                        data: [formDataArray[1]].map(formData => ({
+                            ...formData,
+                            savedOn: /^20/,
+                            createdOn: /^20/
+                        })),
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's list published revisions only.
+        [response] = await listPublishedForms({ search: "test" });
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    listPublishedForms: {
+                        data: [formDataArray[0], formDataArray[1]].map(formData => ({
+                            ...formData,
+                            savedOn: /^20/,
+                            createdOn: /^20/
+                        })),
                         error: null
                     }
                 }
