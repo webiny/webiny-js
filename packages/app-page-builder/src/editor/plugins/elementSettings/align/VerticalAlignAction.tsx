@@ -15,7 +15,12 @@ const icons = {
     center: <AlignCenterIcon />,
     end: <AlignBottomIcon />
 };
-type AlignTypesType = "start" | "center" | "end";
+const alignments = Object.keys(icons);
+enum AlignTypesEnum {
+    START = "start",
+    CENTER = "center",
+    END = "end"
+}
 type VerticalAlignActionPropsType = {
     children: React.ReactElement;
 };
@@ -25,11 +30,11 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
     const eventActionHandler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
 
-    const align = element?.data?.settings?.verticalAlign || "start";
+    const align = element?.data?.settings?.verticalAlign || AlignTypesEnum.START;
 
-    const alignElement = React.useCallback(() => {
-        const alignments = Object.keys(icons);
-        const nextAlign = (alignments[alignments.indexOf(align) + 1] || "start") as AlignTypesType;
+    const alignElement = () => {
+        const nextAlign = (alignments[alignments.indexOf(align) + 1] ||
+            AlignTypesEnum.START) as AlignTypesEnum;
 
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
@@ -45,7 +50,7 @@ const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType>
                 }
             })
         );
-    }, [align]);
+    };
 
     if (!element) {
         return null;

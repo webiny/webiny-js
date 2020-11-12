@@ -1,33 +1,24 @@
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import React from "react";
 import preview from "./preview.png";
-import { plugins } from "@webiny/plugins";
-import { PbEditorBlockPlugin, PbEditorGridPresetPluginType } from "@webiny/app-page-builder/types";
+import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
-const getDefaultPreset = () => {
-    const pluginsByType = plugins.byType<PbEditorGridPresetPluginType>("pb-editor-grid-preset");
-    if (!pluginsByType || pluginsByType.length === 0) {
-        throw new Error("There are no preset plugins defined.");
-    }
-    const pl = pluginsByType.find(() => true);
-    return pl.preset;
-};
+const width = 500;
+const height = 73;
+
 export default {
     name: "pb-editor-grid-block",
     type: "pb-editor-block",
     category: "general",
     title: "Grid block",
-    create(options = {}) {
-        return createElementHelper("grid", {
-            ...options,
-            preset: getDefaultPreset()
-        });
+    create() {
+        return createElementHelper("grid");
     },
     image: {
         meta: {
-            width: 500,
-            height: 73,
-            aspectRatio: 500 / 73
+            width,
+            height,
+            aspectRatio: width / height
         }
     },
     preview() {
