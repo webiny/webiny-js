@@ -36,7 +36,7 @@ export default {
     typeDefs: /* GraphQL */ `
         type PbPageCategory {
             slug: String
-            title: String
+            name: String
             url: String
         }
 
