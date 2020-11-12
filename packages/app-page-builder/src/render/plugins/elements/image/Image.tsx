@@ -43,8 +43,10 @@ const Image = props => {
     return (
         <ElementRoot
             element={props.element}
-            style={{ display: "flex", justifyContent: position[horizontalAlign] }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
+            // alignItems: position[horizontalAlign] is here because of a Safari CSS bug when flex is enabled on an image
+            // container with height is set to auto and the width is configured
+            style={{ display: "flex", alignItems: position[horizontalAlign], justifyContent: position[horizontalAlign] }}
         >
             <Link link={link}>
                 <WebinyImage
