@@ -19,6 +19,7 @@
     "@ramda/pipe": "^0.26.1",
     "@webiny/api-i18n": "^4.14.0",
     "@webiny/api-security": "^4.14.0",
+    "@webiny/api-plugin-elastic-search-client": "^4.14.0",
     "@webiny/commodo": "^4.14.0",
     "@webiny/graphql": "^4.14.0",
     "@webiny/handler-ssr": "^4.14.0",
@@ -48,8 +49,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
     "@elastic/elasticsearch": "^7.9.1",
-    "@elastic/elasticsearch-mock": "^0.3.0",
-    "@shelf/jest-dynamodb": "^1.7.0",
+    "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-settings-manager": "^4.14.0",
     "flow-copy-source": "^2.0.2",
     "jest-dynalite": "^3.0.0"
