@@ -11,7 +11,6 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
-import Mock from "@elastic/elasticsearch-mock";
 // Graphql
 import {
     GET_SETTINGS,
@@ -28,7 +27,9 @@ import {
     UNPUBLISH_REVISION,
     DELETE_REVISION,
     SAVE_FORM_VIEW,
-    GET_FORM
+    GET_FORM,
+    LIST_FORMS,
+    LIST_PUBLISHED_FORMS
 } from "./graphql/forms";
 import {
     CREATE_FROM_SUBMISSION,
@@ -139,6 +140,12 @@ export default ({ permissions, identity } = {}) => {
         },
         async getForm(variables) {
             return invoke({ body: { query: GET_FORM, variables } });
+        },
+        async listForms(variables) {
+            return invoke({ body: { query: LIST_FORMS, variables } });
+        },
+        async listPublishedForms(variables) {
+            return invoke({ body: { query: LIST_PUBLISHED_FORMS, variables } });
         },
         // Form Submission
         async createFormSubmission(variables) {

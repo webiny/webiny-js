@@ -133,3 +133,61 @@ export const GET_FORM = /* GraphQL */ `
         }
     }
 `;
+
+export const LIST_FORMS = /* GraphQL */ `
+    query ListForms(
+        $sort: JSON,
+        $search: String,
+        $parent: String,
+        $limit: Int,
+        $after: String,
+        $before: String
+    ) {
+        forms {
+            listForms(
+                sort: $sort,
+                search: $search,
+                parent: $parent,
+                limit: $limit,
+                after: $after,
+                before: $before
+                ) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PUBLISHED_FORMS = /* GraphQL */ `
+    query ListPublishedForms(
+        $search: String,
+        $id: ID,
+        $parent: ID,
+        $slug: String,
+        $version: Int,
+        $tags: [String],
+        $sort: FormSortInput,
+        $limit: Int,
+        $after: String,
+        $before: String
+    ) {
+        forms {
+            listPublishedForms(
+                search: $search,
+                id: $id,
+                parent: $parent,
+                slug: $slug,
+                version: $version,
+                tags: $tags,
+                sort: $sort,
+                limit: $limit,
+                after: $after,
+                before: $before
+                ) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
