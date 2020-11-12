@@ -1,6 +1,4 @@
 import gql from "graphql-tag";
-import { getPlugins } from "@webiny/plugins";
-import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const error = `
 error {
@@ -8,22 +6,34 @@ error {
     message
 }`;
 
-const sharedFields = `
+/**
+ isHomePage
+ isErrorPage
+ isNotFoundPage
+ savedOn
+ * */
+export const DATA_FIELDS = `
     id
     title
     url
     version
     parent
     published
-    isHomePage
-    isErrorPage
-    isNotFoundPage
     locked
-    savedOn
+    
 `;
 
+export const LIST_DATA_FIELDS = `
+    status
+    title
+    category
+    createdBy {
+        displayName
+    }
+`
+
 export const CREATE_PAGE = gql`
-    mutation PbCreatePage($category: ID!) {
+    mutation PbCreatePage($category: String!) {
         pageBuilder {
             page: createPage(data: { category: $category }) {
                 data {
@@ -36,56 +46,47 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query PbListPages($sort: JSON, $search: String, $limit: Int, $after: String, $before: String) {
+    query PbListPages($sort: JSON, $limit: Int) {
         pageBuilder {
-            pages: listPages(sort: $sort, search: $search, limit: $limit, after: $after, before: $before) {
+            listPages(sort: $sort, limit: $limit) {
                 data {
-                    ${sharedFields}
-                    category {
-                        id
-                        name
-                    }
-                    createdBy {
-                        firstName
-                        lastName
-                    }
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
+                    id
+                    title
+                    ${LIST_DATA_FIELDS}
                 }
             }
         }
     }
 `;
 
-export const GET_PAGE = () => gql`
-    query PbGetPage($id: ID!) {
-        pageBuilder {
-            page: getPage(id: $id) {
-                data {
-                    ${sharedFields}
-                    snippet
-                    content
-                    settings {
+/**
+ *
+ settings {
                         _empty
                         ${getPlugins("pb-editor-page-settings")
                             .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
                             .join("\n")}
                     }
-                    category {
+ category {
                         id
                         name
                         url
                     }
-                    revisions {
+ revisions {
                         ${sharedFields}
                     }
+ *
+ * */
+export const GET_PAGE = gql`
+    query PbGetPage($id: ID!) {
+        pageBuilder {
+            page: getPage(id: $id) {
+                data {
+                    ${DATA_FIELDS}
+                    snippet
+                    category
+                    content
+
                 }
                 ${error}
             }
@@ -111,7 +112,7 @@ export const PUBLISH_REVISION = gql`
         pageBuilder {
             publishRevision(id: $id) {
                 data {
-                    ${sharedFields}
+                    ${DATA_FIELDS}
                 }
                 ${error}
             }
