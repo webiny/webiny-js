@@ -44,6 +44,7 @@ export default {
             id: ID
             createdBy: PbCreatedBy
             createdOn: DateTime
+            savedOn: DateTime
             publishedOn: DateTime
             category: PbPageCategory
             version: Int
@@ -65,6 +66,7 @@ export default {
         type PbPageListItem {
             id: ID
             createdOn: DateTime
+            savedOn: DateTime
             createdBy: PbCreatedBy
             published: Boolean
             category: PbPageCategory

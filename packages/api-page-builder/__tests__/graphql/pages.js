@@ -16,6 +16,7 @@ export const DATA_FIELD = /* GraphQL */ `
         locked
         parent
         createdOn
+        savedOn
         createdBy {
             id
             displayName
@@ -35,6 +36,7 @@ const LIST_DATA_FIELD = /* GraphQL */ `
         url
         status
         createdOn
+        savedOn
         createdBy {
             id
             displayName

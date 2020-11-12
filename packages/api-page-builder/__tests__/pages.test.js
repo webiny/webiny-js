@@ -185,7 +185,6 @@ describe("CRUD Test", () => {
             }
         });
 
-        process.exit()
         // After deleting all pages, list should be empty.
         for (let i = 0; i < response.data.pageBuilder.listPages.data.length; i++) {
             const { id } = response.data.pageBuilder.listPages.data[i];
