@@ -56,7 +56,9 @@ describe("CRUD Test", () => {
                     pageBuilder: {
                         createPage: {
                             data: {
-                                ...data,
+                                category: {
+                                    slug: "slug"
+                                },
                                 title: "Untitled",
                                 url: /^\/some-url\/untitled-*/,
                                 published: null,
@@ -77,7 +79,9 @@ describe("CRUD Test", () => {
                     pageBuilder: {
                         getPage: {
                             data: {
-                                ...data,
+                                category: {
+                                    slug: "slug"
+                                },
                                 createdOn: /^20/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -117,7 +121,7 @@ describe("CRUD Test", () => {
 
         // List should show three pages.
         while (true) {
-            await sleep();
+            await sleep(2000);
             [response] = await listPages();
             if (response.data.pageBuilder.listPages.data.length) {
                 break;
@@ -130,7 +134,9 @@ describe("CRUD Test", () => {
                     listPages: {
                         data: [
                             {
-                                category: "slug",
+                                category: {
+                                    slug: "slug"
+                                },
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
@@ -143,7 +149,9 @@ describe("CRUD Test", () => {
                                 url: "url-UPDATED-2"
                             },
                             {
-                                category: "slug",
+                                category: {
+                                    slug: "slug"
+                                },
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
@@ -156,7 +164,9 @@ describe("CRUD Test", () => {
                                 url: "url-UPDATED-1"
                             },
                             {
-                                category: "slug",
+                                category: {
+                                    slug: "slug"
+                                },
                                 createdBy: {
                                     displayName: "m",
                                     id: "mocked"
@@ -175,6 +185,7 @@ describe("CRUD Test", () => {
             }
         });
 
+        process.exit()
         // After deleting all pages, list should be empty.
         for (let i = 0; i < response.data.pageBuilder.listPages.data.length; i++) {
             const { id } = response.data.pageBuilder.listPages.data[i];
@@ -201,7 +212,6 @@ describe("CRUD Test", () => {
             [response] = await listPages();
         }
 
-        [response] = await listPages();
         expect(response).toEqual({
             data: {
                 pageBuilder: {

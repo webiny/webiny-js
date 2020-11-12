@@ -2,7 +2,9 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         publishedOn
-        category
+        category {
+            slug
+        }
         version
         title
         url
@@ -24,7 +26,9 @@ export const DATA_FIELD = /* GraphQL */ `
 const LIST_DATA_FIELD = /* GraphQL */ `
     {
         id
-        category
+        category {
+            slug
+        }
         status
         published
         title
