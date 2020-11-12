@@ -22,7 +22,7 @@ export type SecurityAuthorizationPlugin = Plugin & {
     getPermissions(context: Context): Promise<SecurityPermission[]>;
 };
 
-export type SecurityContext = {
+export type HandlerSecurityContext = {
     security: {
         getIdentity: () => SecurityIdentity;
         getPermission: (name: string) => Promise<SecurityPermission>;
