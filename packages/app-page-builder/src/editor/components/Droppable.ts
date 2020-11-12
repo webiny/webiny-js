@@ -65,11 +65,12 @@ const Droppable = (props: DroppableProps) => {
         }
     });
 
-    if (!isVisible) {
+    if (isVisible === undefined || typeof isVisible !== "function") {
         isVisible = defaultVisibility;
     }
 
-    if (!isVisible({ type, item, isDragging })) {
+    const isVisibleValue = isVisible({ type, item, isDragging });
+    if (!isVisibleValue) {
         return null;
     }
 

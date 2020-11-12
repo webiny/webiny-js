@@ -1,10 +1,11 @@
+import React, { CSSProperties } from "react";
+import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
+import Element from "@webiny/app-page-builder/editor/components/Element";
+import styled from "@emotion/styled";
 import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
 import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { IconButton } from "@webiny/ui/Button";
-import React, { CSSProperties } from "react";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import { css } from "emotion";
 import {
     DropElementActionEvent,
@@ -24,6 +25,10 @@ const addIcon = css({
     }
 });
 
+const BlockContainerInnerWrapStyled = styled("div")({
+    position: "relative"
+});
+
 type BlockContainerPropsType = {
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
@@ -40,7 +45,6 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
 }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
-    const eventActionHandler = useEventActionHandler();
     const { id, path, type, elements } = element;
 
     const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
@@ -96,41 +100,19 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                     </DropZone.Center>
                 )}
                 {elements.map((childId, index) => (
-                    <React.Fragment key={childId}>
+                    <BlockContainerInnerWrapStyled key={childId}>
                         <DropZone.Above
                             type={type}
-                            onDrop={source => () => {
-                                eventActionHandler.trigger(
-                                    new DropElementActionEvent({
-                                        source,
-                                        target: {
-                                            id,
-                                            type,
-                                            position: index
-                                        }
-                                    })
-                                );
-                            }}
+                            onDrop={source => dropElementAction(source, index)}
                         />
                         <Element key={childId} id={childId} />
-                        {index === elements.length - 1 && (
+                        {index === totalElements - 1 && (
                             <DropZone.Below
                                 type={type}
-                                onDrop={source => {
-                                    eventActionHandler.trigger(
-                                        new DropElementActionEvent({
-                                            source,
-                                            target: {
-                                                id,
-                                                type,
-                                                position: totalElements
-                                            }
-                                        })
-                                    );
-                                }}
+                                onDrop={source => dropElementAction(source, totalElements)}
                             />
                         )}
-                    </React.Fragment>
+                    </BlockContainerInnerWrapStyled>
                 ))}
             </div>
         </div>
