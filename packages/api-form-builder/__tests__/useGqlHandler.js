@@ -9,6 +9,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
+import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
 import Mock from "@elastic/elasticsearch-mock";
 // Graphql
@@ -49,68 +50,12 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
+        elasticSearch({ endpoint: `http://localhost:9201` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        {
-            type: "context",
-            name: "context-elastic-search",
-            apply(context) {
-                const mock = new Mock();
-                const client = new Client({
-                    node: "http://localhost:9200",
-                    Connection: mock.getConnection()
-                });
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/form-builder/_doc/_search"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "PUT",
-                        path: "/form-builder/_doc/:id/_create"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/form-builder/_doc/:id/_update"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/_bulk"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "DELETE",
-                        path: "/form-builder/_doc/:id"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                context.elasticSearch = client;
-            }
-        },
         formBuilderPlugins(),
         {
             type: "security-authorization",
@@ -142,6 +87,15 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        elasticSearch: new Client({
+            hosts: [`http://localhost:9201`],
+            node: "http://localhost:9201"
+        }),
+        sleep: (ms = 100) => {
+            return new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        },
         handler,
         invoke,
         // Form builder settings
