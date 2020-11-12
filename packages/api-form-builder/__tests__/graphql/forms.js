@@ -134,6 +134,17 @@ export const GET_FORM = /* GraphQL */ `
     }
 `;
 
+export const GET_PUBLISHED_FORM = /* GraphQL */ `
+    query getPublishedForm($id: ID, $parent: ID, $slug: String, $version: Int) {
+        forms {
+            getPublishedForm(id: $id, parent: $parent, slug: $slug, version: $version) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const LIST_FORMS = /* GraphQL */ `
     query ListForms(
         $sort: JSON,

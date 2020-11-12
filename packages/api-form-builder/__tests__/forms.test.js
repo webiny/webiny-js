@@ -13,6 +13,7 @@ describe("Form Builder Settings Test", () => {
         createRevisionFrom,
         saveFormView,
         getForm,
+        getPublishedForm,
         listForms,
         listPublishedForms
     } = useGqlHandler();
@@ -308,7 +309,7 @@ describe("Form Builder Settings Test", () => {
         });
     });
 
-    test(`List forms`, async () => {
+    test(`List forms, list published forms and get published form`, async () => {
         const formIds = [];
         const formDataArray = [];
         // Let's create three forms.
@@ -458,6 +459,20 @@ describe("Form Builder Settings Test", () => {
                             savedOn: /^20/,
                             createdOn: /^20/
                         })),
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Let's get the published revision by parent.
+        [response] = await getPublishedForm({ parent: formIds[0] });
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    getPublishedForm: {
+                        data: formDataArray[0],
                         error: null
                     }
                 }

@@ -29,7 +29,8 @@ import {
     SAVE_FORM_VIEW,
     GET_FORM,
     LIST_FORMS,
-    LIST_PUBLISHED_FORMS
+    LIST_PUBLISHED_FORMS,
+    GET_PUBLISHED_FORM
 } from "./graphql/forms";
 import {
     CREATE_FROM_SUBMISSION,
@@ -140,6 +141,9 @@ export default ({ permissions, identity } = {}) => {
         },
         async getForm(variables) {
             return invoke({ body: { query: GET_FORM, variables } });
+        },
+        async getPublishedForm(variables) {
+            return invoke({ body: { query: GET_PUBLISHED_FORM, variables } });
         },
         async listForms(variables) {
             return invoke({ body: { query: LIST_FORMS, variables } });
