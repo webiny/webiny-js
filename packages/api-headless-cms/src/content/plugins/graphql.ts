@@ -1,3 +1,5 @@
+// TODO remove
+// @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {
     resolveCreate,

@@ -1,3 +1,5 @@
+// TODO remove
+// @ts-nocheck
 import gql from "graphql-tag";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import { hasScope } from "@webiny/api-security";

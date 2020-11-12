@@ -1,7 +1,8 @@
+// TODO remove
+// @ts-nocheck
 import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
-// TODO remove ignore
 // eslint-disable-next-line
 import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";

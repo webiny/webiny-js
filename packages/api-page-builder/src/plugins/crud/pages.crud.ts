@@ -1,3 +1,5 @@
+// TODO remove
+// @ts-nocheck
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
