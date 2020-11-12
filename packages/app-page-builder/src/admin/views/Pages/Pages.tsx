@@ -1,71 +1,81 @@
-import React, { useState, useCallback } from "react";
-import { useApolloClient } from "react-apollo";
-import { useRouter } from "@webiny/react-router";
-import { useHandler } from "@webiny/app/hooks/useHandler";
+import React, { useMemo, useState, useCallback } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CREATE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
-import { useDataList } from "@webiny/app/hooks/useDataList";
-import { CircularProgress } from "@webiny/ui/Progress";
 import PagesDataList from "./PagesDataList";
-import PageDetails from "./PageDetails";
+import { useSecurity } from "@webiny/app-security";
 import CategoriesDialog from "../Categories/CategoriesDialog";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useMutation } from "react-apollo";
+import { CREATE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 
-const Pages = props => {
+const Pages = () => {
     const [creatingPage, setCreatingPage] = useState(false);
     const [showCategoriesDialog, setCategoriesDialog] = useState(false);
-    const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
-
-    const dataList = useDataList({
-        query: LIST_PAGES,
-        variables: {
-            sort: { savedOn: -1 }
-        }
-    });
 
     const openDialog = useCallback(() => setCategoriesDialog(true), []);
     const closeDialog = useCallback(() => setCategoriesDialog(false), []);
 
-    const createPageMutation = useHandler(props, () => async category => {
+    // ------------
+
+    // TODO remove
+    // eslint-disable-next-line
+    const [create, createMutation] = useMutation(CREATE_PAGE, {
+        // refetchQueries: [{ query: LIST_MENUS }]
+    });
+
+    const createPageMutation = useCallback(async ({ slug: category }) => {
         try {
             setCreatingPage(true);
-            const res = await client.mutate({
-                mutation: CREATE_PAGE,
-                variables: { category },
-                refetchQueries: ["PbListPages"],
-                awaitRefetchQueries: true
+            const res = await create({
+                variables: { category }
             });
+
             setCreatingPage(false);
             closeDialog();
+
             const { data } = res.data.pageBuilder.page;
-            history.push(`/page-builder/editor/${data.id}`);
+            history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
         } catch (e) {
             showSnackbar(e.message);
         }
-    });
+    }, []);
 
-    const onSelect = useCallback(category => {
-        createPageMutation(category.id);
+    const { identity } = useSecurity();
+    const pbPagePermission = useMemo(() => {
+        return identity.getPermission("pb.page");
+    }, []);
+
+    const canCreate = useMemo(() => {
+        if (typeof pbPagePermission.rwd === "string") {
+            return pbPagePermission.rwd.includes("w");
+        }
+
+        return true;
     }, []);
 
     return (
-        <React.Fragment>
-            <CategoriesDialog open={showCategoriesDialog} onClose={closeDialog} onSelect={onSelect}>
+        <>
+            <CategoriesDialog
+                open={showCategoriesDialog}
+                onClose={closeDialog}
+                onSelect={createPageMutation}
+            >
                 {creatingPage && <CircularProgress label={"Creating page..."} />}
             </CategoriesDialog>
             <SplitView>
-                <LeftPanel span={4}>
-                    <PagesDataList dataList={dataList} />
+                <LeftPanel>
+                    <PagesDataList />
                 </LeftPanel>
-                <RightPanel span={8}>
-                    <PageDetails refreshPages={dataList.refresh} />
-                </RightPanel>
+                <RightPanel>{/*<PageDetails />*/}</RightPanel>
             </SplitView>
-            <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />
-        </React.Fragment>
+            {canCreate && (
+                <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />
+            )}
+        </>
     );
 };
 

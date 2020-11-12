@@ -2,7 +2,9 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         publishedOn
-        category
+        category {
+            slug
+        }
         version
         title
         url
@@ -14,6 +16,7 @@ export const DATA_FIELD = /* GraphQL */ `
         locked
         parent
         createdOn
+        savedOn
         createdBy {
             id
             displayName
@@ -24,13 +27,16 @@ export const DATA_FIELD = /* GraphQL */ `
 const LIST_DATA_FIELD = /* GraphQL */ `
     {
         id
-        category
+        category {
+            slug
+        }
         status
         published
         title
         url
         status
         createdOn
+        savedOn
         createdBy {
             id
             displayName

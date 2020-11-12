@@ -21,6 +21,7 @@ export type Page = {
     settings: Record<string, any>;
     locked: boolean;
     createdOn: string;
+    savedOn: string;
     createdBy: {
         id: string;
         displayName: string;
@@ -89,7 +90,12 @@ export default {
                 // eslint-disable-next-line
                 const { limit = 44, sort, search = "", types = [], tags = [], ids = [] } = args;
 
-                const must = [];
+                const must = [
+                    /* {
+                        terms: { "locale.keyword": i18nContent.locale.code }
+                    }*/
+                ];
+
                 if (Array.isArray(types) && types.length) {
                     must.push({ terms: { "type.keyword": types } });
                 }
@@ -158,6 +164,7 @@ export default {
                     version: 1,
                     type: ITEM_TYPE,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy: {
                         id: identity.id,
                         displayName: identity.displayName
@@ -175,6 +182,7 @@ export default {
                         locale: i18nContent?.locale?.code,
                         // TODO: tenant
                         createdOn: data.createdOn,
+                        savedOn: data.savedOn,
                         createdBy: data.createdBy,
                         category: data.category,
                         title: data.title,
@@ -193,7 +201,9 @@ export default {
                 const updateData = new UpdateDataModel().populate(data);
                 await updateData.validate();
 
-                data = await updateData.toJSON({ onlyDirty: true });
+                data = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
+                    savedOn: new Date().toISOString()
+                });
 
                 await db.update({
                     ...defaults.db,
@@ -210,7 +220,8 @@ export default {
                             // TODO: test this, what if the value is `undefined`?
                             tags: data.tags,
                             title: data.title,
-                            url: data.url
+                            url: data.url,
+                            savedOn: data.savedOn
                         }
                     }
                 });

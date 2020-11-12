@@ -161,7 +161,7 @@ export default {
                 const { categories } = context;
                 const { slug, data } = args;
 
-                let category = await categories.get(slug);
+                const category = await categories.get(slug);
                 if (!category) {
                     return new NotFoundResponse(`Category "${slug}" not found.`);
                 }
@@ -174,10 +174,9 @@ export default {
                     }
                 }
 
-                await categories.update(data);
+                const changed = await categories.update(slug, data);
 
-                category = await categories.get(slug);
-                return new Response(category);
+                return new Response({ ...category, ...changed });
             }),
             deleteCategory: pipe(
                 hasPermission("pb.category"),

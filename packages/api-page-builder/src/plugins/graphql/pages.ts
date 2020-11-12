@@ -37,13 +37,20 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
 };
 
 export default {
-    typeDefs: /* GraphQL*/ `
+    typeDefs: /* GraphQL */ `
+        type PbPageCategory {
+            slug: String
+            name: String
+            url: String
+        }
+
         type PbPage {
             id: ID
             createdBy: PbCreatedBy
             createdOn: DateTime
+            savedOn: DateTime
             publishedOn: DateTime
-            category: String
+            category: PbPageCategory
             version: Int
             title: String
             status: String
@@ -59,13 +66,14 @@ export default {
             locked: Boolean
             parent: ID
         }
-        
+
         type PbPageListItem {
             id: ID
             createdOn: DateTime
+            savedOn: DateTime
             createdBy: PbCreatedBy
             published: Boolean
-            category: String
+            category: PbPageCategory
             title: String
             url: String
             status: String
@@ -163,14 +171,12 @@ export default {
         }
 
         enum PbTagsRule {
-          ALL
-          ANY
+            ALL
+            ANY
         }
 
         extend type PbQuery {
-            getPage(
-                id: ID
-            ): PbPageResponse
+            getPage(id: ID): PbPageResponse
 
             getPublishedPage(
                 id: ID
@@ -181,10 +187,7 @@ export default {
                 preview: Boolean
             ): PbPageResponse
 
-            listPages(
-                sort: JSON
-                limit: Int
-            ): PbPageListResponse
+            listPages(sort: JSON, limit: Int): PbPageListResponse
 
             listPublishedPages(
                 search: String
@@ -203,66 +206,54 @@ export default {
             # Returns existing tags based on given search term.
             searchTags(query: String!): PbSearchTagsResponse
 
-            oembedData(
-                url: String!
-                width: String
-                height: String
-            ): PbOembedResponse
+            oembedData(url: String!, width: String, height: String): PbOembedResponse
         }
 
         extend type PbMutation {
-            createPage(
-                data: PbCreatePageInput!
-            ): PbPageResponse
+            createPage(data: PbCreatePageInput!): PbPageResponse
 
             # Sets given page as new homepage.
             setHomePage(id: ID!): PbPageResponse
 
             # Create a new revision from an existing revision
-            createRevisionFrom(
-                revision: ID!
-            ): PbPageResponse
+            createRevisionFrom(revision: ID!): PbPageResponse
 
             # Update page by given ID.
-             updatePage(
-                id: ID!
-                data: PbUpdatePageInput!
-            ): PbPageResponse
+            updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
             # Publish revision
-            publishRevision(
-                id: ID!
-            ): PbPageResponse
+            publishRevision(id: ID!): PbPageResponse
 
             # Delete page and all of its revisions
-            deletePage(
-                id: ID!
-            ): PbPageResponse
+            deletePage(id: ID!): PbPageResponse
 
             # Delete a single revision
-            deleteRevision(
-                id: ID!
-            ): PbDeleteResponse
+            deleteRevision(id: ID!): PbDeleteResponse
 
             # Create element
-            createElement(
-                data: PbElementInput!
-            ): PbElementResponse
+            createElement(data: PbElementInput!): PbElementResponse
 
-            updateElement(
-                id: ID!
-                data: PbUpdateElementInput!
-            ): PbElementResponse
+            updateElement(id: ID!, data: PbUpdateElementInput!): PbElementResponse
 
             # Delete element
-            deleteElement(
-                id: ID!
-            ): PbDeleteResponse
+            deleteElement(id: ID!): PbDeleteResponse
 
             updateImageSize: PbDeleteResponse
-        },
+        }
     `,
     resolvers: {
+        PbPage: {
+            category: async (page, args, context) => {
+                const { categories } = context;
+                return categories.get(page.category);
+            }
+        },
+        PbPageListItem: {
+            category: async (page, args, context) => {
+                const { categories } = context;
+                return categories.get(page.category);
+            }
+        },
         PbQuery: {
             getPage: pipe(
                 hasPermission("pb.page"),
@@ -274,10 +265,12 @@ export default {
                     return new NotAuthorizedResponse();
                 }
 
+                const id = decodeURIComponent(args.id);
+
                 const { pages } = context;
-                const page = await pages.get(args.id);
+                const page = await pages.get(decodeURIComponent(id));
                 if (!page) {
-                    return new NotFoundResponse(`Page "${args.id}" not found.`);
+                    return new NotFoundResponse(`Page "${id}" not found.`);
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
@@ -302,8 +295,8 @@ export default {
                 }
 
                 const { pages } = context;
-                const lista = await pages.list(args);
-                return new Response(lista);
+                const list = await pages.list(args);
+                return new Response(list);
             }),
 
             listPublishedPages,
@@ -363,7 +356,7 @@ export default {
                 }
 
                 const { pages } = context;
-                const { id } = args;
+                const id = decodeURIComponent(args.id);
 
                 const page = await pages.get(id);
                 if (!page) {
@@ -397,7 +390,8 @@ export default {
                 }
 
                 const { pages } = context;
-                const { id, data } = args;
+                const { data } = args;
+                const id = decodeURIComponent(args.id);
 
                 let page = await pages.get(id);
                 if (!page) {

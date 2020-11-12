@@ -66,7 +66,7 @@ const Editor: React.FunctionComponent = () => {
 
     return (
         <Query
-            query={GET_PAGE()}
+            query={GET_PAGE}
             variables={{ id: params.id }}
             onCompleted={data => {
                 const error = data.pageBuilder?.page?.error?.message;

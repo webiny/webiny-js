@@ -1,59 +1,85 @@
-import * as React from "react";
-import TimeAgo from "timeago-react";
-import { useRouter } from "@webiny/react-router";
+import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
-import { css } from "emotion";
-import { Typography } from "@webiny/ui/Typography";
+import { useRouter } from "@webiny/react-router";
+import { useQuery, useMutation } from "react-apollo";
+import { DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { useSecurity } from "@webiny/app-security";
+import TimeAgo from "timeago-react";
 import {
     DataList,
-    List,
+    ScrollList,
     ListItem,
     ListItemText,
-    ListItemTextSecondary,
+    ListItemMeta,
     ListTextOverline,
-    ListItemMeta
+    ListItemTextSecondary
 } from "@webiny/ui/List";
+import { Typography } from "@webiny/ui/Typography";
+import { css } from "emotion";
 
-const t = i18n.namespace("Pb.PagesDataList");
-
+const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-export type PagesDataListProps = {
-    dataList: any;
-};
+const PageBuilderPagesDataList = () => {
+    const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const listQuery = useQuery(LIST_PAGES);
+    const [deleteIt, deleteMutation] = useMutation(DELETE_PAGE, {
+        refetchQueries: [{ query: LIST_PAGES }]
+    });
 
-const PagesDataList: React.FC<PagesDataListProps> = props => {
-    const { location, history } = useRouter();
-    const { dataList } = props;
+    const { showConfirmation } = useConfirmationDialog();
+
+    const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
+    const slug = new URLSearchParams(location.search).get("slug");
+
+    // TODO remove
+    // eslint-disable-next-line
+    const deleteItem = useCallback(
+        item => {
+            showConfirmation(async () => {
+                const response = await deleteIt({
+                    variables: item
+                });
+
+                const error = response?.data?.pageBuilder?.deletePageBuilderPage?.error;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`Page "{slug}" deleted.`({ slug: item.slug }));
+
+                if (slug === item.slug) {
+                    history.push(`/page-builder/pages`);
+                }
+            });
+        },
+        [slug]
+    );
+
+    const { identity } = useSecurity();
+    // TODO remove
+    // eslint-disable-next-line
+    const pbPagePermission = useMemo(() => {
+        return identity.getPermission("pb.page");
+    }, []);
+
+    const loading = [listQuery, deleteMutation].find(item => item.loading);
     const query = new URLSearchParams(location.search);
 
     return (
         <DataList
-            {...dataList}
+            loading={Boolean(loading)}
+            data={data}
             title={t`Pages`}
-            sorters={[
-                {
-                    label: "Newest to oldest",
-                    sorters: { createdOn: -1 }
-                },
-                {
-                    label: "Oldest to newest",
-                    sorters: { createdOn: 1 }
-                },
-                {
-                    label: "Title A-Z",
-                    sorters: { title: 1 }
-                },
-                {
-                    label: "Title Z-A",
-                    sorters: { title: -1 }
-                }
-            ]}
+            refresh={listQuery.refetch}
         >
-            {({ data = [] }) => (
-                <List data-testid="default-data-list">
+            {({ data }) => (
+                <ScrollList>
                     {data.map(page => (
                         <ListItem key={page.id}>
                             <ListItemText
@@ -63,7 +89,7 @@ const PagesDataList: React.FC<PagesDataListProps> = props => {
                                 }}
                             >
                                 {page.title}
-                                <ListTextOverline>{page.category.name}</ListTextOverline>
+                                <ListTextOverline>{page?.category?.name}</ListTextOverline>
                                 {page.createdBy && (
                                     <ListItemTextSecondary>
                                         Created by: {page.createdBy.firstName || "N/A"}. Last
@@ -78,10 +104,10 @@ const PagesDataList: React.FC<PagesDataListProps> = props => {
                             </ListItemMeta>
                         </ListItem>
                     ))}
-                </List>
+                </ScrollList>
             )}
         </DataList>
     );
 };
 
-export default PagesDataList;
+export default PageBuilderPagesDataList;
