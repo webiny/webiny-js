@@ -2,14 +2,14 @@ import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import {
-    withFields,
-    number,
-    string,
     boolean,
     fields,
+    number,
+    onSet,
     setOnce,
     skipOnPopulate,
-    onSet
+    string,
+    withFields
 } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import KSUID from "ksuid";
@@ -249,6 +249,25 @@ export default {
 
                 return forms;
             },
+            async listFormsInBatch(args) {
+                const batch = db.batch();
+
+                batch.read(
+                    ...args.ids.map(id => ({
+                        ...dbArgs,
+                        query: { PK: PK_FORMS, SK: id },
+                        ...args
+                    }))
+                );
+
+                const response = await batch.execute();
+
+                return response.map(item => {
+                    const [[form]] = item;
+                    return form;
+                });
+            },
+            // TODO: Use "modular" function instead of bulking the CRUD.
             async create(data) {
                 // Use `WithFields` model for data validation and setting default value.
                 const form = new FormModel().populate(data);
@@ -339,44 +358,12 @@ export default {
                 return form.locked ? "locked" : "draft";
             },
             async getNextVersion(id) {
-                // FIXME: Probably move it some place else.
                 try {
-                    const response = await context.elasticSearch.search({
-                        index: "form-builder",
-                        type: "_doc",
-                        body: {
-                            query: {
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                constant_score: {
-                                    filter: {
-                                        bool: {
-                                            // `must` means `and`;
-                                            // all conditions must be satisfied for a record to be present in the result
-                                            must: [
-                                                {
-                                                    wildcard: {
-                                                        id: `${id}*`
-                                                    }
-                                                },
-                                                {
-                                                    term: {
-                                                        latestVersion: {
-                                                            value: true
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            },
-                            size: 1,
-                            sort: [{ version: { order: "desc" } }]
-                        }
+                    const [latestRevision] = await this.listFormsWithId({
+                        id,
+                        sort: { SK: -1 },
+                        limit: 1
                     });
-
-                    const [latestRevision] =
-                        response?.body?.hits?.hits?.map(item => item._source) || [];
 
                     if (latestRevision) {
                         return latestRevision.version + 1;
@@ -384,51 +371,41 @@ export default {
 
                     return 1;
                 } catch (e) {
-                    console.log("Error: [getNextVersion]", e);
-                    console.error(e);
-                    return 1;
+                    throw Error("Unable to get next version for form with id: " + id);
                 }
             },
             async markPreviousLatestVersion(id, version) {
                 try {
-                    // FIXME: Probably move it some place else.
                     const response = await context.elasticSearch.search({
                         index: "form-builder",
                         type: "_doc",
                         body: {
                             query: {
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                constant_score: {
-                                    filter: {
-                                        bool: {
-                                            // `must` means `and`;
-                                            // all conditions must be satisfied for a record to be present in the result
-                                            must: [
-                                                {
-                                                    wildcard: {
-                                                        id: `${id}*`
-                                                    }
-                                                },
-                                                {
-                                                    term: {
-                                                        latestVersion: {
-                                                            value: true
-                                                        }
-                                                    }
+                                bool: {
+                                    must: [
+                                        {
+                                            match: {
+                                                id
+                                            }
+                                        },
+                                        {
+                                            term: {
+                                                latestVersion: {
+                                                    value: true
                                                 }
-                                            ],
-                                            // eslint-disable-next-line @typescript-eslint/camelcase
-                                            must_not: [
-                                                {
-                                                    term: {
-                                                        version: {
-                                                            value: version
-                                                        }
-                                                    }
-                                                }
-                                            ]
+                                            }
                                         }
-                                    }
+                                    ],
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    must_not: [
+                                        {
+                                            term: {
+                                                version: {
+                                                    value: version
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             },
                             size: 1,
@@ -457,8 +434,9 @@ export default {
                         }
                     });
                 } catch (e) {
-                    console.log("Error in [markPreviousLatestVersion]");
-                    console.error(e);
+                    throw Error(
+                        `Unable to mark previous latestVersion "false" for form with id: "${id}"`
+                    );
                 }
             },
             conversionRate(form) {
