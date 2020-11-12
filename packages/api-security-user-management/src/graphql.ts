@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import merge from "lodash.merge";
 import gql from "graphql-tag";
 import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
@@ -12,10 +12,6 @@ export default (): GraphQLSchemaPlugin => ({
     name: "graphql-schema-security",
     schema: {
         typeDefs: gql`
-            extend type File @key(fields: "id") {
-                id: ID @external
-            }
-
             type SecurityQuery {
                 _empty: String
             }

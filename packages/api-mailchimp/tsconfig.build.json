@@ -1,24 +1,37 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../graphql",
-    "../api-security",
-    "../api-settings-manager",
-    "../commodo",
-    "../commodo-graphql"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../api-settings-manager/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"./dist",
+		"../graphql",
+		"../api-security",
+		"../api-settings-manager",
+		"../commodo",
+		"../commodo-graphql"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../api-security/tsconfig.build.json"
+		},
+		{
+			"path": "../api-settings-manager/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo-graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo/tsconfig.build.json"
+		}
+	]
 }

@@ -1,8 +1,8 @@
 name: Pull Request Actions
 
 on:
-  pull_request:
-    branches: [master]
+  pull_request_target:
+    branches: [master, v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -12,8 +12,6 @@ env:
   WEBINY_TRACKING_PREFIX: ${{ secrets.WEBINY_TRACKING_PREFIX }}
 
 jobs:
-  # Unlike in the "Build (beta)" workflow, if some of these fail, we want the rest of the jobs
-  # to continue running so that we can also find out if there are any errors in the actual code.
   initial-checks:
     name: Initial checks
     runs-on: ubuntu-latest

@@ -1,13 +1,38 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../app-plugin-admin-welcome-screen" },
-    { "path": "../app-i18n" },
-    { "path": "../app-template" },
-    { "path": "../form" },
-    { "path": "../plugins" }
-
-  ]
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../app"
+		},
+		{
+			"path": "../app-admin"
+		},
+		{
+			"path": "../app-plugin-admin-welcome-screen"
+		},
+		{
+			"path": "../app-i18n"
+		},
+		{
+			"path": "../form"
+		},
+		{
+			"path": "../plugins"
+		},
+		{
+			"path": "../app-security"
+		},
+		{
+			"path": "../app-security-user-management"
+		},
+		{
+			"path": "../react-router"
+		},
+		{
+			"path": "../ui"
+		},
+		{
+			"path": "../validation"
+		}
+	]
 }

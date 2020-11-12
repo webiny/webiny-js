@@ -59,10 +59,7 @@ export const GET_CURRENT_USER = gql`
                     email
                     firstName
                     lastName
-                    avatar {
-                        id
-                        src
-                    }
+                    avatar
                     personalAccessTokens {
                         id
                         name
@@ -85,10 +82,7 @@ export const UPDATE_CURRENT_USER = gql`
                 data {
                     id
                     email
-                    avatar {
-                        id
-                        src
-                    }
+                    avatar
                 }
             }
         }

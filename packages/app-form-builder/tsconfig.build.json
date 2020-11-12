@@ -1,23 +1,65 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "../form",
-    "../app-i18n",
-    "../app-page-builder",
-    "../app-plugin-admin-welcome-screen"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../form/tsconfig.build.json" },
-    { "path": "../app-i18n/tsconfig.build.json" },
-    { "path": "../app-page-builder/tsconfig.build.json" },
-    { "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"../form",
+		"../app-i18n",
+		"../app-page-builder",
+		"../app-plugin-admin-welcome-screen",
+		"../app",
+		"../app-admin",
+		"../app-security",
+		"../app-security-user-management",
+		"../plugins",
+		"../react-router",
+		"../ui",
+		"../validation"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../form/tsconfig.build.json"
+		},
+		{
+			"path": "../app-i18n/tsconfig.build.json"
+		},
+		{
+			"path": "../app-page-builder/tsconfig.build.json"
+		},
+		{
+			"path": "../app-plugin-admin-welcome-screen/tsconfig.build.json"
+		},
+		{
+			"path": "../app/tsconfig.build.json"
+		},
+		{
+			"path": "../app-admin/tsconfig.build.json"
+		},
+		{
+			"path": "../app-security/tsconfig.build.json"
+		},
+		{
+			"path": "../app-security-user-management/tsconfig.build.json"
+		},
+		{
+			"path": "../plugins/tsconfig.build.json"
+		},
+		{
+			"path": "../react-router/tsconfig.build.json"
+		},
+		{
+			"path": "../ui/tsconfig.build.json"
+		},
+		{
+			"path": "../validation/tsconfig.build.json"
+		}
+	]
 }

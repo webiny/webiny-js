@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";

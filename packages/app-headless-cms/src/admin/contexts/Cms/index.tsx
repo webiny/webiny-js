@@ -4,6 +4,7 @@ import { LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS } from "./graphql";
 import get from "lodash.get";
 import set from "lodash.set";
 import createApolloClient from "./createApolloClient";
+import { useSecurity } from "@webiny/app-security";
 
 export const CmsContext = React.createContext({});
 
@@ -18,6 +19,13 @@ const getCurrentEnvironmentFromLocalStorage = () => {
 };
 
 export function CmsProvider(props) {
+    const { identity } = useSecurity();
+
+    const hasPermission = identity.getPermission("cms.environment");
+    if (!hasPermission) {
+        return <CmsContext.Provider value={{}} {...props} />;
+    }
+
     const [currentEnvironmentId, setCurrentEnvironmentId] = useState(() => {
         const environment = getCurrentEnvironmentFromLocalStorage();
         return environment && environment.id;

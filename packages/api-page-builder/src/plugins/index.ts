@@ -1,6 +1,6 @@
-import models from "./models";
+import crud from "./crud";
 import graphql from "./graphql";
-import pageContentModifiers from "./pageContentModifiers";
-import pageSettings from "./pageSettings";
+// import pageContentModifiers from "./pageContentModifiers";
+// import pageSettings from "./pageSettings";
 
-export default () => [models(), graphql, pageContentModifiers, pageSettings];
+export default () => [crud, graphql /*pageContentModifiers*/ /*pageSettings*/];

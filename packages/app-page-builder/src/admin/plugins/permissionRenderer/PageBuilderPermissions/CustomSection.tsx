@@ -33,7 +33,7 @@ const CustomSection = ({ Bind, data, entity, title }) => {
                             <PermissionInfo title={t`Permissions`} />
                         </Cell>
                         <Cell span={6} align={"middle"}>
-                            <Bind name={`${entity}Permissions`}>
+                            <Bind name={`${entity}Rwd`}>
                                 <Select
                                     label={t`Permissions`}
                                     disabled={data[`${entity}AccessLevel`] !== "full"}

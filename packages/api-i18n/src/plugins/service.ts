@@ -1,7 +1,5 @@
-import i18n from "./i18n";
+import i18nContext from "./context";
 import { ContextI18NGetLocales } from "@webiny/api-i18n/types";
-import { Context } from "@webiny/graphql/types";
-import { HandlerClientContext } from "@webiny/handler-client/types";
 
 let localesCache;
 
@@ -13,11 +11,11 @@ export default (options: ServicePluginsOptions) => {
     }
 
     return [
-        i18n,
+        i18nContext,
         {
             name: "context-i18n-get-locales",
             type: "context-i18n-get-locales",
-            async resolve({ context }: { context: Context & HandlerClientContext }) {
+            async resolve({ context }) {
                 if (Array.isArray(localesCache)) {
                     return localesCache;
                 }
@@ -28,6 +26,6 @@ export default (options: ServicePluginsOptions) => {
 
                 return localesCache;
             }
-        } as ContextI18NGetLocales<Context>
+        } as ContextI18NGetLocales
     ];
 };

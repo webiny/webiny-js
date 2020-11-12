@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../plugins"
+    }
+  ]
+}

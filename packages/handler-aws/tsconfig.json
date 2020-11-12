@@ -4,6 +4,6 @@
     { "path": "../handler" },
     { "path": "../handler-client" },
     { "path": "../handler-http" },
-    { "path": "../handler-args" },
+    { "path": "../handler-args" }
   ]
 }

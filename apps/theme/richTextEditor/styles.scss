@@ -1,0 +1,57 @@
+.codex-editor {
+  h1 {
+    display: block;
+    font-size: 2em;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h2 {
+    display: block;
+    font-size: 1.5em;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h3 {
+    display: block;
+    font-size: 1.17em;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h4 {
+    display: block;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h5 {
+    display: block;
+    font-size: 0.83em;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h6 {
+    display: block;
+    font-size: 0.67em;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .ce-delimiter {
+    line-height: 1.6em;
+    width: 100%;
+    text-align: center;
+  }
+
+  .ce-delimiter:before {
+    display: inline-block;
+    content: "***";
+    font-size: 30px;
+    line-height: 65px;
+    height: 30px;
+    letter-spacing: 0.2em;
+  }
+}

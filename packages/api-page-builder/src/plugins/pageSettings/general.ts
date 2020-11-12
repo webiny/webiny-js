@@ -40,14 +40,7 @@ export default [
                 extend input PbPageSettingsInput {
                     general: PbGeneralPageSettingsInput
                 }
-            `,
-            resolvers: {
-                PbGeneralPageSettings: {
-                    image: ({ image }) => {
-                        return image ? { __typename: "File", id: image } : null;
-                    }
-                }
-            }
+            `
         }
     }
 ];

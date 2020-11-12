@@ -1,19 +1,15 @@
 import { ErrorResponse, Response } from "@webiny/graphql";
-import { PK_LOCALE, LocaleData } from "../../models/localeData.model";
 
 export const install = async (
     root: any,
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { I18N } = context.models;
+    const { locales } = context;
 
     try {
-        const defaultLocale = new I18N();
-        defaultLocale.PK = PK_LOCALE;
-        defaultLocale.SK = args.data.code;
-        defaultLocale.data = new LocaleData().populate({ code: args.data.code, default: true });
-        await defaultLocale.save();
+        await locales.create({ code: args.data.code, default: true });
+        await locales.updateDefault(args.data.code);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
@@ -30,10 +26,7 @@ export const isInstalled = async (
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { I18N } = context.models;
-
-    // Check if at least 1 user exists in the system
-    const localeCount = await I18N.findOne({ query: { PK: PK_LOCALE, SK: { $gt: " " } } });
-
-    return new Response(Boolean(localeCount));
+    const { locales } = context;
+    const defaultLocale = await locales.getDefault();
+    return new Response(Boolean(defaultLocale));
 };

@@ -6,9 +6,7 @@
     "./dist",
     "../handler",
     "../handler-client",
-    "../handler-http",
-    "../commodo",
-    "../commodo-fields-storage-db-proxy"
+    "../handler-http"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -18,8 +16,6 @@
   "references": [
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
-    { "path": "../handler-http/tsconfig.build.json" },
-    { "path": "../commodo/tsconfig.build.json" },
-    { "path": "../commodo-fields-storage-db-proxy/tsconfig.build.json" }
+    { "path": "../handler-http/tsconfig.build.json" }
   ]
 }

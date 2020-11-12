@@ -1,51 +1,58 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
 import S3 from "aws-sdk/clients/s3";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import hasRwd from "@webiny/api-file-manager/plugins/resolvers/utils/hasRwd";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const { File } = context.models;
-    const { id } = args;
+    try {
+        // If permission has "rwd" property set, but "d" is not part of it, bail.
+        const filesFilePermission = await context.security.getPermission("files.file");
+        if (filesFilePermission && !hasRwd({ filesFilePermission, rwd: "d" })) {
+            return new NotAuthorizedResponse();
+        }
+        const files = context.files;
+        const { id } = args;
 
-    const file = await File.findById(id);
-    // Logic for particular permission/resolver
-    // We can move it somewhere else and pass it to "hasScope" like CMS
-    const identity = context.security.getIdentity();
-    // Because check permission passed, we know this permission exist
-    const permission = await context.security.getPermission("files.file.delete");
+        const file = await files.get(id);
+        if (!file) {
+            return new NotFoundResponse(id ? `File "${id}" not found!` : "File not found!");
+        }
 
-    if (permission.own && file.createdBy !== identity.id) {
+        // If user can only manage own records, let's check if he owns the loaded one.
+        if (filesFilePermission?.own === true) {
+            const identity = context.security.getIdentity();
+            if (file.createdBy.id !== identity.id) {
+                return new NotAuthorizedResponse();
+            }
+        }
+
+        const s3 = new S3();
+
+        await s3
+            .deleteObject({
+                Bucket: S3_BUCKET,
+                Key: file.key
+            })
+            .promise();
+        await files.delete(id);
+        // Index file in "Elastic Search"
+        await context.elasticSearch.delete({
+            id,
+            index: "file-manager",
+            type: "_doc"
+        });
+
+        return new Response(true);
+    } catch (e) {
         return new ErrorResponse({
-            message: "Not authorized! Missing permission required for the operation!",
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: { permission }
+            code: e.code,
+            message: e.message,
+            data: e.data
         });
     }
-
-    if (!file) {
-        return new NotFoundResponse(id ? `File "${id}" not found!` : "File not found!");
-    }
-
-    const s3 = new S3();
-
-    await s3
-        .deleteObject({
-            Bucket: S3_BUCKET,
-            Key: file.key
-        })
-        .promise();
-
-    return file
-        .delete()
-        .then(() => new Response(true))
-        .catch(
-            e =>
-                new ErrorResponse({
-                    code: e.code,
-                    message: e.message
-                })
-        );
 };
 
 export default resolver;

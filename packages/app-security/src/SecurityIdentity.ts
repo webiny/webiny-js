@@ -21,7 +21,7 @@ export class SecurityIdentity {
         Object.assign(this, data);
     }
 
-    getPermission(permission) {
+    getPermission(permission): SecurityPermission {
         const perms = this.permissions;
         const exactMatch = perms.find(p => p.name === permission);
         if (exactMatch) {

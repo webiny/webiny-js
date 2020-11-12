@@ -1,7 +1,7 @@
+// @ts-nocheck
 import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { Context as CommodoContext } from "@webiny/api-plugin-commodo-db-proxy/types";
-import { Context as I18NContext } from "@webiny/api-i18n/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
 import isEqual from "fast-deep-equal";
 
 const getRawData = value => {
@@ -11,17 +11,20 @@ const getRawData = value => {
 export type I18NField = {
     field?: any;
     createField?: (valuesInstance: any) => any;
-    context: CommodoContext & I18NContext;
+    context: HandlerI18NContext;
     [key: string]: any;
 };
 
-export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NContext["i18n"]) => {
+export const getI18NValueItem = (
+    value: { [key: string]: any }[],
+    i18n: HandlerI18NContext["i18n"]
+) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;
     }
 
-    const currentLocale = i18n.getLocale();
+    const currentLocale = i18n.getCurrentLocale();
     const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.id);
 
     const output = [...value];
@@ -70,7 +73,7 @@ export const i18nField = ({
                     }
 
                     if (!locale) {
-                        locale = i18n.getLocale();
+                        locale = i18n.getCurrentLocale();
                     }
 
                     const value = this.values.find(value => value.locale === locale.id);

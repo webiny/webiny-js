@@ -1,42 +1,38 @@
 {
-	"name": "@webiny/commodo",
-	"version": "4.13.0",
-	"main": "index.js",
-	"types": "types.d.ts",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git"
-	},
-	"description": "A set of frequently used Commodo higher order functions.",
-	"contributors": [
-		"Pavel Denisjuk <pavel@webiny.com>",
-		"Sven Al Hamad <sven@webiny.com>",
-		"Adrian Smijulj <adrian@webiny.com>"
-	],
-	"license": "MIT",
-	"dependencies": {
-		"@commodo/fields": "^1.2.1",
-		"@commodo/fields-storage": "^2.1.2",
-		"@commodo/fields-storage-ref": "^1.2.1",
-		"@commodo/fields-storage-soft-delete": "^2.1.1",
-		"@commodo/hooks": "^1.2.1",
-		"@commodo/name": "^1.3.1",
-		"commodo-fields-date": "^1.0.3",
-		"commodo-fields-float": "^1.0.2",
-		"commodo-fields-int": "^1.0.1",
-		"commodo-fields-object": "^1.0.3",
-		"commodo-fields-storage-crud-logs": "^1.0.2",
-		"ramda": "^0.26.1",
-		"repropose": "^1.0.2"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "dist"
-	},
-	"scripts": {
-		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-	},
-	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "name": "@webiny/commodo",
+  "version": "4.14.0",
+  "main": "index.js",
+  "types": "types.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A set of frequently used Commodo higher order functions.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@commodo/fields": "^1.2.1",
+    "@commodo/hooks": "^1.2.1",
+    "@commodo/name": "^1.3.1",
+    "commodo-fields-date": "^1.0.3",
+    "commodo-fields-float": "^1.0.2",
+    "commodo-fields-int": "^1.0.1",
+    "commodo-fields-object": "^1.0.3",
+    "ramda": "^0.26.1",
+    "repropose": "^1.0.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

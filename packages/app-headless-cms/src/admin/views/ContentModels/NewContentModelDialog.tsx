@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
@@ -58,6 +58,16 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
         return { value: item.id, label: item.name };
     });
 
+    const nameValidator = useCallback(name => {
+        if (!name.charAt(0).match(/[a-zA-Z]/)) {
+            throw new Error("Value is not valid - must not start with a number.");
+        }
+        if (name.trim().toLowerCase() === "id") {
+            throw new Error('Value is not valid - "id" is an auto-generated field.');
+        }
+        return true;
+    }, undefined);
+
     return (
         <Dialog
             open={open}
@@ -102,7 +112,10 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                     <Cell span={12}>
                                         <Bind
                                             name={"name"}
-                                            validators={validation.create("required,maxLength:100")}
+                                            validators={[
+                                                validation.create("required,maxLength:100"),
+                                                nameValidator
+                                            ]}
                                         >
                                             <Input
                                                 label={t`Name`}

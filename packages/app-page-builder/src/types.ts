@@ -18,7 +18,7 @@ import {
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { Form } from "@webiny/form/Form";
-import { Item } from "@webiny/app-admin/plugins/Menu/Navigation/components";
+import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
 
 export type PbMenuSettingsItemPlugin = Plugin & {
     type: "menu-settings-page-builder";

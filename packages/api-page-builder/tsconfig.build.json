@@ -1,27 +1,68 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../graphql",
-    "../api-security",
-    "../api-settings-manager",
-    "../commodo",
-    "../commodo-graphql",
-    "../handler-ssr",
-    "../validation"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../graphql/tsconfig.build.json" },
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../api-settings-manager/tsconfig.build.json" },
-    { "path": "../commodo-graphql/tsconfig.build.json" },
-    { "path": "../handler-ssr/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"../graphql",
+		"../api-i18n-content",
+		"../api-security",
+		"../commodo",
+		"../commodo-graphql",
+		"../handler",
+		"../handler-db",
+		"../handler-ssr",
+		"../validation",
+		"../api-i18n",
+		"../handler-apollo-server",
+		"../handler-aws",
+		"../db-dynamodb"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../api-security/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo-graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../handler/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-db/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-ssr/tsconfig.build.json"
+		},
+		{
+			"path": "../validation/tsconfig.build.json"
+		},
+		{
+			"path": "../api-i18n-content/tsconfig.build.json"
+		},
+		{
+			"path": "../api-i18n/tsconfig.build.json"
+		},
+		{
+			"path": "../commodo/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-apollo-server/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-aws/tsconfig.build.json"
+		},
+		{
+			"path": "../db-dynamodb/tsconfig.build.json"
+		}
+	]
 }

@@ -1,0 +1,55 @@
+{
+	"name": "site",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@webiny/app": "^4.13.0",
+		"@webiny/app-page-builder": "^4.13.0",
+		"@webiny/app-cookie-policy": "^4.13.0",
+		"@webiny/app-typeform": "^4.13.0",
+		"@webiny/app-mailchimp": "^4.13.0",
+		"@webiny/app-google-tag-manager": "^4.13.0",
+		"@webiny/app-i18n": "^4.13.0",
+		"@webiny/app-form-builder": "^4.13.0",
+		"@webiny/plugins": "^4.13.0",
+		"@webiny/project-utils": "^4.13.0",
+		"@webiny/react-router": "^4.13.0",
+		"@webiny/cli-plugin-deploy-pulumi": "^4.13.0",
+		"apollo-client": "^2.2.8",
+		"apollo-link": "^1.2.14",
+		"apollo-link-batch-http": "^1.2.14",
+		"apollo-cache-inmemory": "^1.6.6",
+		"core-js": "^3.0.1",
+		"cross-fetch": "^3.0.4",
+		"theme": "^0.1.0",
+		"react": "^16.13.1",
+		"react-apollo": "^3.1.0",
+		"react-dom": "^16.13.1",
+		"regenerator-runtime": "^0.13.5"
+	},
+	"devDependencies": {
+		"env-cmd": "^10.1.0"
+	},
+	"scripts": {
+		"analyze": "source-map-explorer build/static/js/main.*",
+		"build": "webiny run build",
+		"start": "webiny run start --env local"
+	},
+	"browserslist": {
+		"development": [
+			"last 2 chrome versions",
+			"last 2 firefox versions",
+			"last 2 edge versions"
+		],
+		"production": [
+			">0.25%",
+			"not op_mini all",
+			"ie 11"
+		]
+	},
+	"svgo": {
+		"plugins": {
+			"removeViewBox": false
+		}
+	}
+}

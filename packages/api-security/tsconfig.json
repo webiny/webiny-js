@@ -1,8 +1,14 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../graphql" },
-    { "path": "../commodo-graphql" },
-    { "path": "../validation" }
+    {
+      "path": "../graphql"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-apollo-server"
+    }
   ]
 }

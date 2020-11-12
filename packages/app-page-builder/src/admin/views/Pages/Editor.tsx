@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
-import Snackbar from "@webiny/app-admin/plugins/Snackbar/Snackbar";
 import {
     createElementHelper,
     updateChildPathsHelper
@@ -10,8 +9,9 @@ import { Query } from "react-apollo";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
+import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { DialogContainer } from "@webiny/app-admin/plugins/Dialog/Dialog";
+import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 

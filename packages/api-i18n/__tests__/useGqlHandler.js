@@ -1,24 +1,28 @@
 import { createHandler } from "@webiny/handler-aws";
-import dynamoDb from "@webiny/api-plugin-commodo-dynamodb";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import i18nPlugins from "@webiny/api-i18n/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dynamoDb({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                endpoint: "localhost:8000",
-                sslEnabled: false,
-                region: "local-env"
+        dbPlugins({
+            table: "I18N",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                    sslEnabled: false,
+                    region: "local"
+                })
             })
         }),
         apolloServerPlugins(),
         securityPlugins(),
-        { type: "security-authorization", getPermissions: () => [{ name: "*", key: "*" }] },
+        { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
         i18nPlugins()
     );
 
@@ -52,9 +56,33 @@ export default () => {
         },
         async getI18NLocale(variables) {
             return invoke({ body: { query: GET_LOCALE, variables } });
+        },
+        async getI18NInformation(variables, rest = {}) {
+            return invoke({ body: { query: GET_I18N_INFORMATION, variables }, ...rest });
         }
     };
 };
+
+const GET_I18N_INFORMATION = /* GraphQL */ `
+    {
+        i18n {
+            getI18NInformation {
+                currentLocales {
+                    context
+                    locale
+                }
+                locales {
+                    default
+                    code
+                }
+                defaultLocale {
+                    default
+                    code
+                }
+            }
+        }
+    }
+`;
 
 const CREATE_LOCALE = /* GraphQL */ `
     mutation CreateI18NLocale($data: I18NLocaleInput!) {
@@ -93,9 +121,9 @@ const UPDATE_LOCALE = /* GraphQL */ `
 `;
 
 const LIST_LOCALES = /* GraphQL */ `
-    query ListI18NLocales($where: ListI18NLocalesWhereInput) {
+    query ListI18NLocales {
         i18n {
-            listI18NLocales(where: $where) {
+            listI18NLocales {
                 data {
                     code
                     default

@@ -1,8 +1,20 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    { "path": "../graphql" },
-    { "path": "../api-security" },
-    { "path": "../api-security-user-management" }
-  ]
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../graphql"
+		},
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../api-security-user-management"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-http"
+		}
+	]
 }

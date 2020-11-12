@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from "react";
 import { getPlugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";

@@ -1,16 +1,13 @@
 export const locales = {
     en: {
-        id: "eeeeeeeeeeeeeeeeeeeeeeee",
         code: "en-US",
         default: true
     },
     de: {
-        id: "dddddddddddddddddddddddd",
         code: "de-DE",
         default: false
     },
     it: {
-        id: "cccccccccccccccccccccccc",
         code: "it-IT",
         default: false
     }

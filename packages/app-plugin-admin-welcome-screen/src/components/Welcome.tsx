@@ -118,9 +118,14 @@ const Welcome = () => {
         return null;
     }
 
+    const canSeeAnyWidget = true;
+
+    /*
+    TODO: update permissions checks!!
     const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
         "admin-welcome-screen-widget"
     ).some(pl => identity.getPermission(pl.scopes[0] || ""));
+    */
 
     return (
         <Grid>

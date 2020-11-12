@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Tab } from "@webiny/ui/Tabs";
 import FormElementAdvancedSettings from "./components/FormElementAdvancedSettings";
-import formsSitePlugins from "@webiny/app-form-builder/page-builder/site/plugins";
+import formElement from "../../../page-builder/render/plugins/formElement";
 import FormElement from "./components/FormElement";
 import { ReactComponent as FormLogo } from "./components/icons/round-description-24px.svg";
 import {
@@ -20,7 +20,7 @@ const PreviewBox = styled("div")({
 });
 
 export default () => [
-    formsSitePlugins(),
+    formElement,
     {
         name: "pb-page-element-form",
         type: "pb-editor-page-element",

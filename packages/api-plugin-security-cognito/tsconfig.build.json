@@ -1,14 +1,37 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": ["node_modules", "dist", "../graphql", "../api-security", "../api-security-user-management"],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist"
-  },
-  "references": [
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../api-security-user-management/tsconfig.build.json" }
-  ]
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"../graphql",
+		"../api-security",
+		"../api-security-user-management",
+		"../handler",
+		"../handler-http"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist"
+	},
+	"references": [
+		{
+			"path": "../api-security/tsconfig.build.json"
+		},
+		{
+			"path": "../api-security-user-management/tsconfig.build.json"
+		},
+		{
+			"path": "../graphql/tsconfig.build.json"
+		},
+		{
+			"path": "../handler/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-http/tsconfig.build.json"
+		}
+	]
 }

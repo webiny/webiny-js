@@ -1,12 +1,12 @@
-import { Context } from "@webiny/api-i18n/types";
+import { HandlerI18NContextObject } from "@webiny/api-i18n/types";
 
-export default (value: { [key: string]: any }[], i18n: Context["i18n"]) => {
+export default (value: Record<string, any>[], i18n: HandlerI18NContextObject) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;
     }
 
-    const currentLocale = i18n.getLocale();
+    const currentLocale = i18n.getCurrentLocale();
     const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.id);
 
     const output = [...value];
