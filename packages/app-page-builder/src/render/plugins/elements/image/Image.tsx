@@ -15,6 +15,8 @@ const Link = ({ link, children }) => {
     return children;
 };
 
+const position = { left: "flex-start", center: "center", right: "flex-end" };
+
 const Image = props => {
     const { image = {}, link = {}, settings = {} } = get(props, "element.data", {});
     if (!image || !image.file) {
@@ -41,7 +43,7 @@ const Image = props => {
     return (
         <ElementRoot
             element={props.element}
-            style={{ textAlign: horizontalAlign }}
+            style={{ display: "flex", justifyContent: position[horizontalAlign] }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
             <Link link={link}>
