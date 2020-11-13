@@ -9,6 +9,13 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import {
+    CREATE_PAGE_ELEMENT,
+    DELETE_PAGE_ELEMENT,
+    LIST_PAGE_ELEMENTS,
+    UPDATE_PAGE_ELEMENT,
+    GET_PAGE_ELEMENT
+} from "./graphql/pageElements";
 import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES, UPDATE_PAGE, GET_PAGE } from "./graphql/pages";
 import { SecurityIdentity } from "@webiny/api-security";
 import {
@@ -76,7 +83,7 @@ export default ({ permissions, identity } = {}) => {
             hosts: [`http://localhost:9201`],
             node: "http://localhost:9201"
         }),
-        sleep: (ms = 100) => {
+        sleep: (ms = 333) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);
             });
@@ -131,6 +138,23 @@ export default ({ permissions, identity } = {}) => {
         },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
+        },
+
+        // PageElements
+        async createPageElement(variables) {
+            return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });
+        },
+        async updatePageElement(variables) {
+            return invoke({ body: { query: UPDATE_PAGE_ELEMENT, variables } });
+        },
+        async deletePageElement(variables) {
+            return invoke({ body: { query: DELETE_PAGE_ELEMENT, variables } });
+        },
+        async listPageElements(variables) {
+            return invoke({ body: { query: LIST_PAGE_ELEMENTS, variables } });
+        },
+        async getPageElement(variables) {
+            return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
         }
     };
 };
