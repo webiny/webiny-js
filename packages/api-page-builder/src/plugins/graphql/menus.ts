@@ -44,7 +44,6 @@ export default {
 
         type PbMenuListResponse {
             data: [PbMenu]
-            meta: PbListMeta
             error: PbError
         }
 

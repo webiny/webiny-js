@@ -132,7 +132,6 @@ export default {
 
         type PbPageListResponse {
             data: [PbPageListItem]
-            meta: PbListMeta
             error: PbError
         }
 
@@ -143,7 +142,6 @@ export default {
 
         type PbElementListResponse {
             data: [PbElement]
-            meta: PbListMeta
         }
 
         type PbSearchTagsResponse {
@@ -264,7 +262,7 @@ export default {
                 const id = decodeURIComponent(args.id);
 
                 const { pages } = context;
-                const page = await pages.get(decodeURIComponent(id));
+                const page = await pages.get(id);
                 if (!page) {
                     return new NotFoundResponse(`Page "${id}" not found.`);
                 }

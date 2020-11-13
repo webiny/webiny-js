@@ -44,7 +44,6 @@ export default {
 
         type PbCategoryListResponse {
             data: [PbCategory]
-            meta: PbListMeta
             error: PbError
         }
 
