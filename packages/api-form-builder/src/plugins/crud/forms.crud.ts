@@ -349,6 +349,21 @@ export default {
                     }
                 });
             },
+            deleteAll(ids: [string]) {
+                const batch = db.batch();
+
+                batch.delete(
+                    ...ids.map(id => ({
+                        ...dbArgs,
+                        query: {
+                            PK: PK_FORMS,
+                            SK: id
+                        }
+                    }))
+                );
+
+                return batch.execute();
+            },
             // Other methods
             getStatus(form) {
                 if (form.published) {
