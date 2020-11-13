@@ -1,6 +1,6 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
-import dbArgs from "./dbArgs";
+import defaults from "./defaults";
 import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 
 export type Menu = {
@@ -24,7 +24,7 @@ export default {
         context.menus = {
             async get(slug: string) {
                 const [[menu]] = await db.read<Menu>({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_MENU, SK: slug },
                     limit: 1
                 });
@@ -33,7 +33,7 @@ export default {
             },
             async list(args) {
                 const [menus] = await db.read<Menu>({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_MENU, SK: { $gt: " " } },
                     ...args
                 });
@@ -44,7 +44,7 @@ export default {
                 const { title, slug, description, items, createdBy, createdOn } = data;
 
                 return db.create({
-                    ...dbArgs,
+                    ...defaults.db,
                     data: {
                         PK: PK_MENU,
                         SK: slug,
@@ -60,7 +60,7 @@ export default {
             update(data) {
                 const { title, slug, description, items } = data;
                 return db.update({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_MENU, SK: slug },
                     data: {
                         title,
@@ -72,7 +72,7 @@ export default {
             },
             delete(slug: string) {
                 return db.delete({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_MENU, SK: slug }
                 });
             }
