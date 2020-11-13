@@ -3,7 +3,8 @@ import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {
-        const forms = context?.formBuilder?.crud?.forms;
+        const { i18nContent, formBuilder } = context;
+        const forms = formBuilder?.crud?.forms;
 
         const sourceRev = await forms.get(args.revision);
         if (!sourceRev) {
@@ -28,6 +29,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             type: "_doc",
             body: {
                 id: form.id,
+                parent: form.parent,
                 createdOn: form.createdOn,
                 savedOn: form.savedOn,
                 name: form.name,
@@ -38,7 +40,8 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                 locked: form.locked,
                 latestVersion: form.latestVersion,
                 status: form.status,
-                createdBy: form.createdBy
+                createdBy: form.createdBy,
+                locale: i18nContent?.locale?.code
             }
         });
 

@@ -2,7 +2,8 @@ import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const forms = context?.formBuilder?.crud?.forms;
+    const { i18nContent, formBuilder } = context;
+    const forms = formBuilder?.crud?.forms;
     const { data } = args;
 
     try {
@@ -25,7 +26,8 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                 locked: form.locked,
                 latestVersion: form.latestVersion,
                 status: form.status,
-                createdBy: form.createdBy
+                createdBy: form.createdBy,
+                locale: i18nContent?.locale?.code
             }
         });
 

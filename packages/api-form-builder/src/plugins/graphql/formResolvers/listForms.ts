@@ -2,7 +2,8 @@ import { ErrorResponse, ListResponse } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
-    const forms = context?.formBuilder?.crud?.forms;
+    const { i18nContent, formBuilder } = context;
+    const forms = formBuilder?.crud?.forms;
     const {
         // sort = null,
         search = null,
@@ -12,7 +13,10 @@ const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
         // before,
     } = args;
 
-    const must: any = [{ term: { latestVersion: true } }];
+    const must: any = [
+        { term: { latestVersion: true } },
+        { term: { "locale.keyword": i18nContent?.locale?.code } }
+    ];
 
     if (search) {
         must.push({
