@@ -11,7 +11,11 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
         if (!existingForm) {
             return new NotFoundResponse(`Form with id:"${id}" not found!`);
         }
-        // TODO: Delete all submission and revisions
+        // Before delete
+        if (existingForm.version > 1 && existingForm.lastestVersion) {
+            await forms.markPreviousLatestVersionActive(existingForm.parent, existingForm.version);
+        }
+
         await forms.delete(id);
 
         // Delete form with "id" from "Elastic Search"
