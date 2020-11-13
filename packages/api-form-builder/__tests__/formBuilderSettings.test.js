@@ -80,8 +80,22 @@ describe("Form Builder Settings Test", () => {
     });
 
     test(`Should able to get & update settings after "install"`, async () => {
+        // Let's install the `Form builder`
+        let [response] = await install({ domain: "http://localhost:3001" });
+
+        expect(response).toEqual({
+            data: {
+                forms: {
+                    install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
         // Should not have any settings without install
-        let [response] = await getSettings();
+        [response] = await getSettings();
 
         expect(response).toEqual({
             data: {
