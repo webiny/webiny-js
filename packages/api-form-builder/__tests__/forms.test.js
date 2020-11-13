@@ -309,7 +309,7 @@ describe("Form Builder Settings Test", () => {
         });
     });
 
-    test(`List forms, list published forms and get published form`, async () => {
+    test(`list forms, list published forms and get published form`, async () => {
         const formIds = [];
         const formDataArray = [];
         // Let's create three forms.
@@ -478,5 +478,136 @@ describe("Form Builder Settings Test", () => {
                 }
             }
         });
+    });
+
+    test(`deleting parent form should "delete" all it's revisions`, async () => {
+        const formIds = [];
+        const formDataArray = [];
+
+        // Let's create a form
+        let [response] = await createForm({ data: { name: `Test-A` } });
+        // Save to "id" fro later.
+        formIds.push(response?.data?.forms?.createForm?.data.id);
+
+        formDataArray.push({
+            ...response?.data?.forms?.createForm?.data,
+            createdOn: /^20/,
+            savedOn: /^20/
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    createForm: {
+                        data: formDataArray[0],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // List should not be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listForms();
+            if (response.data.forms.listForms.data.length) {
+                break;
+            }
+        }
+
+        [response] = await publishRevision({ id: formIds[0] });
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    publishRevision: {
+                        data: {
+                            ...formDataArray[0],
+                            publishedOn: /^20/,
+                            locked: true,
+                            published: true,
+                            status: "published"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        let parentFormId = formIds[0];
+        // Let's create two revisions from the original form and publish them.
+        for (let i = 0; i < 2; i++) {
+            let [response] = await createRevisionFrom({ revision: parentFormId });
+            const formData = response?.data?.forms?.createRevisionFrom?.data;
+
+            formIds[i + 1] = response?.data?.forms?.createRevisionFrom?.data?.id;
+
+            expect(response).toMatchObject({
+                data: {
+                    forms: {
+                        createRevisionFrom: {
+                            data: {
+                                ...formData,
+                                createdOn: /^20/,
+                                savedOn: /^20/
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            [response] = await publishRevision({ id: formIds[i + 1] });
+            expect(response).toMatchObject({
+                data: {
+                    forms: {
+                        publishRevision: {
+                            data: {
+                                ...formData,
+                                createdOn: /^20/,
+                                savedOn: /^20/,
+                                publishedOn: /^20/,
+                                locked: true,
+                                published: true,
+                                status: "published"
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
+
+            // Update parent id
+            parentFormId = formIds[i + 1];
+        }
+
+        // List should not be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listPublishedForms();
+            if (response.data.forms.listPublishedForms.data.length === 3) {
+                break;
+            }
+        }
+
+        [response] = await deleteForm({ id: formIds[0] });
+        expect(response).toMatchObject({
+            data: {
+                forms: {
+                    deleteForm: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // List should be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listPublishedForms();
+            if (response.data.forms.listPublishedForms.data.length === 0) {
+                break;
+            }
+        }
     });
 });
