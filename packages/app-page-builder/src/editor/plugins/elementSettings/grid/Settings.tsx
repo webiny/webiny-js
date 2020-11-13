@@ -1,6 +1,7 @@
+import React from "react";
+import CellSize from "./CellSize";
 import styled from "@emotion/styled";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
-import React from "react";
 import {
     calculatePresetPluginCells,
     getPresetPlugins
@@ -68,34 +69,58 @@ const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPlugi
 export const Settings: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const currentType = element.data.settings?.grid?.cellsType;
-
+    const currentCellsType = element.data.settings?.grid?.cellsType;
     const presetPlugins = getPresetPlugins();
 
-    const setPreset = (pl: PbEditorGridPresetPluginType) => {
-        const type = pl.cellsType;
-        if (type === currentType) {
-            return;
+    const onInputSizeChange = (value: number, index: number) => {
+        const cellElement = element.elements[index];
+        if (!cellElement) {
+            throw new Error(`There is no element on index ${index}.`);
         }
-        const newElement = {
-            ...element,
-            data: {
-                ...element.data,
-                settings: {
-                    ...(element.data.settings || {}),
-                    grid: {
-                        type
-                    }
-                }
-            },
-            elements: updateChildrenWithPreset(element, pl)
-        };
         handler.trigger(
             new UpdateElementActionEvent({
-                element: newElement
+                element: {
+                    ...cellElement,
+                    data: {
+                        ...cellElement.data,
+                        settings: {
+                            ...(cellElement.data.settings || {}),
+                            grid: {
+                                size: value
+                            }
+                        }
+                    }
+                }
             })
         );
     };
+
+    const setPreset = (pl: PbEditorGridPresetPluginType) => {
+        const cellsType = pl.cellsType;
+        if (cellsType === currentCellsType) {
+            return;
+        }
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element: {
+                    ...element,
+                    data: {
+                        ...element.data,
+                        settings: {
+                            ...(element.data.settings || {}),
+                            grid: {
+                                cellsType
+                            }
+                        }
+                    },
+                    elements: updateChildrenWithPreset(element, pl)
+                }
+            })
+        );
+    };
+    const totalCellsUsed = element.elements.reduce((total, cell) => {
+        return total + (cell.data.settings?.grid?.size || 1);
+    }, 0);
     return (
         <Tabs>
             <Tab label={"Grid"}>
@@ -105,10 +130,22 @@ export const Settings: React.FunctionComponent = () => {
                         <StyledIconButton
                             key={`preset-${pl.cellsType}`}
                             onClick={() => setPreset(pl)}
-                            active={pl.cellsType === currentType}
+                            active={pl.cellsType === currentCellsType}
                         >
                             <Icon />
                         </StyledIconButton>
+                    );
+                })}
+                {element.elements.map((cell, index) => {
+                    const size = cell.data.settings?.grid?.size || 1;
+                    return (
+                        <CellSize
+                            key={`cell-size-${index}`}
+                            value={size}
+                            label={`Cell ${index + 1}`}
+                            onChange={value => onInputSizeChange(value, index)}
+                            maxAllowed={12 - totalCellsUsed}
+                        />
                     );
                 })}
             </Tab>
