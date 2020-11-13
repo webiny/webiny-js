@@ -13,7 +13,6 @@ import {
 } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import KSUID from "ksuid";
-import pipe from "@ramda/pipe";
 import slugify from "slugify";
 import merge from "merge";
 import pick from "lodash/pick";
@@ -77,39 +76,14 @@ const FormSettingsModel = withFields({
     }),
     reCaptcha: fields({
         value: {},
-        instanceOf: pipe(
-            // TODO: We'll see where to implement/move these.
-            // withProps({
-            //     settings: {
-            //         get enabled() {
-            //             return new Promise(async resolve => {
-            //                 const settings = await FormSettings.load();
-            //                 resolve(Boolean(get(settings, "data.reCaptcha.enabled")));
-            //             });
-            //         },
-            //         get siteKey() {
-            //             return new Promise(async resolve => {
-            //                 const settings = await FormSettings.load();
-            //                 resolve(get(settings, "data.reCaptcha.siteKey"));
-            //             });
-            //         },
-            //         get secretKey() {
-            //             return new Promise(async resolve => {
-            //                 const settings = await FormSettings.load();
-            //                 resolve(get(settings, "data.reCaptcha.secretKey"));
-            //             });
-            //         }
-            //     }
-            // }),
-            withFields({
-                enabled: boolean(),
-                // Note: We've replaced "i18nString()" with "string()"
-                errorMessage: string({
-                    value: "Please verify that you are not a robot.",
-                    validation: validation.create("maxLength:100")
-                })
+        instanceOf: withFields({
+            enabled: boolean(),
+            // Note: We've replaced "i18nString()" with "string()"
+            errorMessage: string({
+                value: "Please verify that you are not a robot.",
+                validation: validation.create("maxLength:100")
             })
-        )()
+        })()
     })
 })();
 
@@ -153,28 +127,8 @@ const FormModel = withFields(instance => ({
                 if (!instance.locked) {
                     instance.locked = true;
                 }
-                // TODO: We'll see about it.
-                // const removeBeforeSave = instance.hook("beforeSave", async () => {
-                //     removeBeforeSave();
-                //     await instance.hook("beforePublish");
-                // });
-                // TODO: We'll see about it.
-                // const removeAfterSave = instance.hook("afterSave", async () => {
-                //     removeAfterSave();
-                //     await instance.hook("afterPublish");
-                // });
             } else {
                 instance.publishedOn = null;
-                // TODO: We'll see about it.
-                // const removeBeforeSave = instance.hook("beforeSave", async () => {
-                //     removeBeforeSave();
-                //     await instance.hook("beforeUnpublish");
-                // });
-                // TODO: We'll see about it.
-                // const removeAfterSave = instance.hook("afterSave", async () => {
-                //     removeAfterSave();
-                //     await instance.hook("afterUnpublish");
-                // });
             }
         }
         return value;
@@ -198,7 +152,7 @@ export type Form = {
     layout: Record<string, any>;
     stats: Record<string, any>;
     settings: Record<string, any>;
-    trigger: Record<string, any>;
+    triggers: Record<string, any>;
     version: number;
     parent: string;
     locked: boolean;
@@ -454,6 +408,8 @@ export default {
                     );
                 }
             },
+            // FIXME: Move to utils maybe?
+            // Form stats helpers
             conversionRate(form) {
                 if (form.stats.views > 0) {
                     return ((form.stats.submissions / form.stats.views) * 100).toFixed(2);
@@ -469,23 +425,27 @@ export default {
                 form.stats.submissions = form.stats.submissions + 1;
             },
             async submit({
-                instance,
+                form: formInstance,
                 reCaptchaResponseToken,
                 data: rawData,
                 meta
             }: {
-                instance: any;
+                form: Form;
                 reCaptchaResponseToken?: string;
                 data: { [key: string]: any };
                 meta: { [key: string]: any };
             }) {
                 let result;
-                if (instance.settings.reCaptcha.enabled) {
+                const { formBuilderSettings } = context.formBuilder.crud;
+
+                const settingsFB = await formBuilderSettings.get();
+
+                if (settingsFB?.reCaptcha?.enabled) {
                     if (!reCaptchaResponseToken) {
                         throw new Error("Missing reCAPTCHA response token - cannot verify.");
                     }
 
-                    const secretKey = await instance.settings.reCaptcha.settings.secretKey;
+                    const { secretKey } = settingsFB.reCaptcha;
 
                     const recaptchaResponse = await fetch(
                         "https://www.google.com/recaptcha/api/siteverify",
@@ -513,7 +473,7 @@ export default {
 
                 // Validate data.
                 const validatorPlugins = context.plugins.byType("form-field-validator");
-                const fields = instance.fields;
+                const fields = formInstance.fields;
                 const data = pick(
                     rawData,
                     fields.map(field => field.fieldId)
@@ -570,48 +530,38 @@ export default {
                 const formSubmission = await formSubmissionCrud.create({
                     data,
                     meta: { ...meta, locale: i18n.getCurrentLocales() },
-                    formId: `${instance.id}#${instance.version}`
+                    formId: getFormId(formInstance)
                 });
-
-                // We'll see how to manage
-                // formSubmission.form = {
-                //     parent: this.parent,
-                //     revision: this
-                // };
 
                 formSubmissionCrud.addLog(formSubmission, {
                     type: "info",
                     message: "Form submission created."
                 });
-                // TODO: Need to find a way to just update the existing "submission"
-                // Should it be a new submission
-                // await formSubmission.save();
+
                 await formSubmissionCrud.update({ data: {}, existingData: formSubmission });
 
                 try {
                     // Execute triggers
-                    if (instance.triggers) {
+                    if (formInstance.triggers) {
                         const plugins = context.plugins.byType("form-trigger-handler");
                         for (let i = 0; i < plugins.length; i++) {
                             const plugin = plugins[i];
-                            instance.triggers[plugin.trigger] &&
+                            formInstance.triggers[plugin.trigger] &&
                                 (await plugin.handle({
                                     form: this,
                                     formSubmission,
                                     data,
                                     meta,
-                                    trigger: instance.triggers[plugin.trigger]
+                                    trigger: formInstance.triggers[plugin.trigger]
                                 }));
                         }
                     }
 
-                    // this.stats.incrementSubmissions();
-                    this.incrementSubmissions(instance);
-                    // TODO: Need to find a way to just update the existing "form"
-                    // await this.save();
+                    this.incrementSubmissions(formInstance);
+
                     await context.formBuilder.crud.forms.update({
                         data: {},
-                        existingForm: instance
+                        existingForm: formInstance
                     });
 
                     formSubmissionCrud.addLog(formSubmission, {
@@ -625,8 +575,6 @@ export default {
                     });
                     throw e;
                 } finally {
-                    // TODO: Need to find a way to just update the existing "submission"
-                    // await formSubmission.save();
                     result = await formSubmissionCrud.update({
                         data: {},
                         existingData: formSubmission
