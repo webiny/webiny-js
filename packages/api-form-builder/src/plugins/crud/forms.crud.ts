@@ -262,10 +262,12 @@ export default {
 
                 const response = await batch.execute();
 
-                return response.map(item => {
-                    const [[form]] = item;
-                    return form;
-                });
+                return response
+                    .map(item => {
+                        const [[form]] = item;
+                        return form;
+                    })
+                    .filter(Boolean);
             },
             // TODO: Use "modular" function instead of bulking the CRUD.
             async create(data) {
@@ -294,8 +296,12 @@ export default {
                 // Latest revision
                 form.latestVersion = true;
                 if (form.version > 1) {
-                    // Get "previousLatestForm" and mark it's "latestVersion" as "false".
-                    await this.markPreviousLatestVersion(getBaseFormId(form.id), form.version);
+                    // Mark previous Latest Form's  "latestVersion" to false.
+                    await this.markPreviousLatestVersion({
+                        parentId: form.parent,
+                        version: form.version,
+                        latestVersion: false
+                    });
                 }
                 // Set form status
                 form.status = this.getStatus(form);
@@ -389,7 +395,7 @@ export default {
                     throw Error("Unable to get next version for form with id: " + id);
                 }
             },
-            async markPreviousLatestVersion(id, version) {
+            async markPreviousLatestVersion({ parentId, version, latestVersion }) {
                 try {
                     const response = await context.elasticSearch.search({
                         index: "form-builder",
@@ -399,15 +405,8 @@ export default {
                                 bool: {
                                     must: [
                                         {
-                                            match: {
-                                                id
-                                            }
-                                        },
-                                        {
                                             term: {
-                                                latestVersion: {
-                                                    value: true
-                                                }
+                                                "parent.keyword": parentId
                                             }
                                         }
                                     ],
@@ -428,13 +427,14 @@ export default {
                         }
                     });
 
-                    const [previousLatestRevision] =
-                        response?.body?.hits?.hits?.map(item => item._source) || [];
+                    const [previousLatestRevision] = response?.body?.hits?.hits?.map(
+                        item => item._source
+                    );
 
                     const previousLatestRevisionForm = await this.get(previousLatestRevision.id);
 
                     await this.update({
-                        data: { latestVersion: false },
+                        data: { latestVersion },
                         existingForm: previousLatestRevisionForm
                     });
 
@@ -444,13 +444,13 @@ export default {
                         index: "form-builder",
                         body: {
                             doc: {
-                                latestVersion: false
+                                latestVersion
                             }
                         }
                     });
                 } catch (e) {
                     throw Error(
-                        `Unable to mark previous latestVersion "false" for form with id: "${id}"`
+                        `Unable to mark previous latestVersion "false" for form with id: "${parentId}"`
                     );
                 }
             },
