@@ -24,7 +24,7 @@ describe("Form Builder Settings Test", () => {
         } catch (e) {}
     });
 
-    beforeEach(async () => {
+    afterEach(async () => {
         try {
             await elasticSearch.indices.delete({ index: "form-builder" });
         } catch (e) {}

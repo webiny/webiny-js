@@ -3,15 +3,31 @@ import * as mocks from "./mocks/form.mocks";
 
 describe("Form Submission Test", () => {
     const {
+        elasticSearch,
+        sleep,
         createFormSubmission,
         updateRevision,
         publishRevision,
         createForm,
+        listPublishedForms,
         getFormSubmission,
         listFormSubmission
     } = useGqlHandler();
 
     let formId, formData;
+
+    beforeAll(async () => {
+        try {
+            await elasticSearch.indices.create({ index: "form-builder" });
+        } catch (e) {}
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: "form-builder" });
+        } catch (e) {}
+    });
+
     beforeEach(async () => {
         // Let's create a form
         let [response] = await createForm({ data: { name: "Test A" } });
@@ -27,20 +43,7 @@ describe("Form Submission Test", () => {
             data: {
                 forms: {
                     createForm: {
-                        data: {
-                            createdOn: /^20/,
-                            id: formId,
-                            layout: [],
-                            locked: false,
-                            name: "Test A",
-                            parent: formId,
-                            published: null,
-                            publishedOn: null,
-                            savedOn: /^20/,
-                            status: null,
-                            triggers: null,
-                            version: 1
-                        },
+                        data: formData,
                         error: null
                     }
                 }
@@ -48,7 +51,7 @@ describe("Form Submission Test", () => {
         });
         // Let's update a form revision
         await updateRevision({
-            id: `${formId}#${formData.version}`,
+            id: formId,
             data: {
                 layout: [["QIspyfQRx", "AVoKqyAuH"], ["fNJag3ZdX"]],
                 triggers: {
@@ -61,18 +64,27 @@ describe("Form Submission Test", () => {
         });
         // Let's publish this form so that we can submit it later.
         await publishRevision({
-            id: `${formId}#${formData.version}`
+            id: formId
         });
+
+        // List should not be empty.
+        while (true) {
+            await sleep();
+            const [response] = await listPublishedForms();
+            if (response.data.forms.listPublishedForms.data.length) {
+                break;
+            }
+        }
     });
 
     test(`create, read, export "form submission"`, async () => {
         // Let's create a form revision
         let [response] = await createFormSubmission({
-            id: `${formId}#${formData.version}`,
+            id: formId,
             ...mocks.formSubmissionDataA
         });
         let formSubmissionIdA = response?.data?.forms.createFormSubmission?.data?.id;
-        console.log("formSubmissionIdA: ", formSubmissionIdA);
+
         expect(response).toMatchObject({
             data: {
                 forms: {
@@ -92,7 +104,7 @@ describe("Form Submission Test", () => {
         [response] = await getFormSubmission({
             id: formSubmissionIdA,
             where: {
-                formId: formId + "#" + formData.version
+                formId: formId
             }
         });
 
@@ -113,11 +125,11 @@ describe("Form Submission Test", () => {
 
         // Let's create another form submission
         [response] = await createFormSubmission({
-            id: `${formId}#${formData.version}`,
+            id: formId,
             ...mocks.formSubmissionDataB
         });
         let formSubmissionIdB = response?.data?.forms.createFormSubmission?.data?.id;
-        console.log("formSubmissionIdB: ", formSubmissionIdB);
+
         expect(response).toMatchObject({
             data: {
                 forms: {
