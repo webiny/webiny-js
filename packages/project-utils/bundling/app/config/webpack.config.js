@@ -387,6 +387,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             include: [paths.appSrc, paths.appIndexJs, ...paths.allPackages],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
+                                sourceType: "unambiguous",
                                 presets: [require.resolve("babel-preset-react-app")],
                                 plugins: [
                                     [
@@ -420,6 +421,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                                 babelrc: false,
                                 configFile: false,
                                 compact: false,
+                                sourceType: "unambiguous",
                                 presets: [
                                     [
                                         require.resolve("babel-preset-react-app/dependencies"),
