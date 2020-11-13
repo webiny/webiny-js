@@ -9,7 +9,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
     }
 
     try {
-        const formSubmission = await forms.submit({ ...args, instance: form });
+        const formSubmission = await forms.submit({ ...args, form });
         return new Response(formSubmission);
     } catch (e) {
         return new ErrorResponse({

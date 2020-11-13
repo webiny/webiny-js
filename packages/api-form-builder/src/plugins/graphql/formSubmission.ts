@@ -2,6 +2,7 @@ import { hasScope } from "@webiny/api-security";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
 import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
+import { getBaseFormId } from "./formResolvers/utils/formResolversUtils";
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -82,7 +83,8 @@ export default {
             form: async (formSubmission, args, context) => {
                 const forms = context?.formBuilder?.crud?.forms;
                 const formData = await forms.get(formSubmission.formId);
-                const parentData = await forms.get(formSubmission.formId.split("#")[0] + "#" + 1);
+                const parentId = `${getBaseFormId(formSubmission.formId)}#1`;
+                const parentData = await forms.get(parentId);
 
                 return {
                     parent: parentData,
@@ -97,7 +99,7 @@ export default {
                     const { where } = args;
 
                     const data = await formSubmission.list({
-                        id: where.form.parent
+                        id: getBaseFormId(where.form.parent)
                     });
                     return new ListResponse(data);
                 } catch (err) {

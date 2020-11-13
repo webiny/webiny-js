@@ -5,6 +5,7 @@ import { withFields, string, fields, skipOnPopulate } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import KSUID from "ksuid";
 import merge from "merge";
+import { getBaseFormId } from "../graphql/formResolvers/utils/formResolversUtils";
 
 const FormSubmissionModel = withFields({
     id: string({ validation: validation.create("required") }),
@@ -103,7 +104,7 @@ export default {
                 // Let's validate the form.
                 await formSubmission.validate();
 
-                const formIdWithoutVersion = formSubmission.formId.split("#")[0];
+                const formIdWithoutVersion = getBaseFormId(formSubmission.formId);
                 const formDataJSON = await formSubmission.toJSON();
                 // Finally create "form" entry in "DB".
                 await db.create({
