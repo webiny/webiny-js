@@ -2,8 +2,9 @@ import gql from "graphql-tag";
 import { merge } from "lodash";
 import menus from "./graphql/menus";
 import pages from "./graphql/pages";
+import pageElements from "./graphql/pageElements";
 import categories from "./graphql/categories";
-import install from "./graphql/installation";
+import install from "./graphql/install";
 const emptyResolver = () => ({});
 
 export default {
@@ -36,13 +37,6 @@ export default {
                 previous: String
             }
 
-            type PbListMeta {
-                cursors: PbCursors
-                hasNextPage: Boolean
-                hasPreviousPage: Boolean
-                totalCount: Int
-            }
-
             type PbQuery {
                 pageBuilder: PbQuery
             }
@@ -62,6 +56,7 @@ export default {
             ${menus.typeDefs},
             ${categories.typeDefs},
             ${pages.typeDefs},
+            ${pageElements.typeDefs},
             ${install.typeDefs}
         `,
         resolvers: merge(
@@ -76,6 +71,7 @@ export default {
             categories.resolvers,
             menus.resolvers,
             pages.resolvers,
+            pageElements.resolvers,
             // settings.resolvers,
             install.resolvers
         )
