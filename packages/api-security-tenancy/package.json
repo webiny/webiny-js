@@ -24,7 +24,7 @@
     "@webiny/handler-apollo-server": "^4.14.0",
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.4",
-    "ksuid": "^2.0.0",
+    "mdbid": "^1.0.0",
     "graphql-tag": "^2.10.1",
     "lodash.merge": "^4.6.2"
   },

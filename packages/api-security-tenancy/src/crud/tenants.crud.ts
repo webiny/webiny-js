@@ -1,10 +1,13 @@
-import KSUID from "ksuid";
+import mdbid from "mdbid";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { HandlerTenancyContext, Tenant, TenantsCRUD } from "../types";
 import dbArgs from "./dbArgs";
 import { SecurityPermission } from "@webiny/api-security/types";
+import { paginateBatch } from "./paginateBatch";
 
 type DbTenantGroup2User = {
+    PK: string;
+    SK: string;
     tenantId: string;
     tenantName: string;
     group: string;
@@ -64,7 +67,7 @@ export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD 
         async create(data) {
             const tenant = {
                 ...data,
-                id: data.id ?? KSUID.randomSync().string
+                id: data.id ?? mdbid()
             };
 
             await db.create({
@@ -135,6 +138,28 @@ export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD 
                     PK: link.PK,
                     SK: link.SK
                 }
+            });
+        },
+        async updateUserPermissions(tenant, slug, permissions) {
+            const [links] = await db.read<DbTenantGroup2User>({
+                ...dbArgs,
+                query: {
+                    PK: `T#${tenant.id}`,
+                    SK: { $beginsWith: `G2U#${slug}#` }
+                }
+            });
+
+            // BatchWrite can only handle 25 writes, so we need to paginate
+            await paginateBatch<DbTenantGroup2User>(links, 25, items => {
+                const batch = db.batch();
+                for (let i = 0; i < items.length; i++) {
+                    batch.update({
+                        ...dbArgs,
+                        query: { PK: items[i].PK, SK: items[i].SK },
+                        data: Object.assign(items[i], { permissions })
+                    });
+                }
+                return batch.execute();
             });
         }
     };

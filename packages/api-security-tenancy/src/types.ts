@@ -83,6 +83,7 @@ export type TenantsCRUD = {
     getUserPermissions(login: string): Promise<TenantWithPermissions[]>;
     linkUser(tenant: Tenant, login: string, group: Group): Promise<void>;
     unlinkUser(tenant: Tenant, login: string): Promise<void>;
+    updateUserPermissions(tenant: Tenant, slug: string, permissions: SecurityPermission[]): Promise<void>;
 };
 
 export type GroupsCRUD = {

@@ -4,7 +4,7 @@ import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
 import install from "./graphql/Install";
-import group from "./graphql/Group";
+import group from "./graphql/group";
 import user from "./graphql/User";
 
 export default (): GraphQLSchemaPlugin => ({

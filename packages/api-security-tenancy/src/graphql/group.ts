@@ -1,6 +1,6 @@
 import deepEqual from "deep-equal";
 import { hasPermission } from "@webiny/api-security";
-import deleteGroup from "./groupResolvers/deleteGroup";
+
 import {
     ErrorResponse,
     ListErrorResponse,
@@ -131,8 +131,14 @@ export default {
 
                     await context.security.groups.update(slug, data);
 
-                    // TODO: when a group permissions are updated, find all users of this tenant which are assigned to this group
-                    // and update their permissions
+                    if (permissionsChanged) {
+                        const tenant = context.security.getTenant();
+                        await context.security.tenants.updateUserPermissions(
+                            tenant,
+                            slug,
+                            data.permissions
+                        );
+                    }
 
                     return new Response(Object.assign({}, existingGroup, data));
                 } catch (e) {
@@ -143,7 +149,27 @@ export default {
                     });
                 }
             }),
-            deleteGroup: hasPermission("security.group.manage")(deleteGroup)
+            deleteGroup: hasPermission<any, { slug: string }, HandlerTenancyContext>(
+                "security.group.manage"
+            )(async (_, { slug }, context) => {
+                try {
+                    const group = await context.security.groups.get(slug);
+
+                    if (!group) {
+                        return new NotFoundResponse(`Group "${slug}" was not found!`);
+                    }
+
+                    await context.security.groups.delete(slug);
+
+                    return new Response(true);
+                } catch (e) {
+                    return new ErrorResponse({
+                        message: e.message,
+                        code: e.code,
+                        data: e.data || null
+                    });
+                }
+            })
         }
     }
 };
