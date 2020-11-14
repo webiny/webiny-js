@@ -1,8 +1,7 @@
-import KSUID from "ksuid";
+import mdbid from "mdbid";
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import securityPlugins from "@webiny/api-security/authenticator";
-import userManagement from "@webiny/api-security-user-management";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -60,15 +59,13 @@ export default () => {
                 return new SecurityIdentity(mocks.admin);
             }
         },
-        // Add user management
-        userManagement(),
         // Add Cognito plugins for user management
         [
             {
                 name: "security-user-management",
                 type: "security-user-management",
                 async createUser({ user }) {
-                    user.id = KSUID.randomSync().string;
+                    user.id = mdbid();
                     return Promise.resolve();
                 },
                 async updateUser() {

@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import { SecurityUserManagementPlugin } from "@webiny/api-security-user-management/types";
+import { SecurityIdentityProviderPlugin } from "@webiny/api-security-tenancy/types";
 
 export default ({ region, userPoolId }) => {
     const cognito = new CognitoIdentityServiceProvider({ region });
@@ -28,15 +28,15 @@ export default ({ region, userPoolId }) => {
             }
         } as GraphQLSchemaPlugin,
         {
-            name: "security-user-management",
-            type: "security-user-management",
-            async createUser({ data, user, permanent = false }) {
+            name: "security-identity-provider",
+            type: "security-identity-provider",
+            async createUser({ data, permanent = false }) {
                 try {
-                    const idpUser = await cognito
-                        .adminGetUser({ Username: user.email, UserPoolId: userPoolId })
+                    await cognito
+                        .adminGetUser({ Username: data.login, UserPoolId: userPoolId })
                         .promise();
 
-                    user.id = idpUser.UserAttributes.find(attr => attr.Name === "sub").Value;
+                    // User exists
                     return;
                 } catch {
                     // User does not exist
@@ -44,7 +44,7 @@ export default ({ region, userPoolId }) => {
 
                 const params = {
                     UserPoolId: userPoolId,
-                    Username: user.email,
+                    Username: data.login,
                     DesiredDeliveryMediums: [],
                     ForceAliasCreation: false,
                     MessageAction: "SUPPRESS",
@@ -52,21 +52,21 @@ export default ({ region, userPoolId }) => {
                     UserAttributes: [
                         {
                             Name: "given_name",
-                            Value: user.firstName
+                            Value: data.firstName
                         },
                         {
                             Name: "family_name",
-                            Value: user.lastName
+                            Value: data.lastName
                         }
                     ]
                 };
 
-                const { User } = await cognito.adminCreateUser(params).promise();
-                user.id = User.Attributes.find(attr => attr.Name === "sub").Value;
+                await cognito.adminCreateUser(params).promise();
+                // user.id = User.Attributes.find(attr => attr.Name === "sub").Value;
 
                 const verify = {
                     UserPoolId: userPoolId,
-                    Username: user.email,
+                    Username: data.login,
                     UserAttributes: [
                         {
                             Name: "email_verified",
@@ -82,7 +82,7 @@ export default ({ region, userPoolId }) => {
                         .adminSetUserPassword({
                             Permanent: true,
                             Password: data.password,
-                            Username: user.email,
+                            Username: data.login,
                             UserPoolId: userPoolId
                         })
                         .promise();
@@ -93,7 +93,7 @@ export default ({ region, userPoolId }) => {
                     const pass = {
                         Permanent: true,
                         Password: data.password,
-                        Username: user.email,
+                        Username: user.login,
                         UserPoolId: userPoolId
                     };
 
@@ -102,9 +102,9 @@ export default ({ region, userPoolId }) => {
             },
             async deleteUser({ user }) {
                 await cognito
-                    .adminDeleteUser({ UserPoolId: userPoolId, Username: user.email })
+                    .adminDeleteUser({ UserPoolId: userPoolId, Username: user.login })
                     .promise();
             }
-        } as SecurityUserManagementPlugin
+        } as SecurityIdentityProviderPlugin<{ password: string }>
     ];
 };

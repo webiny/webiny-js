@@ -16,9 +16,6 @@
     "@webiny/handler": "^4.14.0",
     "@webiny/api-i18n": "^4.14.0"
   },
-  "optionalDependencies": {
-    "fsevents": "^2.1.3"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -27,11 +24,6 @@
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

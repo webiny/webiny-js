@@ -2,7 +2,7 @@ import { withFields, string } from "@commodo/fields";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { HandlerSecurityContext } from "@webiny/api-security/types";
-import { HandlerTenancyContext, User, UsersCRUD } from "../types";
+import { DbItemSecurityUser2Tenant, HandlerTenancyContext, User, UsersCRUD } from "../types";
 import dbArgs from "./dbArgs";
 
 const CreateDataModel = withFields({
@@ -12,7 +12,6 @@ const CreateDataModel = withFields({
 })();
 
 const UpdateDataModel = withFields({
-    login: string({ validation: validation.create("minLength:2") }),
     firstName: string({ validation: validation.create("minLength:2") }),
     lastName: string({ validation: validation.create("minLength:2") })
 })();
@@ -27,7 +26,7 @@ export default (
 ): UsersCRUD => {
     const { db } = context;
     return {
-        async get(login: string) {
+        async getUser(login: string) {
             const [[user]] = await db.read<User>({
                 ...dbArgs,
                 query: { PK: `U#${login}`, SK: "A" },
@@ -36,7 +35,7 @@ export default (
 
             return user;
         },
-        async list({ tenant }) {
+        async listUsers({ tenant }) {
             const tenantId = tenant ?? context.security.getTenant().id;
 
             const [users] = await db.read<DbUser>({
@@ -59,7 +58,7 @@ export default (
 
             return results.map(res => res[0][0]);
         },
-        async create(data) {
+        async createUser(data) {
             const identity = context.security.getIdentity();
 
             if (await this.get(data.login)) {
@@ -87,34 +86,95 @@ export default (
                 data: {
                     PK: `U#${user.login}`,
                     SK: "A",
+                    TYPE: "SecurityUser",
                     ...user
                 }
             });
 
             return user;
         },
-        async update(login, data) {
+        async updateUser(login, data) {
             const model = await new UpdateDataModel().populate(data);
             await model.validate();
-            
+
+            const updatedAttributes = await model.toJSON({ onlyDirty: true });
+
             await db.update({
                 ...dbArgs,
                 query: { PK: `U#${login}`, SK: "A" },
-                data: await model.toJSON({ onlyDirty: true })
+                data: updatedAttributes
             });
 
-            return true;
+            return updatedAttributes;
         },
-        async delete(login) {
-            await db.delete({
+        async deleteUser(login) {
+            const [items] = await db.read({
                 ...dbArgs,
                 query: {
                     PK: `U#${login}`,
-                    SK: "A"
+                    SK: { $gt: " " }
                 }
             });
 
+            const batch = db.batch();
+            for (let i = 0; i < items.length; i++) {
+                batch.delete({
+                    ...dbArgs,
+                    query: {
+                        PK: items[i].PK,
+                        SK: items[i].SK
+                    }
+                });
+            }
+            await batch.execute();
+
             return true;
+        },
+        async linkUserToTenant(login, tenant, group) {
+            await db.create({
+                data: {
+                    PK: `U#${login}`,
+                    SK: `LINK#T#${tenant.id}#G#${group.slug}`,
+                    TYPE: "SecurityUser2Tenant",
+                    tenantId: tenant.id,
+                    tenantName: tenant.name,
+                    group: group.slug,
+                    permissions: group.permissions
+                }
+            });
+        },
+        async unlinkUserFromTenant(login, tenant) {
+            const [[link]] = await db.read<DbItemSecurityUser2Tenant>({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: { $beginsWith: `LINK#T#${tenant.id}#G#` }
+                },
+                limit: 1
+            });
+
+            await db.delete({
+                ...dbArgs,
+                query: {
+                    PK: link.PK,
+                    SK: link.SK
+                }
+            });
+        },
+        async getUserPermissions(login) {
+            const [links] = await db.read<DbItemSecurityUser2Tenant>({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: { $beginsWith: `LINK#` }
+                }
+            });
+
+            return links.map(link => ({
+                id: link.tenantId,
+                name: link.tenantName,
+                permissions: link.permissions
+            }));
         }
     };
 };

@@ -1,4 +1,4 @@
- {
+{
   "compilerOptions": {
     "target": "es6",
     "allowJs": true,
@@ -28,21 +28,23 @@
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
       "@webiny/api-tenancy/*": ["./packages/api-tenancy/src/*"],
-      "@webiny/@webiny/api-plugin-elastic-search-client/*": ["./packages/api-plugin-elastic-search-client/src/*"],
-      "@webiny/@webiny/api-plugin-elastic-search-client": ["./packages/api-plugin-elastic-search-client/src/*"],
+      "@webiny/api-plugin-elastic-search-client/*": [
+        "./packages/api-plugin-elastic-search-client/src/*"
+      ],
+      "@webiny/api-plugin-elastic-search-client": [
+        "./packages/api-plugin-elastic-search-client/src/*"
+      ],
       "@webiny/api-plugin-db-dynamodb/*": ["./packages/api-plugin-db-dynamodb/src/*"],
       "@webiny/api-plugin-db-dynamodb": ["./packages/api-plugin-db-dynamodb/src"],
       "@webiny/api-settings-manager/*": ["./packages/api-settings-manager/src/*"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
-      "@webiny/api-security-permissions-manager/*": [
-        "./packages/api-security-permissions-manager/src/*"
-      ],
-      "@webiny/api-security-permissions-manager": [
-        "./packages/api-security-permissions-manager/src"
-      ],
+      "@webiny/api-security-tenancy/*": ["./packages/api-security-tenancy/src/*"],
+      "@webiny/api-security-tenancy": ["./packages/api-security-tenancy/src"],
       "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
       "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
+      "@webiny/api-plugin-security-cognito/*": ["./packages/api-plugin-security-cognito/src/*"],
+      "@webiny/api-plugin-security-cognito": ["./packages/api-plugin-security-cognito/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
       "@webiny/app": ["./packages/app/src"],
       "@webiny/app-admin/*": ["./packages/app-admin/src/*"],

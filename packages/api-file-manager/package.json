@@ -46,9 +46,6 @@
     "@elastic/elasticsearch-mock": "0.3.0",
     "jest-dynalite": "^3.0.0"
   },
-  "optionalDependencies": {
-    "fsevents": "^2.1.3"
-  },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -57,11 +54,6 @@
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
   },
   "adio": {
     "ignoreDirs": [

@@ -65,7 +65,8 @@ export default {
                 "security.group.manage"
             )(async (_, { slug }, context) => {
                 try {
-                    const group = await context.security.groups.get(slug);
+                    const tenant = context.security.getTenant();
+                    const group = await context.security.groups.getGroup(tenant, slug);
 
                     if (!group) {
                         return new NotFoundResponse(`Unable to find group with slug: ${slug}`);
@@ -83,7 +84,8 @@ export default {
             listGroups: hasPermission<any, any, HandlerTenancyContext>("security.group.manage")(
                 async (_, args, context) => {
                     try {
-                        const groupList = await context.security.groups.list();
+                        const tenant = context.security.getTenant();
+                        const groupList = await context.security.groups.listGroups(tenant);
 
                         return new ListResponse(groupList);
                     } catch (e) {
@@ -101,7 +103,8 @@ export default {
                 "security.group.manage"
             )(async (_, { data }, context) => {
                 try {
-                    const groupData = await context.security.groups.create(data);
+                    const tenant = context.security.getTenant();
+                    const groupData = await context.security.groups.createGroup(tenant, data);
 
                     return new Response(groupData);
                 } catch (e) {
@@ -114,11 +117,12 @@ export default {
             }),
             updateGroup: hasPermission<
                 any,
-                { slug: string; data: Partial<GroupData> },
+                { slug: string; data: Omit<GroupData, "slug" | "system"> },
                 HandlerTenancyContext
             >("security.group.manage")(async (_, { slug, data }, context) => {
                 try {
-                    const existingGroup = await context.security.groups.get(slug);
+                    const tenant = context.security.getTenant();
+                    const existingGroup = await context.security.groups.getGroup(tenant, slug);
 
                     if (!existingGroup) {
                         return new NotFoundResponse(`Group "${slug}" was not found!`);
@@ -129,11 +133,10 @@ export default {
                         existingGroup.permissions
                     );
 
-                    await context.security.groups.update(slug, data);
+                    await context.security.groups.updateGroup(tenant, slug, data);
 
                     if (permissionsChanged) {
-                        const tenant = context.security.getTenant();
-                        await context.security.tenants.updateUserPermissions(
+                        await context.security.groups.updatePermissionsOnUsersInGroup(
                             tenant,
                             slug,
                             data.permissions
@@ -153,13 +156,14 @@ export default {
                 "security.group.manage"
             )(async (_, { slug }, context) => {
                 try {
-                    const group = await context.security.groups.get(slug);
+                    const tenant = context.security.getTenant();
+                    const group = await context.security.groups.getGroup(tenant, slug);
 
                     if (!group) {
                         return new NotFoundResponse(`Group "${slug}" was not found!`);
                     }
 
-                    await context.security.groups.delete(slug);
+                    await context.security.groups.deleteGroup(tenant, slug);
 
                     return new Response(true);
                 } catch (e) {

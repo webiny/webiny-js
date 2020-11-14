@@ -15,7 +15,7 @@ const getCurrentTenant = async (context): Promise<Tenant> => {
     const tenantId = headers["X-Tenant"] ?? "default";
 
     if (!tenantCache[tenantId]) {
-        tenantCache[tenantId] = await context.security.tenant.get(tenantId);
+        tenantCache[tenantId] = await context.security.tenant.getTenant(tenantId);
     }
 
     return tenantCache[tenantId];
@@ -25,9 +25,6 @@ export default {
     type: "context",
     apply: async context => {
         let __tenant = null;
-        context.security.withTenantId = value => {
-            return `T#${this.getTenant().id}#${value}`;
-        };
 
         context.security.getTenant = () => {
             return __tenant;

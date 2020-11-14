@@ -8,7 +8,7 @@
 		"dist",
 		"../graphql",
 		"../api-security",
-		"../api-security-user-management",
+		"../api-security-tenancy",
 		"../handler",
 		"../handler-http"
 	],
@@ -22,7 +22,7 @@
 			"path": "../api-security/tsconfig.build.json"
 		},
 		{
-			"path": "../api-security-user-management/tsconfig.build.json"
+			"path": "../api-security-tenancy/tsconfig.build.json"
 		},
 		{
 			"path": "../graphql/tsconfig.build.json"
