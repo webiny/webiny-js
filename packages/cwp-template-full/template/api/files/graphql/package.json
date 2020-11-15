@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@webiny/handler": "^4.0.0-beta.0",
-    "@webiny/handler-apollo-server": "^4.0.0-beta.0",
+    "@webiny/handler-graphql": "^4.0.0-beta.0",
     "@webiny/api-security": "^4.0.0-beta.0",
     "@webiny/api-settings-manager": "^4.0.0-beta.0",
     "@webiny/api-file-manager": "^4.0.0-beta.0",

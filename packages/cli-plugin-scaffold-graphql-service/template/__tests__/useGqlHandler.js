@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityServicePlugins from "@webiny/api-security/plugins/service";
-import apolloServerPlugins from "@webiny/handler-apollo-server";
+import apolloServerPlugins from "@webiny/handler-graphql";
 import myPlugins from "../src/plugins";
 
 /**

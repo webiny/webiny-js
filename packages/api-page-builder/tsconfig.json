@@ -35,7 +35,7 @@
       "path": "../api-i18n"
     },
     {
-      "path": "../handler-apollo-server"
+      "path": "../handler-graphql"
     },
     {
       "path": "../handler-aws"

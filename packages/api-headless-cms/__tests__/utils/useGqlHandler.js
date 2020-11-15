@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
-import apolloServerPlugins from "@webiny/handler-apollo-server";
+import apolloServerPlugins from "@webiny/handler-graphql";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";

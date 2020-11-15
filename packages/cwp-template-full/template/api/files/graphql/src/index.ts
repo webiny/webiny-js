@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler";
-import apolloServerPlugins from "@webiny/handler-apollo-server";
+import apolloServerPlugins from "@webiny/handler-graphql";
 import dbProxyPlugins from "@webiny/api-plugin-commodo-db-proxy";
 import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import securityServicePlugins from "@webiny/api-security/plugins/service";

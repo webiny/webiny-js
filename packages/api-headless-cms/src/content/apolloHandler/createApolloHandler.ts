@@ -1,4 +1,4 @@
-import { CreateSchemaPlugin } from "@webiny/handler-apollo-server/types";
+import { CreateSchemaPlugin } from "@webiny/handler-graphql/types";
 import { HandlerContext } from "@webiny/handler/types";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
 import { runHttpQuery as apolloRunHttpQuery } from "apollo-server-core/dist/runHttpQuery";
@@ -15,11 +15,11 @@ export default async function createApolloHandler({
     meta = null
 }: CreateApolloHandlerParams) {
     const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
-        "handler-apollo-server-create-schema"
+        "handler-graphql-create-schema"
     );
 
     if (!createSchemaPlugin) {
-        throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
+        throw Error(`"handler-graphql-create-schema" plugin is not configured!`);
     }
 
     const { schema } = await createSchemaPlugin.create(context);
