@@ -1,7 +1,5 @@
 export { default as InvalidFieldsError } from "./InvalidFieldsError";
 
-export { resolveUpdateSettings, resolveGetSettings } from "./settingsResolvers";
-
 export {
     Response,
     ListResponse,
