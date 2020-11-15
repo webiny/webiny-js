@@ -2,7 +2,7 @@ import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/handler-ssr/Client";
 import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql/responses";
 
 export default () => [
     {

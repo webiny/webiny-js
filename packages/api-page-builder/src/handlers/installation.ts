@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { HandlerPlugin } from "@webiny/handler/types";
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql/responses";
 import downloadInstallationFiles from "./utils/downloadInstallationFiles";
 import saveElements from "./utils/saveElements";
 import savePages from "./utils/savePages";
