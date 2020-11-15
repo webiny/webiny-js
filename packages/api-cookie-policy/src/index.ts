@@ -116,9 +116,9 @@ export default () => [
                     }
                 },
                 CookiePolicyMutation: {
-                    updateSettings: hasScope("pb:settings")(
-                        /*resolveUpdateSettings(({ models }) => models.CookiePolicySettings)*/
-                    )
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.CookiePolicySettings)*!/
+                    )*/
                 }
             }
         }

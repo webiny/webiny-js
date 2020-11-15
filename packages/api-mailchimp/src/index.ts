@@ -184,9 +184,9 @@ export default () => [
                             });
                         }
                     },
-                    updateSettings: hasScope("pb:settings")(
-                        /*resolveUpdateSettings(({ models }) => models.MailchimpSettings)*/
-                    )
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.MailchimpSettings)*!/
+                    )*/
                 }
             }
         }
