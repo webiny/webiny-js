@@ -1,6 +1,6 @@
 import minimatch from "minimatch";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { ErrorResponse } from "@webiny/graphql";
+import { ErrorResponse } from "@webiny/graphql/responses";
 import NotAuthorizedResponse from "./NotAuthorizedResponse";
 
 const checkPermission = (permission: any) => {

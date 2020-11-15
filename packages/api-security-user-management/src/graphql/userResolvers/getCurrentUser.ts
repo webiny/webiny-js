@@ -1,4 +1,4 @@
-import { Response, NotFoundResponse } from "@webiny/commodo-graphql";
+import { Response, NotFoundResponse } from "@webiny/graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {

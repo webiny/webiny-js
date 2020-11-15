@@ -1,4 +1,4 @@
-import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql";
+import { NotFoundResponse, Response, ErrorResponse } from "@webiny/graphql/responses";
 
 export default async (_, { id }, context) => {
     const { groups } = context;

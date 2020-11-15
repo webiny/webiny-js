@@ -1,6 +1,7 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { WithFieldsError } from "@webiny/commodo";
-import { InvalidFieldsError, ErrorResponse, Response } from "@webiny/commodo-graphql";
+import { WithFieldsError } from "@commodo/fields";
+import { ErrorResponse, Response } from "@webiny/graphql/responses";
+import InvalidFieldsError from "@webiny/commodo-graphql/InvalidFieldsError";
 import { SecurityUserManagementPlugin } from "../../types";
 
 const resolver: GraphQLFieldResolver = async (root, { data }, context) => {

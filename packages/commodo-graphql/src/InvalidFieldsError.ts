@@ -1,6 +1,6 @@
 import each from "lodash.foreach";
 import get from "lodash.get";
-import { WithFieldsError } from "@webiny/commodo";
+import { WithFieldsError } from "@commodo/fields";
 
 function formatInvalidFields(invalidFields, prefix = "", formattedErrors) {
     each(invalidFields, ({ code, data, message }, name) => {

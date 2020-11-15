@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/commodo-graphql";
+import { Response, ErrorResponse } from "@webiny/graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { SecurityUserManagementPlugin } from "../../types";
 

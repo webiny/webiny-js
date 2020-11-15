@@ -1,7 +1,8 @@
 import minimatch from "minimatch";
-import { ContextPlugin } from "@webiny/graphql/types";
+import { HandlerContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
 import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
+
 
 export default () => [
     {
@@ -60,5 +61,5 @@ export default () => [
                 }
             }
         }
-    } as ContextPlugin
+    } as HandlerContextPlugin
 ];

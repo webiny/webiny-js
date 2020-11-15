@@ -5,9 +5,6 @@ import resolveUpdateCurrentSecurityUser from "./userResolvers/updateCurrentUser"
 import resolveCreateUser from "./userResolvers/createUser";
 import resolveUpdateUser from "./userResolvers/updateUser";
 import resolveDeleteUser from "./userResolvers/deleteUser";
-import resolveCreatePAT from "./userResolvers/PersonalAccessTokens/createPAT";
-import resolveUpdatePAT from "./userResolvers/PersonalAccessTokens/updatePAT";
-import resolveDeletePAT from "./userResolvers/PersonalAccessTokens/deletePAT";
 import listUsers from "./userResolvers/listUsers";
 import getUser from "./userResolvers/getUser";
 
@@ -15,35 +12,6 @@ const userFetcher = ctx => ctx.models.SecurityUser;
 
 export default {
     typeDefs: /* GraphQL */ `
-        # Personal Access Token type
-        type PersonalAccessToken {
-            id: ID
-            user: SecurityUser
-            name: String
-            token: String
-            createdOn: DateTime
-        }
-
-        input PersonalAccessTokenInput {
-            name: String
-        }
-
-        type PersonalAccessTokenCreationData {
-            pat: PersonalAccessToken
-            # The full token - you only receive it once!
-            token: String
-        }
-
-        type PersonalAccessTokenCreationResponse {
-            data: PersonalAccessTokenCreationData
-            error: SecurityUserError
-        }
-
-        type PersonalAccessTokenResponse {
-            data: PersonalAccessToken
-            error: SecurityUserError
-        }
-
         type SecurityIdentity {
             id: ID
             login: String
@@ -56,7 +24,7 @@ export default {
             gravatar: String
         }
 
-        type SecurityUser @key(fields: "id") {
+        type SecurityUser {
             id: ID
             email: String
             firstName: String
@@ -67,7 +35,6 @@ export default {
             enabled: Boolean
             group: SecurityGroup
             permissions: [JSON]
-            personalAccessTokens: [PersonalAccessToken]
             createdOn: DateTime
         }
 
@@ -158,20 +125,9 @@ export default {
             updateUser(id: ID!, data: SecurityUserInput!): SecurityUserResponse
 
             deleteUser(id: ID!): SecurityUserDeleteResponse
-
-            createPAT(name: String!, userId: ID): PersonalAccessTokenCreationResponse
-
-            updatePAT(id: ID!, data: PersonalAccessTokenInput!): PersonalAccessTokenResponse
-
-            deletePAT(id: ID!): SecurityUserDeleteResponse
         }
     `,
     resolvers: {
-        PersonalAccessToken: {
-            token: pat => {
-                return pat.token.substr(-4);
-            }
-        },
         SecurityUser: {
             __resolveReference(reference, context) {
                 return userFetcher(context).findById(reference.id);
@@ -214,9 +170,6 @@ export default {
             createUser: hasScope("security.user.manage")(resolveCreateUser),
             updateUser: hasScope("security.user.manage")(resolveUpdateUser),
             deleteUser: hasScope("security.user.manage")(resolveDeleteUser),
-            createPAT: hasScope("security.user.manage")(resolveCreatePAT),
-            updatePAT: hasScope("security.user.manage")(resolveUpdatePAT),
-            deletePAT: hasScope("security.user.manage")(resolveDeletePAT)
         }
     }
 };

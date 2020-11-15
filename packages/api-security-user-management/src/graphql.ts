@@ -1,11 +1,11 @@
 import merge from "lodash.merge";
 import gql from "graphql-tag";
-import { emptyResolver } from "@webiny/commodo-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
+const emptyResolver = () => ({});
 import group from "./graphql/Group";
-import user from "./graphql/User";
 import install from "./graphql/Install";
+import user from "./graphql/User";
 
 export default (): GraphQLSchemaPlugin => ({
     type: "graphql-schema",
