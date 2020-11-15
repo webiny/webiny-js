@@ -7,7 +7,7 @@
     "../graphql",
     "../handler",
     "../plugins",
-    "../handler-apollo-server"
+    "../handler-graphql"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -25,7 +25,7 @@
       "path": "../plugins/tsconfig.build.json"
     },
     {
-      "path": "../handler-apollo-server/tsconfig.build.json"
+      "path": "../handler-graphql/tsconfig.build.json"
     }
   ]
 }

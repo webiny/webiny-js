@@ -29,7 +29,7 @@
 			"path": "../handler-aws"
 		},
 		{
-			"path": "../handler-apollo-server"
+			"path": "../handler-graphql"
 		}
 	]
 }

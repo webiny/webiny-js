@@ -10,7 +10,8 @@
 		"../api-security",
 		"../api-settings-manager",
 		"../commodo",
-		"../commodo-graphql"
+		"../commodo-graphql",
+		"../handler"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -32,6 +33,9 @@
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"
+		},
+		{
+			"path": "../handler/tsconfig.build.json"
 		}
 	]
 }

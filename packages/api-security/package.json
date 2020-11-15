@@ -26,7 +26,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
     "@webiny/handler": "^4.14.0",
-    "@webiny/handler-apollo-server": "^4.14.0",
+    "@webiny/handler-graphql": "^4.14.0",
     "eslint-plugin-jest": "^22.17.0"
   },
   "optionalDependencies": {

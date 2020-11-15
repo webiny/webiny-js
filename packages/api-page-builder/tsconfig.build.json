@@ -14,7 +14,7 @@
     "../handler-ssr",
     "../validation",
     "../api-i18n",
-    "../handler-apollo-server",
+    "../handler-graphql",
     "../handler-aws",
     "../db-dynamodb"
   ],
@@ -59,7 +59,7 @@
       "path": "../commodo/tsconfig.build.json"
     },
     {
-      "path": "../handler-apollo-server/tsconfig.build.json"
+      "path": "../handler-graphql/tsconfig.build.json"
     },
     {
       "path": "../handler-aws/tsconfig.build.json"

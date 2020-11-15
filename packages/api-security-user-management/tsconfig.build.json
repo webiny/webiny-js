@@ -15,7 +15,7 @@
 		"../commodo-graphql",
 		"../validation",
 		"../handler-aws",
-		"../handler-apollo-server"
+		"../handler-graphql"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -51,7 +51,7 @@
 			"path": "../handler-aws/tsconfig.build.json"
 		},
 		{
-			"path": "../handler-apollo-server/tsconfig.build.json"
+			"path": "../handler-graphql/tsconfig.build.json"
 		}
 	]
 }

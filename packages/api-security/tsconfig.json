@@ -11,7 +11,7 @@
       "path": "../plugins"
     },
     {
-      "path": "../handler-apollo-server"
+      "path": "../handler-graphql"
     }
   ]
 }

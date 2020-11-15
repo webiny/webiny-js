@@ -24,7 +24,7 @@
     "@webiny/handler": "^4.14.0",
     "@webiny/handler-http": "^4.14.0",
     "@webiny/handler-client": "^4.14.0",
-    "@webiny/handler-apollo-server": "^4.14.0",
+    "@webiny/handler-graphql": "^4.14.0",
     "@webiny/validation": "^4.14.0",
     "apollo-server-core": "2.17.0",
     "apollo-server-env": "^2.4.3",

@@ -24,7 +24,7 @@
 			"path": "../handler"
 		},
 		{
-			"path": "../handler-apollo-server"
+			"path": "../handler-graphql"
 		},
 		{
 			"path": "../handler-client"
