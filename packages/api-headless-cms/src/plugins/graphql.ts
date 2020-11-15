@@ -14,10 +14,6 @@ export default () => [
         type: "graphql-schema",
         schema: {
             typeDefs: gql`
-                extend type SecurityUser @key(fields: "id") {
-                    id: ID @external
-                }
-
                 input CmsSearchInput {
                     query: String
                     fields: [String]
