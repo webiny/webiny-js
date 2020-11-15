@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";

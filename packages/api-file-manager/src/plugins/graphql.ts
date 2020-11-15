@@ -1,5 +1,4 @@
 import gql from "graphql-tag";
-import { emptyResolver } from "@webiny/commodo-graphql";
 import { hasPermission } from "@webiny/api-security";
 
 import getFile from "./resolvers/getFile";
@@ -16,6 +15,7 @@ import { install, isInstalled } from "./resolvers/install";
 import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
 const fileFetcher = ({ models }): any => models.File;
+const emptyResolver = () => ({});
 
 export default [
     {
@@ -95,7 +95,7 @@ export default [
                     error: FileError
                 }
 
-                type File @key(fields: "id") {
+                type File {
                     id: ID
                     key: String
                     name: String

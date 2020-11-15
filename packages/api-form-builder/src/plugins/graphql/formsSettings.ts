@@ -1,11 +1,9 @@
-import { resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import { Context } from "@webiny/graphql/types";
 import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
 type SettingsContext = Context & SettingsManagerContext;
-
-const getFormSettings = ctx => ctx.models.FormSettings;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -57,7 +55,7 @@ export default {
             })
         },
         FormsMutation: {
-            updateSettings: hasScope("forms:settings")(resolveUpdateSettings(getFormSettings))
+            /*updateSettings: hasScope("forms:settings")(resolveUpdateSettings(getFormSettings))*/
         }
     }
 };

@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql/responses";
 
 export const install = async (
     root: any,

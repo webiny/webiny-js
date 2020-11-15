@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/graphql";
+import { Response, ErrorResponse } from "@webiny/graphql/responses";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";

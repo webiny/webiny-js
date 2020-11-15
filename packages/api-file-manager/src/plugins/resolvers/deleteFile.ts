@@ -1,4 +1,4 @@
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql/responses";
 import S3 from "aws-sdk/clients/s3";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import hasRwd from "@webiny/api-file-manager/plugins/resolvers/utils/hasRwd";

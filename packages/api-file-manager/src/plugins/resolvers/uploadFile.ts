@@ -1,4 +1,4 @@
-import { Response } from "@webiny/graphql";
+import { Response } from "@webiny/graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";

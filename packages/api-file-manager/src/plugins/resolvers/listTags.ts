@@ -1,5 +1,5 @@
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { ErrorResponse } from "@webiny/graphql";
+import { ErrorResponse } from "@webiny/graphql/responses";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {

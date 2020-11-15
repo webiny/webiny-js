@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/graphql";
+import { Response, ErrorResponse } from "@webiny/graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 import { BATCH_CREATE_MAX_FILES } from "./utils/constants";
 

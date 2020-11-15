@@ -1,7 +1,7 @@
 import { hasScope } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql/responses";
 
 export default {
     typeDefs: /* GraphQL */ `
