@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
+import { emptyResolver, ErrorResponse } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
 import { Context } from "@webiny/graphql/types";
@@ -79,9 +79,9 @@ export default () => [
                     }
                 },
                 GtmMutation: {
-                    updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)
-                    )
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)*!/
+                    )*/
                 }
             }
         }

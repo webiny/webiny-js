@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { emptyResolver } from "@webiny/commodo-graphql";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
@@ -185,7 +185,7 @@ export default () => [
                         }
                     },
                     updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.MailchimpSettings)
+                        /*resolveUpdateSettings(({ models }) => models.MailchimpSettings)*/
                     )
                 }
             }

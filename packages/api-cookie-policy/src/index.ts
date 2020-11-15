@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { emptyResolver, ErrorResponse, resolveUpdateSettings } from "@webiny/commodo-graphql";
+import { emptyResolver, ErrorResponse } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";
 import { Context } from "@webiny/graphql/types";
@@ -117,7 +117,7 @@ export default () => [
                 },
                 CookiePolicyMutation: {
                     updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.CookiePolicySettings)
+                        /*resolveUpdateSettings(({ models }) => models.CookiePolicySettings)*/
                     )
                 }
             }
