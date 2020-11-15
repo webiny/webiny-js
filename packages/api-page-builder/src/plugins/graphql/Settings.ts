@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/commodo-graphql";
 import { Context } from "@webiny/graphql/types";
 
 type SettingsContext = Context;
@@ -95,7 +95,7 @@ export default {
             }
         },
         PbMutation: {
-            updateSettings: resolveUpdateSettings(ctx => ctx.models.PbSettings)
+            /*updateSettings: resolveUpdateSettings(ctx => ctx.models.PbSettings)*/
         }
     }
 };

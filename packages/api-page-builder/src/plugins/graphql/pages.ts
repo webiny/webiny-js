@@ -1,16 +1,18 @@
 import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
+
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
+
 import pipe from "@ramda/pipe";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/responses";
 import uniqid from "uniqid";
 
 const pageFetcher = ctx => ctx.models.PbPage;

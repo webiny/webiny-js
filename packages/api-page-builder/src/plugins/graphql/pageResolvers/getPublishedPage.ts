@@ -1,4 +1,4 @@
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/responses";
 import { listPublishedPages } from "./listPublishedPages";
 import get from "lodash.get";
 

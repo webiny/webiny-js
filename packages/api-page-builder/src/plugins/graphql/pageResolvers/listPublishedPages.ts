@@ -1,4 +1,4 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { ListResponse } from "@webiny/graphql/responses";
 import { GraphQLResolveInfo } from "graphql";
 
 export const listPublishedPages = async params => {

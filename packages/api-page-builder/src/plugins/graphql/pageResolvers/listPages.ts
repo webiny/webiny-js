@@ -1,4 +1,4 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+import { ListResponse, requiresTotalCount } from "@webiny/graphql/responses";
 
 export const listPages = async ({ context, args, info }) => {
     const { PbPagesListPage } = context.models;

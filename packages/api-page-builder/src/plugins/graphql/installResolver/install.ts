@@ -1,4 +1,4 @@
-import { Response } from "@webiny/graphql";
+import { Response } from "@webiny/graphql/responses";
 
 export const install = async () => {
     // TODO: call the separate installation function via handlerClient.

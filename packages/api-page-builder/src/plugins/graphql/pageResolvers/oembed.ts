@@ -1,5 +1,5 @@
 import { fetchEmbed, findProvider } from "./oembed/index";
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/graphql/responses";
 
 export default async (_: { [key: string]: any }, args: { [key: string]: any }) => {
     try {

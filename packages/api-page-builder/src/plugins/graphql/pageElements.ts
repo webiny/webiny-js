@@ -1,6 +1,6 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/responses";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
