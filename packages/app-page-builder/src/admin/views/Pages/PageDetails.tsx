@@ -1,14 +1,12 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
 import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
-import { PageDetailsProvider, PageDetailsConsumer } from "../../contexts/PageDetails";
 import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { get } from "lodash";
 
 declare global {
     // eslint-disable-next-line
@@ -57,7 +55,7 @@ const EmptyPageDetails = () => {
     );
 };
 
-const PageDetails = ({ refreshPages }) => {
+const PageDetails = () => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -68,46 +66,33 @@ const PageDetails = ({ refreshPages }) => {
         return <EmptyPageDetails />;
     }
 
+    const getPageQuery = useQuery(GET_PAGE, {
+        variables: { id: pageId },
+        skip: !pageId,
+        onCompleted: data => {
+            const error = data?.pageBuilder?.getPage?.error;
+            if (error) {
+                history.push("/page-builder/pages");
+                showSnackbar(error.message);
+            }
+        }
+    });
+
+    const page = getPageQuery.data?.pageBuilder?.getPage?.data || {};
+
     return (
-        <Query
-            query={GET_PAGE}
-            variables={{ id: pageId }}
-            onCompleted={data => {
-                const error = get(data, "pageBuilder.page.error.message");
-                if (error) {
-                    query.delete("id");
-                    history.push({ search: query.toString() });
-                    showSnackbar(error);
-                }
-            }}
-        >
-            {({ data, loading }) => {
-                const details = { page: get(data, "pageBuilder.page.data") || {}, loading };
-                return (
-                    <ElementAnimation>
-                        {({ refresh }) => (
-                            <DetailsContainer onScroll={refresh}>
-                                <PageDetailsProvider value={details}>
-                                    <PageDetailsConsumer>
-                                        {pageDetails => (
-                                            <React.Fragment>
-                                                <test-id data-testid="pb-page-details">
-                                                    {renderPlugins("pb-page-details", {
-                                                        refreshPages,
-                                                        pageDetails,
-                                                        loading
-                                                    })}
-                                                </test-id>
-                                            </React.Fragment>
-                                        )}
-                                    </PageDetailsConsumer>
-                                </PageDetailsProvider>
-                            </DetailsContainer>
-                        )}
-                    </ElementAnimation>
-                );
-            }}
-        </Query>
+        <ElementAnimation>
+            {({ refresh }) => (
+                <DetailsContainer onScroll={refresh}>
+                    <test-id data-testid="pb-page-details">
+                        {renderPlugins("pb-page-details", {
+                            page,
+                            getPageQuery
+                        })}
+                    </test-id>
+                </DetailsContainer>
+            )}
+        </ElementAnimation>
     );
 };
 

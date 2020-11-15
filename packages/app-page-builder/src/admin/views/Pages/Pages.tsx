@@ -69,7 +69,7 @@ const Pages = () => {
                 <LeftPanel>
                     <PagesDataList />
                 </LeftPanel>
-                <RightPanel>{/*<PageDetails />*/}</RightPanel>
+                <RightPanel><PageDetails /></RightPanel>
             </SplitView>
             {canCreate && (
                 <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />

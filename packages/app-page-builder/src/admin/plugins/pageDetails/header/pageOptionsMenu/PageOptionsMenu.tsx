@@ -29,10 +29,7 @@ const menuStyles = css({
 });
 
 const PageOptionsMenu = props => {
-    const {
-        pageDetails: { page }
-    } = props;
-
+    const { page } = props;
     const { getPageUrl, getPagePreviewUrl, getDomain } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
 

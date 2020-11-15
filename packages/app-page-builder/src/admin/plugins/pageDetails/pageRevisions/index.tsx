@@ -9,7 +9,7 @@ const plugin: PbPageDetailsRevisionContentPlugin = {
     render({ pageDetails, loading }) {
         return (
             <Tab label={"Revisions"} disabled={loading}>
-                <RevisionsList pageDetails={pageDetails} loading={loading} />
+                {/*<RevisionsList pageDetails={pageDetails} loading={loading} />*/}
             </Tab>
         );
     }

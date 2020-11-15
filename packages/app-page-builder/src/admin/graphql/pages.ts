@@ -24,8 +24,10 @@ export const DATA_FIELDS = `
 `;
 
 export const LIST_DATA_FIELDS = `
+    id
     status
     title
+    savedOn
     category {
         name
         slug
@@ -33,7 +35,7 @@ export const LIST_DATA_FIELDS = `
     createdBy {
         displayName
     }
-`
+`;
 
 export const CREATE_PAGE = gql`
     mutation PbCreatePage($category: String!) {
@@ -53,8 +55,6 @@ export const LIST_PAGES = gql`
         pageBuilder {
             listPages(sort: $sort, limit: $limit) {
                 data {
-                    id
-                    title
                     ${LIST_DATA_FIELDS}
                 }
             }
@@ -78,7 +78,7 @@ export const LIST_PAGES = gql`
 export const GET_PAGE = gql`
     query PbGetPage($id: ID!) {
         pageBuilder {
-            page: getPage(id: $id) {
+            getPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
                     snippet

@@ -191,9 +191,8 @@ export type PbDocumentElementPlugin = Plugin & {
 export type PbPageDetailsRevisionContentPlugin = Plugin & {
     type: "pb-page-details-revision-content";
     render(params: {
-        pageDetails: PbPageDetailsContextValue;
-        loading: boolean;
-        refreshPages: () => void;
+        page: PbPageDetailsContextValue;
+        getPageQuery: any;
     }): ReactElement;
 };
 
@@ -205,9 +204,8 @@ export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
 export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
     type: "pb-page-details-revision-content-preview";
     render(params: {
-        pageDetails: PbPageDetailsContextValue;
-        loading: boolean;
-        refreshPages: () => void;
+        page: PbPageDetailsContextValue;
+        getPageQuery: any;
     }): ReactElement;
 };
 
