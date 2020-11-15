@@ -16,7 +16,8 @@
     "@babel/runtime": "^7.5.5",
     "@webiny/plugins": "^4.14.0",
     "apollo-graphql": "^0.4.4",
-    "graphql": "^14.6.0"
+    "graphql": "^14.6.0",
+    "@webiny/handler": "^4.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

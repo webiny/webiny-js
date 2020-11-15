@@ -1,16 +1,18 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "../plugins"
-  ],
+  "exclude": ["node_modules", "../plugins", "../handler"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist"
   },
   "references": [
-    { "path": "../plugins/tsconfig.build.json" }
+    {
+      "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../handler/tsconfig.build.json"
+    }
   ]
 }
