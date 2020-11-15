@@ -11,7 +11,7 @@
 		"../handler-db",
 		"../graphql",
 		"../api-security",
-		"../commodo",
+		"../plugins",
 		"../commodo-graphql",
 		"../validation",
 		"../handler-aws",
@@ -27,7 +27,7 @@
 			"path": "../api-security/tsconfig.build.json"
 		},
 		{
-			"path": "../commodo/tsconfig.build.json"
+			"path": "../plugins/tsconfig.build.json"
 		},
 		{
 			"path": "../commodo-graphql/tsconfig.build.json"

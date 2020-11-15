@@ -8,6 +8,9 @@
       "path": "../handler"
     },
     {
+      "path": "../plugins"
+    },
+    {
       "path": "../handler-apollo-server"
     }
   ]

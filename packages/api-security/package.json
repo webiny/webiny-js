@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
+    "@webiny/plugins": "^4.14.0",
     "@webiny/graphql": "^4.14.0",
     "jsonwebtoken": "^8.2.2",
     "minimatch": "^3.0.4"

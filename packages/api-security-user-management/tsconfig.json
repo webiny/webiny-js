@@ -17,7 +17,7 @@
 			"path": "../handler-db"
 		},
 		{
-			"path": "../commodo"
+			"path": "../plugins"
 		},
 		{
 			"path": "../commodo-graphql"

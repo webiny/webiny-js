@@ -1,17 +1,14 @@
 {
-	"extends": "../../tsconfig",
-	"references": [
-		{
-			"path": "../handler"
-		},
-		{
-			"path": "../handler-http"
-		},
-		{
-			"path": "../graphql"
-		},
-		{
-			"path": "../plugins"
-		}
-	]
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../graphql"
+    }
+  ]
 }

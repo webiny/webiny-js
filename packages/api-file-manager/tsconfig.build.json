@@ -5,7 +5,6 @@
     "node_modules",
     "./dist",
     "../api-security",
-    "../commodo-graphql",
     "../graphql",
     "../handler",
     "../handler-client",
@@ -20,9 +19,6 @@
   "references": [
     {
       "path": "../api-security/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo-graphql/tsconfig.build.json"
     },
     {
       "path": "../graphql/tsconfig.build.json"

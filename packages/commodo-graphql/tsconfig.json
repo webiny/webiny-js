@@ -1,7 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    { "path": "../graphql" },
-    { "path": "../commodo" }
-  ]
+  "references": [{ "path": "../graphql" }]
 }

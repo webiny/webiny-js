@@ -19,7 +19,6 @@
     "@commodo/fields": "beta",
     "@ramda/pipe": "^0.26.1",
     "@webiny/api-security": "^4.14.0",
-    "@webiny/commodo-graphql": "^4.14.0",
     "@webiny/graphql": "^4.14.0",
     "@webiny/handler": "^4.14.0",
     "@webiny/handler-db": "^4.14.0",
