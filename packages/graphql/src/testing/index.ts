@@ -1,4 +1,3 @@
-import { createSchema } from "../index";
 import { PluginsContainer } from "@webiny/plugins/PluginsContainer";
 
 // TODO: probably can go to trash.
@@ -11,11 +10,12 @@ const applyContextPlugins = async context => {
     }
 };
 
-export const setupSchema = async plugins => {
+// TODO: Trash probably.
+/*export const setupSchema = async plugins => {
     const pluginsContainer = new PluginsContainer([plugins]);
 
     return await createSchema({ plugins: pluginsContainer });
-};
+};*/
 
 export const setupContext = async (plugins, baseContext = {}) => {
     const pluginsContainer = new PluginsContainer([plugins]);
