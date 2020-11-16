@@ -3,57 +3,45 @@ import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { withFields, string, fields, skipOnPopulate } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import KSUID from "ksuid";
+import mdbid from "mdbid";
 import merge from "merge";
 import { getBaseFormId } from "../graphql/formResolvers/utils/formResolversUtils";
+import defaults from "./defaults";
+import { FormSubmissionsCRUD, FormSubmission } from "../../types";
 
-const FormSubmissionModel = withFields({
-    id: string({ validation: validation.create("required") }),
-    // Form submission data
-    formId: string({ validation: validation.create("required") }),
+const CreateDataModel = withFields({
     data: object({ validation: validation.create("required") }),
     meta: fields({
         instanceOf: withFields({
-            ip: string({ validation: validation.create("required") }),
+            ip: string({ validation: validation.create("required,maxLength:100") }),
             locale: object(),
-            submittedOn: skipOnPopulate()(string({ validation: validation.create("required") }))
+            submittedOn: skipOnPopulate()(
+                string({ validation: validation.create("required,maxLength:100") })
+            )
         })()
     }),
+    form: fields({
+        instanceOf: withFields({
+            parent: string({ validation: validation.create("required") }),
+            revision: string({ validation: validation.create("required") })
+        })()
+    })
+})();
+
+const UpdateDataModel = withFields({
     logs: fields({
         list: true,
         value: [],
         instanceOf: withFields({
             type: string({
-                validation: validation.create("required,in:error:warning:info:success"),
-                message: string(),
-                data: object(),
-                createdOn: string({ value: new Date().toISOString() })
-            })
+                validation: validation.create("required,in:error:warning:info:success")
+            }),
+            message: string(),
+            data: object(),
+            createdOn: string({ value: new Date().toISOString() })
         })()
     })
 })();
-
-export const dbArgs = {
-    table: process.env.DB_TABLE_FORM_BUILDER,
-    keys: [
-        { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-    ]
-};
-
-export type Form = {
-    name: string;
-    slug: string;
-    fields: Record<string, any>;
-    layout: Record<string, any>;
-    stats: Record<string, any>;
-    settings: Record<string, any>;
-    trigger: Record<string, any>;
-    version: number;
-    parent: string;
-    locked: boolean;
-    published: boolean;
-    publishedOn: string;
-};
 
 export default {
     type: "context",
@@ -68,13 +56,17 @@ export default {
         }
 
         context.formBuilder.crud.formSubmission = {
-            async get({ formId, submissionId }: { formId: string; submissionId: string }) {
-                const formIdWithoutVersion = formId.split("#")[0];
-
-                const [[formSubmission]] = await db.read<Form>({
-                    ...dbArgs,
+            async getSubmission({
+                formId,
+                submissionId
+            }: {
+                formId: string;
+                submissionId: string;
+            }) {
+                const [[formSubmission]] = await db.read<FormSubmission>({
+                    ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${formIdWithoutVersion}`,
+                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formId)}`,
                         SK: `S#${submissionId}`
                     },
                     limit: 1
@@ -82,74 +74,73 @@ export default {
 
                 return formSubmission;
             },
-            async list(args) {
-                const [formSubmissions] = await db.read<Form>({
-                    ...dbArgs,
+            async listAllSubmissions({ formId, sort }) {
+                const [formSubmissions] = await db.read<FormSubmission>({
+                    ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${args.id}`,
+                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formId)}`,
                         SK: { $beginsWith: "S#" }
                     },
-                    ...args
+                    sort
                 });
 
                 return formSubmissions;
             },
-            async create(data) {
+            async createSubmission(data) {
                 // Use `WithFields` model for data validation and setting default value.
-                const formSubmission = new FormSubmissionModel().populate(data);
-                formSubmission.id = KSUID.randomSync().string;
+                let formSubmission = new CreateDataModel().populate(data);
                 // "beforeCreate" checks
                 formSubmission.meta.submittedOn = new Date().toISOString();
-
-                // Let's validate the form.
+                // Let's validate the form submission.
                 await formSubmission.validate();
 
-                const formIdWithoutVersion = getBaseFormId(formSubmission.formId);
-                const formDataJSON = await formSubmission.toJSON();
+                const formSubmissionDataJSON = await formSubmission.toJSON();
+
+                formSubmission = {
+                    ...formSubmissionDataJSON,
+                    id: mdbid()
+                };
+
                 // Finally create "form" entry in "DB".
                 await db.create({
                     data: {
-                        PK: `${PK_FORM_SUBMISSION}#${formIdWithoutVersion}`,
+                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formSubmission.form.revision)}`,
                         SK: `S#${formSubmission.id}`,
-                        ...formDataJSON
+                        TYPE: "FormSubmission",
+                        ...formSubmission
                     }
                 });
 
-                return formDataJSON;
+                return formSubmission;
             },
-            async update({ data, existingData }: { data: any; existingData: Form }) {
-                const updatedData = merge.recursive({}, existingData, data);
-                // Use `WithFields` model for data validation and setting default value.
-                const formSubmission = new FormSubmissionModel().populate(updatedData);
-                // "beforeCreate" checks
-                formSubmission.meta.submittedOn = new Date().toISOString();
-                // Run validation
-                await formSubmission.validate();
+            async updateSubmission({ formId, data }) {
+                await new UpdateDataModel().populate(data).validate();
 
-                const formIdWithoutVersion = formSubmission.formId.split("#")[0];
-                const formDataJSON = await formSubmission.toJSON();
+                const formIdWithoutVersion = getBaseFormId(formId);
+
                 // Finally save it to DB
                 await db.update({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: {
                         PK: `${PK_FORM_SUBMISSION}#${formIdWithoutVersion}`,
-                        SK: `S#${formSubmission.id}`
+                        SK: `S#${data.id}`
                     },
-                    data: formDataJSON
+                    data: {
+                        logs: data.logs
+                    }
                 });
 
-                return formDataJSON;
+                return true;
             },
-            delete({ formId, submissionId }: { formId: string; submissionId: string }) {
+            deleteSubmission({ formId, submissionId }) {
                 return db.delete({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: {
                         PK: `${PK_FORM_SUBMISSION}#${formId}`,
                         SK: `S#${submissionId}`
                     }
                 });
             },
-            // Other methods
             addLog(instance, log) {
                 if (!Array.isArray(instance.logs)) {
                     instance.logs = [];
@@ -157,6 +148,6 @@ export default {
 
                 instance.logs = [...instance.logs, log];
             }
-        };
+        } as FormSubmissionsCRUD;
     }
 } as HandlerContextPlugin<HandlerContextDb>;
