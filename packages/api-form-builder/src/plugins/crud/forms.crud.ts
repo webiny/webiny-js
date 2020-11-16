@@ -1,23 +1,20 @@
 import { HandlerContextPlugin } from "@webiny/handler/types";
 import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
-import {
-    boolean,
-    fields,
-    number,
-    onSet,
-    setOnce,
-    skipOnPopulate,
-    string,
-    withFields
-} from "@commodo/fields";
+import { boolean, fields, string, withFields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import KSUID from "ksuid";
+import mdbid from "mdbid";
 import slugify from "slugify";
 import merge from "merge";
 import pick from "lodash/pick";
 import fetch from "node-fetch";
-import { getBaseFormId, getFormId } from "../graphql/formResolvers/utils/formResolversUtils";
+import {
+    getBaseFormId,
+    getFormId,
+    getStatus
+} from "../graphql/formResolvers/utils/formResolversUtils";
+import defaults from "./defaults";
+import { Form, FormsCRUD, FormSubmissionsCRUD } from "../../types";
 
 // "Form Fields" data model.
 const FormFieldsModel = withFields({
@@ -47,12 +44,6 @@ const FormFieldsModel = withFields({
         })()
     }),
     settings: object({ value: {} })
-})();
-
-// "Form Stats" data model.
-const FormStatsModel = withFields({
-    views: number({ value: 0 }),
-    submissions: number({ value: 0 })
 })();
 
 // "Form Settings" data model.
@@ -87,83 +78,27 @@ const FormSettingsModel = withFields({
     })
 })();
 
-// "Form" data model.
-const FormModel = withFields(instance => ({
-    id: setOnce()(string({ validation: validation.create("required") })),
-    createdBy: fields({
-        value: {},
-        instanceOf: withFields({
-            id: string({ validation: validation.create("maxLength:100") }),
-            displayName: string({ validation: validation.create("maxLength:100") })
-        })()
+const CreateDataModel = withFields({
+    name: string({ validation: validation.create("required,maxLength:100") })
+})();
+
+const UpdateDataModel = withFields({
+    name: string({ validation: validation.create("maxLength:100") }),
+    fields: fields({
+        list: true,
+        value: [],
+        instanceOf: FormFieldsModel
     }),
-    createdOn: setOnce()(string({ value: new Date().toISOString() })),
-    savedOn: string({ value: new Date().toISOString() }),
-    // Form data
-    name: onSet(value => (instance.locked ? instance.name : value))(
-        string({ validation: validation.create("required") })
-    ),
-    slug: setOnce()(string({ validation: validation.create("required") })),
-    fields: onSet(value => (instance.locked ? instance.fields : value))(
-        fields({
-            list: true,
-            value: [],
-            instanceOf: FormFieldsModel
-        })
-    ),
-    layout: onSet(value => (instance.locked ? instance.layout : value))(object({ value: [] })),
-    stats: skipOnPopulate()(fields({ instanceOf: FormStatsModel, value: {} })),
-    settings: onSet(value => (instance.locked ? instance.settings : value))(
-        fields({ instanceOf: FormSettingsModel, value: {} })
-    ),
-    triggers: onSet(value => (instance.locked ? instance.triggers : value))(object()),
-    version: number(),
-    parent: string(),
-    publishedOn: string(),
-    published: onSet(value => {
-        if (instance.published !== value) {
-            if (value) {
-                instance.publishedOn = new Date().toISOString();
-                if (!instance.locked) {
-                    instance.locked = true;
-                }
-            } else {
-                instance.publishedOn = null;
-            }
-        }
-        return value;
-    })(boolean()),
-    locked: skipOnPopulate()(boolean({ value: false })),
-    latestVersion: boolean(),
-    status: string({ validation: validation.create("required") })
-}))();
+    layout: object({ value: [] }),
+    settings: fields({ instanceOf: FormSettingsModel, value: {} }),
+    triggers: object()
+})();
 
-export const dbArgs = {
-    table: process.env.DB_TABLE_FORM_BUILDER,
-    keys: [
-        { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-    ]
-};
-
-export type Form = {
-    name: string;
-    slug: string;
-    fields: Record<string, any>;
-    layout: Record<string, any>;
-    stats: Record<string, any>;
-    settings: Record<string, any>;
-    triggers: Record<string, any>;
-    version: number;
-    parent: string;
-    locked: boolean;
-    published: boolean;
-    publishedOn: string;
-};
-
+// TODO: Handle "locked" check.
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
+        const { db, i18nContent, elasticSearch } = context;
         // Question: Will there be ever "i18nContent?.locale?.code" undefined?
         const PK_FORMS = `${i18nContent?.locale?.code}#FB`;
 
@@ -173,9 +108,9 @@ export default {
         }
 
         context.formBuilder.crud.forms = {
-            async get(id: string) {
+            async getForm(id: string) {
                 const [[form]] = await db.read<Form>({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: {
                         PK: PK_FORMS,
                         SK: id
@@ -185,32 +120,33 @@ export default {
 
                 return form;
             },
-            async list(args) {
+            async listAllForms(sort) {
                 const [forms] = await db.read<Form>({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_FORMS, SK: { $gt: " " } },
-                    ...args
+                    sort
                 });
 
                 return forms;
             },
-            async listFormsWithId(args) {
+            async listFormsBeginsWithId({ id, sort, limit }) {
                 const [forms] = await db.read<Form>({
-                    ...dbArgs,
-                    query: { PK: PK_FORMS, SK: { $beginsWith: `${getBaseFormId(args.id)}#` } },
-                    ...args
+                    ...defaults.db,
+                    query: { PK: PK_FORMS, SK: { $beginsWith: `${getBaseFormId(id)}#` } },
+                    sort,
+                    limit
                 });
 
                 return forms;
             },
-            async listFormsInBatch(args) {
+            async listFormsInBatch(ids) {
                 const batch = db.batch();
 
                 batch.read(
-                    ...args.ids.map(id => ({
-                        ...dbArgs,
+                    ...ids.map(id => ({
+                        ...defaults.db,
                         query: { PK: PK_FORMS, SK: id },
-                        ...args
+                        limit: 1
                     }))
                 );
 
@@ -223,98 +159,132 @@ export default {
                     })
                     .filter(Boolean);
             },
-            // TODO: Use "modular" function instead of bulking the CRUD.
-            async create(data) {
-                // Use `WithFields` model for data validation and setting default value.
-                const form = new FormModel().populate(data);
-                // Form `id` will remain the same in case of "createRevisionFrom"
-                if (!form.id) {
-                    form.id = KSUID.randomSync().string;
-                }
-                // "beforeCreate" checks
-                if (!form.parent) {
-                    // Parent will always be the first revision.
-                    form.parent = `${form.id}#1`;
-                }
-                if (!form.name) {
-                    form.name = "Untitled";
-                }
-                if (!form.slug) {
-                    form.slug = [slugify(form.name), KSUID.randomSync().string]
-                        .join("-")
-                        .toLowerCase();
-                }
+            async createForm(data) {
+                const identity = context.security.getIdentity();
 
-                form.version = await this.getNextVersion(getBaseFormId(form.id));
+                await new CreateDataModel().populate(data).validate();
+                const id = mdbid() + "#1";
 
-                // Latest revision
-                form.latestVersion = true;
-                if (form.version > 1) {
-                    // Mark previous Latest Form's  "latestVersion" to false.
-                    await this.markPreviousLatestVersion({
-                        parentId: form.parent,
-                        version: form.version,
-                        latestVersion: false
-                    });
-                }
-                // Set form status
-                form.status = this.getStatus(form);
-                // Let's validate the form.
-                await form.validate();
-
-                const formDataJSON = await form.toJSON();
-                formDataJSON.id = getFormId(formDataJSON);
+                const form = {
+                    id,
+                    savedOn: new Date().toISOString(),
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    },
+                    name: data.name,
+                    slug: [slugify(data.name), mdbid()].join("-").toLowerCase(),
+                    version: 1,
+                    parent: id,
+                    locked: false,
+                    published: false,
+                    publishedOn: null,
+                    latestVersion: true,
+                    status: getStatus({ published: false, locked: false }),
+                    stats: {
+                        views: 0,
+                        submissions: 0
+                    },
+                    // Will be added via a "update"
+                    fields: null,
+                    layout: null,
+                    settings: null,
+                    triggers: null
+                };
 
                 // Finally create "form" entry in "DB".
                 await db.create({
                     data: {
                         PK: PK_FORMS,
-                        SK: formDataJSON.id,
-                        ...formDataJSON
+                        SK: form.id,
+                        TYPE: "Form",
+                        ...form
                     }
                 });
 
-                return formDataJSON;
-            },
-            async update({ data, existingForm }: { data: any; existingForm: Form }) {
-                const updatedForm = merge.recursive({}, existingForm, data);
-                // Use `WithFields` model for data validation and setting default value.
-                const form = new FormModel().populate(updatedForm);
-                // Due to "skipOnPopulate"
-                form.stats = updatedForm.stats;
-                // Set form status
-                form.status = this.getStatus(form);
-                // Run validation
-                await form.validate();
-
-                const formDataJSON = await form.toJSON();
-                // Finally save it to DB
-                await db.update({
-                    ...dbArgs,
-                    query: {
-                        PK: PK_FORMS,
-                        SK: form.id
-                    },
-                    data: formDataJSON
+                // Index form in "Elastic Search"
+                await elasticSearch.create({
+                    ...defaults.es,
+                    id: form.id,
+                    body: {
+                        id: form.id,
+                        parent: form.parent,
+                        createdOn: form.createdOn,
+                        savedOn: form.savedOn,
+                        name: form.name,
+                        slug: form.slug,
+                        published: form.published,
+                        publishedOn: form.publishedOn,
+                        version: form.version,
+                        locked: form.locked,
+                        latestVersion: form.latestVersion,
+                        status: form.status,
+                        createdBy: form.createdBy,
+                        locale: i18nContent?.locale?.code
+                    }
                 });
 
-                return formDataJSON;
+                return form;
             },
-            delete(id: string) {
-                return db.delete({
-                    ...dbArgs,
+            async updateForm(id, data) {
+                const updateData = new UpdateDataModel().populate(data);
+                await updateData.validate();
+
+                const savedOn = new Date().toISOString();
+                data = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
+                    savedOn
+                });
+
+                // Finally save it to DB
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_FORMS,
+                        SK: id
+                    },
+                    data
+                });
+
+                // Update form in "Elastic Search"
+                await elasticSearch.update({
+                    ...defaults.es,
+                    id: id,
+                    body: {
+                        doc: {
+                            id: id,
+                            savedOn,
+                            name: data.name
+                        }
+                    }
+                });
+
+                return true;
+            },
+            async deleteForm(id: string) {
+                await db.delete({
+                    ...defaults.db,
                     query: {
                         PK: PK_FORMS,
                         SK: id
                     }
                 });
+
+                // Delete form with "id" from "Elastic Search"
+                await elasticSearch.delete({
+                    ...defaults.es,
+                    id
+                });
+
+                return true;
             },
-            deleteAll(ids: [string]) {
+            async deleteForms(ids: [string]) {
                 const batch = db.batch();
 
                 batch.delete(
                     ...ids.map(id => ({
-                        ...dbArgs,
+                        ...defaults.db,
                         query: {
                             PK: PK_FORMS,
                             SK: id
@@ -322,19 +292,169 @@ export default {
                     }))
                 );
 
-                return batch.execute();
-            },
-            // Other methods
-            getStatus(form) {
-                if (form.published) {
-                    return "published";
+                await batch.execute();
+
+                // Delete all index from "ES"
+                const body = ids.map(id => ({
+                    delete: { _index: "form-builder", _id: id }
+                }));
+
+                const { body: bulkResponse } = await elasticSearch.bulk({ body });
+                if (bulkResponse.errors) {
+                    console.info("Error: While deleting indexed `forms`.");
                 }
 
-                return form.locked ? "locked" : "draft";
+                return true;
+            },
+            async publishForm(id: string) {
+                const savedOn = new Date().toISOString();
+                const status = getStatus({ published: true, locked: true });
+
+                // Finally save it to DB
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_FORMS,
+                        SK: id
+                    },
+                    data: {
+                        published: true,
+                        publishedOn: savedOn,
+                        locked: true,
+                        savedOn,
+                        status
+                    }
+                });
+
+                // Update form in "Elastic Search"
+                await elasticSearch.update({
+                    ...defaults.es,
+                    id,
+                    body: {
+                        doc: {
+                            published: true,
+                            publishedOn: savedOn,
+                            locked: true,
+                            savedOn,
+                            status
+                        }
+                    }
+                });
+
+                return true;
+            },
+            async unPublishForm(id: string) {
+                const savedOn = new Date().toISOString();
+                const status = getStatus({ published: false, locked: false });
+                // Finally save it to DB
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_FORMS,
+                        SK: id
+                    },
+                    data: {
+                        published: false,
+                        publishedOn: null,
+                        locked: false,
+                        savedOn,
+                        status
+                    }
+                });
+
+                // Update form in "Elastic Search"
+                await elasticSearch.update({
+                    ...defaults.es,
+                    id,
+                    body: {
+                        doc: {
+                            published: false,
+                            publishedOn: null,
+                            locked: false,
+                            savedOn,
+                            status
+                        }
+                    }
+                });
+
+                return true;
+            },
+            async createFormRevision(sourceRev) {
+                const identity = context.security.getIdentity();
+                const version = await this.getNextVersion(sourceRev.id);
+                const id = `${getBaseFormId(sourceRev.id)}#${version}`;
+
+                const newRevision = {
+                    id,
+                    savedOn: new Date().toISOString(),
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    },
+                    name: sourceRev.name,
+                    slug: sourceRev.slug,
+                    version: version,
+                    parent: sourceRev.parent,
+                    locked: false,
+                    published: false,
+                    publishedOn: null,
+                    latestVersion: true,
+                    status: getStatus({ published: false, locked: false }),
+                    fields: sourceRev.fields,
+                    layout: sourceRev.layout,
+                    // TODO: We'll see who to manage stats?
+                    stats: sourceRev.stats,
+                    settings: sourceRev.settings,
+                    triggers: sourceRev.triggers
+                };
+
+                // Mark previous Latest Form's  "latestVersion" to false.
+                await this.markPreviousLatestVersion({
+                    parentId: newRevision.parent,
+                    version: newRevision.version,
+                    latestVersion: false
+                });
+
+                // Finally create "form" entry in "DB".
+                await db.create({
+                    ...defaults.db,
+                    data: {
+                        PK: PK_FORMS,
+                        SK: newRevision.id,
+                        TYPE: "Form",
+                        ...newRevision
+                    }
+                });
+
+                // Index form in "Elastic Search"
+                await elasticSearch.create({
+                    ...defaults.es,
+                    id: newRevision.id,
+                    body: {
+                        id: newRevision.id,
+                        parent: newRevision.parent,
+                        createdOn: newRevision.createdOn,
+                        savedOn: newRevision.savedOn,
+                        name: newRevision.name,
+                        slug: newRevision.slug,
+                        published: newRevision.published,
+                        publishedOn: newRevision.publishedOn,
+                        version: newRevision.version,
+                        locked: newRevision.locked,
+                        latestVersion: newRevision.latestVersion,
+                        status: newRevision.status,
+                        createdBy: newRevision.createdBy,
+                        locale: i18nContent?.locale?.code
+                    }
+                });
+
+                return newRevision;
             },
             async getNextVersion(id) {
                 try {
-                    const [latestRevision] = await this.listFormsWithId({
+                    const [latestRevision] = await this.listFormsBeginsWithId({
                         id,
                         sort: { SK: -1 },
                         limit: 1
@@ -351,9 +471,8 @@ export default {
             },
             async markPreviousLatestVersion({ parentId, version, latestVersion }) {
                 try {
-                    const response = await context.elasticSearch.search({
-                        index: "form-builder",
-                        type: "_doc",
+                    const response = await elasticSearch.search({
+                        ...defaults.es,
                         body: {
                             query: {
                                 bool: {
@@ -384,59 +503,52 @@ export default {
                     const [previousLatestRevision] = response?.body?.hits?.hits?.map(
                         item => item._source
                     );
-
-                    const previousLatestRevisionForm = await this.get(previousLatestRevision.id);
-
-                    await this.update({
-                        data: { latestVersion },
-                        existingForm: previousLatestRevisionForm
+                    // Update "latestVersion" in DB.
+                    await db.update({
+                        ...defaults.db,
+                        query: { PK: PK_FORMS, SK: previousLatestRevision.id },
+                        data: {
+                            latestVersion
+                        }
                     });
 
-                    // Also needs to update the same in "ES".
-                    await context.elasticSearch.update({
-                        id: previousLatestRevisionForm.id,
-                        index: "form-builder",
+                    // Update "latestVersion" in Elasticsearch.
+                    await elasticSearch.update({
+                        ...defaults.es,
+                        id: previousLatestRevision.id,
                         body: {
                             doc: {
                                 latestVersion
                             }
                         }
                     });
+
+                    return true;
                 } catch (e) {
                     throw Error(
                         `Unable to mark previous latestVersion "false" for form with id: "${parentId}"`
                     );
                 }
             },
-            // FIXME: Move to utils maybe?
-            // Form stats helpers
-            conversionRate(form) {
-                if (form.stats.views > 0) {
-                    return ((form.stats.submissions / form.stats.views) * 100).toFixed(2);
-                }
-                return 0;
+            async saveFormStats(id, stats) {
+                // Update "form stats" in DB.
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_FORMS,
+                        SK: id
+                    },
+                    data: {
+                        stats
+                    }
+                });
+
+                return true;
             },
-            incrementViews(form) {
-                // Increment views
-                form.stats.views = form.stats.views + 1;
-            },
-            incrementSubmissions(form) {
-                // Increment submissions
-                form.stats.submissions = form.stats.submissions + 1;
-            },
-            async submit({
-                form: formInstance,
-                reCaptchaResponseToken,
-                data: rawData,
-                meta
-            }: {
-                form: Form;
-                reCaptchaResponseToken?: string;
-                data: { [key: string]: any };
-                meta: { [key: string]: any };
-            }) {
+            async submit({ form: formInstance, reCaptchaResponseToken, data: rawData, meta }) {
                 let result;
                 const { formBuilderSettings } = context.formBuilder.crud;
+                const forms: FormsCRUD = context.formBuilder.crud.forms;
 
                 const settingsFB = await formBuilderSettings.get();
 
@@ -525,12 +637,17 @@ export default {
                 // Validation passed, let's create a form submission.
                 const { i18n } = context;
 
-                const formSubmissionCrud = context?.formBuilder?.crud?.formSubmission;
+                const formSubmissionCrud: FormSubmissionsCRUD =
+                    context?.formBuilder?.crud?.formSubmission;
 
-                const formSubmission = await formSubmissionCrud.create({
-                    data,
+                const formSubmission = await formSubmissionCrud.createSubmission({
+                    reCaptchaResponseToken,
+                    data: rawData,
                     meta: { ...meta, locale: i18n.getCurrentLocales() },
-                    formId: getFormId(formInstance)
+                    form: {
+                        parent: getFormId(formInstance),
+                        revision: getFormId(formInstance)
+                    }
                 });
 
                 formSubmissionCrud.addLog(formSubmission, {
@@ -538,7 +655,10 @@ export default {
                     message: "Form submission created."
                 });
 
-                await formSubmissionCrud.update({ data: {}, existingData: formSubmission });
+                await formSubmissionCrud.updateSubmission({
+                    formId: getFormId(formInstance),
+                    data: formSubmission
+                });
 
                 try {
                     // Execute triggers
@@ -557,12 +677,9 @@ export default {
                         }
                     }
 
-                    this.incrementSubmissions(formInstance);
+                    formInstance.stats.submissions = formInstance.stats.submissions + 1;
 
-                    await context.formBuilder.crud.forms.update({
-                        data: {},
-                        existingForm: formInstance
-                    });
+                    await forms.updateForm(formInstance.id, formInstance);
 
                     formSubmissionCrud.addLog(formSubmission, {
                         type: "success",
@@ -575,13 +692,14 @@ export default {
                     });
                     throw e;
                 } finally {
-                    result = await formSubmissionCrud.update({
-                        data: {},
-                        existingData: formSubmission
+                    await formSubmissionCrud.updateSubmission({
+                        formId: getFormId(formInstance),
+                        data: formSubmission
                     });
+                    result = formSubmission;
                 }
                 return result;
             }
-        };
+        } as FormsCRUD;
     }
 } as HandlerContextPlugin<HandlerContextDb>;
