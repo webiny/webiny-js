@@ -2,6 +2,7 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { hasScope } from "@webiny/api-security";
 import { Context } from "@webiny/graphql/types";
 import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+import { FormBuilderSettingsCRUD } from "../../types";
 
 type SettingsContext = Context & SettingsManagerContext;
 
@@ -47,9 +48,10 @@ export default {
         FormsQuery: {
             getSettings: hasScope("forms:settings")(async (_, args, context: SettingsContext) => {
                 try {
-                    const formBuilderSettings = context?.formBuilder?.crud?.formBuilderSettings;
+                    const formBuilderSettings: FormBuilderSettingsCRUD =
+                        context?.formBuilder?.crud?.formBuilderSettings;
 
-                    const data = await formBuilderSettings.get();
+                    const data = await formBuilderSettings.getSettings();
                     return new Response(data);
                 } catch (err) {
                     return new ErrorResponse(err);
@@ -60,18 +62,16 @@ export default {
             updateSettings: hasScope("forms:settings")(
                 async (_, args, context: SettingsContext) => {
                     try {
-                        const formBuilderSettings = context?.formBuilder?.crud?.formBuilderSettings;
+                        const formBuilderSettings: FormBuilderSettingsCRUD =
+                            context?.formBuilder?.crud?.formBuilderSettings;
 
-                        const existingSettings = await formBuilderSettings.get();
+                        const existingSettings = await formBuilderSettings.getSettings();
 
                         if (!existingSettings) {
                             return new NotFoundResponse(`"Form Builder" settings not found!`);
                         }
-
-                        const data = await formBuilderSettings.update({
-                            data: args.data,
-                            existingSettings
-                        });
+                        await formBuilderSettings.updateSettings(args.data);
+                        const data = await formBuilderSettings.getSettings();
                         return new Response(data);
                     } catch (err) {
                         return new ErrorResponse(err);
