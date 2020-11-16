@@ -4,7 +4,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-settings-manager"
+    "directory": "packages/api-plugin-elastic-search-client"
   },
   "description": "A client to work with Elastic Search domain.",
   "contributors": [
