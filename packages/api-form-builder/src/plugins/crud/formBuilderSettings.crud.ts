@@ -3,32 +3,13 @@ import { HandlerContextDb } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { withFields, string, boolean, fields, setOnce } from "@commodo/fields";
 import merge from "merge";
-
-// TODO: Use `toJSON` function from "@commodo/fields"
-export const getJSON = instance => {
-    const output = {};
-    const fields = Object.keys(instance.getFields());
-
-    for (let i = 0; i < fields.length; i++) {
-        const field = fields[i];
-        if (
-            typeof instance[field] === "object" &&
-            !Array.isArray(instance[field]) &&
-            instance[field]
-        ) {
-            output[field] = getJSON(instance[field]);
-        } else if (instance[field]) {
-            output[field] = instance[field];
-        }
-    }
-    return output;
-};
+import defaults from "./defaults";
+import { FormBuilderSettingsCRUD, FormBuilderSettings } from "../../types";
 
 export const PK_SETTINGS = "S";
-
 export const FB_SETTINGS_KEY = "form-builder";
-// A simple data model
-const FormBuilderSettings = withFields({
+
+const CreateDataModel = withFields({
     key: setOnce()(string({ value: FB_SETTINGS_KEY })),
     installed: boolean({ value: false }),
     domain: string(),
@@ -42,19 +23,17 @@ const FormBuilderSettings = withFields({
     })
 })();
 
-export const dbArgs = {
-    table: process.env.DB_TABLE_FORM_BUILDER,
-    keys: [
-        { primary: true, unique: true, name: "primary", fields: [{ name: "PK" }, { name: "SK" }] }
-    ]
-};
-
-export type FormBuilderSettingsType = {
-    key: string;
-    installed: boolean;
-    domain: string;
-    reCaptcha: Record<string, any>;
-};
+const UpdateDataModel = withFields({
+    domain: string(),
+    reCaptcha: fields({
+        value: {},
+        instanceOf: withFields({
+            enabled: boolean(),
+            siteKey: string({ validation: validation.create("maxLength:100") }),
+            secretKey: string({ validation: validation.create("maxLength:100") })
+        })()
+    })
+})();
 
 export default {
     type: "context",
@@ -67,64 +46,53 @@ export default {
         }
 
         context.formBuilder.crud.formBuilderSettings = {
-            async get(key = FB_SETTINGS_KEY) {
-                const [[settings]] = await db.read<FormBuilderSettingsType>({
-                    ...dbArgs,
-                    query: { PK: PK_SETTINGS, SK: key },
+            async getSettings() {
+                const [[settings]] = await db.read<FormBuilderSettings>({
+                    ...defaults.db,
+                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY },
                     limit: 1
                 });
 
                 return settings;
             },
-            async list(args) {
-                const [settingsList] = await db.read<FormBuilderSettingsType>({
-                    ...dbArgs,
-                    query: { PK: PK_SETTINGS, SK: { $gt: " " } },
-                    ...args
-                });
-
-                return settingsList;
-            },
-            async create(data) {
-                // Use `WithFields` model for data validation and setting default value.
-                const formBuilderSettings = new FormBuilderSettings().populate(data);
+            async createSettings(data) {
+                const formBuilderSettings = new CreateDataModel().populate(data);
                 await formBuilderSettings.validate();
+
+                const dataJSON = await formBuilderSettings.toJSON();
 
                 await db.create({
                     data: {
                         PK: PK_SETTINGS,
                         SK: formBuilderSettings.key,
-                        ...getJSON(formBuilderSettings)
+                        TYPE: "FormBuilderSettings",
+                        ...dataJSON
                     }
                 });
 
-                return formBuilderSettings;
+                return dataJSON;
             },
-            async update({ data, existingSettings }) {
-                // Only update incoming props
-                const propsToUpdate = Object.keys(data);
-                propsToUpdate.forEach(key => {
-                    existingSettings[key] = data[key];
-                });
+            async updateSettings(data) {
+                const updatedData = new UpdateDataModel().populate(data);
 
-                // Use `WithFields` model for data validation and setting default value.
-                const formBuilderSettings = new FormBuilderSettings().populate(existingSettings);
-                await formBuilderSettings.validate();
+                await updatedData.validate();
+
+                const dataJSON = await updatedData.toJSON({ onlyDirty: true });
 
                 await db.update({
-                    ...dbArgs,
-                    query: { PK: PK_SETTINGS, SK: formBuilderSettings.key },
-                    data: getJSON(formBuilderSettings)
+                    ...defaults.db,
+                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY },
+                    data: dataJSON
                 });
 
-                return formBuilderSettings;
+                return true;
             },
-            delete(key = FB_SETTINGS_KEY) {
+            deleteSettings() {
                 return db.delete({
-                    ...dbArgs,
-                    query: { PK: PK_SETTINGS, SK: key }
+                    ...defaults.db,
+                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY }
                 });
             }
-        };
+        } as FormBuilderSettingsCRUD;
     }
 } as HandlerContextPlugin<HandlerContextDb>;
