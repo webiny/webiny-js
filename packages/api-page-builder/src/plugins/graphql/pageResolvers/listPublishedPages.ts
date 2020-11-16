@@ -81,7 +81,7 @@ export const listPublishedPages = async params => {
         limit,
         after,
         before,
-        totalCount: info ? requiresTotalCount(info) : false
+        totalCount: info ? /*requiresTotalCount*/(info) : false
     });
 };
 

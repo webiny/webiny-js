@@ -1,4 +1,4 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql/responses";
+import { ListResponse } from "@webiny/graphql/responses";
 
 export const listPages = async ({ context, args, info }) => {
     const { PbPagesListPage } = context.models;
@@ -28,7 +28,7 @@ export const listPages = async ({ context, args, info }) => {
         before,
         search,
         query,
-        totalCount: requiresTotalCount(info)
+        totalCount: /*requiresTotalCount*/(info)
     });
 };
 

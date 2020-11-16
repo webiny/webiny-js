@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fetch from "node-fetch";
 import providerList from "./providers";
 
