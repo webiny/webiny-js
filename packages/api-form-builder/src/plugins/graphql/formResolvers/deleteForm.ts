@@ -1,13 +1,14 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { FormsCRUD } from "../../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { formBuilder, elasticSearch } = context;
-    const forms = formBuilder?.crud?.forms;
+    const forms: FormsCRUD = formBuilder?.crud?.forms;
     const { id } = args;
 
     try {
-        const existingForm = await forms.get(id);
+        const existingForm = await forms.getForm(id);
 
         if (!existingForm) {
             return new NotFoundResponse(`Form with id:"${id}" not found!`);
@@ -46,27 +47,14 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
             if (revisionIds.length > 1) {
                 // Delete all revisions.
-                await forms.deleteAll(revisionIds);
-                // Delete all index from "ES"
-                const body = revisionIds.map(id => ({
-                    delete: { _index: "form-builder", _id: id }
-                }));
-                const { body: bulkResponse } = await elasticSearch.bulk({ body });
-                if (bulkResponse.errors) {
-                    console.info("Error: While deleting indexed `forms`.");
-                }
+                await forms.deleteForms(revisionIds);
 
                 return new Response(true);
             }
         }
         // Delete the form.
-        await forms.delete(id);
-        // Delete form with "id" from "Elastic Search"
-        await context.elasticSearch.delete({
-            id,
-            index: "form-builder",
-            type: "_doc"
-        });
+        await forms.deleteForm(id);
+
         return new Response(true);
     } catch (e) {
         return new ErrorResponse({

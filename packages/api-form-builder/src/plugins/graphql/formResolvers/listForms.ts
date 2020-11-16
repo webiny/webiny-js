@@ -1,9 +1,10 @@
 import { ErrorResponse, ListResponse } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { FormsCRUD } from "../../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
     const { i18nContent, formBuilder } = context;
-    const forms = formBuilder?.crud?.forms;
+    const forms: FormsCRUD = formBuilder?.crud?.forms;
     const {
         // sort = null,
         search = null,
@@ -63,7 +64,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
         // Get complete form data for returned list.
         if (list?.length) {
             const formIds = list.map(item => item.id);
-            list = await forms.listFormsInBatch({ ids: formIds });
+            list = await forms.listFormsInBatch(formIds);
         }
 
         return new ListResponse(list);

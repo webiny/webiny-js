@@ -13,6 +13,7 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
+import { FormsCRUD } from "../../types";
 
 type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
@@ -277,8 +278,8 @@ export default {
         Form: {
             overallStats: async (form, args, context) => {
                 // Prepare SK and do a batch read
-                const forms = context?.formBuilder?.crud?.forms;
-                const allForms = await forms.listFormsWithId({ id: form.id });
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                const allForms = await forms.listFormsBeginsWithId({ id: form.id });
                 // Then calculate the stats
 
                 const stats = {
@@ -307,20 +308,20 @@ export default {
             },
             revisions: async (form, args, context) => {
                 // Prepare SK and do a batch read
-                const forms = context?.formBuilder?.crud?.forms;
-                return await forms.listFormsWithId({ id: form.id, sort: { SK: -1 } });
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsBeginsWithId({ id: form.id, sort: { SK: -1 } });
             },
             publishedRevisions: async (form, args, context) => {
                 // Prepare SK and do a batch read
-                const forms = context?.formBuilder?.crud?.forms;
-                return await forms.listFormsWithId({ id: form.id });
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsBeginsWithId({ id: form.id });
             }
         },
         FormsQuery: {
             getForm: hasScope("forms:form:crud")(async (_, args, context: Context) => {
                 try {
-                    const forms = context?.formBuilder?.crud?.forms;
-                    const form = await forms.get(args.id);
+                    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                    const form = await forms.getForm(args.id);
 
                     if (!form) {
                         return new NotFoundResponse(`Form with id: "${args.id}" not found!`);

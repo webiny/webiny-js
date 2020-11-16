@@ -1,35 +1,14 @@
 import { ErrorResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { FormsCRUD } from "../../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const { i18nContent, formBuilder } = context;
-    const forms = formBuilder?.crud?.forms;
+    const { formBuilder } = context;
+    const forms: FormsCRUD = formBuilder?.crud?.forms;
     const { data } = args;
 
     try {
-        const form = await forms.create(data);
-        // Index form in "Elastic Search"
-        await context.elasticSearch.create({
-            id: form.id,
-            index: "form-builder",
-            type: "_doc",
-            body: {
-                id: form.id,
-                parent: form.parent,
-                createdOn: form.createdOn,
-                savedOn: form.savedOn,
-                name: form.name,
-                slug: form.slug,
-                published: form.published,
-                publishedOn: form.publishedOn,
-                version: form.version,
-                locked: form.locked,
-                latestVersion: form.latestVersion,
-                status: form.status,
-                createdBy: form.createdBy,
-                locale: i18nContent?.locale?.code
-            }
-        });
+        const form = await forms.createForm(data);
 
         return new Response(form);
     } catch (e) {

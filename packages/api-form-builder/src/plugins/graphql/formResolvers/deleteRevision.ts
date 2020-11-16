@@ -1,29 +1,27 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { FormsCRUD } from "../../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
-    const forms = context?.formBuilder?.crud?.forms;
+    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
     const { id } = args;
 
     try {
-        const existingForm = await forms.get(id);
+        const existingForm = await forms.getForm(id);
 
         if (!existingForm) {
             return new NotFoundResponse(`Form with id:"${id}" not found!`);
         }
         // Before delete
-        if (existingForm.version > 1 && existingForm.lastestVersion) {
-            await forms.markPreviousLatestVersionActive(existingForm.parent, existingForm.version);
+        if (existingForm.version > 1 && existingForm.latestVersion) {
+            await forms.markPreviousLatestVersion({
+                parentId: existingForm.parent,
+                version: existingForm.version,
+                latestVersion: true
+            });
         }
 
-        await forms.delete(id);
-
-        // Delete form with "id" from "Elastic Search"
-        await context.elasticSearch.delete({
-            id,
-            index: "form-builder",
-            type: "_doc"
-        });
+        await forms.deleteForm(id);
 
         return new Response(true);
     } catch (e) {
