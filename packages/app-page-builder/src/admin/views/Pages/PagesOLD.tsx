@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
@@ -7,13 +8,12 @@ import {
 } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 
-export function useRevisionHandlers({ rev }) {
+export function useRevisionHandlers(props) {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const client = useApolloClient();
-    const { page } = usePageDetails();
+    const { page } = props
     const { publishRevision } = usePublishRevisionHandler({ page });
 
     const createRevision = useCallback(async () => {

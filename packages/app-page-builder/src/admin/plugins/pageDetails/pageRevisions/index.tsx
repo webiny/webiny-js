@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { Tab } from "@webiny/ui/Tabs";
 import { PbPageDetailsRevisionContentPlugin } from "@webiny/app-page-builder/types";

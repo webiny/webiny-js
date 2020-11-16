@@ -1,1 +1,0 @@
-export { usePageDetails } from "./usePageDetails";

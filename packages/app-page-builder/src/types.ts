@@ -4,10 +4,6 @@ import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { Reducer as ReduxReducer, Store as ReduxStore } from "redux";
-import {
-    PbPageDetailsContextValue,
-    PbPageRevision
-} from "./admin/contexts/PageDetails/PageDetailsContext";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { EditorBarProps } from "@webiny/app-page-builder/editor/components/Editor/Bar";
@@ -180,8 +176,6 @@ export type PbEditorReduxMiddlewarePlugin = Plugin & {
     middleware: MiddlewareFunction;
 };
 
-export { PbPageDetailsContextValue, PbPageRevision };
-
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
     create(options?: any): PbElement;
@@ -190,10 +184,7 @@ export type PbDocumentElementPlugin = Plugin & {
 
 export type PbPageDetailsRevisionContentPlugin = Plugin & {
     type: "pb-page-details-revision-content";
-    render(params: {
-        page: PbPageDetailsContextValue;
-        getPageQuery: any;
-    }): ReactElement;
+    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
 };
 
 export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
@@ -203,10 +194,7 @@ export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
 
 export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
     type: "pb-page-details-revision-content-preview";
-    render(params: {
-        page: PbPageDetailsContextValue;
-        getPageQuery: any;
-    }): ReactElement;
+    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
 };
 
 export type PbMenuItemPlugin = Plugin & {
