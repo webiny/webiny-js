@@ -31,15 +31,8 @@
       "@webiny/@webiny/api-plugin-elastic-search-client": ["./packages/api-plugin-elastic-search-client/src/*"],
       "@webiny/api-plugin-db-dynamodb/*": ["./packages/api-plugin-db-dynamodb/src/*"],
       "@webiny/api-plugin-db-dynamodb": ["./packages/api-plugin-db-dynamodb/src"],
-      "@webiny/api-settings-manager/*": ["./packages/api-settings-manager/src/*"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
-      "@webiny/api-security-permissions-manager/*": [
-        "./packages/api-security-permissions-manager/src/*"
-      ],
-      "@webiny/api-security-permissions-manager": [
-        "./packages/api-security-permissions-manager/src"
-      ],
       "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
       "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
@@ -91,8 +84,8 @@
       "@webiny/handler": ["./packages/handler/src"],
       "@webiny/handler-apollo-gateway": ["./packages/handler-apollo-gateway/src"],
       "@webiny/handler-apollo-gateway/*": ["./packages/handler-apollo-gateway/src/*"],
-      "@webiny/handler-apollo-server": ["./packages/handler-apollo-server/src"],
-      "@webiny/handler-apollo-server/*": ["./packages/handler-apollo-server/src/*"],
+      "@webiny/handler-graphql": ["./packages/handler-graphql/src"],
+      "@webiny/handler-graphql/*": ["./packages/handler-graphql/src/*"],
       "@webiny/handler-graphql-playground": ["./packages/handler-graphql-playground/src"],
       "@webiny/handler-graphql-playground/*": ["./packages/handler-graphql-playground/src/*"],
       "@webiny/handler-args": ["./packages/handler-args/src"],
