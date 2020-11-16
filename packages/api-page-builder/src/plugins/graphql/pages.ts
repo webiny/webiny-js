@@ -5,17 +5,15 @@ import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
-
-import pipe from "@ramda/pipe";
+import { composeResolvers } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { Context as HandlerContext } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/responses";
 import uniqid from "uniqid";
 
 const pageFetcher = ctx => ctx.models.PbPage;
-const elementFetcher = ctx => ctx.models.PbPageElement;
 
 const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
     args.data = { published: true };
@@ -24,7 +22,7 @@ const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => 
     return resolveUpdate(pageFetcher)(_, args, ctx, info);
 };
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type Context = HandlerContext<I18NContext, SecurityContext>;
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -226,78 +224,71 @@ export default {
             # Delete a single revision
             deleteRevision(id: ID!): PbDeleteResponse
 
-            # Create element
-            createElement(data: PbElementInput!): PbElementResponse
-
-            updateElement(id: ID!, data: PbUpdateElementInput!): PbElementResponse
-
-            # Delete element
-            deleteElement(id: ID!): PbDeleteResponse
-
             updateImageSize: PbDeleteResponse
         }
     `,
     resolvers: {
         PbPage: {
-            category: async (page, args, context) => {
+            category: async (page: { category: string }, args, context: Context) => {
                 const { categories } = context;
                 return categories.get(page.category);
             }
         },
         PbPageListItem: {
-            category: async (page, args, context) => {
+            category: async (page: { category: string }, args, context: Context) => {
                 const { categories } = context;
                 return categories.get(page.category);
             }
         },
         PbQuery: {
-            getPage: pipe(
+            getPage: composeResolvers<any, { id: string }, Context>(
                 hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const id = decodeURIComponent(args.id);
-
-                const { pages } = context;
-                const page = await pages.get(id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
+                hasI18NContentPermission(),
+                async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
                         return new NotAuthorizedResponse();
                     }
+
+                    const id = decodeURIComponent(args.id);
+
+                    const { pages } = context;
+                    const page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    return new Response(page);
                 }
+            ),
 
-                return new Response(page);
-            }),
-
-            listPages: pipe(
+            listPages: composeResolvers<any, any, Context>(
                 hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
-                    return new NotAuthorizedResponse();
-                }
+                hasI18NContentPermission(),
+                async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
+                        return new NotAuthorizedResponse();
+                    }
 
-                const { pages } = context;
-                const list = await pages.list(args);
-                return new Response(list);
-            }),
+                    const { pages } = context;
+                    const list = await pages.list(args);
+                    return new Response(list);
+                }
+            ),
 
             listPublishedPages,
             getPublishedPage,
-            listElements: hasPermission("pb:element:crud")(elementFetcher),
             searchTags: async (
                 root: any,
                 args: { [key: string]: any },
@@ -311,111 +302,112 @@ export default {
             oembedData: hasPermission("pb:oembed:read")(oembed)
         },
         PbMutation: {
-            createPage: pipe(
+            createPage: composeResolvers<any, { data: Record<string, any> }, Context>(
                 hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const { pages, categories } = context;
-                const { data } = args;
-
-                const existingCategory = await categories.get(data.category);
-                if (!existingCategory) {
-                    return new NotFoundResponse(`Category with slug "${data.category}" not found.`);
-                }
-
-                try {
-                    return new Response(
-                        await pages.create({
-                            category: data.category,
-                            title: "Untitled",
-                            url: existingCategory.url + "untitled-" + uniqid.time()
-                        })
-                    );
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            }),
-            deletePage: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "d" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const { pages } = context;
-                const id = decodeURIComponent(args.id);
-
-                const page = await pages.get(id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${args.id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
+                hasI18NContentPermission(),
+                async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
                         return new NotAuthorizedResponse();
                     }
+
+                    const { pages, categories } = context;
+                    const { data } = args;
+
+                    const existingCategory = await categories.get(data.category);
+                    if (!existingCategory) {
+                        return new NotFoundResponse(
+                            `Category with slug "${data.category}" not found.`
+                        );
+                    }
+
+                    try {
+                        return new Response(
+                            await pages.create({
+                                category: data.category,
+                                title: "Untitled",
+                                url: existingCategory.url + "untitled-" + uniqid.time()
+                            })
+                        );
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 }
+            ),
+            deletePage: composeResolvers<any, { id: string }, Context>(
+                hasPermission("pb.page"),
+                hasI18NContentPermission(),
+                async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "d" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
+                        return new NotAuthorizedResponse();
+                    }
 
-                await pages.delete(id);
+                    const { pages } = context;
+                    const id = decodeURIComponent(args.id);
 
-                return new Response(page);
-            }),
+                    const page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${args.id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    await pages.delete(id);
+
+                    return new Response(page);
+                }
+            ),
 
             setHomePage,
             createRevisionFrom: hasPermission("pb:page:crud")(createRevisionFrom),
 
-            updatePage: pipe(
+            updatePage: composeResolvers<any, { id: string; data: Record<string, any> }, Context>(
                 hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const { pages } = context;
-                const { data } = args;
-                const id = decodeURIComponent(args.id);
-
-                let page = await pages.get(id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
+                hasI18NContentPermission(),
+                async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
                         return new NotAuthorizedResponse();
                     }
-                }
 
-                try {
-                    await pages.update(id, data);
-                    page = await pages.get(id);
-                    return new Response(page);
-                } catch (e) {
-                    return new ErrorResponse(e);
+                    const { pages } = context;
+                    const { data } = args;
+                    const id = decodeURIComponent(args.id);
+
+                    let page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    try {
+                        await pages.update(id, data);
+                        page = await pages.get(id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 }
-            }),
+            ),
             publishRevision: hasPermission("pb:page:crud")(publishRevision),
-            deleteRevision: hasPermission("pb:page:crud")(pageFetcher),
-
-            createElement: hasPermission("pb:page:crud")(elementFetcher),
-            updateElement: hasPermission("pb:page:crud")(elementFetcher),
-            deleteElement: hasPermission("pb:page:crud")(elementFetcher)
+            deleteRevision: hasPermission("pb:page:crud")(pageFetcher)
         },
         PbPageSettings: {
             _empty: () => ""
