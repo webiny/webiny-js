@@ -1,8 +1,8 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/handler-ssr/Client";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
-export default (): HandlerContextPlugin[] => [
+export default (): ContextPlugin[] => [
     {
         type: "context",
         name: "context-ssr-cache-client",

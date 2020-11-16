@@ -1,5 +1,5 @@
-import { HandlerHttpContext } from "@webiny/handler-http/types";
-import { HandlerContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
+import { HttpContext } from "@webiny/handler-http/types";
+import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
 
 export default () => [
     {
@@ -7,7 +7,7 @@ export default () => [
         apply(context) {
             context.http = null;
         }
-    } as HandlerContextPlugin<HandlerHttpContext>,
+    } as ContextPlugin<HttpContext>,
     {
         type: "handler-error",
         handle: (context, error) => {
@@ -27,5 +27,5 @@ export default () => [
                 headers: { "Cache-Control": "no-store", "Content-Type": "application/json" }
             });
         }
-    } as HandlerErrorPlugin<HandlerHttpContext>
+    } as HandlerErrorPlugin<HttpContext>
 ];

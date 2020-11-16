@@ -5,9 +5,9 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import formModel from "./models/form.model";
 import formSettings from "./models/formSettings.model";
 import formSubmission from "./models/formSubmission.model";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
-export default (): HandlerContextPlugin => ({
+export default (): ContextPlugin => ({
     name: "context-models",
     type: "context",
     apply(context) {

@@ -1,4 +1,4 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 export default [
     {
@@ -18,5 +18,5 @@ export default [
 
             context.files = self;
         }
-    } as HandlerContextPlugin
+    } as ContextPlugin
 ];

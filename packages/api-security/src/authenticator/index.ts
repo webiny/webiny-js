@@ -1,5 +1,5 @@
 import minimatch from "minimatch";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
 import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
 
@@ -61,5 +61,5 @@ export default () => [
                 }
             }
         }
-    } as HandlerContextPlugin
+    } as ContextPlugin
 ];

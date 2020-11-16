@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
 import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
 import DataLoader from "dataloader";
@@ -109,4 +109,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerI18NContentContext, HandlerContextDb>;
+} as ContextPlugin<HandlerI18NContentContext, DbContext>;

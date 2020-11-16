@@ -1,12 +1,12 @@
 import { createPlaygroundOptions, PlaygroundConfig } from "apollo-server-core";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HttpContext } from "@webiny/handler-http/types";
 import { HandlerPlugin } from "@webiny/handler/types";
 import {
     renderPlaygroundPage,
     RenderPageOptions as PlaygroundRenderPageOptions
 } from "@apollographql/graphql-playground-html";
 
-export default (options: PlaygroundConfig = {}): HandlerPlugin<HandlerHttpContext> => ({
+export default (options: PlaygroundConfig = {}): HandlerPlugin<HttpContext> => ({
     type: "handler",
     handle(context) {
         const { http } = context;

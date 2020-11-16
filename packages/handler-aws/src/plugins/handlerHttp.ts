@@ -1,6 +1,6 @@
-import { HandlerHttpContext } from "@webiny/handler-http/types";
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerArgsContext } from "@webiny/handler-args/types";
+import { HttpContext } from "@webiny/handler-http/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { ArgsContext } from "@webiny/handler-args/types";
 
 export default {
     type: "context",
@@ -36,4 +36,4 @@ export default {
             context.http.body = Buffer.from(context.http.body, "base64").toString("utf-8");
         }
     }
-} as HandlerContextPlugin<HandlerHttpContext & HandlerArgsContext>;
+} as ContextPlugin<HttpContext & ArgsContext>;

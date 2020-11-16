@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
 export type PbInstallPlugin = Plugin & {
     name: "pb-install";
-    before: (params: { context: HandlerContext; data: any }) => void;
-    after: (params: { context: HandlerContext; data: any }) => void;
+    before: (params: { context: Context; data: any }) => void;
+    after: (params: { context: Context; data: any }) => void;
 };

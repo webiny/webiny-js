@@ -3,10 +3,10 @@ import { withStorage } from "@commodo/fields-storage";
 import { pipe } from "@commodo/pipe";
 import ssrCache from "./ssrCache.model";
 import { withId, DbProxyDriver } from "no-exist";
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerClientContext } from "@webiny/handler-client/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { ClientContext } from "@webiny/handler-client/types";
 
-export default (options): HandlerContextPlugin<HandlerClientContext> => ({
+export default (options): ContextPlugin<ClientContext> => ({
     type: "context",
     name: "context-models",
     apply(context) {

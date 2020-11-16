@@ -1,6 +1,6 @@
 import { Db } from "@webiny/db";
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "./types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "./types";
 
 export default args => {
     return [
@@ -12,6 +12,6 @@ export default args => {
                 }
                 context.db = new Db(args);
             }
-        } as HandlerContextPlugin<HandlerContextDb>
+        } as ContextPlugin<DbContext>
     ];
 };

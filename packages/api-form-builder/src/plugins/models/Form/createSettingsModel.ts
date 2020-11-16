@@ -2,11 +2,11 @@ import { get } from "lodash";
 import { i18nString, i18nObject } from "@webiny/api-i18n/fields";
 import { withFields, string, fields, boolean, withProps } from "@webiny/commodo";
 import { flow } from "lodash";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
+import { Context } from "@webiny/handler/types";
 
 export type CreateSettingsModel = {
-    context: HandlerContext & HandlerI18NContext;
+    context: Context & I18NContext;
     FormSettings: any;
 };
 

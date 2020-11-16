@@ -6,9 +6,9 @@ import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
-type SettingsContext = HandlerContextPlugin<any>;
+type SettingsContext = ContextPlugin<any>;
 
 export default () => [
     {
@@ -17,7 +17,7 @@ export default () => [
         apply({ models }) {
             models.MailchimpSettings = mailchimpSettings({ createBase: models.createBase });
         }
-    } as HandlerContextPlugin,
+    } as ContextPlugin,
     {
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",

@@ -3,7 +3,7 @@
  * registers the actual validation plugin with access to the request context.
  */
 import { FbFormFieldPatternValidatorPlugin } from "@webiny/api-form-builder/types";
-import {HandlerContextPlugin} from "@webiny/handler/types";
+import {ContextPlugin} from "@webiny/handler/types";
 
 export default {
     name: "context-form-field-validator",
@@ -44,4 +44,4 @@ export default {
             }
         });
     }
-} as HandlerContextPlugin;
+} as ContextPlugin;

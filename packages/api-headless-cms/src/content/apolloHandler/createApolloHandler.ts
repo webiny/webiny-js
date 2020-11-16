@@ -4,13 +4,13 @@
 // TODO: Check code of `handler-graphql` to get a sense how it should look. The only difference will be
 // TODO: in how we cache handlers - here we must cache per type, tenant, environment, and content locale.
 import { CreateSchemaPlugin } from "@webiny/handler-graphql/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
 import { runHttpQuery as apolloRunHttpQuery } from "apollo-server-core/dist/runHttpQuery";
 import { Headers } from "apollo-server-env";
 
 type CreateApolloHandlerParams = {
-    context: HandlerContext;
+    context: Context;
     options: { [key: string]: any };
     meta?: { [key: string]: any };
 };

@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { HandlerI18NContentContext } from "../types";
 
 export default () =>
@@ -8,4 +8,4 @@ export default () =>
         apply(context) {
             context.i18nContent = { locale: context.i18n.getCurrentLocale("content") };
         }
-    } as HandlerContextPlugin<HandlerI18NContext, HandlerI18NContentContext>);
+    } as ContextPlugin<I18NContext, HandlerI18NContentContext>);

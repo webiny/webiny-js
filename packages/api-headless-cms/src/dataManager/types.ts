@@ -1,4 +1,4 @@
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
 export type Action =
     | "copyEnvironment"
@@ -18,5 +18,5 @@ interface CmsDataManagerEntryHookParams {
 
 export type CmsDataManagerEntryHookPlugin = Plugin & {
     type: "cms-data-manager-entry-hook";
-    hook(params: CmsDataManagerEntryHookParams, context: HandlerContext): Promise<void>;
+    hook(params: CmsDataManagerEntryHookParams, context: Context): Promise<void>;
 };

@@ -1,9 +1,9 @@
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { HandlerClientPlugin, InvokeArgs, InvokeResult } from "./types";
 
 class HandlerClient {
     plugin: HandlerClientPlugin;
-    constructor(context: HandlerContext) {
+    constructor(context: Context) {
         this.plugin = context.plugins.byName<HandlerClientPlugin>("handler-client");
         if (!this.plugin) {
             throw new Error(

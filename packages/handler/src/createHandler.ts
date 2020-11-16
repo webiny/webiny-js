@@ -1,5 +1,5 @@
 import { PluginsContainer } from "@webiny/plugins";
-import { HandlerContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
+import { ContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
@@ -9,7 +9,7 @@ export default (...plugins) => async (...args) => {
     };
 
     try {
-        const contextPlugins = context.plugins.byType<HandlerContextPlugin>("context");
+        const contextPlugins = context.plugins.byType<ContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
             if (contextPlugins[i].apply) {
                 await contextPlugins[i].apply(context);

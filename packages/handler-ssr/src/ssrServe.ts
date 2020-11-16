@@ -1,10 +1,10 @@
 import qs from "querystringify";
-import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { Context, HandlerPlugin } from "@webiny/handler/types";
 import mime from "mime-types";
 import { getSsrHtml } from "./functions";
 import zlib from "zlib";
-import { HandlerClientContext } from "@webiny/handler-client/types";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { ClientContext } from "@webiny/handler-client/types";
+import { HttpContext } from "@webiny/handler-http/types";
 
 const createSsrResponse = (props, http) => {
     return http.response({
@@ -24,7 +24,7 @@ export default (options): HandlerPlugin => {
             type: "handler",
             name: "handler-ssr-with-cache",
             async handle(
-                context: HandlerContext & HandlerClientContext & HandlerHttpContext,
+                context: Context & ClientContext & HttpContext,
                 next
             ) {
                 const { http } = context;
@@ -108,7 +108,7 @@ export default (options): HandlerPlugin => {
     return {
         type: "handler",
         name: "handler-ssr-no-cache",
-        async handle(context: HandlerContext & HandlerHttpContext, next) {
+        async handle(context: Context & HttpContext, next) {
             const { http } = context;
 
             if (!(http.method === "GET" && !mime.lookup(http.path.base))) {

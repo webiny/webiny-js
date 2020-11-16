@@ -1,9 +1,9 @@
-import { HandlerArgsContext } from "@webiny/handler-args/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { ArgsContext } from "@webiny/handler-args/types";
+import { Context } from "@webiny/handler/types";
 
 export default {
     type: "context",
-    apply(context: HandlerContext & HandlerArgsContext) {
+    apply(context: Context & ArgsContext) {
         const [event] = context.args;
         context.invocationArgs = event;
     }

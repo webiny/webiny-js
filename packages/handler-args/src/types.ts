@@ -1,3 +1,3 @@
-export type HandlerArgsContext = {
+export type ArgsContext = {
     invocationArgs: { [key: string]: any };
 };

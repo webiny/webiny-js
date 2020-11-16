@@ -10,6 +10,6 @@ export type HandlerClientPlugin = Plugin & {
     invoke: <T = InvokeResult>(params: InvokeArgs) => Promise<T>;
 };
 
-export type HandlerClientContext = {
+export type ClientContext = {
     handlerClient: HandlerClient;
 };

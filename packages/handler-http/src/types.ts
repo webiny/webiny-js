@@ -4,7 +4,7 @@ type ResponseArgs = {
     body?: string;
 };
 
-export type HandlerHttpContextObject = {
+export type HttpContextObject = {
     method: "POST" | "GET" | "DELETE" | "OPTIONS";
     body: string;
     headers: { [key: string]: any };
@@ -17,6 +17,6 @@ export type HandlerHttpContextObject = {
     response: (args: ResponseArgs) => { [key: string]: any };
 };
 
-export type HandlerHttpContext = {
-    http: HandlerHttpContextObject;
+export type HttpContext = {
+    http: HttpContextObject;
 };

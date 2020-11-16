@@ -6,7 +6,7 @@ import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 type HeadlessPluginsOptions = {
     type: string;
@@ -38,7 +38,7 @@ export default (
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
-    } as HandlerContextPlugin,
+    } as ContextPlugin,
     checkRefFieldsBeforeSave(),
     addRefFieldHooks(),
     models(),

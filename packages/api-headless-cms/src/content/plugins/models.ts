@@ -14,7 +14,7 @@ import {
     ContextBeforeContentModelsPlugin,
     ContextAfterContentModelsPlugin
 } from "@webiny/api-headless-cms/types";
-import { HandlerContextPlugin } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 export default () => {
     return [
@@ -152,6 +152,6 @@ export default () => {
 
                 context.modelsInit.resolve();
             }
-        } as HandlerContextPlugin<CmsContext>
+        } as ContextPlugin<CmsContext>
     ];
 };

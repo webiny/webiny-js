@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
 
 export const PK_LOCALE = "L";
 export const PK_DEFAULT_LOCALE = "L#D";
@@ -132,4 +132,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as ContextPlugin<DbContext>;

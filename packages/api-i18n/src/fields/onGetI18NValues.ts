@@ -1,6 +1,6 @@
-import { HandlerI18NContextObject } from "@webiny/api-i18n/types";
+import { I18NContextObject } from "@webiny/api-i18n/types";
 
-export default (value: Record<string, any>[], i18n: HandlerI18NContextObject) => {
+export default (value: Record<string, any>[], i18n: I18NContextObject) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;

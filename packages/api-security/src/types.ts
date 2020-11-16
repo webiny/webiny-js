@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 export type SecurityIdentity = {
     id: string;
     login: string;
@@ -19,7 +19,7 @@ export type SecurityPermission = {
 
 export type SecurityAuthorizationPlugin = Plugin & {
     type: "security-authorization";
-    getPermissions(context: HandlerContext): Promise<SecurityPermission[]>;
+    getPermissions(context: Context): Promise<SecurityPermission[]>;
 };
 
 export type SecurityContext = {

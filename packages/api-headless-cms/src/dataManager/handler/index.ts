@@ -1,4 +1,4 @@
-import { HandlerContext, HandlerPlugin } from "@webiny/handler/types";
+import { Context, HandlerPlugin } from "@webiny/handler/types";
 import headlessPlugins from "../../content/plugins";
 import { generateContentModelIndexes } from "./generateContentModelIndexes";
 import { generateRevisionIndexes } from "./generateRevisionIndexes";
@@ -7,8 +7,8 @@ import { deleteEnvironmentData } from "./deleteEnvironmentData";
 import { Action } from "../types";
 import { copyEnvironment } from "./copyEnvironment";
 import { CmsDataManagerEntryHookPlugin } from "@webiny/api-headless-cms/dataManager/types";
-import { HandlerClientContext } from "@webiny/handler-client/types";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { ClientContext } from "@webiny/handler-client/types";
+import { HttpContext } from "@webiny/handler-http/types";
 
 // Setup plugins for given environment
 async function setupEnvironment(context, environment) {
@@ -16,7 +16,7 @@ async function setupEnvironment(context, environment) {
     // await applyContextPlugins(context);
 }
 
-const processEntryHooks = async (payload, context: HandlerContext) => {
+const processEntryHooks = async (payload, context: Context) => {
     const plugins = context.plugins.byType<CmsDataManagerEntryHookPlugin>(
         "cms-data-manager-entry-hook"
     );
@@ -128,5 +128,5 @@ export default () => [
                 throw err;
             }
         }
-    } as HandlerPlugin<HandlerHttpContext & HandlerClientContext>
+    } as HandlerPlugin<HttpContext & ClientContext>
 ];

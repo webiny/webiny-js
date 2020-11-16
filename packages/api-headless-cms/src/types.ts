@@ -1,7 +1,7 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
 import { GraphQLFieldResolver, Plugin } from "@webiny/graphql/types";
-import { HandlerI18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import {HandlerContext} from "@webiny/handler/types";
+import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { Context as HandlerContext } from "@webiny/handler/types";
 
 export interface CmsDataManager {
     generateRevisionIndexes({ revision }): Promise<void>;
@@ -58,7 +58,7 @@ export type Context = {
 /**
  * This combines all contexts used in the CMS into a single type.
  */
-export type CmsContext =  HandlerI18NContext & HandlerContext;
+export type CmsContext = I18NContext & HandlerContext;
 
 export type CmsModelFieldValue<T> = {
     values: CmsLocalizedModelFieldValue<T>[];
@@ -145,12 +145,12 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
     }): void;
 };
 
-export type ContextBeforeContentModelsPlugin<T = Context> = Plugin & {
+export type ContextBeforeContentModelsPlugin<T = HandlerContext> = Plugin & {
     type: "context-before-content-models";
     apply?: (context: T) => void | Promise<void>;
 };
 
-export type ContextAfterContentModelsPlugin<T = Context> = Plugin & {
+export type ContextAfterContentModelsPlugin<T = HandlerContext> = Plugin & {
     type: "context-after-content-models";
     apply?: (context: T) => void | Promise<void>;
 };
