@@ -13,14 +13,12 @@ const FormEditorApp = () => {
         id?: string;
     }> = router.match;
     const { id } = matched.params;
-    const { hash } = router.location;
-    const formIdWithRevision = `${id}${hash}`;
 
     return (
         <FormEditorProvider
-            key={formIdWithRevision}
+            key={id}
             apollo={client}
-            id={formIdWithRevision}
+            id={id}
             defaultLayoutRenderer={"forms-form-layout-default"}
         >
             <FormEditor />

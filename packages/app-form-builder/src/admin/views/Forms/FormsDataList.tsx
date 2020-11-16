@@ -81,9 +81,9 @@ const FormsDataList = (props: FormsDataListProps) => {
                         return showSnackbar(error.message);
                     }
 
-                    history.push(`/forms/${data.id}`);
+                    history.push(`/forms/${encodeURIComponent(data.id)}`);
                 } else {
-                    history.push("/forms/" + form.id);
+                    history.push(`/forms/${encodeURIComponent(form.id)}`);
                 }
             };
         }

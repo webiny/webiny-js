@@ -66,7 +66,7 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
                             }
 
                             await formsDataList.refresh();
-                            history.push("/forms/" + response.data.id);
+                            history.push("/forms/" + encodeURIComponent(response.data.id));
                         }}
                     >
                         {({ Bind, submit }) => (
