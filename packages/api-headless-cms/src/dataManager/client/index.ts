@@ -1,11 +1,11 @@
-import { ContextPlugin } from "@webiny/graphql/types";
 import { DataManagerClient } from "./DataManagerClient";
+import { HandlerContextPlugin } from "@webiny/handler/types";
 
 interface Params {
     dataManagerFunction: string;
 }
 
-export default ({ dataManagerFunction }: Params): ContextPlugin => {
+export default ({ dataManagerFunction }: Params): HandlerContextPlugin => {
     return {
         type: "context",
         name: "context-cms-data-manager",

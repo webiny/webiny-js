@@ -1,11 +1,8 @@
 import gql from "graphql-tag";
 import { emptyResolver, ErrorResponse } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
 import cookiePolicySettings from "./cookiePolicySettings.model";
-import { Context } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
-type SettingsContext = Context & SettingsManagerContext;
+type SettingsContext = any;
 
 export default () => [
     {

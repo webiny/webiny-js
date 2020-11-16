@@ -1,4 +1,5 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
+// @ts-nocheck
+import { ListResponse} from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context, info) => {

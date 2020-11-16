@@ -1,6 +1,7 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
-import { Context as APIContext, GraphQLFieldResolver, Plugin } from "@webiny/graphql/types";
+import { GraphQLFieldResolver, Plugin } from "@webiny/graphql/types";
 import { HandlerI18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import {HandlerContext} from "@webiny/handler/types";
 
 export interface CmsDataManager {
     generateRevisionIndexes({ revision }): Promise<void>;
@@ -57,7 +58,7 @@ export type Context = {
 /**
  * This combines all contexts used in the CMS into a single type.
  */
-export type CmsContext = APIContext & HandlerI18NContext & Context;
+export type CmsContext =  HandlerI18NContext & HandlerContext;
 
 export type CmsModelFieldValue<T> = {
     values: CmsLocalizedModelFieldValue<T>[];

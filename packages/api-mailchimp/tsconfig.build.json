@@ -8,7 +8,6 @@
 		"./dist",
 		"../graphql",
 		"../api-security",
-		"../api-settings-manager",
 		"../commodo",
 		"../commodo-graphql",
 		"../handler"
@@ -24,9 +23,6 @@
 		},
 		{
 			"path": "../api-security/tsconfig.build.json"
-		},
-		{
-			"path": "../api-settings-manager/tsconfig.build.json"
 		},
 		{
 			"path": "../commodo-graphql/tsconfig.build.json"

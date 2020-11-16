@@ -12,7 +12,6 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^4.14.0",
     "@webiny/commodo": "^4.14.0",
     "@webiny/commodo-graphql": "^4.14.0",
     "@webiny/validation": "^4.14.0",
@@ -24,8 +23,7 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@svgr/webpack": "^4.3.2",
-    "@webiny/api-settings-manager": "^4.14.0"
+    "@svgr/webpack": "^4.3.2"
   },
   "peerDependencies": {
     "@webiny/graphql": "^4.14.0"

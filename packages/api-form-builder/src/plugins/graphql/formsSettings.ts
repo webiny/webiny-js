@@ -1,9 +1,6 @@
 import { ErrorResponse } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
-import { Context } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
-
-type SettingsContext = Context & SettingsManagerContext;
+type SettingsContext = any;
 
 export default {
     typeDefs: /* GraphQL*/ `

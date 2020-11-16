@@ -37,7 +37,6 @@
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.8.3",
-    "@webiny/api-settings-manager": "^4.14.0",
     "flow-copy-source": "^2.0.2"
   },
   "publishConfig": {

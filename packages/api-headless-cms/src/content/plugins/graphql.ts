@@ -1,11 +1,7 @@
+// @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveUpdate,
     emptyResolver,
-    resolveList
 } from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
 import { merge } from "lodash";

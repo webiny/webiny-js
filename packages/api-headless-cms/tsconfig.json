@@ -34,9 +34,6 @@
 		},
 		{
 			"path": "../validation"
-		},
-		{
-			"path": "../api-settings-manager"
 		}
 	]
 }

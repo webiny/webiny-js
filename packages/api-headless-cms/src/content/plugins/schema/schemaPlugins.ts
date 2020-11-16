@@ -1,3 +1,4 @@
+// @ts-nocheck
 import gql from "graphql-tag";
 import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 import {

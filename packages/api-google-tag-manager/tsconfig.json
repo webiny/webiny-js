@@ -1,20 +1,11 @@
 {
-	"extends": "../../tsconfig",
-	"references": [
-		{
-			"path": "../api-security"
-		},
-		{
-			"path": "../api-settings-manager"
-		},
-		{
-			"path": "../commodo"
-		},
-		{
-			"path": "../commodo-graphql"
-		},
-		{
-			"path": "../graphql"
-		}
-	]
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../commodo-graphql"
+    }
+  ]
 }

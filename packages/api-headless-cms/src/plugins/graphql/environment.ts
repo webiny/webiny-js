@@ -1,10 +1,4 @@
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "@webiny/commodo-graphql";
+// @ts-nocheck
 import { hasCmsPermission } from "@webiny/api-security";
 
 const checkEnvironmentSettingUpdatePermission = async ({ permission }) => {

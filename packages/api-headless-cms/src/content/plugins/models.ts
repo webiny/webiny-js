@@ -1,5 +1,5 @@
+// @ts-nocheck
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
-import { ContextPlugin } from "@webiny/graphql/types";
 import contentModel from "./models/contentModel.model";
 import cmsAccessToken from "../../plugins/models/accessToken.model";
 import CmsEnvironment2AccessToken from "../../plugins/models/environment2accessToken";
@@ -14,6 +14,7 @@ import {
     ContextBeforeContentModelsPlugin,
     ContextAfterContentModelsPlugin
 } from "@webiny/api-headless-cms/types";
+import { HandlerContextPlugin } from "@webiny/handler/types";
 
 export default () => {
     return [
@@ -151,6 +152,6 @@ export default () => {
 
                 context.modelsInit.resolve();
             }
-        } as ContextPlugin<CmsContext>
+        } as HandlerContextPlugin<CmsContext>
     ];
 };

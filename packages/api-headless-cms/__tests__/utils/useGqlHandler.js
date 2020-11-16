@@ -3,7 +3,6 @@ import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
 import apolloServerPlugins from "@webiny/handler-graphql";
-import settingsManagerPlugins from "@webiny/api-settings-manager/client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
 import securityAuthPlugins from "@webiny/api-security/plugins/auth";
@@ -23,7 +22,6 @@ export default ({ database } = {}) => {
             securityAuthJwtPlugins({
                 secret: JWT_TOKEN_SIGN_SECRET
             }),
-            settingsManagerPlugins({ functionName: process.env.SETTINGS_MANAGER_FUNCTION }),
             dataManagerPlugins()
         );
 

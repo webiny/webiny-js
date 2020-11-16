@@ -15,8 +15,7 @@
 		"../handler-client",
 		"../handler-http",
 		"../validation",
-		"./jest.config.js",
-		"../api-settings-manager"
+		"./jest.config.js"
 	],
 	"compilerOptions": {
 		"outDir": "dist",
@@ -53,9 +52,6 @@
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"
-		},
-		{
-			"path": "../api-settings-manager/tsconfig.build.json"
 		}
 	]
 }

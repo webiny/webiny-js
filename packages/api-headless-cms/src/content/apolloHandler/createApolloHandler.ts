@@ -1,3 +1,8 @@
+// @ts-nocheck
+// TODO: 2020-11-15, @adrian
+// TODO: complete build from scratch - we no longer have these plugins, it's should be coded much simpler.
+// TODO: Check code of `handler-graphql` to get a sense how it should look. The only difference will be
+// TODO: in how we cache handlers - here we must cache per type, tenant, environment, and content locale.
 import { CreateSchemaPlugin } from "@webiny/handler-graphql/types";
 import { HandlerContext } from "@webiny/handler/types";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";

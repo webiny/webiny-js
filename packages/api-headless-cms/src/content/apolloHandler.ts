@@ -1,3 +1,5 @@
+// @ts-nocheck
+// TODO: CreateApolloHandlerPlugin no longer exists, @see packages/api-headless-cms/src/content/apolloHandler/createApolloHandler.ts
 import { CreateApolloHandlerPlugin } from "@webiny/handler-graphql/types";
 import createApolloHandler from "./apolloHandler/createApolloHandler";
 
