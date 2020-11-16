@@ -1,7 +1,6 @@
 import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
-
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
@@ -21,6 +20,7 @@ const elementFetcher = ctx => ctx.models.PbPageElement;
 const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
     args.data = { published: true };
 
+    // @ts-ignore
     return resolveUpdate(pageFetcher)(_, args, ctx, info);
 };
 
