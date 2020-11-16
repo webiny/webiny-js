@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-apollo-server";
+import apolloServerPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
 import cognitoUserManagement from "@webiny/api-plugin-security-cognito/userManagement";

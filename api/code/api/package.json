@@ -14,7 +14,7 @@
 		"@webiny/db-dynamodb": "^4.13.0",
 		"@webiny/api-plugin-elastic-search-client": "^4.13.0",
 		"@webiny/api-file-manager": "^4.13.0",
-		"@webiny/handler-apollo-server": "^4.13.0",
+		"@webiny/handler-graphql": "^4.13.0",
 		"@webiny/api-security": "^4.13.0",
 		"@webiny/api-plugin-security-cognito": "^4.13.0",
 		"@webiny/project-utils": "^4.13.0"
