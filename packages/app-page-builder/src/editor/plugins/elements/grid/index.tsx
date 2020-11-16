@@ -72,8 +72,8 @@ const plugin: PbEditorPageElementPlugin = {
     },
     create: (options = {}) => {
         const { elements, data = {} } = options;
-        const { cellsType = getDefaultPresetCellsTypePluginType() } =
-            data.settings?.cellsType || {};
+        const defaultCellsType = getDefaultPresetCellsTypePluginType();
+        const cellsType = data.settings?.cellsType || defaultCellsType;
 
         return {
             type: "grid",

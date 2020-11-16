@@ -5,6 +5,7 @@ import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
 const width = 500;
 const height = 73;
+const aspectRatio = width / height;
 
 export default {
     name: "pb-editor-grid-block",
@@ -12,16 +13,18 @@ export default {
     category: "general",
     title: "Grid block",
     create() {
-        return createElementHelper("grid");
+        return createElementHelper("block", {
+            elements: [createElementHelper("grid")]
+        });
     },
     image: {
         meta: {
             width,
             height,
-            aspectRatio: width / height
+            aspectRatio
         }
     },
     preview() {
-        return <img src={preview} alt={"Empty block"} />;
+        return <img src={preview} alt={"Empty grid block"} />;
     }
 } as PbEditorBlockPlugin;
