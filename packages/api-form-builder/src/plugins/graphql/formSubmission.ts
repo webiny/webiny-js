@@ -3,6 +3,7 @@ import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissio
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
 import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
 import { getBaseFormId } from "./formResolvers/utils/formResolversUtils";
+import { FormsCRUD, FormSubmissionsCRUD } from "../../types";
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -81,10 +82,10 @@ export default {
     resolvers: {
         FormSubmission: {
             form: async (formSubmission, args, context) => {
-                const forms = context?.formBuilder?.crud?.forms;
-                const formData = await forms.get(formSubmission.formId);
-                const parentId = `${getBaseFormId(formSubmission.formId)}#1`;
-                const parentData = await forms.get(parentId);
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+
+                const formData = await forms.getForm(formSubmission.form.revision);
+                const parentData = await forms.getForm(formSubmission.form.revision);
 
                 return {
                     parent: parentData,
@@ -95,11 +96,13 @@ export default {
         FormsQuery: {
             listFormSubmissions: hasScope("forms:form:crud")(async (_, args, context) => {
                 try {
-                    const formSubmission = context?.formBuilder?.crud?.formSubmission;
+                    const formSubmission: FormSubmissionsCRUD =
+                        context?.formBuilder?.crud?.formSubmission;
                     const { where } = args;
 
-                    const data = await formSubmission.list({
-                        id: getBaseFormId(where.form.parent)
+                    const data = await formSubmission.listAllSubmissions({
+                        formId: getBaseFormId(where.form.parent),
+                        sort: { SK: 1 }
                     });
                     return new ListResponse(data);
                 } catch (err) {
@@ -108,11 +111,13 @@ export default {
             }),
             getFormSubmission: hasScope("forms:form")(async (_, args, context) => {
                 try {
-                    const formSubmission = context?.formBuilder?.crud?.formSubmission;
+                    const formSubmission: FormSubmissionsCRUD =
+                        context?.formBuilder?.crud?.formSubmission;
+
                     const { id, where } = args;
-                    const data = await formSubmission.get({
-                        submissionId: id,
-                        formId: where.formId
+                    const data = await formSubmission.getSubmission({
+                        formId: where.formId,
+                        submissionId: id
                     });
                     return new Response(data);
                 } catch (err) {
