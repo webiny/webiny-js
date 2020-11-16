@@ -1,6 +1,6 @@
-import { HandlerPlugin, HandlerContext } from "@webiny/handler/types";
-import { HandlerApolloServerOptions } from "../types";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
+import { HandlerPlugin, Context } from "@webiny/handler/types";
+import { HandlerGraphQLOptions } from "./types";
+import { HttpContext } from "@webiny/handler-http/types";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin } from "@webiny/graphql/types";
 import gql from "graphql-tag";
@@ -8,9 +8,9 @@ import { graphql } from "graphql";
 import GraphQLJSON from "graphql-type-json";
 import { GraphQLDateTime } from "graphql-iso-date";
 import GraphQLLong from "graphql-type-long";
-import { RefInput } from "./types/RefInputScalar";
-import { Number } from "./types/NumberScalar";
-import { Any } from "./types/AnyScalar";
+import { RefInput } from "./builtInTypes/RefInputScalar";
+import { Number } from "./builtInTypes/NumberScalar";
+import { Any } from "./builtInTypes/AnyScalar";
 import { boolean } from "boolean";
 
 const DEFAULT_HEADERS = {
@@ -21,10 +21,10 @@ const DEFAULT_HEADERS = {
 
 let schema;
 
-export default (options: HandlerApolloServerOptions = {}): HandlerPlugin => ({
+export default (options: HandlerGraphQLOptions = {}): HandlerPlugin => ({
     type: "handler",
     name: "handler-graphql",
-    async handle(context: HandlerContext & HandlerHttpContext, next) {
+    async handle(context: Context & HttpContext, next) {
         const { http } = context;
         if (!http) {
             return next();
