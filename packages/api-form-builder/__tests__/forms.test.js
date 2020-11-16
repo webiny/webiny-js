@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("Form Builder Settings Test", () => {
+describe('Form Builder "Form" Test', () => {
     const {
         elasticSearch,
         sleep,
