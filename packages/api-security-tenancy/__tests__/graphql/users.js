@@ -1,29 +1,29 @@
 const DATA_FIELD = /* GraphQL */ `
     {
-        id
-        email
+        login
         firstName
         lastName
         avatar
+        gravatar
         group {
-            id
-            name
-            description
             slug
-            permissions
+            name
         }
     }
 `;
 
 const DATA_FIELD_SECURITY_IDENTITY = /* GraphQL */ `
     {
-        id
-        email
+        login
         firstName
         lastName
-        fullName
         avatar
-        permissions
+        gravatar
+        access {
+            id
+            name
+            permissions
+        }
     }
 `;
 
@@ -58,9 +58,9 @@ export const CREATE_SECURITY_USER = /* GraphQL */ `
 `;
 
 export const UPDATE_SECURITY_USER = /* GraphQL */ `
-    mutation UpdateUser($id: ID!, $data: SecurityUserInput!) {
+    mutation UpdateUser($login: String!, $data: SecurityUserInput!) {
         security {
-            updateUser(id: $id, data: $data) {
+            updateUser(login: $login, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -69,9 +69,9 @@ export const UPDATE_SECURITY_USER = /* GraphQL */ `
 `;
 
 export const DELETE_SECURITY_USER = /* GraphQL */ `
-    mutation DeleteUser($id: ID!) {
+    mutation DeleteUser($login: String!) {
         security {
-            deleteUser(id: $id) {
+            deleteUser(login: $login) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -91,20 +91,9 @@ export const LIST_SECURITY_USERS = /* GraphQL */ `
 `;
 
 export const GET_SECURITY_USER = /* GraphQL */ `
-    query GetUser($id: ID, $login: String) {
+    query GetUser($login: String!) {
         security {
-            getUser(id: $id, login: $login) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
-    query GetCurrentUser {
-        security {
-            getCurrentUser {
+            getUser(login: $login) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

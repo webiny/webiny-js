@@ -53,10 +53,16 @@ export type User = {
     createdBy: CreatedBy;
 };
 
-type TenantWithPermissions = {
-    id: string;
-    name: string;
-    permissions: SecurityPermission[];
+type TenantAccess = {
+    tenant: {
+        id: string;
+        name: string;
+    };
+    group: {
+        slug: string;
+        name: string;
+        permissions: SecurityPermission[];
+    };
 };
 
 export type TenantData = {
@@ -70,6 +76,7 @@ export type CreateUserData = {
     firstName: string;
     lastName: string;
     avatar?: Record<string, any>;
+    group?: string;
 };
 
 export type UpdateUserData = Partial<Omit<CreateUserData, "login">>;
@@ -97,11 +104,7 @@ export type GroupsCRUD = {
     createGroup(tenant: Tenant, data: GroupData): Promise<Group>;
     updateGroup(tenant: Tenant, slug: string, data: Partial<GroupData>): Promise<boolean>;
     deleteGroup(tenant: Tenant, slug: string): Promise<boolean>;
-    updatePermissionsOnUsersInGroup(
-        tenant: Tenant,
-        slug: string,
-        permissions: SecurityPermission[]
-    ): Promise<void>;
+    updateUserLinks(tenant: Tenant, group: Group): Promise<void>;
 };
 
 export type UsersCRUD = {
@@ -112,7 +115,7 @@ export type UsersCRUD = {
     deleteUser(login: string): Promise<boolean>;
     linkUserToTenant(login: string, tenant: Tenant, group: Group): Promise<void>;
     unlinkUserFromTenant(login: string, tenant: Tenant): Promise<void>;
-    getUserPermissions(login: string): Promise<TenantWithPermissions[]>;
+    getUserAccess(login: string): Promise<TenantAccess[]>;
 };
 
 export type HandlerTenancyContextObject = {
@@ -134,8 +137,13 @@ export type DbItemSecurityUser2Tenant = {
     PK: string;
     SK: string;
     TYPE: "SecurityUser2Tenant";
-    tenantId: string;
-    tenantName: string;
-    group: string;
-    permissions: SecurityPermission[];
+    tenant: {
+        id: string;
+        name: string;
+    };
+    group: {
+        slug: string;
+        name: string;
+        permissions: SecurityPermission[];
+    };
 };

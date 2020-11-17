@@ -21,7 +21,7 @@ const plugin: FbBuilderFieldPlugin = {
                 label: {
                     values: [
                         {
-                            locale: i18n.getDefaultLocale().id,
+                            locale: i18n.getDefaultLocale().code,
                             value: "Email"
                         }
                     ]
@@ -32,7 +32,7 @@ const plugin: FbBuilderFieldPlugin = {
                         message: {
                             values: [
                                 {
-                                    locale: i18n.getDefaultLocale().id,
+                                    locale: i18n.getDefaultLocale().code,
                                     value: "Please enter a valid e-mail."
                                 }
                             ]

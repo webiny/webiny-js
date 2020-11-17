@@ -7,15 +7,20 @@ import tenantCrud from "./crud/tenants.crud";
 import userCrud from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 
+type Context = HandlerHttpContext &
+    HandlerSecurityContext &
+    HandlerTenancyContext &
+    HandlerContextDb;
+
 const tenantCache = {};
 
-const getCurrentTenant = async (context): Promise<Tenant> => {
+const getCurrentTenant = async (context: Context): Promise<Tenant> => {
     const { headers = {} } = context.http;
 
-    const tenantId = headers["X-Tenant"] ?? "default";
+    const tenantId = headers["X-Tenant"] ?? "root";
 
     if (!tenantCache[tenantId]) {
-        tenantCache[tenantId] = await context.security.tenant.getTenant(tenantId);
+        tenantCache[tenantId] = await context.security.tenants.getTenant(tenantId);
     }
 
     return tenantCache[tenantId];
@@ -42,9 +47,4 @@ export default {
 
         __tenant = await getCurrentTenant(context);
     }
-} as HandlerContextPlugin<
-    HandlerHttpContext,
-    HandlerSecurityContext,
-    HandlerTenancyContext,
-    HandlerContextDb
->;
+} as HandlerContextPlugin<Context>;

@@ -1,13 +1,12 @@
-import mdbid from "mdbid";
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-apollo-server";
 import securityPlugins from "@webiny/api-security/authenticator";
+import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { SecurityIdentity } from "@webiny/api-security";
+import tenancyPlugins from "../src/index";
 // Graphql
-import mocks from "./mocks/securityUser";
 import {
     UPDATE_SECURITY_GROUP,
     CREATE_SECURITY_GROUP,
@@ -16,7 +15,6 @@ import {
     LIST_SECURITY_GROUPS
 } from "./graphql/groups";
 import {
-    GET_CURRENT_SECURITY_USER,
     UPDATE_CURRENT_SECURITY_USER,
     DELETE_SECURITY_USER,
     UPDATE_SECURITY_USER,
@@ -27,14 +25,14 @@ import {
 } from "./graphql/users";
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
-export default () => {
+export default (opts = {}) => {
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
         sslEnabled: false,
         region: "local"
     });
-    
+
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
@@ -45,37 +43,48 @@ export default () => {
         }),
         apolloServerPlugins(),
         securityPlugins(),
+        tenancyPlugins(),
         {
             type: "security-authorization",
-            getPermissions: () => [
-                { name: "security.user.manage" },
-                { name: "security.group.manage" }
-            ]
+            getPermissions: async context => {
+                if (opts.fullAccess) {
+                    return [{ name: "*" }];
+                }
+                
+                const tenant = context.security.getTenant();
+                const allPermissions = await context.security.users.getUserAccess(
+                    context.security.getIdentity().id
+                );
+                const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
+                return tenantAccess ? tenantAccess.group.permissions : null;
+            }
         },
-        // Add Cognito plugins for authentication
         {
             type: "security-authentication",
             async authenticate() {
-                return new SecurityIdentity(mocks.admin);
+                return new SecurityIdentity({
+                    id: "admin@webiny.com",
+                    type: "admin",
+                    displayName: "John Doe",
+                    firstName: "John",
+                    lastName: "Doe"
+                });
             }
         },
         // Add Cognito plugins for user management
-        [
-            {
-                name: "security-user-management",
-                type: "security-user-management",
-                async createUser({ user }) {
-                    user.id = mdbid();
-                    return Promise.resolve();
-                },
-                async updateUser() {
-                    return Promise.resolve();
-                },
-                async deleteUser() {
-                    return Promise.resolve();
-                }
+        {
+            name: "security-identity-provider",
+            type: "security-identity-provider",
+            async createUser() {
+                return Promise.resolve();
+            },
+            async updateUser() {
+                return Promise.resolve();
+            },
+            async deleteUser() {
+                return Promise.resolve();
             }
-        ]
+        }
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -127,9 +136,6 @@ export default () => {
         },
         async get(variables) {
             return invoke({ body: { query: GET_SECURITY_USER, variables } });
-        },
-        async getCurrentUser() {
-            return invoke({ body: { query: GET_CURRENT_SECURITY_USER } });
         },
         async updateCurrentUser(variables) {
             return invoke({ body: { query: UPDATE_CURRENT_SECURITY_USER, variables } });

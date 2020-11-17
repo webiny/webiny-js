@@ -21,7 +21,7 @@ export const useI18NHelpers = () => {
     const getTitleValue = useCallback(({ locale, item, useDefaultLocale }) => {
         const defaultLocale = getDefaultLocale();
         const titleInCurrentLocale = getValue(item.meta.title, locale);
-        const titleInDefaultLocale = getValue(item.meta.title, defaultLocale.id);
+        const titleInDefaultLocale = getValue(item.meta.title, defaultLocale.code);
 
         let name;
 

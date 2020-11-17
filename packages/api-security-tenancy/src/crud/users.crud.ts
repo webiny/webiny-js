@@ -36,11 +36,9 @@ export default (
             return user;
         },
         async listUsers({ tenant }) {
-            const tenantId = tenant ?? context.security.getTenant().id;
-
             const [users] = await db.read<DbUser>({
                 ...dbArgs,
-                query: { PK: `T#${tenantId}`, SK: { $beginsWith: "U#" } }
+                query: { GSI1_PK: `T#${tenant}`, GSI1_SK: { $gt: " " } }
             });
 
             const batch = db.batch();
@@ -48,7 +46,7 @@ export default (
                 batch.read({
                     ...dbArgs,
                     query: {
-                        PK: users[i].SK,
+                        PK: users[i].PK,
                         SK: "A"
                     }
                 });
@@ -61,7 +59,7 @@ export default (
         async createUser(data) {
             const identity = context.security.getIdentity();
 
-            if (await this.get(data.login)) {
+            if (await this.getUser(data.login)) {
                 throw {
                     message: "User with that login already exists.",
                     code: "USER_EXISTS"
@@ -83,6 +81,7 @@ export default (
             };
 
             await db.create({
+                ...dbArgs,
                 data: {
                     PK: `U#${user.login}`,
                     SK: "A",
@@ -132,14 +131,22 @@ export default (
         },
         async linkUserToTenant(login, tenant, group) {
             await db.create({
+                ...dbArgs,
                 data: {
                     PK: `U#${login}`,
                     SK: `LINK#T#${tenant.id}#G#${group.slug}`,
+                    GSI1_PK: `T#${tenant.id}`,
+                    GSI1_SK: `G#${group.slug}#U#${login}`,
                     TYPE: "SecurityUser2Tenant",
-                    tenantId: tenant.id,
-                    tenantName: tenant.name,
-                    group: group.slug,
-                    permissions: group.permissions
+                    tenant: {
+                        id: tenant.id,
+                        name: tenant.name
+                    },
+                    group: {
+                        slug: group.slug,
+                        name: group.name,
+                        permissions: group.permissions
+                    }
                 }
             });
         },
@@ -161,7 +168,7 @@ export default (
                 }
             });
         },
-        async getUserPermissions(login) {
+        async getUserAccess(login) {
             const [links] = await db.read<DbItemSecurityUser2Tenant>({
                 ...dbArgs,
                 query: {
@@ -171,9 +178,8 @@ export default (
             });
 
             return links.map(link => ({
-                id: link.tenantId,
-                name: link.tenantName,
-                permissions: link.permissions
+                group: link.group,
+                tenant: link.tenant
             }));
         }
     };

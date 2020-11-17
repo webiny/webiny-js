@@ -3,7 +3,6 @@ import minimatch from "minimatch";
 export type SecurityPermission = { name: string; [key: string]: any };
 
 export type SecurityIdentityData = {
-    id: string;
     login: string;
     permissions: SecurityPermission[];
     logout(): void;
@@ -12,7 +11,6 @@ export type SecurityIdentityData = {
 };
 
 export class SecurityIdentity {
-    id: string;
     login: string;
     permissions: SecurityPermission[];
     [key: string]: any;

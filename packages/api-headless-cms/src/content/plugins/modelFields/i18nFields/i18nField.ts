@@ -25,7 +25,7 @@ export const getI18NValueItem = (
     }
 
     const currentLocale = i18n.getCurrentLocale();
-    const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.id);
+    const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.code);
 
     const output = [...value];
     const [currentLocaleItem] = output.splice(currentLocaleItemIndex, 1);
@@ -76,7 +76,7 @@ export const i18nField = ({
                         locale = i18n.getCurrentLocale();
                     }
 
-                    const value = this.values.find(value => value.locale === locale.id);
+                    const value = this.values.find(value => value.locale === locale.code);
                     return value ? value.value : undefined;
                 }
             })

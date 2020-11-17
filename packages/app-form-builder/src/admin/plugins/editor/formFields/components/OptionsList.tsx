@@ -119,7 +119,7 @@ const OptionsList = ({ form, multiple }: OptionsListProps) => {
                                 newValue.push({
                                     value: camelCase(label),
                                     label: {
-                                        values: [{ locale: getDefaultLocale().id, value: label }]
+                                        values: [{ locale: getDefaultLocale().code, value: label }]
                                     }
                                 });
                                 setOptionsValue(newValue);

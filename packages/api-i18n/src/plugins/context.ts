@@ -132,7 +132,7 @@ export default {
                     }
 
                     // @ts-ignore
-                    const valuesValue = value.values.find(value => value.locale === locale.id);
+                    const valuesValue = value.values.find(value => value.locale === locale.code);
                     return valuesValue ? valuesValue.value : "";
                 }
 

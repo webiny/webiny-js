@@ -1,8 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe(`Test "Security" install`, () => {
-    const { install } = useGqlHandler();
-    
+    const { install, securityGroup } = useGqlHandler({ fullAccess: true });
+
     test(`should return "isInstalled" false without running install`, async () => {
         const [response] = await install.isInstalled();
 
@@ -20,7 +20,7 @@ describe(`Test "Security" install`, () => {
 
     test(`should run "install" successfully`, async () => {
         let [response] = await install.install({
-            data: { firstName: "first test", lastName: "last test", email: "firstlast@test.com" }
+            data: { firstName: "first test", lastName: "last test", login: "firstlast@test.com" }
         });
 
         expect(response).toEqual({
@@ -36,7 +36,7 @@ describe(`Test "Security" install`, () => {
 
         // Running "install" again should throw an error
         [response] = await install.install({
-            data: { firstName: "first test", lastName: "last test", email: "firstlast@test.com" }
+            data: { firstName: "first test", lastName: "last test", login: "firstlast@test.com" }
         });
 
         expect(response).toEqual({
@@ -67,5 +67,12 @@ describe(`Test "Security" install`, () => {
                 }
             }
         });
+
+        // There have to be 2 groups installed
+        [response] = await securityGroup.list();
+        const { listGroups: groups } = response.data.security;
+        expect(groups.data.length).toBe(2);
+        expect(groups.data[0].slug).toBe("anonymous");
+        expect(groups.data[1].slug).toBe("full-access");
     });
 });

@@ -1,6 +1,6 @@
 const avatars = {
     userA: {
-        id: "1ja9FeDZUtJXapQFHj1eNoHJatrA",
+        id: "5fb297c01d35c932d44e79e3",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         src:
@@ -9,7 +9,7 @@ const avatars = {
         type: "image/jpeg"
     },
     userB: {
-        id: "1ja9FeDZUtJXapQFHj1eNoHJatrB",
+        id: "5fb297c11d35c932d44e79e4",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         src:
@@ -18,7 +18,7 @@ const avatars = {
         type: "image/jpeg"
     },
     admin: {
-        id: "1ja9FeDZUtJXapQFHj1eNoHJatrAdmin",
+        id: "5fb297c11d35c932d44e79e5",
         name: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         key: "8kgvqs3io-8kgvqrn7i-John-Rambo-Sylvester-Stallone.jpg",
         src:
@@ -29,57 +29,18 @@ const avatars = {
 };
 
 const mocks = {
-    getUserWithGroup: ({ userData = {}, groupId }) => ({
-        ...userData,
-        group: groupId
-    }),
-    getUserWithGroupData: ({ userData = {}, groupData = {} }) => ({
-        ...userData,
-        group: groupData
-    }),
     userA: {
-        email: "user_a@yahoo.com",
+        login: "user_a@yahoo.com",
         firstName: "Arabella",
         lastName: "Ricci",
         avatar: avatars.userA
     },
     userB: {
-        email: "user_b@email.it",
+        login: "user_b@email.it",
         firstName: "Arturo",
         lastName: "Surace",
         avatar: avatars.userB
-    },
-    admin: {
-        id: "15521103-5fee-48c3-8247-17e73e18407a",
-        login: "admin@webiny.com",
-        type: "admin",
-        firstName: "Admin",
-        lastName: "Test",
-        avatar: avatars.admin
-    },
-    adminUser: {
-        id: "15521103-5fee-48c3-8247-17e73e18407a",
-        email: "admin@webiny.com",
-        firstName: "Admin",
-        lastName: "Test",
-        avatar: avatars.admin,
-        group: null
-    },
-    adminUserWithPermissions: {
-        id: "15521103-5fee-48c3-8247-17e73e18407a",
-        email: "admin@webiny.com",
-        firstName: "Admin",
-        lastName: "Test",
-        avatar: avatars.admin,
-        permissions: [
-            {
-                name: "security.user.manage"
-            },
-            {
-                name: "security.group.manage"
-            }
-        ]
-    }
+    } 
 };
 
 export default mocks;

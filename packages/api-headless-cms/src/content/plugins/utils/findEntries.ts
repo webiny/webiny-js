@@ -50,7 +50,7 @@ export default async function findEntries<T = CmsContext>({
 
     // For `read` API we always include `locale` in the queries
     if (!context.cms.MANAGE) {
-        query.locale = context.cms.locale.id;
+        query.locale = context.cms.locale.code;
     }
 
     /*

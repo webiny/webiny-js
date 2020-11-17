@@ -19,7 +19,7 @@ const plugin: FbBuilderFieldPlugin = {
                 label: {
                     values: [
                         {
-                            locale: i18n.getDefaultLocale().id,
+                            locale: i18n.getDefaultLocale().code,
                             value: "Street address"
                         }
                     ]

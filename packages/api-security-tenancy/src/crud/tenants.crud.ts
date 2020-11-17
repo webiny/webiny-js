@@ -14,7 +14,15 @@ export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD 
                 limit: 1
             });
 
-            return tenant;
+            if (tenant) {
+                return {
+                    id: tenant.id,
+                    name: tenant.name,
+                    parent: tenant.parent
+                };
+            }
+
+            return null;
         },
         async getTenant(id: string) {
             const [[tenant]] = await db.read<Tenant>({
@@ -23,7 +31,15 @@ export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD 
                 limit: 1
             });
 
-            return tenant;
+            if (tenant) {
+                return {
+                    id: tenant.id,
+                    name: tenant.name,
+                    parent: tenant.parent
+                };
+            }
+
+            return null;
         },
         async listTenants({ parent }) {
             const [tenants] = await db.read<Tenant>({
@@ -41,6 +57,7 @@ export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD 
             };
 
             await db.create({
+                ...dbArgs,
                 data: {
                     PK: `T#${tenant.id}`,
                     SK: "A",

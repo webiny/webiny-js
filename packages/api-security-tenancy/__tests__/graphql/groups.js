@@ -1,6 +1,5 @@
 const DATA_FIELD = /* GraphQL */ `
     {
-        id
         name
         description
         slug
@@ -28,9 +27,9 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation UpdateGroup($id: ID!, $data: SecurityGroupInput!) {
+    mutation UpdateGroup($slug: String!, $data: SecurityGroupInput!) {
         security {
-            updateGroup(id: $id, data: $data) {
+            updateGroup(slug: $slug, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -39,9 +38,9 @@ export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const DELETE_SECURITY_GROUP = /* GraphQL */ `
-    mutation DeleteGroup($id: ID!) {
+    mutation DeleteGroup($slug: String!) {
         security {
-            deleteGroup(id: $id) {
+            deleteGroup(slug: $slug) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -50,9 +49,9 @@ export const DELETE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const LIST_SECURITY_GROUPS = /* GraphQL */ `
-    query ListGroups($where: ListSecurityGroupWhereInput, $sort: Int) {
+    query ListGroups {
         security {
-            listGroups(where: $where, sort: $sort) {
+            listGroups {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -61,10 +60,10 @@ export const LIST_SECURITY_GROUPS = /* GraphQL */ `
 `;
 
 export const GET_SECURITY_GROUP = /* GraphQL */ `
-    query GetGroup($id: ID, $slug: String) {
+    query GetGroup($slug: String) {
         security {
-            getGroup(id: $id, slug: $slug) {
-               data ${DATA_FIELD}
+            getGroup(slug: $slug) {
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }

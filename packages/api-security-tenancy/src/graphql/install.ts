@@ -1,32 +1,57 @@
+import gql from "graphql-tag";
 import { ErrorResponse, Response } from "@webiny/graphql";
 import { HandlerContext } from "@webiny/handler/types";
-import { HandlerTenancyContext, SecurityIdentityProviderPlugin } from "../types";
+import { Group, HandlerTenancyContext, SecurityIdentityProviderPlugin } from "../types";
+import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
 
-const ensureFullAccessGroup = async (context: HandlerTenancyContext) => {
+const createDefaultGroups = async (
+    context: HandlerTenancyContext
+): Promise<Record<"fullAccessGroup" | "anonymousGroup", Group>> => {
     const tenant = context.security.getTenant();
-    let groupData = await context.security.groups.getGroup(tenant, "security-full-access");
 
-    if (!groupData) {
-        groupData = await context.security.groups.createGroup(tenant, {
-            name: "Security - Full Access",
+    let anonymousGroup: Group = null;
+    let fullAccessGroup: Group = null;
+
+    const groups = await context.security.groups.listGroups(tenant);
+
+    groups.forEach(group => {
+        if (group.slug === "full-access") {
+            fullAccessGroup = group;
+        }
+
+        if (group.slug === "anonymous") {
+            anonymousGroup = group;
+        }
+    });
+
+    if (!fullAccessGroup) {
+        fullAccessGroup = await context.security.groups.createGroup(tenant, {
+            name: "Full Access",
             description: "Grants full access to all API fields.",
             system: true,
-            slug: "security-full-access",
+            slug: "full-access",
             permissions: [{ name: "*" }]
         });
     }
-    return groupData;
+
+    if (!anonymousGroup) {
+        anonymousGroup = await context.security.groups.createGroup(tenant, {
+            name: "Anonymous",
+            description: "Permissions for anonymous users (public access).",
+            system: true,
+            slug: "anonymous",
+            permissions: []
+        });
+    }
+
+    return { fullAccessGroup, anonymousGroup };
 };
 
-/**
- * We consider security to be installed if a root tenant exists.
- */
-const isSecurityInstalled = async (context: HandlerTenancyContext) => {
-    return !!(await context.security.tenants.getRootTenant());
-};
-
-export default {
-    typeDefs: `
+const plugin: GraphQLSchemaPlugin = {
+    type: "graphql-schema",
+    name: "graphql-schema-security",
+    schema: {
+        typeDefs: gql`
         input SecurityInstallInput {
             firstName: String!
             lastName: String!
@@ -48,55 +73,67 @@ export default {
             install(data: SecurityInstallInput!): SecurityInstallResponse
         }
     `,
-    resolvers: {
-        SecurityQuery: {
-            isInstalled: async (root, args, context) => {
-                return new Response(await isSecurityInstalled(context));
-            }
-        },
-        SecurityMutation: {
-            install: async (root, args, context: HandlerContext & HandlerTenancyContext) => {
-                if (await isSecurityInstalled(context)) {
-                    return new ErrorResponse({
-                        code: "SECURITY_INSTALL_ABORTED",
-                        message: "Security is already installed."
-                    });
+        resolvers: {
+            SecurityQuery: {
+                isInstalled: async (root, args, context) => {
+                    const rootTenant = await context.security.tenants.getRootTenant();
+                    return new Response(!!rootTenant);
                 }
+            },
+            SecurityMutation: {
+                install: async (root, args, context: HandlerContext & HandlerTenancyContext) => {
+                    const rootTenant = await context.security.tenants.getRootTenant();
 
-                const { data } = args;
+                    if (rootTenant) {
+                        return new ErrorResponse({
+                            code: "SECURITY_INSTALL_ABORTED",
 
-                try {
-                    // Create root tenant
-                    const tenant = await context.security.tenants.createTenant({
-                        name: "Root",
-                        parent: null
-                    });
+                            message: "Security is already installed."
+                        });
+                    }
 
-                    context.security.setTenant(tenant);
+                    const { data } = args;
 
-                    // Create full-access group
-                    const group = await ensureFullAccessGroup(context);
+                    try {
+                        // Create root tenant
+                        const tenant = await context.security.tenants.createTenant({
+                            id: "root",
+                            name: "Root",
+                            parent: null
+                        });
 
-                    const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
+                        context.security.setTenant(tenant);
 
-                    // Create new user
-                    await authPlugin.createUser({ data, permanent: true }, context);
-                    const user = await context.security.users.createUser(data);
+                        // Create default groups
+                        const { fullAccessGroup } = await createDefaultGroups(context);
 
-                    // Link user with group for this tenant
-                    await context.security.users.linkUserToTenant(user.login, tenant, group);
+                        const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
+                            "security-identity-provider"
+                        );
 
-                    return new Response(true);
-                } catch (e) {
-                    return new ErrorResponse({
-                        code: e.code,
-                        message: e.message,
-                        data: e.data
-                    });
+                        // Create new user
+                        await authPlugin.createUser({ data, permanent: true }, context);
+                        const user = await context.security.users.createUser(data);
+
+                        // Link user with group for this tenant
+                        await context.security.users.linkUserToTenant(
+                            user.login,
+                            tenant,
+                            fullAccessGroup
+                        );
+
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse({
+                            code: e.code,
+                            message: e.message,
+                            data: e.data
+                        });
+                    }
                 }
             }
         }
     }
 };
+
+export default plugin;

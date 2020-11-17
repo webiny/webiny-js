@@ -14,19 +14,14 @@ const CreateDataModel = withFields({
     description: string({ validation: validation.create("required,minLength:10") }),
     permissions: object({
         list: true,
-        validation: validation.create("required,minLength:1"),
-        value: []
+        validation: validation.create("required")
     })
 })();
 
 const UpdateDataModel = withFields({
     name: string({ validation: validation.create("minLength:3") }),
     description: string({ validation: validation.create("minLength:10") }),
-    permissions: object({
-        list: true,
-        validation: validation.create("minLength:1"),
-        value: []
-    })
+    permissions: object({ list: true })
 })();
 
 export default (
@@ -54,28 +49,31 @@ export default (
         async createGroup(tenant, data) {
             const identity = context.security.getIdentity();
 
-            if (await this.get(data.slug)) {
+            if (await this.getGroup(tenant, data.slug)) {
                 throw {
                     message: `Group with slug "${data.slug}" already exists.`,
                     code: "GROUP_EXISTS"
                 };
             }
 
-            await new CreateDataModel().populate(data).validate();
+            await new CreateDataModel().populate({ ...data, tenant: tenant.id }).validate();
 
             const group = {
                 tenant: tenant.id,
                 system: false,
                 ...data,
                 createdOn: new Date().toISOString(),
-                createdBy: {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                }
+                createdBy: identity
+                    ? {
+                          id: identity.id,
+                          displayName: identity.displayName,
+                          type: identity.type
+                      }
+                    : null
             };
 
             await db.create({
+                ...dbArgs,
                 data: {
                     PK: `T#${tenant.id}`,
                     SK: `G#${data.slug}`,
@@ -109,12 +107,12 @@ export default (
 
             return true;
         },
-        async updatePermissionsOnUsersInGroup(tenant, slug, permissions) {
+        async updateUserLinks(tenant, group) {
             const [links] = await db.read<DbItemSecurityUser2Tenant>({
                 ...dbArgs,
                 query: {
                     GSI1_PK: `T#${tenant.id}`,
-                    GSI1_SK: { $beginsWith: `G#${slug}#` }
+                    GSI1_SK: { $beginsWith: `G#${group.slug}#` }
                 }
             });
 
@@ -124,7 +122,13 @@ export default (
                     batch.update({
                         ...dbArgs,
                         query: { PK: links[i].PK, SK: links[i].SK },
-                        data: Object.assign(links[i], { permissions })
+                        data: Object.assign(links[i], {
+                            group: {
+                                slug: group.slug,
+                                name: group.name,
+                                permissions: group.permissions
+                            }
+                        })
                     });
                 }
                 await batch.execute();

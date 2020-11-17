@@ -2,7 +2,7 @@ import { Plugin, Context } from "@webiny/graphql/types";
 
 export type SecurityIdentity = {
     id: string;
-    login: string;
+    displayName: string;
     type: string;
     [key: string]: any;
 };
