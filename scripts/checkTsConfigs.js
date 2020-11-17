@@ -7,6 +7,7 @@ const minimatch = require('minimatch');
 
 const { _: packagesToCheck } = argv;
 
+// If a package reference is pointing to a package that is a part of a workspace, return true;
 const pathPointsToWorkspacePackage = packageAbsolutePath => {
     const workspaces = rootPackageJson.workspaces.packages;
     for (let i = 0; i < workspaces.length; i++) {
@@ -14,7 +15,6 @@ const pathPointsToWorkspacePackage = packageAbsolutePath => {
         if (minimatch(packageAbsolutePath, absolutePath)) {
             return true;
         }
-
     }
 
     return false;
