@@ -190,7 +190,7 @@ export default {
                     // Will be added via a "update"
                     fields: [],
                     layout: [],
-                    settings: {},
+                    settings: await new FormSettingsModel().toJSON(),
                     triggers: null
                 };
 
