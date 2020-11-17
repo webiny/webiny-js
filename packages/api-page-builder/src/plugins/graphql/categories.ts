@@ -4,8 +4,8 @@ import { Response, NotFoundResponse } from "@webiny/graphql/responses";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { composeResolvers } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { compose } from "@webiny/handler-graphql";
 
 const hasRwd = ({ pbCategoryPermission, rwd }) => {
     if (typeof pbCategoryPermission.rwd !== "string") {
@@ -17,7 +17,7 @@ const hasRwd = ({ pbCategoryPermission, rwd }) => {
 
 type Context = HandlerContext<I18NContext, SecurityContext>;
 
-export default {
+const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -66,107 +66,106 @@ export default {
         `,
         resolvers: {
             PbQuery: {
-                getCategory: composeResolvers<any, { slug: string }, Context>(
+                getCategory: compose(
                     hasPermission("pb.category"),
-                    hasI18NContentPermission(),
-                    async (_, args, context) => {
-                        // If permission has "rwd" property set, but "r" is not part of it, bail.
-                        const pbCategoryPermission = await context.security.getPermission(
-                            "pb.category"
-                        );
-                        if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
+                    hasI18NContentPermission()
+                )(async (_, args: { slug: string }, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbCategoryPermission = await context.security.getPermission(
+                        "pb.category"
+                    );
+
+                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    const { categories } = context;
+                    const category = await categories.get(args.slug);
+                    if (!category) {
+                        return new NotFoundResponse(`Category "${args.slug}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbCategoryPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (category.createdBy.id !== identity.id) {
                             return new NotAuthorizedResponse();
                         }
-
-                        const { categories } = context;
-                        const category = await categories.get(args.slug);
-                        if (!category) {
-                            return new NotFoundResponse(`Category "${args.slug}" not found.`);
-                        }
-
-                        // If user can only manage own records, let's check if he owns the loaded one.
-                        if (pbCategoryPermission?.own === true) {
-                            const identity = context.security.getIdentity();
-                            if (category.createdBy.id !== identity.id) {
-                                return new NotAuthorizedResponse();
-                            }
-                        }
-
-                        return new Response(category);
                     }
-                ),
-                listCategories: composeResolvers<any, any, Context>(
+
+                    return new Response(category);
+                }),
+                listCategories: compose(
                     hasPermission("pb.category"),
-                    hasI18NContentPermission(),
-                    async (_, args, context) => {
-                        // If permission has "rwd" property set, but "r" is not part of it, bail.
-                        const pbCategoryPermission = await context.security.getPermission(
-                            "pb.category"
-                        );
-                        if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
-                            return new NotAuthorizedResponse();
-                        }
-
-                        const { categories } = context;
-
-                        let list = await categories.list();
-
-                        // If user can only manage own records, let's check if he owns the loaded one.
-                        if (pbCategoryPermission?.own === true) {
-                            const identity = context.security.getIdentity();
-                            list = list.filter(category => category.createdBy.id === identity.id);
-                        }
-
-                        return new Response(list);
+                    hasI18NContentPermission()
+                )(async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbCategoryPermission = await context.security.getPermission(
+                        "pb.category"
+                    );
+                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
+                        return new NotAuthorizedResponse();
                     }
-                )
+
+                    const { categories } = context;
+
+                    let list = await categories.list();
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbCategoryPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        list = list.filter(category => category.createdBy.id === identity.id);
+                    }
+
+                    return new Response(list);
+                })
             },
             PbMutation: {
-                createCategory: composeResolvers<any, { data: Record<string, any> }, Context>(
+                createCategory: compose(
                     hasPermission("pb.category"),
-                    hasI18NContentPermission(),
-                    async (_, args, context) => {
-                        // If permission has "rwd" property set, but "w" is not part of it, bail.
-                        const pbCategoryPermission = await context.security.getPermission(
-                            "pb.category"
-                        );
-                        if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
-                            return new NotAuthorizedResponse();
-                        }
-
-                        const { categories } = context;
-                        const { data } = args;
-
-                        if (await categories.get(data.slug)) {
-                            return new NotFoundResponse(
-                                `Category with slug "${data.slug}" already exists.`
-                            );
-                        }
-
-                        const identity = context.security.getIdentity();
-
-                        const newData = {
-                            ...data,
-                            createdOn: new Date().toISOString(),
-                            createdBy: {
-                                id: identity.id,
-                                displayName: identity.displayName
-                            }
-                        };
-
-                        await categories.create(newData);
-
-                        return new Response(newData);
+                    hasI18NContentPermission()
+                )(async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbCategoryPermission = await context.security.getPermission(
+                        "pb.category"
+                    );
+                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
+                        return new NotAuthorizedResponse();
                     }
-                ),
-                updateCategory: composeResolvers<
-                    any,
-                    { slug: string; data: Record<string, any> },
-                    Context
-                >(
+
+                    const { categories } = context;
+                    const { data } = args;
+
+                    if (await categories.get(data.slug)) {
+                        return new NotFoundResponse(
+                            `Category with slug "${data.slug}" already exists.`
+                        );
+                    }
+
+                    const identity = context.security.getIdentity();
+
+                    const newData = {
+                        ...data,
+                        createdOn: new Date().toISOString(),
+                        createdBy: {
+                            id: identity.id,
+                            displayName: identity.displayName
+                        }
+                    };
+
+                    await categories.create(newData);
+
+                    return new Response(newData);
+                }),
+                updateCategory: compose(
                     hasPermission("pb.category"),
-                    hasI18NContentPermission(),
-                    async (_, args, context) => {
+                    hasI18NContentPermission()
+                )(
+                    async (
+                        _,
+                        args: { slug: string; data: Record<string, any> },
+                        context: Context
+                    ) => {
                         // If permission has "rwd" property set, but "w" is not part of it, bail.
                         const pbCategoryPermission = await context.security.getPermission(
                             "pb.category"
@@ -196,40 +195,41 @@ export default {
                         return new Response({ ...category, ...changed });
                     }
                 ),
-                deleteCategory: composeResolvers<any, { slug: string }, Context>(
+                deleteCategory: compose<any, { slug: string }, Context>(
                     hasPermission("pb.category"),
-                    hasI18NContentPermission(),
-                    async (_, args, context) => {
-                        // If permission has "rwd" property set, but "d" is not part of it, bail.
-                        const pbCategoryPermission = await context.security.getPermission(
-                            "pb.category"
-                        );
-                        if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "d" })) {
+                    hasI18NContentPermission()
+                )(async (_, args, context) => {
+                    // If permission has "rwd" property set, but "d" is not part of it, bail.
+                    const pbCategoryPermission = await context.security.getPermission(
+                        "pb.category"
+                    );
+                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "d" })) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    const { categories } = context;
+                    const { slug } = args;
+
+                    const category = await categories.get(slug);
+                    if (!category) {
+                        return new NotFoundResponse(`Category "${args.slug}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbCategoryPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (category.createdBy.id !== identity.id) {
                             return new NotAuthorizedResponse();
                         }
-
-                        const { categories } = context;
-                        const { slug } = args;
-
-                        const category = await categories.get(slug);
-                        if (!category) {
-                            return new NotFoundResponse(`Category "${args.slug}" not found.`);
-                        }
-
-                        // If user can only manage own records, let's check if he owns the loaded one.
-                        if (pbCategoryPermission?.own === true) {
-                            const identity = context.security.getIdentity();
-                            if (category.createdBy.id !== identity.id) {
-                                return new NotAuthorizedResponse();
-                            }
-                        }
-
-                        await categories.delete(slug);
-
-                        return new Response(category);
                     }
-                )
+
+                    await categories.delete(slug);
+
+                    return new Response(category);
+                })
             }
         }
     }
-} as GraphQLSchemaPlugin;
+};
+
+export default plugin;

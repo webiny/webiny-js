@@ -4,7 +4,8 @@ import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/respo
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { composeResolvers } from "@webiny/handler-graphql";
+import { compose } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -16,56 +17,58 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
 
 type Context = HandlerContext<I18NContext, SecurityContext>;
 
-export default {
-    typeDefs: /* GraphQL */ `
-        type PbPageElement {
-            id: ID
-            createdOn: DateTime
-            createdBy: PbCreatedBy
-            name: String
-            category: String
-            type: String
-            content: JSON
-            preview: JSON
-        }
+const plugin: GraphQLSchemaPlugin = {
+    type: "graphql-schema",
+    schema: {
+        typeDefs: /* GraphQL */ `
+            type PbPageElement {
+                id: ID
+                createdOn: DateTime
+                createdBy: PbCreatedBy
+                name: String
+                category: String
+                type: String
+                content: JSON
+                preview: JSON
+            }
 
-        input PbPageElementInput {
-            id: ID
-            name: String
-            type: String
-            category: String
-            content: JSON
-            preview: JSON
-        }
+            input PbPageElementInput {
+                id: ID
+                name: String
+                type: String
+                category: String
+                content: JSON
+                preview: JSON
+            }
 
-        # Response types
-        type PbPageElementResponse {
-            data: PbPageElement
-            error: PbError
-        }
+            # Response types
+            type PbPageElementResponse {
+                data: PbPageElement
+                error: PbError
+            }
 
-        type PbPageElementListResponse {
-            data: [PbPageElement]
-            error: PbError
-        }
+            type PbPageElementListResponse {
+                data: [PbPageElement]
+                error: PbError
+            }
 
-        extend type PbQuery {
-            listPageElements: PbPageElementListResponse
-            getPageElement(id: ID!): PbPageElementResponse
-        }
+            extend type PbQuery {
+                listPageElements: PbPageElementListResponse
+                getPageElement(id: ID!): PbPageElementResponse
+            }
 
-        extend type PbMutation {
-            createPageElement(data: PbPageElementInput!): PbPageElementResponse
-            updatePageElement(id: ID!, data: PbPageElementInput!): PbPageElementResponse
-            deletePageElement(id: ID!): PbPageElementResponse
-        }
-    `,
-    resolvers: {
-        PbQuery: {
-            getPageElement: composeResolvers<any, { id: string }, Context>(
-                hasPermission("pb.page"),
-                hasI18NContentPermission(),
-                async (_, args, context: Context) => {
+            extend type PbMutation {
+                createPageElement(data: PbPageElementInput!): PbPageElementResponse
+                updatePageElement(id: ID!, data: PbPageElementInput!): PbPageElementResponse
+                deletePageElement(id: ID!): PbPageElementResponse
+            }
+        `,
+        resolvers: {
+            PbQuery: {
+                getPageElement: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
@@ -89,12 +92,11 @@ export default {
                     }
 
                     return new Response(pageElement);
-                }
-            ),
-            listPageElements: composeResolvers<any, any, Context>(
-                hasPermission("pb.page"),
-                hasI18NContentPermission(),
-                async (_, args, context: Context) => {
+                }),
+                listPageElements: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args, context: Context) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
@@ -112,37 +114,32 @@ export default {
                     }
 
                     return new Response(list);
-                }
-            )
-        },
-        PbMutation: {
-            createPageElement: composeResolvers<any, { data: Record<string, any> }, Context>(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                    return new NotAuthorizedResponse();
-                }
+                })
+            },
+            PbMutation: {
+                createPageElement: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { data: Record<string, any> }, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                        return new NotAuthorizedResponse();
+                    }
 
-                const { pageElements } = context;
-                const { data } = args;
+                    const { pageElements } = context;
+                    const { data } = args;
 
-                try {
-                    return new Response(await pageElements.create(data));
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            }),
-            updatePageElement: composeResolvers<
-                any,
-                { id: string; data: Record<string, any> },
-                Context
-            >(
-                hasPermission("pb.page"),
-                hasI18NContentPermission(),
-                async (_, args, context: Context) => {
+                    try {
+                        return new Response(await pageElements.create(data));
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+                updatePageElement: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string; data: Record<string, any> }, context: Context) => {
                     // If permission has "rwd" property set, but "w" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
@@ -172,12 +169,11 @@ export default {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                }
-            ),
-            deletePageElement: composeResolvers<any, { id: string }, Context>(
-                hasPermission("pb.page"),
-                hasI18NContentPermission(),
-                async (_, args, context: Context) => {
+                }),
+                deletePageElement: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
                     // If permission has "rwd" property set, but "d" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
@@ -203,8 +199,10 @@ export default {
                     await pageElements.delete(id);
 
                     return new Response(pageElement);
-                }
-            )
+                })
+            }
         }
     }
 };
+
+export default plugin;
