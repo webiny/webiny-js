@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import gql from "graphql-tag";
 import { merge } from "lodash";
 import { hasScope, hasCmsPermission } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";

@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import cookiePolicySettings from "./cookiePolicySettings.model";
 

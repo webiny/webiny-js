@@ -38,6 +38,8 @@ const PageBuilderPagesDataList = () => {
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
     const slug = new URLSearchParams(location.search).get("slug");
 
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deleteItem = useCallback(
         item => {
             showConfirmation(async () => {
@@ -61,6 +63,8 @@ const PageBuilderPagesDataList = () => {
     );
 
     const { identity } = useSecurity();
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const pbPagePermission = useMemo(() => {
         return identity.getPermission("pb.page");
     }, []);

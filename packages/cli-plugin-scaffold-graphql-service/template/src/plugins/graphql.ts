@@ -1,5 +1,4 @@
 // @ts-nocheck
-import gql from "graphql-tag";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasScope } from "@webiny/api-security";
 

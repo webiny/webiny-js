@@ -1,5 +1,4 @@
 import { merge } from "lodash";
-import gql from "graphql-tag";
 import locales from "./graphql/locales";
 import installation from "./graphql/installation";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";

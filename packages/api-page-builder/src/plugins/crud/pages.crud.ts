@@ -60,10 +60,11 @@ const UpdateDataModel = withFields({
 
 const TYPE = "pb#page";
 
+/*
 const sorters = {
     CREATED_ON_ASC: { createdOn: "asc" },
     CREATED_ON_DESC: { createdOn: "desc" }
-};
+};*/
 
 export default {
     type: "context",
@@ -83,7 +84,7 @@ export default {
             },
 
             async list(args) {
-                const { limit = 44, sort, search = "", types = [], tags = [], ids = [] } = args;
+                const { limit = 44, search = "", types = [], tags = [], ids = [] } = args;
 
                 const must = [
                     /* {

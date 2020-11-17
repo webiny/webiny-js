@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { hasPermission } from "@webiny/api-security";
 
 import getFile from "./resolvers/getFile";

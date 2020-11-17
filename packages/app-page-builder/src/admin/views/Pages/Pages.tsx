@@ -22,7 +22,7 @@ const Pages = () => {
 
     // ------------
 
-    const [create, createMutation] = useMutation(CREATE_PAGE, {
+    const [create /*createMutation*/] = useMutation(CREATE_PAGE, {
         // refetchQueries: [{ query: LIST_MENUS }]
     });
 
