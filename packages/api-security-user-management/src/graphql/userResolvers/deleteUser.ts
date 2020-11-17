@@ -24,11 +24,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: Context) => {
 
         return new Response(true);
     } catch (e) {
-        return new ErrorResponse({
-            code: e.code,
-            message: e.message,
-            data: e.data
-        });
+        return new ErrorResponse(e);
     }
 };
 

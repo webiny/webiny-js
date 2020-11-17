@@ -1,14 +1,9 @@
+// @ts-nocheck
 import gql from "graphql-tag";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasScope } from "@webiny/api-security";
-import {
-    emptyResolver,
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "@webiny/commodo-graphql";
+
+const emptyResolver = () => ({});
 
 const entityFetcher = ctx => ctx.models.Entity;
 

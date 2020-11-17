@@ -1,8 +1,10 @@
 import gql from "graphql-tag";
-import { emptyResolver, ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
 
 type SettingsContext = any;
+
+const emptyResolver = () => ({});
 
 export default () => [
     {

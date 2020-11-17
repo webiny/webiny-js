@@ -1,8 +1,5 @@
 // @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import {
-    emptyResolver,
-} from "@webiny/commodo-graphql";
 import gql from "graphql-tag";
 import { merge } from "lodash";
 import { hasScope, hasCmsPermission } from "@webiny/api-security";
@@ -12,6 +9,8 @@ import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
 import meta from "./graphql/meta";
+
+const emptyResolver = () => ({});
 
 const checkContentModelListPermission = async ({ args, context, permission }) => {
     const { CmsContentModelGroup, CmsContentModel } = context.models;

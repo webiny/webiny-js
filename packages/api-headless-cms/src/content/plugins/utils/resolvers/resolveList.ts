@@ -1,4 +1,4 @@
-import { ListResponse, ListErrorResponse } from "@webiny/commodo-graphql";
+import { ListResponse, ListErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 import { setContextLocale } from "../setContextLocale";

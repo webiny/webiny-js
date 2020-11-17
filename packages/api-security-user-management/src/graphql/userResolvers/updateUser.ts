@@ -1,7 +1,5 @@
-import { WithFieldsError } from "@commodo/fields";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import InvalidFieldsError from "@webiny/commodo-graphql/InvalidFieldsError";
 import { SecurityUserManagementPlugin } from "../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
@@ -27,19 +25,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
         return new Response(user);
     } catch (e) {
-        if (e.code === WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS) {
-            const attrError = InvalidFieldsError.from(e);
-            return new ErrorResponse({
-                code: attrError.code || WithFieldsError.VALIDATION_FAILED_INVALID_FIELDS,
-                message: attrError.message,
-                data: attrError.data
-            });
-        }
-        return new ErrorResponse({
-            code: e.code,
-            message: e.message,
-            data: e.data
-        });
+        return new ErrorResponse(e);
     }
 };
 

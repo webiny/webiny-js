@@ -1,6 +1,8 @@
 import gql from "graphql-tag";
-import { emptyResolver, ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import cookiePolicySettings from "./cookiePolicySettings.model";
+
+const emptyResolver = () => ({});
 
 type SettingsContext = any;
 

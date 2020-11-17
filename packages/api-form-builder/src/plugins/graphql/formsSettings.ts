@@ -1,4 +1,4 @@
-import { ErrorResponse } from "@webiny/commodo-graphql";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import { hasScope } from "@webiny/api-security";
 type SettingsContext = any;
 

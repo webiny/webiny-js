@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/commodo-graphql";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { setContextLocale } from "./../../setContextLocale";
 
