@@ -44,6 +44,7 @@ export type FbFormTriggerHandlerPlugin = Plugin & {
 
 export type Form = {
     id: string;
+    createdBy: CreatedBy;
     savedOn: string;
     createdOn: string;
     name: string;
