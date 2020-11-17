@@ -1,5 +1,6 @@
-import { GraphQLScalarType, GraphQLFieldResolver } from "graphql";
+import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
 import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 
 export type GraphQLScalarPlugin = Plugin & {
     type: "graphql-scalar";
@@ -17,6 +18,12 @@ export interface HandlerGraphQLOptions {
     };
 }
 
+export type GraphQLFieldResolver<
+    TSource = any,
+    TArgs = any,
+    TContext = Context
+    > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
+
 // `GraphQLSchemaPlugin` types.
 export type Types = string | (() => string | Promise<string>);
 
@@ -26,15 +33,18 @@ export type GraphQLSchemaPluginTypeArgs = {
     source?: any;
 };
 
-export type Resolvers =
-    | GraphQLFieldResolver<any, any, any>
-    | { [property: string]: Resolvers };
+export type Resolvers<TContext> =
+    | GraphQLFieldResolver<any, Record<string, any>, TContext>
+    | { [property: string]: Resolvers<TContext> };
 
-export type GraphQLSchemaPlugin = Plugin<{
+export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
     type: "graphql-schema";
-    /*prepare?: (params: { context: T }) => Promise<void>;*/ // TODO: is this necessary?
+
+    // TODO: is this necessary?
+    /*prepare?: (params: { context: T }) => Promise<void>;*/
+
     schema: {
         typeDefs: Types;
-        resolvers: Resolvers;
+        resolvers: Resolvers<TContext>;
     };
 }>;
