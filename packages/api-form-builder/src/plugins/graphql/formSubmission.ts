@@ -1,9 +1,17 @@
-import { hasScope } from "@webiny/api-security";
+import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
+import { HandlerContext } from "@webiny/handler/types";
+import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { SecurityContext } from "@webiny/api-security/types";
+import pipe from "@ramda/pipe";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
-import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
 import { getBaseFormId } from "./formResolvers/utils/formResolversUtils";
 import { FormsCRUD, FormSubmissionsCRUD } from "../../types";
+import { hasRwd } from "./formResolvers/utils/formResolversUtils";
+
+type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -81,7 +89,7 @@ export default {
     `,
     resolvers: {
         FormSubmission: {
-            form: async (formSubmission, args, context) => {
+            form: async (formSubmission, args, context: Context) => {
                 const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
 
                 const formData = await forms.getForm(formSubmission.form.revision);
@@ -94,11 +102,32 @@ export default {
             }
         },
         FormsQuery: {
-            listFormSubmissions: hasScope("forms:form:crud")(async (_, args, context) => {
+            listFormSubmissions: pipe(
+                hasPermission("forms.submissions"),
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
+                // If permission has "rwd" property set, but "r" is not part of it, bail.
+                const formBuilderFormPermission = await context.security.getPermission(
+                    "forms.submissions"
+                );
+                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                    return new NotAuthorizedResponse();
+                }
+
                 try {
                     const formSubmission: FormSubmissionsCRUD =
                         context?.formBuilder?.crud?.formSubmission;
+                    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
                     const { where } = args;
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (formBuilderFormPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        const form = await forms.getForm(where.form.parent);
+                        if (form.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
 
                     const data = await formSubmission.listAllSubmissions({
                         formId: getBaseFormId(where.form.parent),
@@ -109,12 +138,34 @@ export default {
                     return new ErrorResponse(err);
                 }
             }),
-            getFormSubmission: hasScope("forms:form")(async (_, args, context) => {
+            getFormSubmission: pipe(
+                hasPermission("forms.submissions"),
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
+                // If permission has "rwd" property set, but "r" is not part of it, bail.
+                const formBuilderFormPermission = await context.security.getPermission(
+                    "forms.submissions"
+                );
+                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                    return new NotAuthorizedResponse();
+                }
+
                 try {
                     const formSubmission: FormSubmissionsCRUD =
                         context?.formBuilder?.crud?.formSubmission;
+                    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
 
                     const { id, where } = args;
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (formBuilderFormPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        const form = await forms.getForm(where.formId);
+                        if (form.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
                     const data = await formSubmission.getSubmission({
                         formId: where.formId,
                         submissionId: id
@@ -128,7 +179,10 @@ export default {
         FormsMutation: {
             createFormSubmission,
             // Note: We'll test it manually using admin app.
-            exportFormSubmissions: hasScope("forms:form:submissions:export")(exportFormSubmissions)
+            exportFormSubmissions: pipe(
+                hasPermission("forms.submissions"),
+                hasI18NContentPermission()
+            )(exportFormSubmissions)
         }
     }
 };
