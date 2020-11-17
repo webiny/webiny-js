@@ -11,19 +11,11 @@ const plugin: FbBuilderFieldPlugin = {
         name: "jobTitle",
         label: "Job title",
         createField(props) {
-            const { i18n } = props;
             return {
                 ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "jobTitle",
-                label: {
-                    values: [
-                        {
-                            locale: i18n.getDefaultLocale().id,
-                            value: "Job title"
-                        }
-                    ]
-                }
+                label: "Job title"
             };
         }
     }
