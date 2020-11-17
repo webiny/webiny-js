@@ -1,6 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
-import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 import cmsAccessToken from "./graphql/accessToken";
@@ -13,7 +12,7 @@ export default () => [
         name: "graphql-schema-headless",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 input CmsSearchInput {
                     query: String
                     fields: [String]

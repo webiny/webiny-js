@@ -1,6 +1,5 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/handler-ssr/Client";
-import gql from "graphql-tag";
 import { hasScope } from "@webiny/api-security";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
 
@@ -142,10 +141,9 @@ export default () => [
         }
     },
     {
-        name: "graphql-schema-page-builder-use-ssr-cache-tags",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 extend type PbMutation {
                     # Refreshes SSR cache for current page. The page must be published.
                     invalidateSsrCache(revision: ID!, refresh: Boolean): PbPageResponse

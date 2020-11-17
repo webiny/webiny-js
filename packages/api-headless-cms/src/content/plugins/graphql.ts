@@ -184,7 +184,7 @@ export default ({ type }) => [
             return generateSchemaPlugins({ context });
         },
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
                 ${i18nFieldType("CmsJSON", "JSON")}

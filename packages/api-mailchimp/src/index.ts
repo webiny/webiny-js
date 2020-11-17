@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
@@ -23,7 +22,7 @@ export default () => [
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type MailchimpSettings {
                     enabled: Boolean
                     apiKey: String

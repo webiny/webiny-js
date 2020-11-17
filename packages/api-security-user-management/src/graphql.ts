@@ -11,7 +11,7 @@ export default (): GraphQLSchemaPlugin => ({
     type: "graphql-schema",
     name: "graphql-schema-security",
     schema: {
-        typeDefs: gql`
+        typeDefs: /* GraphQL */ `
             type SecurityQuery {
                 _empty: String
             }

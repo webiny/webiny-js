@@ -17,10 +17,9 @@ export default () => [
         }
     },
     {
-        name: "graphql-schema-settings-cookie-policy",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */`
                 type CookiePolicySettings {
                     enabled: Boolean
                     policyLink: String

@@ -17,10 +17,9 @@ export default [
         }
     },
     {
-        name: "graphql-schema-page-builder-settings-general",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type PbGeneralPageSettings {
                     tags: [String]
                     layout: String

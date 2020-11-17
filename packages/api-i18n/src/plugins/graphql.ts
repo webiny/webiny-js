@@ -10,7 +10,7 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-i18n",
     schema: {
-        typeDefs: gql`
+        typeDefs: /* GraphQL */ `
             type I18NQuery {
                 _empty: String
             }

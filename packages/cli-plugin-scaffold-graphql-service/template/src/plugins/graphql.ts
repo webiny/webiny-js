@@ -19,7 +19,7 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-entities",
     schema: {
-        typeDefs: gql`
+        typeDefs: /* GraphQL */ `
             type EntityDeleteResponse {
                 data: Boolean
                 error: EntityError

@@ -20,7 +20,7 @@ export default () => [
         name: "graphql-schema-google-tag-manager",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type GtmError {
                     code: String
                     message: String

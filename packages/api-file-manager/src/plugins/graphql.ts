@@ -20,9 +20,8 @@ const emptyResolver = () => ({});
 export default [
     {
         type: "graphql-schema",
-        name: "graphql-schema-files",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 input FileInput {
                     key: String
                     name: String
