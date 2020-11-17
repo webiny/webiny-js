@@ -8,12 +8,15 @@ import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
-import { hasScope } from "@webiny/api-security";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { HandlerContext } from "@webiny/handler/types";
 import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
+import pipe from "@ramda/pipe";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { FormsCRUD } from "../../types";
+import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
 type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
 
@@ -318,13 +321,31 @@ export default {
             }
         },
         FormsQuery: {
-            getForm: hasScope("forms:form:crud")(async (_, args, context: Context) => {
+            getForm: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(async (_, args, context: Context) => {
+                // If permission has "rwd" property set, but "r" is not part of it, bail.
+                const formBuilderFormPermission = await context.security.getPermission(
+                    "forms.forms"
+                );
+                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                    return new NotAuthorizedResponse();
+                }
                 try {
                     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
                     const form = await forms.getForm(args.id);
 
                     if (!form) {
                         return new NotFoundResponse(`Form with id: "${args.id}" not found!`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (formBuilderFormPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (form.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
                     }
 
                     return new Response(form);
@@ -336,24 +357,39 @@ export default {
                     });
                 }
             }),
-            listForms: hasScope("forms:form:crud")(listForms),
+            listForms: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(listForms),
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: hasScope("forms:form:crud")(createForm),
+            createForm: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(createForm),
             // Deletes the entire form
-            deleteForm: hasScope("forms:form:crud")(deleteForm),
+            deleteForm: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(deleteForm),
             // Creates a revision from the given revision
-            createRevisionFrom: hasScope("forms:form:crud")(createRevisionFrom),
+            createRevisionFrom: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(createRevisionFrom),
             // Updates revision
-            updateRevision: hasScope("forms:form:crud")(updateRevision),
+            updateRevision: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(updateRevision),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: hasScope("forms:form:revision:publish")(publishRevision),
-            unpublishRevision: hasScope("forms:form:revision:unpublish")(unPublishRevision),
+            publishRevision: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(publishRevision),
+            unpublishRevision: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(unPublishRevision),
             // Delete a revision
-            deleteRevision: hasScope("forms:form:crud")(deleteRevision),
+            deleteRevision: pipe(
+                hasPermission("forms.forms"),
+                hasI18NContentPermission()
+            )(deleteRevision),
             saveFormView
         }
     }
