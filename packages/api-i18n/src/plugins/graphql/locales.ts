@@ -2,7 +2,7 @@ import { hasPermission } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql/responses";
-import { composeResolvers } from "@webiny/handler-graphql";
+import { compose } from "@webiny/handler-graphql";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -70,9 +70,8 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: composeResolvers<any, { code: string }>(
-                hasPermission("i18n.locale"),
-                async (_, args, context) => {
+            getI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string }, context) => {
                     const { locales } = context;
                     const locale = await locales.getByCode(args.code);
                     if (!locale) {
@@ -82,20 +81,16 @@ export default {
                     return new Response(locale);
                 }
             ),
-            listI18NLocales: composeResolvers(
-                hasPermission("i18n.locale"),
-                async (_, args, context) => {
-                    const { locales } = context;
-                    return new Response(await locales.list());
-                }
-            ),
+            listI18NLocales: compose(hasPermission("i18n.locale"))(async (_, args, context) => {
+                const { locales } = context;
+                return new Response(await locales.list());
+            }),
             searchLocaleCodes,
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: composeResolvers<any, { data: Record<string, any> }>(
-                hasPermission("i18n.locale"),
-                async (_, args, context) => {
+            createI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { data: Record<string, any> }, context) => {
                     const { locales } = context;
                     const { data } = args;
 
@@ -113,9 +108,8 @@ export default {
                     return new Response(data);
                 }
             ),
-            updateI18NLocale: composeResolvers<any, { code: string; default: boolean }>(
-                hasPermission("i18n.locale"),
-                async (_, args, context) => {
+            updateI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string; default: boolean }, context) => {
                     const { locales } = context;
                     const { code } = args;
 
@@ -135,9 +129,8 @@ export default {
                     return new Response(locale);
                 }
             ),
-            deleteI18NLocale: composeResolvers<any, { code: string }>(
-                hasPermission("i18n.locale"),
-                async (_, args, context) => {
+            deleteI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string }, context) => {
                     const { locales } = context;
                     const { code } = args;
 

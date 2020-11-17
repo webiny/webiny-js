@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { HandlerI18NContentContext } from "./types";
 import { Context } from "@webiny/handler/types";
