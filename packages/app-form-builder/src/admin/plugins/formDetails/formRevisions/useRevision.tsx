@@ -42,10 +42,10 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 return showSnackbar(error.message);
             }
 
-            history.push(`/forms/${data.id}`);
+            history.push(`/forms/${encodeURIComponent(data.id)}`);
         },
         editRevision: () => () => {
-            history.push(`/forms/${revision.id}`);
+            history.push(`/forms/${encodeURIComponent(revision.id)}`);
         },
         deleteRevision: () => async () => {
             await client.mutate({

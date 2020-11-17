@@ -70,7 +70,7 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                                         const firstRevision = data.forms.form.data.revisions[0];
                                         selectRevision(firstRevision);
                                         if (revision.id === form.id) {
-                                            return history.push("/forms?id=" + firstRevision.id);
+                                            return history.push("/forms?id=" + encodeURIComponent(firstRevision.id));
                                         }
                                     }
                                 });
