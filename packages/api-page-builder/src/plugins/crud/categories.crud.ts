@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
-import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
@@ -109,4 +109,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<HandlerI18NContentContext, DbContext>;
+} as ContextPlugin<I18NContentContext, DbContext>;

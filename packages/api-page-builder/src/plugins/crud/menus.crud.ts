@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
-import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
 export type Menu = {
     title: string;
@@ -78,4 +78,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, HandlerI18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext>;

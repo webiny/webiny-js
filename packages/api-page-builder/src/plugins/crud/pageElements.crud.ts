@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
@@ -112,4 +112,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, HandlerI18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext>;
