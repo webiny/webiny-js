@@ -21,7 +21,6 @@ import {
     FbFormLayoutPlugin
 } from "@webiny/app-form-builder/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 declare global {
     // eslint-disable-next-line
@@ -52,8 +51,6 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const reCaptchaResponseToken = useRef("");
     const termsOfServiceAccepted = useRef(false);
-
-    const { getValue } = useI18N();
 
     if (!data.id) {
         return null;
@@ -91,7 +88,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                         }
 
                         return async value => {
-                            let isInvalid = true;
+                            let isInvalid;
                             try {
                                 const result = await validatorPlugin.validator.validate(
                                     value,
@@ -103,7 +100,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
                             }
 
                             if (isInvalid) {
-                                throw new Error(getValue(item.message) || "Invalid value.");
+                                throw new Error(item.message || "Invalid value.");
                             }
                         };
                     })
