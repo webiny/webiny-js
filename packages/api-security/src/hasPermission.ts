@@ -1,5 +1,5 @@
 import minimatch from "minimatch";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse } from "@webiny/graphql/responses";
 import NotAuthorizedResponse from "./NotAuthorizedResponse";
 

@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse } from "@webiny/graphql/responses";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {

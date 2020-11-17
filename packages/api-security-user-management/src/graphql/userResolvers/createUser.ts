@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { WithFieldsError } from "@commodo/fields";
 import { ErrorResponse, Response } from "@webiny/graphql/responses";
 import InvalidFieldsError from "@webiny/commodo-graphql/InvalidFieldsError";

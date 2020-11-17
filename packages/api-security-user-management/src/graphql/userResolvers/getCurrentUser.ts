@@ -1,5 +1,5 @@
 import { Response, NotFoundResponse } from "@webiny/graphql/responses";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const identity = context.security.getIdentity();

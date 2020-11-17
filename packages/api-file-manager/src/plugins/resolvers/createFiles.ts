@@ -1,5 +1,5 @@
 import { Response, ErrorResponse } from "@webiny/graphql/responses";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { BATCH_CREATE_MAX_FILES } from "./utils/constants";
 
 const getFileDoc = file => ({

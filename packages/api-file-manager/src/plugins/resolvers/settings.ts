@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/graphql/responses";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
 export const getSettings: GraphQLFieldResolver = async (root, args, context) => {

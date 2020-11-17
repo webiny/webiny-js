@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql/responses";
 import { SecurityUserManagementPlugin } from "@webiny/api-security-user-management/types";
 import { Context } from "@webiny/handler/types";

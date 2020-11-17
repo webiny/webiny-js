@@ -1,4 +1,4 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Response, ErrorResponse } from "@webiny/commodo-graphql";
 import { entryNotFound } from "./../entryNotFound";
 import { CmsContext } from "@webiny/api-headless-cms/types";
