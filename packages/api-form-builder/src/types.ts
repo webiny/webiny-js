@@ -57,7 +57,7 @@ export type Form = {
     latestVersion: boolean;
     status: string;
     fields: Record<string, any>[];
-    layout: [string[]];
+    layout: string[][];
     stats: Record<string, any>;
     settings: Record<string, any>;
     triggers: Record<string, any>;
@@ -76,7 +76,7 @@ export type FormCreateData = {
 export type FormUpdateData = {
     name: string;
     fields: Record<string, any>[];
-    layout: [string[]];
+    layout: string[][];
     settings: Record<string, any>;
     triggers: Record<string, any>;
 };
