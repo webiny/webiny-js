@@ -1,10 +1,17 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
 import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 import { FormsCRUD } from "../../../types";
+import { hasRwd } from "./utils/formResolversUtils";
 
 export const publishRevision: GraphQLFieldResolver = async (root, args, context) => {
     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
     const { id } = args;
+    // If permission has "rwd" property set, but "p" is not part of it, bail.
+    const formBuilderFormPermission = await context.security.getPermission("forms.forms");
+    if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "p" })) {
+        return new NotAuthorizedResponse();
+    }
 
     try {
         const existingForm = await forms.getForm(id);
@@ -29,6 +36,11 @@ export const publishRevision: GraphQLFieldResolver = async (root, args, context)
 export const unPublishRevision: GraphQLFieldResolver = async (root, args, context) => {
     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
     const { id } = args;
+    // If permission has "rwd" property set, but "p" is not part of it, bail.
+    const formBuilderFormPermission = await context.security.getPermission("forms.forms");
+    if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "p" })) {
+        return new NotAuthorizedResponse();
+    }
 
     try {
         const existingForm = await forms.getForm(id);
