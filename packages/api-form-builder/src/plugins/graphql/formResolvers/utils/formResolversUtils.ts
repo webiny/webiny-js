@@ -16,3 +16,11 @@ export const getStatus = ({ published, locked }: { published: boolean; locked: b
 
     return locked ? "locked" : "draft";
 };
+
+export const hasRwd = ({ formBuilderFormPermission, rwd }) => {
+    if (typeof formBuilderFormPermission.rwd !== "string") {
+        return true;
+    }
+
+    return formBuilderFormPermission.rwd.includes(rwd);
+};
