@@ -67,8 +67,10 @@ const FormsDataList = (props: FormsDataListProps) => {
     });
 
     const editRecord = useCallback(form => {
-        if (!editHandlers.current[form.id]) {
-            editHandlers.current[form.id] = async () => {
+        // Note: form id is remains the same after publish.
+        const handlerKey = form.id + form.status;
+        if (!editHandlers.current[handlerKey]) {
+            editHandlers.current[handlerKey] = async () => {
                 if (form.published) {
                     const { data: res } = await client.mutate({
                         mutation: CREATE_REVISION_FROM,
@@ -88,7 +90,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             };
         }
 
-        return editHandlers.current[form.id];
+        return editHandlers.current[handlerKey];
     }, []);
 
     const query = new URLSearchParams(location.search);
