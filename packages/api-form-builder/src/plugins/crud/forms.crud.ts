@@ -14,7 +14,7 @@ import {
     getStatus
 } from "../graphql/formResolvers/utils/formResolversUtils";
 import defaults from "./defaults";
-import { Form, FormsCRUD, FormSubmissionsCRUD } from "../../types";
+import { Form, FormBuilderSettingsCRUD, FormsCRUD, FormSubmissionsCRUD } from "../../types";
 
 // "Form Fields" data model.
 const FormFieldsModel = withFields({
@@ -547,10 +547,11 @@ export default {
             },
             async submit({ form: formInstance, reCaptchaResponseToken, data: rawData, meta }) {
                 let result;
-                const { formBuilderSettings } = context.formBuilder.crud;
+                const formBuilderSettings: FormBuilderSettingsCRUD =
+                    context.formBuilder.crud.formBuilderSettings;
                 const forms: FormsCRUD = context.formBuilder.crud.forms;
 
-                const settingsFB = await formBuilderSettings.get();
+                const settingsFB = await formBuilderSettings.getSettings();
 
                 if (settingsFB?.reCaptcha?.enabled) {
                     if (!reCaptchaResponseToken) {
