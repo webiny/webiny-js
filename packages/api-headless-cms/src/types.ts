@@ -1,5 +1,6 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
-import { GraphQLFieldResolver, Plugin } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 

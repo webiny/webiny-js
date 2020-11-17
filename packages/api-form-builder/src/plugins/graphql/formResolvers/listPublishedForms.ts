@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ListResponse } from "@webiny/graphql";
+import { ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {

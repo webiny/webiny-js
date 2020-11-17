@@ -15,7 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "@commodo/fields": "beta",
-    "@webiny/graphql": "^4.14.0",
     "graphql": "^14.4.2",
     "lodash.foreach": "^4.5.0",
     "lodash.forown": "^4.4.0",

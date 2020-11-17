@@ -1,4 +1,4 @@
-import { Plugin } from "@webiny/graphql/types";
+import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
 
 export type I18NLocale = {

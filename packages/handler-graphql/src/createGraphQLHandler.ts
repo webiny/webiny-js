@@ -2,7 +2,7 @@ import { HandlerPlugin, Context } from "@webiny/handler/types";
 import { HandlerGraphQLOptions } from "./types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLScalarPlugin } from "@webiny/graphql/types";
+import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
 import gql from "graphql-tag";
 import { graphql } from "graphql";
 import GraphQLJSON from "graphql-type-json";

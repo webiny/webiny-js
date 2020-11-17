@@ -10,7 +10,7 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql/responses";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import uniqid from "uniqid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 

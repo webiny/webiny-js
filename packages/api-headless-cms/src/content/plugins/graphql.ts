@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import {
     emptyResolver,
 } from "@webiny/commodo-graphql";

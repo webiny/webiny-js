@@ -1,4 +1,4 @@
-import { Response, NotFoundResponse } from "@webiny/graphql";
+import { Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
 import { listPublishedForms } from "./listPublishedForms";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 

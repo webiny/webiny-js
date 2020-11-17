@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { ErrorResponse } from "@webiny/commodo-graphql";
-import { Context } from "@webiny/graphql/types";
+import { Context } from "@webiny/handler/types";
 
 type SettingsContext = Context;
 

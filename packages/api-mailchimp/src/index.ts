@@ -1,14 +1,15 @@
 import gql from "graphql-tag";
-import { emptyResolver } from "@webiny/commodo-graphql";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/graphql";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ContextPlugin } from "@webiny/handler/types";
 
 type SettingsContext = ContextPlugin<any>;
+
+const emptyResolver = () => ({});
 
 export default () => [
     {

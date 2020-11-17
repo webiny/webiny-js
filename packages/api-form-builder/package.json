@@ -19,7 +19,6 @@
     "@webiny/api-security": "^4.14.0",
     "@webiny/commodo": "^4.14.0",
     "@webiny/commodo-graphql": "^4.14.0",
-    "@webiny/graphql": "^4.14.0",
     "@webiny/handler-ssr": "^4.14.0",
     "@webiny/validation": "^4.14.0",
     "form-data": "^2.5.0",

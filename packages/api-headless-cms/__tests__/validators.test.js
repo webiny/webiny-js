@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { setupContext } from "@webiny/graphql/testing";
 import validatorPlugins from "../src/content/plugins/validators";
 

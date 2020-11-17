@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Response } from "@webiny/graphql/responses";
+import { Response } from "@webiny/handler-graphql/responses";
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",

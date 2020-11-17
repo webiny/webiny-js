@@ -15,7 +15,6 @@
 		"@webiny/api-security": "^4.14.0",
 		"@webiny/commodo": "^4.14.0",
 		"@webiny/commodo-graphql": "^4.14.0",
-		"@webiny/graphql": "^4.14.0",
 		"got": "^9.6.0",
 		"graphql-tag": "^2.10.1",
 		"lodash": "^4.17.4",

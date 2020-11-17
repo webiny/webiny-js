@@ -1,6 +1,6 @@
 import merge from "lodash.merge";
 import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 import group from "./graphql/Group";

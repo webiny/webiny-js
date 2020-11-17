@@ -12,7 +12,6 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api-security": "^4.14.0",
-    "@webiny/graphql": "^4.14.0",
     "@webiny/handler": "^4.14.0",
     "@webiny/api-i18n": "^4.14.0"
   },

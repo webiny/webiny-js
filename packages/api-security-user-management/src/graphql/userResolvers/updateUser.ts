@@ -1,6 +1,6 @@
 import { WithFieldsError } from "@commodo/fields";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql/responses";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
 import InvalidFieldsError from "@webiny/commodo-graphql/InvalidFieldsError";
 import { SecurityUserManagementPlugin } from "../../types";
 

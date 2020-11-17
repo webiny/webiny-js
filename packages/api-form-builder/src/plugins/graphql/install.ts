@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {

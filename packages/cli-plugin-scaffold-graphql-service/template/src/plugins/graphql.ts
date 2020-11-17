@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasScope } from "@webiny/api-security";
 import {
     emptyResolver,

@@ -1,4 +1,4 @@
-import { ErrorResponse } from "@webiny/graphql/responses";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 
 class NotAuthorizedResponse extends ErrorResponse {
     constructor() {

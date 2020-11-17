@@ -1,4 +1,4 @@
-import { ListResponse } from "@webiny/graphql/responses";
+import { ListResponse } from "@webiny/handler-graphql/responses";
 
 export const listPages = async ({ context, args, info }) => {
     const { PbPagesListPage } = context.models;
