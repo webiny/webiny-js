@@ -8,10 +8,12 @@
 			"path": "../api-security"
 		},
 		{
-			"path": "../graphql"
+			"path": "../handler-graphql"
 		},
 		{
 			"path": "../handler"
+		},{
+			"path": "../plugins"
 		},
 		{
 			"path": "../handler-client"

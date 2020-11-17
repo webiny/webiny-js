@@ -18,6 +18,7 @@
     "@graphql-tools/schema": "^7.0.0",
     "@webiny/handler": "^4.14.0",
     "@webiny/handler-http": "^4.14.0",
+    "@webiny/plugins": "^4.14.0",
     "boolean": "^3.0.1",
     "graphql": "^14.4.2",
     "graphql-iso-date": "^3.6.1",

@@ -4,7 +4,6 @@
   "exclude": [
     "node_modules",
     "./dist",
-    "../graphql",
     "../handler",
     "../plugins",
     "../handler-graphql"
@@ -15,9 +14,6 @@
     "declarationDir": "./dist"
   },
   "references": [
-    {
-      "path": "../graphql/tsconfig.build.json"
-    },
     {
       "path": "../handler/tsconfig.build.json"
     },

@@ -2,8 +2,16 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { yellow } = require("chalk");
 const fs = require("fs-extra");
+const path = require("path");
+
+const PROJECT_ROOT = path.join(__dirname, "..", "..");
+const rootPackageJson = readJson.sync(path.join(PROJECT_ROOT, "package.json"));
+
+module.exports.PROJECT_ROOT = PROJECT_ROOT;
+module.exports.rootPackageJson = rootPackageJson;
 
 let packagesCache;
+
 module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
         return packagesCache;

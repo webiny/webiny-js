@@ -2,16 +2,13 @@
 	"extends": "../../tsconfig",
 	"references": [
 		{
-			"path": "../graphql"
+			"path": "../handler-graphql"
 		},
 		{
 			"path": "../api-security"
 		},
 		{
 			"path": "../commodo"
-		},
-		{
-			"path": "../commodo-graphql"
 		},
 		{
 			"path": "../handler"

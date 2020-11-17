@@ -9,10 +9,8 @@
 		"../db-dynamodb",
 		"../handler",
 		"../handler-db",
-		"../graphql",
 		"../api-security",
 		"../plugins",
-		"../commodo-graphql",
 		"../validation",
 		"../handler-aws",
 		"../handler-graphql"
@@ -30,13 +28,7 @@
 			"path": "../plugins/tsconfig.build.json"
 		},
 		{
-			"path": "../commodo-graphql/tsconfig.build.json"
-		},
-		{
 			"path": "../db-dynamodb/tsconfig.build.json"
-		},
-		{
-			"path": "../graphql/tsconfig.build.json"
 		},
 		{
 			"path": "../handler/tsconfig.build.json"

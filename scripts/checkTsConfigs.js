@@ -1,10 +1,24 @@
 #!/usr/bin/env node
 const { parse, resolve, relative, join } = require("path");
-const { getPackages, getPackage } = require("./utils/getPackages");
-const { cyan, gray, red, green } = require("chalk");
+const { getPackages, getPackage, rootPackageJson, PROJECT_ROOT } = require("./utils/getPackages");
+const { yellow, cyan, gray, red, green } = require("chalk");
 const argv = require("yargs").argv;
+const minimatch = require('minimatch');
 
 const { _: packagesToCheck } = argv;
+
+const pathPointsToWorkspacePackage = packageAbsolutePath => {
+    const workspaces = rootPackageJson.workspaces.packages;
+    for (let i = 0; i < workspaces.length; i++) {
+        let absolutePath = resolve(join(PROJECT_ROOT, workspaces[i]));
+        if (minimatch(packageAbsolutePath, absolutePath)) {
+            return true;
+        }
+
+    }
+
+    return false;
+};
 
 const TSCONFIG = {
     DEV: "tsconfig.json",
@@ -21,6 +35,9 @@ const TSCONFIG = {
 
 (async () => {
     const workspacePackagesErrors = {};
+    let errorsCount = 0;
+    let warningsCount = 0;
+
     const workspacesPackages = getPackages({ includes: "/packages/" });
 
     for (let i = 0; i < workspacesPackages.length; i++) {
@@ -47,6 +64,7 @@ const TSCONFIG = {
 
             const workspacePackageWbyDepObject = getPackage(workspacePackageWbyDepName);
             if (!workspacePackageWbyDepObject) {
+                errorsCount++;
                 workspacePackageErrors.push({
                     message: `Dependency package "${workspacePackageWbyDepName}" not found. Is the package name correct?`
                 });
@@ -72,6 +90,7 @@ const TSCONFIG = {
                 );
 
                 if (!exists) {
+                    errorsCount++;
                     workspacePackageErrors.push({
                         package: workspacePackageObject,
                         message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
@@ -87,6 +106,7 @@ const TSCONFIG = {
 
                 let exists = tsConfigBuildJsonExclude.includes(depPackageRelativePath);
                 if (!exists) {
+                    errorsCount++;
                     workspacePackageErrors.push({
                         package: workspacePackageObject,
                         message: `missing package "${workspacePackageWbyDepObject.packageJson.name}" in "exclude" property`,
@@ -99,6 +119,7 @@ const TSCONFIG = {
                 const path = join(depPackageRelativePath, "tsconfig.build.json");
                 exists = tsConfigBuildJsonReferences.find(item => item.path === path);
                 if (!exists) {
+                    errorsCount++;
                     workspacePackageErrors.push({
                         package: workspacePackageObject,
                         message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
@@ -123,15 +144,26 @@ const TSCONFIG = {
                         );
 
                         if (!exists) {
+                            errorsCount++;
                             workspacePackageErrors.push({
                                 file: TSCONFIG.DEV,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.DEV} ("references" property), but missing in package.json.`
                             });
                         }
                     } else {
+                        errorsCount++;
                         workspacePackageErrors.push({
                             file: TSCONFIG.DEV,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "references"`
+                        });
+                    }
+                } else {
+                    // Only throw an error if the path points to a workspace folder.
+                    if (pathPointsToWorkspacePackage(referencePath)) {
+                        errorsCount++;
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.DEV,
+                            message: `Could not find the package referenced via the "${ref.path}" path in "references" property`
                         });
                     }
                 }
@@ -158,15 +190,26 @@ const TSCONFIG = {
                         );
 
                         if (!exists) {
+                            errorsCount++;
                             workspacePackageErrors.push({
                                 file: TSCONFIG.BUILD,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("references" property), but missing in package.json.`
                             });
                         }
                     } else {
+                        errorsCount++;
                         workspacePackageErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "references"`
+                        });
+                    }
+                } else {
+                    // Only throw an error if the path points to a workspace folder.
+                    if (pathPointsToWorkspacePackage(referencePath)) {
+                        errorsCount++;
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.BUILD,
+                            message: `Could not find the package referenced via the "${ref.path}" path in "references" property`
                         });
                     }
                 }
@@ -190,15 +233,26 @@ const TSCONFIG = {
                         );
 
                         if (!exists) {
+                            errorsCount++;
                             workspacePackageErrors.push({
                                 file: TSCONFIG.BUILD,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("exclude" property), but missing in package.json.`
                             });
                         }
                     } else {
+                        errorsCount++;
                         workspacePackageErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "exclude"`
+                        });
+                    }
+                } else {
+                    // Only throw an error if the path points to a workspace folder.
+                    if (pathPointsToWorkspacePackage(referencePath)) {
+                        errorsCount++;
+                        workspacePackageErrors.push({
+                            file: TSCONFIG.BUILD,
+                            message: `Could not find the package referenced via the "${ref}" path in "exclude" property`
                         });
                     }
                 }
@@ -211,11 +265,6 @@ const TSCONFIG = {
                 errors: workspacePackageErrors
             };
         }
-    }
-
-    if (!Object.keys(workspacePackagesErrors).length) {
-        console.log(green("✅  All TS configs in order!"));
-        process.exit(0);
     }
 
     for (let workspacePackageName in workspacePackagesErrors) {
@@ -245,12 +294,23 @@ const TSCONFIG = {
                 console.log(` ${gray(file)}`);
                 for (let i = 0; i < fileErrors.length; i++) {
                     let fileError = fileErrors[i];
-                    console.log(`  ${red(`${i + 1}. ${fileError.message}`)}`);
+                    const color = fileError.warning ? yellow : red;
+                    console.log(`  ${color(`${i + 1}. ${fileError.message}`)}`);
                 }
             }
         }
 
-        console.log();
+    }
+
+    console.log();
+
+    console.log(red(`Total errors: ${errorsCount}`));
+    console.log(yellow(`Total warnings: ${warningsCount}`));
+
+    if (errorsCount === 0) {
+        console.log()
+        console.log(green("✅  All TS configs in order!"));
+        process.exit(0);
     }
 
     process.exit(1);

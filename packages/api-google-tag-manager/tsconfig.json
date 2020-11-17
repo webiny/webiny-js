@@ -5,7 +5,7 @@
       "path": "../commodo"
     },
     {
-      "path": "../commodo-graphql"
+      "path": "../handler-graphql"
     }
   ]
 }

@@ -7,7 +7,7 @@
 		"node_modules",
 		"./dist",
 		"../commodo",
-		"../commodo-graphql"
+		"../handler-graphql"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -16,7 +16,7 @@
 	},
 	"references": [
 		{
-			"path": "../commodo-graphql/tsconfig.build.json"
+			"path": "../handler-graphql/tsconfig.build.json"
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"

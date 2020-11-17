@@ -3,12 +3,11 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../graphql",
+    "../plugins",
     "../api-i18n-content",
     "../api-plugin-elastic-search-client",
     "../api-security",
     "../commodo",
-    "../commodo-graphql",
     "../handler",
     "../handler-db",
     "../handler-ssr",
@@ -25,13 +24,10 @@
   },
   "references": [
     {
-      "path": "../graphql/tsconfig.build.json"
+      "path": "../plugins/tsconfig.build.json"
     },
     {
       "path": "../api-security/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo-graphql/tsconfig.build.json"
     },
     {
       "path": "../handler/tsconfig.build.json"

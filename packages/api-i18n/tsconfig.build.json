@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "../api-security",
-    "../graphql",
+    "../plugins",
     "../handler",
     "../handler-aws",
     "../handler-graphql",
@@ -25,7 +25,7 @@
       "path": "../api-security/tsconfig.build.json"
     },
     {
-      "path": "../graphql/tsconfig.build.json"
+      "path": "../plugins/tsconfig.build.json"
     },
     {
       "path": "../handler/tsconfig.build.json"

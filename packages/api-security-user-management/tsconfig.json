@@ -8,9 +8,6 @@
 			"path": "../db-dynamodb"
 		},
 		{
-			"path": "../graphql"
-		},
-		{
 			"path": "../handler"
 		},
 		{
@@ -18,9 +15,6 @@
 		},
 		{
 			"path": "../plugins"
-		},
-		{
-			"path": "../commodo-graphql"
 		},
 		{
 			"path": "../validation"

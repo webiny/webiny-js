@@ -2,7 +2,7 @@
   "extends": "../../tsconfig",
   "references": [
     {
-      "path": "../graphql"
+      "path": "../plugins"
     },
     {
       "path": "../api-i18n-content"
@@ -15,9 +15,6 @@
     },
     {
       "path": "../commodo"
-    },
-    {
-      "path": "../commodo-graphql"
     },
     {
       "path": "../handler"
