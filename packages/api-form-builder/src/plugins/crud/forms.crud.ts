@@ -188,9 +188,9 @@ export default {
                         submissions: 0
                     },
                     // Will be added via a "update"
-                    fields: null,
-                    layout: null,
-                    settings: null,
+                    fields: [],
+                    layout: [],
+                    settings: {},
                     triggers: null
                 };
 
