@@ -126,7 +126,9 @@ describe('Form Builder "Form" Test', () => {
                                     url: "www.webiny.com"
                                 }
                             },
-                            published: false
+                            published: false,
+                            locked: true,
+                            status: "locked"
                         },
                         error: null
                     }

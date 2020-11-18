@@ -22,6 +22,7 @@ function MockResponse({ prefix, id }) {
     this.status = "draft";
     this.triggers = null;
     this.version = 1;
+    this.layout = [];
 }
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
