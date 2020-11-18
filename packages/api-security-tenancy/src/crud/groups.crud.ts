@@ -1,10 +1,10 @@
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
-import { HandlerSecurityContext } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import dbArgs from "./dbArgs";
-import { DbItemSecurityUser2Tenant, Group, GroupsCRUD, HandlerTenancyContext } from "../types";
+import { DbItemSecurityUser2Tenant, Group, GroupsCRUD, TenancyContext } from "../types";
 import { paginateBatch } from "./paginateBatch";
 
 const CreateDataModel = withFields({
@@ -25,7 +25,7 @@ const UpdateDataModel = withFields({
 })();
 
 export default (
-    context: HandlerContextDb & HandlerSecurityContext & HandlerTenancyContext
+    context: DbContext & SecurityContext & TenancyContext
 ): GroupsCRUD => {
     const { db } = context;
     return {

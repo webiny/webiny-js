@@ -1,9 +1,9 @@
 import mdbid from "mdbid";
-import { HandlerContextDb } from "@webiny/handler-db/types";
-import { HandlerTenancyContext, Tenant, TenantsCRUD } from "../types";
+import { DbContext } from "@webiny/handler-db/types";
+import { TenancyContext, Tenant, TenantsCRUD } from "../types";
 import dbArgs from "./dbArgs";
 
-export default (context: HandlerContextDb & HandlerTenancyContext): TenantsCRUD => {
+export default (context: DbContext & TenancyContext): TenantsCRUD => {
     const { db } = context;
 
     return {

@@ -1,9 +1,9 @@
-import { HandlerTenancyContext } from "@webiny/api-security-tenancy/types";
-import { HandlerSecurityContext } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 export default () => ({
     type: "security-authorization",
-    async getPermissions({ security }: HandlerSecurityContext & HandlerTenancyContext) {
+    async getPermissions({ security }: SecurityContext & TenancyContext) {
         const identity = security.getIdentity();
         const tenant = security.getTenant();
 

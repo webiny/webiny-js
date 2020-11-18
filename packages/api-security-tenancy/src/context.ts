@@ -1,16 +1,13 @@
-import { HandlerSecurityContext } from "@webiny/api-security/types";
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
-import { HandlerTenancyContext, Tenant } from "./types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { HttpContext } from "@webiny/handler-http/types";
+import { DbContext } from "@webiny/handler-db/types";
+import { TenancyContext, Tenant } from "./types";
 import tenantCrud from "./crud/tenants.crud";
 import userCrud from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 
-type Context = HandlerHttpContext &
-    HandlerSecurityContext &
-    HandlerTenancyContext &
-    HandlerContextDb;
+type Context = HttpContext & SecurityContext & TenancyContext & DbContext;
 
 const tenantCache = {};
 
@@ -47,4 +44,4 @@ export default {
 
         __tenant = await getCurrentTenant(context);
     }
-} as HandlerContextPlugin<Context>;
+} as ContextPlugin<Context>;

@@ -1,8 +1,8 @@
 import { withFields, string } from "@commodo/fields";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
-import { HandlerSecurityContext } from "@webiny/api-security/types";
-import { DbItemSecurityUser2Tenant, HandlerTenancyContext, User, UsersCRUD } from "../types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { DbItemSecurityUser2Tenant, TenancyContext, User, UsersCRUD } from "../types";
 import dbArgs from "./dbArgs";
 
 const CreateDataModel = withFields({
@@ -22,7 +22,7 @@ type DbUser = User & {
 };
 
 export default (
-    context: HandlerContextDb & HandlerSecurityContext & HandlerTenancyContext
+    context: DbContext & SecurityContext & TenancyContext
 ): UsersCRUD => {
     const { db } = context;
     return {

@@ -1,11 +1,13 @@
-import gql from "graphql-tag";
-import { ErrorResponse, Response } from "@webiny/graphql";
-import { HandlerContext } from "@webiny/handler/types";
-import { Group, HandlerTenancyContext, SecurityIdentityProviderPlugin } from "../types";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
+import { Context as HandlerContext } from "@webiny/handler/types";
+import { Group, TenancyContext, SecurityIdentityProviderPlugin } from "../types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { SecurityContext } from "@webiny/api-security/types";
+
+type Context = HandlerContext<TenancyContext, SecurityContext>;
 
 const createDefaultGroups = async (
-    context: HandlerTenancyContext
+    context: TenancyContext
 ): Promise<Record<"fullAccessGroup" | "anonymousGroup", Group>> => {
     const tenant = context.security.getTenant();
 
@@ -49,9 +51,9 @@ const createDefaultGroups = async (
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-security",
+    name: "graphql-schema-security-install",
     schema: {
-        typeDefs: gql`
+        typeDefs: `
         input SecurityInstallInput {
             firstName: String!
             lastName: String!
@@ -75,13 +77,13 @@ const plugin: GraphQLSchemaPlugin = {
     `,
         resolvers: {
             SecurityQuery: {
-                isInstalled: async (root, args, context) => {
+                isInstalled: async (root, args, context: Context) => {
                     const rootTenant = await context.security.tenants.getRootTenant();
                     return new Response(!!rootTenant);
                 }
             },
             SecurityMutation: {
-                install: async (root, args, context: HandlerContext & HandlerTenancyContext) => {
+                install: async (root, args, context: Context) => {
                     const rootTenant = await context.security.tenants.getRootTenant();
 
                     if (rootTenant) {

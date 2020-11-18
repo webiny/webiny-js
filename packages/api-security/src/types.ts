@@ -1,5 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
+
 export type SecurityIdentity = {
     id: string;
     displayName: string;
@@ -22,7 +23,7 @@ export type SecurityAuthorizationPlugin = Plugin & {
     getPermissions(context: Context): Promise<SecurityPermission[]>;
 };
 
-export type HandlerSecurityContext = {
+export type SecurityContext = {
     security: {
         getIdentity: () => SecurityIdentity;
         getPermission: (name: string) => Promise<SecurityPermission>;

@@ -1,33 +1,34 @@
 import md5 from "md5";
-import gql from "graphql-tag";
 import { hasPermission } from "@webiny/api-security";
 import {
     CreateUserData,
-    HandlerTenancyContext,
+    TenancyContext,
     SecurityIdentityProviderPlugin,
     UpdateUserData,
     User
 } from "../types";
-import { HandlerSecurityContext } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import {
     Response,
     NotFoundResponse,
     ErrorResponse,
     ListResponse,
     ListErrorResponse
-} from "@webiny/graphql";
-import { HandlerContext } from "@webiny/handler/types";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+} from "@webiny/handler-graphql/responses";
+import { Context as HandlerContext } from "@webiny/handler/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const gravatar = (user: User) => {
     return "https://www.gravatar.com/avatar/" + md5(user.login);
 };
 
+type Context = HandlerContext<TenancyContext, SecurityContext>;
+
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-security",
+    name: "graphql-schema-security-user",
     schema: {
-        typeDefs: gql`
+        typeDefs: `
             type TenantAccess {
                 """
                 Tenant ID
@@ -146,7 +147,7 @@ const plugin: GraphQLSchemaPlugin = {
                 async avatar(user: User) {
                     return user.avatar;
                 },
-                async group(user: User, arg, context: HandlerTenancyContext) {
+                async group(user: User, args, context: Context) {
                     const tenant = context.security.getTenant();
                     const allPermissions = await context.security.users.getUserAccess(user.login);
                     const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
@@ -159,13 +160,13 @@ const plugin: GraphQLSchemaPlugin = {
             },
             SecurityIdentity: {
                 gravatar,
-                login: (_, args, context: HandlerSecurityContext) => {
+                login: (_, args, context: Context) => {
                     return context.security.getIdentity().id;
                 },
                 async avatar(user: User) {
                     return user.avatar;
                 },
-                async access(user: User, args, context: HandlerTenancyContext) {
+                async access(user: User, args, context: Context) {
                     const access = await context.security.users.getUserAccess(user.login);
                     return access.map(item => ({
                         id: item.tenant.id,
@@ -175,27 +176,27 @@ const plugin: GraphQLSchemaPlugin = {
                 }
             },
             SecurityQuery: {
-                getUser: hasPermission<any, { login: string }, HandlerTenancyContext>(
-                    "security.user.manage"
-                )(async (_, args, context) => {
-                    const { login } = args;
+                getUser: hasPermission("security.user.manage")(
+                    async (_, args: { login: string }, context: Context) => {
+                        const { login } = args;
 
-                    try {
-                        const user = await context.security.users.getUser(login);
-                        if (!user) {
-                            return new NotFoundResponse(`User "${login}" was not found!`);
+                        try {
+                            const user = await context.security.users.getUser(login);
+                            if (!user) {
+                                return new NotFoundResponse(`User "${login}" was not found!`);
+                            }
+                            return new Response(user);
+                        } catch (e) {
+                            return new ErrorResponse({
+                                code: e.code,
+                                message: e.message,
+                                data: e.data || null
+                            });
                         }
-                        return new Response(user);
-                    } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data || null
-                        });
                     }
-                }),
-                listUsers: hasPermission<any, any, HandlerTenancyContext>("security.user.manage")(
-                    async (_, args, context) => {
+                ),
+                listUsers: hasPermission("security.user.manage")(
+                    async (_, args, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
                             const userList = await context.security.users.listUsers({
@@ -214,11 +215,7 @@ const plugin: GraphQLSchemaPlugin = {
                 )
             },
             SecurityMutation: {
-                login: async (
-                    root,
-                    args,
-                    context: HandlerContext & HandlerSecurityContext & HandlerTenancyContext
-                ) => {
+                login: async (root, args, context: Context) => {
                     try {
                         const identity = context.security.getIdentity();
 
@@ -258,11 +255,7 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                updateCurrentUser: async (
-                    root,
-                    args: { data: UpdateUserData },
-                    context: HandlerContext & HandlerSecurityContext & HandlerTenancyContext
-                ) => {
+                updateCurrentUser: async (_, args: { data: UpdateUserData }, context: Context) => {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         throw new Error("Not authorized!");
@@ -307,109 +300,107 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                createUser: hasPermission<
-                    any,
-                    { data: CreateUserData },
-                    HandlerContext & HandlerSecurityContext & HandlerTenancyContext
-                >("security.user.manage")(async (root, { data }, context) => {
-                    try {
-                        const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
-                            "security-identity-provider"
-                        );
+                createUser: hasPermission("security.user.manage")(
+                    async (_, { data }: { data: CreateUserData }, context: Context) => {
+                        try {
+                            const authPlugin = context.plugins.byName<
+                                SecurityIdentityProviderPlugin
+                            >("security-identity-provider");
 
-                        // First let's try creating a user with our IDP
-                        await authPlugin.createUser({ data }, context);
+                            // First let's try creating a user with our IDP
+                            await authPlugin.createUser({ data }, context);
 
-                        // Now we can store the user in our DB
-                        const user = await context.security.users.createUser(data);
+                            // Now we can store the user in our DB
+                            const user = await context.security.users.createUser(data);
 
-                        if (data.group) {
-                            const tenant = context.security.getTenant();
-                            const group = await context.security.groups.getGroup(
-                                tenant,
-                                data.group
+                            if (data.group) {
+                                const tenant = context.security.getTenant();
+                                const group = await context.security.groups.getGroup(
+                                    tenant,
+                                    data.group
+                                );
+                                await context.security.users.linkUserToTenant(
+                                    user.login,
+                                    tenant,
+                                    group
+                                );
+                            }
+
+                            return new Response(user);
+                        } catch (e) {
+                            return new ErrorResponse({
+                                code: e.code,
+                                message: e.message,
+                                data: e.data
+                            });
+                        }
+                    }
+                ),
+                updateUser: hasPermission("security.user.manage")(
+                    async (
+                        root,
+                        { data, login }: { login: string; data: UpdateUserData },
+                        context: Context
+                    ) => {
+                        try {
+                            const user = await context.security.users.getUser(login);
+
+                            if (!user) {
+                                return new NotFoundResponse(`User "${login}" was not found!`);
+                            }
+
+                            const updatedAttributes = await context.security.users.updateUser(
+                                login,
+                                data
                             );
-                            await context.security.users.linkUserToTenant(
-                                user.login,
-                                tenant,
-                                group
-                            );
-                        }
 
-                        return new Response(user);
-                    } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data
-                        });
+                            Object.assign(user, updatedAttributes);
+
+                            const authPlugin = context.plugins.byName<
+                                SecurityIdentityProviderPlugin
+                            >("security-identity-provider");
+
+                            if (authPlugin) {
+                                await authPlugin.updateUser({ data, user }, context);
+                            }
+
+                            return new Response(user);
+                        } catch (e) {
+                            return new ErrorResponse({
+                                code: e.code,
+                                message: e.message,
+                                data: e.data
+                            });
+                        }
                     }
-                }),
-                updateUser: hasPermission<
-                    any,
-                    { login: string; data: UpdateUserData },
-                    HandlerContext & HandlerSecurityContext & HandlerTenancyContext
-                >("security.user.manage")(async (root, { data, login }, context) => {
-                    try {
-                        const user = await context.security.users.getUser(login);
+                ),
+                deleteUser: hasPermission("security.user.manage")(
+                    async (root, { login }: { login: string }, context: Context) => {
+                        try {
+                            const user = await context.security.users.getUser(login);
 
-                        if (!user) {
-                            return new NotFoundResponse(`User "${login}" was not found!`);
+                            if (!user) {
+                                return new NotFoundResponse(`User "${login}" was not found!`);
+                            }
+
+                            await context.security.users.deleteUser(login);
+
+                            const authPlugin = context.plugins.byName<
+                                SecurityIdentityProviderPlugin
+                            >("security-identity-provider");
+
+                            await authPlugin.deleteUser({ user }, context);
+
+                            return new Response(true);
+                        } catch (e) {
+                            return new ErrorResponse({
+                                code: e.code,
+                                message: e.message,
+                                data: e.data
+                            });
                         }
-
-                        const updatedAttributes = await context.security.users.updateUser(
-                            login,
-                            data
-                        );
-
-                        Object.assign(user, updatedAttributes);
-
-                        const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
-                            "security-identity-provider"
-                        );
-
-                        if (authPlugin) {
-                            await authPlugin.updateUser({ data, user }, context);
-                        }
-
-                        return new Response(user);
-                    } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data
-                        });
                     }
-                }),
-                deleteUser: hasPermission<
-                    any,
-                    { login: string },
-                    HandlerContext & HandlerTenancyContext
-                >("security.user.manage")(async (root, { login }, context) => {
-                    try {
-                        const user = await context.security.users.getUser(login);
-
-                        if (!user) {
-                            return new NotFoundResponse(`User "${login}" was not found!`);
-                        }
-
-                        await context.security.users.deleteUser(login);
-
-                        const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
-                            "security-identity-provider"
-                        );
-
-                        await authPlugin.deleteUser({ user }, context);
-
-                        return new Response(true);
-                    } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data
-                        });
-                    }
-                })
+                )
             }
         }
     }

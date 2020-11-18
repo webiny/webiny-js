@@ -1,13 +1,12 @@
-import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-security",
+    name: "graphql-schema-security-base",
     schema: {
-        typeDefs: gql`
+        typeDefs: `
             type SecurityQuery {
                 _empty: String
             }

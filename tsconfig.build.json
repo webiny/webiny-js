@@ -40,8 +40,6 @@
       "@webiny/api-security": ["./packages/api-security/src"],
       "@webiny/api-security-tenancy/*": ["./packages/api-security-tenancy/src/*"],
       "@webiny/api-security-tenancy": ["./packages/api-security-tenancy/src"],
-      "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
-      "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
       "@webiny/api-plugin-security-cognito/*": ["./packages/api-plugin-security-cognito/src/*"],
       "@webiny/api-plugin-security-cognito": ["./packages/api-plugin-security-cognito/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
