@@ -15,7 +15,7 @@ const plugin: FbBuilderFieldPlugin = {
                 ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "postCode",
-                label: "Post code",
+                label: "Post code"
             };
         }
     }

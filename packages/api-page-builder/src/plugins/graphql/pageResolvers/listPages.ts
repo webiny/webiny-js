@@ -28,7 +28,7 @@ export const listPages = async ({ context, args, info }) => {
         before,
         search,
         query,
-        totalCount: /*requiresTotalCount*/(info)
+        totalCount: /*requiresTotalCount*/ info
     });
 };
 

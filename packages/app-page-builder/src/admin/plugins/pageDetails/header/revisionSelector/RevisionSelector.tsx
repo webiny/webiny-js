@@ -24,7 +24,7 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = (props) => {
+const RevisionSelector = props => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);

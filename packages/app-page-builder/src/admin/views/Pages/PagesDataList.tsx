@@ -16,14 +16,13 @@ import {
     ListTextOverline,
     ListItemTextSecondary
 } from "@webiny/ui/List";
-import {Typography} from "@webiny/ui/Typography";
+import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
-
 
 const PageBuilderPagesDataList = () => {
     const { history } = useRouter();
@@ -37,7 +36,6 @@ const PageBuilderPagesDataList = () => {
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
     const slug = new URLSearchParams(location.search).get("slug");
-
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deleteItem = useCallback(

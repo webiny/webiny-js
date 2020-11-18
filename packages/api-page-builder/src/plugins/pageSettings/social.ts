@@ -26,7 +26,7 @@ export default [
     {
         type: "graphql-schema",
         schema: {
-            typeDefs: /* GraphQL */`
+            typeDefs: /* GraphQL */ `
                 type PbOpenGraphTag {
                     property: String
                     content: String

@@ -13,7 +13,7 @@ export function useRevisionHandlers(props) {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const client = useApolloClient();
-    const { page } = props
+    const { page } = props;
     const { publishRevision } = usePublishRevisionHandler({ page });
 
     const createRevision = useCallback(async () => {

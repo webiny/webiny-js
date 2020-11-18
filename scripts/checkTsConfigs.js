@@ -3,7 +3,7 @@ const { parse, resolve, relative, join } = require("path");
 const { getPackages, getPackage, rootPackageJson, PROJECT_ROOT } = require("./utils/getPackages");
 const { yellow, cyan, gray, red, green } = require("chalk");
 const argv = require("yargs").argv;
-const minimatch = require('minimatch');
+const minimatch = require("minimatch");
 
 const { _: packagesToCheck } = argv;
 
@@ -299,7 +299,6 @@ const TSCONFIG = {
                 }
             }
         }
-
     }
 
     console.log();
@@ -308,7 +307,7 @@ const TSCONFIG = {
     console.log(yellow(`Total warnings: ${warningsCount}`));
 
     if (errorsCount === 0) {
-        console.log()
+        console.log();
         console.log(green("✅  All TS configs in order!"));
         process.exit(0);
     }
