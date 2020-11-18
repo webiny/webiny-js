@@ -1,81 +1,73 @@
-import gql from "graphql-tag";
 import { merge } from "lodash";
 import menus from "./graphql/menus";
+import pages from "./graphql/pages";
+import pageElements from "./graphql/pageElements";
 import categories from "./graphql/categories";
-import install from "./graphql/installation";
+import install from "./graphql/install";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+
 const emptyResolver = () => ({});
 
-export default {
-    type: "graphql-schema",
-    schema: {
-        typeDefs: gql`
-            input PbSearchInput {
-                query: String
-                fields: [String]
-                operator: String
-            }
+export default [
+    {
+        type: "graphql-schema",
+        schema: {
+            typeDefs: /* GraphQL */ `
+                type PbCreatedBy {
+                    id: ID
+                    displayName: String
+                }
 
-            type PbError {
-                code: String
-                message: String
-                data: JSON
-            }
+                type PbError {
+                    code: String
+                    message: String
+                    data: JSON
+                }
 
-            type PbDeleteResponse {
-                data: Boolean
-                error: PbError
-            }
+                type PbDeleteResponse {
+                    data: Boolean
+                    error: PbError
+                }
 
-            type PbBooleanResponse {
-                data: Boolean
-                error: PbError
-            }
+                type PbBooleanResponse {
+                    data: Boolean
+                    error: PbError
+                }
 
-            type PbCursors {
-                next: String
-                previous: String
-            }
+                type PbCursors {
+                    next: String
+                    previous: String
+                }
 
-            type PbListMeta {
-                cursors: PbCursors
-                hasNextPage: Boolean
-                hasPreviousPage: Boolean
-                totalCount: Int
-            }
+                type PbQuery {
+                    pageBuilder: PbQuery
+                }
 
-            type PbQuery {
-                pageBuilder: PbQuery
-            }
+                type PbMutation {
+                    pageBuilder: PbMutation
+                }
 
-            type PbMutation {
-                pageBuilder: PbMutation
-            }
+                extend type Query {
+                    pageBuilder: PbQuery
+                }
 
-            extend type Query {
-                pageBuilder: PbQuery
-            }
-
-            extend type Mutation {
-                pageBuilder: PbMutation
-            }
-
-            ${menus.typeDefs},
-            ${categories.typeDefs},
-            ${install.typeDefs}
-        `,
-        resolvers: merge(
-            {
+                extend type Mutation {
+                    pageBuilder: PbMutation
+                }
+            `,
+            resolvers: merge({
                 Query: {
                     pageBuilder: emptyResolver
                 },
                 Mutation: {
                     pageBuilder: emptyResolver
                 }
-            },
-            categories.resolvers,
-            menus.resolvers,
-            // settings.resolvers,
-            install.resolvers
-        )
-    }
-};
+            })
+        }
+    },
+    menus,
+    categories,
+    pages,
+    pageElements,
+    install
+] as GraphQLSchemaPlugin[];

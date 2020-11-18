@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import isEqual from "fast-deep-equal";
 
 const getRawData = value => {
@@ -11,13 +11,13 @@ const getRawData = value => {
 export type I18NField = {
     field?: any;
     createField?: (valuesInstance: any) => any;
-    context: HandlerI18NContext;
+    context: I18NContext;
     [key: string]: any;
 };
 
 export const getI18NValueItem = (
     value: { [key: string]: any }[],
-    i18n: HandlerI18NContext["i18n"]
+    i18n: I18NContext["i18n"]
 ) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {

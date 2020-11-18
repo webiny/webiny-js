@@ -1,11 +1,13 @@
-import { CreateApolloHandlerPlugin } from "@webiny/handler-apollo-server/types";
+// @ts-nocheck
+// TODO: CreateApolloHandlerPlugin no longer exists, @see packages/api-headless-cms/src/content/apolloHandler/createApolloHandler.ts
+import { CreateApolloHandlerPlugin } from "@webiny/handler-graphql/types";
 import createApolloHandler from "./apolloHandler/createApolloHandler";
 
 const handlers = {};
 
 const plugin: CreateApolloHandlerPlugin = {
-    name: "handler-apollo-server-create-handler",
-    type: "handler-apollo-server-create-handler",
+    name: "handler-graphql-create-handler",
+    type: "handler-graphql-create-handler",
     async create({ context, options }) {
         const http = context.http;
 

@@ -1,5 +1,5 @@
+// @ts-nocheck
 import { GraphQLFieldResolver } from "graphql";
-import { resolveCreate, resolveUpdate, resolveDelete, resolveGet } from "@webiny/commodo-graphql";
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";

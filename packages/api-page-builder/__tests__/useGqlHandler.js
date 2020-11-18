@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-apollo-server";
+import apolloServerPlugins from "@webiny/handler-graphql";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
@@ -9,6 +9,14 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import {
+    CREATE_PAGE_ELEMENT,
+    DELETE_PAGE_ELEMENT,
+    LIST_PAGE_ELEMENTS,
+    UPDATE_PAGE_ELEMENT,
+    GET_PAGE_ELEMENT
+} from "./graphql/pageElements";
+import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES, UPDATE_PAGE, GET_PAGE } from "./graphql/pages";
 import { SecurityIdentity } from "@webiny/api-security";
 import {
     CREATE_CATEGORY,
@@ -17,6 +25,8 @@ import {
     UPDATE_CATEGORY,
     GET_CATEGORY
 } from "./graphql/categories";
+import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import { Client } from "@elastic/elasticsearch";
 
 export default ({ permissions, identity } = {}) => {
     const handler = createHandler(
@@ -31,12 +41,14 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
+        elasticSearch({ endpoint: `http://localhost:9201` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
+
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -67,6 +79,15 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        elasticSearch: new Client({
+            hosts: [`http://localhost:9201`],
+            node: "http://localhost:9201"
+        }),
+        sleep: (ms = 333) => {
+            return new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        },
         handler,
         invoke,
         // Menus
@@ -101,6 +122,39 @@ export default ({ permissions, identity } = {}) => {
         },
         async getCategory(variables) {
             return invoke({ body: { query: GET_CATEGORY, variables } });
+        },
+
+        async createPage(variables) {
+            return invoke({ body: { query: CREATE_PAGE, variables } });
+        },
+        async updatePage(variables) {
+            return invoke({ body: { query: UPDATE_PAGE, variables } });
+        },
+        async deletePage(variables) {
+            return invoke({ body: { query: DELETE_PAGE, variables } });
+        },
+        async listPages(variables) {
+            return invoke({ body: { query: LIST_PAGES, variables } });
+        },
+        async getPage(variables) {
+            return invoke({ body: { query: GET_PAGE, variables } });
+        },
+
+        // PageElements
+        async createPageElement(variables) {
+            return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });
+        },
+        async updatePageElement(variables) {
+            return invoke({ body: { query: UPDATE_PAGE_ELEMENT, variables } });
+        },
+        async deletePageElement(variables) {
+            return invoke({ body: { query: DELETE_PAGE_ELEMENT, variables } });
+        },
+        async listPageElements(variables) {
+            return invoke({ body: { query: LIST_PAGE_ELEMENTS, variables } });
+        },
+        async getPageElement(variables) {
+            return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
         }
     };
 };

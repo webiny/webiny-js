@@ -4,8 +4,8 @@ import fetch from "node-fetch";
 import util from "util";
 import { SecurityIdentity } from "@webiny/api-security";
 import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
-import { HandlerHttpContext } from "@webiny/handler-http/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { HttpContext } from "@webiny/handler-http/types";
+import { Context } from "@webiny/handler/types";
 const verify = util.promisify(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
@@ -17,7 +17,7 @@ type CognitoAuthOptions = {
     identityType: string;
     getIdentity?(
         params: { identityType: string; token: { [key: string]: any } },
-        context: HandlerContext
+        context: Context
     ): SecurityIdentity;
 };
 
@@ -37,7 +37,7 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
     return [
         {
             type: "security-authentication",
-            async authenticate(context: HandlerContext<HandlerHttpContext>) {
+            async authenticate(context: Context<HttpContext>) {
                 const { method: httpMethod, headers = {} } = context.http;
                 let idToken = headers["Authorization"] || headers["authorization"] || "";
 

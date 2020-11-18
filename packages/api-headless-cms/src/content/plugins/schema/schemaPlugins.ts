@@ -1,5 +1,6 @@
+// @ts-nocheck
 import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import {
     CmsContentModel as CmsContentModelType,
     CmsModelFieldToGraphQLPlugin,

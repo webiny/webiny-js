@@ -1,6 +1,6 @@
 import { withHooks } from "@webiny/commodo";
 import SsrApiClient from "@webiny/handler-ssr/Client";
-import { ContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 export default (): ContextPlugin[] => [
     {

@@ -8,19 +8,13 @@
 			"path": "../db-dynamodb"
 		},
 		{
-			"path": "../graphql"
-		},
-		{
 			"path": "../handler"
 		},
 		{
 			"path": "../handler-db"
 		},
 		{
-			"path": "../commodo"
-		},
-		{
-			"path": "../commodo-graphql"
+			"path": "../plugins"
 		},
 		{
 			"path": "../validation"
@@ -29,7 +23,7 @@
 			"path": "../handler-aws"
 		},
 		{
-			"path": "../handler-apollo-server"
+			"path": "../handler-graphql"
 		}
 	]
 }

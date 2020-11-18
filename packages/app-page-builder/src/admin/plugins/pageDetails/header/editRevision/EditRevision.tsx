@@ -5,15 +5,14 @@ import { useApolloClient } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { CREATE_REVISION_FORM } from "@webiny/app-page-builder/admin/graphql/pages";
-import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 
-const EditRevision = () => {
+const EditRevision = (props) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();
-    const { page } = usePageDetails();
+    const { page } = props;
     const [inProgress, setInProgress] = useState();
 
     const unpublishedRevision = (get(page, "revisions") || []).find(

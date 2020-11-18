@@ -8,7 +8,6 @@ import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/ass
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
-import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -25,8 +24,8 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = () => {
-    const { page } = usePageDetails();
+const RevisionSelector = (props) => {
+    const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 

@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../graphql", "../handler", "../handler-apollo-server"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../handler",
+    "../plugins",
+    "../handler-graphql"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -9,13 +15,13 @@
   },
   "references": [
     {
-      "path": "../graphql/tsconfig.build.json"
-    },
-    {
       "path": "../handler/tsconfig.build.json"
     },
     {
-      "path": "../handler-apollo-server/tsconfig.build.json"
+      "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-graphql/tsconfig.build.json"
     }
   ]
 }

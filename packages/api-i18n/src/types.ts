@@ -1,12 +1,12 @@
-import { Plugin } from "@webiny/graphql/types";
-import { HandlerClientContext } from "@webiny/handler-client/types";
+import { Plugin } from "@webiny/plugins/types";
+import { ClientContext } from "@webiny/handler-client/types";
 
 export type I18NLocale = {
     code: string;
     default: boolean;
 };
 
-export type HandlerI18NContextObject = {
+export type I18NContextObject = {
     __i18n: {
         acceptLanguage: string;
         defaultLocale: I18NLocale;
@@ -21,13 +21,13 @@ export type HandlerI18NContextObject = {
     getLocales: () => I18NLocale[];
 };
 
-export type HandlerI18NContext = {
-    i18n: HandlerI18NContextObject;
+export type I18NContext = {
+    i18n: I18NContextObject;
 };
 
 export type ContextI18NGetLocales = Plugin & {
     name: "context-i18n-get-locales";
-    resolve(params: { context: HandlerI18NContext & HandlerClientContext }): Promise<any[]>;
+    resolve(params: { context: I18NContext & ClientContext }): Promise<any[]>;
 };
 
 export type I18NLocaleContextPlugin = Plugin<{

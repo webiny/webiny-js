@@ -1,4 +1,3 @@
-import { ContextPlugin } from "@webiny/graphql/types";
 import models from "./models";
 import modelFields from "./modelFields";
 import filterOperators from "./filterOperators";
@@ -7,6 +6,7 @@ import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
+import { ContextPlugin } from "@webiny/handler/types";
 
 type HeadlessPluginsOptions = {
     type: string;

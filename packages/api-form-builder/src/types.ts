@@ -1,4 +1,5 @@
-import { Plugin } from "@webiny/graphql/types";
+import { Plugin } from "@webiny/plugins/types";
+
 type FbFormTriggerData = { [key: string]: any };
 type FbFormSubmissionData = { [key: string]: any };
 

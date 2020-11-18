@@ -1,13 +1,8 @@
 import { hasPermission } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/graphql";
-import {HandlerI18NContext } from "@webiny/api-i18n/types";
-
-// TODO: WTF?!
-type I18NContext = HandlerI18NContext & {
-    locales: any;
-}
+import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
+import { compose } from "@webiny/handler-graphql";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -75,16 +70,18 @@ export default {
     `,
     resolvers: {
         I18NQuery: {
-            getI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
-                const { locales } = context;
-                const locale = await locales.getByCode(args.code);
-                if (!locale) {
-                    return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                }
+            getI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string }, context) => {
+                    const { locales } = context;
+                    const locale = await locales.getByCode(args.code);
+                    if (!locale) {
+                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
+                    }
 
-                return new Response(locale);
-            }),
-            listI18NLocales: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
+                    return new Response(locale);
+                }
+            ),
+            listI18NLocales: compose(hasPermission("i18n.locale"))(async (_, args, context) => {
                 const { locales } = context;
                 return new Response(await locales.list());
             }),
@@ -92,67 +89,75 @@ export default {
             getI18NInformation
         },
         I18NMutation: {
-            createI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
-                const { locales } = context;
-                const { data } = args;
+            createI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { data: Record<string, any> }, context) => {
+                    const { locales } = context;
+                    const { data } = args;
 
-                if (await locales.getByCode(data.code)) {
-                    return new NotFoundResponse(`Locale with key "${data.code}" already exists.`);
+                    if (await locales.getByCode(data.code)) {
+                        return new NotFoundResponse(
+                            `Locale with key "${data.code}" already exists.`
+                        );
+                    }
+
+                    await locales.create(data);
+                    if (data.default) {
+                        await locales.updateDefault(data.code);
+                    }
+
+                    return new Response(data);
                 }
+            ),
+            updateI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string; default: boolean }, context) => {
+                    const { locales } = context;
+                    const { code } = args;
 
-                await locales.create(data);
-                if (data.default) {
-                    await locales.updateDefault(data.code);
-                }
+                    const locale = await locales.getByCode(code);
+                    if (!locale) {
+                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
+                    }
 
-                return new Response(data);
-            }),
-            updateI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
-                const { locales } = context;
-                const { code } = args;
-
-                const locale = await locales.getByCode(code);
-                if (!locale) {
-                    return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                }
-
-                await locales.update(code, {
-                    default: args.default
-                });
-
-                if (locale.default) {
-                    await locales.updateDefault(code);
-                }
-
-                return new Response(locale);
-            }),
-            deleteI18NLocale: hasPermission<any, any, I18NContext>("i18n.locale")(async (_, args, context) => {
-                const { locales } = context;
-                const { code } = args;
-
-                const locale = await locales.getByCode(code);
-                if (!locale) {
-                    return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                }
-
-                if (locale.default) {
-                    return new ErrorResponse({
-                        message:
-                            "Cannot delete default locale, please set another locale as default first."
+                    await locales.update(code, {
+                        default: args.default
                     });
+
+                    if (locale.default) {
+                        await locales.updateDefault(code);
+                    }
+
+                    return new Response(locale);
                 }
+            ),
+            deleteI18NLocale: compose(hasPermission("i18n.locale"))(
+                async (_, args: { code: string }, context) => {
+                    const { locales } = context;
+                    const { code } = args;
 
-                const allLocales = await locales.list();
-                if (allLocales.length === 1) {
-                    return new ErrorResponse({
-                        message: "Cannot delete the last locale."
-                    });
+                    const locale = await locales.getByCode(code);
+                    if (!locale) {
+                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
+                    }
+
+                    if (locale.default) {
+                        return new ErrorResponse({
+                            message:
+                                "Cannot delete default locale, please set another locale as default first."
+                        });
+                    }
+
+                    const allLocales = await locales.list();
+                    if (allLocales.length === 1) {
+                        return new ErrorResponse({
+                            message: "Cannot delete the last locale."
+                        });
+                    }
+
+                    await locales.delete(code);
+
+                    return new Response(locale);
                 }
-
-                await locales.delete(code);
-
-                return new Response(locale);
-            })
+            )
         }
     }
 };

@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 import { usePublishRevisionHandler } from "../../utils/usePublishRevisionHandler";
-import { usePageDetails } from "@webiny/app-page-builder/admin/hooks/usePageDetails";
 import PublishRevisionDialog from "./PublishRevisionDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -28,8 +27,8 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-const PublishRevision = () => {
-    const { page } = usePageDetails();
+const PublishRevision = (props) => {
+    const { page } = props;
     const { publishRevision } = usePublishRevisionHandler({ page });
     const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
     const publishSuggestion = getPublishSuggestion(page, publishableRevisions);

@@ -1,5 +1,5 @@
-import { Plugin, Context } from "@webiny/graphql/types";
-
+import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 export type SecurityIdentity = {
     id: string;
     displayName: string;

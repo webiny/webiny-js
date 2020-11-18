@@ -6,9 +6,6 @@
 		},
 		{
 			"path": "../handler"
-		},
-		{
-			"path": "../graphql"
 		}
 	]
 }

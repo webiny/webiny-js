@@ -1,5 +1,5 @@
 import { Db } from "@webiny/db";
 
-export type HandlerContextDb = {
+export type DbContext = {
     db: Db;
 };

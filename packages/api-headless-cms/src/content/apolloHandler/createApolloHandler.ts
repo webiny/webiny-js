@@ -1,11 +1,16 @@
-import { CreateSchemaPlugin } from "@webiny/handler-apollo-server/types";
-import { HandlerContext } from "@webiny/handler/types";
+// @ts-nocheck
+// TODO: 2020-11-15, @adrian
+// TODO: complete build from scratch - we no longer have these plugins, it's should be coded much simpler.
+// TODO: Check code of `handler-graphql` to get a sense how it should look. The only difference will be
+// TODO: in how we cache handlers - here we must cache per type, tenant, environment, and content locale.
+import { CreateSchemaPlugin } from "@webiny/handler-graphql/types";
+import { Context } from "@webiny/handler/types";
 import { generateSchemaHash } from "apollo-server-core/dist/utils/schemaHash";
 import { runHttpQuery as apolloRunHttpQuery } from "apollo-server-core/dist/runHttpQuery";
 import { Headers } from "apollo-server-env";
 
 type CreateApolloHandlerParams = {
-    context: HandlerContext;
+    context: Context;
     options: { [key: string]: any };
     meta?: { [key: string]: any };
 };
@@ -15,11 +20,11 @@ export default async function createApolloHandler({
     meta = null
 }: CreateApolloHandlerParams) {
     const createSchemaPlugin = context.plugins.byName<CreateSchemaPlugin>(
-        "handler-apollo-server-create-schema"
+        "handler-graphql-create-schema"
     );
 
     if (!createSchemaPlugin) {
-        throw Error(`"handler-apollo-server-create-schema" plugin is not configured!`);
+        throw Error(`"handler-graphql-create-schema" plugin is not configured!`);
     }
 
     const { schema } = await createSchemaPlugin.create(context);

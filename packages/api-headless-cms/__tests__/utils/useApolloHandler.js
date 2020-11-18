@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler";
-import httpHandlerApolloServerPlugins from "@webiny/handler-apollo-server";
+import httpHandlerApolloServerPlugins from "@webiny/handler-graphql";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
 const createApolloHandler = plugins =>

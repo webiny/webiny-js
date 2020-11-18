@@ -1,6 +1,6 @@
 import minimatch from "minimatch";
-import { Context, GraphQLFieldResolver } from "@webiny/graphql/types";
-import { ErrorResponse } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import NotAuthorizedResponse from "./NotAuthorizedResponse";
 
 const checkPermission = <TSource, TArgs, TContext = Context>(permission: any) => {
