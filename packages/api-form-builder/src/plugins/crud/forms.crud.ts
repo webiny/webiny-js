@@ -94,7 +94,6 @@ const UpdateDataModel = withFields({
     triggers: object()
 })();
 
-// TODO: Handle "locked" check.
 export default {
     type: "context",
     apply(context) {
@@ -345,7 +344,7 @@ export default {
             },
             async unPublishForm(id: string) {
                 const savedOn = new Date().toISOString();
-                const status = getStatus({ published: false, locked: false });
+                const status = getStatus({ published: false, locked: true });
                 // Finally save it to DB
                 await db.update({
                     ...defaults.db,
@@ -356,7 +355,6 @@ export default {
                     data: {
                         published: false,
                         publishedOn: null,
-                        locked: false,
                         savedOn,
                         status
                     }
@@ -370,7 +368,6 @@ export default {
                         doc: {
                             published: false,
                             publishedOn: null,
-                            locked: false,
                             savedOn,
                             status
                         }
