@@ -19,6 +19,7 @@
     "@webiny/handler-graphql": "^4.14.0",
     "@webiny/handler-db": "^4.14.0",
     "@webiny/handler-http": "^4.14.0",
+    "@webiny/plugins": "^4.14.0",
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.4",
     "mdbid": "^1.0.0",

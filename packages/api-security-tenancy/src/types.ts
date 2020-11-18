@@ -1,5 +1,5 @@
-import { Plugin } from "@webiny/handler-graphql/types";
-import { Context } from "@webiny/handler-graphql/types";
+import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 
 export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin & {

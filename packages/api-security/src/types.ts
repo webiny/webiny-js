@@ -10,7 +10,7 @@ export type SecurityIdentity = {
 
 export type SecurityAuthenticationPlugin = Plugin & {
     type: "security-authentication";
-    authenticate(context: any): Promise<null> | Promise<SecurityIdentity>;
+    authenticate(context: Context): Promise<null> | Promise<SecurityIdentity>;
 };
 
 export type SecurityPermission = {
