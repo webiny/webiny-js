@@ -125,6 +125,7 @@ module.exports = ({ cli }) => {
             cdn: {
                 component: "@webiny/serverless-aws-cloudfront",
                 inputs: {
+                    comment: "${api.name}",
                     forwardIdViaHeaders: true,
                     defaults: {
                         ttl: 300,
