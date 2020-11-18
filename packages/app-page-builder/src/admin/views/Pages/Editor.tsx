@@ -101,7 +101,7 @@ const Editor = () => {
 
     return (
         <Query
-            query={GET_PAGE()}
+            query={GET_PAGE}
             variables={{ id: params.id }}
             onCompleted={data => {
                 const error = get(data, "pageBuilder.page.error.message");

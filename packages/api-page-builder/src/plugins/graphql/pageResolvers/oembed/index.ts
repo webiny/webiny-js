@@ -1,4 +1,5 @@
-import request from "request";
+// @ts-nocheck
+import fetch from "node-fetch";
 import providerList from "./providers";
 
 const getHostname = url => {
@@ -63,7 +64,7 @@ export const fetchEmbed = async (
             .join("&");
 
     return new Promise((resolve, reject) => {
-        request(
+        fetch(
             {
                 url: link,
                 json: true

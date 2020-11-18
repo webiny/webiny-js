@@ -1,13 +1,13 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { Context } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { hasPermission } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
 import pipe from "@ramda/pipe";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { FormBuilderSettingsCRUD } from "../../types";
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type ResolverContext = Context<I18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -52,7 +52,7 @@ export default {
             getSettings: pipe(
                 hasPermission("forms.settings"),
                 hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
+            )(async (_, args, context: ResolverContext) => {
                 try {
                     const formBuilderSettings: FormBuilderSettingsCRUD =
                         context?.formBuilder?.crud?.formBuilderSettings;
@@ -68,7 +68,7 @@ export default {
             updateSettings: pipe(
                 hasPermission("forms.settings"),
                 hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
+            )(async (_, args, context: ResolverContext) => {
                 try {
                     const formBuilderSettings: FormBuilderSettingsCRUD =
                         context?.formBuilder?.crud?.formBuilderSettings;

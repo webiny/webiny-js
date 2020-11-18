@@ -6,7 +6,7 @@
 	],
 	"references": [
 		{
-			"path": "../graphql"
+			"path": "../plugins"
 		},
 		{
 			"path": "../api-i18n"
@@ -18,13 +18,10 @@
 			"path": "../commodo"
 		},
 		{
-			"path": "../commodo-graphql"
-		},
-		{
 			"path": "../handler"
 		},
 		{
-			"path": "../handler-apollo-server"
+			"path": "../handler-graphql"
 		},
 		{
 			"path": "../handler-client"
@@ -34,9 +31,6 @@
 		},
 		{
 			"path": "../validation"
-		},
-		{
-			"path": "../api-settings-manager"
 		}
 	]
 }

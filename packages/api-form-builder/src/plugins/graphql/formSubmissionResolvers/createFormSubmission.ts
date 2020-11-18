@@ -1,4 +1,4 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import { FormsCRUD } from "../../../types";
 
 export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {

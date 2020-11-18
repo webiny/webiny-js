@@ -1,8 +1,9 @@
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
-import { ErrorResponse, Response, NotFoundResponse } from "@webiny/graphql";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
 import { SecurityUserManagementPlugin } from "@webiny/api-security-user-management/types";
+import { Context } from "@webiny/handler/types";
 
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context: Context) => {
     const { id } = args;
     const { users } = context;
 
@@ -23,11 +24,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
 
         return new Response(true);
     } catch (e) {
-        return new ErrorResponse({
-            code: e.code,
-            message: e.message,
-            data: e.data
-        });
+        return new ErrorResponse(e);
     }
 };
 

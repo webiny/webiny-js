@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
 import pipe from "@ramda/pipe";
 import { validation } from "@webiny/validation";
 import { withFields, string, number, setOnce, onSet } from "@commodo/fields";
@@ -186,4 +186,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as ContextPlugin<DbContext>;

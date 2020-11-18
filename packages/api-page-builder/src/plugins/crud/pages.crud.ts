@@ -1,11 +1,12 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
-import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
-import KSUID from "ksuid";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./defaults";
+
 export type Page = {
     id: string;
     title: string;
@@ -19,6 +20,7 @@ export type Page = {
     settings: Record<string, any>;
     locked: boolean;
     createdOn: string;
+    savedOn: string;
     createdBy: {
         id: string;
         displayName: string;
@@ -56,12 +58,13 @@ const UpdateDataModel = withFields({
     })
 })();
 
-const ITEM_TYPE = "pb#page";
+const TYPE = "pb#page";
 
+/*
 const sorters = {
     CREATED_ON_ASC: { createdOn: "asc" },
     CREATED_ON_DESC: { createdOn: "desc" }
-};
+};*/
 
 export default {
     type: "context",
@@ -81,9 +84,14 @@ export default {
             },
 
             async list(args) {
-                const { limit = 44, sort, search = "", types = [], tags = [], ids = [] } = args;
+                const { limit = 44, search = "", types = [], tags = [], ids = [] } = args;
 
-                const must = [];
+                const must = [
+                    /* {
+                        terms: { "locale.keyword": i18nContent.locale.code }
+                    }*/
+                ];
+
                 if (Array.isArray(types) && types.length) {
                     must.push({ terms: { "type.keyword": types } });
                 }
@@ -110,25 +118,34 @@ export default {
                         terms: { "id.keyword": ids }
                     });
                 }
+                /*
+
+               {
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "title":   "Search"        }},
+        { "match": { "content": "Elasticsearch" }}
+      ],
+      "filter": [
+        { "term":  { "status": "published" }},
+        { "range": { "publish_date": { "gte": "2015-01-01" }}}
+      ]
+    }
+  }
+}
+                */
 
                 const response = await elasticSearch.search({
-                    ...defaults.es,
+                    index: "page-builder",
                     body: {
                         query: {
-                            // eslint-disable-next-line @typescript-eslint/camelcase
-                            constant_score: {
-                                filter: {
-                                    bool: {
-                                        // `must` means `and`;
-                                        // all conditions must be satisfied for a record to be present in the result
-                                        must: must
-                                    }
-                                }
+                            term: {
+                                "locale.keyword": i18nContent.locale.code
                             }
                         },
                         size: limit,
                         sort: { createdOn: "desc" }
-                        // sort: [sorters[sort] || sorters.CREATED_ON_ASC]
                     }
                 });
 
@@ -140,18 +157,19 @@ export default {
                 const createData = new CreateDataModel().populate({ category, title, url });
                 await createData.validate();
 
-                const id = KSUID.randomSync().string + "#1";
+                const id = mdbid() + "#1";
                 const data = {
                     PK: PK_PAGE,
                     SK: id,
+                    TYPE,
                     id,
                     category,
                     title,
                     url,
                     status: "draft",
                     version: 1,
-                    type: ITEM_TYPE,
                     createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy: {
                         id: identity.id,
                         displayName: identity.displayName
@@ -161,7 +179,7 @@ export default {
                 await db.create({ ...defaults.db, data });
 
                 // Index file in "Elastic Search"
-                await elasticSearch.create({
+                await elasticSearch.index({
                     ...defaults.es,
                     id: data.SK,
                     body: {
@@ -169,6 +187,7 @@ export default {
                         locale: i18nContent?.locale?.code,
                         // TODO: tenant
                         createdOn: data.createdOn,
+                        savedOn: data.savedOn,
                         createdBy: data.createdBy,
                         category: data.category,
                         title: data.title,
@@ -176,8 +195,7 @@ export default {
                         status: data.status,
                         latest: true,
                         published: false,
-                        tags: [],
-
+                        tags: []
                     }
                 });
 
@@ -188,7 +206,9 @@ export default {
                 const updateData = new UpdateDataModel().populate(data);
                 await updateData.validate();
 
-                data = await updateData.toJSON({ onlyDirty: true });
+                data = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
+                    savedOn: new Date().toISOString()
+                });
 
                 await db.update({
                     ...defaults.db,
@@ -205,7 +225,8 @@ export default {
                             // TODO: test this, what if the value is `undefined`?
                             tags: data.tags,
                             title: data.title,
-                            url: data.url
+                            url: data.url,
+                            savedOn: data.savedOn
                         }
                     }
                 });
@@ -222,7 +243,7 @@ export default {
                 });
 
                 // Index file in "Elastic Search"
-                await elasticSearch.update({
+                await elasticSearch.index({
                     ...defaults.es,
                     id,
                     body: {
@@ -247,4 +268,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb, HandlerI18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext>;

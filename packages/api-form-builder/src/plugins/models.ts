@@ -5,7 +5,7 @@ import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/c
 import formModel from "./models/form.model";
 import formSettings from "./models/formSettings.model";
 import formSubmission from "./models/formSubmission.model";
-import { ContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 export default (): ContextPlugin => ({
     name: "context-models",

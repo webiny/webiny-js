@@ -19,11 +19,9 @@ export function usePublishRevisionHandler({ page }) {
                     return;
                 }
 
-                const getPageQuery = GET_PAGE();
-
                 // Update revisions
                 const pageFromCache = cache.readQuery({
-                    query: getPageQuery,
+                    query: GET_PAGE,
                     variables: { id: page.id }
                 });
 
@@ -43,7 +41,7 @@ export function usePublishRevisionHandler({ page }) {
 
                 // Write our data back to the cache.
                 cache.writeQuery({
-                    query: getPageQuery,
+                    query: GET_PAGE,
                     data: set(pageFromCache, "pageBuilder.page.data", page)
                 });
             }

@@ -1,29 +1,29 @@
 import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
-import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
-import pipe from "@ramda/pipe";
+import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { Context as HandlerContext } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/graphql";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import uniqid from "uniqid";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const pageFetcher = ctx => ctx.models.PbPage;
-const elementFetcher = ctx => ctx.models.PbPageElement;
 
 const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
     args.data = { published: true };
 
+    // @ts-ignore
     return resolveUpdate(pageFetcher)(_, args, ctx, info);
 };
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type Context = HandlerContext<I18NContext, SecurityContext>;
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -33,399 +33,386 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
-export default {
-    typeDefs: /* GraphQL*/ `
-        type PbPage {
-            id: ID
-            createdBy: PbCreatedBy
-            createdOn: DateTime
-            publishedOn: DateTime
-            category: String
-            version: Int
-            title: String
-            status: String
-            snippet: String
-            url: String
-            fullUrl: String
-            settings: PbPageSettings
-            content: JSON
-            published: Boolean
-            # isHomePage: Boolean
-            # isErrorPage: Boolean
-            # isNotFoundPage: Boolean
-            locked: Boolean
-            parent: ID
-        }
-        
-        type PbPageListItem {
-            id: ID
-            createdOn: DateTime
-            createdBy: PbCreatedBy
-            published: Boolean
-            category: String
-            title: String
-            url: String
-            status: String
-        }
-
-        type PbPageSettings {
-            _empty: String
-        }
-
-        type PbElement {
-            id: ID
-            name: String
-            type: String
-            category: String
-            content: JSON
-            preview: String
-        }
-
-        input PbElementInput {
-            name: String!
-            type: String!
-            category: String
-            content: JSON!
-            preview: RefInput
-        }
-
-        input PbUpdateElementInput {
-            name: String
-            category: String
-            content: JSON
-            preview: RefInput
-        }
-
-        input PbUpdatePageInput {
-            title: String
-            snippet: String
-            category: ID
-            url: String
-            settings: PbPageSettingsInput
-            content: JSON
-        }
-
-        input PbPageSettingsInput {
-            _empty: String
-        }
-
-        input PbCreatePageInput {
-            category: String!
-        }
-
-        type PbPageDeleteResponse {
-            data: Boolean
-            error: PbError
-        }
-
-        type PbPageResponse {
-            data: PbPage
-            error: PbError
-        }
-
-        type PbPageListResponse {
-            data: [PbPageListItem]
-            meta: PbListMeta
-            error: PbError
-        }
-
-        type PbElementResponse {
-            data: PbElement
-            error: PbError
-        }
-
-        type PbElementListResponse {
-            data: [PbElement]
-            meta: PbListMeta
-        }
-
-        type PbSearchTagsResponse {
-            data: [String]
-        }
-
-        type PbOembedResponse {
-            data: JSON
-            error: PbError
-        }
-
-        input PbOEmbedInput {
-            url: String!
-            width: Int
-            height: Int
-        }
-
-        input PbPageSortInput {
-            title: Int
-            publishedOn: Int
-        }
-
-        enum PbTagsRule {
-          ALL
-          ANY
-        }
-
-        extend type PbQuery {
-            getPage(
-                id: ID
-            ): PbPageResponse
-
-            getPublishedPage(
-                id: ID
+const plugin: GraphQLSchemaPlugin = {
+    type: "graphql-schema",
+    schema: {
+        typeDefs: /* GraphQL */ `
+            type PbPageCategory {
+                slug: String
+                name: String
                 url: String
+            }
+
+            type PbPage {
+                id: ID
+                createdBy: PbCreatedBy
+                createdOn: DateTime
+                savedOn: DateTime
+                publishedOn: DateTime
+                category: PbPageCategory
+                version: Int
+                title: String
+                status: String
+                snippet: String
+                url: String
+                fullUrl: String
+                settings: PbPageSettings
+                content: JSON
+                published: Boolean
+                # isHomePage: Boolean
+                # isErrorPage: Boolean
+                # isNotFoundPage: Boolean
+                locked: Boolean
                 parent: ID
-                returnNotFoundPage: Boolean
-                returnErrorPage: Boolean
-                preview: Boolean
-            ): PbPageResponse
+            }
 
-            listPages(
-                sort: JSON
-                limit: Int
-            ): PbPageListResponse
+            type PbPageListItem {
+                id: ID
+                createdOn: DateTime
+                savedOn: DateTime
+                createdBy: PbCreatedBy
+                published: Boolean
+                category: PbPageCategory
+                title: String
+                url: String
+                status: String
+            }
 
-            listPublishedPages(
-                search: String
+            type PbPageSettings {
+                _empty: String
+            }
+
+            type PbElement {
+                id: ID
+                name: String
+                type: String
                 category: String
-                parent: String
-                tags: [String]
-                tagsRule: PbTagsRule
-                sort: PbPageSortInput
-                limit: Int
-                after: String
-                before: String
-            ): PbPageListResponse
+                content: JSON
+                preview: String
+            }
 
-            listElements(limit: Int): PbElementListResponse
+            input PbElementInput {
+                name: String!
+                type: String!
+                category: String
+                content: JSON!
+                preview: RefInput
+            }
 
-            # Returns existing tags based on given search term.
-            searchTags(query: String!): PbSearchTagsResponse
+            input PbUpdateElementInput {
+                name: String
+                category: String
+                content: JSON
+                preview: RefInput
+            }
 
-            oembedData(
+            input PbUpdatePageInput {
+                title: String
+                snippet: String
+                category: ID
+                url: String
+                settings: PbPageSettingsInput
+                content: JSON
+            }
+
+            input PbPageSettingsInput {
+                _empty: String
+            }
+
+            input PbCreatePageInput {
+                category: String!
+            }
+
+            type PbPageDeleteResponse {
+                data: Boolean
+                error: PbError
+            }
+
+            type PbPageResponse {
+                data: PbPage
+                error: PbError
+            }
+
+            type PbPageListResponse {
+                data: [PbPageListItem]
+                error: PbError
+            }
+
+            type PbElementResponse {
+                data: PbElement
+                error: PbError
+            }
+
+            type PbElementListResponse {
+                data: [PbElement]
+            }
+
+            type PbSearchTagsResponse {
+                data: [String]
+            }
+
+            type PbOembedResponse {
+                data: JSON
+                error: PbError
+            }
+
+            input PbOEmbedInput {
                 url: String!
-                width: String
-                height: String
-            ): PbOembedResponse
-        }
+                width: Int
+                height: Int
+            }
 
-        extend type PbMutation {
-            createPage(
-                data: PbCreatePageInput!
-            ): PbPageResponse
+            input PbPageSortInput {
+                title: Int
+                publishedOn: Int
+            }
 
-            # Sets given page as new homepage.
-            setHomePage(id: ID!): PbPageResponse
+            enum PbTagsRule {
+                ALL
+                ANY
+            }
 
-            # Create a new revision from an existing revision
-            createRevisionFrom(
-                revision: ID!
-            ): PbPageResponse
+            extend type PbQuery {
+                getPage(id: ID): PbPageResponse
 
-            # Update page by given ID.
-             updatePage(
-                id: ID!
-                data: PbUpdatePageInput!
-            ): PbPageResponse
+                getPublishedPage(
+                    id: ID
+                    url: String
+                    parent: ID
+                    returnNotFoundPage: Boolean
+                    returnErrorPage: Boolean
+                    preview: Boolean
+                ): PbPageResponse
 
-            # Publish revision
-            publishRevision(
-                id: ID!
-            ): PbPageResponse
+                listPages(sort: JSON, limit: Int): PbPageListResponse
 
-            # Delete page and all of its revisions
-            deletePage(
-                id: ID!
-            ): PbPageResponse
+                listPublishedPages(
+                    search: String
+                    category: String
+                    parent: String
+                    tags: [String]
+                    tagsRule: PbTagsRule
+                    sort: PbPageSortInput
+                    limit: Int
+                    after: String
+                    before: String
+                ): PbPageListResponse
 
-            # Delete a single revision
-            deleteRevision(
-                id: ID!
-            ): PbDeleteResponse
+                listElements(limit: Int): PbElementListResponse
 
-            # Create element
-            createElement(
-                data: PbElementInput!
-            ): PbElementResponse
+                # Returns existing tags based on given search term.
+                searchTags(query: String!): PbSearchTagsResponse
 
-            updateElement(
-                id: ID!
-                data: PbUpdateElementInput!
-            ): PbElementResponse
+                oembedData(url: String!, width: String, height: String): PbOembedResponse
+            }
 
-            # Delete element
-            deleteElement(
-                id: ID!
-            ): PbDeleteResponse
+            extend type PbMutation {
+                createPage(data: PbCreatePageInput!): PbPageResponse
 
-            updateImageSize: PbDeleteResponse
-        },
-    `,
-    resolvers: {
-        PbQuery: {
-            getPage: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
-                    return new NotAuthorizedResponse();
+                # Sets given page as new homepage.
+                setHomePage(id: ID!): PbPageResponse
+
+                # Create a new revision from an existing revision
+                createRevisionFrom(revision: ID!): PbPageResponse
+
+                # Update page by given ID.
+                updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
+
+                # Publish revision
+                publishRevision(id: ID!): PbPageResponse
+
+                # Delete page and all of its revisions
+                deletePage(id: ID!): PbPageResponse
+
+                # Delete a single revision
+                deleteRevision(id: ID!): PbDeleteResponse
+
+                updateImageSize: PbDeleteResponse
+            }
+        `,
+        resolvers: {
+            PbPage: {
+                category: async (page: { category: string }, args, context: Context) => {
+                    const { categories } = context;
+                    return categories.get(page.category);
                 }
-
-                const { pages } = context;
-                const page = await pages.get(args.id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${args.id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
-                        return new NotAuthorizedResponse();
-                    }
-                }
-
-                return new Response(page);
-            }),
-
-            listPages: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const { pages } = context;
-                const lista = await pages.list(args);
-                return new Response(lista);
-            }),
-
-            listPublishedPages,
-            getPublishedPage,
-            listElements: hasPermission("pb:element:crud")(elementFetcher),
-            searchTags: async (
-                root: any,
-                args: { [key: string]: any },
-                context: { [key: string]: any },
-                info: { [key: string]: any }
-            ) => {
-                const resolver = context.plugins.byName("pb-resolver-search-tags");
-
-                return { data: await resolver.resolve({ root, args, context, info }) };
             },
-            oembedData: hasPermission("pb:oembed:read")(oembed)
-        },
-        PbMutation: {
-            createPage: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                    return new NotAuthorizedResponse();
+            PbPageListItem: {
+                category: async (page: { category: string }, args, context: Context) => {
+                    const { categories } = context;
+                    return categories.get(page.category);
                 }
+            },
+            PbQuery: {
+                getPage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission(),
+                    async (_, args: { id: string }, context: Context) => {
+                        // If permission has "rwd" property set, but "r" is not part of it, bail.
+                        const pbPagePermission = await context.security.getPermission("pb.page");
+                        if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
+                            return new NotAuthorizedResponse();
+                        }
 
-                const { pages, categories } = context;
-                const { data } = args;
+                        const id = decodeURIComponent(args.id);
 
-                const existingCategory = await categories.get(data.category);
-                if (!existingCategory) {
-                    return new NotFoundResponse(`Category with slug "${data.category}" not found.`);
-                }
+                        const { pages } = context;
+                        const page = await pages.get(id);
+                        if (!page) {
+                            return new NotFoundResponse(`Page "${id}" not found.`);
+                        }
 
-                try {
-                    return new Response(
-                        await pages.create({
-                            category: data.category,
-                            title: "Untitled",
-                            url: existingCategory.url + "untitled-" + uniqid.time()
-                        })
-                    );
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            }),
-            deletePage: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "d" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
-                    return new NotAuthorizedResponse();
-                }
+                        // If user can only manage own records, let's check if he owns the loaded one.
+                        if (pbPagePermission?.own === true) {
+                            const identity = context.security.getIdentity();
+                            if (page.createdBy.id !== identity.id) {
+                                return new NotAuthorizedResponse();
+                            }
+                        }
 
-                const { pages } = context;
-                const { id } = args;
+                        return new Response(page);
+                    }
+                ),
 
-                const page = await pages.get(id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${args.id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
+                listPages: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
                         return new NotAuthorizedResponse();
                     }
-                }
 
-                await pages.delete(id);
+                    const { pages } = context;
+                    const list = await pages.list(args);
+                    return new Response(list);
+                }),
 
-                return new Response(page);
-            }),
+                listPublishedPages,
+                getPublishedPage,
+                searchTags: async (
+                    root: any,
+                    args: { [key: string]: any },
+                    context: { [key: string]: any },
+                    info: { [key: string]: any }
+                ) => {
+                    const resolver = context.plugins.byName("pb-resolver-search-tags");
 
-            setHomePage,
-            createRevisionFrom: hasPermission("pb:page:crud")(createRevisionFrom),
-
-            updatePage: pipe(
-                hasPermission("pb.page"),
-                hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
-                const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                    return new NotAuthorizedResponse();
-                }
-
-                const { pages } = context;
-                const { id, data } = args;
-
-                let page = await pages.get(id);
-                if (!page) {
-                    return new NotFoundResponse(`Page "${id}" not found.`);
-                }
-
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
-                    if (page.createdBy.id !== identity.id) {
+                    return { data: await resolver.resolve({ root, args, context, info }) };
+                },
+                oembedData: hasPermission("pb:oembed:read")(oembed)
+            },
+            PbMutation: {
+                createPage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { data: Record<string, any> }, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
                         return new NotAuthorizedResponse();
                     }
-                }
 
-                try {
-                    await pages.update(id, data);
-                    page = await pages.get(id);
+                    const { pages, categories } = context;
+                    const { data } = args;
+
+                    const existingCategory = await categories.get(data.category);
+                    if (!existingCategory) {
+                        return new NotFoundResponse(
+                            `Category with slug "${data.category}" not found.`
+                        );
+                    }
+
+                    try {
+                        return new Response(
+                            await pages.create({
+                                category: data.category,
+                                title: "Untitled",
+                                url: existingCategory.url + "untitled-" + uniqid.time()
+                            })
+                        );
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+                deletePage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    // If permission has "rwd" property set, but "d" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    const { pages } = context;
+                    const id = decodeURIComponent(args.id);
+
+                    const page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${args.id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    await pages.delete(id);
+
                     return new Response(page);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
-            }),
-            publishRevision: hasPermission("pb:page:crud")(publishRevision),
-            deleteRevision: hasPermission("pb:page:crud")(pageFetcher),
+                }),
 
-            createElement: hasPermission("pb:page:crud")(elementFetcher),
-            updateElement: hasPermission("pb:page:crud")(elementFetcher),
-            deleteElement: hasPermission("pb:page:crud")(elementFetcher)
-        },
-        PbPageSettings: {
-            _empty: () => ""
+                setHomePage,
+                createRevisionFrom: hasPermission("pb:page:crud")(createRevisionFrom),
+
+                updatePage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string; data: Record<string, any> }, context: Context) => {
+                    // If permission has "rwd" property set, but "w" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    const { pages } = context;
+                    const { data } = args;
+                    const id = decodeURIComponent(args.id);
+
+                    let page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    try {
+                        await pages.update(id, data);
+                        page = await pages.get(id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+                publishRevision: hasPermission("pb:page:crud")(publishRevision),
+                deleteRevision: hasPermission("pb:page:crud")(pageFetcher)
+            },
+            PbPageSettings: {
+                _empty: () => ""
+            }
         }
     }
 };
+
+export default plugin;

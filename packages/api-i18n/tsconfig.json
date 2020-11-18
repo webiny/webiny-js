@@ -5,7 +5,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../graphql"
+      "path": "../plugins"
     },
     {
       "path": "../handler"
@@ -14,7 +14,7 @@
       "path": "../handler-aws"
     },
     {
-      "path": "../handler-apollo-server"
+      "path": "../handler-graphql"
     },
     {
       "path": "../handler-client"

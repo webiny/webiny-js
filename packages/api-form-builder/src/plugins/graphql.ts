@@ -1,6 +1,4 @@
 import { merge } from "lodash";
-import { emptyResolver } from "@webiny/graphql";
-import gql from "graphql-tag";
 import {
     I18NStringValueType,
     I18NJSONValueType,
@@ -12,13 +10,15 @@ import form from "./graphql/form";
 import formSubmission from "./graphql/formSubmission";
 import formsSettings from "./graphql/formsSettings";
 import { install, isInstalled } from "./graphql/install";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+
+const emptyResolver = () => ({});
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-forms",
     schema: {
-        typeDefs: gql`
+        typeDefs: `
             ${I18NStringValueType()}
             ${I18NJSONValueType()}
             ${I18NStringValueInput()}

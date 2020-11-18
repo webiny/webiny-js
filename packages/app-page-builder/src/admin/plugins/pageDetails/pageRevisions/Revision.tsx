@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";

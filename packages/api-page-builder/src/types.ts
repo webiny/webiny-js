@@ -1,4 +1,5 @@
-import { Context, Plugin } from "@webiny/graphql/types";
+import { Plugin } from "@webiny/plugins/types";
+import { Context } from "@webiny/handler/types";
 
 export type PbInstallPlugin = Plugin & {
     name: "pb-install";

@@ -1,6 +1,6 @@
-import { ErrorResponse, Response, ListResponse } from "@webiny/graphql";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { ErrorResponse, Response, ListResponse } from "@webiny/handler-graphql/responses";
+import { Context } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
 import pipe from "@ramda/pipe";
@@ -11,7 +11,7 @@ import { getBaseFormId } from "./formResolvers/utils/formResolversUtils";
 import { FormsCRUD, FormSubmissionsCRUD } from "../../types";
 import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type ResolverContext = Context<I18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -89,7 +89,7 @@ export default {
     `,
     resolvers: {
         FormSubmission: {
-            form: async (formSubmission, args, context: Context) => {
+            form: async (formSubmission, args, context: ResolverContext) => {
                 const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
 
                 const formData = await forms.getForm(formSubmission.form.revision);
@@ -105,7 +105,7 @@ export default {
             listFormSubmissions: pipe(
                 hasPermission("forms.submissions"),
                 hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
+            )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const formBuilderFormPermission = await context.security.getPermission(
                     "forms.submissions"
@@ -141,7 +141,7 @@ export default {
             getFormSubmission: pipe(
                 hasPermission("forms.submissions"),
                 hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
+            )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const formBuilderFormPermission = await context.security.getPermission(
                     "forms.submissions"

@@ -1,13 +1,5 @@
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveUpdate,
-    emptyResolver,
-    resolveList
-} from "@webiny/commodo-graphql";
-import gql from "graphql-tag";
+// @ts-nocheck
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
 import { hasScope, hasCmsPermission } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";
@@ -16,6 +8,8 @@ import { i18nFieldType } from "./graphqlTypes/i18nFieldType";
 import { i18nFieldInput } from "./graphqlTypes/i18nFieldInput";
 import contentModelGroup from "./graphql/contentModelGroup";
 import meta from "./graphql/meta";
+
+const emptyResolver = () => ({});
 
 const checkContentModelListPermission = async ({ args, context, permission }) => {
     const { CmsContentModelGroup, CmsContentModel } = context.models;
@@ -189,7 +183,7 @@ export default ({ type }) => [
             return generateSchemaPlugins({ context });
         },
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 ${i18nFieldType("CmsString", "String")}
                 ${i18nFieldInput("CmsString", "String")}
                 ${i18nFieldType("CmsJSON", "JSON")}

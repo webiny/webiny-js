@@ -1,11 +1,9 @@
-import gql from "graphql-tag";
-import { emptyResolver, ErrorResponse, resolveUpdateSettings } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import cookiePolicySettings from "./cookiePolicySettings.model";
-import { Context } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
-type SettingsContext = Context & SettingsManagerContext;
+const emptyResolver = () => ({});
+
+type SettingsContext = any;
 
 export default () => [
     {
@@ -18,10 +16,9 @@ export default () => [
         }
     },
     {
-        name: "graphql-schema-settings-cookie-policy",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */`
                 type CookiePolicySettings {
                     enabled: Boolean
                     policyLink: String
@@ -116,9 +113,9 @@ export default () => [
                     }
                 },
                 CookiePolicyMutation: {
-                    updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.CookiePolicySettings)
-                    )
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.CookiePolicySettings)*!/
+                    )*/
                 }
             }
         }

@@ -1,5 +1,5 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { FormsCRUD } from "../../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {

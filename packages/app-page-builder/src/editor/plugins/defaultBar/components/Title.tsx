@@ -2,7 +2,7 @@ import React, { useState, useCallback, SyntheticEvent } from "react";
 import slugify from "slugify";
 import { connect } from "@webiny/app-page-builder/editor/redux";
 import { Input } from "@webiny/ui/Input";
-import { updateRevision } from "@webiny/app-page-builder/editor/actions";
+import { updatePage } from "@webiny/app-page-builder/editor/actions";
 import { getPage } from "@webiny/app-page-builder/editor/selectors";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
@@ -28,7 +28,7 @@ type Props = {
     pageCategory: string;
     pageLocked: boolean;
     pageVersion: number;
-    updateRevision: (params: { title: string; history?: boolean }) => void;
+    updatePage: (params: { title: string; history?: boolean }) => void;
     editTitle: boolean;
     enableEdit: Function;
     setTitle: (title: string) => void;
@@ -42,7 +42,7 @@ const Title = ({
     pageCategoryUrl,
     pageLocked,
     pageVersion,
-    updateRevision
+    updatePage
 }: Props) => {
     const [editTitle, setEdit] = useState(false);
     const [stateTitle, setTitle] = useState(null);
@@ -55,7 +55,7 @@ const Title = ({
             setTitle(title);
         }
         setEdit(false);
-        updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
+        updatePage(getRevData({ title, pageTitle, pageCategoryUrl }));
     }, [title]);
 
     const onKeyDown = useCallback(
@@ -76,7 +76,7 @@ const Title = ({
                     e.preventDefault();
                     setEdit(false);
 
-                    updateRevision(getRevData({ title, pageTitle, pageCategoryUrl }));
+                    updatePage(getRevData({ title, pageTitle, pageCategoryUrl }));
                     break;
                 default:
                     return;
@@ -149,5 +149,5 @@ export default connect<any, any, any>(
             pageCategoryUrl: category.url
         };
     },
-    { updateRevision }
+    { updatePage }
 )(React.memo(Title));

@@ -261,7 +261,7 @@ addMiddleware([ELEMENT_DROPPED], ({ store, next, action }) => {
     });
 });
 
-export const updateRevision = createAction(UPDATE_REVISION);
+export const updatePage = createAction(UPDATE_REVISION);
 addMiddleware([UPDATE_REVISION], ({ store, next, action }) => {
     next(action);
 
@@ -381,10 +381,10 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
 
     lastSavedRevision = revision;
 
-    const updateRevision = gql`
-        mutation UpdateRevision($id: ID!, $data: PbUpdatePageInput!) {
+    const updatePage = gql`
+        mutation UpdatePage($id: ID!, $data: PbUpdatePageInput!) {
             pageBuilder {
-                updateRevision(id: $id, data: $data) {
+                updatePage(id: $id, data: $data) {
                     data {
                         id
                         content
@@ -405,7 +405,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
     store.dispatch(startSaving);
 
     action.meta.client
-        .mutate({ mutation: updateRevision, variables: { id: data.id, data: revision } })
+        .mutate({ mutation: updatePage, variables: { id: data.id, data: revision } })
         .then(data => {
             store.dispatch(finishSaving);
             action.meta.onFinish && action.meta.onFinish();

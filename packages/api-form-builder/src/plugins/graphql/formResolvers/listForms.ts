@@ -1,5 +1,5 @@
-import { ErrorResponse, ListResponse } from "@webiny/graphql";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { FormsCRUD } from "../../../types";
 import { hasRwd } from "./utils/formResolversUtils";

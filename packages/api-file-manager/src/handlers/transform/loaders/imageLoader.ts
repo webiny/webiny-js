@@ -1,14 +1,14 @@
 import sanitizeImageTransformations from "./sanitizeImageTransformations";
 import { getObjectParams } from "../../utils";
 import { SUPPORTED_IMAGES, SUPPORTED_TRANSFORMABLE_IMAGES, getImageKey } from "../utils";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerClientContext } from "@webiny/handler-client/types";
+import { Context } from "@webiny/handler/types";
+import { ClientContext } from "@webiny/handler-client/types";
 
 // @ts-ignore
 const IMAGE_TRANSFORMER_FUNCTION = process.env.IMAGE_TRANSFORMER_FUNCTION;
 
 interface TransformerParams {
-    context: HandlerContext & HandlerClientContext;
+    context: Context & ClientContext;
     key: string;
     transformations?: any;
 }

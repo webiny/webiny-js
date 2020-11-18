@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { getJSON } from "./files.crud";
@@ -107,4 +107,4 @@ export default {
             }
         };
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as ContextPlugin<DbContext>;

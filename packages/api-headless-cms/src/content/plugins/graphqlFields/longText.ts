@@ -9,7 +9,7 @@ const createListFilters = ({ field }) => {
         ${field.fieldId}: String
 
         # Matches if the field is not equal to the given value
-        ${field.fieldId}_not: String
+        ${field.fieldId}_not: Str1ing
 
 
         # Matches if the field value equal one of the given values

@@ -3,19 +3,14 @@
   "include": ["./src"],
   "exclude": [
     "node_modules",
-    "../graphql",
+    "../plugins",
     "../api-i18n",
     "../api-security",
-    "../api-settings-manager",
-    "../commodo",
-    "../handler-ssr",
-    "../validation",
-    "../handler-db",
     "../handler",
-    "../db-dynamodb",
-    "../api-i18n-content",
-    "../handler-apollo-server",
-    "../handler-aws"
+    "../commodo",
+    "../handler-graphql",
+    "../handler-ssr",
+    "../validation"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -23,44 +18,13 @@
     "declarationDir": "./dist"
   },
   "references": [
-    {
-      "path": "../graphql/tsconfig.build.json"
-    },
-    {
-      "path": "../api-i18n/tsconfig.build.json"
-    },
-    {
-      "path": "../api-security/tsconfig.build.json"
-    },
-    {
-      "path": "../api-settings-manager/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-ssr/tsconfig.build.json"
-    },
-    {
-      "path": "../validation/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-db/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    },
-    {
-      "path": "../db-dynamodb/tsconfig.build.json"
-    },
-    {
-      "path": "../api-i18n-content/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-apollo-server/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-aws/tsconfig.build.json"
-    }
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-security/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../commodo/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../handler-ssr/tsconfig.build.json" },
+    { "path": "../validation/tsconfig.build.json" }
   ]
 }

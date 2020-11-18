@@ -1,4 +1,4 @@
-import { ListResponse, ListErrorResponse } from "@webiny/graphql";
+import { ListResponse, ListErrorResponse } from "@webiny/handler-graphql/responses";
 
 export default async (_, args, context) => {
     try {

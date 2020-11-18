@@ -1,9 +1,9 @@
 import HandlerClient from "./HandlerClient";
-import { HandlerContext } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 
 export default () => ({
     type: "context",
-    apply(context: HandlerContext) {
+    apply(context: Context) {
         context.handlerClient = new HandlerClient(context);
     }
 });
