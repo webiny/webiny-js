@@ -25,7 +25,6 @@
     "@webiny/validation": "^4.14.0",
     "form-data": "^2.5.0",
     "got": "^9.6.0",
-    "graphql": "^14.5.8",
     "json2csv": "^4.5.2",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
