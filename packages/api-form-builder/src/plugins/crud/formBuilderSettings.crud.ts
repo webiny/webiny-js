@@ -1,5 +1,5 @@
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { withFields, string, boolean, fields, setOnce } from "@commodo/fields";
 import merge from "merge";
@@ -95,4 +95,4 @@ export default {
             }
         } as FormBuilderSettingsCRUD;
     }
-} as HandlerContextPlugin<HandlerContextDb>;
+} as ContextPlugin<DbContext>;
