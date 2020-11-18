@@ -2,7 +2,7 @@ import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { FormsCRUD } from "../../../types";
 
-export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {
+export const listPublishedForms: GraphQLFieldResolver = async (root, args, context) => {
     const { i18nContent, formBuilder } = context;
     const forms: FormsCRUD = formBuilder?.crud?.forms;
 

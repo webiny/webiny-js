@@ -401,8 +401,10 @@ export default {
                     status: getStatus({ published: false, locked: false }),
                     fields: sourceRev.fields,
                     layout: sourceRev.layout,
-                    // TODO: We'll see who to manage stats?
-                    stats: sourceRev.stats,
+                    stats: {
+                        submissions: 0,
+                        views: 0
+                    },
                     settings: sourceRev.settings,
                     triggers: sourceRev.triggers
                 };
