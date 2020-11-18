@@ -8,17 +8,17 @@ import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/graphql";
-import { HandlerContext } from "@webiny/handler/types";
-import { HandlerI18NContext } from "@webiny/api-i18n/types";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { Context } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
-import pipe from "@ramda/pipe";
+import { pipe } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { FormsCRUD } from "../../types";
 import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
-type Context = HandlerContext<HandlerI18NContext, SecurityContext>;
+type ResolverContext = Context<I18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -279,7 +279,7 @@ export default {
     `,
     resolvers: {
         Form: {
-            overallStats: async (form, args, context) => {
+            overallStats: async (form, args, context: ResolverContext) => {
                 // Prepare SK and do a batch read
                 const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
                 const allForms = await forms.listFormsBeginsWithId({ id: form.id });
@@ -309,7 +309,7 @@ export default {
                     conversionRate
                 };
             },
-            revisions: async (form, args, context) => {
+            revisions: async (form, args, context: ResolverContext) => {
                 // Prepare SK and do a batch read
                 const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
                 return await forms.listFormsBeginsWithId({ id: form.id, sort: { SK: -1 } });
@@ -324,7 +324,7 @@ export default {
             getForm: pipe(
                 hasPermission("forms.forms"),
                 hasI18NContentPermission()
-            )(async (_, args, context: Context) => {
+            )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const formBuilderFormPermission = await context.security.getPermission(
                     "forms.forms"
