@@ -3,7 +3,7 @@ import { Context } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { hasPermission } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
-import pipe from "@ramda/pipe";
+import { pipe } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { FormBuilderSettingsCRUD } from "../../types";
 
