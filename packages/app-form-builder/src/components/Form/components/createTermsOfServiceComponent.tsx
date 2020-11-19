@@ -1,7 +1,6 @@
 import * as React from "react";
 import { termsOfServiceEnabled } from "./../functions";
 import { FbFormModel, FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
-import { I18NStringValue, I18NObjectValue } from "@webiny/app-i18n/types";
 
 type CreateTermsOfServiceComponentArgs = {
     props: FbFormRenderComponentProps;
@@ -11,8 +10,8 @@ type CreateTermsOfServiceComponentArgs = {
 
 type ChildrenFunction = (params: {
     onChange: (value: boolean) => void;
-    errorMessage: I18NStringValue;
-    message: I18NObjectValue;
+    errorMessage: String;
+    message: Record<string, any>;
 }) => React.ReactNode;
 
 export type TermsOfServiceProps = {
