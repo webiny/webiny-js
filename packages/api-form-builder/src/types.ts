@@ -28,10 +28,10 @@ export type FbFormFieldPatternValidatorPlugin = Plugin & {
 };
 
 export type FbFormTriggerHandlerParams = {
-    formSubmission: { [key: string]: any }; // TODO: FormSubmission model instance
+    addLog: (log: Record<string, any>) => void;
     trigger: FbFormTriggerData;
     data: FbFormSubmissionData;
-    form: { [key: string]: any }; // TODO: Form model instance
+    form: Form;
 };
 
 /**
