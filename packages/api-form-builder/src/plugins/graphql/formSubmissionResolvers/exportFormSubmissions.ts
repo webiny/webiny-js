@@ -1,6 +1,5 @@
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { parseAsync } from "json2csv";
-import uploadFile from "./uploadFile";
 import { FormsCRUD, FormSubmissionsCRUD } from "../../../types";
 
 export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
@@ -76,7 +75,7 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
         // Save CSV file and return its URL to the client.
         const csv = await parseAsync(rows, { fields: Object.values(fields) });
         const buffer = Buffer.from(csv);
-        const result = await uploadFile({
+        const result = await context.fileManager.uploadFile({
             context,
             buffer,
             file: {
