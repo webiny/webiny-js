@@ -57,6 +57,9 @@ describe("Form Submission Test", () => {
                 triggers: {
                     redirect: {
                         url: "www.webiny.com"
+                    },
+                    webhook: {
+                        urls: ["https://webhook.site/e306293a-d7a3-4097-8759-27a105099d94"]
                     }
                 },
                 fields: mocks.fields
