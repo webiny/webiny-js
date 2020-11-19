@@ -118,7 +118,8 @@ export default {
                     const formSubmission: FormSubmissionsCRUD =
                         context?.formBuilder?.crud?.formSubmission;
                     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
-                    const { where } = args;
+                    const { where, limit = 10, sort = { savedOn: 1 } } = args;
+                    const [SK] = Object.values(sort);
 
                     // If user can only manage own records, let's check if he owns the loaded one.
                     if (formBuilderFormPermission?.own === true) {
@@ -130,8 +131,9 @@ export default {
                     }
 
                     const data = await formSubmission.listAllSubmissions({
-                        formId: getBaseFormId(where.form.parent),
-                        sort: { SK: 1 }
+                        parentFormId: getBaseFormId(where.form.parent),
+                        sort: { SK },
+                        limit
                     });
                     return new ListResponse(data);
                 } catch (err) {
@@ -167,7 +169,7 @@ export default {
                     }
 
                     const data = await formSubmission.getSubmission({
-                        formId: where.formId,
+                        parentFormId: where.formId,
                         submissionId: id
                     });
                     return new Response(data);
