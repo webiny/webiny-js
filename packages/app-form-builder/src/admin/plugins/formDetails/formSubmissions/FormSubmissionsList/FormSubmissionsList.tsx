@@ -86,13 +86,11 @@ const FormSubmissionsList = props => {
                                                 setExportInProgress(true);
                                                 const args = {
                                                     variables: {
-                                                        parent: null,
+                                                        parent: form.parent,
                                                         ids: null
                                                     }
                                                 };
-                                                if (dataList.isNoneMultiSelected()) {
-                                                    args.variables.parent = form.parent;
-                                                } else {
+                                                if (!dataList.isNoneMultiSelected()) {
                                                     args.variables.ids = dataList
                                                         .getMultiSelected()
                                                         .map(item => item.id);
