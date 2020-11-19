@@ -81,6 +81,13 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
                     }
                 }
             },
+            sort: [
+                {
+                    savedOn: {
+                        order: "desc"
+                    }
+                }
+            ],
             size: limit
         }
     });

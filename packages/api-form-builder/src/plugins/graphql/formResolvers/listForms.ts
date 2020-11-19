@@ -77,6 +77,13 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                         }
                     }
                 },
+                sort: [
+                    {
+                        savedOn: {
+                            order: "desc"
+                        }
+                    }
+                ],
                 size: limit
             }
         });
