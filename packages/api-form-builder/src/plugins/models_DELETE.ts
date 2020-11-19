@@ -2,9 +2,9 @@
 import { flow } from "lodash";
 import { withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 
-import formModel from "./models/form.model";
-import formSettings from "./models/formSettings.model";
-import formSubmission from "./models/formSubmission.model";
+import formModel from "./models_DELETE/form.model";
+import formSettings from "./models_DELETE/formSettings.model";
+import formSubmission from "./models_DELETE/formSubmission.model";
 import { ContextPlugin } from "@webiny/handler/types";
 
 export default (): ContextPlugin => ({
