@@ -82,7 +82,7 @@ export default {
             
              exportFormSubmissions(
                 ids: [ID] 
-                parent: ID 
+                parent: ID!
                 form: ID 
             ): ExportFormSubmissionsResponse
         }
