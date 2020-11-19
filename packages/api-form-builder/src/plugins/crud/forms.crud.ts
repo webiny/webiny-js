@@ -679,7 +679,7 @@ export default {
 
                     formInstance.stats.submissions = formInstance.stats.submissions + 1;
 
-                    await forms.updateForm(formInstance.id, formInstance);
+                    await forms.saveFormStats(formInstance.id, formInstance.stats);
 
                     formSubmissionCrud.addLog(formSubmission, {
                         type: "success",
