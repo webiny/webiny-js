@@ -56,17 +56,11 @@ export default {
         }
 
         context.formBuilder.crud.formSubmission = {
-            async getSubmission({
-                formId,
-                submissionId
-            }: {
-                formId: string;
-                submissionId: string;
-            }) {
+            async getSubmission({ parentFormId, submissionId }) {
                 const [[formSubmission]] = await db.read<FormSubmission>({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formId)}`,
+                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
                         SK: `S#${submissionId}`
                     },
                     limit: 1
@@ -74,17 +68,40 @@ export default {
 
                 return formSubmission;
             },
-            async listAllSubmissions({ formId, sort }) {
+            async listAllSubmissions({ parentFormId, sort, limit }) {
                 const [formSubmissions] = await db.read<FormSubmission>({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formId)}`,
+                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
                         SK: { $beginsWith: "S#" }
                     },
-                    sort
+                    sort,
+                    limit
                 });
 
                 return formSubmissions;
+            },
+            async listSubmissionsWithIds({ parentFormId, submissionIds }) {
+                const batch = db.batch();
+
+                batch.read(
+                    ...submissionIds.map(submissionId => ({
+                        ...defaults.db,
+                        query: {
+                            PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
+                            SK: `S#${submissionId}`
+                        }
+                    }))
+                );
+
+                const response = await batch.execute();
+
+                return response
+                    .map(item => {
+                        const [[formSubmission]] = item;
+                        return formSubmission;
+                    })
+                    .filter(Boolean);
             },
             async createSubmission(data) {
                 // Use `WithFields` model for data validation and setting default value.
