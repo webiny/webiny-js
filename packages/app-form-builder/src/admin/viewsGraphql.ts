@@ -148,7 +148,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
 `;
 
 export const EXPORT_FORM_SUBMISSIONS = gql`
-    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID, $form: ID) {
+    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID!, $form: ID) {
         forms {
             exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
                 data {
