@@ -593,7 +593,7 @@ export default {
                 if (Object.keys(data).length === 0) {
                     throw new Error("Form data cannot be empty.");
                 }
-                // TODO: We might need to update the data validation due to updated "I18N"
+
                 const invalidFields = {};
                 for (let i = 0; i < fields.length; i++) {
                     const field = fields[i];
@@ -619,9 +619,7 @@ export default {
                             }
 
                             if (isInvalid) {
-                                const { i18n } = context;
-                                invalidFields[field.fieldId] =
-                                    i18n.getValue(validator.message) || "Invalid value";
+                                invalidFields[field.fieldId] = validator.message || "Invalid value";
                             }
                         }
                     }
