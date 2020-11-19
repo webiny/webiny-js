@@ -39,6 +39,9 @@
     },
     {
       "path": "../db-dynamodb"
+    },
+    {
+      "path": "../db"
     }
   ]
 }

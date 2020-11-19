@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields": "beta",
+    "@commodo/fields": "1.1.2-beta.20",
     "@webiny/api-i18n-content": "^4.14.0",
     "@webiny/handler-aws": "^4.14.0",
     "@webiny/handler-db": "^4.14.0",
@@ -30,7 +30,6 @@
     "@webiny/handler-graphql": "^4.14.0",
     "@webiny/validation": "^4.14.0",
     "commodo-fields-object": "^1.0.6",
-    "form-data": "^2.5.0",
     "got": "^9.6.0",
     "json2csv": "^4.5.2",
     "lodash": "^4.17.11",
@@ -38,7 +37,8 @@
     "merge": "^1.2.1",
     "node-fetch": "^2.6.1",
     "slugify": "^1.2.9",
-    "uniqid": "^5.0.3"
+    "uniqid": "^5.0.3",
+    "@webiny/db": "^4.14.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
