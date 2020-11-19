@@ -5,7 +5,7 @@ const plugin: FbFormTriggerHandlerPlugin = {
     type: "form-trigger-handler",
     name: "form-trigger-handler-webhook",
     trigger: "webhook",
-    async handle({ trigger, data, formSubmission }) {
+    async handle({ trigger, data, addLog }) {
         const urls = trigger && trigger.urls;
         if (Array.isArray(urls)) {
             for (let i = 0; i < urls.length; i++) {
@@ -20,7 +20,7 @@ const plugin: FbFormTriggerHandlerPlugin = {
                         body: data
                     });
 
-                    formSubmission.addLog({
+                    addLog({
                         type: "success",
                         message: `Successfully sent a POST request to ${url}`,
                         data: {
@@ -28,7 +28,7 @@ const plugin: FbFormTriggerHandlerPlugin = {
                         }
                     });
                 } catch (e) {
-                    formSubmission.addLog({
+                    addLog({
                         type: "warning",
                         message: `POST request to ${url} failed: ${e.message}`
                     });
