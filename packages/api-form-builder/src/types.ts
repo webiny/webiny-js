@@ -1,4 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
+import { Result } from "@webiny/db";
 
 type FbFormTriggerData = { [key: string]: any };
 type FbFormSubmissionData = { [key: string]: any };
@@ -152,13 +153,28 @@ export type FormSubmissionCreateData = {
 
 export type FormSubmissionsCRUD = {
     getSubmission({
-        formId,
+        parentFormId,
         submissionId
     }: {
-        formId: string;
+        parentFormId: string;
         submissionId: string;
     }): Promise<FormSubmission>;
-    listAllSubmissions({ formId, sort }: { formId: string; sort: Sort }): Promise<FormSubmission[]>;
+    listAllSubmissions({
+        parentFormId,
+        sort,
+        limit
+    }: {
+        parentFormId: string;
+        sort: Sort;
+        limit: number;
+    }): Promise<FormSubmission[]>;
+    listSubmissionsWithIds({
+        parentFormId,
+        submissionIds
+    }: {
+        parentFormId: string;
+        submissionIds: string[];
+    }): Promise<FormSubmission[]>;
     createSubmission(data: FormSubmissionCreateData): Promise<FormSubmission>;
     updateSubmission({ formId, data }: { formId: string; data: FormSubmission }): Promise<boolean>;
     deleteSubmission({
@@ -167,7 +183,7 @@ export type FormSubmissionsCRUD = {
     }: {
         formId: string;
         submissionId: string;
-    }): Promise<boolean>;
+    }): Promise<Result<true>>;
     addLog(formSubmission: FormSubmission, log: Record<string, any>): FormSubmission;
 };
 
@@ -199,5 +215,5 @@ export type FormBuilderSettingsCRUD = {
     getSettings(): Promise<FormBuilderSettings>;
     createSettings(data: FormBuilderSettings): Promise<FormBuilderSettings>;
     updateSettings(data: FormBuilderSettingsUpdateData): Promise<boolean>;
-    deleteSettings(): Promise<boolean>;
+    deleteSettings(): Promise<Result<true>>;
 };
