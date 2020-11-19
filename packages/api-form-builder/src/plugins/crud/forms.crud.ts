@@ -666,14 +666,20 @@ export default {
                             const plugin = plugins[i];
                             formInstance.triggers[plugin.trigger] &&
                                 (await plugin.handle({
-                                    form: this,
-                                    formSubmission,
+                                    form: formInstance,
+                                    addLog: log => formSubmissionCrud.addLog(formSubmission, log),
                                     data,
                                     meta,
                                     trigger: formInstance.triggers[plugin.trigger]
                                 }));
                         }
                     }
+
+                    // Save form submission after executing "triggers"
+                    await formSubmissionCrud.updateSubmission({
+                        formId: getFormId(formInstance),
+                        data: formSubmission
+                    });
 
                     formInstance.stats.submissions = formInstance.stats.submissions + 1;
 
