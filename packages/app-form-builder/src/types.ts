@@ -229,6 +229,7 @@ export type FormComponentPropsType = {
 export type FbFormRenderComponentProps = {
     preview?: boolean;
     data?: FbFormModel;
+    client?: ApolloClient<any>;
 };
 
 export type FormSubmitResponseType = {
