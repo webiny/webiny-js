@@ -9,7 +9,7 @@ const t = i18n.ns("app-form-builder/admin/menus");
 const FormBuilderMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    if (!identity.getPermission("forms.form.crud")) {
+    if (!identity.getPermission("forms.forms")) {
         return null;
     }
 
