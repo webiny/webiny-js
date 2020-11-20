@@ -147,7 +147,7 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
 
 export const LIST_FORMS = /* GraphQL */ `
     query ListForms(
-        $sort: JSON,
+        $sort: ListFormsSortInput,
         $search: String,
         $parent: String,
         $limit: Int,

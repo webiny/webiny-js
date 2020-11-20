@@ -133,7 +133,7 @@ describe("Forms Security Test", () => {
                 }
             }
 
-            let [response] = await listForms();
+            let [response] = await listForms({ sort: { createdOn: 1 } });
             expect(response).toMatchObject({
                 data: {
                     forms: {
@@ -162,8 +162,8 @@ describe("Forms Security Test", () => {
                 forms: {
                     listForms: {
                         data: [
-                            new MockResponse({ prefix: "list-forms-1-", id: form1Id }),
-                            new MockResponse({ prefix: "list-forms-2-", id: form2Id })
+                            new MockResponse({ prefix: "list-forms-2-", id: form2Id }),
+                            new MockResponse({ prefix: "list-forms-1-", id: form1Id })
                         ],
                         error: null
                     }
@@ -182,8 +182,8 @@ describe("Forms Security Test", () => {
                 forms: {
                     listForms: {
                         data: [
-                            new MockResponse({ prefix: "list-forms-3-", id: form3Id }),
-                            new MockResponse({ prefix: "list-forms-4-", id: form4Id })
+                            new MockResponse({ prefix: "list-forms-4-", id: form4Id }),
+                            new MockResponse({ prefix: "list-forms-3-", id: form3Id })
                         ],
                         error: null
                     }

@@ -349,7 +349,11 @@ describe('Form Builder "Form" Test', () => {
         }
 
         // Let's list all the forms
-        let [response] = await listForms();
+        let [response] = await listForms({
+            sort: {
+                createdOn: 1
+            }
+        });
 
         expect(response).toMatchObject({
             data: {
@@ -400,7 +404,7 @@ describe('Form Builder "Form" Test', () => {
         }
 
         // Let's list published revisions only.
-        [response] = await listPublishedForms({});
+        [response] = await listPublishedForms({ sort: { publishedOn: 1 } });
 
         expect(response).toMatchObject({
             data: {
@@ -456,7 +460,7 @@ describe('Form Builder "Form" Test', () => {
             data: {
                 forms: {
                     listPublishedForms: {
-                        data: [formDataArray[0], formDataArray[1]].map(formData => ({
+                        data: [formDataArray[1], formDataArray[0]].map(formData => ({
                             ...formData,
                             savedOn: /^20/,
                             createdOn: /^20/
