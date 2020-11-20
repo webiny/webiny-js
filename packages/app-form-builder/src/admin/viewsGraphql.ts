@@ -21,7 +21,7 @@ const BASE_FORM_FIELDS = `
 `;
 
 export const LIST_FORMS = gql`
-    query FormsListForms($sort: JSON, $limit: Int, $search: String, $after: String, $before: String) {
+    query FormsListForms($sort: ListFormsSortInput, $limit: Int, $search: String, $after: String, $before: String) {
         forms {
             listForms(sort: $sort, limit: $limit, search: $search, after: $after, before: $before) {
                 data {  
