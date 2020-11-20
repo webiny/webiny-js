@@ -69,6 +69,6 @@ const apiGateway = new ApiGateway({
 const cloudfront = new Cloudfront({ apiGateway });
 
 export const region = process.env.AWS_REGION;
-export const cdnDomain = cloudfront.cloudfront.domainName;
+export const cdnDomain = cloudfront.cloudfront.domainName.apply(value => `https://${value}/graphql`);
 export const cognitoUserPoolId = cognito.userPool.id;
 export const cognitoAppClientId = cognito.userPoolClient.id;
