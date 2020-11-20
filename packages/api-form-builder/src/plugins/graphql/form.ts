@@ -205,6 +205,11 @@ export default {
             error: FormError
         }
         
+        input ListFormsSortInput {
+            name: Int
+            createdOn: Int
+        }
+        
         extend type FormsQuery {
             getForm(
                 id: ID 
@@ -215,7 +220,7 @@ export default {
             getPublishedForm(id: ID, parent: ID, slug: String, version: Int): FormResponse
             
             listForms(
-                sort: JSON
+                sort: ListFormsSortInput
                 search: String
                 parent: String
                 limit: Int
