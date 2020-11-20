@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler";
-import httpHandlerApolloServerPlugins from "@webiny/handler-apollo-server";
+import httpHandlerApolloServerPlugins from "@webiny/handler-graphql";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
 const createApolloHandler = plugins =>
@@ -9,7 +9,7 @@ export default plugins => () => {
     const apolloHandler = createApolloHandler(plugins);
     return {
         apolloHandler,
-        invoke: async ({ httpMethod = "POST", body }) => {
+        invoke: async ({ body }) => {
             const response = await apolloHandler({
                 httpMethod: "POST",
                 body: JSON.stringify(body),

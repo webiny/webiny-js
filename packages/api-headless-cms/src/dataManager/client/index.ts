@@ -1,5 +1,5 @@
-import { ContextPlugin } from "@webiny/graphql/types";
 import { DataManagerClient } from "./DataManagerClient";
+import { ContextPlugin } from "@webiny/handler/types";
 
 interface Params {
     dataManagerFunction: string;

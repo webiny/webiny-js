@@ -1,4 +1,3 @@
-import gql from "graphql-tag";
 import { withFields, string, fields } from "@webiny/commodo";
 
 export default [
@@ -24,10 +23,9 @@ export default [
         }
     },
     {
-        name: "graphql-schema-page-builder-settings-seo",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type PbSeoSettingsMetaTag {
                     name: String
                     content: String

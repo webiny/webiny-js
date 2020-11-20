@@ -1,1 +1,0 @@
-# @webiny/api-settings-manager

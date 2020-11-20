@@ -44,6 +44,7 @@ describe("CRUD Test", () => {
             }
         });
 
+        const ids = [];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
             let data = {
@@ -64,7 +65,7 @@ describe("CRUD Test", () => {
                                 published: null,
                                 locked: null,
                                 version: 1,
-                                createdOn: /^20/,
+                                createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -73,7 +74,11 @@ describe("CRUD Test", () => {
                 }
             });
 
-            [response] = await getPage({ id: response.data.pageBuilder.createPage.data.id });
+            let { id } = response.data.pageBuilder.createPage.data;
+
+            ids.push(id);
+            [response] = await getPage({ id });
+
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -82,7 +87,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
-                                createdOn: /^20/,
+                                createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -91,7 +96,8 @@ describe("CRUD Test", () => {
                 }
             });
 
-            const { id } = response.data.pageBuilder.getPage.data;
+            id = response.data.pageBuilder.getPage.data.id;
+
             data = {
                 title: "title-UPDATED-" + i,
                 url: "url-UPDATED-" + i,
@@ -109,7 +115,7 @@ describe("CRUD Test", () => {
                         updatePage: {
                             data: {
                                 ...data,
-                                createdOn: /^20/,
+                                createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -121,9 +127,9 @@ describe("CRUD Test", () => {
 
         // List should show three pages.
         while (true) {
-            await sleep(2000);
+            await sleep();
             [response] = await listPages();
-            if (response.data.pageBuilder.listPages.data.length) {
+            if (response?.data?.pageBuilder?.listPages?.data.length) {
                 break;
             }
         }
@@ -142,7 +148,8 @@ describe("CRUD Test", () => {
                                     id: "mocked"
                                 },
                                 createdOn: /^20/,
-                                id: /^[a-zA-Z0-9]{15}$/,
+                                savedOn: /^20/,
+                                id: ids[2],
                                 published: false,
                                 status: "draft",
                                 title: "title-UPDATED-2",
@@ -157,7 +164,8 @@ describe("CRUD Test", () => {
                                     id: "mocked"
                                 },
                                 createdOn: /^20/,
-                                id: /^[a-zA-Z0-9]{15}$/,
+                                savedOn: /^20/,
+                                id: ids[1],
                                 published: false,
                                 status: "draft",
                                 title: "title-UPDATED-1",
@@ -172,7 +180,8 @@ describe("CRUD Test", () => {
                                     id: "mocked"
                                 },
                                 createdOn: /^20/,
-                                id: /^[a-zA-Z0-9]{15}$/,
+                                savedOn: /^20/,
+                                id: ids[0],
                                 published: false,
                                 status: "draft",
                                 title: "title-UPDATED-0",
@@ -195,7 +204,7 @@ describe("CRUD Test", () => {
                         deletePage: {
                             data: {
                                 id,
-                                createdOn: /^20/,
+                                createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null

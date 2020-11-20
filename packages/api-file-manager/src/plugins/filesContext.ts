@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/graphql/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
 export default [
     {

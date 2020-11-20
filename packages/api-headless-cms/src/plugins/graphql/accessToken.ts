@@ -1,12 +1,4 @@
-// TODO remove
 // @ts-nocheck
-import {
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 
 const AccessTokenFetcher = ctx => ctx.models.CmsAccessToken;

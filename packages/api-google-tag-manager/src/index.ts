@@ -1,11 +1,9 @@
-import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings, ErrorResponse } from "@webiny/commodo-graphql";
-import { hasScope } from "@webiny/api-security";
+import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import googleTagManagerSettings from "./googleTagManagerSettings.model";
-import { Context } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
 
-type SettingsContext = Context & SettingsManagerContext;
+type SettingsContext = any;
+
+const emptyResolver = () => ({});
 
 export default () => [
     {
@@ -21,7 +19,7 @@ export default () => [
         name: "graphql-schema-google-tag-manager",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type GtmError {
                     code: String
                     message: String
@@ -79,9 +77,9 @@ export default () => [
                     }
                 },
                 GtmMutation: {
-                    updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)
-                    )
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)*!/
+                    )*/
                 }
             }
         }

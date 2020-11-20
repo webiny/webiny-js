@@ -2,6 +2,7 @@ import React, { useMemo, useState, useCallback } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import PagesDataList from "./PagesDataList";
+import PageDetails from "./PageDetails";
 import { useSecurity } from "@webiny/app-security";
 import CategoriesDialog from "../Categories/CategoriesDialog";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -21,9 +22,7 @@ const Pages = () => {
 
     // ------------
 
-    // TODO remove
-    // eslint-disable-next-line
-    const [create, createMutation] = useMutation(CREATE_PAGE, {
+    const [create /*createMutation*/] = useMutation(CREATE_PAGE, {
         // refetchQueries: [{ query: LIST_MENUS }]
     });
 
@@ -70,7 +69,9 @@ const Pages = () => {
                 <LeftPanel>
                     <PagesDataList />
                 </LeftPanel>
-                <RightPanel>{/*<PageDetails />*/}</RightPanel>
+                <RightPanel>
+                    <PageDetails />
+                </RightPanel>
             </SplitView>
             {canCreate && (
                 <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />

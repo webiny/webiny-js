@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
@@ -49,10 +50,10 @@ const PagePreviewToolbar = styled("div")({
 });
 
 type PagePreviewProps = {
-    pageDetails: PbPageDetailsContextValue;
+    page: PbPageDetailsContextValue;
 };
 
-const PagePreview = ({ pageDetails }: PagePreviewProps) => {
+const PagePreview = ({ page }: PagePreviewProps) => {
     return (
         <Zoom>
             {({ zoom, setZoom }) => (
@@ -61,7 +62,7 @@ const PagePreview = ({ pageDetails }: PagePreviewProps) => {
                     // @ts-ignore
                     style={{ "--webiny-pb-page-preview-scale": zoom }}
                 >
-                    <RenderElement key={pageDetails.page.id} element={pageDetails.page.content} />
+                    <RenderElement key={page.id} element={page.content} />
                     <PagePreviewToolbar>
                         <span>
                             <Typography use={"overline"}>Zoom:&nbsp;</Typography>

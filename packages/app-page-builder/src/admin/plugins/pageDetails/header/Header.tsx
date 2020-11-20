@@ -31,11 +31,7 @@ const headerActions = css({
 });
 
 const Header = props => {
-    const {
-        pageDetails,
-        pageDetails: { page },
-        refreshPages
-    } = props;
+    const { page } = props;
     return (
         <React.Fragment>
             <Grid className={headerTitle}>
@@ -43,8 +39,8 @@ const Header = props => {
                     <Typography use="headline5">{page.title}</Typography>
                 </Cell>
                 <Cell span={4} className={headerActions}>
-                    {renderPlugins("pb-page-details-header-left", { pageDetails, refreshPages })}
-                    {renderPlugins("pb-page-details-header-right", { pageDetails, refreshPages })}
+                    {renderPlugins("pb-page-details-header-left", props)}
+                    {renderPlugins("pb-page-details-header-right", props)}
                 </Cell>
             </Grid>
         </React.Fragment>

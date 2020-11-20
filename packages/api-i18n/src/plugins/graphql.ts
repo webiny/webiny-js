@@ -1,8 +1,7 @@
 import { merge } from "lodash";
-import gql from "graphql-tag";
 import locales from "./graphql/locales";
 import installation from "./graphql/installation";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
 
@@ -10,7 +9,7 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-i18n",
     schema: {
-        typeDefs: gql`
+        typeDefs: /* GraphQL */ `
             type I18NQuery {
                 _empty: String
             }

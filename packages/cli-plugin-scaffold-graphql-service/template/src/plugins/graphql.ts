@@ -1,16 +1,8 @@
-// TODO remove
 // @ts-nocheck
-import gql from "graphql-tag";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasScope } from "@webiny/api-security";
-import {
-    emptyResolver,
-    resolveCreate,
-    resolveDelete,
-    resolveGet,
-    resolveList,
-    resolveUpdate
-} from "@webiny/commodo-graphql";
+
+const emptyResolver = () => ({});
 
 const entityFetcher = ctx => ctx.models.Entity;
 
@@ -26,7 +18,7 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-entities",
     schema: {
-        typeDefs: gql`
+        typeDefs: /* GraphQL */ `
             type EntityDeleteResponse {
                 data: Boolean
                 error: EntityError

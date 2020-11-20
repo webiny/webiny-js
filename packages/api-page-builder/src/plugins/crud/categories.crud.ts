@@ -1,9 +1,7 @@
-// TODO remove
-// @ts-nocheck
-import { HandlerContextPlugin } from "@webiny/handler/types";
-import { HandlerContextDb } from "@webiny/handler-db/types";
-import dbArgs from "./dbArgs";
-import { HandlerI18NContentContext } from "@webiny/api-i18n-content/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types";
+import defaults from "./defaults";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
@@ -49,7 +47,7 @@ export default {
 
             for (let i = 0; i < slugs.length; i++) {
                 batch.read({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_CATEGORY, SK: slugs[i] }
                 });
             }
@@ -66,7 +64,7 @@ export default {
             },
             async list(args) {
                 const [categories] = await db.read<Category>({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_CATEGORY, SK: { $gt: " " } },
                     ...args
                 });
@@ -76,7 +74,7 @@ export default {
             create(data) {
                 const { name, slug, url, layout, createdOn, createdBy } = data;
                 return db.create({
-                    ...dbArgs,
+                    ...defaults.db,
                     data: {
                         PK: PK_CATEGORY,
                         SK: slug,
@@ -96,7 +94,7 @@ export default {
                 data = await updateData.toJSON({ onlyDirty: true });
 
                 await db.update({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_CATEGORY, SK: slug },
                     data
                 });
@@ -105,10 +103,10 @@ export default {
             },
             delete(slug: string) {
                 return db.delete({
-                    ...dbArgs,
+                    ...defaults.db,
                     query: { PK: PK_CATEGORY, SK: slug }
                 });
             }
         };
     }
-} as HandlerContextPlugin<HandlerI18NContentContext, HandlerContextDb>;
+} as ContextPlugin<I18NContentContext, DbContext>;

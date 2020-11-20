@@ -1,23 +1,18 @@
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
-import gql from "graphql-tag";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 import cmsAccessToken from "./graphql/accessToken";
 import cmsInstall from "./graphql/install";
 
-import { emptyResolver } from "@webiny/commodo-graphql";
+const emptyResolver = () => ({});
 
 export default () => [
     {
         name: "graphql-schema-headless",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
-                extend type SecurityUser @key(fields: "id") {
-                    id: ID @external
-                }
-
+            typeDefs: /* GraphQL */ `
                 input CmsSearchInput {
                     query: String
                     fields: [String]

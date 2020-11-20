@@ -1,5 +1,5 @@
-import { Plugin } from "@webiny/graphql/types";
-import { Context } from "@webiny/graphql/types";
+import { Context } from "@webiny/handler/types";
+import { Plugin } from "@webiny/plugins/types";
 
 export type SecurityUserManagementPlugin = Plugin & {
     name: "security-user-management";

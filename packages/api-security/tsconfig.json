@@ -2,13 +2,13 @@
   "extends": "../../tsconfig",
   "references": [
     {
-      "path": "../graphql"
-    },
-    {
       "path": "../handler"
     },
     {
-      "path": "../handler-apollo-server"
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler-graphql"
     }
   ]
 }

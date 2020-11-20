@@ -1,14 +1,14 @@
-import gql from "graphql-tag";
-import { emptyResolver, resolveUpdateSettings } from "@webiny/commodo-graphql";
-import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/graphql";
+import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { hasScope } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
-import { Context, ContextPlugin, GraphQLSchemaPlugin } from "@webiny/graphql/types";
-import { Context as SettingsManagerContext } from "@webiny/api-settings-manager/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { ContextPlugin } from "@webiny/handler/types";
 
-type SettingsContext = Context & SettingsManagerContext;
+type SettingsContext = ContextPlugin<any>;
+
+const emptyResolver = () => ({});
 
 export default () => [
     {
@@ -22,7 +22,7 @@ export default () => [
         name: "graphql-schema-mailchimp",
         type: "graphql-schema",
         schema: {
-            typeDefs: gql`
+            typeDefs: /* GraphQL */ `
                 type MailchimpSettings {
                     enabled: Boolean
                     apiKey: String
@@ -126,22 +126,20 @@ export default () => [
                             return new ListErrorResponse(e);
                         }
                     },
-                    getSettings: hasScope("pb:settings")(
-                        async (_, args, context: SettingsContext) => {
-                            try {
-                                const data = await context.settingsManager.getSettings("mailchimp");
-                                return { data };
-                            } catch (err) {
-                                return new ErrorResponse(err);
-                            }
+                    getSettings: hasScope("pb:settings")(async (_, args, context) => {
+                        try {
+                            const data = await context.settingsManager.getSettings("mailchimp");
+                            return { data };
+                        } catch (err) {
+                            return new ErrorResponse(err);
                         }
-                    )
+                    })
                 },
                 MailchimpMutation: {
                     addToList: async (
                         _: any,
                         { list: listId, email }: { [key: string]: any },
-                        context: Context
+                        context
                     ) => {
                         const { MailchimpSettings } = context.models;
 
@@ -183,12 +181,12 @@ export default () => [
                                 message: e.message
                             });
                         }
-                    },
-                    updateSettings: hasScope("pb:settings")(
-                        resolveUpdateSettings(({ models }) => models.MailchimpSettings)
-                    )
+                    }
+                    /*updateSettings: hasScope("pb:settings")(
+                        /!*resolveUpdateSettings(({ models }) => models.MailchimpSettings)*!/
+                    )*/
                 }
             }
         }
-    } as GraphQLSchemaPlugin
+    } as GraphQLSchemaPlugin<SettingsContext>
 ];

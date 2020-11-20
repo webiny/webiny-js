@@ -1,5 +1,6 @@
-import { ListResponse, requiresTotalCount } from "@webiny/graphql";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+// @ts-nocheck
+import { ListResponse } from "@webiny/handler-graphql/responses";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {
     const { Form } = context.models;

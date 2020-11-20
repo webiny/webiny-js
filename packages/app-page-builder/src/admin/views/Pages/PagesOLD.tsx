@@ -1,4 +1,3 @@
-// TODO remove
 // @ts-nocheck
 import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";

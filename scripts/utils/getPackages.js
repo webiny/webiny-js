@@ -2,8 +2,16 @@ const readJson = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { yellow } = require("chalk");
 const fs = require("fs-extra");
+const path = require("path");
+
+const PROJECT_ROOT = path.join(__dirname, "..", "..");
+const rootPackageJson = readJson.sync(path.join(PROJECT_ROOT, "package.json"));
+
+module.exports.PROJECT_ROOT = PROJECT_ROOT;
+module.exports.rootPackageJson = rootPackageJson;
 
 let packagesCache;
+
 module.exports.getPackages = (args = {}) => {
     if (packagesCache) {
         return packagesCache;
@@ -21,8 +29,8 @@ module.exports.getPackages = (args = {}) => {
             const tsConfigJsonPath = path + "/tsconfig.json";
             const tsConfigBuildJsonPath = path + "/tsconfig.build.json";
 
-            let packageJson, tsConfigJson, tsConfigBuildJson;
-            packageJson = readJson.sync(packageJsonPath);
+            let tsConfigJson, tsConfigBuildJson;
+            const packageJson = readJson.sync(packageJsonPath);
 
             try {
                 tsConfigJson = readJson.sync(tsConfigJsonPath);

@@ -1,5 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/graphql";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {

@@ -1,6 +1,4 @@
-// TODO remove
 // @ts-nocheck
-import { resolveGet, resolveList } from "@webiny/commodo-graphql";
 import { hasScope } from "@webiny/api-security";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";

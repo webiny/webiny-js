@@ -1,6 +1,5 @@
-import gql from "graphql-tag";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GraphQLSchemaPlugin } from "@webiny/graphql/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { SecurityUserManagementPlugin } from "@webiny/api-security-user-management/types";
 
 export default ({ region, userPoolId }) => {
@@ -11,7 +10,7 @@ export default ({ region, userPoolId }) => {
             type: "graphql-schema",
             name: "graphql-schema-cognito",
             schema: {
-                typeDefs: gql`
+                typeDefs: /* GraphQL */ `
                     extend input SecurityInstallInput {
                         password: String
                     }

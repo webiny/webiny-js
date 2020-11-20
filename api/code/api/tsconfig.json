@@ -5,13 +5,7 @@
       "path": "../../../../packages/api-security"
     },
     {
-      "path": "../../../../packages/api-security-permissions-manager"
-    },
-    {
       "path": "../../../../packages/api-security-user-management"
-    },
-    {
-      "path": "../../../../packages/api-settings-manager"
     },
     {
       "path": "../../../../packages/handler"
@@ -23,7 +17,7 @@
       "path": "../../../../packages/handler-aws"
     },
     {
-      "path": "../../../../packages/handler-apollo-server"
+      "path": "../../../../packages/handler-graphql"
     },
     {
       "path": "../../../packages/api-i18n"
@@ -59,7 +53,7 @@
       "path": "../../../packages/api-security"
     },
     {
-      "path": "../../../packages/handler-apollo-server"
+      "path": "../../../packages/handler-graphql"
     }
   ]
 }

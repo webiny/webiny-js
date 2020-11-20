@@ -1,7 +1,7 @@
-import { Response, ErrorResponse } from "@webiny/graphql";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
-import { GraphQLFieldResolver } from "@webiny/graphql/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
