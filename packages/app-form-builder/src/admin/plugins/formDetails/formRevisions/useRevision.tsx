@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "react-apollo";
-import { cloneDeep, get } from "lodash";
+import { cloneDeep } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {
     GET_FORM,
@@ -53,7 +53,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 variables: { id: revision.id },
                 refetchQueries: ["FormsListForms"],
                 update: (cache, updated) => {
-                    const error = get(updated, "data.forms.deleteRevision.error");
+                    const error = updated?.data?.forms?.deleteRevision?.error;
                     if (error) {
                         return showSnackbar(error.message);
                     }
