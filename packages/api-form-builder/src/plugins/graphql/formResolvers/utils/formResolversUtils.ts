@@ -28,6 +28,16 @@ export const hasRwd = ({ formBuilderFormPermission, rwd }) => {
 export const convertMongoSortToElasticSort = sort => {
     const [[key, value]] = Object.entries(sort);
 
+    const shouldUseKeyword = ["name"];
+
+    if (shouldUseKeyword.includes(key)) {
+        return {
+            [`${key}.keyword`]: {
+                order: value === -1 ? "desc" : "asc"
+            }
+        };
+    }
+
     return {
         [key]: {
             order: value === -1 ? "desc" : "asc"

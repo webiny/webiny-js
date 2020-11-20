@@ -208,6 +208,7 @@ export default {
         input ListFormsSortInput {
             name: Int
             createdOn: Int
+            savedOn: Int
         }
         
         extend type FormsQuery {
