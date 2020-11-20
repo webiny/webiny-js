@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Icon } from "@webiny/ui/Icon";
-import { get, cloneDeep } from "lodash";
+import { cloneDeep } from "lodash";
 import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
@@ -109,8 +109,7 @@ export const EditTab = () => {
                                                     }
                                                     isVisible={item =>
                                                         item.ui === "field" &&
-                                                        (row.length < 4 ||
-                                                            get(item, "pos.row") === index)
+                                                        (row.length < 4 || item?.pos?.row === index)
                                                     }
                                                 />
 
@@ -129,7 +128,7 @@ export const EditTab = () => {
                                                         isVisible={item =>
                                                             item.ui === "field" &&
                                                             (row.length < 4 ||
-                                                                get(item, "pos.row") === index)
+                                                                item?.pos?.row === index)
                                                         }
                                                         onDrop={item =>
                                                             handleDropField(item, {
