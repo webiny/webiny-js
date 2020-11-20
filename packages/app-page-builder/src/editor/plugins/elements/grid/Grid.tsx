@@ -20,9 +20,14 @@ type GridPropsType = {
     customClasses: string[];
     element: PbElement;
 };
-const Grid: React.FunctionComponent<GridPropsType> = props => {
-    const { elementStyle, elementAttributes, customClasses, combineClassNames, element } = props;
-    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
+const Grid: React.FunctionComponent<GridPropsType> = ({
+    elementStyle,
+    elementAttributes,
+    customClasses,
+    combineClassNames,
+    element
+}) => {
+    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle || {};
 
     return (
         <StyledGrid
@@ -39,7 +44,7 @@ const Grid: React.FunctionComponent<GridPropsType> = props => {
         >
             {element.elements.map(child => {
                 return (
-                    <CellContainer size={child.data.settings.grid?.size} key={`cell-${child.id}`}>
+                    <CellContainer size={child.data.settings?.grid?.size} key={`cell-${child.id}`}>
                         <Element id={child.id} />
                     </CellContainer>
                 );

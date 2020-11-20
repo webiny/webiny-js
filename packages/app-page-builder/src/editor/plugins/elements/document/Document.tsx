@@ -7,8 +7,8 @@ type DocumentProps = { element: PbShallowElement };
 const Document = ({ element }: DocumentProps) => {
     return (
         <div className={"webiny-pb-page-document"} data-testid={"pb-editor-page-canvas-section"}>
-            {element.elements.map(el => {
-                return <Element key={el} id={el} />;
+            {element.elements.map(id => {
+                return <Element key={id} id={id} />;
             })}
         </div>
     );

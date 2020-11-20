@@ -126,10 +126,6 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                         </Draggable>
                         {renderedPlugin}
                     </div>
-                    {/*
-                        <div className="add-element add-element--above">+</div>
-                        <div className="add-element add-element--below">+</div>
-                        */}
                 </ElementContainer>
             )}
         </Transition>
