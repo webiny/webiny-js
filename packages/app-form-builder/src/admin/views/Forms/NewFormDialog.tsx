@@ -30,10 +30,9 @@ const narrowDialog = css({
 export type NewFormDialogProps = {
     open: boolean;
     onClose: DialogOnClose;
-    formsDataList: any;
 };
 
-const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataList }) => {
+const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
@@ -65,8 +64,6 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
                         setLoading(false);
                         return showSnackbar(error?.message);
                     }
-                    // FIXME: I believe me might not need this.
-                    await formsDataList.refresh();
                     history.push("/forms/" + encodeURIComponent(id));
                 }}
             >
