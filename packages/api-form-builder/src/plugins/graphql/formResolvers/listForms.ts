@@ -2,14 +2,14 @@ import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { FormsCRUD } from "../../../types";
-import { hasRwd } from "./utils/formResolversUtils";
+import { convertMongoSortToElasticSort, hasRwd } from "./utils/formResolversUtils";
 import defaults from "../../crud/defaults";
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     const { i18nContent, formBuilder } = context;
     const forms: FormsCRUD = formBuilder?.crud?.forms;
     const {
-        // sort = null,
+        sort = { createdOn: -1 },
         search = null,
         parent = null,
         limit = 10
@@ -77,13 +77,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                         }
                     }
                 },
-                sort: [
-                    {
-                        savedOn: {
-                            order: "desc"
-                        }
-                    }
-                ],
+                sort: [convertMongoSortToElasticSort(sort)],
                 size: limit
             }
         });

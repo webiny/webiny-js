@@ -1,6 +1,7 @@
 import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { FormsCRUD } from "../../../types";
+import { convertMongoSortToElasticSort } from "./utils/formResolversUtils";
 
 export const listPublishedForms: GraphQLFieldResolver = async (root, args, context) => {
     const { i18nContent, formBuilder } = context;
@@ -13,7 +14,9 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
         slug = null,
         version = null,
         tags = null,
-        // sort
+        sort = {
+            publishedOn: -1
+        },
         limit = 10
         // after
         // before
@@ -81,13 +84,7 @@ export const listPublishedForms: GraphQLFieldResolver = async (root, args, conte
                     }
                 }
             },
-            sort: [
-                {
-                    savedOn: {
-                        order: "desc"
-                    }
-                }
-            ],
+            sort: [convertMongoSortToElasticSort(sort)],
             size: limit
         }
     });
