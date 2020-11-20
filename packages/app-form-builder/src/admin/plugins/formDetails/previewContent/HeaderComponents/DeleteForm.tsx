@@ -7,7 +7,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-form-builder/admin/icons/delete.svg";
 import { GET_FORM, DELETE_FORM } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { cloneDeep, get } from "lodash";
+import { cloneDeep } from "lodash";
 
 const DeleteForm = ({ form, revision, selectRevision }) => {
     const { showSnackbar } = useSnackbar();
@@ -34,12 +34,9 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                                     variables: { id: revision.id },
                                     refetchQueries: ["FormsListForms"],
                                     update: (cache, updated) => {
-                                        const error = get(
-                                            updated,
-                                            "data.forms.deleteRevision.error"
-                                        );
+                                        const error = updated?.data?.forms?.deleteRevision?.error;
                                         if (error) {
-                                            return showSnackbar(error.message);
+                                            return showSnackbar(error?.message);
                                         }
 
                                         showSnackbar("Form was deleted successfully!");
