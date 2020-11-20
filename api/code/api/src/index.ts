@@ -2,6 +2,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
+import securityTenancyPlugins from "@webiny/api-security-tenancy";
 import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
 import cognitoIdentityProvider from "@webiny/api-plugin-security-cognito/identityProvider";
 import i18nPlugins from "@webiny/api-i18n/plugins";
@@ -32,7 +33,7 @@ export const handler = createHandler(
     }),
     // Adds a context plugin to process `security` plugins for authentication
     securityPlugins(),
-
+    securityTenancyPlugins(),
     // Add Cognito plugin for authentication
     cognitoAuthentication({
         region: process.env.COGNITO_REGION,

@@ -53,28 +53,28 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-security-install",
     schema: {
-        typeDefs: `
-        input SecurityInstallInput {
-            firstName: String!
-            lastName: String!
-            login: String!
-        }
+        typeDefs: /* GraphQL */ `
+            input SecurityInstallInput {
+                firstName: String!
+                lastName: String!
+                login: String!
+            }
 
-        extend type SecurityQuery {
-            "Is Security installed?"
-            isInstalled: SecurityBooleanResponse
-        }
+            extend type SecurityQuery {
+                "Is Security installed?"
+                isInstalled: SecurityBooleanResponse
+            }
 
-        type SecurityInstallResponse {
-            data: Boolean
-            error: SecurityError
-        }
+            type SecurityInstallResponse {
+                data: Boolean
+                error: SecurityError
+            }
 
-        extend type SecurityMutation {
-            "Install Security"
-            install(data: SecurityInstallInput!): SecurityInstallResponse
-        }
-    `,
+            extend type SecurityMutation {
+                "Install Security"
+                install(data: SecurityInstallInput!): SecurityInstallResponse
+            }
+        `,
         resolvers: {
             SecurityQuery: {
                 isInstalled: async (root, args, context: Context) => {
