@@ -24,3 +24,13 @@ export const hasRwd = ({ formBuilderFormPermission, rwd }) => {
 
     return formBuilderFormPermission.rwd.includes(rwd);
 };
+
+export const convertMongoSortToElasticSort = sort => {
+    const [[key, value]] = Object.entries(sort);
+
+    return {
+        [key]: {
+            order: value === -1 ? "desc" : "asc"
+        }
+    };
+};
