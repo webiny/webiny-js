@@ -1,11 +1,10 @@
 import React from "react";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { CREATE_FORM } from "../../viewsGraphql";
-import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -39,6 +38,11 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
+    const [create] = useMutation(CREATE_FORM, {
+        refetchQueries: ["FormsListForms"],
+        awaitRefetchQueries: true
+    });
+
     return (
         <Dialog
             open={open}
@@ -46,46 +50,41 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose, formsDataL
             className={narrowDialog}
             data-testid="fb-new-form-modal"
         >
-            <Mutation mutation={CREATE_FORM}>
-                {update => (
-                    <Form
-                        onSubmit={async data => {
-                            setLoading(true);
-                            const response = get(
-                                await update({
-                                    variables: data,
-                                    refetchQueries: ["FormsListForms"],
-                                    awaitRefetchQueries: true
-                                }),
-                                "data.forms.form"
-                            );
+            <Form
+                onSubmit={async data => {
+                    setLoading(true);
 
-                            if (response.error) {
-                                setLoading(false);
-                                return showSnackbar(response.error.message);
-                            }
+                    const response = await create({
+                        variables: data
+                    });
 
-                            await formsDataList.refresh();
-                            history.push("/forms/" + encodeURIComponent(response.data.id));
-                        }}
-                    >
-                        {({ Bind, submit }) => (
-                            <>
-                                {loading && <CircularProgress />}
-                                <DialogTitle>{t`New form`}</DialogTitle>
-                                <DialogContent>
-                                    <Bind name={"name"}>
-                                        <Input placeholder={"Enter a name for your new form"} />
-                                    </Bind>
-                                </DialogContent>
-                                <DialogActions>
-                                    <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
-                                </DialogActions>
-                            </>
-                        )}
-                    </Form>
+                    const id = response?.data?.forms?.form?.data?.id;
+                    const error = response?.data?.forms?.form?.error;
+
+                    if (error) {
+                        setLoading(false);
+                        return showSnackbar(error?.message);
+                    }
+                    // FIXME: I believe me might not need this.
+                    await formsDataList.refresh();
+                    history.push("/forms/" + encodeURIComponent(id));
+                }}
+            >
+                {({ Bind, submit }) => (
+                    <>
+                        {loading && <CircularProgress />}
+                        <DialogTitle>{t`New form`}</DialogTitle>
+                        <DialogContent>
+                            <Bind name={"name"}>
+                                <Input placeholder={"Enter a name for your new form"} />
+                            </Bind>
+                        </DialogContent>
+                        <DialogActions>
+                            <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
+                        </DialogActions>
+                    </>
                 )}
-            </Mutation>
+            </Form>
         </Dialog>
     );
 };
