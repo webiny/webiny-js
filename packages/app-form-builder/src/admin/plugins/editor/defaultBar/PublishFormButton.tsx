@@ -1,5 +1,5 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -18,41 +18,41 @@ const PublishFormButton = () => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
+    const [publish] = useMutation(publishRevision, {
+        refetchQueries: ["FormsListForms"]
+    });
+
     return (
         <ConfirmationDialog
             title={t`Publish form`}
             message={t`You are about to publish this form, are you sure want to continue?`}
         >
             {({ showConfirmation }) => (
-                <Mutation mutation={publishRevision} refetchQueries={["FormsListForms"]}>
-                    {update => (
-                        <ButtonPrimary
-                            onClick={async () => {
-                                showConfirmation(async () => {
-                                    const response = await update({
-                                        variables: {
-                                            id: data.id
-                                        }
-                                    });
+                <ButtonPrimary
+                    onClick={async () => {
+                        showConfirmation(async () => {
+                            const response = await publish({
+                                variables: {
+                                    id: data?.id
+                                }
+                            });
 
-                                    const { error } = response.data.forms.publishRevision;
-                                    if (error) {
-                                        return showSnackbar(error.message);
-                                    }
+                            const { error } = response?.data?.forms?.publishRevision || {};
+                            if (error) {
+                                return showSnackbar(error?.message);
+                            }
 
-                                    history.push(`/forms?id=${encodeURIComponent(data.id)}`);
+                            history.push(`/forms?id=${encodeURIComponent(data?.id)}`);
 
-                                    // Let's wait a bit, because we are also redirecting the user.
-                                    setTimeout(() => {
-                                        showSnackbar(t`Your form was published successfully!`);
-                                    }, 500);
-                                });
-                            }}
-                        >
-                            {data.version > 1 ? t`Publish changes` : t`Publish`}
-                        </ButtonPrimary>
-                    )}
-                </Mutation>
+                            // Let's wait a bit, because we are also redirecting the user.
+                            setTimeout(() => {
+                                showSnackbar(t`Your form was published successfully!`);
+                            }, 500);
+                        });
+                    }}
+                >
+                    {data.version > 1 ? t`Publish changes` : t`Publish`}
+                </ButtonPrimary>
             )}
         </ConfirmationDialog>
     );
