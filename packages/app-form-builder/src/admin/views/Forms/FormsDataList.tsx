@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from "react";
 import TimeAgo from "timeago-react";
 import { useRouter } from "@webiny/react-router";
 import { css } from "emotion";
-import { get, upperFirst } from "lodash";
+import { upperFirst } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
@@ -33,13 +33,13 @@ const listItemMinHeight = css({
 });
 
 export type FormsDataListProps = {
-    dataList: any;
+    listQuery: any;
 };
 
 const FormsDataList = (props: FormsDataListProps) => {
     const editHandlers = useRef({});
 
-    const { dataList } = props;
+    const { listQuery } = props;
 
     const { location, history } = useRouter();
     const client = useApolloClient();
@@ -47,12 +47,12 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const deleteRecord = useHandler(props, ({ id }) => async item => {
         const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
-        const { data, error } = get(res, "data.forms.deleteForm");
+        const { data, error } = res?.data?.forms?.deleteForm || {};
 
         if (data) {
             showSnackbar(t`Form {name} deleted.`({ name: item.name }));
         } else {
-            showSnackbar(error.message, {
+            showSnackbar(error?.message, {
                 title: t`Something unexpected happened.`
             });
         }
@@ -63,7 +63,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             history.push({ search: query.toString() });
         }
 
-        dataList.refresh();
+        listQuery.refetch();
     });
 
     const editRecord = useCallback(form => {
@@ -95,9 +95,13 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const query = new URLSearchParams(location.search);
 
+    const listFormsData = listQuery?.data?.forms?.listForms?.data || [];
+
     return (
         <DataList
-            {...dataList}
+            data={listFormsData}
+            loading={listQuery.loading}
+            refresh={listQuery.refetch}
             title={t`Forms`}
             sorters={[
                 {
@@ -117,6 +121,7 @@ const FormsDataList = (props: FormsDataListProps) => {
                     sorters: { name: -1 }
                 }
             ]}
+            setSorters={sort => listQuery.refetch({ sort })}
         >
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
