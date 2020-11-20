@@ -11,10 +11,6 @@ import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
-import {
-    PbPageDetailsContextValue,
-    PbPageRevision
-} from "./admin/contexts/PageDetails/PageDetailsContext";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { Form } from "@webiny/form/Form";
@@ -252,8 +248,6 @@ export type PbAddonRenderPlugin = Plugin & {
     type: "addon-render";
     component: ReactElement;
 };
-
-export { PbPageDetailsContextValue, PbPageRevision };
 
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
