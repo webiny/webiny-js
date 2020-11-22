@@ -72,6 +72,7 @@ const plugin: GraphQLSchemaPlugin = {
                 savedOn: DateTime
                 createdBy: PbCreatedBy
                 published: Boolean
+                version: Int
                 category: PbPageCategory
                 title: String
                 url: String
