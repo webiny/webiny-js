@@ -9,7 +9,6 @@ import { ReactComponent as HandleIcon } from "@webiny/app-form-builder/admin/ico
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { FieldLayoutPositionType } from "@webiny/app-form-builder/types";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
@@ -30,8 +29,6 @@ export const EditTab = () => {
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     }, undefined);
-
-    const i18n = useI18N();
 
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, name, ui } = source;
@@ -56,7 +53,7 @@ export const EditTab = () => {
 
         // Find field plugin which handles the dropped field type "name".
         const plugin = getFieldPlugin({ name });
-        insertField(plugin.field.createField({ i18n }), dropTarget);
+        insertField(plugin.field.createField(), dropTarget);
     }, undefined);
 
     const fields: Array<any> = getFields(true);

@@ -19,7 +19,6 @@ import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { FbBuilderFieldPlugin, FbFormModelField } from "@webiny/app-form-builder/types";
 
 const dialogBody = css({
@@ -50,7 +49,6 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
     const [screen, setScreen] = useState();
 
     const { getFieldPlugin } = useFormEditor();
-    const i18n = useI18N();
 
     useEffect(() => {
         setCurrent(cloneDeep(field));
@@ -128,9 +126,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                             key={pl.name}
                                             fieldType={pl.field}
                                             onClick={() => {
-                                                const newCurrent: any = pl.field.createField({
-                                                    i18n
-                                                });
+                                                const newCurrent: any = pl.field.createField();
                                                 if (current) {
                                                     // User edited existing field, that's why we still want to
                                                     // keep a couple of previous values.
