@@ -103,12 +103,12 @@ export default {
         },
         FormsQuery: {
             listFormSubmissions: pipe(
-                hasPermission("forms.submissions"),
+                hasPermission("fb.submission"),
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const formBuilderFormPermission = await context.security.getPermission(
-                    "forms.submissions"
+                    "fb.submission"
                 );
                 if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
@@ -141,12 +141,12 @@ export default {
                 }
             }),
             getFormSubmission: pipe(
-                hasPermission("forms.submissions"),
+                hasPermission("fb.submission"),
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
                 const formBuilderFormPermission = await context.security.getPermission(
-                    "forms.submissions"
+                    "fb.submission"
                 );
                 if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
@@ -182,7 +182,7 @@ export default {
             createFormSubmission,
             // Note: We'll test it manually using admin app.
             exportFormSubmissions: pipe(
-                hasPermission("forms.submissions"),
+                hasPermission("fb.submission"),
                 hasI18NContentPermission()
             )(exportFormSubmissions)
         }

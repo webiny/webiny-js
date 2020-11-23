@@ -50,7 +50,7 @@ export default {
     resolvers: {
         FormsQuery: {
             getSettings: pipe(
-                hasPermission("forms.settings"),
+                hasPermission("fb.settings"),
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 try {
@@ -66,7 +66,7 @@ export default {
         },
         FormsMutation: {
             updateSettings: pipe(
-                hasPermission("forms.settings"),
+                hasPermission("fb.settings"),
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 try {

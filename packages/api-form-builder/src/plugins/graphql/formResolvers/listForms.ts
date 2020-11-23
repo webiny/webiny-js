@@ -18,7 +18,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
     } = args;
 
     // If permission has "rwd" property set, but "r" is not part of it, bail.
-    const formBuilderFormPermission = await context.security.getPermission("forms.forms");
+    const formBuilderFormPermission = await context.security.getPermission("fb.form");
     if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
         return new NotAuthorizedResponse();
     }

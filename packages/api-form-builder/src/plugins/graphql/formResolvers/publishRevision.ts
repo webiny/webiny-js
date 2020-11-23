@@ -8,7 +8,7 @@ export const publishRevision: GraphQLFieldResolver = async (root, args, context)
     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
     const { id } = args;
     // If permission has "rwd" property set, but "p" is not part of it, bail.
-    const formBuilderFormPermission = await context.security.getPermission("forms.forms");
+    const formBuilderFormPermission = await context.security.getPermission("fb.form");
     if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "p" })) {
         return new NotAuthorizedResponse();
     }
@@ -37,7 +37,7 @@ export const unPublishRevision: GraphQLFieldResolver = async (root, args, contex
     const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
     const { id } = args;
     // If permission has "rwd" property set, but "p" is not part of it, bail.
-    const formBuilderFormPermission = await context.security.getPermission("forms.forms");
+    const formBuilderFormPermission = await context.security.getPermission("fb.form");
     if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "p" })) {
         return new NotAuthorizedResponse();
     }

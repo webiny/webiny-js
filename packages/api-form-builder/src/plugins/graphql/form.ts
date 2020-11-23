@@ -335,20 +335,18 @@ export default {
                     ...form.settings,
                     reCaptcha: {
                         ...form.settings.reCaptcha,
-                        settings: settings.reCaptcha
+                        settings: settings?.reCaptcha
                     }
                 };
             }
         },
         FormsQuery: {
             getForm: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const formBuilderFormPermission = await context.security.getPermission(
-                    "forms.forms"
-                );
+                const formBuilderFormPermission = await context.security.getPermission("fb.form");
                 if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
                 }
@@ -377,37 +375,37 @@ export default {
                     });
                 }
             }),
-            listForms: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(listForms),
+            listForms: pipe(hasPermission("fb.form"), hasI18NContentPermission())(listForms),
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(createForm),
+            createForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(createForm),
             // Deletes the entire form
-            deleteForm: pipe(hasPermission("forms.forms"), hasI18NContentPermission())(deleteForm),
+            deleteForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(deleteForm),
             // Creates a revision from the given revision
             createRevisionFrom: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(createRevisionFrom),
             // Updates revision
             updateRevision: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(updateRevision),
             // Publish revision (must be given an exact revision ID to publish)
             publishRevision: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(publishRevision),
             unpublishRevision: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(unPublishRevision),
             // Delete a revision
             deleteRevision: pipe(
-                hasPermission("forms.forms"),
+                hasPermission("fb.form"),
                 hasI18NContentPermission()
             )(deleteRevision),
             saveFormView
