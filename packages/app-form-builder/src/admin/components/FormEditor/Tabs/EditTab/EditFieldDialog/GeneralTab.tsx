@@ -3,7 +3,6 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
 import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { FormChildrenFunctionParams } from "@webiny/form/Form";
@@ -17,7 +16,6 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getField, getFieldPlugin } = useFormEditor();
-    const { getValue } = useI18N();
 
     const setRef = useCallback(ref => (inputRef.current = ref), []);
 
@@ -26,7 +24,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
     }, []);
 
     const afterChangeLabel = useCallback(value => {
-        setValue("fieldId", camelCase(getValue(value)));
+        setValue("fieldId", camelCase(value));
     }, []);
 
     const uniqueFieldIdValidator = useCallback(fieldId => {
