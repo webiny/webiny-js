@@ -11,7 +11,15 @@ export const DATA_FIELD = /* GraphQL */ `
         name
         # fields
         layout
-        # settings
+        settings {
+           reCaptcha {
+               settings {
+                   enabled
+                   siteKey
+                   secretKey
+               }
+           } 
+        }
         triggers
         published
         locked
