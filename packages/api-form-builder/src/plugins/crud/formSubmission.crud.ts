@@ -48,7 +48,7 @@ export default {
     apply(context) {
         const { db, i18nContent } = context;
 
-        const PK_FORM_SUBMISSION = `${i18nContent?.locale?.code}#S#FB`;
+        const PK_FORM_SUBMISSION = `FB#S#${i18nContent?.locale?.code}`;
 
         if (!context?.formBuilder?.crud) {
             context.formBuilder = merge({}, context.formBuilder);
@@ -123,7 +123,7 @@ export default {
                     data: {
                         PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formSubmission.form.revision)}`,
                         SK: `S#${formSubmission.id}`,
-                        TYPE: "FormSubmission",
+                        TYPE: "formBuilder:formSubmission",
                         ...formSubmission
                     }
                 });

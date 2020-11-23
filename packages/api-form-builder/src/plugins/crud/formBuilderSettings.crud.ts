@@ -7,7 +7,7 @@ import defaults from "./defaults";
 import { FormBuilderSettingsCRUD, FormBuilderSettings } from "../../types";
 
 export const PK_SETTINGS = "S";
-export const FB_SETTINGS_KEY = "form-builder";
+export const FB_SETTINGS_KEY = "formBuilder";
 
 const CreateDataModel = withFields({
     key: setOnce()(string({ value: FB_SETTINGS_KEY })),
@@ -65,7 +65,7 @@ export default {
                     data: {
                         PK: PK_SETTINGS,
                         SK: formBuilderSettings.key,
-                        TYPE: "FormBuilderSettings",
+                        TYPE: "formBuilder:FormBuilderSettings",
                         ...dataJSON
                     }
                 });

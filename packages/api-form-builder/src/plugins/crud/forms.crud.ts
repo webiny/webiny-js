@@ -98,8 +98,8 @@ export default {
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
-        // Question: Will there be ever "i18nContent?.locale?.code" undefined?
-        const PK_FORMS = `${i18nContent?.locale?.code}#FB`;
+
+        const PK_FORMS = `FB#${i18nContent?.locale?.code}`;
 
         if (!context?.formBuilder?.crud) {
             context.formBuilder = merge({}, context.formBuilder);
@@ -198,7 +198,7 @@ export default {
                     data: {
                         PK: PK_FORMS,
                         SK: form.id,
-                        TYPE: "Form",
+                        TYPE: "formBuilder:form",
                         ...form
                     }
                 });
