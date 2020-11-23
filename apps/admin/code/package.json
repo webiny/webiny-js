@@ -21,7 +21,7 @@
 		"@webiny/app-cookie-policy": "^4.13.0",
 		"@webiny/app-typeform": "^4.13.0",
 		"@webiny/app-mailchimp": "^4.13.0",
-		"@webiny/app-security-user-management": "^4.13.0",
+		"@webiny/app-security-tenancy": "^4.13.0",
 		"@webiny/app-google-tag-manager": "^4.13.0",
 		"@webiny/app-i18n": "^4.13.0",
 		"@webiny/app-form-builder": "^4.13.0",
@@ -47,13 +47,14 @@
 		"regenerator-runtime": "^0.13.5"
 	},
 	"devDependencies": {
+		"cross-env": "^7.0.2",
 		"env-cmd": "^10.1.0",
 		"@webiny/cli": "^4.13.0",
 		"@webiny/project-utils": "^4.13.0"
 	},
 	"scripts": {
 		"analyze": "source-map-explorer build/static/js/main.*",
-		"start": "webiny run start --env=local",
+		"start": "cross-env PORT=3001 webiny run start --env=local",
 		"build": "webiny run build"
 	},
 	"browserslist": {

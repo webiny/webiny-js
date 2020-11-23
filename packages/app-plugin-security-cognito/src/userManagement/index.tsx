@@ -4,10 +4,10 @@ import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 import {
-    UserManagementInstallationFormPlugin,
-    UserManagementUserAccountFormPlugin,
-    UserManagementUserFormPlugin
-} from "@webiny/app-security-user-management/types";
+    SecurityInstallationFormPlugin,
+    SecurityUserAccountFormPlugin,
+    SecurityUserFormPlugin
+} from "@webiny/app-security-tenancy/types";
 
 const t1 = i18n.ns("cognito/user-management/installation-form");
 const t2 = i18n.ns("cognito/user-management/user-account-form");
@@ -15,7 +15,7 @@ const t3 = i18n.ns("cognito/user-management/user-form");
 
 export default () => [
     {
-        type: "user-management-installation-form",
+        type: "security-installation-form",
         render({ Bind }) {
             return (
                 <Cell span={12}>
@@ -25,9 +25,9 @@ export default () => [
                 </Cell>
             );
         }
-    } as UserManagementInstallationFormPlugin,
+    } as SecurityInstallationFormPlugin,
     {
-        type: "user-management-user-account-form",
+        type: "security-user-account-form",
         render({ Bind, data }) {
             return (
                 <Cell span={12}>
@@ -42,9 +42,9 @@ export default () => [
                 </Cell>
             );
         }
-    } as UserManagementUserAccountFormPlugin,
+    } as SecurityUserAccountFormPlugin,
     {
-        type: "user-management-user-form",
+        type: "security-user-form",
         render({ Bind, data }) {
             return (
                 <Cell span={12}>
@@ -62,5 +62,5 @@ export default () => [
                 </Cell>
             );
         }
-    } as UserManagementUserFormPlugin
+    } as SecurityUserFormPlugin
 ];

@@ -1,4 +1,4 @@
-import { LOGIN } from "@webiny/app-security-user-management/graphql";
+import { LOGIN } from "@webiny/app-security-tenancy/graphql";
 
 /**
  * `getIdentityData` is a function that has to return information about the identity (a user within Webiny).
@@ -15,10 +15,5 @@ import { LOGIN } from "@webiny/app-security-user-management/graphql";
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 export const getIdentityData = async ({ client, payload }) => {
     const { data } = await client.mutate({ mutation: LOGIN });
-    const identity = data.security.login.data;
-
-    return {
-        ...identity,
-        avatar: identity.avatar ? identity.avatar : { src: identity.gravatar }
-    };
+    return data.security.login.data;
 };

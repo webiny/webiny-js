@@ -131,7 +131,7 @@ const Welcome = () => {
         <Grid>
             <Cell span={12} className={cellClass}>
                 <SimpleForm>
-                    <SimpleFormHeader title={`Hi ${identity.fullName.split(" ")[0]}!`} />
+                    <SimpleFormHeader title={`Hi ${identity.firstName}!`} />
                     <SimpleFormContent>
                         <ContentTheme>
                             <Cell span={12}>

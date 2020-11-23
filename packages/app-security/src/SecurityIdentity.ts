@@ -4,7 +4,7 @@ export type SecurityPermission = { name: string; [key: string]: any };
 
 export type SecurityIdentityData = {
     login: string;
-    permissions: SecurityPermission[];
+    permissions?: SecurityPermission[];
     logout(): void;
     [key: string]: any;
     getPermission?(permission: string): SecurityPermission;
@@ -19,8 +19,12 @@ export class SecurityIdentity {
         Object.assign(this, data);
     }
 
+    setPermissions(permissions: SecurityPermission[]) {
+        this.permissions = permissions;
+    }
+
     getPermission(permission): SecurityPermission {
-        const perms = this.permissions;
+        const perms = this.permissions || [];
         const exactMatch = perms.find(p => p.name === permission);
         if (exactMatch) {
             return exactMatch;

@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import {
     PermissionInfo,
     gridNoPaddingClass
-} from "@webiny/app-security-user-management/components/permission";
+} from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
 import { Switch } from "@webiny/ui/Switch";
 import { Elevation } from "@webiny/ui/Elevation";

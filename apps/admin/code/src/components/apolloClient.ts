@@ -3,7 +3,7 @@ import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createOmitTypenameLink } from "@webiny/app/graphql";
+import { createOmitTypenameLink, createSetContextLink } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
 
@@ -30,10 +30,13 @@ export const createApolloClient = () => {
              */
             createOmitTypenameLink(),
             /**
-             * This allows you to register links using plugins. For example, "app-plugin-security-cognito" package
-             * adds an authorization header to each request by registering an "apollo-link" plugin.
+             * This allows you to register links using plugins.
              */
             ...plugins.byType("apollo-link").map(pl => pl.createLink()),
+            /**
+             * This allows you to modify request context using "apollo-link-context" plugin.
+             */
+            createSetContextLink(),
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
