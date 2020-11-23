@@ -1,6 +1,5 @@
 // @ts-nocheck
 import React, { useState } from "react";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { camelCase, cloneDeep } from "lodash";
@@ -87,8 +86,6 @@ type OptionsListProps = {
 const OptionsList = ({ form, multiple }: OptionsListProps) => {
     const { Bind } = form;
 
-    const { getDefaultLocale } = useI18N();
-
     const [editOption, setEditOption] = useState({
         data: null,
         index: null
@@ -118,9 +115,7 @@ const OptionsList = ({ form, multiple }: OptionsListProps) => {
                                     : [];
                                 newValue.push({
                                     value: camelCase(label),
-                                    label: {
-                                        values: [{ locale: getDefaultLocale().id, value: label }]
-                                    }
+                                    label
                                 });
                                 setOptionsValue(newValue);
                             }}
