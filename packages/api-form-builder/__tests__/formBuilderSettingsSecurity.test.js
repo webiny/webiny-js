@@ -31,7 +31,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "forms.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
     identity: identityA
 });
 
@@ -67,8 +67,8 @@ describe("Form Builder Settings Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "forms.*" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.settings" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -114,8 +114,8 @@ describe("Form Builder Settings Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "forms.*" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.settings" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {

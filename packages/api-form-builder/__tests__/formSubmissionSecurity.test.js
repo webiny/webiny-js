@@ -47,7 +47,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "forms.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
     identity: identityA
 });
 
@@ -87,7 +87,7 @@ describe("Forms Security Test", () => {
         });
 
         const defaultHandlerWithIdentityB = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "forms.*" }],
+            permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
             identity: identityB
         });
 
@@ -158,9 +158,9 @@ describe("Forms Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "forms.submissions", rwd: "wd" }], identityA],
-            [[{ name: "forms.submissions", rwd: "d" }], identityA],
-            [[{ name: "forms.submissions", rwd: "w" }], identityA]
+            [[{ name: "fb.submission", rwd: "wd" }], identityA],
+            [[{ name: "fb.submission", rwd: "d" }], identityA],
+            [[{ name: "fb.submission", rwd: "w" }], identityA]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -171,11 +171,11 @@ describe("Forms Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "content.i18n" }, { name: "forms.submissions" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.*" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fb.submission" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -208,7 +208,7 @@ describe("Forms Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "forms.submissions", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "fb.submission", own: true }],
             identity: identityA
         });
 
@@ -237,7 +237,7 @@ describe("Forms Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "forms.submissions", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "fb.submission", own: true }],
             identity: identityB
         });
 
@@ -327,9 +327,9 @@ describe("Forms Security Test", () => {
         let insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "forms.submissions", rwd: "w" }], identityA],
-            [[{ name: "forms.submissions", rwd: "wd" }], identityA],
-            [[{ name: "forms.submissions", own: true }], identityB]
+            [[{ name: "fb.submission", rwd: "w" }], identityA],
+            [[{ name: "fb.submission", rwd: "wd" }], identityA],
+            [[{ name: "fb.submission", own: true }], identityB]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -345,11 +345,11 @@ describe("Forms Security Test", () => {
         }
 
         let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "forms.submissions" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "forms.submissions", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fb.submission" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
