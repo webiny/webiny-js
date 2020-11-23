@@ -32,16 +32,16 @@ describe("Form Submission Test", () => {
         // Let's create a form
         let [response] = await createForm({ data: { name: "Test A" } });
 
-        formId = response?.data?.forms?.createForm?.data.id;
+        formId = response?.data?.formBuilder?.createForm?.data.id;
         formData = {
-            ...response?.data?.forms?.createForm?.data,
+            ...response?.data?.formBuilder?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createForm: {
                         data: formData,
                         error: null
@@ -74,7 +74,7 @@ describe("Form Submission Test", () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length) {
+            if (response.data.formBuilder.listPublishedForms.data.length) {
                 break;
             }
         }
@@ -86,11 +86,11 @@ describe("Form Submission Test", () => {
             id: formId,
             ...mocks.formSubmissionDataA
         });
-        let formSubmissionIdA = response?.data?.forms.createFormSubmission?.data?.id;
+        let formSubmissionIdA = response?.data?.formBuilder.createFormSubmission?.data?.id;
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createFormSubmission: {
                         data: mocks.getFormSubmissionData({
                             id: formSubmissionIdA,
@@ -113,7 +113,7 @@ describe("Form Submission Test", () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     getFormSubmission: {
                         data: mocks.getFormSubmissionData({
                             id: formSubmissionIdA,
@@ -131,11 +131,11 @@ describe("Form Submission Test", () => {
             id: formId,
             ...mocks.formSubmissionDataB
         });
-        let formSubmissionIdB = response?.data?.forms.createFormSubmission?.data?.id;
+        let formSubmissionIdB = response?.data?.formBuilder.createFormSubmission?.data?.id;
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createFormSubmission: {
                         data: mocks.getFormSubmissionData({
                             id: formSubmissionIdB,
@@ -159,7 +159,7 @@ describe("Form Submission Test", () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listFormSubmissions: {
                         data: [
                             mocks.getFormSubmissionData({

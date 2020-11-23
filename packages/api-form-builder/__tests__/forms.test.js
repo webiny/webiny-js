@@ -34,16 +34,16 @@ describe('Form Builder "Form" Test', () => {
         // Let's create a form
         let [response] = await createForm({ data: { name: "sign-up" } });
 
-        let formId = response?.data?.forms?.createForm?.data.id;
+        let formId = response?.data?.formBuilder?.createForm?.data.id;
         let formData = {
-            ...response?.data?.forms?.createForm?.data,
+            ...response?.data?.formBuilder?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createForm: {
                         data: formData,
                         error: null
@@ -66,7 +66,7 @@ describe('Form Builder "Form" Test', () => {
         });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     updateRevision: {
                         data: {
                             ...formData,
@@ -89,7 +89,7 @@ describe('Form Builder "Form" Test', () => {
         });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     publishRevision: {
                         data: {
                             ...formData,
@@ -116,7 +116,7 @@ describe('Form Builder "Form" Test', () => {
         });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     unpublishRevision: {
                         data: {
                             ...formData,
@@ -143,7 +143,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     deleteForm: {
                         data: true,
                         error: null
@@ -153,15 +153,15 @@ describe('Form Builder "Form" Test', () => {
         });
 
         [response] = await createForm({ data: { name: "login" } });
-        formId = response?.data?.forms?.createForm?.data.id;
+        formId = response?.data?.formBuilder?.createForm?.data.id;
         formData = {
-            ...response?.data?.forms?.createForm?.data,
+            ...response?.data?.formBuilder?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createForm: {
                         data: formData,
                         error: null
@@ -177,7 +177,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     deleteRevision: {
                         data: true,
                         error: null
@@ -190,7 +190,7 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             [response] = await listForms();
-            if (response.data.forms.listForms.data.length === 0) {
+            if (response.data.formBuilder.listForms.data.length === 0) {
                 break;
             }
         }
@@ -198,7 +198,7 @@ describe('Form Builder "Form" Test', () => {
         [response] = await listForms();
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listForms: {
                         data: [],
                         error: null
@@ -208,15 +208,15 @@ describe('Form Builder "Form" Test', () => {
         });
         // Let's create a form again!
         [response] = await createForm({ data: { name: "register" } });
-        formId = response?.data?.forms?.createForm?.data.id;
+        formId = response?.data?.formBuilder?.createForm?.data.id;
         formData = {
-            ...response?.data?.forms?.createForm?.data,
+            ...response?.data?.formBuilder?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createForm: {
                         data: formData,
                         error: null
@@ -230,14 +230,14 @@ describe('Form Builder "Form" Test', () => {
             id: formId
         });
         formData = {
-            ...response?.data?.forms?.publishRevision?.data,
+            ...response?.data?.formBuilder?.publishRevision?.data,
             createdOn: /^20/,
             savedOn: /^20/,
             publishedOn: /^20/
         };
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     publishRevision: {
                         data: formData,
                         error: null
@@ -250,26 +250,26 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             [response] = await listForms();
-            if (response.data.forms.listForms.data.length === 1) {
+            if (response.data.formBuilder.listForms.data.length === 1) {
                 break;
             }
         }
 
         // Let's create a new revision
         [response] = await createRevisionFrom({ revision: formId });
-        formId = response?.data?.forms?.createRevisionFrom?.data?.id;
+        formId = response?.data?.formBuilder?.createRevisionFrom?.data?.id;
         formData = {
-            ...response?.data?.forms?.createRevisionFrom?.data,
+            ...response?.data?.formBuilder?.createRevisionFrom?.data,
             createdOn: /^20/,
             savedOn: /^20/
         };
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createRevisionFrom: {
                         data: {
                             ...formData,
-                            id: response?.data?.forms?.createRevisionFrom?.data?.id,
+                            id: response?.data?.formBuilder?.createRevisionFrom?.data?.id,
                             version: 2
                         },
                         error: null
@@ -282,7 +282,7 @@ describe('Form Builder "Form" Test', () => {
         [response] = await saveFormView({ id: formId });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     saveFormView: {
                         error: null
                     }
@@ -294,7 +294,7 @@ describe('Form Builder "Form" Test', () => {
         [response] = await getForm({ id: formId });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     getForm: {
                         data: {
                             ...formData,
@@ -319,17 +319,17 @@ describe('Form Builder "Form" Test', () => {
             // Let's create a form
             const [response] = await createForm({ data: { name: `Test-${i}` } });
             // Save to "id" fro later.
-            formIds.push(response?.data?.forms?.createForm?.data.id);
+            formIds.push(response?.data?.formBuilder?.createForm?.data.id);
 
             formDataArray.push({
-                ...response?.data?.forms?.createForm?.data,
+                ...response?.data?.formBuilder?.createForm?.data,
                 createdOn: /^20/,
                 savedOn: /^20/
             });
 
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         createForm: {
                             data: formDataArray[i],
                             error: null
@@ -343,12 +343,12 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             const [response] = await listForms();
-            if (response.data.forms.listForms.data.length) {
+            if (response.data.formBuilder.listForms.data.length) {
                 break;
             }
         }
 
-        // Let's list all the forms
+        // Let's list all the formBuilder
         let [response] = await listForms({
             sort: {
                 createdOn: 1
@@ -357,7 +357,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listForms: {
                         data: formDataArray.map(formData => ({
                             ...formData,
@@ -370,13 +370,13 @@ describe('Form Builder "Form" Test', () => {
             }
         });
 
-        // Let's publish two forms.
+        // Let's publish two formBuilder.
         for (let i = 0; i < 2; i++) {
             // Let's create a form
             const [response] = await publishRevision({ id: formIds[i] });
 
             formDataArray[i] = {
-                ...response?.data?.forms?.publishRevision?.data,
+                ...response?.data?.formBuilder?.publishRevision?.data,
                 createdOn: /^20/,
                 savedOn: /^20/,
                 publishedOn: /^20/
@@ -384,7 +384,7 @@ describe('Form Builder "Form" Test', () => {
 
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         publishRevision: {
                             data: formDataArray[i],
                             error: null
@@ -398,7 +398,7 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length) {
+            if (response.data.formBuilder.listPublishedForms.data.length) {
                 break;
             }
         }
@@ -408,7 +408,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listPublishedForms: {
                         data: [formDataArray[0], formDataArray[1]].map(formData => ({
                             ...formData,
@@ -426,7 +426,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listPublishedForms: {
                         data: [],
                         error: null
@@ -440,7 +440,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listPublishedForms: {
                         data: [formDataArray[1]].map(formData => ({
                             ...formData,
@@ -458,7 +458,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listPublishedForms: {
                         data: [formDataArray[1], formDataArray[0]].map(formData => ({
                             ...formData,
@@ -476,7 +476,7 @@ describe('Form Builder "Form" Test', () => {
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     getPublishedForm: {
                         data: formDataArray[0],
                         error: null
@@ -493,17 +493,17 @@ describe('Form Builder "Form" Test', () => {
         // Let's create a form
         let [response] = await createForm({ data: { name: `Test-A` } });
         // Save to "id" fro later.
-        formIds.push(response?.data?.forms?.createForm?.data.id);
+        formIds.push(response?.data?.formBuilder?.createForm?.data.id);
 
         formDataArray.push({
-            ...response?.data?.forms?.createForm?.data,
+            ...response?.data?.formBuilder?.createForm?.data,
             createdOn: /^20/,
             savedOn: /^20/
         });
 
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     createForm: {
                         data: formDataArray[0],
                         error: null
@@ -516,7 +516,7 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             const [response] = await listForms();
-            if (response.data.forms.listForms.data.length) {
+            if (response.data.formBuilder.listForms.data.length) {
                 break;
             }
         }
@@ -524,7 +524,7 @@ describe('Form Builder "Form" Test', () => {
         [response] = await publishRevision({ id: formIds[0] });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     publishRevision: {
                         data: {
                             ...formDataArray[0],
@@ -543,13 +543,13 @@ describe('Form Builder "Form" Test', () => {
         // Let's create two revisions from the original form and publish them.
         for (let i = 0; i < 2; i++) {
             let [response] = await createRevisionFrom({ revision: parentFormId });
-            const formData = response?.data?.forms?.createRevisionFrom?.data;
+            const formData = response?.data?.formBuilder?.createRevisionFrom?.data;
 
-            formIds[i + 1] = response?.data?.forms?.createRevisionFrom?.data?.id;
+            formIds[i + 1] = response?.data?.formBuilder?.createRevisionFrom?.data?.id;
 
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         createRevisionFrom: {
                             data: {
                                 ...formData,
@@ -565,7 +565,7 @@ describe('Form Builder "Form" Test', () => {
             [response] = await publishRevision({ id: formIds[i + 1] });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         publishRevision: {
                             data: {
                                 ...formData,
@@ -590,7 +590,7 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length === 3) {
+            if (response.data.formBuilder.listPublishedForms.data.length === 3) {
                 break;
             }
         }
@@ -598,7 +598,7 @@ describe('Form Builder "Form" Test', () => {
         [response] = await deleteForm({ id: formIds[0] });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     deleteForm: {
                         data: true,
                         error: null
@@ -611,7 +611,7 @@ describe('Form Builder "Form" Test', () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length === 0) {
+            if (response.data.formBuilder.listPublishedForms.data.length === 0) {
                 break;
             }
         }

@@ -45,7 +45,7 @@ export const ERROR_FIELD = /* GraphQL */ `
 
 export const CREATE_FROM = /* GraphQL */ `
     mutation CreateForm($data: CreateFormInput!) {
-        forms {
+        formBuilder {
             createForm(data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -57,7 +57,7 @@ export const CREATE_FROM = /* GraphQL */ `
 // Create a new revision from an existing revision
 export const CREATE_REVISION_FROM = /* GraphQL */ `
     mutation CreateRevisionFrom($revision: ID!) {
-        forms {
+        formBuilder {
             createRevisionFrom(revision: $revision) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -68,7 +68,7 @@ export const CREATE_REVISION_FROM = /* GraphQL */ `
 
 export const UPDATE_REVISION = /* GraphQL */ `
     mutation UpdateRevision($id: ID!, $data: UpdateFormInput!) {
-        forms {
+        formBuilder {
             updateRevision(id: $id, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -79,7 +79,7 @@ export const UPDATE_REVISION = /* GraphQL */ `
 
 export const PUBLISH_REVISION = /* GraphQL */ `
     mutation publishRevision($id: ID!) {
-        forms {
+        formBuilder {
             publishRevision(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -90,7 +90,7 @@ export const PUBLISH_REVISION = /* GraphQL */ `
 
 export const UNPUBLISH_REVISION = /* GraphQL */ `
     mutation UnpublishRevision($id: ID!) {
-        forms {
+        formBuilder {
             unpublishRevision(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -101,7 +101,7 @@ export const UNPUBLISH_REVISION = /* GraphQL */ `
 
 export const DELETE_FORM = /* GraphQL */ `
     mutation DeleteForm($id: ID!) {
-        forms {
+        formBuilder {
             deleteForm(id: $id) {
                 data
                 error ${ERROR_FIELD}
@@ -112,7 +112,7 @@ export const DELETE_FORM = /* GraphQL */ `
 
 export const DELETE_REVISION = /* GraphQL */ `
     mutation DeleteRevision($id: ID!) {
-        forms {
+        formBuilder {
             deleteRevision(id: $id) {
                 data
                 error ${ERROR_FIELD}
@@ -123,7 +123,7 @@ export const DELETE_REVISION = /* GraphQL */ `
 
 export const SAVE_FORM_VIEW = /* GraphQL */ `
     mutation SaveFormView($id: ID!) {
-        forms {
+        formBuilder {
             saveFormView(id: $id) {
                 error ${ERROR_FIELD}
             }
@@ -133,7 +133,7 @@ export const SAVE_FORM_VIEW = /* GraphQL */ `
 
 export const GET_FORM = /* GraphQL */ `
     query getForm($id: ID, $where: JSON, $sort: String) {
-        forms {
+        formBuilder {
             getForm(id: $id, where: $where, sort: $sort) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -144,7 +144,7 @@ export const GET_FORM = /* GraphQL */ `
 
 export const GET_PUBLISHED_FORM = /* GraphQL */ `
     query getPublishedForm($id: ID, $parent: ID, $slug: String, $version: Int) {
-        forms {
+        formBuilder {
             getPublishedForm(id: $id, parent: $parent, slug: $slug, version: $version) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -162,7 +162,7 @@ export const LIST_FORMS = /* GraphQL */ `
         $after: String,
         $before: String
     ) {
-        forms {
+        formBuilder {
             listForms(
                 sort: $sort,
                 search: $search,
@@ -191,7 +191,7 @@ export const LIST_PUBLISHED_FORMS = /* GraphQL */ `
         $after: String,
         $before: String
     ) {
-        forms {
+        formBuilder {
             listPublishedForms(
                 search: $search,
                 id: $id,

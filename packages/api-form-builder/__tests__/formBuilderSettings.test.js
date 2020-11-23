@@ -9,7 +9,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     getSettings: {
                         data: null,
                         error: null
@@ -21,7 +21,7 @@ describe("Form Builder Settings Test", () => {
         [response] = await updateSettings({ data: { domain: "main" } });
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     updateSettings: {
                         data: null,
                         error: {
@@ -41,7 +41,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     isInstalled: {
                         data: false,
                         error: null
@@ -55,7 +55,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     install: {
                         data: true,
                         error: null
@@ -69,7 +69,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     isInstalled: {
                         data: true,
                         error: null
@@ -85,7 +85,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     install: {
                         data: true,
                         error: null
@@ -99,7 +99,7 @@ describe("Form Builder Settings Test", () => {
 
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     getSettings: {
                         data: {
                             domain: "http://localhost:3001",
@@ -118,7 +118,7 @@ describe("Form Builder Settings Test", () => {
         [response] = await updateSettings({ data: { domain: "http://localhost:5001" } });
         expect(response).toEqual({
             data: {
-                forms: {
+                formBuilder: {
                     updateSettings: {
                         data: {
                             domain: "http://localhost:5001",

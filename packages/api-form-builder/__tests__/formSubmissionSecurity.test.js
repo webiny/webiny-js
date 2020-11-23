@@ -19,7 +19,7 @@ function MockSubmission(prefix) {
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
-        forms: {
+        formBuilder: {
             [operation]: {
                 data: null,
                 error: {
@@ -76,8 +76,8 @@ describe("Forms Security Test", () => {
         } = defaultHandler;
         const mockA = new Mock("get-form-submission-A-");
         const [createFormResponseA] = await createForm({ data: mockA });
-        const formIdA = createFormResponseA.data.forms.createForm.data.id;
-        const formDataA = createFormResponseA.data.forms.createForm.data;
+        const formIdA = createFormResponseA.data.formBuilder.createForm.data.id;
+        const formDataA = createFormResponseA.data.formBuilder.createForm.data;
         // Let's add some fields.
         await updateRevision({
             id: formIdA,
@@ -93,8 +93,8 @@ describe("Forms Security Test", () => {
 
         const mockB = new Mock("get-form-submission-B-");
         const [createFormResponseB] = await defaultHandlerWithIdentityB.createForm({ data: mockB });
-        const formIdB = createFormResponseB.data.forms.createForm.data.id;
-        const formDataB = createFormResponseB.data.forms.createForm.data;
+        const formIdB = createFormResponseB.data.formBuilder.createForm.data.id;
+        const formDataB = createFormResponseB.data.formBuilder.createForm.data;
         // Let's add some fields.
         await updateRevision({
             id: formIdB,
@@ -108,7 +108,7 @@ describe("Forms Security Test", () => {
         while (true) {
             await sleep();
             const [response] = await listForms();
-            if (response.data.forms.listForms.data.length === 2) {
+            if (response.data.formBuilder.listForms.data.length === 2) {
                 break;
             }
         }
@@ -121,7 +121,7 @@ describe("Forms Security Test", () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length === 2) {
+            if (response.data.formBuilder.listPublishedForms.data.length === 2) {
                 break;
             }
         }
@@ -137,7 +137,7 @@ describe("Forms Security Test", () => {
             });
             // Save submission "id".
             formSubmissionIds.push(
-                createFormSubmissionResponse.data.forms.createFormSubmission.data.id
+                createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id
             );
         }
 
@@ -151,7 +151,7 @@ describe("Forms Security Test", () => {
             });
             // Save submission "id".
             formSubmissionIds.push(
-                createFormSubmissionResponse.data.forms.createFormSubmission.data.id
+                createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id
             );
         }
 
@@ -191,7 +191,7 @@ describe("Forms Security Test", () => {
             });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         listFormSubmissions: {
                             data: formSubmissionIds.slice(0, 2).map((id, index) =>
                                 mocks.getFormSubmissionData({
@@ -221,7 +221,7 @@ describe("Forms Security Test", () => {
         });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listFormSubmissions: {
                         data: formSubmissionIds.slice(0, 2).map((id, index) =>
                             mocks.getFormSubmissionData({
@@ -250,7 +250,7 @@ describe("Forms Security Test", () => {
         });
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listFormSubmissions: {
                         data: [
                             mocks.getFormSubmissionData({
@@ -284,8 +284,8 @@ describe("Forms Security Test", () => {
         const mock = new Mock("get-form-submission-");
 
         const [createFormResponse] = await createForm({ data: mock });
-        const formId = createFormResponse.data.forms.createForm.data.id;
-        const formData = createFormResponse.data.forms.createForm.data;
+        const formId = createFormResponse.data.formBuilder.createForm.data.id;
+        const formData = createFormResponse.data.formBuilder.createForm.data;
         // Let's add some fields.
         await updateRevision({
             id: formId,
@@ -299,7 +299,7 @@ describe("Forms Security Test", () => {
         while (true) {
             await sleep();
             const [response] = await listForms();
-            if (response.data.forms.listForms.data.length) {
+            if (response.data.formBuilder.listForms.data.length) {
                 break;
             }
         }
@@ -311,7 +311,7 @@ describe("Forms Security Test", () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length) {
+            if (response.data.formBuilder.listPublishedForms.data.length) {
                 break;
             }
         }
@@ -322,7 +322,7 @@ describe("Forms Security Test", () => {
             id: formId,
             ...submissionMock
         });
-        const submissionId = createFormSubmissionResponse.data.forms.createFormSubmission.data.id;
+        const submissionId = createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
 
         let insufficientPermissions = [
             [[], null],
@@ -363,7 +363,7 @@ describe("Forms Security Test", () => {
             });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         getFormSubmission: {
                             data: mocks.getFormSubmissionData({
                                 id: submissionId,

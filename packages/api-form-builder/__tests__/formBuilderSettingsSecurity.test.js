@@ -3,7 +3,7 @@ import useGqlHandler from "./useGqlHandler";
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
-        forms: {
+        formBuilder: {
             [operation]: {
                 data: null,
                 error: {
@@ -77,7 +77,7 @@ describe("Form Builder Settings Security Test", () => {
             let [response] = await updateSettings({ data: { domain: "localhost:3000" } });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         updateSettings: {
                             data: {
                                 domain: "localhost:3000",
@@ -124,7 +124,7 @@ describe("Form Builder Settings Security Test", () => {
             let [response] = await getSettings();
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         getSettings: {
                             data: {
                                 domain: "localhost:5000",

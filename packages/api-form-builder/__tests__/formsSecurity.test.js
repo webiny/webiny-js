@@ -27,7 +27,7 @@ function MockResponse({ prefix, id }) {
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
-        forms: {
+        formBuilder: {
             [operation]: {
                 data: null,
                 error: {
@@ -77,24 +77,25 @@ describe("Forms Security Test", () => {
         let [createFormResponse] = await createForm({
             data: new Mock("list-forms-1-")
         });
+        console.log(JSON.stringify(createFormResponse, null, 2));
 
-        const form1Id = createFormResponse.data.forms.createForm.data.id;
-
+        const form1Id = createFormResponse.data.formBuilder.createForm.data.id;
+        
         [createFormResponse] = await createForm({
             data: new Mock("list-forms-2-")
         });
-        const form2Id = createFormResponse.data.forms.createForm.data.id;
+        const form2Id = createFormResponse.data.formBuilder.createForm.data.id;
 
         const identityBHandler = useGqlHandler({ identity: identityB });
         let [identityBHandlerCreateFormResponse] = await identityBHandler.createForm({
             data: new Mock("list-forms-3-")
         });
-        const form3Id = identityBHandlerCreateFormResponse.data.forms.createForm.data.id;
+        const form3Id = identityBHandlerCreateFormResponse.data.formBuilder.createForm.data.id;
 
         [identityBHandlerCreateFormResponse] = await identityBHandler.createForm({
             data: new Mock("list-forms-4-")
         });
-        const form4Id = identityBHandlerCreateFormResponse.data.forms.createForm.data.id;
+        const form4Id = identityBHandlerCreateFormResponse.data.formBuilder.createForm.data.id;
 
         const insufficientPermissions = [
             [[], null],
@@ -128,7 +129,7 @@ describe("Forms Security Test", () => {
             while (true) {
                 await sleep();
                 const [response] = await listForms();
-                if (response.data.forms.listForms.data.length) {
+                if (response.data.formBuilder.listForms.data.length) {
                     break;
                 }
             }
@@ -136,7 +137,7 @@ describe("Forms Security Test", () => {
             let [response] = await listForms({ sort: { createdOn: 1 } });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         listForms: {
                             data: [
                                 new MockResponse({ prefix: "list-forms-1-", id: form1Id }),
@@ -159,7 +160,7 @@ describe("Forms Security Test", () => {
         let [response] = await identityAHandler.listForms();
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listForms: {
                         data: [
                             new MockResponse({ prefix: "list-forms-2-", id: form2Id }),
@@ -179,7 +180,7 @@ describe("Forms Security Test", () => {
         [response] = await identityAHandler.listForms();
         expect(response).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     listForms: {
                         data: [
                             new MockResponse({ prefix: "list-forms-4-", id: form4Id }),
@@ -224,12 +225,12 @@ describe("Forms Security Test", () => {
             let [response] = await createForm({ data });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         createForm: {
                             data: {
                                 ...new MockResponse({
                                     prefix: `form-create-${i}-`,
-                                    id: response.data.forms.createForm.data.id
+                                    id: response.data.formBuilder.createForm.data.id
                                 })
                             },
                             error: null
@@ -245,7 +246,7 @@ describe("Forms Security Test", () => {
         const mock = new Mock("update-form-");
 
         const [createFormResponse] = await createForm({ data: mock });
-        const formId = createFormResponse.data.forms.createForm.data.id;
+        const formId = createFormResponse.data.formBuilder.createForm.data.id;
 
         let insufficientPermissions = [
             [[], null],
@@ -278,7 +279,7 @@ describe("Forms Security Test", () => {
             let [response] = await updateRevision({ id: formId, data: mock });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         updateRevision: {
                             data: {
                                 ...new MockResponse({ prefix: `new-updated-form-`, id: formId }),
@@ -297,7 +298,7 @@ describe("Forms Security Test", () => {
         const mock = new Mock("get-form-");
 
         const [createFormResponse] = await createForm({ data: mock });
-        const formId = createFormResponse.data.forms.createForm.data.id;
+        const formId = createFormResponse.data.formBuilder.createForm.data.id;
 
         let insufficientPermissions = [
             [[], null],
@@ -328,7 +329,7 @@ describe("Forms Security Test", () => {
             let [response] = await getForm({ id: formId });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         getForm: {
                             data: new MockResponse({ prefix: `get-form-`, id: formId }),
                             error: null
@@ -344,7 +345,7 @@ describe("Forms Security Test", () => {
         const mock = new Mock("delete-form-");
 
         let [createFormResponse] = await createForm({ data: mock });
-        let formId = createFormResponse.data.forms.createForm.data.id;
+        let formId = createFormResponse.data.formBuilder.createForm.data.id;
 
         let insufficientPermissions = [
             [[], null],
@@ -374,7 +375,7 @@ describe("Forms Security Test", () => {
             let [response] = await deleteForm({ id: formId });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         deleteForm: {
                             data: true,
                             error: null
@@ -385,7 +386,7 @@ describe("Forms Security Test", () => {
 
             // Let's restore the form.
             [createFormResponse] = await createForm({ data: mock });
-            formId = createFormResponse.data.forms.createForm.data.id;
+            formId = createFormResponse.data.formBuilder.createForm.data.id;
         }
     });
 
@@ -394,7 +395,7 @@ describe("Forms Security Test", () => {
         const mock = new Mock("publishRevision-form-");
 
         let [createFormResponse] = await createForm({ data: mock });
-        let formId = createFormResponse.data.forms.createForm.data.id;
+        let formId = createFormResponse.data.formBuilder.createForm.data.id;
 
         let insufficientPermissions = [
             [[], null],
@@ -423,7 +424,7 @@ describe("Forms Security Test", () => {
             let [response] = await publishRevision({ id: formId });
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         publishRevision: {
                             data: {
                                 ...new MockResponse({
@@ -443,7 +444,7 @@ describe("Forms Security Test", () => {
 
             // Let's restore the form.
             const [unPublishFormRevision] = await unpublishRevision({ id: formId });
-            formId = unPublishFormRevision.data.forms.unpublishRevision.data.id;
+            formId = unPublishFormRevision.data.formBuilder.unpublishRevision.data.id;
         }
     });
 
@@ -452,12 +453,12 @@ describe("Forms Security Test", () => {
         const mock = new Mock("create-revision-form-");
 
         const [createFormResponse] = await createForm({ data: mock });
-        let formId = createFormResponse.data.forms.createForm.data.id;
+        let formId = createFormResponse.data.formBuilder.createForm.data.id;
         // Let's also publish the form.
         const [publishRevisionResponse] = await publishRevision({ id: formId });
         expect(publishRevisionResponse).toMatchObject({
             data: {
-                forms: {
+                formBuilder: {
                     publishRevision: {
                         data: {
                             ...new MockResponse({
@@ -480,7 +481,7 @@ describe("Forms Security Test", () => {
         while (true) {
             await sleep();
             const [response] = await listPublishedForms();
-            if (response.data.forms.listPublishedForms.data.length) {
+            if (response.data.formBuilder.listPublishedForms.data.length) {
                 break;
             }
         }
@@ -512,11 +513,11 @@ describe("Forms Security Test", () => {
             const { createRevisionFrom } = useGqlHandler({ permissions, identity });
             let [response] = await createRevisionFrom({ revision: formId });
 
-            formId = response.data.forms.createRevisionFrom.data.id;
+            formId = response.data.formBuilder.createRevisionFrom.data.id;
 
             expect(response).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         createRevisionFrom: {
                             data: {
                                 ...new MockResponse({
@@ -536,7 +537,7 @@ describe("Forms Security Test", () => {
             const [publishRevisionResponse] = await publishRevision({ id: formId });
             expect(publishRevisionResponse).toMatchObject({
                 data: {
-                    forms: {
+                    formBuilder: {
                         publishRevision: {
                             data: {
                                 ...new MockResponse({

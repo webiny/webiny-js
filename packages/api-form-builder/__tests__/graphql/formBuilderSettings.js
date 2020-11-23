@@ -19,7 +19,7 @@ export const ERROR_FIELD = /* GraphQL */ `
 
 export const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateSettings($data: FormsSettingsInput) {
-        forms {
+        formBuilder {
             updateSettings(data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -30,7 +30,7 @@ export const UPDATE_SETTINGS = /* GraphQL */ `
 
 export const GET_SETTINGS = /* GraphQL */ `
     query GetSettings {
-        forms {
+        formBuilder {
             getSettings {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
@@ -41,7 +41,7 @@ export const GET_SETTINGS = /* GraphQL */ `
 
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
-        forms {
+        formBuilder {
             isInstalled {
                 data
                 error ${ERROR_FIELD}
@@ -52,7 +52,7 @@ export const IS_INSTALLED = /* GraphQL */ `
 
 export const INSTALL = /* GraphQL */ `
     mutation Install($domain: String) {
-        forms {
+        formBuilder {
             install(domain: $domain) {
                 data
                 error ${ERROR_FIELD}
