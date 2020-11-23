@@ -10,7 +10,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/menus");
 
-const ROLE_FORMS_SETTINGS = ["forms.settings"];
+const ROLE_FORMS_SETTINGS = ["fb.settings"];
 
 const plugins = [
     {
