@@ -26,5 +26,8 @@ module.exports = (options = {}) => ({
                 process.exit(0);
             }
         );
+    },
+    execute(args, context) {
+        return require("./build")(args, context);
     }
 });

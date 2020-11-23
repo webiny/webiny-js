@@ -76,6 +76,7 @@ const plugin: GraphQLSchemaPlugin = {
                 savedOn: DateTime
                 createdBy: PbCreatedBy
                 published: Boolean
+                version: Int
                 category: PbPageCategory
                 title: String
                 url: String
@@ -250,33 +251,32 @@ const plugin: GraphQLSchemaPlugin = {
             PbQuery: {
                 getPage: compose(
                     hasPermission("pb.page"),
-                    hasI18NContentPermission(),
-                    async (_, args: { id: string }, context: Context) => {
-                        // If permission has "rwd" property set, but "r" is not part of it, bail.
-                        const pbPagePermission = await context.security.getPermission("pb.page");
-                        if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    // If permission has "rwd" property set, but "r" is not part of it, bail.
+                    const pbPagePermission = await context.security.getPermission("pb.page");
+                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    const id = decodeURIComponent(args.id);
+
+                    const { pages } = context;
+                    const page = await pages.get(id);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${id}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (pbPagePermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (page.createdBy.id !== identity.id) {
                             return new NotAuthorizedResponse();
                         }
-
-                        const id = decodeURIComponent(args.id);
-
-                        const { pages } = context;
-                        const page = await pages.get(id);
-                        if (!page) {
-                            return new NotFoundResponse(`Page "${id}" not found.`);
-                        }
-
-                        // If user can only manage own records, let's check if he owns the loaded one.
-                        if (pbPagePermission?.own === true) {
-                            const identity = context.security.getIdentity();
-                            if (page.createdBy.id !== identity.id) {
-                                return new NotAuthorizedResponse();
-                            }
-                        }
-
-                        return new Response(page);
                     }
-                ),
+
+                    return new Response(page);
+                }),
 
                 listPages: compose(
                     hasPermission("pb.page"),

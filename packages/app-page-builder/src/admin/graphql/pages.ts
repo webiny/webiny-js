@@ -27,6 +27,7 @@ export const LIST_DATA_FIELDS = `
     id
     status
     title
+    version
     savedOn
     category {
         name

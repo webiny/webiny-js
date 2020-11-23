@@ -16,6 +16,12 @@ module.exports = (options = {}) => ({
                     describe: `Environment`,
                     type: "string"
                 });
+                yargs.option("build", {
+                    required: false,
+                    default: true,
+                    describe: `Build packages before deploying`,
+                    type: "boolean"
+                });
                 yargs.option("preview", {
                     required: false,
                     default: false,

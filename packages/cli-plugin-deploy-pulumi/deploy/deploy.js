@@ -61,6 +61,11 @@ module.exports = async (inputs, context) => {
 
     const stacksDir = path.join(".", stack);
 
+    if (inputs.build) {
+        const buildPlugin = context.plugins.byName("cli-command-build");
+        await buildPlugin.execute({ path: stacksDir, env }, context);
+    }
+
     const spinner = new ora();
     const pulumi = new Pulumi({
         execa: {
