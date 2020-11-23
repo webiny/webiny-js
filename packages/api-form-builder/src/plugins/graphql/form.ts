@@ -15,7 +15,7 @@ import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
 import { pipe } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { FormsCRUD } from "../../types";
+import { FormBuilderSettingsCRUD, FormsCRUD } from "../../types";
 import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
 type ResolverContext = Context<I18NContext, SecurityContext>;
@@ -324,6 +324,20 @@ export default {
                 // Prepare SK and do a batch read
                 const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
                 return await forms.listFormsBeginsWithId({ id: form.id });
+            },
+            settings: async (form, args, context) => {
+                const formBuilderSettings: FormBuilderSettingsCRUD =
+                    context?.formBuilder?.crud?.formBuilderSettings;
+
+                const settings = await formBuilderSettings.getSettings();
+
+                return {
+                    ...form.settings,
+                    reCaptcha: {
+                        ...form.settings.reCaptcha,
+                        settings: settings.reCaptcha
+                    }
+                };
             }
         },
         FormsQuery: {
