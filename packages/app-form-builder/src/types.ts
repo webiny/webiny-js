@@ -75,7 +75,7 @@ export type FbBuilderFieldPlugin = Plugin & {
         validators?: string[];
         description: string;
         icon: React.ReactNode;
-        createField: ({ i18n: any }) => FbFormModelField;
+        createField: (props?: { [key: string]: any }) => FbFormModelField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
