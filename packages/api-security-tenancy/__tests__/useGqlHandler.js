@@ -21,11 +21,22 @@ import {
     CREATE_SECURITY_USER,
     LIST_SECURITY_USERS,
     GET_SECURITY_USER,
+    GET_CURRENT_SECURITY_USER,
     LOGIN
 } from "./graphql/users";
+
+import {
+    CREATE_SECURITY_USER_PAT,
+    DELETE_CURRENT_SECURITY_USER_PAT,
+    GET_CURRENT_SECURITY_USER_WITH_PAT,
+    UPDATE_CURRENT_SECURITY_USER_PAT
+} from "./graphql/pat";
+
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
 export default (opts = {}) => {
+    const defaults = { mockUser: true, fullAccess: false, plugins: [] };
+    opts = Object.assign({}, defaults, opts);
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
@@ -41,27 +52,16 @@ export default (opts = {}) => {
                 documentClient
             })
         }),
-        apolloServerPlugins(),
-        securityPlugins(),
         tenancyPlugins(),
-        {
-            type: "security-authorization",
-            getPermissions: async context => {
-                if (opts.fullAccess) {
-                    return [{ name: "*" }];
-                }
-                
-                const tenant = context.security.getTenant();
-                const allPermissions = await context.security.users.getUserAccess(
-                    context.security.getIdentity().id
-                );
-                const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
-                return tenantAccess ? tenantAccess.group.permissions : null;
-            }
-        },
+        securityPlugins(),
+        apolloServerPlugins(),
         {
             type: "security-authentication",
-            async authenticate() {
+            async authenticate(context) {
+                if ("Authorization" in context.http.headers) {
+                    return;
+                }
+
                 return new SecurityIdentity({
                     id: "admin@webiny.com",
                     type: "admin",
@@ -69,6 +69,21 @@ export default (opts = {}) => {
                     firstName: "John",
                     lastName: "Doe"
                 });
+            }
+        },
+        {
+            type: "security-authorization",
+            getPermissions: async context => {
+                if (opts.fullAccess) {
+                    return [{ name: "*" }];
+                }
+
+                const tenant = context.security.getTenant();
+                const allPermissions = await context.security.users.getUserAccess(
+                    context.security.getIdentity().id
+                );
+                const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
+                return tenantAccess ? tenantAccess.group.permissions : null;
             }
         },
         // Add Cognito plugins for user management
@@ -84,7 +99,8 @@ export default (opts = {}) => {
             async deleteUser() {
                 return Promise.resolve();
             }
-        }
+        },
+        ...opts.plugins
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -137,8 +153,29 @@ export default (opts = {}) => {
         async get(variables) {
             return invoke({ body: { query: GET_SECURITY_USER, variables } });
         },
+        async getCurrentUser() {
+            return invoke({ body: { query: GET_CURRENT_SECURITY_USER } });
+        },
         async updateCurrentUser(variables) {
             return invoke({ body: { query: UPDATE_CURRENT_SECURITY_USER, variables } });
+        }
+    };
+
+    const securityUserPAT = {
+        async getCurrentUser(variables, headers = {}) {
+            return invoke({
+                body: { query: GET_CURRENT_SECURITY_USER_WITH_PAT, variables },
+                headers
+            });
+        },
+        async createPAT(variables) {
+            return invoke({ body: { query: CREATE_SECURITY_USER_PAT, variables } });
+        },
+        async updatePAT(variables) {
+            return invoke({ body: { query: UPDATE_CURRENT_SECURITY_USER_PAT, variables } });
+        },
+        async deletePAT(variables) {
+            return invoke({ body: { query: DELETE_CURRENT_SECURITY_USER_PAT, variables } });
         }
     };
 
@@ -156,6 +193,7 @@ export default (opts = {}) => {
         invoke,
         securityGroup,
         securityUser,
+        securityUserPAT,
         install,
         documentClient
     };

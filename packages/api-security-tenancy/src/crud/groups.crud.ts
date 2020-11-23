@@ -77,7 +77,7 @@ export default (
                 data: {
                     PK: `T#${tenant.id}`,
                     SK: `G#${data.slug}`,
-                    TYPE: "SecurityGroup",
+                    TYPE: "security:group",
                     ...group
                 }
             });

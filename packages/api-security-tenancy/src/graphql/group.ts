@@ -18,7 +18,7 @@ const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
     name: "graphql-schema-security-group",
     schema: {
-        typeDefs: `
+        typeDefs: /* GraphQL */ `
             type SecurityGroup {
                 name: String
                 slug: String
@@ -34,25 +34,14 @@ const plugin: GraphQLSchemaPlugin = {
                 permissions: [JSON]
             }
 
-            type SecurityGroupError {
-                code: String
-                message: String
-                data: JSON
-            }
-
-            type SecurityGroupDeleteResponse {
-                data: Boolean
-                error: SecurityGroupError
-            }
-
             type SecurityGroupResponse {
                 data: SecurityGroup
-                error: SecurityGroupError
+                error: SecurityError
             }
 
             type SecurityGroupListResponse {
                 data: [SecurityGroup]
-                error: SecurityGroupError
+                error: SecurityError
             }
 
             extend type SecurityQuery {
@@ -63,7 +52,7 @@ const plugin: GraphQLSchemaPlugin = {
             extend type SecurityMutation {
                 createGroup(data: SecurityGroupInput!): SecurityGroupResponse
                 updateGroup(slug: String!, data: SecurityGroupInput!): SecurityGroupResponse
-                deleteGroup(slug: String!): SecurityGroupDeleteResponse
+                deleteGroup(slug: String!): SecurityBooleanResponse
             }
         `,
 

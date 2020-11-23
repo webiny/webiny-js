@@ -1,13 +1,18 @@
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityContext } from "@webiny/api-security/types";
 
-export default () => ({
+export default ({ identityType }) => ({
     type: "security-authorization",
     async getPermissions({ security }: SecurityContext & TenancyContext) {
         const identity = security.getIdentity();
         const tenant = security.getTenant();
 
         if (identity) {
+            if (identity.type !== identityType) {
+                return;
+            }
+
+            // TODO: implement via DataLoader to cache User data
             const user = await security.users.getUser(identity.id);
 
             if (!user) {

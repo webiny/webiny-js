@@ -101,6 +101,22 @@ export const GET_SECURITY_USER = /* GraphQL */ `
     }
 `;
 
+export const GET_CURRENT_SECURITY_USER = /* GraphQL */ `
+    query GetCurrentUser {
+        security {
+            getCurrentUser {
+                data {
+                    login
+                    firstName
+                    lastName
+                    avatar
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const UPDATE_CURRENT_SECURITY_USER = /* GraphQL */ `
     mutation UpdateCurrentUser($data: SecurityCurrentUserInput!) {
         security {

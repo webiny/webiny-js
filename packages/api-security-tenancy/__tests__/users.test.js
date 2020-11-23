@@ -9,9 +9,11 @@ describe("Security User CRUD Test", () => {
     const { install, securityUser, securityGroup } = useGqlHandler();
     let groupA;
 
+    const adminData = { firstName: "John", lastName: "Doe", login: "admin@webiny.com" };
+
     beforeEach(async () => {
         await install.install({
-            data: { firstName: "John", lastName: "Doe", login: "admin@webiny.com" }
+            data: adminData
         });
     });
 
@@ -225,6 +227,25 @@ describe("Security User CRUD Test", () => {
                             message: "User with that login already exists.",
                             data: null
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    test("should return current user based on identity", async () => {
+        // Creating a user with same "email" should not be allowed
+        const [response] = await securityUser.getCurrentUser();
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    getCurrentUser: {
+                        data: {
+                            ...adminData,
+                            avatar: null
+                        },
+                        error: null
                     }
                 }
             }

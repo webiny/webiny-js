@@ -65,14 +65,9 @@ const plugin: GraphQLSchemaPlugin = {
                 isInstalled: SecurityBooleanResponse
             }
 
-            type SecurityInstallResponse {
-                data: Boolean
-                error: SecurityError
-            }
-
             extend type SecurityMutation {
                 "Install Security"
-                install(data: SecurityInstallInput!): SecurityInstallResponse
+                install(data: SecurityInstallInput!): SecurityBooleanResponse
             }
         `,
         resolvers: {
@@ -89,7 +84,6 @@ const plugin: GraphQLSchemaPlugin = {
                     if (rootTenant) {
                         return new ErrorResponse({
                             code: "SECURITY_INSTALL_ABORTED",
-
                             message: "Security is already installed."
                         });
                     }

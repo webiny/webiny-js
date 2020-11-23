@@ -23,12 +23,7 @@ type CognitoAuthOptions = {
     ): SecurityIdentity;
 };
 
-export default ({
-    region,
-    userPoolId,
-    identityType,
-    getIdentity
-}: CognitoAuthOptions) => {
+export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOptions) => {
     let jwksCache = null;
     const url = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
 
@@ -75,9 +70,9 @@ export default ({
                 }
 
                 return new SecurityIdentity({
-                    id: token.sub,
-                    login: token.email,
+                    id: token.email,
                     type: identityType,
+                    displayName: `${token.given_name} ${token.family_name}`,
                     firstName: token.given_name,
                     lastName: token.family_name
                 });

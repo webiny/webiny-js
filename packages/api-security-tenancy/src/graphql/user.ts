@@ -1,10 +1,10 @@
 import md5 from "md5";
 import { hasPermission } from "@webiny/api-security";
 import {
-    CreateUserData,
+    CreateUser,
     TenancyContext,
     SecurityIdentityProviderPlugin,
-    UpdateUserData,
+    UpdateUser,
     User
 } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -95,23 +95,12 @@ const plugin: GraphQLSchemaPlugin = {
 
             type SecurityUserResponse {
                 data: SecurityUser
-                error: SecurityUserError
+                error: SecurityError
             }
-
-            type SecurityUserError {
-                code: String
-                message: String
-                data: JSON
-            }
-
-            type SecurityUserDeleteResponse {
-                data: Boolean
-                error: SecurityUserError
-            }
-
+            
             type SecurityUserListResponse {
                 data: [SecurityUser]
-                error: SecurityUserError
+                error: SecurityError
             }
 
             type SecurityIdentityLoginResponse {
@@ -122,6 +111,9 @@ const plugin: GraphQLSchemaPlugin = {
             extend type SecurityQuery {
                 "Get a single user by id or specific search criteria"
                 getUser(login: String): SecurityUserResponse
+                
+                "Get current user"
+                getCurrentUser: SecurityUserResponse
 
                 "Get a list of users"
                 listUsers: SecurityUserListResponse
@@ -138,7 +130,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                 updateUser(login: String!, data: SecurityUserInput!): SecurityUserResponse
 
-                deleteUser(login: String!): SecurityUserDeleteResponse
+                deleteUser(login: String!): SecurityBooleanResponse
             }
         `,
         resolvers: {
@@ -195,6 +187,20 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
+                getCurrentUser: async (_, args, context: Context) => {
+                    const identity = context.security.getIdentity();
+
+                    if (!identity) {
+                        throw new Error("Not authorized!");
+                    }
+
+                    const user = await context.security.users.getUser(identity.id);
+                    if (!user) {
+                        return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
+                    }
+
+                    return new Response(user);
+                },
                 listUsers: hasPermission("security.user.manage")(
                     async (_, args, context: Context) => {
                         try {
@@ -255,7 +261,7 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                updateCurrentUser: async (_, args: { data: UpdateUserData }, context: Context) => {
+                updateCurrentUser: async (_, args: { data: UpdateUser }, context: Context) => {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         throw new Error("Not authorized!");
@@ -301,7 +307,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
                 },
                 createUser: hasPermission("security.user.manage")(
-                    async (_, { data }: { data: CreateUserData }, context: Context) => {
+                    async (_, { data }: { data: CreateUser }, context: Context) => {
                         try {
                             const authPlugin = context.plugins.byName<
                                 SecurityIdentityProviderPlugin
@@ -339,7 +345,7 @@ const plugin: GraphQLSchemaPlugin = {
                 updateUser: hasPermission("security.user.manage")(
                     async (
                         root,
-                        { data, login }: { login: string; data: UpdateUserData },
+                        { data, login }: { login: string; data: UpdateUser },
                         context: Context
                     ) => {
                         try {

@@ -1,32 +1,53 @@
 import { withFields, string } from "@commodo/fields";
+import { object } from "commodo-fields-object";
 import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import { SecurityContext } from "@webiny/api-security/types";
-import { DbItemSecurityUser2Tenant, TenancyContext, User, UsersCRUD } from "../types";
+import {
+    DbItemSecurityUser2Tenant,
+    TenancyContext,
+    User,
+    UserAccessToken,
+    UsersCRUD
+} from "../types";
 import dbArgs from "./dbArgs";
+import mdbid from "mdbid";
 
-const CreateDataModel = withFields({
+const CreateUserDataModel = withFields({
     login: string({ validation: validation.create("required,minLength:2") }),
     firstName: string({ validation: validation.create("required,minLength:2") }),
-    lastName: string({ validation: validation.create("required,minLength:2") })
+    lastName: string({ validation: validation.create("required,minLength:2") }),
+    avatar: object()
 })();
 
-const UpdateDataModel = withFields({
+const UpdateUserDataModel = withFields({
     firstName: string({ validation: validation.create("minLength:2") }),
     lastName: string({ validation: validation.create("minLength:2") })
 })();
 
-type DbUser = User & {
+const CreateAccessTokenDataModel = withFields({
+    name: string({ validation: validation.create("required,maxLength:100") }),
+    token: string({ validation: validation.create("required,maxLength:64") })
+})();
+
+const UpdateAccessTokenDataModel = withFields({
+    name: string({ validation: validation.create("required") })
+})();
+
+type DbItem<T> = T & {
     PK: string;
     SK: string;
+    GSI1_PK: string;
+    GSI1_SK: string;
 };
 
-export default (
-    context: DbContext & SecurityContext & TenancyContext
-): UsersCRUD => {
+type DbUser = DbItem<User>;
+type DbUserAccessToken = DbItem<UserAccessToken>;
+
+export default (context: DbContext & SecurityContext & TenancyContext): UsersCRUD => {
     const { db } = context;
     return {
-        async getUser(login: string) {
+        async getUser(login) {
             const [[user]] = await db.read<User>({
                 ...dbArgs,
                 query: { PK: `U#${login}`, SK: "A" },
@@ -66,10 +87,11 @@ export default (
                 };
             }
 
-            await new CreateDataModel().populate(data).validate();
+            const model = await new CreateUserDataModel().populate(data);
+            await model.validate();
 
             const user: User = {
-                ...data,
+                ...(await model.toJSON({ onlyDirty: true })),
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
@@ -85,7 +107,7 @@ export default (
                 data: {
                     PK: `U#${user.login}`,
                     SK: "A",
-                    TYPE: "SecurityUser",
+                    TYPE: "security:user",
                     ...user
                 }
             });
@@ -93,7 +115,7 @@ export default (
             return user;
         },
         async updateUser(login, data) {
-            const model = await new UpdateDataModel().populate(data);
+            const model = await new UpdateUserDataModel().populate(data);
             await model.validate();
 
             const updatedAttributes = await model.toJSON({ onlyDirty: true });
@@ -137,7 +159,7 @@ export default (
                     SK: `LINK#T#${tenant.id}#G#${group.slug}`,
                     GSI1_PK: `T#${tenant.id}`,
                     GSI1_SK: `G#${group.slug}#U#${login}`,
-                    TYPE: "SecurityUser2Tenant",
+                    TYPE: "security:user2tenant",
                     tenant: {
                         id: tenant.id,
                         name: tenant.name
@@ -181,6 +203,92 @@ export default (
                 group: link.group,
                 tenant: link.tenant
             }));
+        },
+        async getUserByPAT(token) {
+            const [[pat]] = await db.read<DbUserAccessToken>({
+                ...dbArgs,
+                query: {
+                    GSI1_PK: "PAT",
+                    GSI1_SK: token
+                }
+            });
+
+            if (!pat) {
+                return null;
+            }
+
+            return await this.getUser(pat.login);
+        },
+        async getAccessToken(login, tokenId) {
+            const [[token]] = await db.read<DbUserAccessToken>({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: `PAT#${tokenId}`
+                }
+            });
+
+            return token;
+        },
+        async createToken(login, { name, token }) {
+            await new CreateAccessTokenDataModel().populate({ name, token }).validate();
+
+            const tokenData = {
+                id: mdbid(),
+                name,
+                token,
+                login,
+                createdOn: new Date().toISOString()
+            };
+
+            await db.create({
+                ...dbArgs,
+                data: {
+                    PK: `U#${login}`,
+                    SK: `PAT#${tokenData.id}`,
+                    GSI1_PK: `PAT`,
+                    GSI1_SK: token,
+                    TYPE: "security:pat",
+                    ...tokenData
+                }
+            });
+
+            return tokenData;
+        },
+        async deleteToken(login: string, tokenId: string) {
+            await db.delete({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: `PAT#${tokenId}`
+                }
+            });
+
+            return true;
+        },
+        async listTokens(login) {
+            const [tokens] = await db.read<DbUserAccessToken>({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: { $beginsWith: "PAT#" }
+                }
+            });
+
+            return tokens;
+        },
+        async updateToken(login, tokenId, { name }) {
+            await new UpdateAccessTokenDataModel().populate({ name }).validate();
+            await db.update({
+                ...dbArgs,
+                query: {
+                    PK: `U#${login}`,
+                    SK: `PAT#${tokenId}`
+                },
+                data: { name }
+            });
+
+            return { name };
         }
     };
 };
