@@ -34,7 +34,8 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                                     variables: { id: revision.id },
                                     refetchQueries: ["FormsListForms"],
                                     update: (cache, updated) => {
-                                        const error = updated?.data?.forms?.deleteRevision?.error;
+                                        const error =
+                                            updated?.data?.formBuilder?.deleteRevision?.error;
                                         if (error) {
                                             return showSnackbar(error?.message);
                                         }
@@ -52,11 +53,14 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
                                             variables: { id: form.id }
                                         };
                                         const data: any = cloneDeep(cache.readQuery(gqlParams));
-                                        const indexOfDeleted = data.forms.form.data.revisions.findIndex(
+                                        const indexOfDeleted = data.formBuilder.form.data.revisions.findIndex(
                                             item => item.id === revision.id
                                         );
 
-                                        data.forms.form.data.revisions.splice(indexOfDeleted, 1);
+                                        data.formBuilder.form.data.revisions.splice(
+                                            indexOfDeleted,
+                                            1
+                                        );
                                         cache.writeQuery({
                                             ...gqlParams,
                                             data
@@ -64,7 +68,8 @@ const DeleteForm = ({ form, revision, selectRevision }) => {
 
                                         // If currently selected revision (from left list of forms) was deleted,
                                         // we redirect to the first revision in the list of all form revision.
-                                        const firstRevision = data.forms.form.data.revisions[0];
+                                        const firstRevision =
+                                            data.formBuilder.form.data.revisions[0];
                                         selectRevision(firstRevision);
                                         if (revision.id === form.id) {
                                             return history.push(

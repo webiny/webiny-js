@@ -18,7 +18,7 @@ const ReCaptchaSettings = ({ Bind, formData }) => {
         onCompleted: () => setSettingsLoaded(true)
     });
 
-    const settings = data?.forms?.getSettings?.data?.reCaptcha || {};
+    const settings = data?.formBuilder?.getSettings?.data?.reCaptcha || {};
     const reCaptchaEnabledInSettings = settings.enabled && settings.siteKey && settings.secretKey;
     const reCaptchaEnabled = formData?.reCaptcha?.enabled;
 

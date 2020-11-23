@@ -17,7 +17,7 @@ const GeneralSettings = ({ Bind }) => {
     const layouts = useMemo(
         () =>
             [
-                ...(get(theme, "forms.layouts") || []),
+                ...(get(theme, "formBuilder.layouts") || []),
                 ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {

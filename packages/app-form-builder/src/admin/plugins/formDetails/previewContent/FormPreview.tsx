@@ -9,7 +9,7 @@ import CircularProgress from "@webiny/ui/Progress/CircularProgress";
 
 const GET_FORM = gql`
     query GetForm($id: ID!) {
-        forms {
+        formBuilder {
             getForm(id: $id) {
                 data {
                     ${DATA_FIELDS}
@@ -49,7 +49,7 @@ const FormPreview = ({ revision }: FormPreviewProps) => {
 
     return (
         <div className={pageInnerWrapper}>
-            {revision && <Form preview data={data?.forms?.getForm?.data} />}
+            {revision && <Form preview data={data?.formBuilder?.getForm?.data} />}
         </div>
     );
 };

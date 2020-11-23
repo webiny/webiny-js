@@ -21,7 +21,7 @@ const FormsSettings = () => {
 
     const getSettingsQuery = useQuery(graphql.query);
 
-    const settings = getSettingsQuery?.data?.forms?.getSettings?.data || {};
+    const settings = getSettingsQuery?.data?.formBuilder?.getSettings?.data || {};
     const queryInProgress = getSettingsQuery?.loading;
 
     const [updateSettings, updateSettingsMutation] = useMutation(graphql.mutation);

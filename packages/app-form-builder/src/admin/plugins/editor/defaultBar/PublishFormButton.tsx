@@ -37,7 +37,7 @@ const PublishFormButton = () => {
                                 }
                             });
 
-                            const { error } = response?.data?.forms?.publishRevision || {};
+                            const { error } = response?.data?.formBuilder?.publishRevision || {};
                             if (error) {
                                 return showSnackbar(error?.message);
                             }

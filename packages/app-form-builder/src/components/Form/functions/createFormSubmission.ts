@@ -48,7 +48,7 @@ export default async ({
         }
     });
 
-    response = response?.data?.forms?.createFormSubmission;
+    response = response?.data?.formBuilder?.createFormSubmission;
 
     return {
         preview: false,

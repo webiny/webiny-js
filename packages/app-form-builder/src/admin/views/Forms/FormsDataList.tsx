@@ -47,7 +47,7 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const deleteRecord = useHandler(props, ({ id }) => async item => {
         const res = await client.mutate({ mutation: DELETE_FORM, variables: { id: item.id } });
-        const { data, error } = res?.data?.forms?.deleteForm || {};
+        const { data, error } = res?.data?.formBuilder?.deleteForm || {};
 
         if (data) {
             showSnackbar(t`Form {name} deleted.`({ name: item.name }));
@@ -77,7 +77,7 @@ const FormsDataList = (props: FormsDataListProps) => {
                         variables: { revision: form.id },
                         refetchQueries: ["FormsListForms"]
                     });
-                    const { data, error } = res.forms.revision;
+                    const { data, error } = res.formBuilder.revision;
 
                     if (error) {
                         return showSnackbar(error.message);
@@ -95,7 +95,7 @@ const FormsDataList = (props: FormsDataListProps) => {
 
     const query = new URLSearchParams(location.search);
 
-    const listFormsData = listQuery?.data?.forms?.listForms?.data || [];
+    const listFormsData = listQuery?.data?.formBuilder?.listForms?.data || [];
 
     return (
         <DataList

@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const SAVE_FORM_VIEW = gql`
     mutation SaveFormView($id: ID!) {
-        forms {
+        formBuilder {
             saveFormView(id: $id) {
                 error {
                     message
@@ -19,7 +19,7 @@ export const CREATE_FORM_SUBMISSION = gql`
         $meta: JSON!
         $reCaptchaResponseToken: String
     ) {
-        forms {
+        formBuilder {
             createFormSubmission(
                 id: $id
                 data: $data

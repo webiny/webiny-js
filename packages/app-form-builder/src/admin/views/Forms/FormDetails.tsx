@@ -63,7 +63,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
             id: formId
         },
         onCompleted: data => {
-            const error = data?.forms?.form?.error?.message;
+            const error = data?.formBuilder?.form?.error?.message;
             if (error) {
                 query.delete("id");
                 history.push({ search: query.toString() });
@@ -72,7 +72,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
         }
     });
 
-    const form = data?.forms?.form?.data || null;
+    const form = data?.formBuilder?.form?.data || null;
 
     return (
         <DetailsContainer>

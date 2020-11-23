@@ -52,7 +52,7 @@ export const DATA_FIELDS = `
 
 export const GET_PUBLISHED_FORM = gql`
     query GetPublishedForm($id: ID, $parent: ID, $version: Int, $slug: String) {
-        forms {
+        formBuilder {
             getPublishedForm(id: $id, parent: $parent, version: $version, slug: $slug) {
                 data {
                     ${DATA_FIELDS}

@@ -32,7 +32,7 @@ export default FormEditorContext => {
                     query: GET_FORM,
                     variables: { id: decodeURIComponent(id) }
                 });
-                const { data, error } = response?.data?.forms?.getForm || {};
+                const { data, error } = response?.data?.formBuilder?.getForm || {};
                 if (error) {
                     throw new Error(error);
                 }
@@ -57,7 +57,7 @@ export default FormEditorContext => {
                     }
                 });
 
-                return response?.data?.forms?.updateRevision;
+                return response?.data?.formBuilder?.updateRevision;
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.

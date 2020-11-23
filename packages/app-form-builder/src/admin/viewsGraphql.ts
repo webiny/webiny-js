@@ -22,7 +22,7 @@ const BASE_FORM_FIELDS = `
 
 export const LIST_FORMS = gql`
     query FormsListForms($sort: ListFormsSortInput, $limit: Int, $search: String, $after: String, $before: String) {
-        forms {
+        formBuilder {
             listForms(sort: $sort, limit: $limit, search: $search, after: $after, before: $before) {
                 data {  
                     ${BASE_FORM_FIELDS}
@@ -43,7 +43,7 @@ export const LIST_FORMS = gql`
 
 export const CREATE_FORM = gql`
     mutation FormsCreateForm($name: String!) {
-        forms {
+        formBuilder {
             form: createForm(data: { name: $name }) {
                 data {
                     id
@@ -58,7 +58,7 @@ export const CREATE_FORM = gql`
 
 export const GET_FORM = gql`
     query FormsGetForm($id: ID!) {
-        forms {
+        formBuilder {
             form: getForm(id: $id) {
                 data {
                     ${BASE_FORM_FIELDS}
@@ -98,7 +98,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
         $after: String
         $before: String
     ) {
-        forms {
+        formBuilder {
             listFormSubmissions(
                 sort: $sort
                 search: $search
@@ -149,7 +149,7 @@ export const LIST_FORM_SUBMISSIONS = gql`
 
 export const EXPORT_FORM_SUBMISSIONS = gql`
     mutation FormsExportFormSubmissions($ids: [ID], $parent: ID!, $form: ID) {
-        forms {
+        formBuilder {
             exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
                 data {
                     src
@@ -164,7 +164,7 @@ export const EXPORT_FORM_SUBMISSIONS = gql`
 
 export const CREATE_REVISION_FROM = gql`
     mutation FormsCreateRevisionFrom($revision: ID!) {
-        forms {
+        formBuilder {
             revision: createRevisionFrom(revision: $revision) {
                 data {
                     id
@@ -179,7 +179,7 @@ export const CREATE_REVISION_FROM = gql`
 
 export const PUBLISH_REVISION = gql`
     mutation FormsPublishRevision($id: ID!) {
-        forms {
+        formBuilder {
             publishRevision(id: $id) {
                 data {
                     id
@@ -196,7 +196,7 @@ export const PUBLISH_REVISION = gql`
 
 export const UNPUBLISH_REVISION = gql`
     mutation FormsUnpublishRevision($id: ID!) {
-        forms {
+        formBuilder {
             unpublishRevision(id: $id) {
                 data {
                     id
@@ -213,7 +213,7 @@ export const UNPUBLISH_REVISION = gql`
 
 export const DELETE_REVISION = gql`
     mutation FormsDeleteRevision($id: ID!) {
-        forms {
+        formBuilder {
             deleteRevision(id: $id) {
                 data
                 error {
@@ -226,7 +226,7 @@ export const DELETE_REVISION = gql`
 
 export const DELETE_FORM = gql`
     mutation DeleteForm($id: ID!) {
-        forms {
+        formBuilder {
             deleteForm(id: $id) {
                 data
                 error {

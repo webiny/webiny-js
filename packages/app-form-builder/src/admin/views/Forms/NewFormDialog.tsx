@@ -57,8 +57,8 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                         variables: data
                     });
 
-                    const id = response?.data?.forms?.form?.data?.id;
-                    const error = response?.data?.forms?.form?.error;
+                    const id = response?.data?.formBuilder?.form?.data?.id;
+                    const error = response?.data?.formBuilder?.form?.error;
 
                     if (error) {
                         setLoading(false);

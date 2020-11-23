@@ -98,15 +98,15 @@ const FormSubmissionsList = props => {
 
                                         const { data } = await exportFormSubmission(args);
                                         setExportInProgress(false);
-                                        if (data.forms.exportFormSubmissions.error) {
+                                        if (data.formBuilder.exportFormSubmissions.error) {
                                             showSnackbar(
-                                                data.forms.exportFormSubmissions.error.message
+                                                data.formBuilder.exportFormSubmissions.error.message
                                             );
                                             return;
                                         }
 
                                         window.open(
-                                            data.forms.exportFormSubmissions.data.src,
+                                            data.formBuilder.exportFormSubmissions.data.src,
                                             "_blank"
                                         );
                                     }}
