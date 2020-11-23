@@ -16,7 +16,7 @@ const emptyResolver = () => ({});
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
-    name: "graphql-schema-forms",
+    name: "graphql-schema-formBuilder",
     schema: {
         typeDefs: `
             ${I18NStringValueType()}
@@ -40,11 +40,11 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             extend type Query {
-                forms: FormsQuery
+                formBuilder: FormsQuery
             }
 
             extend type Mutation {
-                forms: FormsMutation
+                formBuilder: FormsMutation
             }
 
             type FormError {
@@ -77,10 +77,10 @@ const plugin: GraphQLSchemaPlugin = {
         resolvers: merge(
             {
                 Query: {
-                    forms: emptyResolver
+                    formBuilder: emptyResolver
                 },
                 Mutation: {
-                    forms: emptyResolver
+                    formBuilder: emptyResolver
                 },
                 FormsQuery: { isInstalled },
                 FormsMutation: { install }
