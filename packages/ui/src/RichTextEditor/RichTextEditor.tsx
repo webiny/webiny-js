@@ -14,13 +14,16 @@ export type RichTextEditorProps = {
     context?: { [key: string]: any };
     logLevel?: LogLevels;
     minHeight?: number;
-    onChange: (data: OutputBlockData[]) => void;
+    onChange?: (data: OutputBlockData[]) => void;
     onReady?: (params: OnReadyParams) => void;
     placeholder?: string;
     readOnly?: boolean;
     sanitizer?: SanitizerConfig;
     tools?: { [toolName: string]: ToolSettings };
-    value: OutputBlockData[];
+    value?: OutputBlockData[];
+    label?: string;
+    description?: string;
+    disabled?: boolean;
 };
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
