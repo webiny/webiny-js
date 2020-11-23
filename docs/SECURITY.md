@@ -5,17 +5,15 @@ Provides the mechanism of controlling access to the API:
 - a context plugin for processing all `security` plugins
 - SecurityIdentity class
 
-# api-security-user-management
+# api-security-tenancy
 
-Provides user management capabilities:
-
-- GraphQL API for Users/Roles/Groups/PATs CRUD + `install`
-- `access manager` lambda handler + client, for loading permissions
+Provides tenancy and user management:
+- GraphQL API for Users/Groups/PATs CRUD + `install`
 
 # api-plugin-security-cognito
 
 - `security` plugin for JWTs from Cognito
-- `security-user-management` plugin to handle CRUD operations on identity provider
+- `security-tenancy` plugin to handle CRUD operations on identity provider
 
 # app-admin
 
@@ -24,32 +22,26 @@ Provides <AppInstallation/> component which requires presence of:
 - `{ name: "admin-installation-security", type: "admin-installation" }` - an installer to setup security
 - `app-installer-security` - to render Login view during installation
 
-# app-security-user-management
+# app-security-tenancy
 
-Provides User/Group/Role CRUD modules and `"admin-installation-security"`.
-Requires `user-management-view-*` plugins // TODO - finish.
+Provides User/Group CRUD modules and `"admin-installation-security"`.
 
 # app-plugin-security-cognito
 
-Provides `app-template-renderer` to render authentication UI.
+Provides `app-installer-security` to render authentication UI during app installation.
 
-# app-plugin-security-cognito/user-management
+# app-plugin-security-cognito/identityProvider
 
 Provides plugins for Account, UserForm and Installation
 
-```js
+```ts
 // react identity
-const identity = {
-  id: "identityId",
-  login: "phone|email|whatever",
-  getPermissions() {
-    // custom implementation
-  },
-  // === All other properties are optional ===
-  avatar: "https://",
-  logout() {
-    // custom implementation
-  }
+type SecurityIdentityData = {
+    login: string;
+    permissions?: SecurityPermission[];
+    logout(): void;
+    getPermission?(permission: string): SecurityPermission;
+    [key: string]: any;
 };
 ```
 
