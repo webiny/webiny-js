@@ -6,7 +6,7 @@ import { get } from "lodash";
 import { GET_RECAPTCHA_SETTINGS } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
 import { Alert } from "@webiny/ui/Alert";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { Input } from "@webiny/ui/Input";
 
 const ReCaptchaSettings = ({ Bind, formData }) => {
     const [dialogOpened, setDialogOpened] = useState(false);
@@ -44,7 +44,7 @@ const ReCaptchaSettings = ({ Bind, formData }) => {
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"reCaptcha.errorMessage"}>
-                                        <I18NInput
+                                        <Input
                                             disabled={!reCaptchaEnabled}
                                             label={"Error message"}
                                         />
