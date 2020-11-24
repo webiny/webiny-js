@@ -15,6 +15,20 @@ import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 
+const extractPageGetPage = (data: any): any => {
+    return data.pageBuilder?.getPage || {};
+};
+
+const extractPageData = (data: any): any => {
+    const getPageData = extractPageGetPage(data);
+    return getPageData.data;
+};
+
+const extractPageErrorData = (data: any): any => {
+    const getPageData = extractPageGetPage(data);
+    return getPageData.error || {};
+};
+
 const Editor: React.FunctionComponent = () => {
     const { match, history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -38,12 +52,16 @@ const Editor: React.FunctionComponent = () => {
                     </LoadingEditor>
                 );
             }
-
-            if (!data?.pageBuilder?.page?.data) {
+            if (!data) {
                 return null;
             }
 
-            const { revisions, content, ...restOfPageData } = data.pageBuilder.page.data as any;
+            const pageData = extractPageData(data);
+            if (!pageData) {
+                return null;
+            }
+
+            const { revisions = [], content, ...restOfPageData } = pageData;
             const page = {
                 ...restOfPageData,
                 content: content || updateChildPathsHelper(createElementHelper("document"))
@@ -69,11 +87,13 @@ const Editor: React.FunctionComponent = () => {
             query={GET_PAGE}
             variables={{ id: params.id }}
             onCompleted={data => {
-                const error = data.pageBuilder?.page?.error?.message;
-                if (error) {
-                    history.push(`/page-builder/pages`);
-                    showSnackbar(error);
+                const errorData = extractPageErrorData(data);
+                const error = errorData.message;
+                if (!error) {
+                    return;
                 }
+                history.push(`/page-builder/pages`);
+                showSnackbar(error);
             }}
         >
             {renderEditor}
