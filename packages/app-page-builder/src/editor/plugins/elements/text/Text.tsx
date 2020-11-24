@@ -1,29 +1,46 @@
 import React from "react";
-import { useHandler } from "@webiny/app/hooks/useHandler";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { set } from "dot-prop-immutable";
-import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
+import Slate from "@webiny/app-page-builder/editor/components/Slate";
+import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
+import { useRecoilValue } from "recoil";
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-const Text = props => {
-    const onChange = useHandler(props, ({ element, updateElement }) => value => {
-        updateElement({ element: set(element, "data.text", value) });
-    });
+type TextType = Omit<SlateEditorProps, "value"> & {
+    elementId: string;
+};
+const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
+    const handler = useEventActionHandler();
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
+    const onChange = React.useCallback(
+        value => {
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        data: {
+                            ...element.data,
+                            text: value
+                        }
+                    }
+                })
+            );
+        },
+        [element.id]
+    );
 
+    const text = element.data.text;
     return (
-        <ElementRoot element={props.element} className={className}>
-            <ConnectedSlate elementId={props.element.id} onChange={onChange} />
+        <ElementRoot element={element} className={className}>
+            <Slate value={text} onChange={onChange} />
         </ElementRoot>
     );
 };
-
-export default connect<any, any, any>(
-    (state, props) => ({
-        element: getElement(state, props.elementId)
-    }),
-    { updateElement }
-)(Text);
+export default React.memo(Text);

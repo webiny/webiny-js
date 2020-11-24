@@ -8,7 +8,7 @@ import { CREATE_REVISION_FORM } from "@webiny/app-page-builder/admin/graphql/pag
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { get } from "lodash";
 
-const EditRevision = (props) => {
+const EditRevision = props => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();

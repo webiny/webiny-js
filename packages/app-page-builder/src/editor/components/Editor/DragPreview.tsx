@@ -12,7 +12,6 @@ const layerStyles: React.CSSProperties = {
 };
 
 let subscribedToOffsetChange = false;
-
 let dragPreviewRef = null;
 
 const onOffsetChange = monitor => () => {
@@ -30,8 +29,9 @@ const onOffsetChange = monitor => () => {
     dragPreviewRef.style["-webkit-transform"] = transform;
 };
 
-export default function DragPreview() {
+const DragPreview = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
+
     const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
             // @ts-ignore
@@ -89,4 +89,6 @@ export default function DragPreview() {
             </div>
         </div>
     );
-}
+};
+
+export default DragPreview;

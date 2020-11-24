@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { css } from "emotion";
-import styled from "@emotion/styled";
-import { set } from "dot-prop-immutable";
-import { get } from "lodash";
-import { useHandlers } from "@webiny/app/hooks/useHandlers";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import Resizer from "@webiny/app-page-builder/editor/components/Resizer";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
-import { resizeStart, resizeStop } from "./actions";
+import styled from "@emotion/styled";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import {
+    ResizeEndActionEvent,
+    ResizeStartActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
+import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { css } from "emotion";
+import { useRecoilValue } from "recoil";
 
 const SpacerHandle = styled("div")({
     height: "100%",
@@ -32,43 +32,73 @@ const SpacerHeight = styled("div")({
 export const MIN_HEIGHT = 20;
 export const INIT_HEIGHT = 100;
 
-const SpacerContainer = props => {
-    const { elementStyle, customClasses, combineClassNames } = props;
-
-    const [localHeight, setHeight] = useState(null);
+type SpacerContainerPropsType = {
+    elementId: string;
+    elementStyle: any;
+    customClasses: any;
+    combineClassNames: any;
+};
+const SpacerContainer: React.FunctionComponent<SpacerContainerPropsType> = ({
+    elementId,
+    elementStyle,
+    customClasses,
+    combineClassNames
+}) => {
+    const handler = useEventActionHandler();
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const { initialHeight = MIN_HEIGHT, ...spacerStyle } = elementStyle;
-    let height = initialHeight;
-    if (localHeight) {
-        height = localHeight;
+    const [localHeight, setLocalHeight] = useState<number>(
+        element?.data?.settings?.height?.value || initialHeight
+    );
+    if (!element) {
+        return null;
     }
 
-    const { onResizeStart, onResizeStop, onResize } = useHandlers(props, {
-        onResizeStart: ({ element, resizeStart }) => () => {
-            resizeStart();
-            setHeight(get(element, "data.settings.height.value", MIN_HEIGHT));
-        },
-        onResizeStop: ({ updateElement, element, resizeStop }) => () => {
-            resizeStop();
-            updateElement({ element: set(element, "data.settings.height.value", localHeight) });
-            setHeight(null);
-        },
-        onResize: () => diff => {
-            setHeight(Math.max(MIN_HEIGHT, localHeight - diff));
-        }
-    });
+    const onResizeStart = (height: number) => {
+        handler.trigger(new ResizeStartActionEvent());
+        setLocalHeight(height);
+    };
+
+    const onResizeStop = (height: number) => {
+        handler.trigger(
+            new ResizeEndActionEvent({
+                element: {
+                    ...element,
+                    data: {
+                        ...element.data,
+                        settings: {
+                            ...(element.data?.settings || {}),
+                            height: {
+                                ...(element.data?.settings?.height || {}),
+                                value: height
+                            }
+                        }
+                    }
+                }
+            })
+        );
+    };
+    const onResize = (diff: number) => {
+        setLocalHeight(previousHeight => {
+            return Math.max(MIN_HEIGHT, previousHeight - diff);
+        });
+    };
 
     return (
-        <div style={{ height }} className={combineClassNames(css(spacerStyle), ...customClasses)}>
+        <div
+            style={{ height: localHeight }}
+            className={combineClassNames(css(spacerStyle), ...customClasses)}
+        >
             <Resizer
                 axis={"y"}
-                onResizeStart={onResizeStart}
-                onResizeStop={onResizeStop}
+                onResizeStart={() => onResizeStart(localHeight)}
+                onResizeStop={() => onResizeStop(localHeight)}
                 onResize={onResize}
             >
                 {({ ...otherProps }) => (
                     <React.Fragment>
                         <SpacerHeight>
-                            {height}
+                            {localHeight}
                             px
                         </SpacerHeight>
 
@@ -80,7 +110,4 @@ const SpacerContainer = props => {
     );
 };
 
-export default connect<any, any, any>(
-    (state, props) => ({ element: getElement(state, props.elementId) }),
-    { updateElement, resizeStart, resizeStop }
-)(SpacerContainer);
+export default React.memo(SpacerContainer);

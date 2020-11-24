@@ -1,20 +1,16 @@
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { get } from "lodash";
-import { set } from "dot-prop-immutable";
-
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { Input } from "@webiny/ui/Input";
 import { InputContainer } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
+import { useRecoilValue } from "recoil";
 
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
-
-const validateWidth = value => {
+const validateWidth = (value: string | undefined) => {
     if (!value) {
         return null;
     }
@@ -29,56 +25,54 @@ const validateWidth = value => {
 
     throw Error("Specify % or px!");
 };
+const Settings: React.FunctionComponent = () => {
+    const handler = useEventActionHandler();
+    const element = useRecoilValue(activeElementWithChildrenSelector);
 
-type SettingsProps = {
-    element: PbShallowElement;
-    updateElement: Function;
-};
-
-class Settings extends React.Component<SettingsProps> {
-    updateSettings = async (data, form) => {
+    const updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return;
         }
-
-        const { element, updateElement } = this.props;
-        const attrKey = `data.settings.columnWidth`;
-        const newElement = set(element, attrKey, data);
-
-        updateElement({ element: newElement });
-    };
-
-    render() {
-        const { element } = this.props;
-
-        const data = get(element.data, "settings.columnWidth", { value: "100%" });
-
-        return (
-            <Form data={data} onChange={this.updateSettings}>
-                {({ Bind }) => (
-                    <Tabs>
-                        <Tab label={"Width"}>
-                            <Grid>
-                                <Cell span={5}>
-                                    <Typography use={"overline"}>Width</Typography>
-                                </Cell>
-                                <Cell span={7}>
-                                    <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={validateWidth}>
-                                            <Input />
-                                        </Bind>
-                                    </InputContainer>
-                                </Cell>
-                            </Grid>
-                        </Tab>
-                    </Tabs>
-                )}
-            </Form>
+        return handler.trigger(
+            new UpdateElementActionEvent({
+                element: {
+                    ...element,
+                    data: {
+                        ...element.data,
+                        settings: {
+                            ...(element.data.settings || {}),
+                            columnWidth: data
+                        }
+                    }
+                }
+            })
         );
-    }
-}
+    };
+    const data = element.data.settings?.columnWidth || { value: "100%" };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(Settings);
+    return (
+        <Form data={data} onChange={updateSettings}>
+            {({ Bind }) => (
+                <Tabs>
+                    <Tab label={"Width"}>
+                        <Grid>
+                            <Cell span={5}>
+                                <Typography use={"overline"}>Width</Typography>
+                            </Cell>
+                            <Cell span={7}>
+                                <InputContainer width={"auto"} margin={0}>
+                                    <Bind name={"value"} validators={validateWidth}>
+                                        <Input />
+                                    </Bind>
+                                </InputContainer>
+                            </Cell>
+                        </Grid>
+                    </Tab>
+                </Tabs>
+            )}
+        </Form>
+    );
+};
+
+export default React.memo(Settings);

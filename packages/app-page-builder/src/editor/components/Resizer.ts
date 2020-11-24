@@ -1,63 +1,93 @@
-import React, { ReactElement, SyntheticEvent } from "react";
+import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
 
 type ResizerProps = {
     axis: "x" | "y";
     onResizeStart?: () => void;
     onResizeStop?: () => void;
     onResize(position: number): void;
-    children(params: { isResizing: boolean; onMouseDown(e: SyntheticEvent): void }): ReactElement;
+    children(params: {
+        isResizing: boolean;
+        onMouseDown(e: SyntheticEvent): void;
+    }): React.ReactElement;
 };
 
-class Resizer extends React.Component<ResizerProps> {
-    state = {
-        dragging: false
-    };
+type OnMouseMoveType = (ev: MouseEvent) => void;
+type OnMouseUpType = (ev: MouseEvent) => void;
 
-    startPosition: number;
+const addEventListeners = (onMouseMove: OnMouseMoveType, onMouseUp: OnMouseUpType) => {
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+};
+const removeEventListeners = (onMouseMove: OnMouseMoveType, onMouseUp: OnMouseUpType) => {
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+};
 
-    getMousePosition = e => {
-        return this.props.axis === "x" ? e.pageX : e.pageY;
-    };
+const Resizer = ({
+    axis,
+    onResizeStart = () => {
+        return;
+    },
+    onResizeStop = () => {
+        return;
+    },
+    onResize,
+    children
+}: ResizerProps) => {
+    const [isDragging, setIsDragging] = useState<boolean>(false);
+    const startPosition = useRef(0);
 
-    onMouseDown = (e: SyntheticEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        this.startPosition = this.getMousePosition(e);
-        this.setState(
-            {
-                dragging: true
-            },
-            () => {
-                document.addEventListener("mousemove", this.onMouseMove);
-                document.addEventListener("mouseup", this.onMouseUp);
-            }
-        );
-        this.props.onResizeStart();
-    };
-
-    onMouseUp = () => {
-        if (this.state.dragging) {
-            this.setState({ dragging: false });
-            this.props.onResizeStop();
+    // attaching events on drag start
+    // detaching on drag end
+    // on the first run event listeners can be removed, nothing wrong about it
+    useEffect(() => {
+        if (isDragging) {
+            addEventListeners(onMouseMove, onMouseUp);
+        } else {
+            removeEventListeners(onMouseMove, onMouseUp);
         }
+
+        return () => {
+            removeEventListeners(onMouseMove, onMouseUp);
+        };
+    }, [isDragging]);
+
+    const getMousePosition = (ev: MouseEvent): number => {
+        return axis === "x" ? ev.pageX : ev.pageY;
     };
 
-    onMouseMove = e => {
-        if (!this.state.dragging) {
+    const onMouseMove = (ev: MouseEvent) => {
+        if (!isDragging) {
             return;
         }
-
-        const mousePosition = this.getMousePosition(e);
-        this.props.onResize(this.startPosition - mousePosition);
-        this.startPosition = mousePosition;
+        const mousePosition = getMousePosition(ev);
+        onResize(startPosition.current - mousePosition);
+        startPosition.current = mousePosition;
     };
 
-    render() {
-        return this.props.children({
-            isResizing: this.state.dragging,
-            onMouseDown: this.onMouseDown
-        });
-    }
-}
+    const onMouseUp = () => {
+        if (!isDragging) {
+            return;
+        }
+        setIsDragging(false);
+        onResizeStop();
+    };
+
+    const onMouseDown = (ev: SyntheticEvent<any, MouseEvent>) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const targetEvent =
+            ev.nativeEvent?.pageX !== undefined ? ev.nativeEvent : ((ev as unknown) as MouseEvent);
+        startPosition.current = getMousePosition(targetEvent);
+
+        setIsDragging(true);
+        onResizeStart();
+    };
+
+    return children({
+        isResizing: isDragging,
+        onMouseDown
+    });
+};
 
 export default Resizer;

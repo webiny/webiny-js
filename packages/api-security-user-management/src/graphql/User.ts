@@ -169,7 +169,7 @@ export default {
             updateCurrentUser: resolveUpdateCurrentSecurityUser,
             createUser: hasScope("security.user.manage")(resolveCreateUser),
             updateUser: hasScope("security.user.manage")(resolveUpdateUser),
-            deleteUser: hasScope("security.user.manage")(resolveDeleteUser),
+            deleteUser: hasScope("security.user.manage")(resolveDeleteUser)
         }
     }
 };

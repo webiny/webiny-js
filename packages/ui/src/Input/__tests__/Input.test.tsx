@@ -1,5 +1,7 @@
+// TODO remove
 // @ts-nocheck
 import React from "react";
+// eslint-disable-next-line
 import { Input } from "../index";
 import "jest-dom/extend-expect";
 import { render, cleanup } from "react-testing-library";
@@ -24,7 +26,7 @@ describe("Input tests", () => {
 });
 
 function setup(props = {}) {
-    let renderArg = {};
+    const renderArg = {};
     const renderProp = jest.fn(controllerArg => {
         Object.assign(renderArg, controllerArg);
         return null;
