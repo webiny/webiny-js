@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import { useQuery } from "react-apollo";
@@ -15,6 +15,10 @@ function Forms() {
             sort: { savedOn: -1 }
         }
     });
+    // Refetch "Form list" on mount
+    useEffect(() => {
+        listQuery.refetch();
+    }, []);
 
     return (
         <>
