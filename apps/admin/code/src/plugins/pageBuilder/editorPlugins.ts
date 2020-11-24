@@ -29,6 +29,7 @@ import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/cod
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
 import emptyBlock from "@webiny/app-page-builder/editor/plugins/blocks/emptyBlock";
+import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
 // Block categories
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
 // Toolbar
@@ -71,6 +72,21 @@ import scrollFactory from "@webiny/app-page-builder/editor/plugins/slate/scroll"
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
 // Breadcrumbs
 import breadcrumbs from "@webiny/app-page-builder/editor/plugins/breadcrumbs";
+// default presets for grid
+import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+// event actions
+import {
+    createElementPlugin,
+    deactivatePluginPlugin,
+    deleteElementPlugin,
+    dragPlugin,
+    dropElementPlugin,
+    resizePlugin,
+    saveRevisionPlugin,
+    togglePluginPlugin,
+    updateElementPlugin,
+    updateRevisionPlugin
+} from "@webiny/app-page-builder/editor/recoil/actions";
 
 const blockPlugins = blockFactory();
 const boldPlugins = boldFactory();
@@ -89,6 +105,7 @@ export default [
     document(),
     grid(),
     block(),
+    gridBlock,
     ...cell(),
     icon(),
     image(),
@@ -100,6 +117,8 @@ export default [
     social,
     code,
     pagesList(),
+    // grid presets
+    ...gridPresets,
     // Icons
     icons,
     // Element Actions
@@ -164,5 +183,16 @@ export default [
     // Page settings
     pageSettingsPlugins,
     // Breadcrumbs
-    breadcrumbs
+    breadcrumbs,
+    // action registration
+    createElementPlugin(),
+    updateElementPlugin(),
+    togglePluginPlugin(),
+    saveRevisionPlugin(),
+    dropElementPlugin(),
+    deactivatePluginPlugin(),
+    deleteElementPlugin(),
+    updateRevisionPlugin(),
+    ...resizePlugin(),
+    ...dragPlugin()
 ];
