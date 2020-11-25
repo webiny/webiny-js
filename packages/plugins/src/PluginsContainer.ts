@@ -59,8 +59,12 @@ export class PluginsContainer {
 
     public oneByType<T extends Plugin>(type: string): T {
         const list = this.atLeastOneByType<T>(type);
-        const [plugin] = list;
-        return plugin;
+        if (list.length > 1) {
+            throw new Error(
+                `There is a requirement for plugin of type "${type}" to be only one registered.`
+            );
+        }
+        return list[0];
     }
 
     public all<T extends Plugin>(): T[] {
@@ -72,7 +76,7 @@ export class PluginsContainer {
         assign(plugins, options, this.plugins);
     }
 
-    unregister(name: string): void {
+    public unregister(name: string): void {
         delete this.plugins[name];
     }
 }
