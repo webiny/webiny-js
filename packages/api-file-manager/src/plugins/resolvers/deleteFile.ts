@@ -1,10 +1,7 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import S3 from "aws-sdk/clients/s3";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import hasRwd from "@webiny/api-file-manager/plugins/resolvers/utils/hasRwd";
 import { NotAuthorizedResponse } from "@webiny/api-security";
-
-const S3_BUCKET = process.env.S3_BUCKET;
 
 const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {
@@ -29,21 +26,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             }
         }
 
-        const s3 = new S3();
-
-        await s3
-            .deleteObject({
-                Bucket: S3_BUCKET,
-                Key: file.key
-            })
-            .promise();
-        await files.delete(id);
-        // Index file in "Elastic Search"
-        await context.elasticSearch.delete({
-            id,
-            index: "file-manager",
-            type: "_doc"
-        });
+        await context.fileManager.storage.delete({ id: file.id, key: file.key });
 
         return new Response(true);
     } catch (e) {
