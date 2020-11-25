@@ -3,8 +3,9 @@ import { hasPermission } from "@webiny/api-security";
 import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
-import uploadFile from "./resolvers/uploadFile";
-import uploadFiles from "./resolvers/uploadFiles";
+// TODO: remove these imports after removing the files.
+// import uploadFile from "./resolvers/uploadFile";
+// import uploadFiles from "./resolvers/uploadFiles";
 import createFile from "./resolvers/createFile";
 import updateFile from "./resolvers/updateFile";
 import createFiles from "./resolvers/createFiles";
@@ -30,7 +31,7 @@ export default [
                     meta: JSON
                 }
 
-                input UploadFileInput {
+                # input UploadFileInput {
                     name: String!
                     type: String!
                     size: Int!
@@ -49,12 +50,12 @@ export default [
                     file: UploadFileResponseDataFile
                 }
 
-                type UploadFileResponse {
+                # type UploadFileResponse {
                     error: FileError
                     data: UploadFileResponseData
                 }
 
-                type UploadFilesResponse {
+                # type UploadFilesResponse {
                     error: FileError
                     data: [UploadFileResponseData]!
                 }
@@ -160,8 +161,8 @@ export default [
                 }
 
                 type FilesMutation {
-                    uploadFile(data: UploadFileInput!): UploadFileResponse
-                    uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
+                    # uploadFile(data: UploadFileInput!): UploadFileResponse
+                    # uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFile(id: ID!, data: FileInput!): FileResponse
@@ -209,8 +210,9 @@ export default [
                     getSettings: hasPermission("files.settings")(getSettings)
                 },
                 FilesMutation: {
-                    uploadFile: hasPermission("files.file")(uploadFile),
-                    uploadFiles,
+                    // FIXME: We might not need these because of "api-file-manager-s3"
+                    // uploadFile: hasPermission("files.file")(uploadFile),
+                    // uploadFiles,
                     createFile: hasPermission("files.file")(createFile),
                     updateFile: hasPermission("files.file")(updateFile),
                     createFiles: hasPermission("files.file")(createFiles),
