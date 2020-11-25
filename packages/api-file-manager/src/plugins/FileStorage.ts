@@ -25,8 +25,8 @@ export class FileStorage {
     storagePlugin: FileStoragePlugin;
     settings: FileManagerSettings;
     context: ContextPlugin<FileStorageContext>;
-    constructor({ driver, settings, context }) {
-        this.storagePlugin = driver;
+    constructor({ storagePlugin, settings, context }) {
+        this.storagePlugin = storagePlugin;
         this.settings = settings;
         this.context = context;
     }
@@ -66,8 +66,8 @@ export class FileStorage {
         return file;
     }
 
-    async uploadFiles({ args, context }) {
-        const { files, elasticSearch } = context;
+    async uploadFiles(args) {
+        const { files, elasticSearch } = this.context;
 
         const promises = [];
         for (let i = 0; i < args.files.length; i++) {
@@ -113,9 +113,9 @@ export class FileStorage {
         return data;
     }
 
-    async delete({ args, context }) {
+    async delete(args) {
         const { id, key } = args;
-        const { files, elasticSearch } = context;
+        const { files, elasticSearch } = this.context;
         // Cloud storage provider logic.
         await this.storagePlugin.delete({
             key
