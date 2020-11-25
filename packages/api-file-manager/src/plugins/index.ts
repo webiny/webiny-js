@@ -1,5 +1,4 @@
-import crud from "./crud";
 import graphql from "./graphql";
-import fileManagerContext from "./fileManagerContext";
+import context from "./context";
 
-export default (): any => [crud, graphql, fileManagerContext];
+export default (): any => [graphql, context];
