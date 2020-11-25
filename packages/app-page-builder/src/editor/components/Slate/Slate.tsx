@@ -30,8 +30,8 @@ const valueToJSON = value => {
 export type SlateEditorProps = {
     // Plugin names to exclude
     exclude?: string[];
-
     onChange?: (value: { [key: string]: any }) => void;
+    value: any;
 };
 
 export type SlateEditorState = {

@@ -1,9 +1,17 @@
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import React from "react";
+import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { getPlugins } from "@webiny/plugins";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
-const AdvancedAction = ({ elementType, children }) => {
+const AdvancedAction: React.FunctionComponent<any> = ({ children }) => {
+    const element = useRecoilValue(activeElementSelector);
+    if (!element) {
+        throw new Error(
+            "This component should not be called if there is no active element selected."
+        );
+    }
+    const elementType = element.type;
     const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
         "pb-editor-page-element-advanced-settings"
     );
@@ -15,6 +23,4 @@ const AdvancedAction = ({ elementType, children }) => {
     return children;
 };
 
-export default connect<any, any, any>(state => ({ elementType: getActiveElement(state).type }))(
-    AdvancedAction
-);
+export default React.memo(AdvancedAction);

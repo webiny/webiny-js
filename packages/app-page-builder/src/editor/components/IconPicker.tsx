@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
 import { getPlugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
@@ -85,10 +85,17 @@ const searchInput = css({
     }
 });
 
-const { useState, useCallback, useMemo, Fragment } = React;
-
-const IconPicker = ({ value, onChange, removable = true }) => {
-    const [filter, setFilter] = useState("");
+type IconPickerPropsType = {
+    value: [string, string];
+    onChange: (item: PbIcon) => void;
+    removable?: boolean;
+};
+const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
+    value,
+    onChange,
+    removable = true
+}) => {
+    const [filter, setFilter] = useState<string>("");
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -179,7 +186,7 @@ const IconPicker = ({ value, onChange, removable = true }) => {
     const renderGrid = useCallback(
         ({ closeMenu }) => {
             return (
-                <Fragment>
+                <>
                     <DelayedOnChange value={filter} onChange={onFilterChange}>
                         {({ value, onChange }) => (
                             <Input
@@ -201,7 +208,7 @@ const IconPicker = ({ value, onChange, removable = true }) => {
                         rowHeight={100}
                         width={640}
                     />
-                </Fragment>
+                </>
             );
         },
         [icons]
@@ -211,7 +218,7 @@ const IconPicker = ({ value, onChange, removable = true }) => {
         <Menu
             handle={
                 <div className={pickIcon}>
-                    <FontAwesomeIcon icon={value || ["far", "star"]} size={"2x"} />
+                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             }
         >

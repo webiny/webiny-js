@@ -1,6 +1,10 @@
+// TODO remove
+// @ts-nocheck
 import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
+// eslint-disable-next-line
+import listPages from "./pageResolvers/listPages";
 import listPublishedPages from "./pageResolvers/listPublishedPages";
 import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
@@ -72,6 +76,7 @@ const plugin: GraphQLSchemaPlugin = {
                 savedOn: DateTime
                 createdBy: PbCreatedBy
                 published: Boolean
+                version: Int
                 category: PbPageCategory
                 title: String
                 url: String

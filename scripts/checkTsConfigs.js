@@ -11,7 +11,7 @@ const { _: packagesToCheck } = argv;
 const pathPointsToWorkspacePackage = packageAbsolutePath => {
     const workspaces = rootPackageJson.workspaces.packages;
     for (let i = 0; i < workspaces.length; i++) {
-        let absolutePath = resolve(join(PROJECT_ROOT, workspaces[i]));
+        const absolutePath = resolve(join(PROJECT_ROOT, workspaces[i]));
         if (minimatch(packageAbsolutePath, absolutePath)) {
             return true;
         }
@@ -36,7 +36,7 @@ const TSCONFIG = {
 (async () => {
     const workspacePackagesErrors = {};
     let errorsCount = 0;
-    let warningsCount = 0;
+    const warningsCount = 0;
 
     const workspacesPackages = getPackages({ includes: "/packages/" });
 
@@ -60,7 +60,7 @@ const TSCONFIG = {
         }).filter(getPackage);
 
         for (let j = 0; j < workspacePackageWbyDepsNames.length; j++) {
-            let workspacePackageWbyDepName = workspacePackageWbyDepsNames[j];
+            const workspacePackageWbyDepName = workspacePackageWbyDepsNames[j];
 
             const workspacePackageWbyDepObject = getPackage(workspacePackageWbyDepName);
             if (!workspacePackageWbyDepObject) {
@@ -133,13 +133,13 @@ const TSCONFIG = {
         if (workspacePackageObject.tsConfigJson && workspacePackageObject.tsConfigJson.references) {
             for (let j = 0; j < workspacePackageObject.tsConfigJson.references.length; j++) {
                 // Check if a package is defined in TS config, but not listed in package.json.
-                let ref = workspacePackageObject.tsConfigJson.references[j];
+                const ref = workspacePackageObject.tsConfigJson.references[j];
                 const referencePath = resolve(join(workspacePackageObject.packageFolder, ref.path));
                 const refPackageObject = getPackage(referencePath);
 
                 if (refPackageObject) {
                     if (refPackageObject.isTs) {
-                        let exists = workspacePackageWbyDepsNames.includes(
+                        const exists = workspacePackageWbyDepsNames.includes(
                             refPackageObject.packageJson.name
                         );
 
@@ -176,7 +176,7 @@ const TSCONFIG = {
         ) {
             // Check if a package is defined in TS config, but not listed in package.json.
             for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.references.length; j++) {
-                let ref = workspacePackageObject.tsConfigBuildJson.references[j];
+                const ref = workspacePackageObject.tsConfigBuildJson.references[j];
                 const referencePath = resolve(
                     join(workspacePackageObject.packageFolder, parse(ref.path).dir)
                 );
@@ -185,7 +185,7 @@ const TSCONFIG = {
 
                 if (refPackageObject) {
                     if (refPackageObject.isTs) {
-                        let exists = workspacePackageWbyDepsNames.includes(
+                        const exists = workspacePackageWbyDepsNames.includes(
                             refPackageObject.packageJson.name
                         );
 
@@ -222,13 +222,13 @@ const TSCONFIG = {
         ) {
             // Check if a package is defined in TS config, but not listed in package.json.
             for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.exclude.length; j++) {
-                let ref = workspacePackageObject.tsConfigBuildJson.exclude[j];
+                const ref = workspacePackageObject.tsConfigBuildJson.exclude[j];
                 const referencePath = resolve(join(workspacePackageObject.packageFolder, ref));
                 const refPackageObject = getPackage(referencePath);
 
                 if (refPackageObject) {
                     if (refPackageObject.isTs) {
-                        let exists = workspacePackageWbyDepsNames.includes(
+                        const exists = workspacePackageWbyDepsNames.includes(
                             refPackageObject.packageJson.name
                         );
 
@@ -267,7 +267,7 @@ const TSCONFIG = {
         }
     }
 
-    for (let workspacePackageName in workspacePackagesErrors) {
+    for (const workspacePackageName in workspacePackagesErrors) {
         const {
             package: workspacePackageObject,
             errors: workspacePackageErrors
@@ -288,12 +288,12 @@ const TSCONFIG = {
             return current;
         }, {});
 
-        for (let file in errorsByFiles) {
+        for (const file in errorsByFiles) {
             const fileErrors = errorsByFiles[file];
             if (fileErrors.length) {
                 console.log(` ${gray(file)}`);
                 for (let i = 0; i < fileErrors.length; i++) {
-                    let fileError = fileErrors[i];
+                    const fileError = fileErrors[i];
                     const color = fileError.warning ? yellow : red;
                     console.log(`  ${color(`${i + 1}. ${fileError.message}`)}`);
                 }

@@ -1,27 +1,28 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { getPlugins } from "@webiny/plugins";
-import { ELEMENT_CREATED } from "@webiny/app-page-builder/editor/actions";
-import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import ImageSettings from "./ImageSettings";
 import Image from "./Image";
+import { imageCreatedEditorAction } from "./imageCreatedEditorAction";
+import { CreateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import Action from "../../elementSettings/components/Action";
 import {
-    PbEditorReduxMiddlewarePlugin,
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin
+    PbEditorPageElementSettingsPlugin,
+    PbEditorEventActionPlugin
 } from "@webiny/app-page-builder/types";
+import { Plugin } from "@webiny/plugins/types";
 
-export default () => {
-    const PreviewBox = styled("div")({
-        textAlign: "center",
+const PreviewBox = styled("div")({
+    textAlign: "center",
+    height: 50,
+    svg: {
         height: 50,
-        svg: {
-            height: 50,
-            width: 50
-        }
-    });
+        width: 50
+    }
+});
 
+export default (): Plugin[] => {
     return [
         {
             name: "pb-editor-page-element-image",
@@ -57,7 +58,7 @@ export default () => {
                 "pb-editor-page-element-settings-delete",
                 ""
             ],
-            target: ["column", "row"],
+            target: ["cell", "block"],
             create(options) {
                 return {
                     type: "image",
@@ -94,42 +95,11 @@ export default () => {
             }
         } as PbEditorPageElementSettingsPlugin,
         {
-            type: "pb-editor-redux-middleware",
-            name: "pb-editor-redux-middleware-image-created",
-            actions: [ELEMENT_CREATED],
-            middleware: ({ action, next }) => {
-                const { element, source } = action.payload;
-
-                next(action);
-
-                if (element.type !== "image") {
-                    return;
-                }
-
-                // Check the source of the element (could be `saved` element which behaves differently from other elements)
-                const imagePlugin = getPlugins<PbEditorPageElementPlugin>(
-                    "pb-editor-page-element"
-                ).find(pl => pl.elementType === source.type);
-
-                if (!imagePlugin) {
-                    return;
-                }
-
-                const { onCreate } = imagePlugin;
-                if (!onCreate || onCreate !== "skip") {
-                    // If source element does not define a specific `onCreate` behavior - continue with the actual element plugin
-                    // TODO: this isn't an ideal approach, implement a retry mechanism which polls for DOM element
-                    setTimeout(() => {
-                        const image: HTMLElement = document.querySelector(
-                            `#${window.CSS.escape(element.id)} [data-role="select-image"]`
-                        );
-
-                        if (image) {
-                            image.click();
-                        }
-                    }, 100);
-                }
+            name: "pb-editor-event-action-image-created",
+            type: "pb-editor-event-action-plugin",
+            onEditorMount(handler) {
+                return handler.on(CreateElementActionEvent, imageCreatedEditorAction);
             }
-        } as PbEditorReduxMiddlewarePlugin
+        } as PbEditorEventActionPlugin
     ];
 };

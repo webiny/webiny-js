@@ -1,10 +1,9 @@
-import * as React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { getPlugins } from "@webiny/plugins";
-import { set } from "dot-prop-immutable";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
-import { get } from "dot-prop-immutable";
+import React from "react";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { plugins } from "@webiny/plugins";
+import { useRecoilValue } from "recoil";
 import { ReactComponent as AlignCenterIcon } from "./icons/round-border_horizontal-24px.svg";
 import { ReactComponent as AlignTopIcon } from "./icons/round-border_top-24px.svg";
 import { ReactComponent as AlignBottomIcon } from "./icons/round-border_bottom-24px.svg";
@@ -16,22 +15,49 @@ const icons = {
     center: <AlignCenterIcon />,
     end: <AlignBottomIcon />
 };
+const alignments = Object.keys(icons);
+enum AlignTypesEnum {
+    START = "start",
+    CENTER = "center",
+    END = "end"
+}
+type VerticalAlignActionPropsType = {
+    children: React.ReactElement;
+};
+const VerticalAlignAction: React.FunctionComponent<VerticalAlignActionPropsType> = ({
+    children
+}) => {
+    const eventActionHandler = useEventActionHandler();
+    const element = useRecoilValue(activeElementWithChildrenSelector);
 
-const VerticalAlignAction = ({ element, updateElement, children }) => {
-    const align = get(element, "data.settings.verticalAlign") || "start";
-    const plugin = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").find(
-        pl => pl.elementType === element.type
-    );
+    const align = element?.data?.settings?.verticalAlign || AlignTypesEnum.START;
 
-    const alignElement = React.useCallback(() => {
-        const alignments = Object.keys(icons);
+    const alignElement = () => {
+        const nextAlign = (alignments[alignments.indexOf(align) + 1] ||
+            AlignTypesEnum.START) as AlignTypesEnum;
 
-        const nextAlign = alignments[alignments.indexOf(align) + 1] || "start";
+        eventActionHandler.trigger(
+            new UpdateElementActionEvent({
+                element: {
+                    ...element,
+                    data: {
+                        ...element.data,
+                        settings: {
+                            ...element.data.settings,
+                            verticalAlign: nextAlign
+                        }
+                    }
+                }
+            })
+        );
+    };
 
-        updateElement({
-            element: set(element, "data.settings.verticalAlign", nextAlign)
-        });
-    }, [align]);
+    if (!element) {
+        return null;
+    }
+    const plugin = plugins
+        .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+        .find(pl => pl.elementType === element.type);
 
     if (!plugin) {
         return null;
@@ -40,6 +66,4 @@ const VerticalAlignAction = ({ element, updateElement, children }) => {
     return React.cloneElement(children, { onClick: alignElement, icon: icons[align] });
 };
 
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(VerticalAlignAction);
+export default React.memo(VerticalAlignAction);

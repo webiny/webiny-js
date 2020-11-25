@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Carousel } from "@webiny/ui/Carousel";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
-import { isPluginActive } from "@webiny/app-page-builder/editor/selectors";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useRecoilValue } from "recoil";
 
 import { ReactComponent as NextSlideIcon } from "./assets/next-slide.svg";
 import { ReactComponent as PrevSlideIcon } from "./assets/prev-slide.svg";
@@ -74,9 +75,13 @@ const SlideControl = styled("div")({
     }
 });
 
-const Onboarding = ({ deactivatePlugin, showOnboarding }) => {
+const onboardingPluginName = "pb-editor-toolbar-onboarding";
+
+const Onboarding: React.FunctionComponent = () => {
+    const handler = useEventActionHandler();
     const [slideIndex, setSlideIndex] = useState(0);
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+    const showOnboarding = useRecoilValue(isPluginActiveSelector(onboardingPluginName));
 
     const nextSlide = useCallback(() => {
         setSlideIndex(slideIndex + 1);
@@ -84,7 +89,11 @@ const Onboarding = ({ deactivatePlugin, showOnboarding }) => {
 
     const closeDialog = useCallback(() => {
         setSlideIndex(0);
-        deactivatePlugin({ name: "pb-editor-toolbar-onboarding" });
+        handler.trigger(
+            new DeactivatePluginActionEvent({
+                name: onboardingPluginName
+            })
+        );
     }, [setSlideIndex]);
 
     useEffect(() => {
@@ -147,9 +156,4 @@ const Onboarding = ({ deactivatePlugin, showOnboarding }) => {
     );
 };
 
-export default connect<any, any, any>(
-    state => ({
-        showOnboarding: isPluginActive("pb-editor-toolbar-onboarding")(state)
-    }),
-    { deactivatePlugin }
-)(React.memo(Onboarding));
+export default React.memo(Onboarding);

@@ -1,40 +1,55 @@
 import React, { useMemo, useCallback } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { set } from "dot-prop-immutable";
-import { get } from "lodash";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getActiveElement } from "@webiny/app-page-builder/editor/selectors";
 import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { Tabs, Tab } from "@webiny/ui/Tabs";
+import { useRecoilValue } from "recoil";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 
-const ImageSettings = ({ element, updateElement }) => {
-    const { image = {} } = get(element, "data", {});
+const ImageSettings = () => {
+    const handler = useEventActionHandler();
+    const element = useRecoilValue(activeElementSelector);
+    const {
+        id,
+        data: { image }
+    } = element;
 
     const setData = useMemo(() => {
         const historyUpdated = {};
-
         return (name, value) => {
-            const attrKey = `data.image.${name}`;
-            const newElement = set(element, attrKey, value);
-
-            if (historyUpdated[name] !== value) {
-                historyUpdated[name] = value;
-                updateElement({ element: newElement });
+            if (historyUpdated[name] === value) {
+                return;
             }
+            historyUpdated[name] = value;
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        elements: [],
+                        data: {
+                            ...element.data,
+                            image: {
+                                ...(element.data.image || {}),
+                                [name]: value
+                            }
+                        }
+                    }
+                })
+            );
         };
-    }, [element, updateElement]);
+    }, [id, image]);
 
-    const updateTitle = useCallback(value => setData("title", value), [setData]);
-    const updateWidth = useCallback(value => setData("width", value), [setData]);
-    const updateHeight = useCallback(value => setData("height", value), [setData]);
+    const updateTitle = useCallback(value => setData("title", value), [id, image]);
+    const updateWidth = useCallback(value => setData("width", value), [id, image]);
+    const updateHeight = useCallback(value => setData("height", value), [id, image]);
 
     return (
         <Tabs>
             <Tab icon={<ImageIcon />} label="Image">
                 <Input
                     label="Title"
-                    value={image.title || ""}
+                    value={image?.title || ""}
                     updateValue={updateTitle}
                     inputWidth={"max-content"}
                 />
@@ -42,7 +57,7 @@ const ImageSettings = ({ element, updateElement }) => {
                     label="Width"
                     placeholder="auto"
                     description="eg. 300 or 50%"
-                    value={image.width || ""}
+                    value={image?.width || ""}
                     updateValue={updateWidth}
                     inputWidth={80}
                 />
@@ -50,7 +65,7 @@ const ImageSettings = ({ element, updateElement }) => {
                     label="Height"
                     placeholder="auto"
                     description="eg. 300 or 50%"
-                    value={image.height || ""}
+                    value={image?.height || ""}
                     updateValue={updateHeight}
                     inputWidth={80}
                 />
@@ -58,7 +73,4 @@ const ImageSettings = ({ element, updateElement }) => {
         </Tabs>
     );
 };
-
-export default connect<any, any, any>(state => ({ element: getActiveElement(state) }), {
-    updateElement
-})(ImageSettings);
+export default React.memo(ImageSettings);

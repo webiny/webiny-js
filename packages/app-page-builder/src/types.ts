@@ -1,14 +1,19 @@
-import { ComponentType, ReactElement, ReactNode } from "react";
+import React, { ComponentType, ReactElement, ReactNode } from "react";
+import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
+import {
+    EventActionHandler,
+    EventActionHandlerActionCallableResponseType,
+    EventActionHandlerMetaType
+} from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { Value } from "slate";
 import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
-import { Reducer as ReduxReducer, Store as ReduxStore } from "redux";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
-import { EditorBarProps } from "@webiny/app-page-builder/editor/components/Editor/Bar";
 import { Form } from "@webiny/form/Form";
-export { Redux } from "@webiny/app-page-builder/editor/redux";
 import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
 
 export type PbMenuSettingsItemPlugin = Plugin & {
@@ -16,13 +21,124 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-export type PbElement = {
+export type PbElementDataSettingsMarginPaddingType = {
+    all?: number;
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+};
+export type PbElementDataSettingsBackgroundType = {
+    color?: string;
+    image?: {
+        scaling?: string;
+        position?: string;
+        file?: {
+            src?: string;
+        };
+    };
+};
+export type PbElementDataSettingsMarginType = {
+    advanced?: boolean;
+    mobile?: PbElementDataSettingsMarginPaddingType;
+    desktop?: PbElementDataSettingsMarginPaddingType;
+};
+export type PbElementDataSettingsPaddingType = {
+    advanced?: boolean;
+    mobile?: PbElementDataSettingsMarginPaddingType;
+    desktop?: PbElementDataSettingsMarginPaddingType;
+};
+export type PbElementDataSettingsBorderType = {
+    width?: number;
+    style?: "none" | "solid" | "dashed" | "dotted";
+    radius?: number;
+    borders?: {
+        top?: boolean;
+        right?: boolean;
+        bottom?: boolean;
+        left?: boolean;
+    };
+};
+export type PbElementDataImageType = {
+    width?: string | number;
+    height?: string | number;
+    file?: {
+        id?: string;
+        src?: string;
+    };
+    title?: string;
+};
+export type PbElementDataIconType = {
+    id?: [string, string];
+    width?: number;
+    color?: string;
+    svg?: string;
+    position?: string;
+};
+export type PbElementDataSettingsFormType = {
+    parent?: string;
+    revision?: string;
+};
+export type PbElementDataSettingsType = {
+    horizontalAlign?: "left" | "center" | "right" | "justify";
+    horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
+    verticalAlign?: "start" | "center" | "end";
+    margin?: PbElementDataSettingsMarginType;
+    padding?: PbElementDataSettingsPaddingType;
+    height?: {
+        value?: number;
+    };
+    background?: PbElementDataSettingsBackgroundType;
+    border?: PbElementDataSettingsBorderType;
+    grid?: {
+        cellsType?: string;
+        size?: number;
+    };
+    columnWidth?: {
+        value?: string;
+    };
+    width?: {
+        value?: string;
+    };
+    className?: string;
+    form?: PbElementDataSettingsFormType;
+    [key: string]: any;
+};
+export type PbElementDataType = {
+    settings?: PbElementDataSettingsType;
+    text?: string;
+    image?: PbElementDataImageType;
+    link?: {
+        href?: string;
+        newTab?: boolean;
+    };
+    type?: string;
+    icon?: PbElementDataIconType;
+    source?: {
+        url?: string;
+    };
+    oembed?: {
+        source?: {
+            url?: string;
+        };
+        html?: string;
+    };
+    width?: number;
+    [key: string]: any;
+};
+type PbBaseElement = {
     id: string;
     path: string;
     type: string;
-    elements: Array<PbElement>;
-    data: { [key: string]: any };
+    data: PbElementDataType;
     [key: string]: any;
+};
+export type PbElement = PbBaseElement & {
+    elements: PbElement[];
+};
+
+export type PbShallowElement = PbBaseElement & {
+    elements: string[];
 };
 
 export type PbTheme = {
@@ -133,49 +249,6 @@ export type PbAddonRenderPlugin = Plugin & {
     component: ReactElement;
 };
 
-export type PbShallowElement = Omit<PbElement, "elements"> & { elements: string[] };
-
-export type Action = {
-    type: string;
-    payload: { [key: string]: any };
-    meta: { [key: string]: any };
-};
-
-export type ActionOptions = {
-    log?: boolean;
-};
-
-export type StatePathGetter = (action: Action) => string;
-
-export type StatePath = null | string | StatePathGetter;
-export type Reducer = ReduxReducer;
-
-export type ReducerFactory = () => Reducer;
-
-export type Store = ReduxStore;
-
-export type State = {
-    elements?: { [key: string]: PbShallowElement };
-    page?: { [key: string]: any };
-    revisions?: Array<{ [key: string]: any }>;
-    ui?: { [key: string]: any };
-};
-
-export type MiddlewareParams = {
-    store: Store;
-    next: Function;
-    action: Action;
-};
-
-export type MiddlewareFunction = (params: MiddlewareParams) => any;
-export type ActionCreator = (payload?: any, meta?: { [key: string]: any }) => Action;
-
-export type PbEditorReduxMiddlewarePlugin = Plugin & {
-    type: "pb-editor-redux-middleware";
-    actions: string[];
-    middleware: MiddlewareFunction;
-};
-
 export type PbDocumentElementPlugin = Plugin & {
     elementType: "document";
     create(options?: any): PbElement;
@@ -254,13 +327,14 @@ export type PbEditorPageElementPlugin = Plugin & {
     canDelete?: (params: { element: PbElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        store?: Store;
-        source: PbElement | { type: string; path?: string };
+        state?: PbState;
+        meta: EventActionHandlerMetaType;
+        source: PbElement | DragObjectWithTypeWithTargetType;
         target: PbElement;
         position: number | null;
-    }) => void;
+    }) => EventActionHandlerActionCallableResponseType;
     // Executed when an immediate child element is deleted
-    onChildDeleted?: (params: { element: PbElement; child: PbElement }) => void;
+    onChildDeleted?: (params: { element: PbElement; child: PbElement }) => PbElement | undefined;
     // Executed after element was created
     onCreate?: string;
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
@@ -342,9 +416,14 @@ export type PbEditorSlateMenuItemPlugin = Plugin & {
     }) => ReactElement;
 };
 
+export type PbEditorBarPluginShouldRenderProps = {
+    plugins: PluginsAtomType;
+    activeElement: any;
+};
+
 export type PbEditorBarPlugin = Plugin & {
     type: "pb-editor-bar";
-    shouldRender(props: EditorBarProps): boolean;
+    shouldRender(props: PbEditorBarPluginShouldRenderProps): boolean;
     render(): ReactElement;
 };
 
@@ -418,4 +497,30 @@ export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     elementType: string;
     render(params?: { Bind: BindComponent; data: any }): ReactElement;
     onSave?: (data: FormData) => FormData;
+};
+
+export type PbEditorEventActionPlugin = Plugin & {
+    type: "pb-editor-event-action-plugin";
+    name: string;
+    // returns an unregister event action callable
+    // please have one action per plugin
+    // you can register more but then unregistering won't work properly
+    onEditorMount: (handler: EventActionHandler) => () => void;
+    // runs when editor is unmounting
+    // by default it runs unregister callable
+    // but dev can do what ever and then run unregister callable - or not
+    onEditorUnmount?: (handler: EventActionHandler, cb: () => void) => void;
+};
+
+export type PbEditorGridPresetPluginType = Plugin & {
+    name: string;
+    type: "pb-editor-grid-preset";
+    cellsType: string;
+    icon: React.FunctionComponent;
+};
+// this will run when saving the element for later use
+export type PbEditorPageElementSaveActionPlugin = Plugin & {
+    type: "pb-editor-page-element-save-action";
+    elementType: string;
+    onSave: (element: PbElement) => PbElement;
 };

@@ -1,6 +1,6 @@
 import React from "react";
+import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import Droppable from "./../Droppable";
 
 const InnerDivVertical = styled("div")({
     position: "absolute",
@@ -18,7 +18,6 @@ type OuterDivVerticalProps = {
 };
 
 const OuterDivVertical = React.memo<OuterDivVerticalProps>(
-    // @ts-ignore
     styled("div")(
         {
             position: "absolute",
@@ -31,8 +30,7 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
         (props: OuterDivVerticalProps) => ({
             [props.last ? "right" : "left"]: -2,
             textAlign: props.last ? "right" : "left",
-            // @ts-ignore
-            [InnerDivVertical]: {
+            [(InnerDivVertical as undefined) as string]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",
@@ -43,14 +41,14 @@ const OuterDivVertical = React.memo<OuterDivVerticalProps>(
     )
 );
 
-type Props = {
+export type VerticalPropsType = {
     type: string;
-    onDrop: Function;
-    last: boolean;
-    isVisible: boolean;
+    onDrop: DroppableOnDropPropType;
+    last?: boolean;
+    isVisible?: DroppableIsVisiblePropType;
 };
 
-const Vertical = ({ last, onDrop, isVisible, type }: Props) => {
+const VerticalComponent = ({ last, onDrop, isVisible, type }: VerticalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -75,4 +73,4 @@ const Vertical = ({ last, onDrop, isVisible, type }: Props) => {
     );
 };
 
-export default React.memo(Vertical);
+export const Vertical = React.memo(VerticalComponent);

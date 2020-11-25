@@ -1,9 +1,16 @@
-import * as React from "react";
-import { connect } from "react-redux";
-import { isEqual } from "lodash";
+import React from "react";
+import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { PbShallowElement } from "@webiny/app-page-builder/types";
+import {
+    activateElementMutation,
+    activeElementSelector,
+    contentAtom,
+    ContentAtomType,
+    highlightElementMutation,
+    uiAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
-import { getActiveElement, getElement } from "@webiny/app-page-builder/editor/selectors";
-import { activateElement, highlightElement } from "@webiny/app-page-builder/editor/actions";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 
 const breadcrumbs = css({
     display: "flex",
@@ -34,23 +41,57 @@ const breadcrumbs = css({
     }
 });
 
-const Breadcrumbs = ({ elements, activateElement, highlightElement }) => {
-    if (!elements) {
+const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) => {
+    const path = element.path;
+    const list = [
+        {
+            id: element.id,
+            type: element.type
+        }
+    ];
+    const paths = path.split(".");
+    paths.pop();
+    while (paths.length > 0) {
+        const el = extrapolateContentElementHelper(content, paths.join("."));
+        if (!el) {
+            return list.reverse();
+        }
+        list.push({
+            id: el.id,
+            type: el.type
+        });
+        paths.pop();
+    }
+    return list.reverse();
+};
+
+const Breadcrumbs: React.FunctionComponent = () => {
+    const setUiAtomValue = useSetRecoilState(uiAtom);
+    const element = useRecoilValue(activeElementSelector);
+    const contentAtomValue = useRecoilValue(contentAtom);
+    if (!element) {
         return null;
     }
+    const highlightElement = (id: string) => {
+        setUiAtomValue(prev => highlightElementMutation(prev, id));
+    };
+    const activateElement = (id: string) => {
+        setUiAtomValue(prev => activateElementMutation(prev, id));
+    };
+
+    const breadcrumbsList = createBreadcrumbs(contentAtomValue, element);
+    breadcrumbsList.shift();
 
     return (
         <ul className={breadcrumbs}>
-            {elements.map((el, index) => (
+            {breadcrumbsList.map(({ id, type }, index) => (
                 <li
-                    key={el.id}
-                    onMouseOver={() => highlightElement({ element: el.id })}
-                    onClick={() => activateElement({ element: el.id })}
+                    key={id}
+                    onMouseOver={() => highlightElement(id)}
+                    onClick={() => activateElement(id)}
                 >
-                    <span className={"element"}>
-                        {el.type.replace("pb-editor-page-element-", "")}
-                    </span>
-                    {elements.length - 1 > index ? (
+                    <span className={"element"}>{type}</span>
+                    {breadcrumbsList.length - 1 > index ? (
                         <span className={"divider"}>&nbsp;&gt;&nbsp;</span>
                     ) : null}
                 </li>
@@ -58,24 +99,4 @@ const Breadcrumbs = ({ elements, activateElement, highlightElement }) => {
         </ul>
     );
 };
-
-export default connect<any, any, any>(
-    state => {
-        const element = getActiveElement(state);
-        if (!element) {
-            return { elements: null };
-        }
-
-        const paths = element?.path?.split(".").slice(1) ?? [];
-        const elements = paths.map((path, index) => {
-            const elPath = [0, ...paths.slice(0, index + 1)].join(".");
-            const el = getElement(state, elPath);
-            return { id: el.id, type: el.type, index: path, active: el.id === element.id };
-        });
-
-        return { elements };
-    },
-    { activateElement, highlightElement },
-    null,
-    { areStatePropsEqual: isEqual }
-)(Breadcrumbs);
+export default React.memo(Breadcrumbs);

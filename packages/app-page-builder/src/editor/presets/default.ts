@@ -12,6 +12,19 @@ import defaultBarPlugins from "./../plugins/defaultBar";
 import slateEditorPlugins from "./../plugins/slate";
 import pageSettingsPlugins from "./../plugins/pageSettings";
 import breadcrumbs from "./../plugins/breadcrumbs";
+import { gridPresets } from "./../plugins/gridPresets";
+import {
+    createElementPlugin,
+    updateElementPlugin,
+    togglePluginPlugin,
+    saveRevisionPlugin,
+    dropElementPlugin,
+    deleteElementPlugin,
+    deactivatePluginPlugin,
+    updateRevisionPlugin,
+    resizePlugin,
+    dragPlugin
+} from "../recoil/actions/plugins";
 
 export default () => [
     contentBackground,
@@ -27,5 +40,17 @@ export default () => [
     defaultBarPlugins,
     slateEditorPlugins,
     pageSettingsPlugins,
-    icons
+    icons,
+    ...gridPresets,
+    // action registration
+    createElementPlugin(),
+    updateElementPlugin(),
+    togglePluginPlugin(),
+    saveRevisionPlugin(),
+    dropElementPlugin(),
+    deactivatePluginPlugin(),
+    deleteElementPlugin(),
+    updateRevisionPlugin(),
+    ...resizePlugin(),
+    ...dragPlugin()
 ];

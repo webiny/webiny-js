@@ -27,7 +27,6 @@
     "@webiny/plugins": "^4.14.0",
     "@webiny/project-utils": "^4.14.0",
     "commodo-fields-object": "^1.0.6",
-    "form-data": "^2.5.0",
     "ksuid": "^2.0.0",
     "mime": "^2.4.4",
     "node-fetch": "^2.6.1",

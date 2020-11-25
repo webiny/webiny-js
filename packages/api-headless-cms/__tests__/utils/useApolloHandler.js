@@ -9,7 +9,7 @@ export default plugins => () => {
     const apolloHandler = createApolloHandler(plugins);
     return {
         apolloHandler,
-        invoke: async ({ httpMethod = "POST", body }) => {
+        invoke: async ({ body }) => {
             const response = await apolloHandler({
                 httpMethod: "POST",
                 body: JSON.stringify(body),

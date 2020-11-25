@@ -1,8 +1,8 @@
 // Elements
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
-import row from "@webiny/app-page-builder/render/plugins/elements/row";
+import grid from "@webiny/app-page-builder/render/plugins/elements/grid";
 import block from "@webiny/app-page-builder/render/plugins/elements/block";
-import column from "@webiny/app-page-builder/render/plugins/elements/column";
+import cell from "@webiny/app-page-builder/render/plugins/elements/cell";
 import icon from "@webiny/app-page-builder/render/plugins/elements/icon";
 import image from "@webiny/app-page-builder/render/plugins/elements/image";
 import text from "@webiny/app-page-builder/render/plugins/elements/text";
@@ -42,9 +42,9 @@ import margin from "@webiny/app-page-builder/render/plugins/elementSettings/marg
 export default [
     // Elements
     document(),
-    row(),
+    grid(),
     block(),
-    column(),
+    cell(),
     image(),
     icon(),
     text(),
