@@ -46,7 +46,7 @@ export default {
         
         type ExportFormSubmissionsFile {
             src: String
-            id: ID
+            key: String
         }
         
         type ExportFormSubmissionsResponse {
