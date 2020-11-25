@@ -1,7 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
-import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
 import adminPlugins from "./admin";
@@ -54,10 +53,6 @@ plugins.register([
      * Headless CMS app.
      */
     // TODO: headlessCmsPlugins,
-    /*
-     *  File storage S3 plugin for File manager app.
-     * */
-    fileStorageS3Plugin(),
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */
