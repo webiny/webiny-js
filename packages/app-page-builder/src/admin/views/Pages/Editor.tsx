@@ -58,7 +58,7 @@ const Editor = () => {
                 );
             }
 
-            if (!get(data, "pageBuilder.page.data")) {
+            if (!get(data, "pageBuilder.getPage.data")) {
                 return null;
             }
 
@@ -67,7 +67,7 @@ const Editor = () => {
             }
 
             if (!loading) {
-                const { revisions, ...page } = data.pageBuilder.page.data;
+                const { revisions, ...page } = data.pageBuilder.getPage.data;
                 if (!page.content) {
                     page.content = createElement("document");
                 }
@@ -104,7 +104,7 @@ const Editor = () => {
             query={GET_PAGE}
             variables={{ id: params.id }}
             onCompleted={data => {
-                const error = get(data, "pageBuilder.page.error.message");
+                const error = get(data, "pageBuilder.getPage.error.message");
                 if (error) {
                     history.push(`/page-builder/pages`);
                     showSnackbar(error);
