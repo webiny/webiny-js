@@ -1,6 +1,6 @@
 import { merge } from "lodash";
 import menus from "./graphql/menus";
-import pages from "./graphql/pages";
+import pages from "./graphql/pages.gql";
 import pageElements from "./graphql/pageElements";
 import categories from "./graphql/categories";
 import install from "./graphql/install";

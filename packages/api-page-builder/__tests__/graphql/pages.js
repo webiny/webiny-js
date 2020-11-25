@@ -2,6 +2,7 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         id
         publishedOn
+        status
         category {
             slug
         }
@@ -12,11 +13,10 @@ export const DATA_FIELD = /* GraphQL */ `
         # settings
         content
         snippet
-        published
         locked
-        parent
-        createdOn
         savedOn
+        createdFrom
+        createdOn
         createdBy {
             id
             displayName
@@ -31,12 +31,12 @@ const LIST_DATA_FIELD = /* GraphQL */ `
             slug
         }
         status
-        published
         title
         url
         status
-        createdOn
         savedOn
+        createdFrom
+        createdOn
         createdBy {
             id
             displayName
@@ -53,9 +53,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_PAGE = /* GraphQL */ `
-    mutation CreatePage($data: PbCreatePageInput!) {
+    mutation CreatePage($from: ID, $data: PbCreatePageInput) {
         pageBuilder {
-            createPage(data: $data) {
+            createPage(from: $from, data: $data) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -74,10 +74,43 @@ export const UPDATE_PAGE = /* GraphQL */ `
     }
 `;
 
-export const LIST_PAGES = /* GraphQL */ `
-    query ListPages {
+export const PUBLISH_PAGE = /* GraphQL */ `
+    mutation PublishPage($id: ID!) {
         pageBuilder {
-            listPages {
+            publishPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const UNPUBLISH_PAGE = /* GraphQL */ `
+    mutation UnpublishPage($id: ID!) {
+        pageBuilder {
+            unpublishPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES = /* GraphQL */ `
+    query ListPages($sort: PbPageSortInput) {
+        pageBuilder {
+            listPages(sort: $sort) {
+                data ${LIST_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
+    query ListPublishedPages($sort: PbPageSortInput) {
+        pageBuilder {
+            listPublishedPages(sort: $sort) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

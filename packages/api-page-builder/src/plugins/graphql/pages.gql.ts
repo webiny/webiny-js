@@ -1,8 +1,5 @@
-import { GraphQLFieldResolver } from "graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
-import listPublishedPages from "./pageResolvers/listPublishedPages";
-import getPublishedPage from "./pageResolvers/getPublishedPage";
 import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
 import { compose } from "@webiny/handler-graphql";
@@ -11,19 +8,7 @@ import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
-import uniqid from "uniqid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-
-const pageFetcher = ctx => ctx.models.PbPage;
-
-const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
-    args.data = { published: true };
-
-    // @ts-ignore
-    return resolveUpdate(pageFetcher)(_, args, ctx, info);
-};
-
-type Context = HandlerContext<I18NContext, SecurityContext>;
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -33,7 +18,9 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
-const plugin: GraphQLSchemaPlugin = {
+type Context = HandlerContext<I18NContext, SecurityContext>;
+
+const plugin: GraphQLSchemaPlugin<Context> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -45,6 +32,7 @@ const plugin: GraphQLSchemaPlugin = {
 
             type PbPage {
                 id: ID
+                createdFrom: ID
                 createdBy: PbCreatedBy
                 createdOn: DateTime
                 savedOn: DateTime
@@ -58,20 +46,26 @@ const plugin: GraphQLSchemaPlugin = {
                 fullUrl: String
                 settings: PbPageSettings
                 content: JSON
-                published: Boolean
+                revisions: [PbPageRevision]
                 # isHomePage: Boolean
                 # isErrorPage: Boolean
                 # isNotFoundPage: Boolean
                 locked: Boolean
-                parent: ID
+            }
+
+            type PbPageRevision {
+                id: ID
+                version: Int
+                title: String
+                status: String
             }
 
             type PbPageListItem {
                 id: ID
-                createdOn: DateTime
                 savedOn: DateTime
+                createdFrom: ID
+                createdOn: DateTime
                 createdBy: PbCreatedBy
-                published: Boolean
                 version: Int
                 category: PbPageCategory
                 title: String
@@ -121,7 +115,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             input PbCreatePageInput {
-                category: String!
+                category: String
             }
 
             type PbPageDeleteResponse {
@@ -179,25 +173,14 @@ const plugin: GraphQLSchemaPlugin = {
                 getPublishedPage(
                     id: ID
                     url: String
-                    parent: ID
                     returnNotFoundPage: Boolean
                     returnErrorPage: Boolean
                     preview: Boolean
                 ): PbPageResponse
 
-                listPages(sort: JSON, limit: Int): PbPageListResponse
+                listPages(sort: PbPageSortInput): PbPageListResponse
 
-                listPublishedPages(
-                    search: String
-                    category: String
-                    parent: String
-                    tags: [String]
-                    tagsRule: PbTagsRule
-                    sort: PbPageSortInput
-                    limit: Int
-                    after: String
-                    before: String
-                ): PbPageListResponse
+                listPublishedPages(sort: PbPageSortInput): PbPageListResponse
 
                 listElements(limit: Int): PbElementListResponse
 
@@ -208,7 +191,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             extend type PbMutation {
-                createPage(data: PbCreatePageInput!): PbPageResponse
+                createPage(from: ID, data: PbCreatePageInput): PbPageResponse
 
                 # Sets given page as new homepage.
                 setHomePage(id: ID!): PbPageResponse
@@ -219,8 +202,11 @@ const plugin: GraphQLSchemaPlugin = {
                 # Update page by given ID.
                 updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
-                # Publish revision
-                publishRevision(id: ID!): PbPageResponse
+                # Publish page
+                publishPage(id: ID!): PbPageResponse
+
+                # Unpublish page
+                unpublishPage(id: ID!): PbPageResponse
 
                 # Delete page and all of its revisions
                 deletePage(id: ID!): PbPageResponse
@@ -233,13 +219,17 @@ const plugin: GraphQLSchemaPlugin = {
         `,
         resolvers: {
             PbPage: {
-                category: async (page: { category: string }, args, context: Context) => {
+                category: async (page: { category: string }, args, context) => {
                     const { categories } = context;
                     return categories.get(page.category);
+                },
+                revisions: async (page: { id: string }, args, context) => {
+                    const { pages } = context;
+                    return pages.listRevisionsForPage(page.id);
                 }
             },
             PbPageListItem: {
-                category: async (page: { category: string }, args, context: Context) => {
+                category: async (page: { category: string }, args, context) => {
                     const { categories } = context;
                     return categories.get(page.category);
                 }
@@ -285,12 +275,23 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     const { pages } = context;
-                    const list = await pages.list(args);
+                    const list = await pages.listLatest(args);
                     return new Response(list);
                 }),
 
-                listPublishedPages,
-                getPublishedPage,
+                listPublishedPages: async (_, args, context) => {
+                    const { pages } = context;
+                    const list = await pages.listPublished(args);
+                    return new Response(list);
+                },
+                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
+                    const { pages } = context;
+                    const page = await pages.getPublished(args);
+                    if (!page) {
+                        return new NotFoundResponse(`Page "${args.id}" not found.`);
+                    }
+                    return new Response(page);
+                },
                 searchTags: async (
                     root: any,
                     args: { [key: string]: any },
@@ -307,35 +308,32 @@ const plugin: GraphQLSchemaPlugin = {
                 createPage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { data: Record<string, any> }, context: Context) => {
-                    // If permission has "rwd" property set, but "w" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                        return new NotAuthorizedResponse();
-                    }
+                )(
+                    async (
+                        _,
+                        args: { from?: string; data?: Record<string, any> },
+                        context: Context
+                    ) => {
+                        // If permission has "rwd" property set, but "w" is not part of it, bail.
+                        const pbPagePermission = await context.security.getPermission("pb.page");
+                        if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                            return new NotAuthorizedResponse();
+                        }
 
-                    const { pages, categories } = context;
-                    const { data } = args;
+                        const { pages } = context;
+                        const { from, data } = args;
 
-                    const existingCategory = await categories.get(data.category);
-                    if (!existingCategory) {
-                        return new NotFoundResponse(
-                            `Category with slug "${data.category}" not found.`
-                        );
+                        try {
+                            if (from) {
+                                return new Response(await pages.createFrom({ from }));
+                            } else {
+                                return new Response(await pages.create(data));
+                            }
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     }
-
-                    try {
-                        return new Response(
-                            await pages.create({
-                                category: data.category,
-                                title: "Untitled",
-                                url: existingCategory.url + "untitled-" + uniqid.time()
-                            })
-                        );
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
-                }),
+                ),
                 deletePage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
@@ -405,8 +403,34 @@ const plugin: GraphQLSchemaPlugin = {
                         return new ErrorResponse(e);
                     }
                 }),
-                publishRevision: hasPermission("pb:page:crud")(publishRevision),
-                deleteRevision: hasPermission("pb:page:crud")(pageFetcher)
+
+                publishPage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    const { pages } = context;
+                    try {
+                        const page = await pages.publish(args.id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+
+                unpublishPage: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    const { pages } = context;
+                    try {
+                        const page = await pages.unpublish(args.id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                })
+
+                // deletePage: hasPermission("pb:page:crud")(pageFetcher)
             },
             PbPageSettings: {
                 _empty: () => ""

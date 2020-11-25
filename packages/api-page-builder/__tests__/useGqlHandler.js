@@ -16,7 +16,16 @@ import {
     UPDATE_PAGE_ELEMENT,
     GET_PAGE_ELEMENT
 } from "./graphql/pageElements";
-import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES, UPDATE_PAGE, GET_PAGE } from "./graphql/pages";
+import {
+    CREATE_PAGE,
+    DELETE_PAGE,
+    LIST_PAGES,
+    LIST_PUBLISHED_PAGES,
+    UPDATE_PAGE,
+    GET_PAGE,
+    PUBLISH_PAGE,
+    UNPUBLISH_PAGE
+} from "./graphql/pages";
 import { SecurityIdentity } from "@webiny/api-security";
 import {
     CREATE_CATEGORY,
@@ -41,7 +50,7 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
@@ -80,12 +89,12 @@ export default ({ permissions, identity } = {}) => {
 
     return {
         elasticSearch: new Client({
-            hosts: [`http://localhost:9201`],
-            node: "http://localhost:9201"
+            hosts: [`http://localhost:9200`],
+            node: "http://localhost:9200"
         }),
         sleep: (ms = 333) => {
             return new Promise(resolve => {
-                setTimeout(resolve, ms);
+                setTimeout(() => resolve(), ms);
             });
         },
         handler,
@@ -130,11 +139,20 @@ export default ({ permissions, identity } = {}) => {
         async updatePage(variables) {
             return invoke({ body: { query: UPDATE_PAGE, variables } });
         },
+        async publishPage(variables) {
+            return invoke({ body: { query: PUBLISH_PAGE, variables } });
+        },
+        async unpublishPage(variables) {
+            return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
+        },
         async deletePage(variables) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
         },
         async listPages(variables) {
             return invoke({ body: { query: LIST_PAGES, variables } });
+        },
+        async listPublishedPages(variables) {
+            return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
