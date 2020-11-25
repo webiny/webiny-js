@@ -52,7 +52,6 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
         onInput: onChangeHandler,
         onBlur: onBlurHandler,
         onFocus: onFocusHandler,
-        "data-texteditor": true,
         dangerouslySetInnerHTML: {
             __html: value.current
         },

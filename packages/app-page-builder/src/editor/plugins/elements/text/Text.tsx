@@ -1,26 +1,27 @@
-import React from "react";
-import Slate from "@webiny/app-page-builder/editor/components/Slate";
+import React, { useMemo } from "react";
 import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { SlateEditorProps } from "@webiny/app-page-builder/editor/components/Slate/Slate";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import {
+    createPropsFromConfig,
+    RichTextEditor as UiRichTextEditor
+} from "@webiny/ui/RichTextEditor";
+import { OutputBlockData } from "@editorjs/editorjs";
 import { useRecoilValue } from "recoil";
+import { plugins } from "@webiny/plugins";
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 
-type TextType = Omit<SlateEditorProps, "value"> & {
+type TextType = {
     elementId: string;
 };
 const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-    // required due to re-rendering when set content atom and still nothing in elements atom
-    if (!element) {
-        return null;
-    }
+    const { id } = element || {};
     const onChange = React.useCallback(
-        value => {
+        (value: OutputBlockData[]) => {
             handler.trigger(
                 new UpdateElementActionEvent({
                     element: {
@@ -33,13 +34,20 @@ const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
                 })
             );
         },
-        [element.id]
+        [id]
     );
+    const rteProps = useMemo(() => {
+        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
+    }, []);
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
 
-    const text = element.data.text;
+    const text = Array.isArray(element.data.text) ? element.data.text : [];
     return (
         <ElementRoot element={element} className={className}>
-            <Slate value={text} onChange={onChange} />
+            <UiRichTextEditor onChange={onChange} value={text} {...rteProps} />
         </ElementRoot>
     );
 };

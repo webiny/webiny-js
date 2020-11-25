@@ -1,6 +1,5 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
-import Slate from "@webiny/app-page-builder/render/components/Slate";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
@@ -18,10 +17,11 @@ const Button = ({ element }: { element: PbElement }) => {
         "webiny-pb-page-element-button__icon--" + position
     ];
 
+    // TODO fix editor display
     const content = (
         <>
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <Slate value={element.data.text} />
+            <div>{element.data.text}</div>
         </>
     );
 

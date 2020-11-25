@@ -58,16 +58,6 @@ import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
-// Slate
-import boldFactory from "@webiny/app-page-builder/editor/plugins/slate/bold";
-import italicFactory from "@webiny/app-page-builder/editor/plugins/slate/italic";
-import underlineFactory from "@webiny/app-page-builder/editor/plugins/slate/underline";
-import listsFactory from "@webiny/app-page-builder/editor/plugins/slate/lists";
-import codeFactory from "@webiny/app-page-builder/editor/plugins/slate/code";
-import breakFactory from "@webiny/app-page-builder/editor/plugins/slate/break";
-import blockFactory from "@webiny/app-page-builder/editor/plugins/slate/block";
-import linkFactory from "@webiny/app-page-builder/editor/plugins/slate/link";
-import scrollFactory from "@webiny/app-page-builder/editor/plugins/slate/scroll";
 // Page settings
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
 // Breadcrumbs
@@ -87,16 +77,6 @@ import {
     updateElementPlugin,
     updateRevisionPlugin
 } from "@webiny/app-page-builder/editor/recoil/actions";
-
-const blockPlugins = blockFactory();
-const boldPlugins = boldFactory();
-const italicPlugins = italicFactory();
-const underlinePlugins = underlineFactory();
-const codePlugins = codeFactory();
-const linkPlugins = linkFactory();
-const listsPlugins = listsFactory();
-const breakPlugins = breakFactory();
-const scrollPlugins = scrollFactory();
 
 export default [
     contentBackground,
@@ -162,24 +142,6 @@ export default [
     link,
     // Default bar
     defaultBarPlugins,
-    // Slate Menu plugins
-    blockPlugins.menu,
-    boldPlugins.menu,
-    italicPlugins.menu,
-    underlinePlugins.menu,
-    codePlugins.menu,
-    linkPlugins.menu,
-    listsPlugins.menu,
-    // Slate Editor plugins
-    boldPlugins.editor,
-    italicPlugins.editor,
-    underlinePlugins.editor,
-    codePlugins.editor,
-    listsPlugins.editor,
-    linkPlugins.editor,
-    breakPlugins.editor,
-    blockPlugins.editor,
-    scrollPlugins.editor,
     // Page settings
     pageSettingsPlugins,
     // Breadcrumbs

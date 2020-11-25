@@ -40,11 +40,12 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 props.onChange(data);
             },
             onReady() {
-                if (typeof onReady === "function") {
-                    onReady({ editor: editorRef.current, initialData });
+                if (typeof onReady !== "function") {
+                    return;
                 }
+                onReady({ editor: editorRef.current, initialData });
             },
-            tools: Object.keys(props.tools).reduce((tools, name) => {
+            tools: Object.keys(props.tools || {}).reduce((tools, name) => {
                 const tool = props.tools[name];
                 tools[name] = tool;
                 if (!tool.config) {

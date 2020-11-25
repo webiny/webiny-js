@@ -1,10 +1,16 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
 import Text, { className } from "./Text";
-import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import {
+    PbCreateEditorValuePluginType,
+    PbEditorPageElementPlugin
+} from "@webiny/app-page-builder/types";
+import { plugins } from "@webiny/plugins";
 
 export default (): PbEditorPageElementPlugin => {
+    const createEditorValuePlugin = plugins.oneByType<PbCreateEditorValuePluginType>(
+        "pb-rte-create-editor-value"
+    );
     const defaultLipsum = {
         count: 3,
         units: "sentences",
@@ -46,7 +52,10 @@ export default (): PbEditorPageElementPlugin => {
                 type: "text",
                 elements: [],
                 data: {
-                    text: createValue(previewText, content.typography || "paragraph"),
+                    text: createEditorValuePlugin.create(
+                        previewText,
+                        content.typography || "paragraph"
+                    ),
                     settings: {
                         margin: {
                             mobile: { top: 0, left: 0, right: 0, bottom: 15 },
