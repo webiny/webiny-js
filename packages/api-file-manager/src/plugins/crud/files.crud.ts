@@ -25,7 +25,7 @@ const File = pipe(
         size: number(),
         type: string({ validation: validation.create("maxLength:50") }),
         name: string({ validation: validation.create("maxLength:100") }),
-        meta: object(),
+        meta: object({ value: { private: false } }),
         tags: onSet(value => {
             if (!Array.isArray(value)) {
                 return null;

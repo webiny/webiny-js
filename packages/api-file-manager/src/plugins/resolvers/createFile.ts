@@ -29,7 +29,8 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                 type: file.type,
                 name: file.name,
                 tags: file.tags,
-                createdBy: file.createdBy
+                createdBy: file.createdBy,
+                meta: file.meta
             }
         });
 
