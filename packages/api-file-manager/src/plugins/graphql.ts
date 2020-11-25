@@ -32,10 +32,10 @@ export default [
                 }
 
                 # input UploadFileInput {
-                    name: String!
-                    type: String!
-                    size: Int!
-                }
+                #     name: String!
+                #     type: String!
+                #     size: Int!
+                # }
 
                 type UploadFileResponseDataFile {
                     name: String
@@ -51,14 +51,14 @@ export default [
                 }
 
                 # type UploadFileResponse {
-                    error: FileError
-                    data: UploadFileResponseData
-                }
+                #     error: FileError
+                #     data: UploadFileResponseData
+                # }
 
                 # type UploadFilesResponse {
-                    error: FileError
-                    data: [UploadFileResponseData]!
-                }
+                #     error: FileError
+                #     data: [UploadFileResponseData]!
+                # }
 
                 type FileCursors {
                     next: String
