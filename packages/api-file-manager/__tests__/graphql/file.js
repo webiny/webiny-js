@@ -102,7 +102,7 @@ export const LIST_FILES = /* GraphQL */ `
                 ids: $ids,
                 search: $search
             ) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD_WITH_ID}
                 error ${ERROR_FIELD}
             }
         }

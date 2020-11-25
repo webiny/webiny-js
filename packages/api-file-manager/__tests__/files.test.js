@@ -25,14 +25,32 @@ const fileBData = {
 };
 
 describe("Files CRUD test", () => {
-    const { createFile, updateFile, createFiles, getFile, listFiles } = useGqlHandler({
+    const {
+        elasticSearch,
+        sleep,
+        createFile,
+        updateFile,
+        createFiles,
+        getFile,
+        listFiles
+    } = useGqlHandler({
         permissions: [{ name: "*" }],
         identity: identityA
     });
 
-    test("create, read, update and delete files", async () => {
-        let fileAId, fileBId;
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.create({ index: "file-manager" });
+        } catch (e) {}
+    });
 
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: "file-manager" });
+        } catch (e) {}
+    });
+
+    test("create, read, update and delete files", async () => {
         let [response] = await createFile({ data: fileAData });
         expect(response).toEqual({
             data: {
@@ -44,7 +62,7 @@ describe("Files CRUD test", () => {
                 }
             }
         });
-        fileAId = response.data.files.createFile.data.id;
+        const fileAId = response.data.files.createFile.data.id;
 
         // Let's update File tags with too long tag.
         [response] = await updateFile({
@@ -113,7 +131,7 @@ describe("Files CRUD test", () => {
             data: [fileBData]
         });
 
-        fileBId = response.data.files.createFiles.data[0].id;
+        const fileBId = response.data.files.createFiles.data[0].id;
         expect(response).toEqual({
             data: {
                 files: {
@@ -140,13 +158,24 @@ describe("Files CRUD test", () => {
             }
         });
 
+        while (true) {
+            await sleep();
+            const [response] = await listFiles({});
+            if (response?.data?.files?.listFiles?.data?.length) {
+                break;
+            }
+        }
+
         // Let's get a all files
         [response] = await listFiles({});
         expect(response).toEqual({
             data: {
                 files: {
                     listFiles: {
-                        data: [fileAData, fileBData],
+                        data: [
+                            { ...fileAData, id: fileAId },
+                            { ...fileBData, id: fileBId }
+                        ],
                         error: null
                     }
                 }
