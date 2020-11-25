@@ -11,7 +11,7 @@ import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
-import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
+import { FileManagerResolverContext } from "../types";
 
 const fileFetcher = ({ models }): any => models.File;
 const emptyResolver = () => ({});
@@ -187,11 +187,12 @@ export default [
             `,
             resolvers: {
                 File: {
+                    // FIXME: Remove this maybe?
                     __resolveReference(reference, context) {
                         return fileFetcher(context).findById(reference.id);
                     },
-                    async src(file, args, context) {
-                        const settings = await context.filesSettings.get(SETTINGS_KEY);
+                    async src(file, args, context: FileManagerResolverContext) {
+                        const settings = await context.fileManager.fileManagerSettings.getSettings();
                         return settings?.srcPrefix + file.key;
                     }
                 },

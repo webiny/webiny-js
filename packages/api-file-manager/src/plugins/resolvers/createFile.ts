@@ -2,8 +2,9 @@ import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
+import { FileManagerResolverContext } from "../../types";
 
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
         // If permission has "rwd" property set, but "w" is not part of it, bail.
         const filesFilePermission = await context.security.getPermission("files.file");
@@ -11,27 +12,10 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             return new NotAuthorizedResponse();
         }
 
-        const { files } = context;
+        const { files } = context.fileManager;
         const { data } = args;
 
-        // Save file in DB.
-        const file = await files.create(data);
-        // Index file in "Elastic Search"
-        await context.elasticSearch.create({
-            id: file.id,
-            index: "file-manager",
-            type: "_doc",
-            body: {
-                id: file.id,
-                createdOn: file.createdOn,
-                key: file.key,
-                size: file.size,
-                type: file.type,
-                name: file.name,
-                tags: file.tags,
-                createdBy: file.createdBy
-            }
-        });
+        const file = await files.createFile(data);
 
         return new Response(file);
     } catch (e) {

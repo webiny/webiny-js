@@ -2,15 +2,9 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
+import { FileManagerResolverContext } from "../../types";
 
-const sorters = {
-    CREATED_ON_ASC: { createdOn: "asc" },
-    CREATED_ON_DESC: { createdOn: "desc" },
-    SIZE_ASC: { size: "asc" },
-    SIZE_DESC: { size: "desc" }
-};
-
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
         // If permission has "rwd" property set, but "r" is not part of it, bail.
         const filesFilePermission = await context.security.getPermission("files.file");
@@ -18,7 +12,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
             return new NotAuthorizedResponse();
         }
 
-        const { limit = 40, sort, search = "", types = [], tags = [], ids = [] } = args;
+        const { limit = 40, search = "", types = [], tags = [], ids = [] } = args;
 
         const must = [];
         // We'll see about it
@@ -59,24 +53,23 @@ const resolver: GraphQLFieldResolver = async (root, args, context) => {
                     constant_score: {
                         filter: {
                             bool: {
-                                // `must` means `and`;
-                                // all conditions must be satisfied for a record to be present in the result
                                 must: must
                             }
                         }
                     }
                 },
-                size: limit,
-                sort: [sorters[sort] || sorters.CREATED_ON_ASC]
+                size: limit
+                // TODO: Add sort later.
+                // sort: [sorters[sort] || sorters.CREATED_ON_ASC]
             }
         });
 
         let list = response?.body?.hits?.hits?.map(item => item._source);
 
         if (!Array.isArray(list)) {
-            const files = context.files;
+            const files = context.fileManager.files;
 
-            list = await files.list();
+            list = await files.listFiles({});
         }
 
         // If user can only manage own records, let's check if he owns the loaded one.
