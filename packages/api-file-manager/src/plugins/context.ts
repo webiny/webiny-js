@@ -30,8 +30,6 @@ export default {
             context.fileManager = {};
         }
 
-        // TODO: Cache "fileManager settings" here.
-
         context.fileManager.files = filesCrud(context);
         context.fileManager.fileManagerSettings = fileManagerSettingsCrud(context);
     }
