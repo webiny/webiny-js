@@ -56,6 +56,7 @@ import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align
 import divider from "@webiny/app-page-builder/editor/plugins/elementSettings/divider";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
+import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Page settings
@@ -83,7 +84,7 @@ export default [
     blockEditing,
     // Elements
     document(),
-    grid(),
+    grid,
     block(),
     gridBlock,
     ...cell(),
@@ -140,6 +141,7 @@ export default [
     height,
     save,
     link,
+    gridSettings,
     // Default bar
     defaultBarPlugins,
     // Page settings

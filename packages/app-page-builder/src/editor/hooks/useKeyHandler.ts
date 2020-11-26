@@ -6,6 +6,10 @@ const keyStack = {};
 let listener = false;
 const filter = ["TEXTAREA", "INPUT"];
 
+const isContentEditable = (value: any) => {
+    return ["true", true].includes(value);
+};
+
 type KeyboardTargetEventType = KeyboardEvent & {
     target: HTMLElement;
 };
@@ -14,7 +18,7 @@ const setupListener = () => {
         document.body.addEventListener("keydown", (ev: KeyboardTargetEventType) => {
             const target = ev.target;
             // We ignore all keyboard events coming from within contentEditable element and inputs.
-            if (filter.includes(target.nodeName) || target.contentEditable) {
+            if (filter.includes(target.nodeName) || isContentEditable(target.contentEditable)) {
                 return;
             }
 
