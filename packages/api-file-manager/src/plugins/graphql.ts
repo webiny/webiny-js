@@ -204,43 +204,43 @@ export default [
                     fileManager: emptyResolver
                 },
                 FmQuery: {
-                    getFile: pipe(hasPermission("files.file"), hasI18NContentPermission())(getFile),
+                    getFile: pipe(hasPermission("fm.file"), hasI18NContentPermission())(getFile),
                     listFiles: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(listFiles),
                     listTags: listTags,
                     isInstalled,
                     getSettings: pipe(
-                        hasPermission("files.settings"),
+                        hasPermission("fm.settings"),
                         hasI18NContentPermission()
                     )(getSettings)
                 },
                 FmMutation: {
                     uploadFile: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(uploadFile),
                     uploadFiles,
                     createFile: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(createFile),
                     updateFile: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(updateFile),
                     createFiles: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(createFiles),
                     deleteFile: pipe(
-                        hasPermission("files.file"),
+                        hasPermission("fm.file"),
                         hasI18NContentPermission()
                     )(deleteFile),
                     install,
                     updateSettings: pipe(
-                        hasPermission("files.settings"),
+                        hasPermission("fm.settings"),
                         hasI18NContentPermission()
                     )(updateSettings)
                 }

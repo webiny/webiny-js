@@ -7,7 +7,7 @@ import { FileManagerResolverContext } from "../../types";
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
         // If permission has "rwd" property set, but "r" is not part of it, bail.
-        const filesFilePermission = await context.security.getPermission("files.file");
+        const filesFilePermission = await context.security.getPermission("fm.file");
         if (filesFilePermission && !hasRwd({ filesFilePermission, rwd: "r" })) {
             return new NotAuthorizedResponse();
         }

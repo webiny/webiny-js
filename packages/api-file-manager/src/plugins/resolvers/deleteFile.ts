@@ -10,7 +10,7 @@ const S3_BUCKET = process.env.S3_BUCKET;
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
         // If permission has "rwd" property set, but "d" is not part of it, bail.
-        const filesFilePermission = await context.security.getPermission("files.file");
+        const filesFilePermission = await context.security.getPermission("fm.file");
         if (filesFilePermission && !hasRwd({ filesFilePermission, rwd: "d" })) {
             return new NotAuthorizedResponse();
         }
