@@ -241,7 +241,7 @@ export default {
                     .execute();
 
                 if (!page) {
-                    throw new Error(`Page "${from}" not found.`);
+                    throw new NotFoundError(`Page "${from}" not found.`);
                 }
 
                 const [, latestPageVersion] = latestPageData.id.split("#");
@@ -414,7 +414,7 @@ export default {
                     .execute();
 
                 if (!page) {
-                    throw new Error(`Page "${pageId}" not found.`);
+                    throw new NotFoundError(`Page "${pageId}" not found.`);
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
@@ -576,7 +576,7 @@ export default {
                     .execute();
 
                 if (!page) {
-                    throw new Error(`Page "${pageId}" not found.`);
+                    throw new NotFoundError(`Page "${pageId}" not found.`);
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
@@ -676,7 +676,7 @@ export default {
                     .execute();
 
                 if (!page) {
-                    throw new Error(`Page "${pageId}" not found.`);
+                    throw new NotFoundError(`Page "${pageId}" not found.`);
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
@@ -749,7 +749,7 @@ export default {
                     .execute();
 
                 if (!page) {
-                    throw new Error(`Page "${pageId}" not found.`);
+                    throw new NotFoundError(`Page "${pageId}" not found.`);
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
