@@ -1,7 +1,7 @@
 import React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
-import TextRenderer from "./RichTextEditorOutputRenderer";
+import TextRenderer from "../RichTextEditorOutputRenderer";
 
 type TextPropsType = {
     element: PbElement;

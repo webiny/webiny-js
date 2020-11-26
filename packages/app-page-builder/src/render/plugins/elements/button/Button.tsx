@@ -3,6 +3,7 @@ import { get } from "dot-prop-immutable";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
+import TextRenderer from "../RichTextEditorOutputRenderer";
 
 const Button = ({ element }: { element: PbElement }) => {
     const { type = "default", icon = {}, link = {} } = element.data || {};
@@ -17,11 +18,10 @@ const Button = ({ element }: { element: PbElement }) => {
         "webiny-pb-page-element-button__icon--" + position
     ];
 
-    // TODO fix editor display
     const content = (
         <>
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <div>{element.data.text}</div>
+            <TextRenderer data={element.data.text} />
         </>
     );
 
