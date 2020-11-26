@@ -16,7 +16,7 @@ import imagesList from "./imagesList";
 export default [
     document(),
     block(),
-    grid(),
+    grid,
     ...cell(),
     ...icon(),
     ...image(),

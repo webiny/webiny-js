@@ -33,7 +33,7 @@ const createDefaultCells = (cellsType: string) => {
     });
 };
 
-const plugin: PbEditorPageElementPlugin = {
+export default {
     type: "pb-editor-page-element",
     name: "pb-editor-page-element-grid",
     elementType: "grid",
@@ -101,6 +101,4 @@ const plugin: PbEditorPageElementPlugin = {
     render({ element }) {
         return <GridContainer element={element} />;
     }
-};
-
-export default () => plugin;
+} as PbEditorPageElementPlugin;
