@@ -17,9 +17,7 @@ describe("versioning and publishing pages", () => {
     } = useGqlHandler();
 
     beforeAll(async () => {
-        try {
-            await elasticSearch.indices.delete({ index: "page-builder" });
-        } catch {}
+        await elasticSearch.indices.delete({ index: "page-builder" });
     });
 
     test("create, read, update and delete pages", async () => {
@@ -137,7 +135,7 @@ describe("versioning and publishing pages", () => {
                     publishPage: {
                         data: {
                             id: p1v2.id,
-                            status: 'published',
+                            status: "published",
                             publishedOn: expect.stringMatching(/^20/),
                             category: {
                                 slug: "slug"
@@ -208,7 +206,7 @@ describe("versioning and publishing pages", () => {
                     publishPage: {
                         data: {
                             id: p1v4.id,
-                            status: 'published',
+                            status: "published",
                             publishedOn: expect.stringMatching(/^20/),
                             category: {
                                 slug: "slug"
@@ -268,7 +266,7 @@ describe("versioning and publishing pages", () => {
                     unpublishPage: {
                         data: {
                             id: p1v4.id,
-                            status: 'unpublished',
+                            status: "unpublished",
                             publishedOn: expect.stringMatching(/^20/),
                             category: {
                                 slug: "slug"

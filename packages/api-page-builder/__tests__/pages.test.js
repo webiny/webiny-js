@@ -13,9 +13,7 @@ describe("CRUD Test", () => {
     } = useGqlHandler();
 
     beforeAll(async () => {
-        try {
-            await elasticSearch.indices.delete({ index: "page-builder" });
-        } catch {}
+        await elasticSearch.indices.delete({ index: "page-builder" });
     });
 
     test("create, read, update and delete pages", async () => {
@@ -61,11 +59,11 @@ describe("CRUD Test", () => {
                                     slug: "slug"
                                 },
                                 title: "Untitled",
-                                url: /^\/some-url\/untitled-*/,
-                                published: null,
-                                locked: null,
+                                url: /^\/some-url\/untitled-.*/,
+                                publishedOn: null,
+                                locked: false,
                                 version: 1,
-                                createdOn: /^20.*/,
+                                createdOn: expect.stringMatching(/^20.*/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -150,7 +148,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[2],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-2",
                                 url: "url-UPDATED-2"
@@ -166,7 +163,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[1],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-1",
                                 url: "url-UPDATED-1"
@@ -182,7 +178,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[0],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-0",
                                 url: "url-UPDATED-0"

@@ -62,15 +62,17 @@ const plugin: GraphQLSchemaPlugin<Context> = {
 
             type PbPageListItem {
                 id: ID
-                savedOn: DateTime
-                createdFrom: ID
-                createdOn: DateTime
-                createdBy: PbCreatedBy
+                status: String
+                locked: Boolean
+                publishedOn: DateTime
                 version: Int
                 category: PbPageCategory
                 title: String
                 url: String
-                status: String
+                savedOn: DateTime
+                createdFrom: ID
+                createdOn: DateTime
+                createdBy: PbCreatedBy
             }
 
             type PbPageSettings {
@@ -208,6 +210,12 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 # Unpublish page
                 unpublishPage(id: ID!): PbPageResponse
 
+                # Signifies that a page needs to be reviewed.
+                requestReview(id: ID!): PbPageResponse
+
+                # Signifies that certain changes are needed on given page.
+                requestChanges(id: ID!): PbPageResponse
+                
                 # Delete page and all of its revisions
                 deletePage(id: ID!): PbPageResponse
 
@@ -372,32 +380,12 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
                 )(async (_, args: { id: string; data: Record<string, any> }, context: Context) => {
-                    // If permission has "rwd" property set, but "w" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
                     const { pages } = context;
                     const { data } = args;
                     const id = decodeURIComponent(args.id);
 
-                    let page = await pages.get(id);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
                     try {
-                        await pages.update(id, data);
-                        page = await pages.get(id);
+                        const page = await pages.update(id, data);
                         return new Response(page);
                     } catch (e) {
                         return new ErrorResponse(e);
@@ -424,6 +412,32 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     const { pages } = context;
                     try {
                         const page = await pages.unpublish(args.id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+
+                requestReview: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    const { pages } = context;
+                    try {
+                        const page = await pages.requestReview(args.id);
+                        return new Response(page);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }),
+
+                requestChanges: compose(
+                    hasPermission("pb.page"),
+                    hasI18NContentPermission()
+                )(async (_, args: { id: string }, context: Context) => {
+                    const { pages } = context;
+                    try {
+                        const page = await pages.requestChanges(args.id);
                         return new Response(page);
                     } catch (e) {
                         return new ErrorResponse(e);

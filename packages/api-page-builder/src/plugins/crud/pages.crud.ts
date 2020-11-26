@@ -9,6 +9,7 @@ import defaults from "./defaults";
 import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export type Page = {
     id: string;
@@ -150,7 +151,7 @@ export default {
             async create({ category: categorySlug }) {
                 const category = await context.categories.get(categorySlug);
                 if (!category) {
-                    throw new Error(`Category with slug "${categorySlug}" not found.`);
+                    throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
                 }
 
                 const title = "Untitled";
@@ -172,6 +173,8 @@ export default {
                     url,
                     version,
                     status: "draft",
+                    locked: false,
+                    publishedOn: null,
                     savedOn: new Date().toISOString(),
                     createdFrom: null,
                     createdOn: new Date().toISOString(),
@@ -207,6 +210,8 @@ export default {
                         title: data.title,
                         url: data.url,
                         status: data.status,
+                        locked: data.locked,
+                        publishedOn: data.publishedOn,
                         tags: []
                     }
                 });
@@ -248,6 +253,8 @@ export default {
                     SK: nextId,
                     id: nextId,
                     status: "draft",
+                    locked: false,
+                    publishedOn: null,
                     version: nextVersion,
                     savedOn: new Date().toISOString(),
                     createdFrom: from,
@@ -293,7 +300,9 @@ export default {
                         title: data.title,
                         url: data.url,
                         tags: data.tags,
-                        status: data.status
+                        status: data.status,
+                        locked: data.locked,
+                        publishedOn: data.publishedOn
                     }
                 });
 
@@ -301,6 +310,40 @@ export default {
             },
 
             async update(id, data) {
+                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                    throw new NotAuthorizedError();
+                }
+
+                const [uniqueId] = id.split("#");
+
+                const [[[page]], [[latestPageData]]] = await db
+                    .batch()
+                    .read({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE, SK: id },
+                        limit: 1
+                    })
+                    .read({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE_LATEST, SK: uniqueId },
+                        limit: 1
+                    })
+                    .execute();
+
+                if (!page) {
+                    throw new NotFoundError(`Page "${id}" not found.`);
+                }
+
+                // If user can only manage own records, let's check if he owns the loaded one.
+                if (pbPagePermission?.own === true) {
+                    const identity = context.security.getIdentity();
+                    if (page.createdBy.id !== identity.id) {
+                        throw new NotAuthorizedError();
+                    }
+                }
+
                 const updateData = new UpdateDataModel().populate(data);
                 await updateData.validate();
 
@@ -314,20 +357,24 @@ export default {
                     data
                 });
 
-                // Index file in "Elastic Search"
-                await elasticSearch.update({
-                    ...defaults.es,
-                    id,
-                    body: {
-                        doc: {
-                            // TODO: test this, what if the value is `undefined`?
-                            tags: data.tags,
-                            title: data.title,
-                            url: data.url,
-                            savedOn: data.savedOn
+                // If we updated the latest version, then make sure the changes are propagated to ES too.
+                if (latestPageData.id === id) {
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...defaults.es,
+                        id: `L#${uniqueId}`,
+                        body: {
+                            doc: {
+                                tags: data.tags,
+                                title: data.title,
+                                url: data.url,
+                                savedOn: data.savedOn
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
+                return { ...page, ...data };
             },
 
             async publish(pageId: string) {
@@ -380,6 +427,7 @@ export default {
 
                 // Change loaded page's status to published.
                 page.status = "published";
+                page.locked = true;
                 page.publishedOn = new Date().toISOString();
 
                 // We need to issue a couple of updates.
@@ -454,7 +502,13 @@ export default {
                 if (latestPageData.id === pageId) {
                     esOperations.push(
                         { update: { _id: `L#${pageUniqueId}`, _index: "page-builder" } },
-                        { doc: { status: "published" } }
+                        {
+                            doc: {
+                                status: "published",
+                                locked: true,
+                                publishedOn: page.publishedOn
+                            }
+                        }
                     );
                 }
 
@@ -474,7 +528,9 @@ export default {
                         title: page.title,
                         url: page.url,
                         tags: page.tags,
-                        status: "published"
+                        status: "published",
+                        locked: true,
+                        publishedOn: page.publishedOn
                     }
                 );
 
@@ -536,6 +592,7 @@ export default {
                 }
 
                 page.status = "unpublished";
+
                 await db
                     .batch()
                     .delete({
@@ -575,16 +632,165 @@ export default {
             },
 
             async delete(id) {
+                const [uniqueId] = id.split("#");
                 await db.delete({
                     ...defaults.db,
                     query: { PK: PK_PAGE, SK: id }
                 });
 
-                // Index file in "Elastic Search"
+                // Delete pages from ES.
                 await elasticSearch.delete({
                     ...defaults.es,
-                    id
+                    id: `L#${uniqueId}`
                 });
+
+                // TODO: finish this.
+            },
+
+            async requestReview(pageId: string) {
+                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                    throw new NotAuthorizedError();
+                }
+
+                pageId = decodeURIComponent(pageId);
+
+                const [pageUniqueId] = pageId.split("#");
+
+                const [[[page]], [[latestPageData]]] = await db
+                    .batch()
+                    .read({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE, SK: pageId },
+                        limit: 1
+                    })
+                    .read({
+                        ...defaults.db,
+                        limit: 1,
+                        query: {
+                            PK: PK_PAGE_LATEST,
+                            SK: pageUniqueId
+                        }
+                    })
+                    .execute();
+
+                if (!page) {
+                    throw new Error(`Page "${pageId}" not found.`);
+                }
+
+                // If user can only manage own records, let's check if he owns the loaded one.
+                if (pbPagePermission?.own === true) {
+                    const identity = context.security.getIdentity();
+                    if (page.createdBy.id !== identity.id) {
+                        throw new NotAuthorizedError();
+                    }
+                }
+
+                // Change loaded page's status to published.
+                page.status = "request-review";
+                page.locked = true;
+
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_PAGE,
+                        SK: pageId
+                    },
+                    data: page
+                });
+
+                // If we updated the latest version, then make sure the changes are propagated to ES too.
+                if (latestPageData.id === pageId) {
+                    // todo: should eliminate probably and store this flag into PAGE
+                    const [uniqueId] = pageId.split("#");
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...defaults.es,
+                        id: `L#${uniqueId}`,
+                        body: {
+                            doc: {
+                                status: "request-review",
+                                locked: true
+                            }
+                        }
+                    });
+                }
+
+                return page;
+            },
+
+            async requestChanges(pageId: string) {
+                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                    throw new NotAuthorizedError();
+                }
+
+                pageId = decodeURIComponent(pageId);
+
+                const [pageUniqueId] = pageId.split("#");
+
+                const [[[page]], [[latestPageData]]] = await db
+                    .batch()
+                    .read({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE, SK: pageId },
+                        limit: 1
+                    })
+                    .read({
+                        ...defaults.db,
+                        limit: 1,
+                        query: {
+                            PK: PK_PAGE_LATEST,
+                            SK: pageUniqueId
+                        }
+                    })
+                    .execute();
+
+                if (!page) {
+                    throw new Error(`Page "${pageId}" not found.`);
+                }
+
+                // If user can only manage own records, let's check if he owns the loaded one.
+                if (pbPagePermission?.own === true) {
+                    const identity = context.security.getIdentity();
+                    if (page.createdBy.id !== identity.id) {
+                        throw new NotAuthorizedError();
+                    }
+                }
+
+                // Change loaded page's status to published.
+                page.status = "changes-needed";
+                page.locked = false;
+
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_PAGE,
+                        SK: pageId
+                    },
+                    data: page
+                });
+
+                // If we updated the latest version, then make sure the changes are propagated to ES too.
+                if (latestPageData.id === pageId) {
+                    // todo: should eliminate probably and store this flag into PAGE
+                    const [uniqueId] = pageId.split("#");
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...defaults.es,
+                        id: `L#${uniqueId}`,
+                        body: {
+                            doc: {
+                                status: "changes-needed",
+                                locked: false
+                            }
+                        }
+                    });
+                }
+
+                return page;
             }
         };
     }

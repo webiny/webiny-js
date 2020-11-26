@@ -1,8 +1,6 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
-        publishedOn
-        status
         category {
             slug
         }
@@ -13,8 +11,10 @@ export const DATA_FIELD = /* GraphQL */ `
         # settings
         content
         snippet
-        locked
         savedOn
+        status
+        locked
+        publishedOn
         createdFrom
         createdOn
         createdBy {
@@ -34,6 +34,8 @@ const LIST_DATA_FIELD = /* GraphQL */ `
         title
         url
         status
+        locked
+        publishedOn
         savedOn
         createdFrom
         createdOn
