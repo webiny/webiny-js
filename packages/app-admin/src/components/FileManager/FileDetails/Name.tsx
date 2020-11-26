@@ -42,7 +42,7 @@ function Name({ file }) {
                             data: { name }
                         },
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.files.updateFile.data");
+                            const newFileData = get(updated, "data.fileManager.updateFile.data");
                             const data: any = cloneDeep(
                                 cache.readQuery({
                                     query: LIST_FILES,
@@ -50,7 +50,7 @@ function Name({ file }) {
                                 })
                             );
 
-                            data.files.listFiles.data.forEach(item => {
+                            data.fileManager.listFiles.data.forEach(item => {
                                 if (item.src === newFileData.src) {
                                     item.name = newFileData.name;
                                 }

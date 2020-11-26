@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    }
+  ]
+}

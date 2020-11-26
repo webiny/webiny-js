@@ -1,0 +1,33 @@
+{
+  "name": "@webiny/api-file-manager-s3",
+  "version": "4.14.0",
+  "main": "index.js",
+  "types": "types.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "File storage S3 plugin for the @webiny/api-file-manager.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/handler-graphql": "^4.14.0",
+    "@webiny/plugins": "^4.14.0",
+    "@webiny/validation": "^4.14.0",
+    "form-data": "^3.0.0",
+    "node-fetch": "^2.6.1",
+    "uniqid": "^5.2.0",
+    "sanitize-filename": "^1.6.3",
+    "mime": "^2.4.6"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

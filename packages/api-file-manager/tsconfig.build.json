@@ -7,10 +7,12 @@
     "../api-security",
     "../handler-graphql",
     "../handler",
-    "../plugins",
     "../handler-client",
     "../handler-db",
-    "../validation"
+    "../validation",
+    "../api-i18n-content",
+    "../api-plugin-elastic-search-client",
+    "../handler-http"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -28,9 +30,6 @@
       "path": "../handler/tsconfig.build.json"
     },
     {
-      "path": "../plugins/tsconfig.build.json"
-    },
-    {
       "path": "../handler-client/tsconfig.build.json"
     },
     {
@@ -38,6 +37,15 @@
     },
     {
       "path": "../validation/tsconfig.build.json"
+    },
+    {
+      "path": "../api-i18n-content/tsconfig.build.json"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-http/tsconfig.build.json"
     }
   ]
 }

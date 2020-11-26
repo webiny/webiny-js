@@ -10,7 +10,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-file-manager/admin");
 
-const PERMISSION_FM_SETTINGS = ["files.settings"];
+const PERMISSION_FM_SETTINGS = ["fm.settings"];
 
 export default [
     {

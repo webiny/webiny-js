@@ -75,15 +75,22 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
         // Save CSV file and return its URL to the client.
         const csv = await parseAsync(rows, { fields: Object.values(fields) });
         const buffer = Buffer.from(csv);
-        const result = await context.fileManager.uploadFile({
-            context,
+        const { key } = await context.fileManager.storage.upload({
             buffer,
-            file: {
-                size: buffer.length,
-                name: "form_submissions_export.csv",
-                type: "text/csv"
-            }
+            size: buffer.length,
+            name: "form_submissions_export.csv",
+            type: "text/csv",
+            keyPrefix: "form-submissions",
+            hideInFileManager: true
         });
+
+        const settings = await context.fileManager.fileManagerSettings.getSettings();
+
+        const result = {
+            key,
+            src: settings?.srcPrefix + key
+        };
+
         return new Response(result);
     } catch (e) {
         return new ErrorResponse({
