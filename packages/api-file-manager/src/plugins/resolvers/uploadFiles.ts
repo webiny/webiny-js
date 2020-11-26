@@ -2,11 +2,11 @@ import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
 import { BATCH_UPLOAD_MAX_FILES } from "./utils/constants";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
+import { FileManagerResolverContext } from "@webiny/api-file-manager/types";
 
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     const { data: files } = args;
-    const settings = await context.filesSettings.get(SETTINGS_KEY);
+    const settings = await context.fileManager.fileManagerSettings.getSettings();
 
     if (!Array.isArray(files)) {
         return new ErrorResponse({

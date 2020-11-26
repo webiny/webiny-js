@@ -1,11 +1,11 @@
 import { Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import getPreSignedPostPayload from "./utils/getPresignedPostPayload";
-import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
+import { FileManagerResolverContext } from "@webiny/api-file-manager/types";
 
-const resolver: GraphQLFieldResolver = async (root, args, context) => {
+const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     const { data } = args;
-    const settings = await context.filesSettings.get(SETTINGS_KEY);
+    const settings = await context.fileManager.fileManagerSettings.getSettings();
     return new Response(await getPreSignedPostPayload(data, settings));
 };
 
