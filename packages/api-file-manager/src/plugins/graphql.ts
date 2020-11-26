@@ -1,5 +1,6 @@
 import { hasPermission } from "@webiny/api-security";
-
+import { pipe } from "@webiny/handler-graphql";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
@@ -203,21 +204,45 @@ export default [
                     files: emptyResolver
                 },
                 FilesQuery: {
-                    getFile: hasPermission("files.file")(getFile),
-                    listFiles: hasPermission("files.file")(listFiles),
+                    getFile: pipe(hasPermission("files.file"), hasI18NContentPermission())(getFile),
+                    listFiles: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(listFiles),
                     listTags: listTags,
                     isInstalled,
-                    getSettings: hasPermission("files.settings")(getSettings)
+                    getSettings: pipe(
+                        hasPermission("files.settings"),
+                        hasI18NContentPermission()
+                    )(getSettings)
                 },
                 FilesMutation: {
-                    uploadFile: hasPermission("files.file")(uploadFile),
+                    uploadFile: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(uploadFile),
                     uploadFiles,
-                    createFile: hasPermission("files.file")(createFile),
-                    updateFile: hasPermission("files.file")(updateFile),
-                    createFiles: hasPermission("files.file")(createFiles),
-                    deleteFile: hasPermission("files.file")(deleteFile),
+                    createFile: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(createFile),
+                    updateFile: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(updateFile),
+                    createFiles: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(createFiles),
+                    deleteFile: pipe(
+                        hasPermission("files.file"),
+                        hasI18NContentPermission()
+                    )(deleteFile),
                     install,
-                    updateSettings: hasPermission("files.settings")(updateSettings)
+                    updateSettings: pipe(
+                        hasPermission("files.settings"),
+                        hasI18NContentPermission()
+                    )(updateSettings)
                 }
             }
         }
