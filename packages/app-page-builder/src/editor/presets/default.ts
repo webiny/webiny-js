@@ -9,7 +9,6 @@ import blocksCategories from "./../plugins/blocksCategories";
 import toolbar from "./../plugins/toolbar";
 import elementSettings from "./../plugins/elementSettings";
 import defaultBarPlugins from "./../plugins/defaultBar";
-import slateEditorPlugins from "./../plugins/slate";
 import pageSettingsPlugins from "./../plugins/pageSettings";
 import breadcrumbs from "./../plugins/breadcrumbs";
 import { gridPresets } from "./../plugins/gridPresets";
@@ -38,7 +37,6 @@ export default () => [
     toolbar,
     elementSettings,
     defaultBarPlugins,
-    slateEditorPlugins,
     pageSettingsPlugins,
     icons,
     ...gridPresets,

@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import { createValue } from "@webiny/app-page-builder/editor/components/Slate";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin
@@ -48,7 +47,7 @@ export default () => {
                     type: "button",
                     elements: [],
                     data: {
-                        text: createValue("Click me", "button"),
+                        text: "Click me",
                         settings: {
                             margin: {
                                 desktop: { all: 0 },

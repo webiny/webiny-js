@@ -13,12 +13,8 @@ const setupListener = () => {
     if (!listener && document.body) {
         document.body.addEventListener("keydown", (ev: KeyboardTargetEventType) => {
             const target = ev.target;
-            // We ignore all keyboard events coming from within `slateEditor` element and inputs.
-            if (
-                target.dataset.slateEditor ||
-                filter.includes(target.nodeName) ||
-                target.dataset.texteditor
-            ) {
+            // We ignore all keyboard events coming from within contentEditable element and inputs.
+            if (filter.includes(target.nodeName) || target.contentEditable) {
                 return;
             }
 

@@ -7,12 +7,9 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { Value } from "slate";
-import { Plugin as SlatePlugin, Editor } from "slate-react";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { MenuButtonProps } from "@webiny/app-page-builder/editor/components/Slate/Menu";
 import { Form } from "@webiny/form/Form";
 import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
 
@@ -106,7 +103,8 @@ export type PbElementDataSettingsType = {
 };
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
-    text?: string;
+    // this needs to be any since editor can be changed
+    text?: any;
     image?: PbElementDataImageType;
     link?: {
         href?: string;
@@ -237,11 +235,6 @@ export type PbPageElementPagesListComponentPlugin = Plugin & {
     title: string;
     componentName: string;
     component: ComponentType<any>;
-};
-
-export type PbRenderSlateEditorPlugin = Plugin & {
-    type: "pb-render-slate-editor";
-    slate: SlatePlugin;
 };
 
 export type PbAddonRenderPlugin = Plugin & {
@@ -387,33 +380,6 @@ export type PbIcon = {
 export type PbIconsPlugin = Plugin & {
     type: "pb-icons";
     getIcons(): PbIcon[];
-};
-
-export type PbEditorSlateEditorPlugin = Plugin & {
-    type: "pb-editor-slate-editor";
-    slate: SlatePlugin;
-};
-
-export type PbEditorSlateMenuItemPlugin = Plugin & {
-    type: "pb-editor-slate-menu-item";
-    render(params: {
-        MenuButton: ComponentType<MenuButtonProps>;
-        value: Value;
-        onChange;
-        editor: Editor;
-        activatePlugin;
-    }): ReactElement;
-    renderDialog?: (params: {
-        onChange(change: Editor): void;
-        editor: Editor;
-        open: boolean;
-        closeDialog(): void;
-        activePlugin: {
-            plugin: string;
-            value: { [key: string]: any };
-        };
-        activatePlugin(name: string): void;
-    }) => ReactElement;
 };
 
 export type PbEditorBarPluginShouldRenderProps = {

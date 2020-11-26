@@ -18,14 +18,6 @@ import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twi
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
-// Slate
-import bold from "@webiny/app-page-builder/render/plugins/slate/bold";
-import italic from "@webiny/app-page-builder/render/plugins/slate/italic";
-import underline from "@webiny/app-page-builder/render/plugins/slate/underline";
-import lists from "@webiny/app-page-builder/render/plugins/slate/lists";
-import code from "@webiny/app-page-builder/render/plugins/slate/code";
-import typography from "@webiny/app-page-builder/render/plugins/slate/typography";
-import link from "@webiny/app-page-builder/render/plugins/slate/link";
 // Page settings
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 // Element settings
@@ -60,14 +52,6 @@ export default [
     pinterest(),
     pagesList(),
     imagesList(),
-    // Slate
-    bold(),
-    italic(),
-    underline(),
-    lists(),
-    code(),
-    typography(),
-    link(),
     // Page settings
     pageSettings(),
     // Element settings
