@@ -4,7 +4,6 @@ import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../icons/delete.svg";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 
 const FieldContainer = styled("div")({
@@ -34,14 +33,13 @@ const Actions = styled("div")({
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;
-    const { getValue } = useI18N();
     const { getFieldPlugin } = useFormEditor();
 
     const fieldPlugin = getFieldPlugin({ name: field.name });
     return (
         <FieldContainer>
             <Info>
-                <Typography use={"subtitle1"}>{getValue(field.label)}</Typography>
+                <Typography use={"subtitle1"}>{field.label}</Typography>
                 <Typography use={"caption"}>{fieldPlugin && fieldPlugin.field.label}</Typography>
             </Info>
             <Actions>

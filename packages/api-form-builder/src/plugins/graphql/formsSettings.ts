@@ -1,6 +1,13 @@
-import { ErrorResponse } from "@webiny/handler-graphql/responses";
-import { hasScope } from "@webiny/api-security";
-type SettingsContext = any;
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { Context } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
+import { hasPermission } from "@webiny/api-security";
+import { SecurityContext } from "@webiny/api-security/types";
+import { pipe } from "@webiny/handler-graphql";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
+import { FormBuilderSettingsCRUD } from "../../types";
+
+type ResolverContext = Context<I18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -42,17 +49,42 @@ export default {
     `,
     resolvers: {
         FormsQuery: {
-            getSettings: hasScope("forms:settings")(async (_, args, context: SettingsContext) => {
+            getSettings: pipe(
+                hasPermission("fb.settings"),
+                hasI18NContentPermission()
+            )(async (_, args, context: ResolverContext) => {
                 try {
-                    const data = await context.settingsManager.getSettings("forms");
-                    return { data };
+                    const formBuilderSettings: FormBuilderSettingsCRUD =
+                        context?.formBuilder?.crud?.formBuilderSettings;
+
+                    const data = await formBuilderSettings.getSettings();
+                    return new Response(data);
                 } catch (err) {
                     return new ErrorResponse(err);
                 }
             })
         },
         FormsMutation: {
-            /*updateSettings: hasScope("forms:settings")(resolveUpdateSettings(getFormSettings))*/
+            updateSettings: pipe(
+                hasPermission("fb.settings"),
+                hasI18NContentPermission()
+            )(async (_, args, context: ResolverContext) => {
+                try {
+                    const formBuilderSettings: FormBuilderSettingsCRUD =
+                        context?.formBuilder?.crud?.formBuilderSettings;
+
+                    const existingSettings = await formBuilderSettings.getSettings();
+
+                    if (!existingSettings) {
+                        return new NotFoundResponse(`"Form Builder" settings not found!`);
+                    }
+                    await formBuilderSettings.updateSettings(args.data);
+                    const data = await formBuilderSettings.getSettings();
+                    return new Response(data);
+                } catch (err) {
+                    return new ErrorResponse(err);
+                }
+            })
         }
     }
 };

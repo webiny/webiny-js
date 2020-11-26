@@ -1,19 +1,24 @@
-// @ts-nocheck
-import { GraphQLFieldResolver } from "graphql";
+import createForm from "./formResolvers/createForm";
+import deleteForm from "./formResolvers/deleteForm";
 import createRevisionFrom from "./formResolvers/createRevisionFrom";
+import updateRevision from "./formResolvers/updateForm";
+import deleteRevision from "./formResolvers/deleteRevision";
+import { publishRevision, unPublishRevision } from "./formResolvers/publishRevision";
 import listForms from "./formResolvers/listForms";
 import listPublishedForms from "./formResolvers/listPublishedForms";
 import getPublishedForm from "./formResolvers/getPublishedForm";
 import saveFormView from "./formResolvers/saveFormView";
-import { hasScope } from "@webiny/api-security";
+import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { Context } from "@webiny/handler/types";
+import { I18NContext } from "@webiny/api-i18n/types";
+import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { SecurityContext } from "@webiny/api-security/types";
+import { pipe } from "@webiny/handler-graphql";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
+import { FormBuilderSettingsCRUD, FormsCRUD } from "../../types";
+import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
-const getForm = ctx => ctx.models.Form;
-
-const publishRevision: GraphQLFieldResolver<any, any> = (_, args, ctx, info) => {
-    args.data = { published: true };
-
-    return resolveUpdate(getForm)(_, args, ctx, info);
-};
+type ResolverContext = Context<I18NContext, SecurityContext>;
 
 export default {
     typeDefs: /* GraphQL*/ `
@@ -54,24 +59,24 @@ export default {
         }
         
         type FieldOptionsType {
-            label: I18NStringValue
+            label: String
             value: String
         }        
         
         input FieldOptionsInput {
-            label: I18NStringValueInput
+            label: String
             value: String
         }
         
         input FieldValidationInput {
             name: String!
-            message: I18NStringValueInput
+            message: String
             settings: JSON
         }
         
         type FieldValidationType {
             name: String!
-            message: I18NStringValue
+            message: String
             settings: JSON
         }
         
@@ -80,9 +85,9 @@ export default {
             fieldId: String!
             type: String!
             name: String!
-            label: I18NStringValue
-            placeholderText: I18NStringValue
-            helpText: I18NStringValue
+            label: String
+            placeholderText: String
+            helpText: String
             options: [FieldOptionsType]
             validation: [FieldValidationType]
             settings: JSON
@@ -93,9 +98,9 @@ export default {
             fieldId: String!
             type: String!
             name: String!
-            label: I18NStringValueInput
-            placeholderText: I18NStringValueInput
-            helpText: I18NStringValueInput
+            label: String
+            placeholderText: String
+            helpText: String
             options: [FieldOptionsInput]
             validation: [FieldValidationInput]
             settings: JSON
@@ -107,8 +112,8 @@ export default {
         
         type TermsOfServiceMessage {
             enabled: Boolean
-            message: I18NJSONValue
-            errorMessage: I18NStringValue
+            message: JSON
+            errorMessage: String
         }
         
         type FormReCaptchaSettings {
@@ -119,14 +124,14 @@ export default {
          
         type ReCaptcha {
             enabled: Boolean
-            errorMessage: I18NJSONValue
+            errorMessage: JSON
             settings: FormReCaptchaSettings
         }
         
         type FormSettingsType {
             layout: FormSettingsLayoutType
-            submitButtonLabel: I18NStringValue
-            successMessage: I18NJSONValue
+            submitButtonLabel: String
+            successMessage: JSON
             termsOfServiceMessage: TermsOfServiceMessage
             reCaptcha: ReCaptcha
         }      
@@ -145,14 +150,14 @@ export default {
         
         input ReCaptchaInput {
             enabled: Boolean
-            errorMessage: I18NJSONValueInput
+            errorMessage: JSON
             settings: FormReCaptchaSettingsInput
         }
         
         input TermsOfServiceMessageInput {
             enabled: Boolean
-            message: I18NJSONValueInput
-            errorMessage: I18NStringValueInput
+            message: JSON
+            errorMessage: String
         }
         
         input FormSettingsLayoutInput {
@@ -161,8 +166,8 @@ export default {
         
         input FormSettingsInput {
             layout: FormSettingsLayoutInput
-            submitButtonLabel: I18NStringValueInput
-            successMessage: I18NJSONValueInput
+            submitButtonLabel: String
+            successMessage: JSON
             termsOfServiceMessage: TermsOfServiceMessageInput
             reCaptcha: ReCaptchaInput
         }
@@ -200,6 +205,12 @@ export default {
             error: FormError
         }
         
+        input ListFormsSortInput {
+            name: Int
+            createdOn: Int
+            savedOn: Int
+        }
+        
         extend type FormsQuery {
             getForm(
                 id: ID 
@@ -210,7 +221,7 @@ export default {
             getPublishedForm(id: ID, parent: ID, slug: String, version: Int): FormResponse
             
             listForms(
-                sort: JSON
+                sort: ListFormsSortInput
                 search: String
                 parent: String
                 limit: Int
@@ -273,26 +284,130 @@ export default {
         }
     `,
     resolvers: {
+        Form: {
+            overallStats: async (form, args, context: ResolverContext) => {
+                // Prepare SK and do a batch read
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                const allForms = await forms.listFormsBeginsWithId({ id: form.id });
+                // Then calculate the stats
+
+                const stats = {
+                    submissions: 0,
+                    views: 0,
+                    conversionRate: 0
+                };
+
+                for (let i = 0; i < allForms.length; i++) {
+                    const form = allForms[i];
+                    stats.views += form.stats.views;
+                    stats.submissions += form.stats.submissions;
+                }
+
+                let conversionRate = 0;
+                if (stats.views > 0) {
+                    conversionRate = parseFloat(
+                        ((stats.submissions / stats.views) * 100).toFixed(2)
+                    );
+                }
+
+                return {
+                    ...stats,
+                    conversionRate
+                };
+            },
+            revisions: async (form, args, context: ResolverContext) => {
+                // Prepare SK and do a batch read
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsBeginsWithId({ id: form.id, sort: { SK: -1 } });
+            },
+            publishedRevisions: async (form, args, context) => {
+                // Prepare SK and do a batch read
+                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                return await forms.listFormsBeginsWithId({ id: form.id });
+            },
+            settings: async (form, args, context) => {
+                const formBuilderSettings: FormBuilderSettingsCRUD =
+                    context?.formBuilder?.crud?.formBuilderSettings;
+
+                const settings = await formBuilderSettings.getSettings();
+
+                return {
+                    ...form.settings,
+                    reCaptcha: {
+                        ...form.settings.reCaptcha,
+                        settings: settings?.reCaptcha
+                    }
+                };
+            }
+        },
         FormsQuery: {
-            getForm: hasScope("forms:form:crud")(resolveGet(getForm)),
-            listForms: hasScope("forms:form:crud")(listForms),
+            getForm: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(async (_, args, context: ResolverContext) => {
+                // If permission has "rwd" property set, but "r" is not part of it, bail.
+                const formBuilderFormPermission = await context.security.getPermission("fb.form");
+                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                    return new NotAuthorizedResponse();
+                }
+                try {
+                    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
+                    const form = await forms.getForm(args.id);
+
+                    if (!form) {
+                        return new NotFoundResponse(`Form with id: "${args.id}" not found!`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (formBuilderFormPermission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (form.createdBy.id !== identity.id) {
+                            return new NotAuthorizedResponse();
+                        }
+                    }
+
+                    return new Response(form);
+                } catch (e) {
+                    return new ErrorResponse({
+                        message: e.message,
+                        code: e.code,
+                        data: e.data
+                    });
+                }
+            }),
+            listForms: pipe(hasPermission("fb.form"), hasI18NContentPermission())(listForms),
             listPublishedForms,
             getPublishedForm
         },
         FormsMutation: {
             // Creates a new form
-            createForm: hasScope("forms:form:crud")(resolveCreate(getForm)),
+            createForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(createForm),
             // Deletes the entire form
-            deleteForm: hasScope("forms:form:crud")(resolveDelete(getForm)),
+            deleteForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(deleteForm),
             // Creates a revision from the given revision
-            createRevisionFrom: hasScope("forms:form:crud")(createRevisionFrom),
+            createRevisionFrom: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(createRevisionFrom),
             // Updates revision
-            updateRevision: hasScope("forms:form:crud")(resolveUpdate(getForm)),
+            updateRevision: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(updateRevision),
             // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: hasScope("forms:form:revision:publish")(publishRevision),
-            unpublishRevision: hasScope("forms:form:revision:unpublish")(publishRevision),
+            publishRevision: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(publishRevision),
+            unpublishRevision: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(unPublishRevision),
             // Delete a revision
-            deleteRevision: hasScope("forms:form:crud")(resolveDelete(getForm)),
+            deleteRevision: pipe(
+                hasPermission("fb.form"),
+                hasI18NContentPermission()
+            )(deleteRevision),
             saveFormView
         }
     }
