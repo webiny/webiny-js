@@ -23,7 +23,7 @@ const FileManagerSettings = () => {
             {({ data, loading: queryInProgress }) => (
                 <Mutation mutation={graphql.UPDATE_SETTINGS}>
                     {(update, { loading: mutationInProgress }) => {
-                        const settings = get(data, "files.getSettings.data") || {};
+                        const settings = get(data, "fileManager.getSettings.data") || {};
 
                         return (
                             <Form

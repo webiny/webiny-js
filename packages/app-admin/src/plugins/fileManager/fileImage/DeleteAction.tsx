@@ -10,7 +10,7 @@ const t = i18n.ns("app-admin/file-manager/files/delete-action");
 
 const DELETE_FILE = gql`
     mutation deleteFile($id: ID!) {
-        files {
+        fileManager {
             deleteFile(id: $id) {
                 data
             }

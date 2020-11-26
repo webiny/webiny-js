@@ -3,7 +3,7 @@ import get from "lodash.get";
 
 const UPLOAD_FILE = gql`
     mutation UploadFile($data: UploadFileInput!) {
-        files {
+        fileManager {
             uploadFile(data: $data) {
                 data {
                     data
@@ -33,7 +33,7 @@ export default () => ({
             }
         });
 
-        presignedPostPayload = get(presignedPostPayload, "data.files.uploadFile");
+        presignedPostPayload = get(presignedPostPayload, "data.fileManager.uploadFile");
         if (presignedPostPayload.error) {
             console.log(presignedPostPayload.error.message); // eslint-disable-line
             return;
