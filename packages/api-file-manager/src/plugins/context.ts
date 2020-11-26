@@ -7,7 +7,8 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
 import filesCrud from "./crud/files.crud";
 import fileManagerSettingsCrud from "./crud/filesSettings.crud";
-import { FilesCRUD, FileManagerSettingsCRUD } from "@webiny/api-file-manager/types";
+import { FilesCRUD, FileManagerSettingsCRUD } from "../types";
+import { FileStorage } from "./FileStorage";
 
 export type FileManagerContextPlugin = HttpContext &
     SecurityContext &
@@ -32,5 +33,14 @@ export default {
 
         context.fileManager.files = filesCrud(context);
         context.fileManager.fileManagerSettings = fileManagerSettingsCrud(context);
+
+        // Get file storage plugin.
+        const [fileStoragePlugin] = context.plugins.byType("api-file-manager-storage");
+        // Add file storage to file manager context.
+        context.fileManager.storage = new FileStorage({
+            storagePlugin: fileStoragePlugin,
+            settings: await context.fileManager.fileManagerSettings.getSettings(),
+            context
+        });
     }
 } as ContextPlugin<FileManagerContextPlugin>;
