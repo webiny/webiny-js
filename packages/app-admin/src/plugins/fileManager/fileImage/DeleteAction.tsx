@@ -2,21 +2,12 @@ import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { ReactComponent as DeleteIcon } from "../../../components/FileManager/icons/delete.svg";
 import { useMutation } from "react-apollo";
-import gql from "graphql-tag";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/files/delete-action");
 
-const DELETE_FILE = gql`
-    mutation deleteFile($id: ID!) {
-        fileManager {
-            deleteFile(id: $id) {
-                data
-            }
-        }
-    }
-`;
+import { ReactComponent as DeleteIcon } from "../../../components/FileManager/icons/delete.svg";
+import { DELETE_FILE } from "../../../components/FileManager/graphql";
 
 const DeleteAction = props => {
     const { file } = props;
