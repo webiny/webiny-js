@@ -14,7 +14,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
 
         const { limit = 40, search = "", types = [], tags = [], ids = [] } = args;
 
-        const must = [];
+        const must: any[] = [{ term: { "meta.private": false } }];
         // We'll see about it
         // must.push({ "meta.private": { $ne: true } }); // Files created by the system, eg. installation files.
         if (Array.isArray(types) && types.length) {

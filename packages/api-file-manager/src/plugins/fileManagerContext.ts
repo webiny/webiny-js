@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { SETTINGS_KEY } from "./crud/filesSettings.crud";
-import uploadAndCreateFile from "./resolvers/utils/uploadAndCreateFile";
+import { FileStorage, FileStorageContext } from "@webiny/api-file-manager/plugins/FileStorage";
 
 export default [
     {
@@ -12,7 +12,15 @@ export default [
             }
 
             context.fileManager.settings = await context.filesSettings.get(SETTINGS_KEY);
-            context.fileManager.uploadFile = uploadAndCreateFile;
+
+            // Get file storage plugin
+            const [fileStoragePlugin] = context.plugins.byType("api-file-manager-storage");
+
+            context.fileManager.storage = new FileStorage({
+                storagePlugin: fileStoragePlugin,
+                settings: context.fileManager.settings,
+                context
+            });
         }
-    } as ContextPlugin
+    } as ContextPlugin<FileStorageContext>
 ];

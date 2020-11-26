@@ -26,6 +26,9 @@ export default async (data, settings) => {
     if (key) {
         key = uniqueId() + "-" + key;
     }
+    if (data.keyPrefix) {
+        key = `${sanitizeFilename(data.keyPrefix)}-${key}`;
+    }
 
     // Replace all whitespace.
     key = key.replace(/\s/g, "");

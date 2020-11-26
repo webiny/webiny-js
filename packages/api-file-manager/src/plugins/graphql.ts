@@ -4,8 +4,6 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
-import uploadFile from "./resolvers/uploadFile";
-import uploadFiles from "./resolvers/uploadFiles";
 import createFile from "./resolvers/createFile";
 import updateFile from "./resolvers/updateFile";
 import createFiles from "./resolvers/createFiles";
@@ -31,12 +29,6 @@ export default [
                     meta: JSON
                 }
 
-                input UploadFileInput {
-                    name: String!
-                    type: String!
-                    size: Int!
-                }
-
                 type UploadFileResponseDataFile {
                     name: String
                     type: String
@@ -48,16 +40,6 @@ export default [
                     # Contains data that is necessary for initiating a file upload.
                     data: JSON
                     file: UploadFileResponseDataFile
-                }
-
-                type UploadFileResponse {
-                    error: FileError
-                    data: UploadFileResponseData
-                }
-
-                type UploadFilesResponse {
-                    error: FileError
-                    data: [UploadFileResponseData]!
                 }
 
                 type FileCursors {
@@ -161,8 +143,6 @@ export default [
                 }
 
                 type FmMutation {
-                    uploadFile(data: UploadFileInput!): UploadFileResponse
-                    uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFile(id: ID!, data: FileInput!): FileResponse
@@ -217,11 +197,6 @@ export default [
                     )(getSettings)
                 },
                 FmMutation: {
-                    uploadFile: pipe(
-                        hasPermission("fm.file"),
-                        hasI18NContentPermission()
-                    )(uploadFile),
-                    uploadFiles,
                     createFile: pipe(
                         hasPermission("fm.file"),
                         hasI18NContentPermission()

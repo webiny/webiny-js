@@ -1,11 +1,8 @@
 import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import S3 from "aws-sdk/clients/s3";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import hasRwd from "@webiny/api-file-manager/plugins/resolvers/utils/hasRwd";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import { FileManagerResolverContext } from "../../types";
-
-const S3_BUCKET = process.env.S3_BUCKET;
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
@@ -30,16 +27,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
             }
         }
 
-        const s3 = new S3();
-        // Delete the real file from bucket.
-        await s3
-            .deleteObject({
-                Bucket: S3_BUCKET,
-                Key: file.key
-            })
-            .promise();
-        // Delete file entry from DB.
-        await files.deleteFile(id);
+        await context.fileManager.storage.delete({ id: file.id, key: file.key });
 
         return new Response(true);
     } catch (e) {
