@@ -9,7 +9,6 @@ import routes from "./routes";
 import menus from "./menus";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
-import { createEditorValue } from "./editor";
 
 export default () => [
     header,
@@ -22,6 +21,5 @@ export default () => [
     routes,
     menus,
     installation,
-    permissionRenderer,
-    createEditorValue()
+    permissionRenderer
 ];

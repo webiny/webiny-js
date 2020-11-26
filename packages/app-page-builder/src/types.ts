@@ -490,8 +490,3 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
     elementType: string;
     onSave: (element: PbElement) => PbElement;
 };
-
-export type PbCreateEditorValuePluginType = Plugin & {
-    type: "pb-rte-create-editor-value";
-    create(value: unknown, type: string): any;
-};
