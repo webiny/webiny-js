@@ -1,4 +1,4 @@
-import { ContextPlugin } from "@webiny/handler/types";
+import { FileManagerResolverContext } from "../types";
 
 export type Args = {
     name: string;
@@ -24,7 +24,7 @@ export interface FileStoragePlugin {
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
     settings: FileManagerSettings;
-    context: ContextPlugin<FileStorageContext>;
+    context: FileManagerResolverContext;
     constructor({ storagePlugin, settings, context }) {
         this.storagePlugin = storagePlugin;
         this.settings = settings;
@@ -32,43 +32,23 @@ export class FileStorage {
     }
 
     async upload(args): Promise<Result> {
-        // Cloud storage provider logic.
+        // Add file to cloud storage.
         const { file: fileData } = await this.storagePlugin.upload({
             ...args,
             settings: args.settings || this.settings
         });
 
-        // Database logic.
-        const { files, elasticSearch } = this.context;
+        const { fileManager } = this.context;
+
         // Save file in DB.
-        const file = await files.create({
+        return await fileManager.files.createFile({
             ...fileData,
             meta: { private: Boolean(args.hideInFileManager) }
         });
-        // Index file in "Elastic Search"
-        await elasticSearch.create({
-            id: file.id,
-            index: "file-manager",
-            type: "_doc",
-            body: {
-                id: file.id,
-                createdOn: file.createdOn,
-                key: file.key,
-                size: file.size,
-                type: file.type,
-                name: file.name,
-                tags: file.tags,
-                createdBy: file.createdBy,
-                meta: file.meta
-            }
-        });
-
-        return file;
     }
 
     async uploadFiles(args) {
-        const { files, elasticSearch } = this.context;
-
+        // Upload files to cloud storage.
         const promises = [];
         for (let i = 0; i < args.files.length; i++) {
             const item = args.files[i];
@@ -84,65 +64,19 @@ export class FileStorage {
 
         const filesData = uploadFileResponses.map(response => response.file);
 
-        const data = await files.createInBatch(filesData);
-
-        const body = data.flatMap(doc => [{ index: { _index: "file-manager" } }, getFileDoc(doc)]);
-
-        const { body: bulkResponse } = await elasticSearch.bulk({ body });
-        if (bulkResponse.errors) {
-            const erroredDocuments = [];
-            // The items array has the same order of the dataset we just indexed.
-            // The presence of the `error` key indicates that the operation
-            // that we did for the document has failed.
-            bulkResponse.items.forEach((action, i) => {
-                const operation = Object.keys(action)[0];
-                if (action[operation].error) {
-                    erroredDocuments.push({
-                        // If the status is 429 it means that you can retry the document,
-                        // otherwise it's very likely a mapping error, and you should
-                        // fix the document before to try it again.
-                        status: action[operation].status,
-                        error: action[operation].error,
-                        operation: body[i * 2],
-                        document: body[i * 2 + 1]
-                    });
-                }
-            });
-        }
-
-        return data;
+        const { fileManager } = this.context;
+        // Save files in DB.
+        return fileManager.files.createFilesInBatch(filesData);
     }
 
     async delete(args) {
         const { id, key } = args;
-        const { files, elasticSearch } = this.context;
-        // Cloud storage provider logic.
+        const { fileManager } = this.context;
+        // Delete file from cloud storage.
         await this.storagePlugin.delete({
             key
         });
-
-        // DB
-        await files.delete(id);
-        // Index file in "Elastic Search"
-        await elasticSearch.delete({
-            id,
-            index: "file-manager",
-            type: "_doc"
-        });
+        // Delete file from the DB.
+        await fileManager.files.deleteFile(id);
     }
 }
-
-export type FileStorageContext = {
-    storage: FileStorage;
-};
-
-const getFileDoc = file => ({
-    id: file.id,
-    createdOn: file.createdOn,
-    key: file.key,
-    size: file.size,
-    type: file.type,
-    name: file.name,
-    tags: file.tags,
-    createdBy: file.createdBy
-});
