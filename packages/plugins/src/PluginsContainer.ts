@@ -41,24 +41,42 @@ export class PluginsContainer {
         this.register(...args);
     }
 
-    byName<T extends Plugin = Plugin>(name: string): T {
+    public byName<T extends Plugin = Plugin>(name: string): T {
         return this.plugins[name] as T;
     }
 
-    byType<T extends Plugin>(type: string): T[] {
+    public byType<T extends Plugin>(type: string): T[] {
         return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
     }
 
-    all<T extends Plugin>(): T[] {
+    public atLeastOneByType<T extends Plugin>(type: string): T[] {
+        const list = this.byType<T>(type);
+        if (list.length === 0) {
+            throw new Error(`There are no plugins by type "${type}".`);
+        }
+        return list;
+    }
+
+    public oneByType<T extends Plugin>(type: string): T {
+        const list = this.atLeastOneByType<T>(type);
+        if (list.length > 1) {
+            throw new Error(
+                `There is a requirement for plugin of type "${type}" to be only one registered.`
+            );
+        }
+        return list[0];
+    }
+
+    public all<T extends Plugin>(): T[] {
         return Object.values(this.plugins) as T[];
     }
 
-    register(...args: any): void {
+    public register(...args: any): void {
         const [plugins, options] = normalizeArgs(args);
         assign(plugins, options, this.plugins);
     }
 
-    unregister(name: string): void {
+    public unregister(name: string): void {
         delete this.plugins[name];
     }
 }
