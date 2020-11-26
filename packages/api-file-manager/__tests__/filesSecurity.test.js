@@ -48,7 +48,7 @@ const identityB = new SecurityIdentity({
 });
 
 const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "files.*" }],
+    permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
     identity: identityA
 });
 
@@ -85,9 +85,9 @@ describe("Files Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "files.file", rwd: "wd" }], identityA],
-            [[{ name: "files.file", rwd: "d" }], identityA],
-            [[{ name: "files.file", rwd: "w" }], identityA]
+            [[{ name: "fm.file", rwd: "wd" }], identityA],
+            [[{ name: "fm.file", rwd: "d" }], identityA],
+            [[{ name: "fm.file", rwd: "w" }], identityA]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -98,11 +98,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissionsAll = [
-            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.*" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rwd" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.*" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
@@ -139,7 +139,7 @@ describe("Files Security Test", () => {
         }
 
         let identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "files.file", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "fm.file", own: true }],
             identity: identityA
         });
 
@@ -159,7 +159,7 @@ describe("Files Security Test", () => {
         });
 
         identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "files.file", own: true }],
+            permissions: [{ name: "content.i18n" }, { name: "fm.file", own: true }],
             identity: identityB
         });
 
@@ -183,8 +183,8 @@ describe("Files Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "files.file", own: false, rwd: "r" }], identityA],
-            [[{ name: "files.file", own: false, rwd: "rd" }], identityA]
+            [[{ name: "fm.file", own: false, rwd: "r" }], identityA],
+            [[{ name: "fm.file", own: false, rwd: "rd" }], identityA]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -196,11 +196,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -232,9 +232,9 @@ describe("Files Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "files.file", rwd: "r" }], identityA],
-            [[{ name: "files.file", rwd: "rd" }], identityA],
-            [[{ name: "files.file", own: true }], identityB]
+            [[{ name: "fm.file", rwd: "r" }], identityA],
+            [[{ name: "fm.file", rwd: "rd" }], identityA],
+            [[{ name: "fm.file", own: true }], identityB]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -245,11 +245,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "w" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -279,9 +279,9 @@ describe("Files Security Test", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "files.file", rwd: "w" }], identityA],
-            [[{ name: "files.file", rwd: "wd" }], identityA],
-            [[{ name: "files.file", own: true }], identityB]
+            [[{ name: "fm.file", rwd: "w" }], identityA],
+            [[{ name: "fm.file", rwd: "wd" }], identityA],
+            [[{ name: "fm.file", own: true }], identityB]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -292,11 +292,11 @@ describe("Files Security Test", () => {
         }
 
         const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "files.file" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "files.file", rwd: "rwd" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rw" }], identityA],
+            [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
