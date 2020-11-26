@@ -20,7 +20,7 @@ function MockResponse({ prefix, id }) {
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
     data: {
-        files: {
+        fileManager: {
             [operation]: {
                 data: null,
                 error: {
@@ -71,16 +71,16 @@ describe("Files Security Test", () => {
             data: [new Mock("list-files-1-"), new Mock("list-files-2-")]
         });
 
-        const file1Id = createFilesResponse.data.files.createFiles.data[0].id;
-        const file2Id = createFilesResponse.data.files.createFiles.data[1].id;
+        const file1Id = createFilesResponse.data.fileManager.createFiles.data[0].id;
+        const file2Id = createFilesResponse.data.fileManager.createFiles.data[1].id;
 
         const identityBHandler = useGqlHandler({ identity: identityB });
         const [identityBHandlerCreateFilesResponse] = await identityBHandler.createFiles({
             data: [new Mock("list-files-3-"), new Mock("list-files-4-")]
         });
 
-        const file3Id = identityBHandlerCreateFilesResponse.data.files.createFiles.data[0].id;
-        const file4Id = identityBHandlerCreateFilesResponse.data.files.createFiles.data[1].id;
+        const file3Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[0].id;
+        const file4Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[1].id;
 
         const insufficientPermissions = [
             [[], null],
@@ -115,7 +115,7 @@ describe("Files Security Test", () => {
                 await sleep();
                 const [response] = await listFiles();
 
-                if (response?.data?.files?.listFiles?.data?.length) {
+                if (response?.data?.fileManager?.listFiles?.data?.length) {
                     break;
                 }
             }
@@ -123,7 +123,7 @@ describe("Files Security Test", () => {
             const [response] = await listFiles();
             expect(response).toEqual({
                 data: {
-                    files: {
+                    fileManager: {
                         listFiles: {
                             data: [
                                 new MockResponse({ prefix: "list-files-1-", id: file1Id }),
@@ -146,7 +146,7 @@ describe("Files Security Test", () => {
         let [response] = await identityAHandler.listFiles();
         expect(response).toEqual({
             data: {
-                files: {
+                fileManager: {
                     listFiles: {
                         data: [
                             new MockResponse({ prefix: "list-files-1-", id: file1Id }),
@@ -166,7 +166,7 @@ describe("Files Security Test", () => {
         [response] = await identityAHandler.listFiles();
         expect(response).toEqual({
             data: {
-                files: {
+                fileManager: {
                     listFiles: {
                         data: [
                             new MockResponse({ prefix: "list-files-3-", id: file3Id }),
@@ -211,9 +211,9 @@ describe("Files Security Test", () => {
             const [response] = await createFile({ data });
             expect(response).toEqual({
                 data: {
-                    files: {
+                    fileManager: {
                         createFile: {
-                            data: { ...data, id: response.data.files.createFile.data.id },
+                            data: { ...data, id: response.data.fileManager.createFile.data.id },
                             error: null
                         }
                     }
@@ -227,7 +227,7 @@ describe("Files Security Test", () => {
         const mock = new Mock("update-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
-        const fileId = createFileResponse.data.files.createFile.data.id;
+        const fileId = createFileResponse.data.fileManager.createFile.data.id;
 
         const insufficientPermissions = [
             [[], null],
@@ -258,7 +258,7 @@ describe("Files Security Test", () => {
             const [response] = await updateFile({ id: fileId, data: mock });
             expect(response).toEqual({
                 data: {
-                    files: {
+                    fileManager: {
                         updateFile: {
                             data: mock,
                             error: null
@@ -274,7 +274,7 @@ describe("Files Security Test", () => {
         const mock = new Mock("get-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
-        const fileId = createFileResponse.data.files.createFile.data.id;
+        const fileId = createFileResponse.data.fileManager.createFile.data.id;
 
         const insufficientPermissions = [
             [[], null],
@@ -305,7 +305,7 @@ describe("Files Security Test", () => {
             const [response] = await getFile({ id: fileId });
             expect(response).toEqual({
                 data: {
-                    files: {
+                    fileManager: {
                         getFile: {
                             data: mock,
                             error: null

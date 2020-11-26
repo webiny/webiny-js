@@ -8,7 +8,7 @@ const ERROR_FIELD = /* GraphQL */ `
 
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
-        files {
+        fileManager {
             isInstalled {
                 data
                 error ${ERROR_FIELD}
@@ -19,7 +19,7 @@ export const IS_INSTALLED = /* GraphQL */ `
 
 export const INSTALL = /* GraphQL */ `
     mutation install($srcPrefix: String) {
-        files {
+        fileManager {
             install(srcPrefix: $srcPrefix) {
                 data
                 error ${ERROR_FIELD}
@@ -30,7 +30,7 @@ export const INSTALL = /* GraphQL */ `
 
 export const GET_SETTINGS = /* GraphQL */ `
     query GetSettings {
-        files {
+        fileManager {
             getSettings {
                 data {
                     uploadMinFileSize
@@ -44,7 +44,7 @@ export const GET_SETTINGS = /* GraphQL */ `
 
 export const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateSettings($data: FileManagerSettingsInput) {
-        files {
+        fileManager {
             updateSettings(data: $data) {
                 data {
                     uploadMinFileSize
