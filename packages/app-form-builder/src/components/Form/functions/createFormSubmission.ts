@@ -2,7 +2,6 @@ import { FbFormRenderComponentProps, FormSubmitResponseType } from "@webiny/app-
 
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";
-import { get } from "lodash";
 import { ApolloClient } from "apollo-client";
 
 type Args = {
@@ -49,11 +48,11 @@ export default async ({
         }
     });
 
-    response = get(response, "data.forms.createFormSubmission");
+    response = response?.data?.formBuilder?.createFormSubmission;
 
     return {
         preview: false,
         data: null,
-        error: response.error
+        error: response?.error
     };
 };

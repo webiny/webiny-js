@@ -37,7 +37,7 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                                             variables: { id: revision.id }
                                         });
 
-                                        const { error } = res.forms.publishRevision;
+                                        const { error } = res.formBuilder.publishRevision;
                                         if (error) {
                                             return showSnackbar(error.message);
                                         }
@@ -72,7 +72,7 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                                             variables: { id: revision.id }
                                         });
 
-                                        const { error } = res.forms.unpublishRevision;
+                                        const { error } = res.formBuilder.unpublishRevision;
                                         if (error) {
                                             return showSnackbar(error.message);
                                         }

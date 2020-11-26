@@ -1,7 +1,7 @@
 import React from "react";
 import { ReactComponent as NumberIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { Input } from "@webiny/ui/Input";
 import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
 
 const plugin: FbBuilderFieldPlugin = {
@@ -30,7 +30,7 @@ const plugin: FbBuilderFieldPlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"placeholderText"}>
-                            <I18NInput
+                            <Input
                                 label={"Placeholder text"}
                                 description={"Placeholder text (optional)"}
                             />

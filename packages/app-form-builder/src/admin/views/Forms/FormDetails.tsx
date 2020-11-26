@@ -1,12 +1,11 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { get } from "lodash";
 import { Tabs } from "@webiny/ui/Tabs";
 
 const EmptySelect = styled("div")({
@@ -52,43 +51,41 @@ export type FormDetailsProps = {
 const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const query = new URLSearchParams(location.search);
+    const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
 
     if (!formId) {
         return <EmptyFormDetails />;
     }
 
+    const { data, loading } = useQuery(GET_FORM, {
+        variables: {
+            id: formId
+        },
+        onCompleted: data => {
+            const error = data?.formBuilder?.form?.error?.message;
+            if (error) {
+                query.delete("id");
+                history.push({ search: query.toString() });
+                showSnackbar(error);
+            }
+        }
+    });
+
+    const form = data?.formBuilder?.form?.data || null;
+
     return (
-        <Query
-            query={GET_FORM}
-            variables={{ id: formId }}
-            onCompleted={data => {
-                const error = get(data, "forms.form.error.message");
-                if (error) {
-                    query.delete("id");
-                    history.push({ search: query.toString() });
-                    showSnackbar(error);
-                }
-            }}
-        >
-            {({ data, loading }) => {
-                const form = get(data, "forms.form.data") || null;
-                return (
-                    <DetailsContainer>
-                        {form && (
-                            <Tabs>
-                                {renderPlugins(
-                                    "forms-form-details-revision-content",
-                                    { refreshForms, form, loading },
-                                    { wrapper: false }
-                                )}
-                            </Tabs>
-                        )}
-                    </DetailsContainer>
-                );
-            }}
-        </Query>
+        <DetailsContainer>
+            {form && (
+                <Tabs>
+                    {renderPlugins(
+                        "forms-form-details-revision-content",
+                        { refreshForms, form, loading },
+                        { wrapper: false }
+                    )}
+                </Tabs>
+            )}
+        </DetailsContainer>
     );
 };
 

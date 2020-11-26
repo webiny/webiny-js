@@ -1,5 +1,4 @@
 import * as React from "react";
-import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
 import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
@@ -26,13 +25,13 @@ const Input = (props: Props) => {
     return (
         <div className="webiny-fb-form-field webiny-fb-form-field--input">
             <label className="webiny-pb-typography-body webiny-fb-form-field__label">
-                <I18NValue value={props.field.label} />
+                {props.field.label}
             </label>
             <input
                 onBlur={onBlur}
                 onChange={e => onChange(e.target.value)}
-                value={value}
-                placeholder={I18NValue(props.field.placeholderText)}
+                value={value || ""}
+                placeholder={props.field.placeholderText}
                 type={props.type}
                 name={props.field.fieldId}
                 id={props.field.fieldId}
@@ -41,7 +40,7 @@ const Input = (props: Props) => {
             <HelperMessage
                 isValid={validation.isValid}
                 errorMessage={validation.message}
-                helperMessage={<I18NValue value={props.field.helpText} />}
+                helperMessage={props.field.helpText}
             />
         </div>
     );

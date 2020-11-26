@@ -12,12 +12,11 @@ import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEdi
 import { Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
 import { FbBuilderFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
 
-const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
+const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {
         const index = validationValue.findIndex(item => item.name === validator.name);
         onChangeValidation([
@@ -30,14 +29,7 @@ const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, vali
             {
                 name: validator.name,
                 settings: validator.defaultSettings,
-                message: {
-                    values: [
-                        {
-                            locale: i18n.getDefaultLocale().id,
-                            value: validator.defaultMessage
-                        }
-                    ]
-                }
+                message: validator.defaultMessage
             }
         ]);
     }
@@ -53,7 +45,6 @@ const onFormChange = debounce(({ data, validationValue, onChangeValidation, vali
 }, 200);
 
 const ValidatorsTab = props => {
-    const i18n = useI18N();
     const { getFieldPlugin } = useFormEditor();
     const {
         field,
@@ -106,7 +97,6 @@ const ValidatorsTab = props => {
                                         value={validatorIndex >= 0}
                                         onChange={() =>
                                             onEnabledChange({
-                                                i18n,
                                                 data,
                                                 validationValue,
                                                 onChangeValidation,
@@ -137,7 +127,7 @@ const ValidatorsTab = props => {
                                                         name={"message"}
                                                         validators={validation.create("required")}
                                                     >
-                                                        <I18NInput
+                                                        <Input
                                                             label={"Message"}
                                                             description={
                                                                 "This message will be displayed to the user"
@@ -151,15 +141,7 @@ const ValidatorsTab = props => {
                                                 validator.renderSettings({
                                                     setValue,
                                                     setMessage: message => {
-                                                        setValue("message", {
-                                                            values: [
-                                                                {
-                                                                    locale: i18n.getDefaultLocale()
-                                                                        .id,
-                                                                    value: message
-                                                                }
-                                                            ]
-                                                        });
+                                                        setValue("message", message);
                                                     },
                                                     data,
                                                     Bind

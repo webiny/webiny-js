@@ -13,7 +13,14 @@ const FormSubmissionsList = (props: Props) => {
         useRouter: false,
         query: LIST_FORM_SUBMISSIONS,
         variables() {
-            return { sort: { savedOn: -1 }, where: { "form.parent": props.form.parent } };
+            return {
+                sort: { savedOn: -1 },
+                where: {
+                    form: {
+                        parent: props.form.parent
+                    }
+                }
+            };
         }
     });
 

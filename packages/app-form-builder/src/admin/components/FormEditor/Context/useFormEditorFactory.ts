@@ -1,6 +1,6 @@
 import React from "react";
 import shortid from "shortid";
-import { get, cloneDeep, pick } from "lodash";
+import { cloneDeep, pick } from "lodash";
 import { GET_FORM, UPDATE_REVISION } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
@@ -28,8 +28,11 @@ export default FormEditorContext => {
             data: state.data,
             state,
             async getForm(id: string) {
-                const response = await self.apollo.query({ query: GET_FORM, variables: { id } });
-                const { data, error } = get(response, "data.forms.getForm");
+                const response = await self.apollo.query({
+                    query: GET_FORM,
+                    variables: { id: decodeURIComponent(id) }
+                });
+                const { data, error } = response?.data?.formBuilder?.getForm || {};
                 if (error) {
                     throw new Error(error);
                 }
@@ -54,7 +57,7 @@ export default FormEditorContext => {
                     }
                 });
 
-                return get(response, "data.forms.updateRevision");
+                return response?.data?.formBuilder?.updateRevision;
             },
             /**
              * Set form data by providing a callback, which receives a fresh copy of data on which you can work on.

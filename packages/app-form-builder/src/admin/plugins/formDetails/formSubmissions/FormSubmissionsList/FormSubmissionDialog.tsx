@@ -65,9 +65,7 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
                                                 width: `calc(100% / ${row.length})`
                                             }}
                                         >
-                                            <Typography use="overline">
-                                                {field.label.value}:{" "}
-                                            </Typography>
+                                            <Typography use="overline">{field.label}: </Typography>
                                             <Typography use="body1">
                                                 {field.type === "textarea" ? (
                                                     <pre>

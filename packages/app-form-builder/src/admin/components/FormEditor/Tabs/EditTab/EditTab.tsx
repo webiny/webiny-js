@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { Icon } from "@webiny/ui/Icon";
-import { get, cloneDeep } from "lodash";
+import { cloneDeep } from "lodash";
 import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
@@ -9,7 +9,6 @@ import { ReactComponent as HandleIcon } from "@webiny/app-form-builder/admin/ico
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { FieldLayoutPositionType } from "@webiny/app-form-builder/types";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormsApp.Editor.EditTab");
 
@@ -30,8 +29,6 @@ export const EditTab = () => {
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     }, undefined);
-
-    const i18n = useI18N();
 
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, name, ui } = source;
@@ -56,7 +53,7 @@ export const EditTab = () => {
 
         // Find field plugin which handles the dropped field type "name".
         const plugin = getFieldPlugin({ name });
-        insertField(plugin.field.createField({ i18n }), dropTarget);
+        insertField(plugin.field.createField(), dropTarget);
     }, undefined);
 
     const fields: Array<any> = getFields(true);
@@ -109,8 +106,7 @@ export const EditTab = () => {
                                                     }
                                                     isVisible={item =>
                                                         item.ui === "field" &&
-                                                        (row.length < 4 ||
-                                                            get(item, "pos.row") === index)
+                                                        (row.length < 4 || item?.pos?.row === index)
                                                     }
                                                 />
 
@@ -129,7 +125,7 @@ export const EditTab = () => {
                                                         isVisible={item =>
                                                             item.ui === "field" &&
                                                             (row.length < 4 ||
-                                                                get(item, "pos.row") === index)
+                                                                item?.pos?.row === index)
                                                         }
                                                         onDrop={item =>
                                                             handleDropField(item, {
