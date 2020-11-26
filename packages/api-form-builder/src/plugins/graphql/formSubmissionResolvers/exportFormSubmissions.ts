@@ -84,9 +84,11 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             hideInFileManager: true
         });
 
+        const settings = await context.fileManager.fileManagerSettings.getSettings();
+
         const result = {
             key,
-            src: context?.fileManager?.settings?.srcPrefix + key
+            src: settings?.srcPrefix + key
         };
 
         return new Response(result);
