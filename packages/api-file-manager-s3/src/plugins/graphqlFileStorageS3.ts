@@ -38,7 +38,7 @@ const plugin: GraphQLSchemaPlugin = {
                 data: [GetPreSignedPostPayloadResponseData]!
             }
 
-            extend type FilesQuery {
+            extend type FmQuery {
                 getPreSignedPostPayload(
                     data: PreSignedPostPayloadInput!
                 ): GetPreSignedPostPayloadResponse
@@ -48,11 +48,11 @@ const plugin: GraphQLSchemaPlugin = {
             }
         `,
         resolvers: {
-            FilesQuery: {
+            FmQuery: {
                 getPreSignedPostPayload: async (root, args, context) => {
                     try {
                         const { data } = args;
-                        const settings = context.fileManager.settings;
+                        const settings = await context.fileManager.fileManagerSettings.getSettings();
                         const response = await getPresignedPostPayload(data, settings);
 
                         return new Response(response);
@@ -88,7 +88,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const settings = context.fileManager.settings;
+                        const settings = await context.fileManager.fileManagerSettings.getSettings();
 
                         const promises = [];
                         for (let i = 0; i < files.length; i++) {
