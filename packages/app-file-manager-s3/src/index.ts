@@ -3,7 +3,7 @@ import { AppFileManagerStorageS3 } from "./types";
 
 const GET_PRE_SIGNED_POST_PAYLOAD = gql`
     query getPreSignedPostPayload($data: PreSignedPostPayloadInput!) {
-        files {
+        fileManager {
             getPreSignedPostPayload(data: $data) {
                 data {
                     data
@@ -35,7 +35,7 @@ export default () =>
                 }
             });
 
-            const preSignedPostPayload = response?.data?.files?.getPreSignedPostPayload;
+            const preSignedPostPayload = response?.data?.fileManager?.getPreSignedPostPayload;
             if (preSignedPostPayload?.error) {
                 console.log(preSignedPostPayload.error.message); // eslint-disable-line
                 return;
