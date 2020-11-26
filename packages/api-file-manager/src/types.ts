@@ -4,6 +4,7 @@ import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { FileStorage } from "./plugins/FileStorage";
 
 export type BaseContext = HttpContext &
     SecurityContext &
@@ -15,6 +16,7 @@ export type FileManagerContext = {
     fileManager: {
         files: FilesCRUD;
         fileManagerSettings: FileManagerSettingsCRUD;
+        storage: FileStorage;
     };
 };
 
