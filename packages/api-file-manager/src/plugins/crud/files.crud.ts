@@ -25,7 +25,7 @@ const CreateDataModel = withFields({
     name: string({ validation: validation.create("maxLength:100") }),
     size: number(),
     type: string({ validation: validation.create("maxLength:50") }),
-    meta: object(),
+    meta: object({ value: { private: false } }),
     tags: onSet(value => {
         if (!Array.isArray(value)) {
             return null;
@@ -240,6 +240,7 @@ export default (context: FileManagerContextPlugin) => {
             await batch.execute();
 
             // Index files in ES.
+            // @ts-ignore
             const body = files.flatMap(doc => [
                 { index: { _index: defaults.es.index } },
                 getFileDocForES(doc, localeCode)
