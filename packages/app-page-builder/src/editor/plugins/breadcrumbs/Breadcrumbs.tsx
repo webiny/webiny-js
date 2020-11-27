@@ -11,6 +11,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { ReactComponent as ArrowForwardIcon } from "../../assets/icons/arrow-forward-breadcrumb.svg";
 
 const breadcrumbs = css({
     display: "flex",
@@ -22,13 +23,16 @@ const breadcrumbs = css({
     bottom: 0,
     width: "calc(100% - 55px)",
     backgroundColor: "var(--mdc-theme-surface)",
-    borderTop: "1px solid var(--mdc-theme-on-background)",
-    fontSize: "14px",
+    borderTop: "1px solid var(--mdc-theme-background)",
+    fontSize: "12px",
     "> li": {
         cursor: "pointer",
+        display: "flex",
+
         ".element": {
+            textTransform: "capitalize",
             color: "var(--mdc-theme-secondary)",
-            padding: "5px",
+            padding: "7px 15px 7px 10px",
             display: "inline-block",
             "&:hover": {
                 backgroundColor: "var(--mdc-theme-background)",
@@ -36,7 +40,10 @@ const breadcrumbs = css({
             }
         },
         ".divider": {
-            color: "var(--mdc-theme-text-secondary-on-background)"
+            color: "var(--mdc-theme-text-secondary-on-background)",
+            "& svg path": {
+                fill: "var(--mdc-theme-text-secondary-on-background)"
+            }
         }
     }
 });
@@ -84,16 +91,16 @@ const Breadcrumbs: React.FunctionComponent = () => {
 
     return (
         <ul className={breadcrumbs}>
-            {breadcrumbsList.map(({ id, type }, index) => (
+            {breadcrumbsList.map(({ id, type }) => (
                 <li
                     key={id}
                     onMouseOver={() => highlightElement(id)}
                     onClick={() => activateElement(id)}
                 >
                     <span className={"element"}>{type}</span>
-                    {breadcrumbsList.length - 1 > index ? (
-                        <span className={"divider"}>&nbsp;&gt;&nbsp;</span>
-                    ) : null}
+                    <span className={"divider"}>
+                        <ArrowForwardIcon />
+                    </span>
                 </li>
             ))}
         </ul>
