@@ -4,6 +4,7 @@ import { ReactComponent as AutoRenew } from "./baseline-autorenew-24px.svg";
 import { ReactComponent as Pen } from "./baseline-edit-24px.svg";
 import { ReactComponent as Delete } from "./baseline-delete-24px.svg";
 import { ReactComponent as Sort } from "./baseline-sort-24px.svg";
+import { ReactComponent as Filter } from "./filter_alt-24px.svg";
 import { ReactComponent as NavigateBefore } from "./baseline-navigate_before-24px.svg";
 import { ReactComponent as NavigateNext } from "./baseline-navigate_next-24px.svg";
 import { ReactComponent as TuneIcon } from "./baseline-tune-24px.svg";
@@ -30,6 +31,10 @@ export const EditIcon = (props: IconButtonProps) => {
 
 export const SortIcon = (props: IconButtonProps) => {
     return <IconButton icon={<Sort />} {...props} />;
+};
+
+export const FilterIcon = (props: IconButtonProps) => {
+    return <IconButton icon={<Filter />} {...props} />;
 };
 
 export const PreviousPageIcon = (props: IconButtonProps) => {

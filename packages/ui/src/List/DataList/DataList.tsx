@@ -12,7 +12,14 @@ import { Checkbox } from "@webiny/ui/Checkbox";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
-import { RefreshIcon, SortIcon, PreviousPageIcon, NextPageIcon, OptionsIcon } from "./icons";
+import {
+    RefreshIcon,
+    SortIcon,
+    FilterIcon,
+    PreviousPageIcon,
+    NextPageIcon,
+    OptionsIcon
+} from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";
 
 import { MetaProp, SortersProp } from "./types";
@@ -151,9 +158,6 @@ type Props = {
     // Triggered once a sorter has been selected.
     setSorters?: Function;
 
-    // Triggered once selected filters are submitted.
-    setFilters?: Function;
-
     // Triggered when number of entries per page has been changed.
     setPerPage?: Function;
 
@@ -165,6 +169,9 @@ type Props = {
 
     // Provide actions that will be shown in the top right corner (eg. export or import actions).
     actions?: React.ReactNode;
+
+    // Provide filters that will be shown in the top left corner (eg. filter by category or status).
+    filters?: React.ReactNode;
 
     // Provide actions that can be executed on one or more multi-selected list items (eg. export or delete).
     multiSelectActions?: React.ReactNode;
@@ -247,6 +254,21 @@ const Sorters = (props: Props) => {
                         {sorter.label}
                     </MenuItem>
                 ))}
+            </Menu>
+        </ListHeaderItem>
+    );
+};
+
+const Filters = (props: Props) => {
+    const filters = props.filters;
+    if (!filters) {
+        return null;
+    }
+
+    return (
+        <ListHeaderItem>
+            <Menu handle={<FilterIcon />}>
+                {filters}
             </Menu>
         </ListHeaderItem>
     );
@@ -344,6 +366,7 @@ export const DataList = (props: Props) => {
                         <MultiSelectAll {...props} />
                         {props.showOptions.refresh && <RefreshButton {...props} />}
                         {props.showOptions.sorters && <Sorters {...props} />}
+                        {props.showOptions.filters && <Filters {...props} />}
                         <MultiSelectActions {...props} />
                     </Cell>
 
@@ -370,6 +393,7 @@ DataList.defaultProps = {
     setPage: null,
     setPerPage: null,
     perPageOptions: [10, 25, 50],
+    filters: null,
     sorters: null,
     setSorters: null,
     actions: null,
@@ -381,7 +405,8 @@ DataList.defaultProps = {
     showOptions: {
         refresh: true,
         pagination: true,
-        sorters: true
+        sorters: true,
+        filters: true,
     }
 };
 
