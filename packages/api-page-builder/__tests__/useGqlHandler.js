@@ -31,6 +31,7 @@ import {
     REQUEST_REVIEW,
     REQUEST_CHANGES
 } from "./graphql/pages";
+
 import { SecurityIdentity } from "@webiny/api-security";
 import {
     CREATE_CATEGORY,
@@ -39,6 +40,8 @@ import {
     UPDATE_CATEGORY,
     GET_CATEGORY
 } from "./graphql/categories";
+
+import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 
 export default ({ permissions, identity } = {}) => {
     const handler = createHandler(
@@ -234,6 +237,12 @@ export default ({ permissions, identity } = {}) => {
         },
         async getPageElement(variables) {
             return invoke({ body: { query: GET_PAGE_ELEMENT, variables } });
+        },
+        async updateSettings(variables) {
+            return invoke({ body: { query: UPDATE_SETTINGS, variables } });
+        },
+        async getSettings(variables) {
+            return invoke({ body: { query: GET_SETTINGS, variables } });
         }
     };
 };
