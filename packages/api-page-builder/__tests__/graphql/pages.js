@@ -98,10 +98,32 @@ export const UNPUBLISH_PAGE = /* GraphQL */ `
     }
 `;
 
-export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($sort: PbPageSortInput) {
+export const REQUEST_REVIEW = /* GraphQL */ `
+    mutation RequestReview($id: ID!) {
         pageBuilder {
-            listPages(sort: $sort) {
+            requestReview(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const REQUEST_CHANGES = /* GraphQL */ `
+    mutation RequestChanges($id: ID!) {
+        pageBuilder {
+            requestChanges(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES = /* GraphQL */ `
+    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+        pageBuilder {
+            listPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -110,9 +132,9 @@ export const LIST_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
-    query ListPublishedPages($sort: PbPageSortInput) {
+    query ListPublishedPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
         pageBuilder {
-            listPublishedPages(sort: $sort) {
+            listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

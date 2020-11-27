@@ -123,7 +123,6 @@ describe("CRUD Test", () => {
             });
         }
 
-        // List should show three pages.
         while (true) {
             await sleep();
             [response] = await listPages();
