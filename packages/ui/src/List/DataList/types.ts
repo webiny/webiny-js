@@ -10,7 +10,7 @@ export type MetaProp = {
     totalCount?: number;
 };
 
-export type SortersProp = Array<{ label: string; sorters: { [key: string]: number } }>;
+export type SortersProp = Array<{ label: string; sorters: { [key: string]: string | number } }>;
 
 export type Props = {
     // Pass a function to take full control of list render.
