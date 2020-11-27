@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import { get } from "lodash";
 import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -24,11 +23,14 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = (props) => {
+const RevisionSelector = props => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
+    const { revisions = [] } = page;
+
+    console.log('revis', revisions)
     return (
         <Menu
             className={menuList}
@@ -42,22 +44,12 @@ const RevisionSelector = (props) => {
                 </ButtonDefault>
             }
         >
-            {(get(page, "revisions") || []).map(rev => {
-                let status = "draft";
-                if (rev.published) {
-                    status = "published";
-                }
-                if (rev.locked && !rev.published) {
-                    status = "locked";
-                }
-
-                return (
-                    <MenuItem key={rev.id}>
-                        <Typography use={"body2"}>v{rev.version}</Typography>
-                        <Typography use={"caption"}>({status})</Typography>
-                    </MenuItem>
-                );
-            })}
+            {revisions.map(rev => (
+                <MenuItem key={rev.id}>
+                    <Typography use={"body2"}>v{rev.version}</Typography>
+                    <Typography use={"caption"}>({rev.status})</Typography>
+                </MenuItem>
+            ))}
         </Menu>
     );
 };
