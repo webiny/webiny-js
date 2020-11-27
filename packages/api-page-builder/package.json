@@ -12,6 +12,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
+		"@ramda/omit": "^0.26.1",
 		"@webiny/api-security": "^4.14.0",
 		"@webiny/commodo": "^4.14.0",
 		"@webiny/plugins": "^4.14.0",
@@ -22,6 +23,9 @@
 		"@webiny/handler-db": "^4.14.0",
 		"@webiny/handler-ssr": "^4.14.0",
 		"@webiny/validation": "^4.14.0",
+		"@webiny/api-i18n-content": "^4.14.0",
+		"@webiny/api-i18n": "^4.14.0",
+		"@webiny/error": "^4.14.0",
 		"@commodo/fields": "beta",
 		"commodo-fields-object": "^1.0.6",
 		"download": "^5.0.3",
@@ -42,10 +46,7 @@
 		"node-fetch": "^2.6.1",
 		"rimraf": "^2.6.2",
 		"zip-local": "^0.3.4",
-		"uniqid": "^5.2.0",
-		"@webiny/api-i18n-content": "^4.14.0",
-		"@webiny/api-i18n": "^4.14.0",
-		"@webiny/error": "^4.14.0"
+		"uniqid": "^5.2.0"
 	},
 	"devDependencies": {
 		"@webiny/api-plugin-elastic-search-client": "^4.14.0",
