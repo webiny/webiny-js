@@ -10,6 +10,8 @@ import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
+import getNormalizedListPagesArgs from "./pages/getNormalizedListPagesArgs";
+import omit from "@ramda/omit";
 
 export type Page = {
     id: string;
@@ -75,6 +77,15 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
+type SortOrder = "asc" | "desc";
+
+export type PagesListArgs = {
+    limit?: number;
+    page?: number;
+    where?: { category?: string; status?: string };
+    sort?: { createdOn?: SortOrder; title?: SortOrder };
+};
+
 export default {
     type: "context",
     apply(context) {
@@ -94,8 +105,8 @@ export default {
                 return page;
             },
 
-            async listLatest(args) {
-                const { limit = 10 } = args;
+            async listLatest(args: PagesListArgs) {
+                const { sort, from, size, filter } = getNormalizedListPagesArgs(args);
 
                 const response = await elasticSearch.search({
                     ...defaults.es,
@@ -104,19 +115,21 @@ export default {
                             bool: {
                                 filter: [
                                     { term: { "locale.keyword": i18nContent.locale.code } },
-                                    { term: { __latest: true } }
+                                    { term: { __latest: true } },
+                                    ...filter
                                 ]
                             }
                         },
-                        size: limit,
-                        sort: { createdOn: "desc" }
+                        from,
+                        size,
+                        sort
                     }
                 });
 
                 return response?.body?.hits?.hits?.map(item => item._source);
             },
 
-            async listPublished(args) {
+            async listPublished(args: PagesListArgs) {
                 const { limit = 10 } = args;
 
                 const response = await elasticSearch.search({
@@ -687,18 +700,23 @@ export default {
                     }
                 }
 
-                // Change loaded page's status to published.
-                page.status = "request-review";
+                // Change loaded page's status to `reviewRequested`.
+                page.status = "reviewRequested";
                 page.locked = true;
 
-                await db.update({
-                    ...defaults.db,
-                    query: {
-                        PK: PK_PAGE,
-                        SK: pageId
-                    },
-                    data: page
-                });
+                const nocic = 'sad'
+                try {
+                    await db.update({
+                        ...defaults.db,
+                        query: {
+                            PK: PK_PAGE,
+                            SK: pageId
+                        },
+                        data: omit(page, ['PK', 'SK'])
+                    });
+                } catch (e) {
+                    console.log(e)
+                }
 
                 // If we updated the latest version, then make sure the changes are propagated to ES too.
                 if (latestPageData.id === pageId) {
@@ -710,7 +728,7 @@ export default {
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
-                                status: "request-review",
+                                status: "reviewRequested",
                                 locked: true
                             }
                         }
@@ -761,7 +779,7 @@ export default {
                 }
 
                 // Change loaded page's status to published.
-                page.status = "changes-needed";
+                page.status = "changesRequested";
                 page.locked = false;
 
                 await db.update({
@@ -770,7 +788,7 @@ export default {
                         PK: PK_PAGE,
                         SK: pageId
                     },
-                    data: page
+                    data: omit(page, ['PK', 'SK'])
                 });
 
                 // If we updated the latest version, then make sure the changes are propagated to ES too.
@@ -783,7 +801,7 @@ export default {
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
-                                status: "changes-needed",
+                                status: "changesRequested",
                                 locked: false
                             }
                         }

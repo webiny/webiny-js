@@ -9,6 +9,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { PagesListArgs } from "@webiny/api-page-builder/plugins/crud/pages.crud";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -159,11 +160,29 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 height: Int
             }
 
-            input PbPageSortInput {
-                title: Int
-                publishedOn: Int
+            enum PbListPagesSortOrders {
+                desc
+                asc
             }
 
+            enum PbPageStatuses {
+                published
+                unpublished
+                draft
+                reviewRequested
+                changesRequested
+            }
+            
+            input PbListPagesSortInput {
+                title: PbListPagesSortOrders
+                createdOn: PbListPagesSortOrders
+            }
+
+            input PbListPagesWhereInput {
+                category: String
+                status: PbPageStatuses
+            }
+             
             enum PbTagsRule {
                 ALL
                 ANY
@@ -180,9 +199,14 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     preview: Boolean
                 ): PbPageResponse
 
-                listPages(sort: PbPageSortInput): PbPageListResponse
+                listPages(
+                    where: PbListPagesWhereInput
+                    limit: Int
+                    page: Int
+                    sort: PbListPagesSortInput
+                ): PbPageListResponse
 
-                listPublishedPages(sort: PbPageSortInput): PbPageListResponse
+                listPublishedPages(sort: PbListPagesSortInput): PbPageListResponse
 
                 listElements(limit: Int): PbElementListResponse
 
@@ -215,7 +239,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
 
                 # Signifies that certain changes are needed on given page.
                 requestChanges(id: ID!): PbPageResponse
-                
+
                 # Delete page and all of its revisions
                 deletePage(id: ID!): PbPageResponse
 
@@ -275,7 +299,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 listPages: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args: PagesListArgs, context: Context) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
