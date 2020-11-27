@@ -79,7 +79,7 @@ describe("Forms Security Test", () => {
         });
 
         const form1Id = createFormResponse.data.formBuilder.createForm.data.id;
-        
+
         [createFormResponse] = await createForm({
             data: new Mock("list-forms-2-")
         });
@@ -105,9 +105,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { listForms } = useGqlHandler({ permissions, identity });
-            let [response] = await listForms();
+            const [response] = await listForms();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("listForms"));
         }
 
@@ -120,7 +120,7 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            let [permissions, identity] = sufficientPermissionsAll[i];
+            const [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
 
             // List should not be empty.
@@ -133,7 +133,7 @@ describe("Forms Security Test", () => {
                 }
             }
 
-            let [response] = await listForms({ sort: { createdOn: 1 } });
+            const [response] = await listForms({ sort: { createdOn: 1 } });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -201,10 +201,10 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { createForm } = useGqlHandler({ permissions, identity });
 
-            let [response] = await createForm({ data: new Mock() });
+            const [response] = await createForm({ data: new Mock() });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createForm"));
         }
 
@@ -217,11 +217,11 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createForm } = useGqlHandler({ permissions, identity });
 
             const data = new Mock(`form-create-${i}-`);
-            let [response] = await createForm({ data });
+            const [response] = await createForm({ data });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -247,7 +247,7 @@ describe("Forms Security Test", () => {
         const [createFormResponse] = await createForm({ data: mock });
         const formId = createFormResponse.data.formBuilder.createForm.data.id;
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.form", rwd: "r" }], identityA],
@@ -256,14 +256,14 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { updateRevision } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`new-updated-form-`);
-            let [response] = await updateRevision({ id: formId, data: mock });
+            const [response] = await updateRevision({ id: formId, data: mock });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateRevision"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", rwd: "w" }], identityA],
@@ -272,10 +272,10 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { updateRevision } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`new-updated-form-`);
-            let [response] = await updateRevision({ id: formId, data: mock });
+            const [response] = await updateRevision({ id: formId, data: mock });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -299,7 +299,7 @@ describe("Forms Security Test", () => {
         const [createFormResponse] = await createForm({ data: mock });
         const formId = createFormResponse.data.formBuilder.createForm.data.id;
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.form", rwd: "w" }], identityA],
@@ -308,13 +308,13 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { getForm } = useGqlHandler({ permissions, identity });
-            let [response] = await getForm({ id: formId });
+            const [response] = await getForm({ id: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getForm"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", rwd: "r" }], identityA],
@@ -323,9 +323,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { getForm } = useGqlHandler({ permissions, identity });
-            let [response] = await getForm({ id: formId });
+            const [response] = await getForm({ id: formId });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -346,7 +346,7 @@ describe("Forms Security Test", () => {
         let [createFormResponse] = await createForm({ data: mock });
         let formId = createFormResponse.data.formBuilder.createForm.data.id;
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.form", rwd: "w" }], identityA],
@@ -355,13 +355,13 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { deleteForm } = useGqlHandler({ permissions, identity });
-            let [response] = await deleteForm({ id: formId });
+            const [response] = await deleteForm({ id: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("deleteForm"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwd" }], identityA],
@@ -369,9 +369,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { deleteForm } = useGqlHandler({ permissions, identity });
-            let [response] = await deleteForm({ id: formId });
+            const [response] = await deleteForm({ id: formId });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -393,10 +393,10 @@ describe("Forms Security Test", () => {
         const { createForm } = defaultHandler;
         const mock = new Mock("publishRevision-form-");
 
-        let [createFormResponse] = await createForm({ data: mock });
+        const [createFormResponse] = await createForm({ data: mock });
         let formId = createFormResponse.data.formBuilder.createForm.data.id;
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.form", rwd: "w" }], identityA],
@@ -405,22 +405,22 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { publishRevision } = useGqlHandler({ permissions, identity });
-            let [response] = await publishRevision({ id: formId });
+            const [response] = await publishRevision({ id: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("publishRevision"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwdp" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { publishRevision, unpublishRevision } = useGqlHandler({ permissions, identity });
-            let [response] = await publishRevision({ id: formId });
+            const [response] = await publishRevision({ id: formId });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -485,7 +485,7 @@ describe("Forms Security Test", () => {
             }
         }
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.form", own: false, rwd: "r" }], identityA],
@@ -493,13 +493,13 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { createRevisionFrom } = useGqlHandler({ permissions, identity });
-            let [response] = await createRevisionFrom({ revision: formId });
+            const [response] = await createRevisionFrom({ revision: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createRevisionFrom"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", rwd: "w" }], identityA],
@@ -508,9 +508,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createRevisionFrom } = useGqlHandler({ permissions, identity });
-            let [response] = await createRevisionFrom({ revision: formId });
+            const [response] = await createRevisionFrom({ revision: formId });
 
             formId = response.data.formBuilder.createRevisionFrom.data.id;
 

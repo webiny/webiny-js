@@ -164,9 +164,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { listFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await listFormSubmission();
+            const [response] = await listFormSubmission();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("listFormSubmissions"));
         }
 
@@ -179,10 +179,10 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            let [permissions, identity] = sufficientPermissionsAll[i];
+            const [permissions, identity] = sufficientPermissionsAll[i];
             const { listFormSubmission } = useGqlHandler({ permissions, identity });
 
-            let [response] = await listFormSubmission({
+            const [response] = await listFormSubmission({
                 where: {
                     form: {
                         parent: formIdA
@@ -322,9 +322,10 @@ describe("Forms Security Test", () => {
             id: formId,
             ...submissionMock
         });
-        const submissionId = createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
+        const submissionId =
+            createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fb.submission", rwd: "w" }], identityA],
@@ -333,9 +334,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { getFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await getFormSubmission({
+            const [response] = await getFormSubmission({
                 id: submissionId,
                 where: {
                     formId: formId
@@ -344,7 +345,7 @@ describe("Forms Security Test", () => {
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getFormSubmission"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.submission" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.submission", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "r" }], identityA],
@@ -353,9 +354,9 @@ describe("Forms Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { getFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await getFormSubmission({
+            const [response] = await getFormSubmission({
                 id: submissionId,
                 where: {
                     formId: formId
