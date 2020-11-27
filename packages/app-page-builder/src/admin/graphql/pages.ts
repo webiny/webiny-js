@@ -17,9 +17,14 @@ export const DATA_FIELDS = `
     title
     url
     version
-    parent
-    published
     locked
+    status
+    revisions {
+        id
+        title
+        status
+        version
+    }
     
 `;
 
@@ -52,9 +57,9 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query PbListPages($sort: JSON, $limit: Int) {
+    query PbListPages($where: PbListPagesWhereInput, $sort: PbListPagesSortInput, $limit: Int) {
         pageBuilder {
-            listPages(sort: $sort, limit: $limit) {
+            listPages(where: $where, sort: $sort, limit: $limit) {
                 data {
                     ${LIST_DATA_FIELDS}
                 }
