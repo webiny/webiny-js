@@ -8,6 +8,9 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
+import { Client } from "@elastic/elasticsearch";
+
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
@@ -24,7 +27,9 @@ import {
     UPDATE_PAGE,
     GET_PAGE,
     PUBLISH_PAGE,
-    UNPUBLISH_PAGE
+    UNPUBLISH_PAGE,
+    REQUEST_REVIEW,
+    REQUEST_CHANGES
 } from "./graphql/pages";
 import { SecurityIdentity } from "@webiny/api-security";
 import {
@@ -34,8 +39,6 @@ import {
     UPDATE_CATEGORY,
     GET_CATEGORY
 } from "./graphql/categories";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import { Client } from "@elastic/elasticsearch";
 
 export default ({ permissions, identity } = {}) => {
     const handler = createHandler(
@@ -50,7 +53,7 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9200` }),
+        elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
@@ -87,19 +90,70 @@ export default ({ permissions, identity } = {}) => {
         return [JSON.parse(response.body), response];
     };
 
+    const sleep = (ms = 333) => {
+        return new Promise(resolve => {
+            setTimeout(() => resolve(), ms);
+        });
+    };
+
+    const elasticSearch = new Client({
+        hosts: [`http://localhost:9200`],
+        node: "http://localhost:9200"
+    });
+
     return {
-        elasticSearch: new Client({
-            hosts: [`http://localhost:9200`],
-            node: "http://localhost:9200"
-        }),
-        sleep: (ms = 333) => {
-            return new Promise(resolve => {
-                setTimeout(() => resolve(), ms);
-            });
-        },
         handler,
         invoke,
-        // Menus
+        // Helpers.
+        elasticSearch: elasticSearch,
+        deleteElasticSearchIndex: async () => {
+            try {
+                await sleep();
+                await elasticSearch.indices.delete({ index: "page-builder" });
+            } catch {}
+        },
+        sleep,
+        tryUntil: async (execute, until, options = {}) => {
+            const tries = options.tries ?? 5;
+            const wait = options.wait ?? 333;
+
+            let result;
+            let triesCount = 0;
+
+            while (true) {
+                result = await execute();
+
+                let done;
+                try {
+                    done = await until(result);
+                } catch {}
+
+                if (done) {
+                    return result;
+                }
+
+                triesCount++;
+                if (triesCount === tries) {
+                    break;
+                }
+
+                // Wait.
+                await new Promise(resolve => {
+                    setTimeout(() => resolve(), wait);
+                });
+            }
+
+            throw new Error(
+                `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+                    result,
+                    null,
+                    2
+                )}`
+            );
+        },
+
+        // GraphQL queries and mutations.
+        // Menus.
         async createMenu(variables) {
             return invoke({ body: { query: CREATE_MENU, variables } });
         },
@@ -116,7 +170,7 @@ export default ({ permissions, identity } = {}) => {
             return invoke({ body: { query: GET_MENU, variables } });
         },
 
-        // Categories
+        // Categories.
         async createCategory(variables) {
             return invoke({ body: { query: CREATE_CATEGORY, variables } });
         },
@@ -133,6 +187,7 @@ export default ({ permissions, identity } = {}) => {
             return invoke({ body: { query: GET_CATEGORY, variables } });
         },
 
+        // Pages.
         async createPage(variables) {
             return invoke({ body: { query: CREATE_PAGE, variables } });
         },
@@ -144,6 +199,12 @@ export default ({ permissions, identity } = {}) => {
         },
         async unpublishPage(variables) {
             return invoke({ body: { query: UNPUBLISH_PAGE, variables } });
+        },
+        async requestReview(variables) {
+            return invoke({ body: { query: REQUEST_REVIEW, variables } });
+        },
+        async requestChanges(variables) {
+            return invoke({ body: { query: REQUEST_CHANGES, variables } });
         },
         async deletePage(variables) {
             return invoke({ body: { query: DELETE_PAGE, variables } });
@@ -158,7 +219,7 @@ export default ({ permissions, identity } = {}) => {
             return invoke({ body: { query: GET_PAGE, variables } });
         },
 
-        // PageElements
+        // PageElements.
         async createPageElement(variables) {
             return invoke({ body: { query: CREATE_PAGE_ELEMENT, variables } });
         },
