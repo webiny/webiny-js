@@ -63,12 +63,6 @@ const TYPE_PAGE = "pb#page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + "#lid";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + "#pid";
 
-/*
-const sorters = {
-    CREATED_ON_ASC: { createdOn: "asc" },
-    CREATED_ON_DESC: { createdOn: "desc" }
-};*/
-
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
         return true;
