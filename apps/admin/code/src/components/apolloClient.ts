@@ -6,6 +6,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { createOmitTypenameLink, createSetContextLink } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
+import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 
 export const createApolloClient = () => {
     return new ApolloClient({
@@ -44,7 +45,24 @@ export const createApolloClient = () => {
         ]),
         cache: new InMemoryCache({
             addTypename: true,
-            dataIdFromObject: obj => obj.id || null
+            dataIdFromObject: obj => {
+                /**
+                 * Since every data type coming from API can have a different data structure,
+                 * we cannot rely on having an `id` field.
+                 */
+                const getters = plugins.byType<CacheGetObjectIdPlugin>("cache-get-object-id");
+                for (let i = 0; i < getters.length; i++) {
+                    const id = getters[i].getObjectId(obj);
+                    if (typeof id !== "undefined") {
+                        return id;
+                    }
+                }
+
+                /**
+                 * As a fallback, try getting object's `id`.
+                 */
+                return obj.id || null;
+            }
         })
     });
 };
