@@ -23,8 +23,7 @@
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.4",
     "mdbid": "^1.0.0",
-    "md5": "^2.3.0",
-    "graphql-tag": "^2.10.1"
+    "md5": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

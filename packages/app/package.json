@@ -21,6 +21,7 @@
     "@webiny/react-router": "^4.14.0",
     "@webiny/ui": "^4.14.0",
     "apollo-client": "^2.6.8",
+    "apollo-link-context": "^1.0.20",
     "apollo-link": "^1.2.1",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",

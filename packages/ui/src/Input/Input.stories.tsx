@@ -69,7 +69,7 @@ story.add(
                                 <React.Fragment>
                                     <Bind name="phone">
                                         <Input
-                                            leadingIcon={<AutoRenewIcon />}
+                                            icon={<AutoRenewIcon />}
                                             label={"Your phone number"}
                                             description={"Please enter a real number"}
                                             disabled={disabled}
@@ -94,7 +94,7 @@ story.add(
                             <React.Fragment>
                                 <Bind name="phone">
                                     <Input
-                                        leadingIcon={<AutoRenewIcon />}
+                                        icon={<AutoRenewIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={${disabled}}
@@ -122,7 +122,7 @@ story.add(
                                     <Bind name="phone">
                                         <Input
                                             outlined
-                                            leadingIcon={<BaselineDeleteIcon />}
+                                            icon={<BaselineDeleteIcon />}
                                             label={"Your phone number"}
                                             description={"Please enter a real number"}
                                             disabled={disabled}
@@ -149,7 +149,7 @@ story.add(
                                 <Bind name="phone">
                                     <Input
                                         outlined
-                                        leadingIcon={<BaselineDeleteIcon />}
+                                        icon={<BaselineDeleteIcon />}
                                         label={"Your phone number"}
                                         description={"Please enter a real number"}
                                         disabled={${disabled}}
