@@ -50,7 +50,7 @@ export default () => [
                 <Cell span={12}>
                     <Bind
                         name="password"
-                        validators={data.id ? undefined : validation.create("required")}
+                        validators={data.createdOn ? undefined : validation.create("required")}
                     >
                         <Input
                             autoComplete="off"

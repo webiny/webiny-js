@@ -178,7 +178,9 @@ type Props = {
     // Callback which returns true if none of the items were selected, otherwise returns false.
     isNoneMultiSelected: () => boolean;
 
-    showOptions: { [key: string]: any };
+    showOptions?: { [key: string]: any };
+
+    extraOptions?: React.ReactNode;
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -354,6 +356,8 @@ export const DataList = (props: Props) => {
                     )}
                 </Grid>
             )}
+
+            {props.extraOptions ? props.extraOptions : null}
 
             {render}
         </ListContainer>

@@ -1,4 +1,5 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
+import { useMutation, useQuery } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -17,31 +18,43 @@ import {
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Avatar } from "@webiny/ui/Avatar";
-import { DELETE_USER, LIST_USERS } from "./graphql";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation, useQuery } from "react-apollo";
-
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { Input } from "@webiny/ui/Input";
+import { DELETE_USER, LIST_USERS } from "./graphql";
+import { ReactComponent as SearchIcon } from "./search.svg";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 
 const UsersDataList = () => {
+    const [filter, setFilter] = useState("");
     const { identity } = useSecurity();
-
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_USERS);
+    const { showConfirmation } = useConfirmationDialog();
 
-    const [deleteIt, deleteMutation] = useMutation(DELETE_USER, {
+    const filterUsers = useCallback(
+        ({ login, firstName, lastName }) => {
+            return (
+                login.toLowerCase().includes(filter) ||
+                firstName.toLowerCase().includes(filter) ||
+                lastName.toLowerCase().includes(filter)
+            );
+        },
+        [filter]
+    );
+
+    const { data: listUsers, loading: usersLoading, refetch: usersRefetch } = useQuery(LIST_USERS);
+
+    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_USER, {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const { showConfirmation } = useConfirmationDialog();
+    const data = usersLoading && !listUsers ? [] : listUsers.security.users.data || [];
+    const filteredData = filter === "" ? data : data.filter(filterUsers);
 
-    const data = listQuery?.data?.security?.users?.data || [];
-
-    const id = new URLSearchParams(location.search).get("id");
+    const login = new URLSearchParams(location.search).get("login");
 
     const deleteItem = useCallback(
         item => {
@@ -55,49 +68,58 @@ const UsersDataList = () => {
                     return showSnackbar(error.message);
                 }
 
-                showSnackbar(t`User "{email}" deleted.`({ email: item.email }));
+                showSnackbar(t`User "{login}" deleted.`({ login: item.login }));
 
-                if (id === item.id) {
+                if (login === item.login) {
                     history.push(`/security/users`);
                 }
             });
         },
-        [id]
+        [login]
     );
 
-    const loading = [listQuery, deleteMutation].find(item => item.loading);
+    const loading = usersLoading || deleteLoading;
 
     return (
         <DataList
             title={t`Security Users`}
-            data={data}
-            loading={Boolean(loading)}
-            refresh={listQuery.refetch}
+            data={filteredData}
+            loading={loading}
+            refresh={usersRefetch}
+            extraOptions={
+                <Input
+                    icon={<SearchIcon />}
+                    placeholder={"Type to filter"}
+                    value={filter}
+                    onChange={setFilter}
+                    autoComplete="off"
+                />
+            }
         >
             {({ data }) => (
                 <ScrollList twoLine avatarList>
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === id}>
+                        <ListItem key={item.login} selected={item.login === login}>
                             <ListItemGraphic>
                                 <Avatar
                                     renderImage={props => (
                                         <Image {...props} transform={{ width: 100 }} />
                                     )}
                                     src={item.avatar ? item.avatar.src : item.gravatar}
-                                    fallbackText={item.fullName}
+                                    fallbackText={item.firstName}
                                     alt={t`User's avatar.`}
                                 />
                             </ListItemGraphic>
                             <ListItemText
-                                onClick={() => history.push(`/security/users?id=${item.id}`)}
+                                onClick={() => history.push(`/security/users?login=${item.login}`)}
                             >
-                                {item.fullName}
-                                <ListItemTextSecondary>{item.email}</ListItemTextSecondary>
+                                {item.firstName} {item.lastName}
+                                <ListItemTextSecondary>{item.login}</ListItemTextSecondary>
                             </ListItemText>
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {identity && identity.id !== item.id ? (
+                                    {identity && identity.id !== item.login ? (
                                         <DeleteIcon onClick={() => deleteItem(item)} />
                                     ) : (
                                         <Tooltip

@@ -19,6 +19,18 @@ export class SecurityIdentity {
         Object.assign(this, data);
     }
 
+    /**
+     * Create a new instance of SecurityIdentity from the existing instance.
+     */
+    static from(identity: SecurityIdentity, data: Partial<SecurityIdentityData>) {
+        const currentData = Object.keys(identity).reduce((acc, key) => {
+            acc[key] = identity[key];
+            return acc;
+        }, {}) as SecurityIdentityData;
+
+        return new SecurityIdentity({ ...currentData, ...data });
+    }
+
     setPermissions(permissions: SecurityPermission[]) {
         this.permissions = permissions;
     }

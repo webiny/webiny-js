@@ -56,3 +56,8 @@ export type RoutePlugin = Plugin & {
     type: "route";
     route: React.ReactElement;
 };
+
+export type CacheGetObjectIdPlugin = Plugin & {
+    type: "cache-get-object-id";
+    getObjectId(obj: Record<string, any>): string | undefined;
+};

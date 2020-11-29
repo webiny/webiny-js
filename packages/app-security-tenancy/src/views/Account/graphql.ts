@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
 export const CREATE_PAT = gql`
-    mutation createPat($name: String!) {
+    mutation CreatePAT($data: SecurityPersonalAccessTokenInput!) {
         security {
-            createPAT(name: $name) {
+            createPAT(data: $data) {
                 data {
                     pat {
                         id
@@ -21,7 +21,7 @@ export const CREATE_PAT = gql`
 `;
 
 export const UPDATE_PAT = gql`
-    mutation($id: ID!, $data: PersonalAccessTokenInput!) {
+    mutation UpdatePAT($id: ID!, $data: SecurityPersonalAccessTokenInput!) {
         security {
             updatePAT(id: $id, data: $data) {
                 data {
@@ -38,7 +38,7 @@ export const UPDATE_PAT = gql`
 `;
 
 export const DELETE_PAT = gql`
-    mutation deletePat($id: ID!) {
+    mutation DeletePAT($id: ID!) {
         security {
             deletePAT(id: $id) {
                 data
@@ -51,9 +51,9 @@ export const DELETE_PAT = gql`
 `;
 
 export const GET_CURRENT_USER = gql`
-    {
+    query GetCurrentUser {
         security {
-            getCurrentUser {
+            user: getCurrentUser {
                 data {
                     login
                     firstName
@@ -75,7 +75,7 @@ export const GET_CURRENT_USER = gql`
 `;
 
 export const UPDATE_CURRENT_USER = gql`
-    mutation updateMe($data: SecurityCurrentUserInput!) {
+    mutation UpdateCurrentUser($data: SecurityCurrentUserInput!) {
         security {
             updateCurrentUser(data: $data) {
                 data {

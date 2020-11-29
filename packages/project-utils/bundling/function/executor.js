@@ -48,10 +48,6 @@ module.exports = (options, context) => {
         }
 
         return webpack(webpackConfig).run(async (err, stats) => {
-
-            console.log('aaaa', process.cwd() + "/statis.json")
-            await fs.writeFile(process.cwd() + "/.statis.json", JSON.stringify(stats.toJson()));
-
             if (err) {
                 return reject(err);
             }

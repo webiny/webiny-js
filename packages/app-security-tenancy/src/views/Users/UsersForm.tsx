@@ -15,7 +15,6 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import AccountTokens from "../Account/AccountTokens";
 import GroupAutocomplete from "../Components/GroupAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/settings-24px.svg";
@@ -30,20 +29,23 @@ import { pick } from "lodash";
 const t = i18n.ns("app-security-tenancy/admin/users-form");
 
 const formatData = data =>
-    pick(data, ["email", "password", "firstName", "lastName", "avatar", "enabled", "group"]);
+    pick(data, ["login", "password", "firstName", "lastName", "avatar", "group"]);
 
 const UsersForm = () => {
-    const [formIsLoading, setFormIsLoading] = useState(false);
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const id = new URLSearchParams(location.search).get("id");
+    const login = new URLSearchParams(location.search).get("login");
 
-    const getQuery = useQuery(READ_USER, {
-        variables: { id },
-        skip: !id,
+    const { data, loading: userLoading } = useQuery(READ_USER, {
+        variables: { login },
+        skip: !login,
         onCompleted: data => {
-            const error = data?.security?.user?.error;
+            if (!data) {
+                return;
+            }
+
+            const { error } = data.security.user;
             if (error) {
                 history.push("/security/users");
                 showSnackbar(error.message);
@@ -51,15 +53,15 @@ const UsersForm = () => {
         }
     });
 
-    const [create, createMutation] = useMutation(CREATE_USER, {
+    const [create, { loading: createLoading }] = useMutation(CREATE_USER, {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_USER, {
+    const [update, { loading: updateLoading }] = useMutation(UPDATE_USER, {
         refetchQueries: [{ query: LIST_USERS }]
     });
 
-    const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
+    const loading = userLoading || createLoading || updateLoading;
 
     const onSubmit = useCallback(
         async data => {
@@ -69,7 +71,7 @@ const UsersForm = () => {
                       update,
                       {
                           variables: {
-                              id: data.id,
+                              login: data.login,
                               data: formatData(data)
                           }
                       }
@@ -83,28 +85,28 @@ const UsersForm = () => {
                       }
                   ];
 
-            const response = await operation(args);
+            const result = await operation(args);
 
-            const error = response?.data?.security?.user?.error;
+            const { data: user, error } = result.data.security.user;
+
             if (error) {
                 return showSnackbar(error.message);
             }
 
-            const id = response?.data?.security?.user?.data?.id;
-
-            !isUpdate && history.push(`/security/users?id=${id}`);
+            !isUpdate && history.push(`/security/users?login=${user.login}`);
             showSnackbar(t`User saved successfully.`);
         },
-        [id]
+        [login]
     );
 
-    const data = getQuery?.data?.security?.user?.data || {};
+    const user = userLoading ? {} : data ? data.security.user.data : {};
 
     const uiPlugins = plugins.byType<SecurityUserFormPlugin>("security-user-form");
+    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
     return (
-        <Form data={data} onSubmit={onSubmit}>
-            {({ data, form, Bind, setValue }) => (
+        <Form data={user} onSubmit={onSubmit}>
+            {({ data, form, Bind }) => (
                 <>
                     <div style={{ marginBottom: "32px", marginTop: "24px" }}>
                         <Bind name="avatar">
@@ -112,14 +114,15 @@ const UsersForm = () => {
                         </Bind>
                     </div>
                     <SimpleForm>
-                        {(formIsLoading || loading) && <CircularProgress />}
-                        <SimpleFormHeader title={data.fullName || t`New User`} />
+                        {loading && <CircularProgress />}
+                        <SimpleFormHeader title={fullName || t`New User`} />
                         <SimpleFormContent>
                             <Accordion elevation={0}>
                                 <AccordionItem
-                                    description="Set Account bio information"
+                                    description="Account information"
                                     title="Bio"
                                     icon={<SettingsIcon />}
+                                    open
                                 >
                                     <Grid>
                                         <Cell span={12}>
@@ -140,7 +143,7 @@ const UsersForm = () => {
                                         </Cell>
                                         <Cell span={12}>
                                             <Bind
-                                                name="email"
+                                                name="login"
                                                 validators={validation.create("required,email")}
                                             >
                                                 <Input label={t`E-mail`} />
@@ -154,7 +157,7 @@ const UsersForm = () => {
                                     </Grid>
                                 </AccordionItem>
                                 <AccordionItem
-                                    description="Set Group"
+                                    description="Assign to security group"
                                     title="Group"
                                     icon={<SecurityIcon />}
                                 >
@@ -163,19 +166,6 @@ const UsersForm = () => {
                                             <GroupAutocomplete label={t`Group`} />
                                         </Bind>
                                     </Cell>
-                                </AccordionItem>
-                                <AccordionItem
-                                    description="Set Personal Access Tokens"
-                                    title="Personal Access Tokens"
-                                    icon={<SecurityIcon />}
-                                >
-                                    <Bind name="personalAccessTokens">
-                                        <AccountTokens
-                                            data={data}
-                                            setValue={setValue}
-                                            setFormIsLoading={setFormIsLoading}
-                                        />
-                                    </Bind>
                                 </AccordionItem>
                             </Accordion>
                         </SimpleFormContent>

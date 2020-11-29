@@ -8,6 +8,7 @@ const createGravatar = email => `https://www.gravatar.com/avatar/${md5(email)}`;
 describe("Security User CRUD Test", () => {
     const { install, securityUser, securityGroup } = useGqlHandler();
     let groupA;
+    let groupB;
 
     const adminData = { firstName: "John", lastName: "Doe", login: "admin@webiny.com" };
 
@@ -18,7 +19,7 @@ describe("Security User CRUD Test", () => {
     });
 
     test("should create, read, update and delete users", async () => {
-        // Let's create a group.
+        // Create user groups
         let [response] = await securityGroup.create({
             data: groupMocks.groupA
         });
@@ -34,6 +35,12 @@ describe("Security User CRUD Test", () => {
                 }
             }
         });
+
+        [response] = await securityGroup.create({
+            data: groupMocks.groupB
+        });
+
+        groupB = response.data.security.createGroup.data;
 
         // Let's create a user.
         [response] = await securityUser.create({
@@ -202,6 +209,30 @@ describe("Security User CRUD Test", () => {
                             group: {
                                 slug: groupMocks.groupA.slug,
                                 name: groupMocks.groupA.name
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Update user's group
+        [response] = await securityUser.update({
+            login: mocks.userA.login,
+            data: { group: groupB.slug }
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    updateUser: {
+                        data: {
+                            ...mocks.userA,
+                            gravatar: createGravatar(mocks.userA.login),
+                            group: {
+                                slug: groupB.slug,
+                                name: groupB.name
                             }
                         },
                         error: null

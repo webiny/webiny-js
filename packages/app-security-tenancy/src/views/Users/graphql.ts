@@ -15,12 +15,6 @@ const fields = /* GraphQL */ `
     }
 `;
 
-// personalAccessTokens {
-//     id
-//     name
-//     token
-// }
-
 export const LIST_USERS: any = gql`
     query ListUsers {
         security {
@@ -33,22 +27,13 @@ export const LIST_USERS: any = gql`
                     gravatar
                     createdOn
                 }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
-                }
             }
         }
     }
 `;
 
 export const READ_USER: any = gql`
-    query getUser($login: ID!) {
+    query GetUser($login: String!) {
         security {
             user: getUser(login: $login){
                 data ${fields}
@@ -62,7 +47,7 @@ export const READ_USER: any = gql`
 `;
 
 export const CREATE_USER: any = gql`
-    mutation createUser($data: SecurityUserInput!){
+    mutation CreateUser($data: SecurityUserInput!){
         security {
             user: createUser(data: $data) {
                 data ${fields}
@@ -77,7 +62,7 @@ export const CREATE_USER: any = gql`
 `;
 
 export const UPDATE_USER: any = gql`
-    mutation updateUser($login: ID!, $data: SecurityUserInput!){
+    mutation UpdateUser($login: String!, $data: SecurityUserInput!){
         security {
             user: updateUser(login: $login, data: $data) {
                 data ${fields}
@@ -92,7 +77,7 @@ export const UPDATE_USER: any = gql`
 `;
 
 export const DELETE_USER: any = gql`
-    mutation deleteUser($login: ID!) {
+    mutation DeleteUser($login: String!) {
         security {
             deleteUser(login: $login) {
                 data

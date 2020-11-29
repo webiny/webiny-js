@@ -1,27 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
-import { ButtonDefault, CopyButton } from "@webiny/ui/Button";
-import { Form } from "@webiny/form";
+import { set } from "dot-prop-immutable";
+import { ButtonDefault, IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { Input } from "@webiny/ui/Input";
-import {
-    Dialog,
-    DialogCancel,
-    DialogAccept,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    DialogButton
-} from "@webiny/ui/Dialog";
-import { Alert } from "@webiny/ui/Alert";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { validation } from "@webiny/validation";
-import { CREATE_PAT } from "./graphql";
-import TokenList from "../PersonalAccessTokens/TokenList";
+import { ListItemMeta, SimpleListItem } from "@webiny/ui/List";
+import { ReactComponent as EditIcon } from "@webiny/app-security-tenancy/assets/icons/edit-24px.svg";
+import { UpdateTokenDialog } from "@webiny/app-security-tenancy/views/Account/UpdateTokenDialog";
+import { ReactComponent as DeleteIcon } from "@webiny/app-security-tenancy/assets/icons/delete-24px.svg";
+import { DELETE_PAT, GET_CURRENT_USER } from "@webiny/app-security-tenancy/views/Account/graphql";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { CreateTokenDialog } from "./CreateTokenDialog";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 
-const t = i18n.ns("app-security/admin/pats/data-list");
+const t = i18n.ns("app-security/admin/personal-access-tokens");
 
 const Header = styled("div")({
     display: "flex",
@@ -29,122 +22,98 @@ const Header = styled("div")({
     marginBottom: 15
 });
 
-const PatContainer = styled("div")({
-    paddingLeft: "12px",
-    paddingRight: "12px",
-    background: "var(--mdc-theme-on-background)"
-});
-
-const TokensElement = ({ setFormIsLoading, data, setValue }) => {
-    const [showCreatePATDialog, setShowCreatePATDialog] = useState(false);
-    const [showPATHashDialog, setShowPATHashDialog] = useState(false);
-    const [tokenHash, setTokenHash] = useState();
+const TokensElement = ({ tokens }) => {
+    const [createToken, setCreateToken] = useState(false);
+    const [updateToken, setUpdateToken] = useState(false);
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
+    const { showConfirmation } = useConfirmationDialog({
+        title: t`Delete token confirmation`,
+        message: t`Are you sure you want to delete this token?`
+    });
 
-    const generateToken = async formData => {
-        setShowCreatePATDialog(false);
-        setFormIsLoading(true);
-        const queryResponse = await client.mutate({
-            mutation: CREATE_PAT,
-            variables: {
-                name: formData.createTokenName,
-                userId: data.id
-            }
-        });
-        setFormIsLoading(false);
+    const onClose = useCallback(() => {
+        setCreateToken(false);
+    }, []);
 
-        const { error } = queryResponse.data.security.createPAT;
-        if (error) {
-            return showSnackbar(error.message, {
-                action: t`Close`
+    const deleteToken = async token => {
+        showConfirmation(async () => {
+            const queryResponse = await client.mutate({
+                mutation: DELETE_PAT,
+                variables: {
+                    id: token.id
+                },
+                update(cache) {
+                    const data: any = cache.readQuery({ query: GET_CURRENT_USER });
+                    const tokens = data.security.user.data.personalAccessTokens.filter(item => {
+                        return item.id !== token.id;
+                    });
+
+                    cache.writeQuery({
+                        query: GET_CURRENT_USER,
+                        data: set(data, `security.user.data.personalAccessTokens`, tokens)
+                    });
+                }
             });
-        }
 
-        const { token, pat: personalAccessToken } = queryResponse.data.security.createPAT.data;
-        let newPATs;
-        if (!data.personalAccessTokens) {
-            newPATs = [personalAccessToken];
-        } else {
-            newPATs = [personalAccessToken, ...data.personalAccessTokens];
-        }
+            const { error } = queryResponse.data.security.deletePAT;
+            if (error) {
+                return showSnackbar(error.message, {
+                    action: t`Close`
+                });
+            }
 
-        setValue("personalAccessTokens", newPATs);
-        setTokenHash(token);
-        setShowPATHashDialog(true);
-        showSnackbar(t`Token created successfully!`);
+            showSnackbar(t`Token deleted successfully!`);
+        });
     };
 
     return (
         <>
-            <Form onSubmit={generateToken} submitOnEnter={true}>
-                {({ Bind, form }) => (
-                    <Dialog
-                        open={showCreatePATDialog}
-                        onClose={() => setShowCreatePATDialog(false)}
-                        data-testid="account-tokens-dialog"
-                    >
-                        <DialogTitle>{t`Create new Personal Access Token`}</DialogTitle>
-                        <DialogContent>
-                            <Bind
-                                name={"createTokenName"}
-                                validators={validation.create("required,maxLength:100")}
-                            >
-                                <Input label={t`Token name`} />
-                            </Bind>
-                        </DialogContent>
-                        <DialogActions>
-                            <DialogCancel>{t`Cancel`}</DialogCancel>
-                            <DialogButton
-                                data-testid={`accept-generate-token`}
-                                onClick={form.submit}
-                            >
-                                {t`OK`}
-                            </DialogButton>
-                        </DialogActions>
-                    </Dialog>
-                )}
-            </Form>
-
-            <Dialog
-                open={showPATHashDialog}
-                onClose={() => setShowPATHashDialog(false)}
-                data-testid="created-token-dialog"
-            >
-                <DialogTitle>{t`Your Personal Access Token`}</DialogTitle>
-                <DialogContent>
-                    <Alert title={t`Please copy the token`} type="info">
-                        {t`Make sure to copy your new personal access token now. You won't be able to see it again!`}
-                    </Alert>
-                    <div>
-                        <div
-                            style={{
-                                display: "flex",
-                                alignItems: "center"
-                            }}
-                        >
-                            <PatContainer>
-                                <Typography use="overline">{tokenHash}</Typography>
-                            </PatContainer>
-                            <CopyButton value={tokenHash} />
-                        </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <DialogAccept>{t`Close`}</DialogAccept>
-                </DialogActions>
-            </Dialog>
-
             <Header>
                 <Typography style={{ lineHeight: "2.4rem" }} use={"overline"}>
                     {t`Tokens`}
                 </Typography>
-                <ButtonDefault onClick={() => setShowCreatePATDialog(true)}>
+                <ButtonDefault onClick={() => setCreateToken(true)}>
                     {t`Create Token`}
                 </ButtonDefault>
             </Header>
             <div data-testid={"pat-tokens-list"}>
-                <TokenList setFormIsLoading={setFormIsLoading} data={data} setValue={setValue} />
+                <CreateTokenDialog open={createToken} onClose={onClose} />
+                <UpdateTokenDialog
+                    open={Boolean(updateToken)}
+                    token={updateToken}
+                    onClose={() => setUpdateToken(false)}
+                />
+                {Array.isArray(tokens)
+                    ? tokens.map(token => (
+                          <SimpleListItem
+                              data-testid="pat-tokens-list-item"
+                              key={token.id}
+                              text={
+                                  <div style={{ paddingLeft: "16px" }}>
+                                      {token.name} (********{token.token})
+                                  </div>
+                              }
+                          >
+                              <ListItemMeta>
+                                  <IconButton
+                                      data-testid="update-personal-access-token"
+                                      onClick={() => setUpdateToken(token)}
+                                      icon={<EditIcon />}
+                                  />
+                                  <IconButton
+                                      data-testid={`delete-personal-access-token`}
+                                      onClick={() => deleteToken(token)}
+                                      icon={<DeleteIcon />}
+                                  />
+                              </ListItemMeta>
+                          </SimpleListItem>
+                      ))
+                    : null}
+
+                {!Array.isArray(tokens) || tokens.length === 0 ? (
+                    <SimpleListItem text={t`You don't have any tokens yet.`} />
+                ) : null}
             </div>
         </>
     );

@@ -19,56 +19,54 @@ import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
 const t = i18n.ns("app-security/admin/groups/data-list");
 
 const GroupsDataList = () => {
-    const { history } = useRouter();
+    const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_GROUPS);
+    const { showConfirmation } = useConfirmationDialog();
 
-    const [deleteIt, deleteMutation] = useMutation(DELETE_GROUP, {
+    const { data: listResponse, loading: listLoading, refetch } = useQuery(LIST_GROUPS);
+
+    const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_GROUP, {
         refetchQueries: [{ query: LIST_GROUPS }]
     });
 
-    const { showConfirmation } = useConfirmationDialog();
-
-    const data = listQuery?.data?.security?.groups?.data || [];
-    const id = new URLSearchParams(location.search).get("id");
+    const data = listLoading && !listResponse ? [] : listResponse.security.groups.data;
+    const slug = new URLSearchParams(location.search).get("slug");
 
     const deleteItem = useCallback(
         item => {
             showConfirmation(async () => {
-                const response = await deleteIt({
+                const { data } = await deleteIt({
                     variables: item
                 });
 
-                const error = response?.data?.security?.deleteGroup?.error;
+                const { error } = data.security.deleteGroup;
                 if (error) {
                     return showSnackbar(error.message);
                 }
 
                 showSnackbar(t`Group "{slug}" deleted.`({ slug: item.slug }));
 
-                if (id === item.id) {
+                if (slug === item.slug) {
                     history.push(`/security/groups`);
                 }
             });
         },
-        [id]
+        [slug]
     );
-
-    const loading = [listQuery, deleteMutation].find(item => item.loading);
 
     return (
         <DataList
             title={t`Security Groups`}
             data={data}
-            refresh={listQuery.refetch}
-            loading={Boolean(loading)}
+            refresh={refetch}
+            loading={listLoading || deleteLoading}
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={item.id === id}>
+                        <ListItem key={item.slug} selected={item.slug === slug}>
                             <ListItemText
-                                onClick={() => history.push(`/security/groups?id=${item.id}`)}
+                                onClick={() => history.push(`/security/groups?slug=${item.slug}`)}
                             >
                                 {item.name}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>

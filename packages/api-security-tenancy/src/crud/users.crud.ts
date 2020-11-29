@@ -22,7 +22,8 @@ const CreateUserDataModel = withFields({
 
 const UpdateUserDataModel = withFields({
     firstName: string({ validation: validation.create("minLength:2") }),
-    lastName: string({ validation: validation.create("minLength:2") })
+    lastName: string({ validation: validation.create("minLength:2") }),
+    group: string()
 })();
 
 const CreateAccessTokenDataModel = withFields({

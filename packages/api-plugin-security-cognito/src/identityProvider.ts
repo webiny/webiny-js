@@ -2,6 +2,9 @@ import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityservi
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { SecurityIdentityProviderPlugin } from "@webiny/api-security-tenancy/types";
 
+// eslint-disable-next-line @typescript-eslint/camelcase
+const updateAttributes = { family_name: "lastName", given_name: "firstName" };
+
 export default ({ region, userPoolId }) => {
     const cognito = new CognitoIdentityServiceProvider({ region });
 
@@ -88,6 +91,16 @@ export default ({ region, userPoolId }) => {
                 }
             },
             async updateUser({ data, user }) {
+                const params = {
+                    UserAttributes: Object.keys(updateAttributes).map(attr => {
+                        return { Name: attr, Value: user[updateAttributes[attr]] };
+                    }),
+                    UserPoolId: userPoolId,
+                    Username: user.login
+                };
+
+                await cognito.adminUpdateUserAttributes(params).promise();
+
                 if (data.password) {
                     const pass = {
                         Permanent: true,

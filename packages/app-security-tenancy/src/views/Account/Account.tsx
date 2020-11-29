@@ -1,8 +1,6 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useState } from "react";
 import { omit } from "lodash";
-import { get } from "dot-prop-immutable";
-import { useApolloClient } from "react-apollo";
-import { useHandler } from "@webiny/app/hooks/useHandler";
+import { useQuery, useMutation } from "react-apollo";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Form } from "@webiny/form";
@@ -27,54 +25,52 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 import { SecurityUserAccountFormPlugin } from "@webiny/app-security-tenancy/types";
+import { useSecurity } from "@webiny/app-security";
+import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 
 const t = i18n.ns("app-security-tenancy/account-form");
 
 const UserAccountForm = () => {
-    const uiPlugins = plugins.byType<SecurityUserAccountFormPlugin>(
-        "security-user-account-form"
-    );
-
-    const [{ loading, user }, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
-        loading: true,
-        user: { data: {} }
-    });
-    const setIsLoading = loading => setState({ loading });
-
-    const client = useApolloClient();
+    const uiPlugins = plugins.byType<SecurityUserAccountFormPlugin>("security-user-account-form");
+    const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
+    const { identity, setIdentity } = useSecurity();
 
-    const onSubmit = useHandler(null, () => async formData => {
-        setState({ loading: true });
-        const { data: response } = await client.mutate({
-            mutation: UPDATE_CURRENT_USER,
-            variables: { data: omit(formData, ["id", "personalAccessTokens"]) }
+    const currentUser = useQuery(GET_CURRENT_USER);
+    const [updateUser] = useMutation(UPDATE_CURRENT_USER);
+
+    const onSubmit = async formData => {
+        setLoading(true);
+        const { data: response } = await updateUser({
+            variables: { data: omit(formData, ["login", "personalAccessTokens"]) }
         });
         const { error } = response.security.updateCurrentUser;
-        setState({ loading: false });
+        setLoading(false);
+
         if (error) {
             return showSnackbar(error.message, {
                 action: <SnackbarAction label="Close" onClick={() => showSnackbar(null)} />
             });
         }
 
-        // TODO: update security context with new data
+        setIdentity(
+            SecurityIdentity.from(identity, {
+                firstName: formData.firstName,
+                lastName: formData.lastName
+            })
+        );
 
         showSnackbar("Account saved successfully!");
-    });
+    };
 
-    useEffect(() => {
-        client.query({ query: GET_CURRENT_USER }).then(({ data }) => {
-            setState({ loading: false, user: get(data, "security.getCurrentUser") });
-        });
-    }, []);
+    const user = currentUser.loading ? {} : currentUser.data.security.user.data;
 
     return (
         <Grid>
             <Cell span={3} />
             <Cell span={6}>
-                <Form data={user.data} onSubmit={onSubmit}>
-                    {({ data, form, Bind, setValue }) => (
+                <Form data={user} onSubmit={onSubmit}>
+                    {({ data, form, Bind }) => (
                         <>
                             <div style={{ marginBottom: "32px" }}>
                                 <Bind name="avatar">
@@ -88,7 +84,7 @@ const UserAccountForm = () => {
                                     <Accordion elevation={0}>
                                         <AccordionItem
                                             open
-                                            description="Show Account bio information"
+                                            description="Account information"
                                             title="Bio"
                                             icon={<SettingsIcon />}
                                         >
@@ -110,12 +106,13 @@ const UserAccountForm = () => {
                                                     </Bind>
                                                 </Cell>
                                                 <Cell span={12}>
-                                                    <Bind
-                                                        name="login"
-                                                        validators={validation.create("required")}
-                                                    >
-                                                        <Input label={t`E-mail`} />
-                                                    </Bind>
+                                                    <Input
+                                                        value={data.login}
+                                                        label={t`E-mail`}
+                                                        description={
+                                                            "Email is your unique identifier and cannot be changed!"
+                                                        }
+                                                    />
                                                 </Cell>
                                                 {uiPlugins.map(pl => (
                                                     <React.Fragment key={pl.name}>
@@ -125,17 +122,11 @@ const UserAccountForm = () => {
                                             </Grid>
                                         </AccordionItem>
                                         <AccordionItem
-                                            description="Show Personal Access Tokens"
                                             title="Personal Access Tokens"
+                                            description="Permanent authentication tokens"
                                             icon={<SecurityIcon />}
                                         >
-                                            <Bind name="personalAccessTokens">
-                                                <AccountTokens
-                                                    data={data}
-                                                    setValue={setValue}
-                                                    setFormIsLoading={setIsLoading}
-                                                />
-                                            </Bind>
+                                            <AccountTokens tokens={user.personalAccessTokens} />
                                         </AccordionItem>
                                     </Accordion>
                                 </SimpleFormContent>

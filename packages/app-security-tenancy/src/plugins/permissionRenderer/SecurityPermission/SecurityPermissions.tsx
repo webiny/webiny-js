@@ -58,12 +58,13 @@ export const SecurityPermissions = ({ securityGroup, value, onChange }) => {
         const hasFullAccess = value.find(
             item => item.name === SECURITY_FULL_ACCESS || item.name === "*"
         );
+
         if (hasFullAccess) {
             return { level: FULL_ACCESS };
         }
 
         const permissions = value.filter(item => item.name.startsWith(SECURITY));
-        if (!permissions) {
+        if (permissions.length === 0) {
             return { level: NO_ACCESS };
         }
 

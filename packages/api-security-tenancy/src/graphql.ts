@@ -1,7 +1,7 @@
-import base from "./graphql/base";
-import install from "./graphql/install";
-import group from "./graphql/group";
-import user from "./graphql/user";
-import pat from "./graphql/pat";
+import base from "./graphql/base.gql";
+import install from "./graphql/install.gql";
+import group from "./graphql/group.gql";
+import user from "./graphql/user.gql";
+import pat from "./graphql/pat.gql";
 
 export default [base, install, user, group, pat];

@@ -47,7 +47,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             type SecurityIdentity {
-                login: ID
+                login: String
                 access: [TenantAccess]
                 firstName: String
                 lastName: String
@@ -57,11 +57,11 @@ const plugin: GraphQLSchemaPlugin = {
 
             type SecurityUserGroup {
                 name: String
-                slug: ID
+                slug: String
             }
 
             type SecurityUser {
-                login: ID
+                login: String
                 firstName: String
                 lastName: String
                 avatar: JSON
@@ -77,7 +77,7 @@ const plugin: GraphQLSchemaPlugin = {
             This input type is used by administrators to update other user's accounts within the same tenant.
             """
             input SecurityUserInput {
-                login: ID
+                login: String
                 firstName: String
                 lastName: String
                 avatar: JSON
@@ -120,7 +120,7 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             extend type SecurityMutation {
-                "Login using ID token obtained from a 3rd party identity provider"
+                "Login using idToken obtained from a 3rd party identity provider"
                 login: SecurityIdentityLoginResponse
 
                 "Update current user"
@@ -359,6 +359,27 @@ const plugin: GraphQLSchemaPlugin = {
                                 login,
                                 data
                             );
+
+                            // Link user with a new group
+                            if (updatedAttributes.group) {
+                                const tenant = context.security.getTenant();
+
+                                await context.security.users.unlinkUserFromTenant(
+                                    user.login,
+                                    tenant
+                                );
+
+                                const group = await context.security.groups.getGroup(
+                                    tenant,
+                                    updatedAttributes.group
+                                );
+
+                                await context.security.users.linkUserToTenant(
+                                    user.login,
+                                    tenant,
+                                    group
+                                );
+                            }
 
                             Object.assign(user, updatedAttributes);
 

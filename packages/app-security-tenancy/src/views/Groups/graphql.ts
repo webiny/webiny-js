@@ -24,7 +24,7 @@ export const LIST_GROUPS: any = gql`
 `;
 
 export const READ_GROUP: any = gql`
-    query getGroup($slug: ID!) {
+    query getGroup($slug: String!) {
         security {
             group: getGroup(slug: $slug){
                 data {
@@ -57,7 +57,7 @@ export const CREATE_GROUP: any = gql`
 `;
 
 export const UPDATE_GROUP: any = gql`
-    mutation updateGroup($slug: ID!, $data: SecurityGroupInput!){
+    mutation updateGroup($slug: String!, $data: SecurityGroupInput!){
         security {
             group: updateGroup(slug: $slug, data: $data) {
                 data {
@@ -74,7 +74,7 @@ export const UPDATE_GROUP: any = gql`
 `;
 
 export const DELETE_GROUP: any = gql`
-    mutation deleteGroup($slug: ID!) {
+    mutation deleteGroup($slug: String!) {
         security {
             deleteGroup(slug: $slug) {
                 data

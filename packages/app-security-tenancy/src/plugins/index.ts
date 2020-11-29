@@ -5,6 +5,7 @@ import menus from "./menus";
 import secureRouteError from "./secureRouteError";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
+import getObjectId from "./getObjectId";
 
 export default () => [
     userMenu,
@@ -13,5 +14,6 @@ export default () => [
     menus,
     secureRouteError,
     installation,
-    permissionRenderer()
+    permissionRenderer(),
+    getObjectId
 ];
