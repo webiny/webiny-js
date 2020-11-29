@@ -56,7 +56,8 @@ const UserAccountForm = () => {
         setIdentity(
             SecurityIdentity.from(identity, {
                 firstName: formData.firstName,
-                lastName: formData.lastName
+                lastName: formData.lastName,
+                avatar: formData.avatar
             })
         );
 

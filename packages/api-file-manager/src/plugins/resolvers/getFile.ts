@@ -19,7 +19,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
         }
 
         // If user can only manage own records, let's check if he owns the loaded one.
-        if (filesFilePermission?.own === true) {
+        if (filesFilePermission.own === true) {
             const identity = context.security.getIdentity();
             if (file.createdBy.id !== identity.id) {
                 return new NotAuthorizedResponse();

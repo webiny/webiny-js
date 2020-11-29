@@ -20,7 +20,7 @@ import {
 const t = i18n.ns("app-pb/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsPageBuilderInstalled {
         pageBuilder {
             isInstalled {
                 data

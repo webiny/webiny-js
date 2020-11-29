@@ -12,7 +12,6 @@ import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
 import { FileManagerResolverContext } from "../types";
 
-const fileFetcher = ({ models }): any => models.File;
 const emptyResolver = () => ({});
 
 export default [
@@ -115,7 +114,7 @@ export default [
                     SIZE_DESC
                 }
 
-                type FmQuery {
+                type FileManagerQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
                     listFiles(
@@ -142,7 +141,7 @@ export default [
                     error: FileError
                 }
 
-                type FmMutation {
+                type FileManagerMutation {
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFile(id: ID!, data: FileInput!): FileResponse
@@ -159,22 +158,18 @@ export default [
                 }
 
                 extend type Query {
-                    fileManager: FmQuery
+                    fileManager: FileManagerQuery
                 }
 
                 extend type Mutation {
-                    fileManager: FmMutation
+                    fileManager: FileManagerMutation
                 }
             `,
             resolvers: {
                 File: {
-                    // FIXME: Remove this maybe?
-                    __resolveReference(reference, context) {
-                        return fileFetcher(context).findById(reference.id);
-                    },
                     async src(file, args, context: FileManagerResolverContext) {
                         const settings = await context.fileManager.fileManagerSettings.getSettings();
-                        return settings?.srcPrefix + file.key;
+                        return settings.srcPrefix + file.key;
                     }
                 },
                 Query: {
@@ -183,7 +178,7 @@ export default [
                 Mutation: {
                     fileManager: emptyResolver
                 },
-                FmQuery: {
+                FileManagerQuery: {
                     getFile: pipe(hasPermission("fm.file"), hasI18NContentPermission())(getFile),
                     listFiles: pipe(
                         hasPermission("fm.file"),
@@ -196,7 +191,7 @@ export default [
                         hasI18NContentPermission()
                     )(getSettings)
                 },
-                FmMutation: {
+                FileManagerMutation: {
                     createFile: pipe(
                         hasPermission("fm.file"),
                         hasI18NContentPermission()

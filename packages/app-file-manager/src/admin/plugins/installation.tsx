@@ -16,7 +16,7 @@ const SimpleFormPlaceholder = styled.div({
 const t = i18n.ns("app-file-manager/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsFileManagerInstalled {
         fileManager {
             isInstalled {
                 data

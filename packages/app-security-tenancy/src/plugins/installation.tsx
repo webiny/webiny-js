@@ -22,7 +22,7 @@ import { SecurityInstallationFormPlugin } from "@webiny/app-security-tenancy/typ
 const t = i18n.ns("app-security/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsSecurityInstalled {
         security {
             isInstalled {
                 data

@@ -16,7 +16,7 @@ const SimpleFormPlaceholder = styled.div({
 const t = i18n.ns("app-forms/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsFormBuilderInstalled {
         formBuilder {
             isInstalled {
                 data

@@ -5,9 +5,11 @@ import { DbContext } from "@webiny/handler-db/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { FileStorage } from "./plugins/FileStorage";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export type BaseContext = HttpContext &
     SecurityContext &
+    TenancyContext &
     I18NContentContext &
     DbContext &
     ElasticSearchClientContext;

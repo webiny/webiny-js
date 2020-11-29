@@ -15,12 +15,11 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-i18n/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsI18NInstalled {
         i18n {
             isInstalled {
                 data
@@ -34,7 +33,7 @@ const IS_INSTALLED = gql`
 `;
 
 const INSTALL = gql`
-    mutation InstallSecurity($data: I18NInstallInput!) {
+    mutation InstallI18N($data: I18NInstallInput!) {
         i18n {
             install(data: $data) {
                 data
@@ -51,7 +50,6 @@ const I18NInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const { refetchLocales } = useI18N();
 
     const onSubmit = useCallback(async form => {
         setLoading(true);
@@ -64,7 +62,6 @@ const I18NInstaller = ({ onInstalled }) => {
             return;
         }
 
-        refetchLocales();
         onInstalled();
     }, []);
 

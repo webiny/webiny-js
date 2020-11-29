@@ -47,14 +47,13 @@ const UpdateDataModel = withFields({
     })(string())
 })();
 
-export const PK_FILE_SETTINGS = "SETTINGS";
-
 export default (context: FileManagerContextPlugin) => {
-    const { db } = context;
+    const { db, security } = context;
+    const tenant = security.getTenant();
+    const PK_FILE_SETTINGS = `T#${tenant.id}#SETTINGS`;
 
     return {
         async getSettings() {
-            // @ts-ignore
             const [[settings]] = await db.read<FileManagerSettings>({
                 ...defaults.db,
                 query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY },
@@ -73,7 +72,7 @@ export default (context: FileManagerContextPlugin) => {
                 data: {
                     PK: PK_FILE_SETTINGS,
                     SK: SETTINGS_KEY,
-                    TYPE: "fileManager:FileManagerSettings",
+                    TYPE: "fm.settings",
                     ...settingsData
                 }
             });

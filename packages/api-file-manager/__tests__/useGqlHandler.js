@@ -41,9 +41,17 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
+        {
+            type: "context",
+            apply(context) {
+                context.security.getTenant = () => {
+                    return { id: "root", name: "Root", parent: null };
+                };
+            }
+        },
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),

@@ -5,6 +5,8 @@ import hasRwd from "./utils/hasRwd";
 import { FileManagerResolverContext } from "../../types";
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
+    const { i18nContent, security } = context;
+
     try {
         // If permission has "rwd" property set, but "r" is not part of it, bail.
         const filesFilePermission = await context.security.getPermission("fm.file");
@@ -14,17 +16,14 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
 
         const { limit = 40, search = "", types = [], tags = [], ids = [] } = args;
 
-        // Files created by the system, eg. installation files.
-        const must: any[] = [{ term: { "meta.private": false } }];
-
-        const { i18nContent } = context;
-        if (i18nContent?.locale?.code) {
-            must.push({
-                term: {
-                    "locale.keyword": i18nContent.locale.code
-                }
-            });
-        }
+        const must: any[] = [
+            // Skip files created by the system, eg. installation files.
+            { term: { "meta.private": false } },
+            // Filter by current tenant
+            { term: { "tenant.keyword": security.getTenant().id } },
+            // Filter files for current content locale
+            { term: { "locale.keyword": i18nContent.locale.code } }
+        ];
 
         if (Array.isArray(types) && types.length) {
             must.push({ terms: { "type.keyword": types } });
@@ -73,7 +72,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
             }
         });
 
-        let list = response?.body?.hits?.hits?.map(item => item._source);
+        let list = response.body.hits.hits.map(item => item._source);
 
         if (!Array.isArray(list)) {
             const files = context.fileManager.files;
@@ -81,8 +80,11 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
             list = await files.listFiles({});
         }
 
+        // TODO: user ID should be included in the Elastic query so it immediately returns only the relevant files.
+        
+        // TODO: this "if" must only be executed if data is loaded from DynamoDB
         // If user can only manage own records, let's check if he owns the loaded one.
-        if (filesFilePermission?.own === true) {
+        if (filesFilePermission.own === true) {
             const identity = context.security.getIdentity();
             list = list.filter(file => file.createdBy.id === identity.id);
         }

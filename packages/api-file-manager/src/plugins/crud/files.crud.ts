@@ -7,7 +7,7 @@ import { File, FilesCRUD } from "../../types";
 import defaults from "./defaults";
 import { FileManagerContextPlugin } from "../context";
 
-const getFileDocForES = (file: File & { [key: string]: any }, locale: string) => ({
+const getFileDocForES = (file: File & { [key: string]: any }, locale: string, tenant: string) => ({
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -17,7 +17,8 @@ const getFileDocForES = (file: File & { [key: string]: any }, locale: string) =>
     tags: file.tags,
     createdBy: file.createdBy,
     meta: file.meta,
-    locale: locale
+    locale,
+    tenant
 });
 
 const CreateDataModel = withFields({
@@ -99,9 +100,10 @@ const UpdateDataModel = withFields({
 })();
 
 export default (context: FileManagerContextPlugin) => {
-    const { db, i18nContent, elasticSearch } = context;
+    const { db, i18nContent, elasticSearch, security } = context;
+    const tenant = security.getTenant();
     const localeCode = i18nContent?.locale?.code;
-    const PK_FILE = `F#${localeCode}`;
+    const PK_FILE = `T#${tenant.id}#F#${localeCode}`;
 
     return {
         async getFile(id: string) {
@@ -134,6 +136,7 @@ export default (context: FileManagerContextPlugin) => {
 
             const file = {
                 id,
+                tenant: tenant.id,
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -156,7 +159,7 @@ export default (context: FileManagerContextPlugin) => {
             await elasticSearch.create({
                 ...defaults.es,
                 id,
-                body: getFileDocForES(file, localeCode)
+                body: getFileDocForES(file, localeCode, tenant.id)
             });
 
             return file;
@@ -204,7 +207,8 @@ export default (context: FileManagerContextPlugin) => {
         async createFilesInBatch(data) {
             const identity = context.security.getIdentity();
 
-            const createFileData = [];
+            // Use Batch to save files in DB.
+            const batch = db.batch();
             const files = [];
 
             for (let i = 0; i < data.length; i++) {
@@ -216,6 +220,8 @@ export default (context: FileManagerContextPlugin) => {
                 const file = await fileInstance.toJSON();
                 // Add unique id.
                 file.id = mdbid();
+                // Set tenant
+                file.tenant = tenant.id;
                 // Add "createdBy"
                 file.createdBy = {
                     id: identity.id,
@@ -225,7 +231,7 @@ export default (context: FileManagerContextPlugin) => {
 
                 files.push(file);
 
-                createFileData.push({
+                batch.create({
                     data: {
                         PK: PK_FILE,
                         SK: file.id,
@@ -234,16 +240,13 @@ export default (context: FileManagerContextPlugin) => {
                 });
             }
 
-            // Use "Batch write" to save files in DB.
-            const batch = db.batch();
-            batch.create(...createFileData);
             await batch.execute();
 
             // Index files in ES.
             // @ts-ignore
             const body = files.flatMap(doc => [
                 { index: { _index: defaults.es.index } },
-                getFileDocForES(doc, localeCode)
+                getFileDocForES(doc, localeCode, tenant.id)
             ]);
 
             const { body: bulkResponse } = await elasticSearch.bulk({ body });

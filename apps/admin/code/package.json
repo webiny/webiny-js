@@ -12,6 +12,7 @@
 		"@webiny/app": "^4.13.0",
 		"@webiny/app-admin": "^4.13.0",
 		"@webiny/app-file-manager": "^4.13.0",
+		"@webiny/app-file-manager-s3": "^4.13.0",
 		"@webiny/app-headless-cms": "^4.13.0",
 		"@webiny/app-i18n-content": "^4.13.0",
 		"@webiny/app-plugin-admin-welcome-screen": "^4.13.0",
