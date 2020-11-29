@@ -29,7 +29,7 @@ const getOptions = ({ gqlResponse, data }) => {
         revision: get(data, "settings.form.revision")
     };
 
-    const parentsList = get(gqlResponse, "data.forms.listForms.data") || [];
+    const parentsList = get(gqlResponse, "data.formBuilder.listForms.data") || [];
 
     output.parents.options = parentsList.map(({ parent, name }) => ({ id: parent, name }));
     output.parents.value = output.parents.options.find(item => item.id === selected.parent) || null;

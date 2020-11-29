@@ -17,7 +17,7 @@ const t = i18n.ns("app-forms/admin/installation");
 
 const IS_INSTALLED = gql`
     {
-        forms {
+        formBuilder {
             isInstalled {
                 data
                 error {
@@ -31,7 +31,7 @@ const IS_INSTALLED = gql`
 
 const INSTALL = gql`
     mutation InstallFormBuilder($domain: String) {
-        forms {
+        formBuilder {
             install(domain: $domain) {
                 data
                 error {
@@ -54,7 +54,7 @@ const FBInstaller = ({ onInstalled }) => {
                 variables: { domain: window.location.origin }
             })
             .then(({ data }) => {
-                const { error } = data.forms.install;
+                const { error } = data.formBuilder.install;
                 if (error) {
                     setError(error.message);
                     return;
@@ -87,9 +87,8 @@ const plugin: AdminInstallationPlugin = {
     dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
-        return true;
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.forms.isInstalled.data;
+        return data.formBuilder.isInstalled.data;
     },
     render({ onInstalled }) {
         return <FBInstaller onInstalled={onInstalled} />;

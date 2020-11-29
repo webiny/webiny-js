@@ -1,11 +1,10 @@
-import * as React from "react";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { get } from "lodash";
-import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
+import React from "react";
 import styled from "@emotion/styled";
-import { connect } from "react-redux";
-import { getActiveElementId } from "@webiny/app-page-builder/editor/selectors";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
+import { PbElement, PbElementDataSettingsFormType } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
 const Overlay = styled("div")({
     background: "black",
@@ -16,32 +15,28 @@ const Overlay = styled("div")({
     opacity: 0.25
 });
 
-export type FormElementProps = {
-    isActive: boolean;
+const renderContent = (form: PbElementDataSettingsFormType): JSX.Element => {
+    if (!form.revision) {
+        return <span>Form not selected.</span>;
+    }
+    const props = {
+        preview: true,
+        parentId: form.revision === "latest" ? form.parent : undefined,
+        revisionId: form.revision === "latest" ? undefined : form.revision
+    };
+
+    return <FormsForm {...props} />;
+};
+
+export type FormElementPropsType = {
     element: PbElement;
 };
 
-const FormElement = (props: FormElementProps) => {
-    const { element, isActive } = props;
-    let render = <span>Form not selected.</span>;
+const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element }) => {
+    const { activeElement } = useRecoilValue(uiAtom);
+    const isActive = activeElement === element.id;
 
-    const form = get(element, "data.settings.form") || {};
-
-    if (form.revision) {
-        const props = {
-            preview: true,
-            parentId: undefined,
-            revisionId: undefined
-        };
-
-        if (form.revision === "latest") {
-            props.parentId = form.parent;
-        } else {
-            props.revisionId = form.revision;
-        }
-
-        render = <FormsForm {...props} />;
-    }
+    const { form = {} } = element.data?.settings || {};
 
     return (
         <>
@@ -51,14 +46,10 @@ const FormElement = (props: FormElementProps) => {
                 element={element}
                 className={"webiny-pb-element-form"}
             >
-                {render}
+                {renderContent(form)}
             </ElementRoot>
         </>
     );
 };
 
-export default connect((state, props: any) => {
-    return {
-        isActive: getActiveElementId(state) === props.element.id
-    };
-})(FormElement);
+export default React.memo(FormElement);

@@ -1,32 +1,69 @@
-import React from "react";
-import { useHandler } from "@webiny/app/hooks/useHandler";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { set } from "dot-prop-immutable";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
-import ConnectedSlate from "@webiny/app-page-builder/editor/components/ConnectedSlate";
+import React, { CSSProperties, useCallback, useRef } from "react";
+import SimpleEditableText from "./SimpleEditableText";
+import { PbElement } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import {
+    elementByIdSelector,
+    textEditorIsActiveMutation,
+    textEditorIsNotActiveMutation,
+    uiAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-const excludePlugins = [
-    "pb-editor-slate-menu-item-link",
-    "pb-editor-slate-menu-item-align",
-    "pb-editor-slate-menu-item-ordered-list",
-    "pb-editor-slate-menu-item-unordered-list",
-    "pb-editor-slate-menu-item-code",
-    "pb-editor-slate-editor-align",
-    "pb-editor-slate-editor-lists",
-    "pb-editor-slate-editor-link"
-];
-
-const ButtonContainer = props => {
-    const { getAllClasses, elementStyle, elementAttributes, element } = props;
-    const { type = "default", icon = {} } = element.data || {};
+type ButtonContainerPropsType = {
+    getAllClasses: (...classes: string[]) => string;
+    elementStyle: CSSProperties;
+    elementAttributes: { [key: string]: string };
+    elementId: string;
+};
+const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
+    getAllClasses,
+    elementStyle,
+    elementAttributes,
+    elementId
+}) => {
+    const eventActionHandler = useEventActionHandler();
+    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const { textEditorActive } = uiAtomValue;
+    const element = useRecoilValue(elementByIdSelector(elementId));
+    const { type = "default", icon = {}, text: dataText } = element.data || {};
     const { alignItems } = elementStyle;
+    const defaultValue = typeof dataText === "string" ? dataText : "Click me";
+    const value = useRef<string>(defaultValue);
 
     const { svg = null, position = "left" } = icon || {};
 
-    const onChange = useHandler(props, ({ element, updateElement }) => (value: string) => {
-        updateElement({ element: set(element, "data.text", value) });
-    });
+    const onChange = useCallback(
+        (received: string) => {
+            value.current = received;
+        },
+        [element.id, textEditorActive]
+    );
+
+    const onFocus = useCallback(() => {
+        setUiAtomValue(textEditorIsActiveMutation);
+    }, [elementId]);
+
+    const onBlur = useCallback(() => {
+        setUiAtomValue(textEditorIsNotActiveMutation);
+        if (value.current === defaultValue) {
+            return;
+        }
+        const newElement: PbElement = {
+            ...element,
+            elements: [],
+            data: {
+                ...element.data,
+                text: value.current as string
+            }
+        };
+        eventActionHandler.trigger(
+            new UpdateElementActionEvent({
+                element: newElement
+            })
+        );
+    }, [elementId]);
 
     return (
         <div
@@ -46,17 +83,15 @@ const ButtonContainer = props => {
                 )}
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-                <ConnectedSlate
-                    elementId={element.id}
+                <SimpleEditableText
+                    value={value.current}
                     onChange={onChange}
-                    exclude={excludePlugins}
+                    onFocus={onFocus}
+                    onBlur={onBlur}
                 />
             </a>
         </div>
     );
 };
 
-export default connect<any, any, any>(
-    (state, props) => ({ element: getElement(state, props.elementId) }),
-    { updateElement }
-)(ButtonContainer);
+export default ButtonContainer;

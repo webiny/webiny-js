@@ -1,9 +1,9 @@
 import document from "./document";
-import row from "./row";
 import block from "./block";
-import column from "./column";
 import image from "./image";
 import text from "./text";
+import grid from "./grid";
+import cell from "./cell";
 import icon from "./icon";
 import spacer from "./spacer";
 import button from "./button";
@@ -15,9 +15,9 @@ import imagesList from "./imagesList";
 
 export default [
     document(),
-    row(),
     block(),
-    column(),
+    grid,
+    ...cell(),
     ...icon(),
     ...image(),
     ...imagesList(),

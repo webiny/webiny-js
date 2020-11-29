@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-const fileFields = /* GraphQL */ `
+const FILE_FIELDS = /* GraphQL */ `
     {
         __typename
         id
@@ -14,11 +14,19 @@ const fileFields = /* GraphQL */ `
     }
 `;
 
+const ERROR_FIELDS = /* GraphQL */ `
+    {
+        code
+        message
+        data
+    }
+`;
+
 export const LIST_FILES = gql`
      query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String, $before: String) {
-        files {
+        fileManager {
             listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after, before: $before) {
-                data ${fileFields}
+                data ${FILE_FIELDS}
                 meta {
                     cursors {
                         next
@@ -35,7 +43,7 @@ export const LIST_FILES = gql`
 
 export const LIST_TAGS = gql`
     query ListTags {
-        files {
+        fileManager {
             listTags
         }
     }
@@ -43,12 +51,10 @@ export const LIST_TAGS = gql`
 
 export const CREATE_FILE = gql`
     mutation CreateFile($data: FileInput!) {
-        files {
+        fileManager {
             createFile(data: $data) {
-                error {
-                    message
-                }
-                data ${fileFields}
+                error ${ERROR_FIELDS}
+                data ${FILE_FIELDS}
             }
         }
     }
@@ -56,7 +62,7 @@ export const CREATE_FILE = gql`
 
 export const UPDATE_FILE = gql`
     mutation UpdateFile($id: ID!, $data: FileInput!) {
-        files {
+        fileManager {
             updateFile(id: $id, data: $data) {
                 data {
                     id
@@ -64,11 +70,7 @@ export const UPDATE_FILE = gql`
                     name
                     tags
                 }
-                error {
-                    code
-                    message
-                    data
-                }
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -76,9 +78,10 @@ export const UPDATE_FILE = gql`
 
 export const DELETE_FILE = gql`
     mutation deleteFile($id: ID!) {
-        files {
+        fileManager {
             deleteFile(id: $id) {
                 data
+                error ${ERROR_FIELDS}
             }
         }
     }
@@ -86,12 +89,13 @@ export const DELETE_FILE = gql`
 
 export const GET_FILE_SETTINGS = gql`
     query getSettings {
-        files {
+        fileManager {
             getSettings {
                 data {
                     uploadMinFileSize
                     uploadMaxFileSize
                 }
+                error ${ERROR_FIELDS}
             }
         }
     }

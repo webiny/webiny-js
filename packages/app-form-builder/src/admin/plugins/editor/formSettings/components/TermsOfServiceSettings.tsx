@@ -1,26 +1,35 @@
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { get } from "lodash";
 import { FormSettingsPluginRenderFunctionType } from "@webiny/app-form-builder/types";
+import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { useMemo } from "react";
+import { plugins } from "@webiny/plugins";
 
 const TermsOfServiceSettings: FormSettingsPluginRenderFunctionType = ({ Bind, formData }) => {
     const enabled = get(formData, "termsOfServiceMessage.enabled");
+
+    const rteProps = useMemo(() => {
+        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
+    }, []);
 
     return (
         <>
             <Grid>
                 <Cell span={12}>
                     <Bind name={"termsOfServiceMessage.enabled"}>
-                        <Switch label={"Enabled"} />
+                        <Switch
+                            label={"Enabled"}
+                            description={`Will require users to "accept the terms of service" by clicking on the checkbox.`}
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"termsOfServiceMessage.message"}>
-                        <I18NInput
-                            disabled={!enabled}
-                            richText
+                        <RichTextEditor
+                            {...rteProps}
                             label={"Terms of service message"}
                             description={
                                 "Show this message near the submit button or event ask users to accept before submitting."
@@ -30,7 +39,7 @@ const TermsOfServiceSettings: FormSettingsPluginRenderFunctionType = ({ Bind, fo
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"termsOfServiceMessage.errorMessage"}>
-                        <I18NInput
+                        <Input
                             disabled={!enabled}
                             label={"Error message"}
                             description={

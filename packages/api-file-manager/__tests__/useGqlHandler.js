@@ -3,10 +3,14 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import filesPlugins from "@webiny/api-file-manager/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
+import i18nContext from "@webiny/api-i18n/plugins/context";
+import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { SecurityIdentity } from "@webiny/api-security";
+import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
-import Mock from "@elastic/elasticsearch-mock";
 // Graphql
 import {
     CREATE_FILE,
@@ -37,67 +41,27 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
+        elasticSearch({ endpoint: `http://localhost:9201` }),
         apolloServerPlugins(),
-        {
-            type: "context",
-            name: "context-elastic-search",
-            apply(context) {
-                const mock = new Mock();
-                const client = new Client({
-                    node: "http://localhost:9200",
-                    Connection: mock.getConnection()
-                });
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/file-manager/_doc/_search"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "PUT",
-                        path: "/file-manager/_doc/:id/_create"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/file-manager/_doc/:id/_update"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                mock.add(
-                    {
-                        method: "POST",
-                        path: "/_bulk"
-                    },
-                    () => {
-                        return { status: "ok" };
-                    }
-                );
-                context.elasticSearch = client;
-            }
-        },
         securityPlugins(),
+        i18nContext,
+        i18nContentPlugins(),
+        mockLocalesPlugins(),
+        filesPlugins(),
         {
             type: "security-authorization",
-            getPermissions: () => permissions || [{ name: "*", key: "*" }]
+            name: "security-authorization",
+            getPermissions: () => permissions || [{ name: "*" }]
         },
         {
             type: "security-authentication",
-            authenticate() {
-                return identity || null;
-            }
-        },
-        filesPlugins()
+            authenticate: () =>
+                identity ||
+                new SecurityIdentity({
+                    id: "mocked",
+                    displayName: "m"
+                })
+        }
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -114,6 +78,15 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        elasticSearch: new Client({
+            hosts: [`http://localhost:9201`],
+            node: "http://localhost:9201"
+        }),
+        sleep: (ms = 100) => {
+            return new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        },
         handler,
         invoke,
         // Files

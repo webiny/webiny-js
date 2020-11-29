@@ -44,7 +44,7 @@ function Tags({ file }) {
                         },
                         refetchQueries: [{ query: LIST_TAGS }],
                         update: (cache, updated) => {
-                            const newFileData = get(updated, "data.files.updateFile.data");
+                            const newFileData = get(updated, "data.fileManager.updateFile.data");
 
                             // 1. Update files list cache
                             let data: any = cloneDeep(
@@ -54,7 +54,7 @@ function Tags({ file }) {
                                 })
                             );
 
-                            data.files.listFiles.data.forEach(item => {
+                            data.fileManager.listFiles.data.forEach(item => {
                                 if (item.key === newFileData.key) {
                                     item.tags = newFileData.tags;
                                 }

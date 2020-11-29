@@ -3,12 +3,7 @@ import { FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
 import { SAVE_FORM_VIEW } from "./graphql";
 import { ApolloClient } from "apollo-client";
 
-// TODO: `client` is not part of FbFormRenderComponentProps but is injected by `FormRender`
-
-const saveFormView = ({
-    data,
-    client
-}: FbFormRenderComponentProps & { client: ApolloClient<any> }) => {
+const saveFormView = ({ data, client }: FbFormRenderComponentProps) => {
     // SSR?
     if (!window || !data) {
         return;

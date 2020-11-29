@@ -17,7 +17,7 @@ import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import { IconButton } from "@webiny/ui/Button";
 import { EXPORT_FORM_SUBMISSIONS } from "@webiny/app-form-builder/admin/viewsGraphql";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
@@ -60,6 +60,8 @@ const FormSubmissionsList = props => {
     const [exportInProgress, setExportInProgress] = useState(false);
     const { showSnackbar } = useSnackbar();
 
+    const [exportFormSubmission] = useMutation(EXPORT_FORM_SUBMISSIONS);
+
     if (!dataList) {
         return;
     }
@@ -73,50 +75,43 @@ const FormSubmissionsList = props => {
                     multiSelect={dataList.multiSelect}
                     multiSelectActions={
                         <>
-                            <Mutation mutation={EXPORT_FORM_SUBMISSIONS}>
-                                {update => (
-                                    <Tooltip
-                                        content={renderExportFormSubmissionsTooltip(dataList)}
-                                        placement={"bottom"}
-                                    >
-                                        <IconButton
-                                            disabled={exportInProgress}
-                                            icon={<ImportExport />}
-                                            onClick={async () => {
-                                                setExportInProgress(true);
-                                                const args = {
-                                                    variables: {
-                                                        parent: null,
-                                                        ids: null
-                                                    }
-                                                };
-                                                if (dataList.isNoneMultiSelected()) {
-                                                    args.variables.parent = form.parent;
-                                                } else {
-                                                    args.variables.ids = dataList
-                                                        .getMultiSelected()
-                                                        .map(item => item.id);
-                                                }
+                            <Tooltip
+                                content={renderExportFormSubmissionsTooltip(dataList)}
+                                placement={"bottom"}
+                            >
+                                <IconButton
+                                    disabled={exportInProgress}
+                                    icon={<ImportExport />}
+                                    onClick={async () => {
+                                        setExportInProgress(true);
+                                        const args = {
+                                            variables: {
+                                                parent: form.parent,
+                                                ids: null
+                                            }
+                                        };
+                                        if (!dataList.isNoneMultiSelected()) {
+                                            args.variables.ids = dataList
+                                                .getMultiSelected()
+                                                .map(item => item.id);
+                                        }
 
-                                                const { data } = await update(args);
-                                                setExportInProgress(false);
-                                                if (data.forms.exportFormSubmissions.error) {
-                                                    showSnackbar(
-                                                        data.forms.exportFormSubmissions.error
-                                                            .message
-                                                    );
-                                                    return;
-                                                }
+                                        const { data } = await exportFormSubmission(args);
+                                        setExportInProgress(false);
+                                        if (data.formBuilder.exportFormSubmissions.error) {
+                                            showSnackbar(
+                                                data.formBuilder.exportFormSubmissions.error.message
+                                            );
+                                            return;
+                                        }
 
-                                                window.open(
-                                                    data.forms.exportFormSubmissions.data.src,
-                                                    "_blank"
-                                                );
-                                            }}
-                                        />
-                                    </Tooltip>
-                                )}
-                            </Mutation>
+                                        window.open(
+                                            data.formBuilder.exportFormSubmissions.data.src,
+                                            "_blank"
+                                        );
+                                    }}
+                                />
+                            </Tooltip>
 
                             {getPlugins<FbFormDetailsSubmissionsListMultiSelectActionPlugin>(
                                 "fb-form-details-submissions-list-multi-select-action"

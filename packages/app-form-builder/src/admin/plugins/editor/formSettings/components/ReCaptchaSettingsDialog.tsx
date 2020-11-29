@@ -1,8 +1,7 @@
 import React from "react";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -27,103 +26,100 @@ const ReCaptchaSettingsDialog = ({ open, onClose, reCaptchaSettings, onSubmit }:
     const { setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();
 
+    const [updateFormsSettings] = useMutation(UPDATE_FORMS_SETTINGS);
+
     return (
         <Dialog open={open} onClose={onClose}>
-            <Mutation mutation={UPDATE_FORMS_SETTINGS}>
-                {update => (
-                    <Form
-                        data={reCaptchaSettings}
-                        onSubmit={async ({ siteKey, secretKey }) => {
-                            setLoading(true);
-                            const response = get(
-                                await update({
-                                    variables: {
-                                        data: { reCaptcha: { enabled: true, siteKey, secretKey } }
-                                    }
-                                }),
-                                "data.forms.updateSettings"
-                            );
-                            setData(data => {
-                                data.settings.reCaptcha.settings = {
-                                    enabled: true,
-                                    siteKey,
-                                    secretKey
-                                };
-                                return data;
-                            });
-                            setLoading(false);
+            <Form
+                data={reCaptchaSettings}
+                onSubmit={async ({ siteKey, secretKey }) => {
+                    setLoading(true);
+                    const updateSettingsResponse = await updateFormsSettings({
+                        variables: {
+                            data: { reCaptcha: { enabled: true, siteKey, secretKey } }
+                        }
+                    });
+                    const response = updateSettingsResponse?.data?.formBuilder?.updateSettings;
 
-                            if (response.error) {
-                                return showSnackbar(response.error.message);
-                            }
+                    setData(data => {
+                        data.settings.reCaptcha.settings = {
+                            enabled: true,
+                            siteKey,
+                            secretKey
+                        };
+                        return data;
+                    });
+                    setLoading(false);
 
-                            onSubmit();
-                        }}
-                    >
-                        {({ Bind, submit }) => {
-                            return (
-                                <>
-                                    {loading && <CircularProgress />}
-                                    <DialogTitle>{t`Edit Google reCAPTCHA settings`}</DialogTitle>
-                                    <DialogContent>
-                                        <Grid>
-                                            <Cell span={12}>
-                                                <Bind
-                                                    name={"siteKey"}
-                                                    validators={validation.create("required")}
-                                                >
-                                                    <Input
-                                                        label={"Site key"}
-                                                        description={
-                                                            <>
-                                                                A v2 Tickbox site key.{" "}
-                                                                <a
-                                                                    href="https://www.google.com/recaptcha/admin"
-                                                                    target={"_blank"}
-                                                                    rel="noopener noreferrer"
-                                                                >
-                                                                    Don&apos;t have a site key?
-                                                                </a>
-                                                            </>
-                                                        }
-                                                    />
-                                                </Bind>
-                                            </Cell>
-                                            <Cell span={12}>
-                                                <Bind
-                                                    name={"secretKey"}
-                                                    validators={validation.create("required")}
-                                                >
-                                                    <Input
-                                                        label={"Secret key"}
-                                                        description={
-                                                            <>
-                                                                A v2 Tickbox secret key.{" "}
-                                                                <a
-                                                                    href="https://www.google.com/recaptcha/admin"
-                                                                    target={"_blank"}
-                                                                    rel="noopener noreferrer"
-                                                                >
-                                                                    Don&apos;t have a site key?
-                                                                </a>
-                                                            </>
-                                                        }
-                                                    />
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </DialogContent>
-                                    <DialogActions>
-                                        <ButtonDefault
-                                            onClick={submit}
-                                        >{t`Enable Google reCAPTCHA`}</ButtonDefault>
-                                    </DialogActions>
-                                </>
-                            );
-                        }}
-                    </Form>
-                )}
-            </Mutation>
+                    if (response.error) {
+                        return showSnackbar(response.error.message);
+                    }
+
+                    onSubmit();
+                }}
+            >
+                {({ Bind, submit }) => {
+                    return (
+                        <>
+                            {loading && <CircularProgress />}
+                            <DialogTitle>{t`Edit Google reCAPTCHA settings`}</DialogTitle>
+                            <DialogContent>
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"siteKey"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input
+                                                label={"Site key"}
+                                                description={
+                                                    <>
+                                                        A v2 Tickbox site key.{" "}
+                                                        <a
+                                                            href="https://www.google.com/recaptcha/admin"
+                                                            target={"_blank"}
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            Don&apos;t have a site key?
+                                                        </a>
+                                                    </>
+                                                }
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind
+                                            name={"secretKey"}
+                                            validators={validation.create("required")}
+                                        >
+                                            <Input
+                                                label={"Secret key"}
+                                                description={
+                                                    <>
+                                                        A v2 Tickbox secret key.{" "}
+                                                        <a
+                                                            href="https://www.google.com/recaptcha/admin"
+                                                            target={"_blank"}
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            Don&apos;t have a site key?
+                                                        </a>
+                                                    </>
+                                                }
+                                            />
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                            </DialogContent>
+                            <DialogActions>
+                                <ButtonDefault
+                                    onClick={submit}
+                                >{t`Enable Google reCAPTCHA`}</ButtonDefault>
+                            </DialogActions>
+                        </>
+                    );
+                }}
+            </Form>
         </Dialog>
     );
 };

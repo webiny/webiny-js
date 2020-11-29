@@ -14,6 +14,9 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import filesPlugins from "@webiny/api-file-manager/plugins";
+// File storage S3 plugin for API file manager.
+import fileManagerS3 from "@webiny/api-file-manager-s3";
+import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 
 export const handler = createHandler(
     graphqlPlugins({
@@ -61,5 +64,8 @@ export const handler = createHandler(
     i18nPlugins(),
     i18nContentPlugins(),
     filesPlugins(),
-    pageBuilderPlugins()
+    // Add File storage S3 plugin for API file manager.
+    fileManagerS3(),
+    pageBuilderPlugins(),
+    formBuilderPlugins()
 );

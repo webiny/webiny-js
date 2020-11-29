@@ -23,6 +23,12 @@ export type FileUploaderPlugin = Plugin & {
     upload(file: File, options: UploadOptions): Promise<any>;
 };
 
+export type AppFileManagerStoragePlugin = Plugin & {
+    type: "app-file-manager-storage";
+    // TODO: @adrian define type for the returned object
+    upload(file: File, options: UploadOptions): Promise<any>;
+};
+
 export { Plugin };
 
 export type ImageProps = {

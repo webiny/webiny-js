@@ -12,8 +12,20 @@ import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 
 const BlockPreview = props => {
-    const { plugin, addBlockToContent, deactivatePlugin, onEdit, onDelete } = props;
-
+    const { plugin, addBlockToContent, onEdit, onDelete } = props;
+    const onClickToAddHandler = ev => {
+        addBlockToContent(plugin);
+        if (ev.shitfKey) {
+            return;
+        }
+        // eventActionHandler.trigger(new TogglePluginEventAction({
+        //     name: "pb-editor-search-blocks-bar"
+        // }))
+        //
+        // activatePluginAction({
+        //     name: "pb-editor-search-blocks-bar",
+        // })
+    };
     return (
         <Elevation
             z={1}
@@ -26,13 +38,7 @@ const BlockPreview = props => {
                 <Styled.AddBlock className={"add-block"}>
                     <ButtonFloating
                         label={"Click to Add"}
-                        onClick={e => {
-                            addBlockToContent(plugin);
-                            !e.shiftKey &&
-                                deactivatePlugin({
-                                    name: "pb-editor-search-blocks-bar"
-                                });
-                        }}
+                        onClick={onClickToAddHandler}
                         icon={<AddIcon />}
                     />
                 </Styled.AddBlock>

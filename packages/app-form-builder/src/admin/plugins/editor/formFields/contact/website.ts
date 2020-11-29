@@ -12,30 +12,15 @@ const plugin: FbBuilderFieldPlugin = {
         label: "Website",
         description: "Link to a website",
         createField(props) {
-            const { i18n } = props;
             return {
                 ...textFieldPlugin.field.createField(props),
                 name: this.name,
                 fieldId: "website",
-                label: {
-                    values: [
-                        {
-                            locale: i18n.getDefaultLocale().code,
-                            value: "Website"
-                        }
-                    ]
-                },
+                label: "Website",
                 validation: [
                     {
                         name: "pattern",
-                        message: {
-                            values: [
-                                {
-                                    locale: i18n.getDefaultLocale().code,
-                                    value: "Please enter a valid URL."
-                                }
-                            ]
-                        },
+                        message: "Please enter a valid URL.",
                         settings: {
                             preset: "url",
                             regex: null,

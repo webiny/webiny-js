@@ -23,10 +23,7 @@ export default (options): HandlerPlugin => {
         return {
             type: "handler",
             name: "handler-ssr-with-cache",
-            async handle(
-                context: Context & ClientContext & HttpContext,
-                next
-            ) {
+            async handle(context: Context & ClientContext & HttpContext, next) {
                 const { http } = context;
                 if (!(http.method == "GET" && !mime.lookup(http.path.base))) {
                     return next();

@@ -1,7 +1,7 @@
 import document from "./document";
-import row from "./row";
 import block from "./block";
-import column from "./column";
+import grid from "./grid";
+import cell from "./cell";
 import icon from "./icon";
 import image from "./image";
 import text from "./text";
@@ -13,9 +13,9 @@ import imagesList from "./imagesList";
 
 export default [
     document(),
-    row(),
     block(),
-    column(),
+    grid(),
+    cell(),
     image(),
     icon(),
     text(),

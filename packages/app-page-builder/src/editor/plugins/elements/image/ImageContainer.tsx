@@ -1,40 +1,63 @@
 import React, { useCallback } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "@emotion/styled";
-import isNumeric from "isnumeric";
-import { set, isEqual } from "lodash";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getElement } from "@webiny/app-page-builder/editor/selectors";
+import { PbElement } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 
 const position = { left: "flex-start", center: "center", right: "flex-end" };
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
-        alignSelf: position[props.align]
+        alignSelf: position[props.align] || "center"
     }
 }));
 
-const ImageContainer = props => {
-    const { horizontalAlign, updateElement, element } = props;
-    const image = { ...props.image };
+type ImageContainerType = {
+    element: PbElement;
+};
+const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
+    const handler = useEventActionHandler();
+    const {
+        id,
+        data: { image = {}, settings = {} }
+    } = element || {};
+    const { horizontalAlign = "center" } = settings;
 
     const imgStyle = { width: null, height: null };
     if (image.width) {
         const { width } = image;
-        imgStyle.width = isNumeric(width) ? parseInt(width) : width;
+        imgStyle.width = parseInt(width as string);
     }
     if (image.height) {
         const { height } = image;
-        imgStyle.height = isNumeric(height) ? parseInt(height) : height;
+        imgStyle.height = parseInt(height as string);
     }
 
     const onChange = useCallback(
-        async data => {
-            updateElement({ element: set(element, "data.image.file", data), merge: true });
+        async (data: { [key: string]: string }) => {
+            handler.trigger(
+                new UpdateElementActionEvent({
+                    element: {
+                        ...element,
+                        data: {
+                            ...element.data,
+                            image: {
+                                ...(element.data.image || {}),
+                                file: data
+                            }
+                        }
+                    },
+                    merge: true
+                })
+            );
         },
-        [element]
+        [id]
     );
+    // required due to re-rendering when set content atom and still nothing in elements atom
+    if (!element) {
+        return null;
+    }
 
     return (
         <AlignImage align={horizontalAlign}>
@@ -47,18 +70,4 @@ const ImageContainer = props => {
     );
 };
 
-export default connect<any, any, any>(
-    (state, { elementId }) => {
-        const element = getElement(state, elementId);
-        const { image = {}, settings = {} } = element.data;
-
-        return {
-            element: { id: element.id, type: element.type, path: element.path },
-            image,
-            horizontalAlign: settings.horizontalAlign || "center"
-        };
-    },
-    { updateElement },
-    null,
-    { areStatePropsEqual: isEqual }
-)(React.memo(ImageContainer));
+export default React.memo(ImageContainer);

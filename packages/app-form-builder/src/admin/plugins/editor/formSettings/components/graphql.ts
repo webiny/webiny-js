@@ -17,7 +17,7 @@ const fields = /* GraphQL */ `
 
 export const GET_RECAPTCHA_SETTINGS = gql`
     query getReCaptchaSettings {
-        forms {
+        formBuilder {
             getSettings ${fields}
         }
     }
@@ -25,7 +25,7 @@ export const GET_RECAPTCHA_SETTINGS = gql`
 
 export const UPDATE_FORMS_SETTINGS = gql`
     mutation updateSettings($data: FormsSettingsInput) {
-        forms {
+        formBuilder {
             updateSettings(data: $data) ${fields}
         }
     }

@@ -1,5 +1,3 @@
-const fs = require('fs-extra');
-
 module.exports = (options, context) => {
     const { boolean } = require("boolean");
     const webpack = require("webpack");

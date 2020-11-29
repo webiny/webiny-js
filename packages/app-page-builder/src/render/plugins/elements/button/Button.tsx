@@ -1,9 +1,9 @@
 import React from "react";
 import { get } from "dot-prop-immutable";
-import Slate from "@webiny/app-page-builder/render/components/Slate";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
+import TextRenderer from "../RichTextEditorOutputRenderer";
 
 const Button = ({ element }: { element: PbElement }) => {
     const { type = "default", icon = {}, link = {} } = element.data || {};
@@ -21,7 +21,7 @@ const Button = ({ element }: { element: PbElement }) => {
     const content = (
         <>
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <Slate value={element.data.text} />
+            <TextRenderer data={element.data.text} />
         </>
     );
 

@@ -3,8 +3,8 @@ const { setEnvironmentFromState } = require("@webiny/cli-plugin-deploy-pulumi/ut
 
 const map = {
     REACT_APP_USER_POOL_REGION: "${region}",
-    REACT_APP_GRAPHQL_API_URL: "//${cdnDomain}/graphql",
-    REACT_APP_API_URL: "//${cdnDomain}",
+    REACT_APP_GRAPHQL_API_URL: "${cdnDomain}/graphql",
+    REACT_APP_API_URL: "${cdnDomain}",
     REACT_APP_USER_POOL_ID: "${cognitoUserPoolId}",
     REACT_APP_USER_POOL_WEB_CLIENT_ID: "${cognitoAppClientId}"
 };

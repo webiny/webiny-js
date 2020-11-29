@@ -1,12 +1,15 @@
 import React from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
+import {
+    RevisionItemAtomType,
+    revisionsAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { getRevisions } from "@webiny/app-page-builder/editor/selectors";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
+import { useRecoilValue } from "recoil";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
 
 const buttonStyle = css({
@@ -24,7 +27,22 @@ const menuList = css({
     }
 });
 
-const Revisions = ({ revisions }) => {
+enum RevisionStatusEnum {
+    PUBLISHED = "published",
+    LOCKED = "locked",
+    DRAFT = "draft"
+}
+const getStatus = (revision: RevisionItemAtomType): RevisionStatusEnum => {
+    if (revision.published) {
+        return RevisionStatusEnum.PUBLISHED;
+    } else if (revision.locked && !revision.published) {
+        return RevisionStatusEnum.LOCKED;
+    }
+    return RevisionStatusEnum.DRAFT;
+};
+
+const Revisions: React.FunctionComponent = () => {
+    const revisions = useRecoilValue(revisionsAtom);
     const { history } = useRouter();
     return (
         <Menu
@@ -39,16 +57,9 @@ const Revisions = ({ revisions }) => {
             }
         >
             {revisions.map(rev => {
-                let status = "draft";
-                if (rev.published) {
-                    status = "published";
-                }
-                if (rev.locked && !rev.published) {
-                    status = "locked";
-                }
-
+                const status = getStatus(rev);
                 return (
-                    <MenuItem key={rev.id} disabled={status !== "draft"}>
+                    <MenuItem key={rev.id} disabled={status !== RevisionStatusEnum.DRAFT}>
                         <Typography use={"body2"}>v{rev.version}</Typography>
                         <Typography use={"caption"}>({status}) </Typography>
                     </MenuItem>
@@ -58,6 +69,4 @@ const Revisions = ({ revisions }) => {
     );
 };
 
-export default connect<any, any, any>(state => ({ revisions: getRevisions(state) }))(
-    React.memo(Revisions)
-);
+export default Revisions;

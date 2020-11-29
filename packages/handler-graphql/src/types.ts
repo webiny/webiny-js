@@ -22,7 +22,7 @@ export type GraphQLFieldResolver<
     TSource = any,
     TArgs = any,
     TContext = Context
-    > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
+> = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
 // `GraphQLSchemaPlugin` types.
 export type Types = string | (() => string | Promise<string>);

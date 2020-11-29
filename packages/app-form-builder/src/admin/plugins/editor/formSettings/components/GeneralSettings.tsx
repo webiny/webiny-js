@@ -2,10 +2,11 @@ import React, { useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { getPlugins } from "@webiny/plugins";
+import { Input } from "@webiny/ui/Input";
+import { getPlugins, plugins } from "@webiny/plugins";
 import { FbFormLayoutPlugin } from "@webiny/app-form-builder/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
+import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 
 const GeneralSettings = ({ Bind }) => {
     const theme = useMemo(
@@ -16,7 +17,7 @@ const GeneralSettings = ({ Bind }) => {
     const layouts = useMemo(
         () =>
             [
-                ...(get(theme, "forms.layouts") || []),
+                ...(get(theme, "formBuilder.layouts") || []),
                 ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {
@@ -27,17 +28,21 @@ const GeneralSettings = ({ Bind }) => {
         []
     );
 
+    const rteProps = useMemo(() => {
+        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
+    }, []);
+
     return (
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
                     <Bind name={"successMessage"}>
-                        <I18NInput richText label={"Success message"} />
+                        <RichTextEditor {...rteProps} label={"Success message"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"submitButtonLabel"}>
-                        <I18NInput label={"Submit button label"} />
+                        <Input label={"Submit button label"} />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

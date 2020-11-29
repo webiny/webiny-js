@@ -1,12 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+    DeactivatePluginActionEvent,
+    UpdateElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
+import { createBlockElementsHelper } from "@webiny/app-page-builder/editor/helpers";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Mutation } from "react-apollo";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { deactivatePlugin, updateElement } from "@webiny/app-page-builder/editor/actions";
-import { getContent } from "@webiny/app-page-builder/editor/selectors";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
-import { createBlockElements } from "@webiny/app-page-builder/editor/utils";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
@@ -20,6 +23,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
+import { useRecoilValue } from "recoil";
 
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
@@ -59,10 +63,11 @@ const sortBlocks = blocks => {
     });
 };
 
-const SearchBar = props => {
-    const { updateElement, content, deactivatePlugin } = props;
+const SearchBar = () => {
+    const content = useRecoilValue(contentSelector);
+    const eventActionHandler = useEventActionHandler();
 
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState<string>("");
     const [editingBlock, setEditingBlock] = useState(null);
     const [activeCategory, setActiveCategory] = useState("all");
 
@@ -78,10 +83,18 @@ const SearchBar = props => {
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
+    const deactivatePlugin = () => {
+        eventActionHandler.trigger(
+            new DeactivatePluginActionEvent({
+                name: "pb-editor-search-blocks-bar"
+            })
+        );
+    };
+
     useEffect(() => {
         addKeyHandler("escape", e => {
             e.preventDefault();
-            deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+            deactivatePlugin();
         });
 
         return () => removeKeyHandler("escape");
@@ -91,9 +104,15 @@ const SearchBar = props => {
         plugin => {
             const element = {
                 ...content,
-                elements: [...content.elements, createBlockElements(plugin.name)]
+                elements: [...content.elements, createBlockElementsHelper(plugin.name)]
             };
-            updateElement({ element });
+            eventActionHandler.trigger(
+                new UpdateElementActionEvent({
+                    element
+                })
+            );
+
+            deactivatePlugin();
         },
         [content]
     );
@@ -217,7 +236,7 @@ const SearchBar = props => {
     }, [search]);
 
     const onExited = useCallback(() => {
-        deactivatePlugin({ name: "pb-editor-search-blocks-bar" });
+        deactivatePlugin();
     }, []);
 
     const categoryPlugin = allCategories.find(pl => pl.categoryName === activeCategory);
@@ -298,7 +317,4 @@ const SearchBar = props => {
     );
 };
 
-export default connect<any, any, any>(state => ({ content: getContent(state) }), {
-    deactivatePlugin,
-    updateElement
-})(SearchBar);
+export default SearchBar;

@@ -3,7 +3,6 @@ import { ContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
 import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
 
-
 export default () => [
     {
         type: "context",

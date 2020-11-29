@@ -27,7 +27,7 @@ function getPublishableRevisions(revisions) {
         });
 }
 
-const PublishRevision = (props) => {
+const PublishRevision = props => {
     const { page } = props;
     const { publishRevision } = usePublishRevisionHandler({ page });
     const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);

@@ -1,73 +1,114 @@
-// @ts-nocheck
-import { ListResponse } from "@webiny/handler-graphql/responses";
+import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { FormsCRUD } from "../../../types";
+import { convertMongoSortToElasticSort } from "./utils/formResolversUtils";
 
-export const listPublishedForms: GraphQLFieldResolver = async (root, args, context, info) => {
-    const { Form } = context.models;
+export const listPublishedForms: GraphQLFieldResolver = async (root, args, context) => {
+    const { i18nContent, formBuilder } = context;
+    const forms: FormsCRUD = formBuilder?.crud?.forms;
 
     const {
-        after,
-        before,
         search,
-        limit = 10,
-        parent = null,
         id = null,
+        parent = null,
         slug = null,
         version = null,
-        latestVersion = null,
-        sort = null
+        tags = null,
+        sort = {
+            publishedOn: -1
+        },
+        limit = 10
+        // after
+        // before
     } = args;
 
-    const query: any = { published: true };
+    const must: any = [
+        { term: { published: true } },
+        { term: { "locale.keyword": i18nContent?.locale?.code } }
+    ];
 
-    if (version) {
-        query.version = version;
+    if (search) {
+        must.push({
+            bool: {
+                should: [
+                    { wildcard: { "name.keyword": `*${search}*` } },
+                    { wildcard: { name: `*${search}*` } },
+                    { wildcard: { "slug.keyword": `*${search}*` } },
+                    { wildcard: { slug: `*${search}*` } }
+                ]
+            }
+        });
     }
-
-    if (latestVersion !== null) {
-        query.latestVersion = latestVersion;
-    }
-
-    if (parent) {
-        if (Array.isArray(parent)) {
-            query.parent = { $in: parent };
+    if (id) {
+        // Question: Can "parent" will ever be an array?
+        if (Array.isArray(id)) {
+            must.push({ terms: { "id.keyword": id } });
         } else {
-            query.parent = parent;
+            must.push({ term: { "id.keyword": id } });
         }
     }
 
-    if (id) {
-        if (Array.isArray(id)) {
-            query.id = { $in: id };
+    if (parent) {
+        // Question: Can "parent" will ever be an array?
+        if (Array.isArray(parent)) {
+            must.push({ terms: { "parent.keyword": parent } });
         } else {
-            query.id = id;
+            must.push({ term: { "parent.keyword": parent } });
         }
     }
 
     if (slug) {
-        if (Array.isArray(slug)) {
-            query.slug = { $in: slug };
-        } else {
-            query.slug = slug;
-        }
+        must.push({ term: { "slug.keyword": slug } });
     }
 
-    const findArgs = {
-        after,
-        before,
-        limit,
-        search,
-        sort,
-        query,
-        totalCount: requiresTotalCount(info)
-    };
+    if (version) {
+        must.push({ term: { version } });
+    }
 
-    return await Form.find(findArgs);
+    if (tags) {
+        must.push({ terms: { tags: tags } });
+    }
+
+    // Get "published" forms from Elasticsearch.
+    const response = await context.elasticSearch.search({
+        index: "form-builder",
+        type: "_doc",
+        body: {
+            query: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                constant_score: {
+                    filter: {
+                        bool: {
+                            must
+                        }
+                    }
+                }
+            },
+            sort: [convertMongoSortToElasticSort(sort)],
+            size: limit
+        }
+    });
+
+    let list = response?.body?.hits?.hits?.map(item => item._source);
+    // Get complete form data for returned list.
+    if (list?.length) {
+        const formIds = list.map(item => item.id);
+        list = await forms.listFormsInBatch(formIds);
+    }
+    return list;
 };
 
 const resolver: GraphQLFieldResolver = async (...args) => {
-    const forms = await listPublishedForms(...args);
-    return new ListResponse(forms, forms.getMeta());
+    try {
+        const forms = await listPublishedForms(...args);
+        return new ListResponse(forms);
+    } catch (e) {
+        return new ErrorResponse({
+            message: e.message,
+            code: e.code,
+            data: e.data
+        });
+    }
 };
 
 export default resolver;

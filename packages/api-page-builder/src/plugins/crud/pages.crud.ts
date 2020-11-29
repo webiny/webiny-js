@@ -190,6 +190,7 @@ export default {
                         savedOn: data.savedOn,
                         createdBy: data.createdBy,
                         category: data.category,
+                        version: data.version,
                         title: data.title,
                         url: data.url,
                         status: data.status,

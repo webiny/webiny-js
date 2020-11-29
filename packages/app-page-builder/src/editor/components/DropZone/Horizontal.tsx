@@ -1,5 +1,8 @@
 import React from "react";
-import Droppable from "@webiny/app-page-builder/editor/components/Droppable";
+import Droppable, {
+    DroppableIsVisiblePropType,
+    DroppableOnDropPropType
+} from "@webiny/app-page-builder/editor/components/Droppable";
 import styled from "@emotion/styled";
 
 const InnerDiv = styled("div")({
@@ -18,7 +21,6 @@ type OuterDiv = {
 };
 
 const OuterDiv = React.memo<OuterDiv>(
-    // @ts-ignore
     styled("div")(
         {
             margin: 0,
@@ -32,8 +34,7 @@ const OuterDiv = React.memo<OuterDiv>(
         },
         (props: OuterDiv) => ({
             [props.below ? "bottom" : "top"]: 0,
-            // @ts-ignore
-            [InnerDiv]: {
+            [(InnerDiv as unknown) as string]: {
                 backgroundColor: props.isOver
                     ? "var(--mdc-theme-primary)"
                     : "var(--mdc-theme-secondary)",
@@ -43,14 +44,14 @@ const OuterDiv = React.memo<OuterDiv>(
     )
 );
 
-type Props = {
+export type HorizontalPropsType = {
     type: string;
-    onDrop: Function;
-    below: boolean;
-    isVisible: boolean;
+    onDrop: DroppableOnDropPropType;
+    below?: boolean;
+    isVisible?: DroppableIsVisiblePropType;
 };
 
-const Horizontal = ({ below, onDrop, isVisible, type }: Props) => {
+const HorizontalComponent = ({ below, onDrop, isVisible, type }: HorizontalPropsType) => {
     return (
         <Droppable type={type} isVisible={isVisible} onDrop={onDrop}>
             {({ isOver, drop }) => (
@@ -74,4 +75,4 @@ const Horizontal = ({ below, onDrop, isVisible, type }: Props) => {
     );
 };
 
-export default React.memo(Horizontal);
+export const Horizontal = React.memo(HorizontalComponent);

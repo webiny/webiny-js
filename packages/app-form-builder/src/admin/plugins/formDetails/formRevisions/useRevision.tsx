@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "@webiny/react-router";
 import { useApolloClient } from "react-apollo";
-import { cloneDeep, get } from "lodash";
+import { cloneDeep } from "lodash";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {
     GET_FORM,
@@ -36,16 +36,16 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 variables: { revision: revision.id },
                 refetchQueries: ["FormsListForms"]
             });
-            const { data, error } = res.forms.revision;
+            const { data, error } = res.formBuilder.revision;
 
             if (error) {
                 return showSnackbar(error.message);
             }
 
-            history.push(`/forms/${data.id}`);
+            history.push(`/forms/${encodeURIComponent(data.id)}`);
         },
         editRevision: () => () => {
-            history.push(`/forms/${revision.id}`);
+            history.push(`/forms/${encodeURIComponent(revision.id)}`);
         },
         deleteRevision: () => async () => {
             await client.mutate({
@@ -53,7 +53,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 variables: { id: revision.id },
                 refetchQueries: ["FormsListForms"],
                 update: (cache, updated) => {
-                    const error = get(updated, "data.forms.deleteRevision.error");
+                    const error = updated?.data?.formBuilder?.deleteRevision?.error;
                     if (error) {
                         return showSnackbar(error.message);
                     }
@@ -66,11 +66,11 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
 
                     const gqlParams = { query: GET_FORM, variables: { id: form.id } };
                     const data: any = cloneDeep(cache.readQuery(gqlParams));
-                    const indexOfDeleted = data.forms.form.data.revisions.findIndex(
+                    const indexOfDeleted = data.formBuilder.form.data.revisions.findIndex(
                         item => item.id === revision.id
                     );
 
-                    data.forms.form.data.revisions.splice(indexOfDeleted, 1);
+                    data.formBuilder.form.data.revisions.splice(indexOfDeleted, 1);
                     cache.writeQuery({
                         ...gqlParams,
                         data
@@ -90,7 +90,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 refetchQueries: ["FormsListForms"]
             });
 
-            const { error } = res.forms.publishRevision;
+            const { error } = res.formBuilder.publishRevision;
             if (error) {
                 return showSnackbar(error.message);
             }

@@ -1,36 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import { useQuery } from "react-apollo";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
 import { LIST_FORMS } from "../../viewsGraphql";
-import { useDataList } from "@webiny/app/hooks/useDataList";
 
 function Forms() {
     const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
 
-    const dataList = useDataList({
-        query: LIST_FORMS,
+    const listQuery = useQuery(LIST_FORMS, {
         variables: {
             sort: { savedOn: -1 }
         }
     });
+    // Refetch "Form list" on mount
+    useEffect(() => {
+        listQuery.refetch();
+    }, []);
 
     return (
         <>
-            <NewFormDialog
-                open={newFormDialogOpened}
-                onClose={() => openNewFormDialog(false)}
-                formsDataList={dataList}
-            />
+            <NewFormDialog open={newFormDialogOpened} onClose={() => openNewFormDialog(false)} />
 
             <SplitView>
                 <LeftPanel span={4}>
-                    <FormsDataList dataList={dataList} />
+                    <FormsDataList listQuery={listQuery} />
                 </LeftPanel>
                 <RightPanel span={8}>
-                    <FormDetails refreshForms={dataList.refresh} />
+                    <FormDetails refreshForms={listQuery.refetch} />
                 </RightPanel>
             </SplitView>
             <FloatingActionButton

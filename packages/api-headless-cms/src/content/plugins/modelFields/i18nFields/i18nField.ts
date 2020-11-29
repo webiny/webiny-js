@@ -1,3 +1,4 @@
+// TODO remove
 // @ts-nocheck
 import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
@@ -15,10 +16,7 @@ export type I18NField = {
     [key: string]: any;
 };
 
-export const getI18NValueItem = (
-    value: { [key: string]: any }[],
-    i18n: I18NContext["i18n"]
-) => {
+export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NContext["i18n"]) => {
     // Let's make current locale's value the first element of the array.
     if (value.length < 2) {
         return value;

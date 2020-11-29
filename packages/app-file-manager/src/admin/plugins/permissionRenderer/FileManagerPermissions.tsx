@@ -13,7 +13,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-file-manager/admin/plugins/permissionRenderer");
 
-const FILE_MANAGER = "files";
+const FILE_MANAGER = "fm";
 const FILE_MANAGER_FULL_ACCESS = `${FILE_MANAGER}.*`;
 const FILE_MANAGER_ACCESS_FILE = `${FILE_MANAGER}.file`;
 const FILE_MANAGER_ACCESS_SETTINGS = `${FILE_MANAGER}.settings`;

@@ -39,6 +39,9 @@
     },
     {
       "path": "../../../packages/handler-graphql"
+    },
+    {
+      "path": "../../../packages/api-file-manager-s3"
     }
   ]
 }

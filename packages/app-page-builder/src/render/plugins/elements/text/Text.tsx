@@ -1,12 +1,15 @@
 import React from "react";
-import Slate from "@webiny/app-page-builder/render/components/Slate";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
+import TextRenderer from "../RichTextEditorOutputRenderer";
 
-const Text = ({ element }: { element: PbElement }) => {
+type TextPropsType = {
+    element: PbElement;
+};
+const Text: React.FunctionComponent<TextPropsType> = ({ element }) => {
     return (
         <ElementRoot element={element} className={className}>
-            <Slate value={element.data.text} />
+            <TextRenderer data={element.data.text} />
         </ElementRoot>
     );
 };
