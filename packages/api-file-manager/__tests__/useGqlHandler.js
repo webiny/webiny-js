@@ -41,7 +41,7 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9200` }),
+        elasticSearch({ endpoint: `http://localhost:9201` }),
         apolloServerPlugins(),
         securityPlugins(),
         {
