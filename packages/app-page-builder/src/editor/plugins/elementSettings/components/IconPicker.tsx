@@ -8,16 +8,19 @@ type IconPickerProps = {
     value: [string, string];
     updateValue: (value: any) => void;
     removable?: boolean;
+    className?: string;
+    handlerClassName?: string;
 };
 
 const IconPicker: React.FunctionComponent<IconPickerProps> = ({
     label,
     value,
     updateValue,
-    removable
+    removable,
+    className
 }) => {
     return (
-        <Grid>
+        <Grid className={className}>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
@@ -29,3 +32,21 @@ const IconPicker: React.FunctionComponent<IconPickerProps> = ({
 };
 
 export default React.memo(IconPicker);
+
+const BaseIconPickerComponent: React.FunctionComponent<Partial<IconPickerProps>> = ({
+    value,
+    updateValue,
+    removable,
+    handlerClassName
+}) => {
+    return (
+        <IconPickerComponent
+            handlerClassName={handlerClassName}
+            value={value}
+            onChange={updateValue}
+            removable={removable}
+        />
+    );
+};
+
+export const BaseIconPicker = React.memo(BaseIconPickerComponent);
