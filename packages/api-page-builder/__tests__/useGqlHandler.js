@@ -10,6 +10,7 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
+import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
 import {
@@ -59,6 +60,7 @@ export default ({ permissions, identity } = {}) => {
         elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
+        fileManagerPlugins(),
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
