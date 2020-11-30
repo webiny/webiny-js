@@ -89,11 +89,13 @@ type IconPickerPropsType = {
     value: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
+    handlerClassName?: string;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
-    removable = true
+    removable = true,
+    handlerClassName
 }) => {
     const [filter, setFilter] = useState<string>("");
 
@@ -217,7 +219,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     return (
         <Menu
             handle={
-                <div className={pickIcon}>
+                <div className={classNames(pickIcon, handlerClassName)}>
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             }
