@@ -34,7 +34,7 @@ const Ul = styled("ul")({
         cursor: "pointer",
         "&.active": {
             border: "1px solid gray",
-            backgroundColor: "var(--mdc-theme-background)"
+            backgroundColor: "var(--mdc-theme-primary)"
         }
     }
 });
