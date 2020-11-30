@@ -1,31 +1,34 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { ButtonPrimary as Button } from "@webiny/ui/Button";
+import { css } from "emotion";
+import { IconButton } from "@webiny/ui/Button";
+import { Typography } from "@webiny/ui/Typography";
+import { Grid, Cell } from "@webiny/ui/Grid";
+// Icons
+import { ReactComponent as AddIcon } from "../../../assets/icons/add.svg";
+import { ReactComponent as RemoveIcon } from "../../../assets/icons/remove.svg";
 
-const InputSizeRowStyled = styled("div")({
-    display: "flex",
-    width: "100%",
-    flexDirection: "row",
-    alignContent: "center",
-    margin: "0 0 5px 0",
-    ":last-child": {
-        margin: "0"
-    }
-});
-const InputSizeCellStyled = styled("div")({
-    width: "30%",
-    boxSizing: "border-box",
-    padding: "0 5px 0 0",
-    textAlign: "right",
-    alignContent: "center"
-});
-const InputValueWrapStyled = styled("div")({
-    width: "auto",
-    flexGrow: 1,
-    display: "flex",
-    flexDirection: "row"
-});
-const InputValueStyled = styled("div")({});
+const classes = {
+    grid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            margin: 0
+        }
+    }),
+    icon: css({
+        "& .mdc-list-item__graphic > svg": {
+            transform: "rotate(90deg)"
+        }
+    }),
+    button: css({
+        "&.mdc-icon-button": {
+            // backgroundColor: "var(--mdc-theme-background)",
+            borderRadius: "50%"
+        },
+        "&.mdc-icon-button:disabled": {
+            cursor: "not-allowed"
+        }
+    })
+};
 
 type CellSizePropsType = {
     value: number;
@@ -55,14 +58,30 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
     };
 
     return (
-        <InputSizeRowStyled>
-            <InputSizeCellStyled>{label}</InputSizeCellStyled>
-            <InputValueWrapStyled>
-                <Button onClick={onReduceHandler}>-</Button>
-                <InputValueStyled>{value}</InputValueStyled>
-                <Button onClick={onAddHandler}>+</Button>
-            </InputValueWrapStyled>
-        </InputSizeRowStyled>
+        <Grid className={classes.grid}>
+            <Cell align={"middle"} span={5}>
+                <Typography use={"overline"}>{label}</Typography>
+            </Cell>
+            <Cell align={"middle"} span={3}>
+                <IconButton
+                    disabled={value <= 1}
+                    className={classes.button}
+                    icon={<RemoveIcon />}
+                    onClick={onReduceHandler}
+                />
+            </Cell>
+            <Cell align={"middle"} span={1}>
+                <Typography use={"overline"}>{value}</Typography>
+            </Cell>
+            <Cell align={"middle"} span={3}>
+                <IconButton
+                    disabled={maxAllowed <= 0}
+                    className={classes.button}
+                    icon={<AddIcon />}
+                    onClick={onAddHandler}
+                />
+            </Cell>
+        </Grid>
     );
 };
 
