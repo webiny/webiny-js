@@ -11,7 +11,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { ReactComponent as ArrowForwardIcon } from "../../assets/icons/arrow-forward-breadcrumb.svg";
+import { ReactComponent as ArrowIcon } from "./dual-tone-arrow.svg";
 
 const breadcrumbs = css({
     display: "flex",
@@ -29,20 +29,35 @@ const breadcrumbs = css({
         cursor: "pointer",
         display: "flex",
 
+        "&:hover": {
+            "& .element": {
+                color: "var(--mdc-them-primary)",
+                backgroundColor: "var(--mdc-theme-on-background)"
+            },
+            "& .divider svg path:first-child": {
+                fill: "var(--mdc-theme-text-secondary-on-background)"
+            },
+            "& .divider svg path:last-child": {
+                fill: "var(--mdc-theme-on-background)"
+            }
+        },
+
         ".element": {
             textTransform: "capitalize",
             color: "var(--mdc-theme-secondary)",
             padding: "7px 15px 7px 10px",
-            display: "inline-block",
-            "&:hover": {
-                backgroundColor: "var(--mdc-theme-background)",
-                color: "var(--mdc-theme-on-surface)"
-            }
+            display: "inline-block"
         },
         ".divider": {
-            color: "var(--mdc-theme-text-secondary-on-background)",
-            "& svg path": {
-                fill: "var(--mdc-theme-text-secondary-on-background)"
+            "& svg": {
+                width: 7,
+                height: 28
+            },
+            "& svg path:first-child": {
+                fill: "var(--mdc-theme-background)"
+            },
+            "& svg path:last-child": {
+                fill: "var(--mdc-theme-surface)"
             }
         }
     }
@@ -99,7 +114,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
                 >
                     <span className={"element"}>{type}</span>
                     <span className={"divider"}>
-                        <ArrowForwardIcon />
+                        <ArrowIcon />
                     </span>
                 </li>
             ))}
