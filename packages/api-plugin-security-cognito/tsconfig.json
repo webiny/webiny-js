@@ -5,7 +5,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-user-management"
+      "path": "../api-security-tenancy"
     },
     {
       "path": "../handler"

@@ -1,26 +1,18 @@
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import { FileManagerResolverContext } from "../../types";
+import defaults from "../crud/defaults";
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
-        const must = [];
-        const { i18nContent } = context;
-        if (i18nContent?.locale?.code) {
-            must.push({
-                term: {
-                    "locale.keyword": i18nContent.locale.code
-                }
-            });
-        }
+        const { i18nContent, security } = context;
+        const esDefaults = defaults.es(security.getTenant());
 
         const response = await context.elasticSearch.search({
-            index: "file-manager",
+            ...esDefaults,
             body: {
                 query: {
-                    bool: {
-                        must
-                    }
+                    term: { "locale.keyword": i18nContent.locale.code }
                 },
                 size: 0,
                 aggs: {
@@ -31,7 +23,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
             }
         });
 
-        return response?.body?.aggregations?.listTags?.buckets?.map(item => item.key) || [];
+        return response.body.aggregations.listTags.buckets.map(item => item.key);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,

@@ -6,6 +6,9 @@
       "path": "../api-security"
     },
     {
+      "path": "../api-security-tenancy"
+    },
+    {
       "path": "../handler-graphql"
     },
     {

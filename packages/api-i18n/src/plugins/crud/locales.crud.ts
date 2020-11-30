@@ -1,8 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
-
-export const PK_LOCALE = "L";
-export const PK_DEFAULT_LOCALE = "L#D";
+import { I18NLocale } from "@webiny/api-i18n/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export const dbArgs = {
     table: process.env.DB_TABLE_I18N,
@@ -11,18 +10,17 @@ export const dbArgs = {
     ]
 };
 
-export type Locale = {
-    code: string;
-    default: boolean;
-};
-
 export default {
     type: "context",
     apply(context) {
-        const { db } = context;
+        const { db, security } = context;
+        const tenant = security.getTenant();
+        const PK_LOCALE = `T#${tenant.id}#L`;
+        const PK_DEFAULT_LOCALE = `T#${tenant.id}#L#D`;
+
         context.locales = {
             async getByCode(code: string) {
-                const [[locale]] = await db.read<Locale>({
+                const [[locale]] = await db.read<I18NLocale>({
                     ...dbArgs,
                     query: { PK: PK_LOCALE, SK: code },
                     limit: 1
@@ -31,7 +29,7 @@ export default {
                 return locale;
             },
             async getDefault() {
-                const [[locale]] = await db.read<Locale>({
+                const [[locale]] = await db.read<I18NLocale>({
                     ...dbArgs,
                     query: { PK: PK_DEFAULT_LOCALE, SK: "default" },
                     limit: 1
@@ -40,7 +38,7 @@ export default {
                 return locale;
             },
             async list(args) {
-                const [locales] = await db.read<Locale>({
+                const [locales] = await db.read<I18NLocale>({
                     ...dbArgs,
                     query: { PK: PK_LOCALE, SK: { $gt: " " } },
                     ...args
@@ -132,4 +130,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext>;
+} as ContextPlugin<DbContext & TenancyContext>;

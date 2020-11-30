@@ -1,4 +1,4 @@
 import authentication from "./authentication";
-import userManagement from "./userManagement";
+import identityProvider from "./identityProvider";
 
-export default options => [authentication(options), userManagement(options)];
+export default options => [authentication(options), identityProvider(options)];

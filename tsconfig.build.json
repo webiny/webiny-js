@@ -29,18 +29,22 @@
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
-      "@webiny/@webiny/api-plugin-elastic-search-client/*": [
+      "@webiny/api-i18n-content/*": ["./packages/api-i18n-content/src/*"],
+      "@webiny/api-i18n-content": ["./packages/api-i18n-content/src"],
+      "@webiny/api-plugin-elastic-search-client/*": [
         "./packages/api-plugin-elastic-search-client/src/*"
       ],
-      "@webiny/@webiny/api-plugin-elastic-search-client": [
-        "./packages/api-plugin-elastic-search-client/src/*"
+      "@webiny/api-plugin-elastic-search-client": [
+        "./packages/api-plugin-elastic-search-client/src"
       ],
       "@webiny/api-plugin-db-dynamodb/*": ["./packages/api-plugin-db-dynamodb/src/*"],
       "@webiny/api-plugin-db-dynamodb": ["./packages/api-plugin-db-dynamodb/src"],
       "@webiny/api-security/*": ["./packages/api-security/src/*"],
       "@webiny/api-security": ["./packages/api-security/src"],
-      "@webiny/api-security-user-management/*": ["./packages/api-security-user-management/src/*"],
-      "@webiny/api-security-user-management": ["./packages/api-security-user-management/src"],
+      "@webiny/api-security-tenancy/*": ["./packages/api-security-tenancy/src/*"],
+      "@webiny/api-security-tenancy": ["./packages/api-security-tenancy/src"],
+      "@webiny/api-plugin-security-cognito/*": ["./packages/api-plugin-security-cognito/src/*"],
+      "@webiny/api-plugin-security-cognito": ["./packages/api-plugin-security-cognito/src"],
       "@webiny/app/*": ["./packages/app/src/*"],
       "@webiny/app": ["./packages/app/src"],
       "@webiny/app-admin/*": ["./packages/app-admin/src/*"],
@@ -68,8 +72,8 @@
       "@webiny/app-page-builder-theme/*": ["./packages/app-page-builder-theme/src/*"],
       "@webiny/app-security": ["./packages/app-security/src"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
-      "@webiny/app-security-user-management": ["./packages/app-security-user-management/src"],
-      "@webiny/app-security-user-management/*": ["./packages/app-security-user-management/src/*"],
+      "@webiny/app-security-tenancy": ["./packages/app-security-tenancy/src"],
+      "@webiny/app-security-tenancy/*": ["./packages/app-security-tenancy/src/*"],
       "@webiny/app-plugin-admin-welcome-screen/*": [
         "./packages/app-plugin-admin-welcome-screen/src/*"
       ],
@@ -84,8 +88,8 @@
       "@webiny/commodo-fields-storage-db-proxy": ["./packages/commodo-fields-storage-db-proxy/src"],
       "@webiny/db/*": ["./packages/db/src/*"],
       "@webiny/db": ["./packages/db/src"],
-      "@webiny/db-dynamodb/*": ["./packages/data-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["./packages/data-dynamodb/src"],
+      "@webiny/db-dynamodb/*": ["./packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["./packages/db-dynamodb/src"],
       "@webiny/graphql/*": ["./packages/graphql/src/*"],
       "@webiny/graphql": ["./packages/graphql/src"],
       "@webiny/handler/*": ["./packages/handler/src/*"],

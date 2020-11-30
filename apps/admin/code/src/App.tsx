@@ -4,6 +4,7 @@ import { UiProvider } from "@webiny/app/contexts/Ui";
 import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security";
+import { TenancyProvider } from "@webiny/app-security-tenancy/contexts/Tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 // TODO: import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
@@ -47,45 +48,50 @@ export const App = () => (
                     */}
                     <UiProvider>
                         {/* 
-                            <I18NProvider> loads system locales. Webiny supports multi-language content and language-based 
-                            permissions, so we always need to know all locales to be able to render language selectors, 
-                            and send the proper locale code to the GraphQL API. 
+                            <AppInstaller> checks and runs app installers registered via "admin-installation" plugins. 
+                            Requires "app-installer-security" plugin configured in "./plugins/security.ts"
+                            to render login for protected installers. 
                         */}
-                        <I18NProvider loader={<CircularProgress label={"Loading locales..."} />}>
-                            {/* 
-                                <AppInstaller> checks and runs app installers registered via "admin-installation" plugins. 
-                                Requires "app-installer-security" plugin configured in "./plugins/security.ts"
-                                to render login for protected installers. 
+                        <AppInstaller>
+                            {/*
+                                Once all installers are executed, <Authentication> is mounted to check the identity
+                                and prompt for login, if necessary. Once logged in, it sets the identity data into
+                                the <SecurityProvider>.
                             */}
-                            <AppInstaller>
-                                {/*
-                                    Once all installers are executed, <Authentication> is mounted to check the identity
-                                    and prompt for login, if necessary. Once logged in, it sets the identity data into
-                                    the <SecurityProvider>.
-                                */}
-                                <Authentication getIdentityData={getIdentityData}>
+                            <Authentication getIdentityData={getIdentityData}>
+                                <TenancyProvider>
                                     {/* 
-                                        <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
-                                        "theme" object. You can build your theme using multiple "pb-theme" plugins and 
-                                        then access is using "usePageBuilder()" hook.
+                                        <I18NProvider> loads system locales. Webiny supports multi-language content and language-based 
+                                        permissions, so we always need to know all locales to be able to render language selectors, 
+                                        and send the proper locale code to the GraphQL API. 
                                     */}
-                                    <PageBuilderProvider>
-                                        {/*
-                                            <CmsProvider> handles CMS environments and provides an Apollo Client instance
-                                            that points to the /manage GraphQL API.   
+                                    <I18NProvider
+                                        loader={<CircularProgress label={"Loading locales..."} />}
+                                    >
+                                        {/* 
+                                            <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
+                                            "theme" object. You can build your theme using multiple "pb-theme" plugins and 
+                                            then access is using "usePageBuilder()" hook.
                                         */}
-                                        {/*<CmsProvider>*/}
-                                        {/*
+                                        {/* TODO: remove this provider once new PB is merged. */}
+                                        <PageBuilderProvider>
+                                            {/*
+                                                <CmsProvider> handles CMS environments and provides an Apollo Client instance
+                                                that points to the /manage GraphQL API.   
+                                            */}
+                                            {/*<CmsProvider>*/}
+                                            {/*
                                                 <Routes/> is a helper component that loads all "route" plugins, sorts them
                                                 in the correct "path" order and renders using the <Switch> component, 
                                                 so only the matching route is rendered.   
                                             */}
-                                        <Routes />
-                                        {/*</CmsProvider>*/}
-                                    </PageBuilderProvider>
-                                </Authentication>
-                            </AppInstaller>
-                        </I18NProvider>
+                                            <Routes />
+                                            {/*</CmsProvider>*/}
+                                        </PageBuilderProvider>
+                                    </I18NProvider>
+                                </TenancyProvider>
+                            </Authentication>
+                        </AppInstaller>
                     </UiProvider>
                 </BrowserRouter>
             </NetworkError>

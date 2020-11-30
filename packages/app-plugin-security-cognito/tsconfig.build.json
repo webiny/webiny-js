@@ -7,7 +7,7 @@
 		"node_modules",
 		"../app",
 		"../app-security",
-		"../app-security-user-management",
+		"../app-security-tenancy",
 		"../plugins",
 		"../ui",
 		"../validation",
@@ -26,7 +26,7 @@
 			"path": "../app-security/tsconfig.build.json"
 		},
 		{
-			"path": "../app-security-user-management/tsconfig.build.json"
+			"path": "../app-security-tenancy/tsconfig.build.json"
 		},
 		{
 			"path": "../plugins/tsconfig.build.json"

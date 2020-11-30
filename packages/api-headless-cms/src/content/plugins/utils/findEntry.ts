@@ -24,7 +24,7 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
     }
 
     if (!context.cms.MANAGE) {
-        query.locale = context.cms.locale.id;
+        query.locale = context.cms.locale.code;
     }
 
     const index: any = await CmsContentEntrySearch.findOne({

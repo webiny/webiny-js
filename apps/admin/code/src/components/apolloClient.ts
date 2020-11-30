@@ -3,9 +3,10 @@ import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createOmitTypenameLink } from "@webiny/app/graphql";
+import { createOmitTypenameLink, createSetContextLink } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
+import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 
 export const createApolloClient = () => {
     return new ApolloClient({
@@ -30,10 +31,13 @@ export const createApolloClient = () => {
              */
             createOmitTypenameLink(),
             /**
-             * This allows you to register links using plugins. For example, "app-plugin-security-cognito" package
-             * adds an authorization header to each request by registering an "apollo-link" plugin.
+             * This allows you to register links using plugins.
              */
             ...plugins.byType("apollo-link").map(pl => pl.createLink()),
+            /**
+             * This allows you to modify request context using "apollo-link-context" plugin.
+             */
+            createSetContextLink(),
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
@@ -41,7 +45,24 @@ export const createApolloClient = () => {
         ]),
         cache: new InMemoryCache({
             addTypename: true,
-            dataIdFromObject: obj => obj.id || null
+            dataIdFromObject: obj => {
+                /**
+                 * Since every data type coming from API can have a different data structure,
+                 * we cannot rely on having an `id` field.
+                 */
+                const getters = plugins.byType<CacheGetObjectIdPlugin>("cache-get-object-id");
+                for (let i = 0; i < getters.length; i++) {
+                    const id = getters[i].getObjectId(obj);
+                    if (typeof id !== "undefined") {
+                        return id;
+                    }
+                }
+
+                /**
+                 * As a fallback, try getting object's `id`.
+                 */
+                return obj.id || null;
+            }
         })
     });
 };

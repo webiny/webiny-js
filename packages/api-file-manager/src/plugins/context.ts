@@ -9,9 +9,11 @@ import filesCrud from "./crud/files.crud";
 import fileManagerSettingsCrud from "./crud/filesSettings.crud";
 import { FilesCRUD, FileManagerSettingsCRUD } from "../types";
 import { FileStorage } from "./FileStorage";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export type FileManagerContextPlugin = HttpContext &
     SecurityContext &
+    TenancyContext &
     I18NContentContext &
     DbContext &
     ElasticSearchClientContext;

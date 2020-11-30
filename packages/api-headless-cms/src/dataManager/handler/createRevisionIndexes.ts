@@ -39,7 +39,7 @@ export const createRevisionIndexes = async ({ model, entry, context, autoDelete 
                         continue;
                     }
                     const i18nValue = entry.fields[fields[f]].values.find(
-                        item => item.locale === locale.id
+                        item => item.locale === locale.code
                     );
                     value = i18nValue ? i18nValue.value : undefined;
                 }
@@ -56,7 +56,7 @@ export const createRevisionIndexes = async ({ model, entry, context, autoDelete 
                 id: model.generateId(),
                 environment: environment.id,
                 model: model.modelId,
-                locale: locale.id,
+                locale: locale.code,
                 revision: entry.id,
                 latestVersion: entry.latestVersion,
                 published: entry.published,

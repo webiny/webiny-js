@@ -73,7 +73,7 @@ const Content = ({ richText, onClose, values, onSubmit }: ContentProps) => {
                                 {getLocales().map((locale, localeIndex) => (
                                     <ListItem
                                         // @ts-ignore
-                                        key={locale.id}
+                                        key={locale.code}
                                         className={listItem}
                                         onClick={() => setActiveLocaleIndex(localeIndex)}
                                     >

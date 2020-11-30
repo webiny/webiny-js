@@ -10,7 +10,7 @@
 		"../app",
 		"../app-admin",
 		"../app-security",
-		"../app-security-user-management",
+		"../app-security-tenancy",
 		"../form",
 		"../plugins",
 		"../react-router",
@@ -33,7 +33,7 @@
 			"path": "../app-security/tsconfig.build.json"
 		},
 		{
-			"path": "../app-security-user-management/tsconfig.build.json"
+			"path": "../app-security-tenancy/tsconfig.build.json"
 		},
 		{
 			"path": "../form/tsconfig.build.json"

@@ -17,7 +17,7 @@ const getFileDocForES = (file: File & { [key: string]: any }, locale: string) =>
     tags: file.tags,
     createdBy: file.createdBy,
     meta: file.meta,
-    locale: locale
+    locale
 });
 
 const CreateDataModel = withFields({
@@ -99,9 +99,12 @@ const UpdateDataModel = withFields({
 })();
 
 export default (context: FileManagerContextPlugin) => {
-    const { db, i18nContent, elasticSearch } = context;
+    const { db, i18nContent, elasticSearch, security } = context;
+    const tenant = security.getTenant();
     const localeCode = i18nContent?.locale?.code;
-    const PK_FILE = `F#${localeCode}`;
+    const PK_FILE = `T#${tenant.id}#F#${localeCode}`;
+
+    const esDefaults = defaults.es(tenant);
 
     return {
         async getFile(id: string) {
@@ -134,6 +137,7 @@ export default (context: FileManagerContextPlugin) => {
 
             const file = {
                 id,
+                tenant: tenant.id,
                 savedOn: new Date().toISOString(),
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -148,13 +152,13 @@ export default (context: FileManagerContextPlugin) => {
                 data: {
                     PK: PK_FILE,
                     SK: file.id,
-                    TYPE: "fileManager:file",
+                    TYPE: "fm.file",
                     ...file
                 }
             });
             // Index file to "ElasticSearch".
             await elasticSearch.create({
-                ...defaults.es,
+                ...esDefaults,
                 id,
                 body: getFileDocForES(file, localeCode)
             });
@@ -179,7 +183,7 @@ export default (context: FileManagerContextPlugin) => {
 
             // Index file in "Elastic Search"
             await elasticSearch.update({
-                ...defaults.es,
+                ...esDefaults,
                 id,
                 body: {
                     doc: updateFile
@@ -194,9 +198,10 @@ export default (context: FileManagerContextPlugin) => {
                 ...defaults.db,
                 query: { PK: PK_FILE, SK: id }
             });
+
             // Delete index form ES.
             await elasticSearch.delete({
-                ...defaults.es,
+                ...esDefaults,
                 id
             });
             return true;
@@ -204,7 +209,8 @@ export default (context: FileManagerContextPlugin) => {
         async createFilesInBatch(data) {
             const identity = context.security.getIdentity();
 
-            const createFileData = [];
+            // Use Batch to save files in DB.
+            const batch = db.batch();
             const files = [];
 
             for (let i = 0; i < data.length; i++) {
@@ -216,6 +222,8 @@ export default (context: FileManagerContextPlugin) => {
                 const file = await fileInstance.toJSON();
                 // Add unique id.
                 file.id = mdbid();
+                // Set tenant
+                file.tenant = tenant.id;
                 // Add "createdBy"
                 file.createdBy = {
                     id: identity.id,
@@ -225,7 +233,7 @@ export default (context: FileManagerContextPlugin) => {
 
                 files.push(file);
 
-                createFileData.push({
+                batch.create({
                     data: {
                         PK: PK_FILE,
                         SK: file.id,
@@ -234,15 +242,12 @@ export default (context: FileManagerContextPlugin) => {
                 });
             }
 
-            // Use "Batch write" to save files in DB.
-            const batch = db.batch();
-            batch.create(...createFileData);
             await batch.execute();
 
             // Index files in ES.
             // @ts-ignore
             const body = files.flatMap(doc => [
-                { index: { _index: defaults.es.index } },
+                { index: { _index: esDefaults.index, _id: doc.id } },
                 getFileDocForES(doc, localeCode)
             ]);
 

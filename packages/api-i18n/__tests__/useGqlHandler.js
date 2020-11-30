@@ -23,6 +23,14 @@ export default () => {
         apolloServerPlugins(),
         securityPlugins(),
         { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
+        {
+            type: "context",
+            apply(context) {
+                context.security.getTenant = () => {
+                    return { id: "root", name: "Root", parent: null };
+                };
+            }
+        },
         i18nPlugins()
     );
 

@@ -1,14 +1,14 @@
 type SecurityIdentityData = {
     id: string;
-    login: string;
     type: string;
+    displayName: string;
     [key: string]: any;
 };
 
 export class SecurityIdentity {
     id: string;
-    login: string;
     type: string;
+    displayName: string;
     constructor(data: SecurityIdentityData) {
         Object.assign(this, data);
     }

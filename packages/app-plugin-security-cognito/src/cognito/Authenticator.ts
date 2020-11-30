@@ -102,16 +102,14 @@ const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
             setState({ checkingUser: true });
             const user = await Auth.currentSession();
 
-            const { id, login, permissions, ...data } = await props.getIdentityData({
+            const { login, ...data } = await props.getIdentityData({
                 client: props.client,
                 payload: user.getIdToken().payload
             });
 
             setIdentity(
                 new SecurityIdentity({
-                    id,
                     login,
-                    permissions,
                     ...data,
                     logout() {
                         Auth.signOut();

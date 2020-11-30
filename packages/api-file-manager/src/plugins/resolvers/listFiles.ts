@@ -3,8 +3,13 @@ import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { NotAuthorizedResponse } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
 import { FileManagerResolverContext } from "../../types";
+import defaults from "../crud/defaults";
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
+    const { i18nContent, security } = context;
+    const identity = security.getIdentity();
+    const esDefaults = defaults.es(security.getTenant());
+
     try {
         // If permission has "rwd" property set, but "r" is not part of it, bail.
         const filesFilePermission = await context.security.getPermission("fm.file");
@@ -14,16 +19,16 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
 
         const { limit = 40, search = "", types = [], tags = [], ids = [] } = args;
 
-        // Files created by the system, eg. installation files.
-        const must: any[] = [{ term: { "meta.private": false } }];
+        const must: any[] = [
+            // Skip files created by the system, eg. installation files.
+            { term: { "meta.private": false } },
+            // Filter files for current content locale
+            { term: { "locale.keyword": i18nContent.locale.code } }
+        ];
 
-        const { i18nContent } = context;
-        if (i18nContent?.locale?.code) {
-            must.push({
-                term: {
-                    "locale.keyword": i18nContent.locale.code
-                }
-            });
+        if (filesFilePermission.own === true) {
+            must.push({ term: { "createdBy.id.keyword": identity.id } });
+            must.push({ term: { "createdBy.type.keyword": identity.type } });
         }
 
         if (Array.isArray(types) && types.length) {
@@ -54,8 +59,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
         }
 
         const response = await context.elasticSearch.search({
-            index: "file-manager",
-            type: "_doc",
+            ...esDefaults,
             body: {
                 query: {
                     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -73,21 +77,7 @@ const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerRe
             }
         });
 
-        let list = response?.body?.hits?.hits?.map(item => item._source);
-
-        if (!Array.isArray(list)) {
-            const files = context.fileManager.files;
-
-            list = await files.listFiles({});
-        }
-
-        // If user can only manage own records, let's check if he owns the loaded one.
-        if (filesFilePermission?.own === true) {
-            const identity = context.security.getIdentity();
-            list = list.filter(file => file.createdBy.id === identity.id);
-        }
-
-        return new Response(list);
+        return new Response(response.body.hits.hits.map(item => item._source));
     } catch (e) {
         return new ErrorResponse({
             code: e.code,

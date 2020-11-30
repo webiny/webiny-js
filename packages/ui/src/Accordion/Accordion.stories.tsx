@@ -27,6 +27,7 @@ story.add(
                                 icon={<SettingsIcon />}
                                 title="Settings 1"
                                 description="Settings description"
+                                open
                             >
                                 <div>Inner child 1</div>
                             </AccordionItem>
@@ -53,6 +54,7 @@ story.add(
                                     icon={<SettingsIcon />}
                                     title="Settings 1"
                                     description="Settings description"
+                                    open
                                 >
                                     <div>Inner child 1</div>
                                 </AccordionItem>

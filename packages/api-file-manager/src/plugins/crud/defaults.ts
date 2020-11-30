@@ -10,8 +10,9 @@ export default {
             }
         ]
     },
-    es: {
-        index: "file-manager",
-        type: "_doc"
+    es(tenant) {
+        return {
+            index: tenant.id + "-file-manager"
+        };
     }
 };

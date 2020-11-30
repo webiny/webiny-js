@@ -7,7 +7,7 @@
   "dependencies": {
     "@webiny/handler-aws": "^4.13.0",
     "@webiny/api-form-builder": "^4.13.0",
-    "@webiny/api-security-user-management": "^4.13.0",
+    "@webiny/api-security-tenancy": "^4.13.0",
     "@webiny/api-i18n": "^4.13.0",
     "@webiny/api-i18n-content": "^4.13.0",
     "@webiny/api-page-builder": "^4.13.0",

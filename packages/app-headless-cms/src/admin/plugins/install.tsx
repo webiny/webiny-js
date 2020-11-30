@@ -16,7 +16,7 @@ const SimpleFormPlaceholder = styled.div({
 const t = i18n.ns("app-headless-cms/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsCMSInstalled {
         cms {
             isInstalled {
                 data
