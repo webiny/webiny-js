@@ -135,7 +135,6 @@
   },
   "exclude": [
     "node_modules",
-    "**/__tests__/**",
     "dist",
     "./scripts/**",
     "**jest**",
@@ -145,7 +144,6 @@
     "./packages/cwp-template-cms",
     "./packages/project-utils",
     "./packages/tracking",
-    "**resources.js",
     "./webiny.root.js"
   ]
 }

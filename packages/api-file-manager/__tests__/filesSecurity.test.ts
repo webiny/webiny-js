@@ -1,5 +1,6 @@
 import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 function Mock(prefix) {
     this.key = `${prefix}key`;
@@ -47,6 +48,8 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
+type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity]>;
+
 describe("Files Security Test", () => {
     const { tenant, elasticSearch, createFile, createFiles, sleep } = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
@@ -85,7 +88,7 @@ describe("Files Security Test", () => {
         const file3Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[0].id;
         const file4Id = identityBHandlerCreateFilesResponse.data.fileManager.createFiles.data[1].id;
 
-        const insufficientPermissions = [
+        const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fm.file", rwd: "wd" }], identityA],
@@ -96,11 +99,11 @@ describe("Files Security Test", () => {
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { listFiles } = useGqlHandler({ permissions, identity });
-            const [response] = await listFiles();
+            const [response] = await listFiles({});
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("listFiles"));
         }
 
-        const sufficientPermissionsAll = [
+        const sufficientPermissionsAll: IdentityPermissions = [
             [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", rwd: "r" }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rw" }], identityA],
@@ -183,7 +186,7 @@ describe("Files Security Test", () => {
     });
 
     test(`allow "createFile" if identity has sufficient permissions`, async () => {
-        const insufficientPermissions = [
+        const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fm.file", own: false, rwd: "r" }], identityA],
@@ -194,11 +197,11 @@ describe("Files Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createFile } = useGqlHandler({ permissions, identity });
 
-            const [response] = await createFile({ data: new Mock() });
+            const [response] = await createFile({ data: new Mock("mock") });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createFile"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: IdentityPermissions = [
             [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", rwd: "w" }], identityA],
@@ -231,7 +234,7 @@ describe("Files Security Test", () => {
         const [createFileResponse] = await createFile({ data: mock });
         const fileId = createFileResponse.data.fileManager.createFile.data.id;
 
-        const insufficientPermissions = [
+        const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fm.file", rwd: "r" }], identityA],
@@ -246,7 +249,7 @@ describe("Files Security Test", () => {
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateFile"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: IdentityPermissions = [
             [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", rwd: "w" }], identityA],
@@ -277,7 +280,7 @@ describe("Files Security Test", () => {
         const [createFileResponse] = await createFile({ data: mock });
         const fileId = createFileResponse.data.fileManager.createFile.data.id;
 
-        const insufficientPermissions = [
+        const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "fm.file", rwd: "w" }], identityA],
@@ -292,7 +295,7 @@ describe("Files Security Test", () => {
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getFile"));
         }
 
-        const sufficientPermissions = [
+        const sufficientPermissions: IdentityPermissions = [
             [[{ name: "content.i18n" }, { name: "fm.file" }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "fm.file", rwd: "r" }], identityA],
