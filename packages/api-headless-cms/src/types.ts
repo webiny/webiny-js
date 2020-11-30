@@ -218,25 +218,65 @@ export type CmsFindFilterOperator = Plugin & {
         context: CmsContext;
     }): { [key: string]: any };
 };
+//
 export type CmsEnvironmentType = {
     id: string;
     name: string;
     slug: string;
     description?: string;
     createdFrom?: CmsEnvironmentType;
-    createdBy?: {
+    createdOn: Date;
+    changedOn?: Date;
+    createdBy: {
         id: string;
+        type: string;
+        displayName: string;
     };
 };
+type CmsEnvironmentCreateInputType = Omit<
+    CmsEnvironmentType,
+    "createdBy" | "createdFrom" | "createdOn" | "changedOn"
+> & {
+    createdFrom: string;
+};
+type CmsEnvironmentUpdateInputType = Omit<
+    CmsEnvironmentType,
+    "createdBy" | "createdFrom" | "createdOn" | "changedOn"
+>;
+
 export type CmsEnvironmentContextType = {
     get: (id: string) => Promise<CmsEnvironmentType>;
     list: () => Promise<CmsEnvironmentType[]>;
-    create: (data: CmsEnvironmentType) => Promise<CmsEnvironmentType>;
-    update: (id: string, data: CmsEnvironmentType) => Promise<CmsEnvironmentType>;
+    create: (data: CmsEnvironmentCreateInputType, initial?: boolean) => Promise<CmsEnvironmentType>;
+    update: (id: string, data: CmsEnvironmentUpdateInputType) => Promise<CmsEnvironmentType>;
+    delete: (id: string) => Promise<void>;
+};
+export type CmsEnvironmentAliasType = {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    environment?: CmsEnvironmentType;
+    createdBy: {
+        id: string;
+        type: string;
+        displayName: string;
+    };
+    createdOn: Date;
+    changedOn?: Date;
+};
+export type CmsEnvironmentAliasContextType = {
+    get: (id: string) => Promise<CmsEnvironmentAliasType>;
+    list: () => Promise<CmsEnvironmentAliasType[]>;
+    create: (data: CmsEnvironmentAliasType) => Promise<CmsEnvironmentAliasType>;
+    update: (id: string, data: CmsEnvironmentAliasType) => Promise<CmsEnvironmentAliasType>;
     delete: (id: string) => Promise<void>;
 };
 export type CmsContextType = {
     cms: {
         environment: CmsEnvironmentContextType;
+        environmentAlias: CmsEnvironmentAliasContextType;
+        // TODO switch data manager to new working way
+        dataManager: any;
     };
 };

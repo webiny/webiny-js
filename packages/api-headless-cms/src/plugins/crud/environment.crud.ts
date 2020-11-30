@@ -5,7 +5,12 @@ import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { CmsEnvironmentType, CmsEnvironmentContextType } from "@webiny/api-headless-cms/types";
+import {
+    CmsEnvironmentType,
+    CmsEnvironmentContextType,
+    CmsContextType
+} from "@webiny/api-headless-cms/types";
+import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -22,11 +27,18 @@ const UpdateEnvironmentModel = withFields({
 
 const TYPE = "env";
 const PARTITION_KEY_START = "CE#";
+
 const createPartitionKey = (i18nContent: Record<string, any>) => {
     if (!i18nContent || !i18nContent.locale) {
         return PARTITION_KEY_START;
     }
     return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
+};
+
+type CmsEnvironmentDynamoType = {
+    PK: string;
+    SK: string;
+    TYPE: string;
 };
 
 export default {
@@ -36,7 +48,7 @@ export default {
         const PK_ENVIRONMENT = createPartitionKey(i18nContent);
 
         const environment: CmsEnvironmentContextType = {
-            async get(id: string): Promise<CmsEnvironmentType | null> {
+            async get(id): Promise<CmsEnvironmentType | null> {
                 const [response] = await db.read<CmsEnvironmentType>({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: id },
@@ -55,9 +67,13 @@ export default {
 
                 return response;
             },
-            async create(data: CmsEnvironmentType): Promise<CmsEnvironmentType> {
+            async create(data, initial): Promise<CmsEnvironmentType> {
                 const identity = context.security.getIdentity();
-                const createData = new CreateEnvironmentModel().populate(data);
+                const slug = toSlug(data.slug || data.name);
+                const createData = new CreateEnvironmentModel().populate({
+                    ...data,
+                    slug
+                });
                 await createData.validate();
 
                 const id = mdbid();
@@ -73,16 +89,45 @@ export default {
                         type: identity.type,
                         displayName: identity.displayName
                     }
+                }) as CmsEnvironmentType & CmsEnvironmentDynamoType;
+
+                // need to read all environments
+                // because we need to check if environment with exact slug already exists
+                // and to check if source environment environment actually exists - when required to
+                const existingEnvironments = await context.cms.environment.list();
+                const sourceEnvironment = existingEnvironments.find(model => {
+                    return model.id === modelData.createdFrom.id;
                 });
 
+                // before create hook
+                if (!initial && !sourceEnvironment) {
+                    throw new Error('Base environment ("createdFrom" field) not set.');
+                }
+                const existing = existingEnvironments.some(model => {
+                    return model.slug === slug;
+                });
+                if (existing) {
+                    throw Error(`Environment with slug "${slug}" already exists.`);
+                }
+                // save
                 await db.create({
                     ...defaults.db,
                     data: modelData
                 });
 
+                // after create hook
+                // there is a possibility that there is no sourceEnvironment - installation process
+                if (sourceEnvironment) {
+                    await context.cms.dataManager.copyEnvironment({
+                        copyFrom: sourceEnvironment.id,
+                        copyTo: id
+                    });
+                }
+                //
+
                 return modelData;
             },
-            async update(id: string, data: CmsEnvironmentType): Promise<CmsEnvironmentType> {
+            async update(id, data): Promise<CmsEnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);
                 await updateData.validate();
 
@@ -94,18 +139,54 @@ export default {
                     data: modelData
                 });
 
-                return data;
+                // after change hook
+                const aliases = (await context.cms.environmentAlias.list())
+                    .filter(alias => {
+                        return alias.environment.id === id;
+                    })
+                    // update all aliases last updated time
+                    .map(alias => {
+                        return {
+                            data: {
+                                ...alias,
+                                changedOn: new Date()
+                            }
+                        };
+                    });
+                if (aliases.length > 0) {
+                    const dbBatch = db.batch();
+                    dbBatch.update(...aliases);
+                    await dbBatch.execute();
+                }
+
+                return modelData;
             },
-            async delete(id: string): Promise<void> {
+            async delete(id): Promise<void> {
+                // before delete hook
+                const aliases = (await context.cms.environmentAlias.list())
+                    .filter(alias => {
+                        return alias.environment.id === id;
+                    })
+                    .map(alias => alias.name);
+                if (aliases.length) {
+                    throw new Error(
+                        `Cannot delete the environment because it's currently linked to the "${aliases.join(
+                            ", "
+                        )}" environment aliases.`
+                    );
+                }
+                // delete
                 await db.delete({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: id }
                 });
+                // after delete hook
+                await context.cms.dataManager.deleteEnvironment({ environment: id });
             }
         };
         context.cms = {
-            ...(context.cms || {}),
+            ...(context.cms || ({} as any)),
             environment
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CmsContextType>;
