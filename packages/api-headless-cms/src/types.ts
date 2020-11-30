@@ -219,30 +219,26 @@ export type CmsFindFilterOperator = Plugin & {
     }): { [key: string]: any };
 };
 //
-export type CmsEnvironmentType = {
+type BaseCmsEnvironmentType = {
     id: string;
     name: string;
     slug: string;
     description?: string;
+    createdOn: string;
+    changedOn?: string;
+};
+export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdFrom?: CmsEnvironmentType;
-    createdOn: Date;
-    changedOn?: Date;
     createdBy: {
         id: string;
         type: string;
         displayName: string;
     };
 };
-type CmsEnvironmentCreateInputType = Omit<
-    CmsEnvironmentType,
-    "createdBy" | "createdFrom" | "createdOn" | "changedOn"
-> & {
+export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
     createdFrom: string;
 };
-type CmsEnvironmentUpdateInputType = Omit<
-    CmsEnvironmentType,
-    "createdBy" | "createdFrom" | "createdOn" | "changedOn"
->;
+export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
 
 export type CmsEnvironmentContextType = {
     get: (id: string) => Promise<CmsEnvironmentType>;

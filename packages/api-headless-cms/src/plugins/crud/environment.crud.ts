@@ -16,13 +16,12 @@ const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
     slug: string({ validation: validation.create("required,maxLength:100") }),
     description: string({ validation: validation.create("required,maxLength:255") }),
-    createdFrom: string({ validation: validation.create("required,maxLength:65") })
+    createdFrom: string({ validation: validation.create("required,maxLength:255") })
 })();
 const UpdateEnvironmentModel = withFields({
     name: string({ validation: validation.create("maxLength:100") }),
     slug: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    createdFrom: string({ validation: validation.create("maxLength:65") })
+    description: string({ validation: validation.create("maxLength:255") })
 })();
 
 const TYPE = "env";
@@ -35,7 +34,7 @@ const createPartitionKey = (i18nContent: Record<string, any>) => {
     return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
 };
 
-type CmsEnvironmentDynamoType = {
+type BaseDynamoType = {
     PK: string;
     SK: string;
     TYPE: string;
@@ -89,7 +88,7 @@ export default {
                         type: identity.type,
                         displayName: identity.displayName
                     }
-                }) as CmsEnvironmentType & CmsEnvironmentDynamoType;
+                }) as CmsEnvironmentType & BaseDynamoType;
 
                 // need to read all environments
                 // because we need to check if environment with exact slug already exists

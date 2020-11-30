@@ -4,7 +4,12 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import { CmsContextType, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import {
+    CmsContextType,
+    CmsEnvironmentCreateInputType,
+    CmsEnvironmentType,
+    CmsEnvironmentUpdateInputType
+} from "@webiny/api-headless-cms/types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
@@ -57,13 +62,13 @@ const hasPermissionRwd = (rwd: string) => {
 type ResolverContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
 
 type CreateEnvironmentArgsType = {
-    data: CmsEnvironmentType;
+    data: CmsEnvironmentCreateInputType;
 };
 type ReadEnvironmentArgsType = {
     id: string;
 };
 type UpdateEnvironmentArgsType = ReadEnvironmentArgsType & {
-    data: CmsEnvironmentType;
+    data: CmsEnvironmentUpdateInputType;
 };
 type DeleteEnvironmentArgsType = {
     id: string;
