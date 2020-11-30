@@ -14,6 +14,16 @@ export default [
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
+                input PbFileInput {
+                    id: ID!
+                    src: String!
+                }  
+                
+                type PbFile {
+                    id: ID!
+                    src: String!
+                }
+
                 type PbCreatedBy {
                     id: ID
                     displayName: String
@@ -28,16 +38,6 @@ export default [
                 type PbDeleteResponse {
                     data: Boolean
                     error: PbError
-                }
-
-                type PbBooleanResponse {
-                    data: Boolean
-                    error: PbError
-                }
-
-                type PbCursors {
-                    next: String
-                    previous: String
                 }
 
                 type PbQuery {
