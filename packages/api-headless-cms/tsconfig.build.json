@@ -48,6 +48,9 @@
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"
-		}
+		},
+        {
+            "path": "../api-i18n-content/tsconfig.build.json"
+        }
 	]
 }
