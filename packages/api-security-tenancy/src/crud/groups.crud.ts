@@ -24,9 +24,7 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-export default (
-    context: DbContext & SecurityContext & TenancyContext
-): GroupsCRUD => {
+export default (context: DbContext & SecurityContext & TenancyContext): GroupsCRUD => {
     const { db } = context;
     return {
         async getGroup(tenant, slug) {

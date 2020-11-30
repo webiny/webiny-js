@@ -3,7 +3,7 @@ import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityContext } from "@webiny/api-security/types";
 import {
     CmsContextType,
     CmsEnvironmentCreateInputType,
@@ -12,12 +12,9 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { TenancyContext, Tenant } from "@webiny/api-security-tenancy/types";
 
 const CMS_ENVIRONMENT_PERMISSION_NAME = "cms.manage.setting";
-
-const getEnvironmentPermission = async (context: ResolverContext) => {
-    return await context.security.getPermission(CMS_ENVIRONMENT_PERMISSION_NAME);
-};
 
 type HasRwdCallableArgsType = {
     permission?: {
@@ -25,6 +22,21 @@ type HasRwdCallableArgsType = {
     };
     rwd: string;
 };
+type ResolverContext = HandlerContext<I18NContext, SecurityContext, CmsContextType, TenancyContext>;
+
+type CreateEnvironmentArgsType = {
+    data: CmsEnvironmentCreateInputType;
+};
+type ReadEnvironmentArgsType = {
+    id: string;
+};
+type UpdateEnvironmentArgsType = ReadEnvironmentArgsType & {
+    data: CmsEnvironmentUpdateInputType;
+};
+type DeleteEnvironmentArgsType = {
+    id: string;
+};
+
 const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
     if (!permission || !permission.rwd) {
         return false;
@@ -38,11 +50,11 @@ const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
     });
 };
 
-const userCanManage = (identity: SecurityIdentity, { createdBy }: CmsEnvironmentType): boolean => {
+const userCanManage = (tenant: Tenant, { createdBy }: CmsEnvironmentType): boolean => {
     if (!createdBy) {
         return false;
     }
-    return createdBy.id === identity.id;
+    return createdBy.id === tenant.id;
 };
 
 const hasPermissionRwd = (rwd: string) => {
@@ -59,19 +71,8 @@ const hasPermissionRwd = (rwd: string) => {
     };
 };
 
-type ResolverContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
-
-type CreateEnvironmentArgsType = {
-    data: CmsEnvironmentCreateInputType;
-};
-type ReadEnvironmentArgsType = {
-    id: string;
-};
-type UpdateEnvironmentArgsType = ReadEnvironmentArgsType & {
-    data: CmsEnvironmentUpdateInputType;
-};
-type DeleteEnvironmentArgsType = {
-    id: string;
+const getEnvironmentPermission = async (context: ResolverContext) => {
+    return await context.security.getPermission(CMS_ENVIRONMENT_PERMISSION_NAME);
 };
 
 export default {
@@ -154,7 +155,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManage(context.security.getTenant(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -172,10 +173,8 @@ export default {
 
                 const environments = await environmentContext.list();
                 if (permission.own === true) {
-                    const identity = context.security.getIdentity();
-                    return new Response(
-                        environments.filter(model => userCanManage(identity, model))
-                    );
+                    const tenant = context.security.getTenant();
+                    return new Response(environments.filter(model => userCanManage(tenant, model)));
                 }
                 return new Response(environments);
             })
@@ -186,11 +185,16 @@ export default {
                 hasPermissionRwd("w"),
                 hasI18NContentPermission()
             )(async (_, args: CreateEnvironmentArgsType, context: ResolverContext) => {
+                const tenant = context.security.getTenant();
                 const environmentContext = context.cms.environment;
 
                 const { data } = args;
+                const createdBy = {
+                    id: tenant.id,
+                    name: tenant.name
+                };
                 try {
-                    return new Response(await environmentContext.create(data));
+                    return new Response(await environmentContext.create(data, createdBy));
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -213,7 +217,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManage(context.security.getTenant(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -242,7 +246,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManage(context.security.getTenant(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }

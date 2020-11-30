@@ -66,8 +66,7 @@ export default {
 
                 return response;
             },
-            async create(data, initial): Promise<CmsEnvironmentType> {
-                const identity = context.security.getIdentity();
+            async create(data, createdBy, initial): Promise<CmsEnvironmentType> {
                 const slug = toSlug(data.slug || data.name);
                 const createData = new CreateEnvironmentModel().populate({
                     ...data,
@@ -83,11 +82,7 @@ export default {
                     TYPE,
                     id,
                     createdOn: new Date().toISOString(),
-                    createdBy: {
-                        id: identity.id,
-                        type: identity.type,
-                        displayName: identity.displayName
-                    }
+                    createdBy
                 }) as CmsEnvironmentType & BaseDynamoType;
 
                 // need to read all environments

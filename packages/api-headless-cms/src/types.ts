@@ -240,10 +240,18 @@ export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
 };
 export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
 
+type CmsEnvironmentCreatedByType = {
+    id: string;
+    name: string;
+};
 export type CmsEnvironmentContextType = {
     get: (id: string) => Promise<CmsEnvironmentType>;
     list: () => Promise<CmsEnvironmentType[]>;
-    create: (data: CmsEnvironmentCreateInputType, initial?: boolean) => Promise<CmsEnvironmentType>;
+    create: (
+        data: CmsEnvironmentCreateInputType,
+        createdBy: CmsEnvironmentCreatedByType,
+        initial?: boolean
+    ) => Promise<CmsEnvironmentType>;
     update: (id: string, data: CmsEnvironmentUpdateInputType) => Promise<CmsEnvironmentType>;
     delete: (id: string) => Promise<void>;
 };

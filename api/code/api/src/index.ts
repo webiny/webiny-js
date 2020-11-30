@@ -39,7 +39,7 @@ export const handler = createHandler(
     // Security Tenancy API (users, groups, tenant links).
     securityTenancy(),
     // Adds a context plugin to process `security-authentication` plugins.
-    // NOTE: this has to be registered *after* the "securityTenancy" plugins  
+    // NOTE: this has to be registered *after* the "securityTenancy" plugins
     // as some of the authentication plugins rely on tenancy context.
     securityAuthenticator(),
     // Authentication plugin for Personal Access Tokens

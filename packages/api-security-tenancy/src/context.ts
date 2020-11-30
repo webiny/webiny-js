@@ -28,7 +28,7 @@ export default {
     apply: async context => {
         let __tenant = null;
 
-        if(!context.security) {
+        if (!context.security) {
             // @ts-ignore
             context.security = {};
         }
@@ -46,7 +46,7 @@ export default {
         context.security.tenants = tenantCrud(context);
         context.security.users = userCrud(context);
         context.security.groups = groupCrud(context);
-        
+
         __tenant = await getCurrentTenant(context);
     }
 } as ContextPlugin<Context>;

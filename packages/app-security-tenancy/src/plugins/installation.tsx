@@ -50,9 +50,7 @@ const INSTALL = gql`
 `;
 
 const Install = ({ onInstalled }) => {
-    const uiPlugins = plugins.byType<SecurityInstallationFormPlugin>(
-        "security-installation-form"
-    );
+    const uiPlugins = plugins.byType<SecurityInstallationFormPlugin>("security-installation-form");
 
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
