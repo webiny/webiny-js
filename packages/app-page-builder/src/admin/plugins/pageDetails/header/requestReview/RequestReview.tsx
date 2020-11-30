@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
+import { ReactComponent as RequestReviewIcon } from "@webiny/app-page-builder/admin/assets/rate_review-24px.svg";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -9,12 +9,12 @@ import { useMutation } from "react-apollo";
 import gql from "graphql-tag";
 import { useSecurity } from "@webiny/app-security";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
+const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/request Review");
 
-const PUBLISH_PAGE = gql`
+const REQUEST_REVIEW = gql`
     mutation updateMenu($id: ID!) {
         pageBuilder {
-            publishPage(id: $id) {
+            requestReview(id: $id) {
                 data {
                     id
                     status
@@ -30,21 +30,22 @@ const PUBLISH_PAGE = gql`
     }
 `;
 
-const PublishRevision = props => {
+const RequestReview = props => {
     const { identity } = useSecurity();
     const { page } = props;
 
     const { showSnackbar } = useSnackbar();
-
-    const [publishPage] = useMutation(PUBLISH_PAGE);
+    const [requestReview] = useMutation(REQUEST_REVIEW);
 
     const { showConfirmation } = useConfirmationDialog({
-        title: t`Publish page`,
+        title: t`Request Review`,
         message: (
             <p>
-                {t`You are about to publish {title} page. Are you sure you want to continue?`({
-                    title: <strong>{page.title}</strong>
-                })}
+                {t`You are about to request review for {title} page. Are you sure you want to continue?`(
+                    {
+                        title: <strong>{page.title}</strong>
+                    }
+                )}
             </p>
         )
     });
@@ -62,27 +63,27 @@ const PublishRevision = props => {
         return null;
     }
 
-    const buttonDisabled = page.status === "published";
+    const buttonEnabled = page.status === "draft" || page.status === "changesRequested";
 
     return (
         <React.Fragment>
-            <Tooltip content={t`Publish`} placement={"top"}>
+            <Tooltip content={t`Request Review`} placement={"top"}>
                 <IconButton
-                    disabled={buttonDisabled}
-                    icon={<PublishIcon />}
+                    disabled={!buttonEnabled}
+                    icon={<RequestReviewIcon />}
                     onClick={() =>
                         showConfirmation(async () => {
-                            const response = await publishPage({
+                            const response = await requestReview({
                                 variables: {
                                     id: page.id
                                 }
                             });
 
-                            const { error } = response.data.pageBuilder.publishPage;
+                            const { error } = response.data.pageBuilder.requestReview;
                             if (error) {
                                 showSnackbar(error.message);
                             } else {
-                                showSnackbar(t`Page published successfully.`);
+                                showSnackbar(t`Review request sent successfully.`);
                             }
                         })
                     }
@@ -92,4 +93,4 @@ const PublishRevision = props => {
     );
 };
 
-export default PublishRevision;
+export default RequestReview;
