@@ -8,7 +8,6 @@ describe("publishing workflow", () => {
         createPage,
         getPage,
         publishPage,
-        unpublishPage,
         requestReview,
         requestChanges,
         listPages,
