@@ -1,6 +1,7 @@
 import React from "react";
 import { ReactComponent as ShadowIcon } from "@webiny/app-page-builder/editor/assets/icons/layers.svg";
 import Settings from "./Settings";
+import ShadowSettings from "./ShadowSettings";
 import Action from "../components/Action";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
@@ -12,5 +13,8 @@ export default {
     },
     renderMenu() {
         return <Settings />;
+    },
+    render() {
+        return <ShadowSettings />;
     }
 } as PbEditorPageElementSettingsPlugin;

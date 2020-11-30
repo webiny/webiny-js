@@ -1,6 +1,7 @@
 import React from "react";
 import { ReactComponent as LinkIcon } from "./round-link-24px.svg";
 import LinkSettings from "./LinkSettings";
+import HrefSettings from "./HrefSettings";
 import Action from "../components/Action";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
@@ -12,5 +13,8 @@ export default {
     },
     renderMenu() {
         return <LinkSettings />;
+    },
+    render() {
+        return <HrefSettings />;
     }
 } as PbEditorPageElementSettingsPlugin;

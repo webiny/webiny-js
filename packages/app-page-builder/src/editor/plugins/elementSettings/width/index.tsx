@@ -3,6 +3,7 @@ import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/type
 import { ReactComponent as WidthIcon } from "./arrows-alt-h-solid.svg";
 import Settings from "./Settings";
 import Action from "../components/Action";
+import WidthSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/width/WidthSettings";
 
 export default {
     name: "pb-editor-page-element-settings-width",
@@ -12,5 +13,8 @@ export default {
     },
     renderMenu() {
         return <Settings />;
+    },
+    render() {
+        return <WidthSettings />;
     }
 } as PbEditorPageElementSettingsPlugin;

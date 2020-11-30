@@ -3,6 +3,7 @@ import { ReactComponent as InvertColorsIcon } from "@webiny/app-page-builder/edi
 import Settings from "./Settings";
 import Action from "../components/Action";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+import BackgroundSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/background/BackgroundSettings";
 
 export default {
     name: "pb-editor-page-element-settings-background",
@@ -12,5 +13,8 @@ export default {
     },
     renderMenu({ options }) {
         return <Settings options={options} />;
+    },
+    render({ options }) {
+        return <BackgroundSettings options={options} />;
     }
 } as PbEditorPageElementSettingsPlugin;

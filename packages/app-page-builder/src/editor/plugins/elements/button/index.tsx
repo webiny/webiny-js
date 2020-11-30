@@ -6,6 +6,7 @@ import {
 } from "@webiny/app-page-builder/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
+import ButtonSettingsNew from "./ButtonSettingsNew";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
@@ -74,6 +75,9 @@ export default () => {
             },
             renderMenu() {
                 return <ButtonSettings />;
+            },
+            render() {
+                return <ButtonSettingsNew />;
             }
         } as PbEditorPageElementSettingsPlugin
     ];

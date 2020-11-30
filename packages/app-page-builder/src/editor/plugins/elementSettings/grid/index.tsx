@@ -1,6 +1,7 @@
 import React from "react";
 import Action from "../components/Action";
 import { Settings } from "./Settings";
+import { GridSettings } from "./GridSettings";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 import { ReactComponent as CellIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
 
@@ -12,5 +13,8 @@ export default {
     },
     renderMenu() {
         return <Settings />;
+    },
+    render() {
+        return <GridSettings />;
     }
 } as PbEditorPageElementSettingsPlugin;

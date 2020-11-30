@@ -1,7 +1,7 @@
 import React from "react";
 import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
-import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/grid-6-6.svg";
+import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import {
@@ -14,7 +14,7 @@ const PreviewBox = styled("div")({
     height: 50,
     svg: {
         height: 50,
-        width: 75
+        width: 50
     }
 });
 
