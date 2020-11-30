@@ -6,6 +6,10 @@ export const DATA_FIELD = /* GraphQL */ `
             instagram
             facebook
             twitter
+            image {
+                src
+                id
+            }
         }
     }
 `;
