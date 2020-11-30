@@ -7,7 +7,7 @@ import { File, FilesCRUD } from "../../types";
 import defaults from "./defaults";
 import { FileManagerContextPlugin } from "../context";
 
-const getFileDocForES = (file: File & { [key: string]: any }, locale: string, tenant: string) => ({
+const getFileDocForES = (file: File & { [key: string]: any }, locale: string) => ({
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -17,8 +17,7 @@ const getFileDocForES = (file: File & { [key: string]: any }, locale: string, te
     tags: file.tags,
     createdBy: file.createdBy,
     meta: file.meta,
-    locale,
-    tenant
+    locale
 });
 
 const CreateDataModel = withFields({
@@ -105,6 +104,8 @@ export default (context: FileManagerContextPlugin) => {
     const localeCode = i18nContent?.locale?.code;
     const PK_FILE = `T#${tenant.id}#F#${localeCode}`;
 
+    const esDefaults = defaults.es(tenant);
+
     return {
         async getFile(id: string) {
             // @ts-ignore
@@ -151,15 +152,15 @@ export default (context: FileManagerContextPlugin) => {
                 data: {
                     PK: PK_FILE,
                     SK: file.id,
-                    TYPE: "fileManager:file",
+                    TYPE: "fm.file",
                     ...file
                 }
             });
             // Index file to "ElasticSearch".
             await elasticSearch.create({
-                ...defaults.es,
+                ...esDefaults,
                 id,
-                body: getFileDocForES(file, localeCode, tenant.id)
+                body: getFileDocForES(file, localeCode)
             });
 
             return file;
@@ -182,7 +183,7 @@ export default (context: FileManagerContextPlugin) => {
 
             // Index file in "Elastic Search"
             await elasticSearch.update({
-                ...defaults.es,
+                ...esDefaults,
                 id,
                 body: {
                     doc: updateFile
@@ -197,9 +198,10 @@ export default (context: FileManagerContextPlugin) => {
                 ...defaults.db,
                 query: { PK: PK_FILE, SK: id }
             });
+
             // Delete index form ES.
             await elasticSearch.delete({
-                ...defaults.es,
+                ...esDefaults,
                 id
             });
             return true;
@@ -245,8 +247,8 @@ export default (context: FileManagerContextPlugin) => {
             // Index files in ES.
             // @ts-ignore
             const body = files.flatMap(doc => [
-                { index: { _index: defaults.es.index } },
-                getFileDocForES(doc, localeCode, tenant.id)
+                { index: { _index: esDefaults.index, _id: doc.id } },
+                getFileDocForES(doc, localeCode)
             ]);
 
             const { body: bulkResponse } = await elasticSearch.bulk({ body });

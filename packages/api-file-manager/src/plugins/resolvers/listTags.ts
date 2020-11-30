@@ -1,25 +1,18 @@
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import { FileManagerResolverContext } from "../../types";
-
-type Term = {
-    term: Record<string, string>;
-};
+import defaults from "../crud/defaults";
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
         const { i18nContent, security } = context;
+        const esDefaults = defaults.es(security.getTenant());
 
         const response = await context.elasticSearch.search({
-            index: "file-manager",
+            ...esDefaults,
             body: {
                 query: {
-                    bool: {
-                        must: [
-                            { term: { "tenant.keyword": security.getTenant().id } },
-                            { term: { "locale.keyword": i18nContent.locale.code } }
-                        ]
-                    }
+                    term: { "locale.keyword": i18nContent.locale.code }
                 },
                 size: 0,
                 aggs: {
