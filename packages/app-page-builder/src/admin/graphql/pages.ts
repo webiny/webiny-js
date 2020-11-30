@@ -44,9 +44,9 @@ export const LIST_DATA_FIELDS = `
 `;
 
 export const CREATE_PAGE = gql`
-    mutation PbCreatePage($category: String!) {
+    mutation CreatePage($category: String!) {
         pageBuilder {
-            page: createPage(data: { category: $category }) {
+            createPage(category: $category) {
                 data {
                     id
                 }
@@ -57,11 +57,16 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query PbListPages($where: PbListPagesWhereInput, $sort: PbListPagesSortInput, $limit: Int) {
+    query ListPages($where: PbListPagesWhereInput, $sort: PbListPagesSortInput, $limit: Int) {
         pageBuilder {
             listPages(where: $where, sort: $sort, limit: $limit) {
                 data {
                     ${LIST_DATA_FIELDS}
+                },
+                error {
+                    data
+                    code
+                    message
                 }
             }
         }
@@ -82,16 +87,14 @@ export const LIST_PAGES = gql`
  *
  * */
 export const GET_PAGE = gql`
-    query PbGetPage($id: ID!) {
+    query GetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
-                    snippet
-                    category {
-                        name
-                        slug
-                    } 
+                    createdBy {
+                        id
+                    }
                     content
 
                 }
@@ -102,7 +105,7 @@ export const GET_PAGE = gql`
 `;
 
 export const CREATE_REVISION_FORM = gql`
-    mutation PbCreateRevisionFrom($revision: ID!) {
+    mutation CreateRevisionFrom($revision: ID!) {
         pageBuilder {
             revision: createRevisionFrom(revision: $revision) {
                 data {
@@ -115,7 +118,7 @@ export const CREATE_REVISION_FORM = gql`
 `;
 
 export const PUBLISH_REVISION = gql`
-    mutation PbPublishRevision($id: ID!) {
+    mutation PublishRevision($id: ID!) {
         pageBuilder {
             publishRevision(id: $id) {
                 data {
