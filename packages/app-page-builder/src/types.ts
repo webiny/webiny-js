@@ -46,9 +46,25 @@ export type PbElementDataSettingsPaddingType = {
     desktop?: PbElementDataSettingsMarginPaddingType;
 };
 export type PbElementDataSettingsBorderType = {
-    width?: number;
+    width?:
+        | number
+        | {
+              all?: number;
+              top?: number;
+              right?: number;
+              bottom?: number;
+              left?: number;
+          };
     style?: "none" | "solid" | "dashed" | "dotted";
-    radius?: number;
+    radius?:
+        | number
+        | {
+              all?: number;
+              topLeft?: number;
+              topRight?: number;
+              bottomLeft?: number;
+              bottomRight?: number;
+          };
     borders?: {
         top?: boolean;
         right?: boolean;
@@ -76,7 +92,16 @@ export type PbElementDataSettingsFormType = {
     parent?: string;
     revision?: string;
 };
+export enum AlignmentTypesEnum {
+    HORIZONTAL_LEFT = "horizontalLeft",
+    HORIZONTAL_CENTER = "horizontalCenter",
+    HORIZONTAL_RIGHT = "horizontalRight",
+    VERTICAL_TOP = "verticalTop",
+    VERTICAL_CENTER = "verticalCenter",
+    VERTICAL_BOTTOM = "verticalBottom"
+}
 export type PbElementDataSettingsType = {
+    alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
     verticalAlign?: "start" | "center" | "end";
@@ -455,6 +480,7 @@ export type PbEditorPageElementSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-settings";
     renderAction(params: { options?: any }): ReactElement;
     renderMenu?: (params: { options?: any }) => ReactElement;
+    render?(params: { options?: any }): ReactElement;
     elements?: boolean | string[];
 };
 

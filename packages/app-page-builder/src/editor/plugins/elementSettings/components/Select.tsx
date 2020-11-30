@@ -24,6 +24,7 @@ type SelectProps = {
     disabled?: boolean;
     // One or more <option> or <optgroup> elements.
     children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
+    className?: string;
 };
 
 const Select = ({
@@ -33,12 +34,13 @@ const Select = ({
     defaultValue,
     updateValue,
     options,
-    children
+    children,
+    className
 }: SelectProps) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;
     return (
-        <Grid>
+        <Grid className={className}>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>

@@ -30,10 +30,10 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
     const value = lodashGet(element, valueKey, 0);
     return (
         <Grid className={className}>
-            <Cell span={2}>
+            <Cell align={"middle"} span={2}>
                 <Icon icon={icon} />
             </Cell>
-            <Cell span={6}>
+            <Cell align={"middle"} span={6}>
                 <Slider
                     value={value}
                     onChange={updateValue}
@@ -43,7 +43,7 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
                     step={1}
                 />
             </Cell>
-            <Cell span={4}>
+            <Cell align={"middle"} span={4}>
                 <InputContainer>
                     <Input placeholder={placeholder || "px"} value={value} onChange={updateValue} />
                 </InputContainer>

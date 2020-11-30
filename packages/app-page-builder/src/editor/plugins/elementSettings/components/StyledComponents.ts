@@ -27,3 +27,17 @@ export const InputContainer = styled<"div", InputContainerProps>("div")(props =>
         }
     }
 }));
+
+type ContentWrapperProps = {
+    direction?: "row" | "row-reverse" | "column" | "column-reverse";
+};
+
+export const ContentWrapper = styled<"div", ContentWrapperProps>("div")(props => ({
+    display: "flex",
+    flexDirection: props.direction || "row",
+    /**
+     * We're applying this style here to counter the extra "padding-left"
+     * on the "Accordion Item" content.
+     */
+    marginLeft: -45
+}));

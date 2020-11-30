@@ -19,6 +19,7 @@ type InputPropsType = {
     description?: string;
     // TODO check - not used anywhere
     className?: string;
+    containerClassName?: string;
 };
 
 const Input: React.FunctionComponent<InputPropsType> = ({
@@ -28,17 +29,19 @@ const Input: React.FunctionComponent<InputPropsType> = ({
     defaultValue,
     placeholder,
     updateValue,
-    inputWidth
+    inputWidth,
+    className,
+    containerClassName
 }) => {
     const element = useRecoilValue(activeElementSelector);
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;
     return (
-        <Grid>
+        <Grid className={containerClassName}>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <InputContainer width={inputWidth}>
+                <InputContainer className={className} width={inputWidth}>
                     <InputCmp placeholder={placeholder} value={keyValue} onChange={updateValue} />
                 </InputContainer>
             </Cell>

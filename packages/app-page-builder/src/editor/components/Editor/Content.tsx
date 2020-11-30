@@ -25,7 +25,7 @@ const contentContainerWrapper = css({
     margin: "95px 65px 50px 85px",
     padding: 0,
     position: "absolute",
-    width: "calc(100vw - 115px)",
+    width: "calc(100vw - 115px - 300px)",
     //overflow: "hidden", // cuts off the block selector tooltip
     top: 0,
     boxSizing: "border-box",
