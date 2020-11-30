@@ -19,6 +19,13 @@
     {
       "path": "../../../packages/api-file-manager"
     },
+    ,
+    {
+      "path": "../../../packages/api-file-manager-s3"
+    },
+    {
+      "path": "../../../packages/api-form-builder"
+    },
     {
       "path": "../../../packages/api-plugin-elastic-search-client"
     },
@@ -39,9 +46,6 @@
     },
     {
       "path": "../../../packages/handler-graphql"
-    },
-    {
-      "path": "../../../packages/api-file-manager-s3"
     }
   ]
 }
