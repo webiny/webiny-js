@@ -389,7 +389,7 @@ addMiddleware([SAVING_REVISION], ({ store, next, action }) => {
                         id
                         content
                         title
-                        published
+                        status
                         savedOn
                     }
                     error {
