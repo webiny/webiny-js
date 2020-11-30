@@ -28,6 +28,8 @@ type ColorPickerProps = {
     defaultValue?: string;
     updatePreview: Function;
     updateValue: Function;
+    className?: string;
+    handlerClassName?: string;
 };
 
 const ColorPicker = ({
@@ -36,11 +38,12 @@ const ColorPicker = ({
     valueKey,
     defaultValue,
     updatePreview,
-    updateValue
+    updateValue,
+    className
 }: ColorPickerProps) => {
     const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
     return (
-        <Grid>
+        <Grid className={className}>
             <Cell span={4}>
                 <Typography use={"overline"}>{label}</Typography>
             </Cell>
@@ -57,3 +60,25 @@ const ColorPicker = ({
 };
 
 export default React.memo(ColorPicker);
+
+export const BaseColorPickerComponent = ({
+    value,
+    valueKey,
+    defaultValue,
+    updatePreview,
+    updateValue,
+    handlerClassName
+}: Partial<ColorPickerProps>) => {
+    const targetValue = extrapolateActiveElementValue(value, valueKey, defaultValue);
+    return (
+        <ColorPickerCmp
+            handlerClassName={handlerClassName}
+            compact
+            value={targetValue}
+            onChange={updatePreview}
+            onChangeComplete={updateValue}
+        />
+    );
+};
+
+export const BaseColorPicker = React.memo(BaseColorPickerComponent);
