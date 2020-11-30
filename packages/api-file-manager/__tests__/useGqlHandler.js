@@ -28,6 +28,7 @@ import {
 } from "./graphql/fileManagerSettings";
 
 export default ({ permissions, identity } = {}) => {
+    const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
@@ -48,7 +49,7 @@ export default ({ permissions, identity } = {}) => {
             type: "context",
             apply(context) {
                 context.security.getTenant = () => {
-                    return { id: "root", name: "Root", parent: null };
+                    return tenant;
                 };
             }
         },
@@ -86,6 +87,7 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        tenant,
         elasticSearch: new Client({
             hosts: [`http://localhost:9201`],
             node: "http://localhost:9201"

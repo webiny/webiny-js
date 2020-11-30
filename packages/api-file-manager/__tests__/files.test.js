@@ -26,6 +26,7 @@ const fileBData = {
 
 describe("Files CRUD test", () => {
     const {
+        tenant,
         elasticSearch,
         sleep,
         createFile,
@@ -40,13 +41,17 @@ describe("Files CRUD test", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: "file-manager" });
+            await elasticSearch.indices.create({
+                index: tenant.id + "-file-manager"
+            });
         } catch (e) {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: "file-manager" });
+            await elasticSearch.indices.delete({
+                index: tenant.id + "-file-manager"
+            });
         } catch (e) {}
     });
 

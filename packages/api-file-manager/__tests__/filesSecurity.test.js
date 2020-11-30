@@ -47,26 +47,29 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
-const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
-    identity: identityA
-});
-
-beforeEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.create({ index: "file-manager" });
-    } catch (e) {}
-});
-
-afterEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.delete({ index: "file-manager" });
-    } catch (e) {}
-});
-
 describe("Files Security Test", () => {
+    const { tenant, elasticSearch, createFile, createFiles, sleep } = useGqlHandler({
+        permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
+        identity: identityA
+    });
+
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.create({
+                index: tenant.id + "-file-manager"
+            });
+        } catch (e) {}
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({
+                index: tenant.id + "-file-manager"
+            });
+        } catch (e) {}
+    });
+
     test(`"listFiles" only returns entries to which the identity has access to`, async () => {
-        const { createFiles, sleep } = defaultHandler;
         const [createFilesResponse] = await createFiles({
             data: [new Mock("list-files-1-"), new Mock("list-files-2-")]
         });
@@ -223,7 +226,6 @@ describe("Files Security Test", () => {
     });
 
     test(`allow "updateFile" if identity has sufficient permissions`, async () => {
-        const { createFile } = defaultHandler;
         const mock = new Mock("update-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
@@ -270,7 +272,6 @@ describe("Files Security Test", () => {
     });
 
     test(`allow "getFile" if identity has sufficient permissions`, async () => {
-        const { createFile } = defaultHandler;
         const mock = new Mock("get-file-");
 
         const [createFileResponse] = await createFile({ data: mock });
