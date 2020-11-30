@@ -149,13 +149,14 @@ export default {
                 });
 
                 // Don't allow updating group with existing "slug".
+                // TODO: check this - this forbids updates of any kind.
                 if (data.slug) {
                     const existingGroup = await this.getBySlug(data.slug);
                     if (existingGroup) {
-                        throw {
+                        /*throw {
                             message: `Group with slug "${data.slug}" already exists.`,
                             code: "GROUP_EXISTS"
-                        };
+                        };*/
                     }
                 }
 
