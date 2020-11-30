@@ -25,6 +25,9 @@ export type Page = {
     latestVersion: boolean;
     settings: Record<string, any>;
     locked: boolean;
+    home: boolean;
+    error: boolean;
+    notFound: boolean;
     createdOn: string;
     savedOn: string;
     createdBy: {
@@ -32,6 +35,12 @@ export type Page = {
         displayName: string;
     };
 };
+
+const STATUS_CHANGES_REQUESTED = "changesRequested";
+const STATUS_REVIEW_REQUESTED = "reviewRequested";
+const STATUS_DRAFT = "draft";
+const STATUS_PUBLISHED = "published";
+const STATUS_UNPUBLISHED = "unpublished";
 
 const CreateDataModel = withFields({
     category: string({ validation: validation.create("required,maxLength:100") })
@@ -71,6 +80,14 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
+const hasRcpu = ({ pbPagePermission, rcpu }) => {
+    if (typeof pbPagePermission.rcpu !== "string") {
+        return true;
+    }
+
+    return pbPagePermission.rcpu.includes(rcpu);
+};
+
 type SortOrder = "asc" | "desc";
 
 export type PagesListArgs = {
@@ -79,6 +96,11 @@ export type PagesListArgs = {
     where?: { category?: string; status?: string };
     sort?: { createdOn?: SortOrder; title?: SortOrder };
 };
+
+// HOME-PAGE-STUFF
+// Has permission to change this?
+// Cannot set unpublished page as XYZ.
+// The page is already set as homepage.
 
 export default {
     type: "context",
@@ -156,6 +178,12 @@ export default {
             },
 
             async create({ category: categorySlug }) {
+                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                    return new NotAuthorizedError();
+                }
+
                 const category = await context.categories.get(categorySlug);
                 if (!category) {
                     throw new NotFoundError(`Category with slug "${categorySlug}" not found.`);
@@ -179,9 +207,12 @@ export default {
                     title,
                     url,
                     version,
-                    status: "draft",
+                    status: STATUS_DRAFT,
                     locked: false,
                     publishedOn: null,
+                    home: false,
+                    error: false,
+                    notFound: false,
                     savedOn: new Date().toISOString(),
                     createdFrom: null,
                     createdOn: new Date().toISOString(),
@@ -219,6 +250,9 @@ export default {
                         status: data.status,
                         locked: data.locked,
                         publishedOn: data.publishedOn,
+                        home: false,
+                        error: false,
+                        notFound: false,
                         tags: []
                     }
                 });
@@ -227,6 +261,12 @@ export default {
             },
 
             async createFrom({ from }) {
+                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                    return new NotAuthorizedError();
+                }
+
                 const [fromUniqueId] = from.split("#");
 
                 const [[[page]], [[latestPageData]]] = await db
@@ -259,9 +299,12 @@ export default {
                     ...page,
                     SK: nextId,
                     id: nextId,
-                    status: "draft",
+                    status: STATUS_DRAFT,
                     locked: false,
                     publishedOn: null,
+                    home: false,
+                    error: false,
+                    notFound: false,
                     version: nextVersion,
                     savedOn: new Date().toISOString(),
                     createdFrom: from,
@@ -309,7 +352,10 @@ export default {
                         tags: data.tags,
                         status: data.status,
                         locked: data.locked,
-                        publishedOn: data.publishedOn
+                        publishedOn: data.publishedOn,
+                        home: false,
+                        error: false,
+                        notFound: false
                     }
                 });
 
@@ -384,10 +430,26 @@ export default {
                 return { ...page, ...data };
             },
 
+            async delete(id) {
+                const [uniqueId] = id.split("#");
+                await db.delete({
+                    ...defaults.db,
+                    query: { PK: PK_PAGE, SK: id }
+                });
+
+                // Delete pages from ES.
+                await elasticSearch.delete({
+                    ...defaults.es,
+                    id: `L#${uniqueId}`
+                });
+
+                // TODO: finish this.
+            },
+
             async publish(pageId: string) {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "p" })) {
                     throw new NotAuthorizedError();
                 }
 
@@ -464,7 +526,7 @@ export default {
                         limit: 1
                     });
 
-                    previouslyPublishedPage.status = "unpublished";
+                    previouslyPublishedPage.status = STATUS_UNPUBLISHED;
 
                     await db.update({
                         ...defaults.db,
@@ -547,9 +609,9 @@ export default {
             },
 
             async unpublish(pageId: string) {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "u" })) {
                     throw new NotAuthorizedError();
                 }
 
@@ -626,7 +688,7 @@ export default {
                 if (latestPageData.id === pageId) {
                     esOperations.push(
                         { update: { _id: `L#${pageUniqueId}`, _index: "page-builder" } },
-                        { doc: { status: "unpublished" } }
+                        { doc: { status: STATUS_UNPUBLISHED } }
                     );
                 }
 
@@ -638,26 +700,10 @@ export default {
                 return page;
             },
 
-            async delete(id) {
-                const [uniqueId] = id.split("#");
-                await db.delete({
-                    ...defaults.db,
-                    query: { PK: PK_PAGE, SK: id }
-                });
-
-                // Delete pages from ES.
-                await elasticSearch.delete({
-                    ...defaults.es,
-                    id: `L#${uniqueId}`
-                });
-
-                // TODO: finish this.
-            },
-
             async requestReview(pageId: string) {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "r" })) {
                     throw new NotAuthorizedError();
                 }
 
@@ -684,6 +730,13 @@ export default {
 
                 if (!page) {
                     throw new NotFoundError(`Page "${pageId}" not found.`);
+                }
+
+                const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
+                if (!allowedStatuses.includes(page.status)) {
+                    throw new Error(
+                        `Cannot request review - page is not a draft nor a change request has been issued.`
+                    );
                 }
 
                 // If user can only manage own records, let's check if he owns the loaded one.
@@ -695,22 +748,17 @@ export default {
                 }
 
                 // Change loaded page's status to `reviewRequested`.
-                page.status = "reviewRequested";
+                page.status = STATUS_REVIEW_REQUESTED;
                 page.locked = true;
 
-                const nocic = 'sad'
-                try {
-                    await db.update({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_PAGE,
-                            SK: pageId
-                        },
-                        data: omit(page, ['PK', 'SK'])
-                    });
-                } catch (e) {
-                    console.log(e)
-                }
+                await db.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_PAGE,
+                        SK: pageId
+                    },
+                    data: omit(["PK", "SK"], page)
+                });
 
                 // If we updated the latest version, then make sure the changes are propagated to ES too.
                 if (latestPageData.id === pageId) {
@@ -722,7 +770,7 @@ export default {
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
-                                status: "reviewRequested",
+                                status: STATUS_REVIEW_REQUESTED,
                                 locked: true
                             }
                         }
@@ -733,9 +781,9 @@ export default {
             },
 
             async requestChanges(pageId: string) {
-                // If permission has "rwd" property set, but "w" is not part of it, bail.
+                await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "c" })) {
                     throw new NotAuthorizedError();
                 }
 
@@ -764,16 +812,30 @@ export default {
                     throw new NotFoundError(`Page "${pageId}" not found.`);
                 }
 
+                if (page.status !== STATUS_REVIEW_REQUESTED) {
+                    throw new Error(
+                        `Cannot request changes on a page that's not in review.`,
+                        "REQUESTED_CHANGES_ON_NOT_IN_REVIEW_PAGE"
+                    );
+                }
+
+                const identity = context.security.getIdentity();
+                if (page.createdBy.id === identity.id) {
+                    throw new Error(
+                        "Cannot request changes on own page.",
+                        "REQUEST_CHANGES_ON_OWN_PAGE"
+                    );
+                }
+
                 // If user can only manage own records, let's check if he owns the loaded one.
                 if (pbPagePermission?.own === true) {
-                    const identity = context.security.getIdentity();
                     if (page.createdBy.id !== identity.id) {
                         throw new NotAuthorizedError();
                     }
                 }
 
                 // Change loaded page's status to published.
-                page.status = "changesRequested";
+                page.status = STATUS_CHANGES_REQUESTED;
                 page.locked = false;
 
                 await db.update({
@@ -782,7 +844,7 @@ export default {
                         PK: PK_PAGE,
                         SK: pageId
                     },
-                    data: omit(page, ['PK', 'SK'])
+                    data: omit(page, ["PK", "SK"])
                 });
 
                 // If we updated the latest version, then make sure the changes are propagated to ES too.
@@ -795,7 +857,7 @@ export default {
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
-                                status: "changesRequested",
+                                status: STATUS_CHANGES_REQUESTED,
                                 locked: false
                             }
                         }
