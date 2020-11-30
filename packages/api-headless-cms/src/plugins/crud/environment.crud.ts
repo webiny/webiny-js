@@ -33,15 +33,22 @@ const UpdateEnvironmentModel = withFields({
 })();
 
 const TYPE = "env";
+const PARTITION_KEY_START = "CE#";
+const createPartitionKey = (i18nContent: Record<string, any>) => {
+    if (!i18nContent || !i18nContent.locale) {
+        return PARTITION_KEY_START;
+    }
+    return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
+};
 
 export default {
     type: "context",
     apply(context) {
         const { db, i18nContent } = context;
-        const PK_ENVIRONMENT = `CE#${i18nContent?.locale?.code}`;
+        const PK_ENVIRONMENT = createPartitionKey(i18nContent);
 
         const environment: EnvironmentContextType = {
-            async get(id: string): Promise<EnvironmentType> {
+            async get(id: string): Promise<EnvironmentType | null> {
                 const [response] = await db.read<EnvironmentType>({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: id },
@@ -50,7 +57,7 @@ export default {
                 if (!response || response.length === 0) {
                     return null;
                 }
-                return response[0];
+                return response.find(() => true);
             },
             async list(): Promise<EnvironmentType[]> {
                 const [response] = await db.read<EnvironmentType>({
@@ -67,7 +74,7 @@ export default {
 
                 const id = mdbid();
 
-                data = Object.assign(await createData.toJSON(), {
+                const modelData = Object.assign(await createData.toJSON(), {
                     PK: PK_ENVIRONMENT,
                     SK: id,
                     TYPE,
@@ -80,20 +87,23 @@ export default {
                     }
                 });
 
-                await db.create({ ...defaults.db, data });
+                await db.create({
+                    ...defaults.db,
+                    data: modelData
+                });
 
-                return data;
+                return modelData;
             },
             async update(id: string, data: EnvironmentType): Promise<EnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);
                 await updateData.validate();
 
-                data = await updateData.toJSON({ onlyDirty: true });
+                const modelData = await updateData.toJSON({ onlyDirty: true });
 
                 await db.update({
                     ...defaults.es,
                     query: { PK: PK_ENVIRONMENT, SK: id },
-                    data
+                    data: modelData
                 });
 
                 return data;

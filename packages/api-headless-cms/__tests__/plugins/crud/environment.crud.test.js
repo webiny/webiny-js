@@ -1,23 +1,14 @@
 import { useGqlHandler } from "./useGqlHandler";
 
-type EnvironmentModelType = {
-    name: string;
-    slug: string;
-    description: string;
-    createdFrom: string;
-};
+const ENUM_PREFIX = "environment-";
+const ENUM_SUFFIX = "UPDATED";
+const ENUM_USER_DISPLAY_NAME = "userName123";
+const ENUM_USER_ID = "1234567890";
 
-enum TestHelperEnum {
-    PREFIX = "environment-",
-    SUFFIX = "UPDATED",
-    USER_DISPLAY_NAME = "userName123",
-    USER_ID = "1234567890"
-}
-
-const createEnvironmentPrefix = (position: number): string => {
-    return `${TestHelperEnum.PREFIX}-${position}`;
+const createEnvironmentPrefix = position => {
+    return `${ENUM_PREFIX}-${position}`;
 };
-const createEnvironmentModel = (prefix: string, suffix?: string): EnvironmentModelType => {
+const createEnvironmentModel = (prefix, suffix) => {
     const append = suffix ? `_${suffix}` : "";
     return {
         name: `${prefix}_name${append}`,
@@ -36,7 +27,7 @@ describe("Environment crud test", () => {
     } = useGqlHandler();
 
     test("environment create, read, update, delete and list all at once", async () => {
-        const createdEnvironmentIdList: string[] = [];
+        const createdEnvironmentIdList = [];
         for (let i = 0; i < 3; i++) {
             const prefix = createEnvironmentPrefix(i);
             const modelData = createEnvironmentModel(prefix);
@@ -51,8 +42,8 @@ describe("Environment crud test", () => {
                             data: {
                                 ...modelData,
                                 createdBy: {
-                                    displayName: TestHelperEnum.USER_DISPLAY_NAME,
-                                    id: TestHelperEnum.USER_ID
+                                    displayName: ENUM_USER_DISPLAY_NAME,
+                                    id: ENUM_USER_ID
                                 },
                                 createdOn: /^20/
                             },
@@ -84,7 +75,7 @@ describe("Environment crud test", () => {
                 }
             });
 
-            const updatedModelData = createEnvironmentModel(prefix, TestHelperEnum.SUFFIX);
+            const updatedModelData = createEnvironmentModel(prefix, ENUM_SUFFIX);
 
             const [updateEnvironmentResponse] = await updateEnvironmentQuery({
                 id: createdEnvironmentId,
@@ -97,8 +88,8 @@ describe("Environment crud test", () => {
                             data: {
                                 ...updatedModelData,
                                 createdBy: {
-                                    displayName: TestHelperEnum.USER_DISPLAY_NAME,
-                                    id: TestHelperEnum.USER_ID
+                                    displayName: ENUM_USER_DISPLAY_NAME,
+                                    id: ENUM_USER_ID
                                 },
                                 createdOn: /^20/
                             },
@@ -115,18 +106,9 @@ describe("Environment crud test", () => {
                 cms: {
                     listEnvironment: {
                         data: [
-                            createEnvironmentModel(
-                                createEnvironmentPrefix(0),
-                                TestHelperEnum.SUFFIX
-                            ),
-                            createEnvironmentModel(
-                                createEnvironmentPrefix(1),
-                                TestHelperEnum.SUFFIX
-                            ),
-                            createEnvironmentModel(
-                                createEnvironmentPrefix(2),
-                                TestHelperEnum.SUFFIX
-                            )
+                            createEnvironmentModel(createEnvironmentPrefix(0), ENUM_SUFFIX),
+                            createEnvironmentModel(createEnvironmentPrefix(1), ENUM_SUFFIX),
+                            createEnvironmentModel(createEnvironmentPrefix(2), ENUM_SUFFIX)
                         ],
                         error: null
                     }

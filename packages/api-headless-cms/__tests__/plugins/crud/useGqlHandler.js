@@ -19,16 +19,8 @@ import {
     UPDATE_ENVIRONMENT_QUERY
 } from "./graphql/environment";
 
-type PermissionsType = {
-    name: string;
-};
-type GQLHandlerArgsType = {
-    permissions?: PermissionsType[];
-    identity?: SecurityIdentity;
-};
-
-const createGetPermissions = (permissions?: PermissionsType[]) => {
-    return (): PermissionsType[] => {
+const createGetPermissions = permissions => {
+    return () => {
         if (!permissions) {
             return [
                 {
@@ -40,8 +32,8 @@ const createGetPermissions = (permissions?: PermissionsType[]) => {
     };
 };
 
-const createAuthenticate = (identity?: SecurityIdentity) => {
-    return (): SecurityIdentity => {
+const createAuthenticate = identity => {
+    return () => {
         if (!identity) {
             return new SecurityIdentity({
                 id: "1234567890",
@@ -54,7 +46,7 @@ const createAuthenticate = (identity?: SecurityIdentity) => {
     };
 };
 
-export const useGqlHandler = ({ permissions, identity }: GQLHandlerArgsType = {}) => {
+export const useGqlHandler = ({ permissions, identity } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",
@@ -109,16 +101,16 @@ export const useGqlHandler = ({ permissions, identity }: GQLHandlerArgsType = {}
         handler,
         invoke,
         // environment
-        async createEnvironmentQuery(variables: Record<string, any>) {
+        async createEnvironmentQuery(variables) {
             return invoke({ body: { query: CREATE_ENVIRONMENT_QUERY, variables } });
         },
-        async getEnvironmentQuery(variables: Record<string, any>) {
+        async getEnvironmentQuery(variables) {
             return invoke({ body: { query: GET_ENVIRONMENT_QUERY, variables } });
         },
-        async updateEnvironmentQuery(variables: Record<string, any>) {
+        async updateEnvironmentQuery(variables) {
             return invoke({ body: { query: UPDATE_ENVIRONMENT_QUERY, variables } });
         },
-        async deleteEnvironmentQuery(variables: Record<string, any>) {
+        async deleteEnvironmentQuery(variables) {
             return invoke({ body: { query: DELETE_ENVIRONMENT_QUERY, variables } });
         },
         async listEnvironmentQuery() {
