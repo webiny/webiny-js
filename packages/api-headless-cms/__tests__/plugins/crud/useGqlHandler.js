@@ -12,12 +12,19 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { SecurityIdentity } from "@webiny/api-security";
 import { Client } from "@elastic/elasticsearch";
 import {
-    CREATE_ENVIRONMENT_QUERY,
-    DELETE_ENVIRONMENT_QUERY,
+    CREATE_ENVIRONMENT_MUTATION,
+    DELETE_ENVIRONMENT_MUTATION,
     GET_ENVIRONMENT_QUERY,
     LIST_ENVIRONMENT_QUERY,
-    UPDATE_ENVIRONMENT_QUERY
+    UPDATE_ENVIRONMENT_MUTATION
 } from "./graphql/environment";
+import {
+    CREATE_ENVIRONMENT_ALIAS_MUTATION,
+    DELETE_ENVIRONMENT_ALIAS_MUTATION,
+    GET_ENVIRONMENT_ALIAS_QUERY,
+    LIST_ENVIRONMENT_ALIAS_QUERY,
+    UPDATE_ENVIRONMENT_ALIAS_MUTATION
+} from "./graphql/environmentAlias";
 
 const createGetPermissions = permissions => {
     return () => {
@@ -101,20 +108,36 @@ export const useGqlHandler = ({ permissions, identity } = {}) => {
         handler,
         invoke,
         // environment
-        async createEnvironmentQuery(variables) {
-            return invoke({ body: { query: CREATE_ENVIRONMENT_QUERY, variables } });
+        async createEnvironmentMutation(variables) {
+            return invoke({ body: { query: CREATE_ENVIRONMENT_MUTATION, variables } });
         },
         async getEnvironmentQuery(variables) {
             return invoke({ body: { query: GET_ENVIRONMENT_QUERY, variables } });
         },
-        async updateEnvironmentQuery(variables) {
-            return invoke({ body: { query: UPDATE_ENVIRONMENT_QUERY, variables } });
+        async updateEnvironmentMutation(variables) {
+            return invoke({ body: { query: UPDATE_ENVIRONMENT_MUTATION, variables } });
         },
-        async deleteEnvironmentQuery(variables) {
-            return invoke({ body: { query: DELETE_ENVIRONMENT_QUERY, variables } });
+        async deleteEnvironmentMutation(variables) {
+            return invoke({ body: { query: DELETE_ENVIRONMENT_MUTATION, variables } });
         },
         async listEnvironmentQuery() {
             return invoke({ body: { query: LIST_ENVIRONMENT_QUERY } });
+        },
+        // environment alias
+        async createEnvironmentAliasMutation(variables) {
+            return invoke({ body: { query: CREATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
+        },
+        async getEnvironmentAliasQuery(variables) {
+            return invoke({ body: { query: GET_ENVIRONMENT_ALIAS_QUERY, variables } });
+        },
+        async updateEnvironmentAliasMutation(variables) {
+            return invoke({ body: { query: UPDATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
+        },
+        async deleteEnvironmentAliasMutation(variables) {
+            return invoke({ body: { query: DELETE_ENVIRONMENT_ALIAS_MUTATION, variables } });
+        },
+        async listEnvironmentAliasQuery() {
+            return invoke({ body: { query: LIST_ENVIRONMENT_ALIAS_QUERY } });
         }
     };
 };

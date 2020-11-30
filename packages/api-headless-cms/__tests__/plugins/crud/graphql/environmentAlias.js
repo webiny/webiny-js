@@ -32,8 +32,8 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    mutation CreateEnvironmentAlias($data: CmsEnvironmentAliasInput!) {
+export const CREATE_ENVIRONMENT_ALIAS_MUTATION = /* GraphQL */ `
+    mutation CreateEnvironmentAliasMutation($data: CmsEnvironmentAliasInput!) {
         cms {
             createEnvironmentAlias(data: $data) {
                 data ${DATA_FIELD}
@@ -43,7 +43,7 @@ export const CREATE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
     }
 `;
 export const GET_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    query GetEnvironmentAlias($id: ID!) {
+    query GetEnvironmentAliasQuery($id: ID!) {
         cms {
             getEnvironmentAlias(id: $id) {
                 data ${DATA_FIELD}
@@ -52,8 +52,8 @@ export const GET_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
         }
     }
 `;
-export const UPDATE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    mutation UpdateEnvironmentAlias($id: ID!, $data: CmsEnvironmentAliasInput!) {
+export const UPDATE_ENVIRONMENT_ALIAS_MUTATION = /* GraphQL */ `
+    mutation UpdateEnvironmentAliasMutation($id: ID!, $data: CmsEnvironmentAliasInput!) {
         cms {
             updateEnvironmentAlias(id: $id, data: $data) {
                 data ${DATA_FIELD}
@@ -62,10 +62,10 @@ export const UPDATE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
         }
     }
 `;
-export const DELETE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    mutation DeleteEnvironmentAlias($id: ID!) {
+export const DELETE_ENVIRONMENT_ALIAS_MUTATION = /* GraphQL */ `
+    mutation DeleteEnvironmentAliasMutation($id: ID!) {
         cms {
-            updateEnvironmentAlias(id: $id) {
+            deleteEnvironmentAlias(id: $id) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -73,7 +73,7 @@ export const DELETE_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
     }
 `;
 export const LIST_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    query ListEnvironmentAlias() {
+    query ListEnvironmentAliasQuery {
         cms {
             listEnvironmentAlias {
                 data ${DATA_FIELD}

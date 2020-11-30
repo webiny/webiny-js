@@ -24,8 +24,8 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_ENVIRONMENT_QUERY = /* GraphQL */ `
-    mutation CreateEnvironment($data: CmsEnvironmentInput!) {
+export const CREATE_ENVIRONMENT_MUTATION = /* GraphQL */ `
+    mutation CreateEnvironmentMutation($data: CmsEnvironmentInput!) {
         cms {
             createEnvironment(data: $data) {
                 data ${DATA_FIELD}
@@ -35,7 +35,7 @@ export const CREATE_ENVIRONMENT_QUERY = /* GraphQL */ `
     }
 `;
 export const GET_ENVIRONMENT_QUERY = /* GraphQL */ `
-    query GetEnvironment($id: ID!) {
+    query GetEnvironmentQuery($id: ID!) {
         cms {
             getEnvironment(id: $id) {
                 data ${DATA_FIELD}
@@ -44,8 +44,8 @@ export const GET_ENVIRONMENT_QUERY = /* GraphQL */ `
         }
     }
 `;
-export const UPDATE_ENVIRONMENT_QUERY = /* GraphQL */ `
-    mutation UpdateEnvironment($id: ID!, $data: CmsEnvironmentInput!) {
+export const UPDATE_ENVIRONMENT_MUTATION = /* GraphQL */ `
+    mutation UpdateEnvironmentMutation($id: ID!, $data: CmsEnvironmentInput!) {
         cms {
             updateEnvironment(id: $id, data: $data) {
                 data ${DATA_FIELD}
@@ -54,8 +54,8 @@ export const UPDATE_ENVIRONMENT_QUERY = /* GraphQL */ `
         }
     }
 `;
-export const DELETE_ENVIRONMENT_QUERY = /* GraphQL */ `
-    mutation DeleteEnvironment($id: ID!) {
+export const DELETE_ENVIRONMENT_MUTATION = /* GraphQL */ `
+    mutation DeleteEnvironmentMutation($id: ID!) {
         cms {
             updateEnvironment(id: $id) {
                 data ${DATA_FIELD}
@@ -65,7 +65,7 @@ export const DELETE_ENVIRONMENT_QUERY = /* GraphQL */ `
     }
 `;
 export const LIST_ENVIRONMENT_QUERY = /* GraphQL */ `
-    query ListEnvironment() {
+    query ListEnvironmentQuery {
         cms {
             listEnvironment {
                 data ${DATA_FIELD}

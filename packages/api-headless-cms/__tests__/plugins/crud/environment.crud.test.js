@@ -1,5 +1,6 @@
 import { useGqlHandler } from "./useGqlHandler";
 
+const TEST_MODELS_AMOUNT = 3; // number of test models to be created
 const ENUM_PREFIX = "environment-";
 const ENUM_SUFFIX = "UPDATED";
 const ENUM_USER_DISPLAY_NAME = "userName123";
@@ -19,20 +20,22 @@ const createEnvironmentModel = (prefix, suffix) => {
 };
 describe("Environment crud test", () => {
     const {
-        createEnvironmentQuery,
+        createEnvironmentMutation,
         getEnvironmentQuery,
-        updateEnvironmentQuery,
-        deleteEnvironmentQuery,
+        updateEnvironmentMutation,
+        deleteEnvironmentMutation,
         listEnvironmentQuery
     } = useGqlHandler();
 
     test("environment create, read, update, delete and list all at once", async () => {
         const createdEnvironmentIdList = [];
-        for (let i = 0; i < 3; i++) {
-            const prefix = createEnvironmentPrefix(i);
+        const prefixes = Array.from(Array(TEST_MODELS_AMOUNT).keys()).map(prefix => {
+            return createEnvironmentPrefix(prefix);
+        });
+        for (const prefix of prefixes) {
             const modelData = createEnvironmentModel(prefix);
 
-            const [createEnvironmentResponse] = await createEnvironmentQuery({
+            const [createEnvironmentResponse] = await createEnvironmentMutation({
                 data: modelData
             });
             expect(createEnvironmentResponse).toMatchObject({
@@ -77,7 +80,7 @@ describe("Environment crud test", () => {
 
             const updatedModelData = createEnvironmentModel(prefix, ENUM_SUFFIX);
 
-            const [updateEnvironmentResponse] = await updateEnvironmentQuery({
+            const [updateEnvironmentResponse] = await updateEnvironmentMutation({
                 id: createdEnvironmentId,
                 data: updatedModelData
             });
@@ -117,7 +120,7 @@ describe("Environment crud test", () => {
         });
 
         for (const id of createdEnvironmentIdList) {
-            const [deleteEnvironmentResponse] = await deleteEnvironmentQuery({
+            const [deleteEnvironmentResponse] = await deleteEnvironmentMutation({
                 id
             });
             expect(deleteEnvironmentResponse).toMatchObject({
