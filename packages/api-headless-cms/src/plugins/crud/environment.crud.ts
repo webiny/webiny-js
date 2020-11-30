@@ -5,20 +5,8 @@ import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
+import { CmsEnvironmentType, CmsEnvironmentContextType } from "@webiny/api-headless-cms/types";
 
-type EnvironmentType = {
-    name: string;
-    slug: string;
-    description: string;
-    createdFrom: string;
-};
-type EnvironmentContextType = {
-    get: (id: string) => Promise<EnvironmentType>;
-    list: () => Promise<EnvironmentType[]>;
-    create: (data: EnvironmentType) => Promise<EnvironmentType>;
-    update: (id: string, data: EnvironmentType) => Promise<EnvironmentType>;
-    delete: (id: string) => Promise<void>;
-};
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
     slug: string({ validation: validation.create("required,maxLength:100") }),
@@ -47,9 +35,9 @@ export default {
         const { db, i18nContent } = context;
         const PK_ENVIRONMENT = createPartitionKey(i18nContent);
 
-        const environment: EnvironmentContextType = {
-            async get(id: string): Promise<EnvironmentType | null> {
-                const [response] = await db.read<EnvironmentType>({
+        const environment: CmsEnvironmentContextType = {
+            async get(id: string): Promise<CmsEnvironmentType | null> {
+                const [response] = await db.read<CmsEnvironmentType>({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: id },
                     limit: 1
@@ -59,15 +47,15 @@ export default {
                 }
                 return response.find(() => true);
             },
-            async list(): Promise<EnvironmentType[]> {
-                const [response] = await db.read<EnvironmentType>({
+            async list(): Promise<CmsEnvironmentType[]> {
+                const [response] = await db.read<CmsEnvironmentType>({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: { $gt: " " } }
                 });
 
                 return response;
             },
-            async create(data: EnvironmentType): Promise<EnvironmentType> {
+            async create(data: CmsEnvironmentType): Promise<CmsEnvironmentType> {
                 const identity = context.security.getIdentity();
                 const createData = new CreateEnvironmentModel().populate(data);
                 await createData.validate();
@@ -94,7 +82,7 @@ export default {
 
                 return modelData;
             },
-            async update(id: string, data: EnvironmentType): Promise<EnvironmentType> {
+            async update(id: string, data: CmsEnvironmentType): Promise<CmsEnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);
                 await updateData.validate();
 

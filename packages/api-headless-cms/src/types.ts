@@ -218,3 +218,25 @@ export type CmsFindFilterOperator = Plugin & {
         context: CmsContext;
     }): { [key: string]: any };
 };
+export type CmsEnvironmentType = {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    createdFrom?: CmsEnvironmentType;
+    createdBy?: {
+        id: string;
+    };
+};
+export type CmsEnvironmentContextType = {
+    get: (id: string) => Promise<CmsEnvironmentType>;
+    list: () => Promise<CmsEnvironmentType[]>;
+    create: (data: CmsEnvironmentType) => Promise<CmsEnvironmentType>;
+    update: (id: string, data: CmsEnvironmentType) => Promise<CmsEnvironmentType>;
+    delete: (id: string) => Promise<void>;
+};
+export type CmsContextType = {
+    cms: {
+        environment: CmsEnvironmentContextType;
+    };
+};
