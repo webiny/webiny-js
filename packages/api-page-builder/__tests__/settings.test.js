@@ -16,7 +16,8 @@ describe("CRUD Test", () => {
                             social: {
                                 facebook: null,
                                 instagram: null,
-                                twitter: null
+                                twitter: null,
+                                image: null
                             }
                         },
                         error: null
@@ -33,7 +34,12 @@ describe("CRUD Test", () => {
                 social: {
                     facebook: "https://www.facebook.com",
                     instagram: "https://www.instagram.com",
-                    twitter: "https://www.twitter.com"
+                    twitter: "https://www.twitter.com",
+                    image: {
+                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                        src:
+                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                    }
                 }
             }
         });
@@ -48,7 +54,12 @@ describe("CRUD Test", () => {
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",
-                                twitter: "https://www.twitter.com"
+                                twitter: "https://www.twitter.com",
+                                image: {
+                                    id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                                    src:
+                                        "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                }
                             }
                         },
                         error: null
@@ -69,7 +80,12 @@ describe("CRUD Test", () => {
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",
-                                twitter: "https://www.twitter.com"
+                                twitter: "https://www.twitter.com",
+                                image: {
+                                    id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                                    src:
+                                        "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                }
                             }
                         },
                         error: null
