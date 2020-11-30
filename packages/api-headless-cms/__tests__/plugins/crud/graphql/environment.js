@@ -4,8 +4,15 @@ const DATA_FIELD = /* GraphQL*/ `
         name
         slug
         description
+        createdOn
+        changedOn
         createdFrom {
             id
+            name
+            slug
+            description
+            createdOn
+            changedOn
         }
     }
 `;
