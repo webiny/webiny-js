@@ -552,7 +552,7 @@ export default {
                             PK: PK_PAGE,
                             SK: publishedPageData.id
                         },
-                        data: previouslyPublishedPage
+                        data: omit(["PK", "SK"], previouslyPublishedPage)
                     });
 
                     batch.update({
