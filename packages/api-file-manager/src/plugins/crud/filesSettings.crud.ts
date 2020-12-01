@@ -1,11 +1,11 @@
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-
+import getPKPrefix from "./utils/getPKPrefix";
 import defaults from "./defaults";
 import { FileManagerContextPlugin } from "@webiny/api-file-manager/plugins/context";
 import { FileManagerSettings, FileManagerSettingsCRUD } from "@webiny/api-file-manager/types";
 
-export const SETTINGS_KEY = "file-manager";
+export const SETTINGS_KEY = "default";
 
 const CreateDataModel = withFields({
     key: setOnce()(string({ value: SETTINGS_KEY })),
@@ -48,15 +48,14 @@ const UpdateDataModel = withFields({
 })();
 
 export default (context: FileManagerContextPlugin) => {
-    const { db, security } = context;
-    const tenant = security.getTenant();
-    const PK_FILE_SETTINGS = `T#${tenant.id}#SETTINGS`;
+    const { db } = context;
+    const PK_FILE_SETTINGS = () => `${getPKPrefix(context)}SETTINGS`;
 
     return {
         async getSettings() {
             const [[settings]] = await db.read<FileManagerSettings>({
                 ...defaults.db,
-                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY },
+                query: { PK: PK_FILE_SETTINGS(), SK: SETTINGS_KEY },
                 limit: 1
             });
 
@@ -70,7 +69,7 @@ export default (context: FileManagerContextPlugin) => {
 
             await db.create({
                 data: {
-                    PK: PK_FILE_SETTINGS,
+                    PK: PK_FILE_SETTINGS(),
                     SK: SETTINGS_KEY,
                     TYPE: "fm.settings",
                     ...settingsData
@@ -87,7 +86,7 @@ export default (context: FileManagerContextPlugin) => {
 
             await db.update({
                 ...defaults,
-                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY },
+                query: { PK: PK_FILE_SETTINGS(), SK: SETTINGS_KEY },
                 data: updatedSettings
             });
 
@@ -96,7 +95,7 @@ export default (context: FileManagerContextPlugin) => {
         async deleteSettings() {
             await db.delete({
                 ...defaults.db,
-                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY }
+                query: { PK: PK_FILE_SETTINGS(), SK: SETTINGS_KEY }
             });
 
             return true;
