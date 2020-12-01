@@ -66,7 +66,13 @@ const SelectBox = ({
                 <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
-                <select className={selectStyle} value={keyValue} onChange={updateValue}>
+                <select
+                    className={selectStyle}
+                    value={keyValue}
+                    onChange={({ target: { value } }) => {
+                        updateValue(value);
+                    }}
+                >
                     {children}
                 </select>
             </Cell>
