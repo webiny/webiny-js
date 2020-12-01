@@ -3,29 +3,26 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { set } from "dot-prop-immutable";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-
 import { plugins } from "@webiny/plugins";
-import { Select } from "@webiny/ui/Select";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Typography } from "@webiny/ui/Typography";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { PbElement, PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 // Components
-import Input from "../../elementSettings/components/Input";
+import Accordion from "../../elementSettings/components/Accordion";
 import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import { ContentWrapper } from "../../elementSettings/components/StyledComponents";
-// Icons
-import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import InputField from "../../elementSettings/components/InputField";
+import SelectField from "../../elementSettings/components/SelectField";
 
 const classes = {
     gridClass: css({
         "&.mdc-layout-grid": {
             padding: 0,
+            margin: 0,
             marginBottom: 24
         }
     }),
@@ -142,69 +139,49 @@ const ButtonSettings = () => {
     ]);
 
     return (
-        <AccordionItem
-            icon={<ButtonIcon />}
-            title={"Button"}
-            description={"Align the inner content of an element."}
-        >
+        <Accordion title={"Button"}>
             <ContentWrapper direction={"column"}>
-                <Grid className={classes.gridClass}>
-                    <Cell span={6}>
-                        <Typography use={"overline"}>Type</Typography>
-                    </Cell>
-                    <Cell span={6}>
-                        <Select value={type} onChange={updateType}>
-                            {types.map(type => (
-                                <option key={type.className} value={type.className}>
-                                    {type.label}
-                                </option>
-                            ))}
-                        </Select>
-                    </Cell>
-                </Grid>
-                <Grid className={classes.gridClass}>
-                    <Cell span={8}>
-                        <Typography use={"overline"}>Icon</Typography>
-                    </Cell>
-                    <Cell span={4}>
-                        <div className={classes.row}>
-                            <BaseIconPicker
-                                handlerClassName={"icon-picker-handler"}
-                                value={icon?.id}
-                                updateValue={updateIcon}
-                            />
-                            <BaseColorPicker
-                                handlerClassName={"color-picker-handler"}
-                                value={icon?.color}
-                                updateValue={updateIconColor}
-                                updatePreview={updateIconColorPreview}
-                            />
-                        </div>
-                    </Cell>
-                    <Cell span={12}>
-                        <Input
-                            label={"Width"}
-                            value={icon?.width || 50}
-                            updateValue={updateIconWidth}
-                        />
-                    </Cell>
-                </Grid>
-
-                <Grid className={classes.gridClass}>
-                    <Cell span={6}>
-                        <Typography use={"overline"}>Position</Typography>
-                    </Cell>
-                    <Cell span={6}>
-                        <Select value={icon?.position || "left"} onChange={updateIconPosition}>
-                            <option value={"left"}>Left</option>
-                            <option value={"right"}>Right</option>
-                            <option value={"top"}>Top</option>
-                            <option value={"bottom"}>Bottom</option>
-                        </Select>
-                    </Cell>
-                </Grid>
+                <Wrapper label={"Type"} containerClassName={classes.gridClass}>
+                    <SelectField value={type} onChange={updateType}>
+                        {types.map(type => (
+                            <option key={type.className} value={type.className}>
+                                {type.label}
+                            </option>
+                        ))}
+                    </SelectField>
+                </Wrapper>
+                <Wrapper label={"Icon"} containerClassName={classes.gridClass}>
+                    <BaseIconPicker
+                        handlerClassName={"icon-picker-handler"}
+                        value={icon?.id}
+                        updateValue={updateIcon}
+                    />
+                </Wrapper>
+                <Wrapper label={"Color"} containerClassName={classes.gridClass}>
+                    <BaseColorPicker
+                        handlerClassName={"color-picker-handler"}
+                        value={icon?.color}
+                        updateValue={updateIconColor}
+                        updatePreview={updateIconColorPreview}
+                    />
+                </Wrapper>
+                <Wrapper label={"Width"} containerClassName={classes.gridClass}>
+                    <InputField
+                        placeholder={"Width"}
+                        value={icon?.width || 50}
+                        onChange={updateIconWidth}
+                    />
+                </Wrapper>
+                <Wrapper label={"Position"} containerClassName={classes.gridClass}>
+                    <SelectField value={icon?.position || "left"} onChange={updateIconPosition}>
+                        <option value={"left"}>Left</option>
+                        <option value={"right"}>Right</option>
+                        <option value={"top"}>Top</option>
+                        <option value={"bottom"}>Bottom</option>
+                    </SelectField>
+                </Wrapper>
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 
