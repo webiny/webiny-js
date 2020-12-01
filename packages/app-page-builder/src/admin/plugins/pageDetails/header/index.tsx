@@ -5,6 +5,7 @@ import RevisionSelector from "./revisionSelector/RevisionSelector";
 import PublishRevision from "./publishRevision/PublishRevision";
 import RequestReview from "./requestReview/RequestReview";
 import EditRevision from "./editRevision/EditRevision";
+import RequestChanges from "./requestChanges/RequestChanges";
 import DeletePage from "./deletePage/DeletePage";
 import PageOptionsMenu from "./pageOptionsMenu/PageOptionsMenu";
 
@@ -24,6 +25,13 @@ const plugins: PbPageDetailsPlugin[] = [
         }
     },
     {
+        name: "pb-page-details-header-edit",
+        type: "pb-page-details-header-right",
+        render(props) {
+            return <EditRevision {...props} />;
+        }
+    },
+    {
         name: "pb-page-details-header-publish",
         type: "pb-page-details-header-right",
         render(props) {
@@ -38,12 +46,13 @@ const plugins: PbPageDetailsPlugin[] = [
         }
     },
     {
-        name: "pb-page-details-header-edit",
+        name: "pb-page-details-header-request-changes",
         type: "pb-page-details-header-right",
         render(props) {
-            return <EditRevision {...props} />;
+            return <RequestChanges {...props} />;
         }
     },
+
     {
         name: "pb-page-details-header-delete",
         type: "pb-page-details-header-right",

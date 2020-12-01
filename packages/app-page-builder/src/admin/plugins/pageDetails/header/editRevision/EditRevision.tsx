@@ -1,42 +1,30 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { useRouter } from "@webiny/react-router";
-import { useApolloClient } from "react-apollo";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
-import { CREATE_REVISION_FORM } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { get } from "lodash";
+import { useSecurity } from "@webiny/app-security";
+import { i18n } from "@webiny/app/i18n";
+const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
+import { useMutation } from "react-apollo";
 
-const EditRevision = (props) => {
-    const { showSnackbar } = useSnackbar();
-    const client = useApolloClient();
-    const { history } = useRouter();
+const EditRevision = props => {
+    const { identity } = useSecurity();
     const { page } = props;
+    const { history } = useRouter();
     const [inProgress, setInProgress] = useState();
+    const { showSnackbar } = useSnackbar();
+    const [createPageFrom] = useMutation(CREATE_PAGE);
 
-    const unpublishedRevision = (get(page, "revisions") || []).find(
-        item => !item.published && !item.locked
-    );
-
-    const editRevision = useCallback(() => {
-        if (unpublishedRevision) {
-            history.push(`/page-builder/editor/${unpublishedRevision.id}`);
-        }
-    }, [unpublishedRevision]);
-
-    const copyAndEdit = useCallback(async () => {
-        const [latestRevision] = page.revisions;
+    const createFromAndEdit = useCallback(async () => {
         setInProgress(true);
-        const { data: res } = await client.mutate({
-            mutation: CREATE_REVISION_FORM,
-            variables: { revision: latestRevision.id },
-            refetchQueries: ["PbListPages"],
-            awaitRefetchQueries: true
+        const response = await createPageFrom({
+            variables: { from: page.id }
         });
         setInProgress(false);
-        const { data, error } = res.pageBuilder.revision;
-
+        const { data, error } = response.data.pageBuilder.createPage;
         if (error) {
             return showSnackbar(error.message);
         }
@@ -44,13 +32,26 @@ const EditRevision = (props) => {
         history.push(`/page-builder/editor/${data.id}`);
     }, [page]);
 
-    if (unpublishedRevision) {
+    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
+    if (!pbPagePermission) {
+        return null;
+    }
+
+    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+        return null;
+    }
+
+    if (typeof pbPagePermission.rwd === "string" && !pbPagePermission.rwd.includes("r")) {
+        return null;
+    }
+
+    if (page.locked) {
         return (
-            <Tooltip content={"Edit"} placement={"top"}>
+            <Tooltip content={t`Edit`} placement={"top"}>
                 <IconButton
                     disabled={inProgress}
                     icon={<EditIcon />}
-                    onClick={editRevision}
+                    onClick={createFromAndEdit}
                     data-testid={"pb-page-details-header-edit-revision"}
                 />
             </Tooltip>
@@ -58,11 +59,11 @@ const EditRevision = (props) => {
     }
 
     return (
-        <Tooltip content={"Edit"} placement={"top"}>
+        <Tooltip content={t`Edit`} placement={"top"}>
             <IconButton
                 disabled={inProgress}
                 icon={<EditIcon />}
-                onClick={copyAndEdit}
+                onClick={() => history.push(`/page-builder/editor/${encodeURIComponent(page.id)}`)}
                 data-testid={"pb-page-details-header-edit-revision"}
             />
         </Tooltip>

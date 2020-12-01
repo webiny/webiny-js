@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import {
-    CREATE_REVISION_FORM,
+    CREATE_PAGE,
     DELETE_REVISION
 } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
@@ -18,7 +18,7 @@ export function useRevisionHandlers(props) {
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
-            mutation: CREATE_REVISION_FORM,
+            mutation: CREATE_PAGE,
             variables: { revision: revision.id },
             refetchQueries: ["PbListPages"],
             awaitRefetchQueries: true

@@ -7,6 +7,7 @@ import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/ass
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
+import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -19,7 +20,8 @@ const menuList = css({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "baseline",
-        textAlign: "left"
+        textAlign: "left",
+        width: 150
     }
 });
 
@@ -30,7 +32,6 @@ const RevisionSelector = props => {
 
     const { revisions = [] } = page;
 
-    console.log('revis', revisions)
     return (
         <Menu
             className={menuList}
@@ -47,7 +48,7 @@ const RevisionSelector = props => {
             {revisions.map(rev => (
                 <MenuItem key={rev.id}>
                     <Typography use={"body2"}>v{rev.version}</Typography>
-                    <Typography use={"caption"}>({rev.status})</Typography>
+                    <Typography use={"caption"}>({statusesLabels[rev.status]})</Typography>
                 </MenuItem>
             ))}
         </Menu>

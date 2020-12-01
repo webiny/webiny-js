@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as RequestReviewIcon } from "@webiny/app-page-builder/admin/assets/rate_review-24px.svg";
+import { ReactComponent as RequestReviewIcon } from "@webiny/app-page-builder/admin/assets/emoji_people-24px.svg";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -59,7 +59,7 @@ const RequestReview = props => {
         return null;
     }
 
-    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("p")) {
+    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("r")) {
         return null;
     }
 
