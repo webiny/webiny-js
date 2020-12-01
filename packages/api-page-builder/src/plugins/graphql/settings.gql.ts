@@ -6,8 +6,9 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { hasPermission } from "@webiny/api-security";
 import { compose } from "@webiny/handler-graphql";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
-type Context = HandlerContext<I18NContext, SecurityContext>;
+type Context = HandlerContext<I18NContext, I18NContentContext, SecurityContext>;
 
 const plugin: GraphQLSchemaPlugin<Context> = {
     type: "graphql-schema",
@@ -23,21 +24,22 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 facebook: String
                 twitter: String
                 instagram: String
-                image: JSON
+                image: PbFile
             }
 
             type PbSettings {
                 name: String
-                favicon: JSON
-                logo: JSON
+                favicon: PbFile
+                logo: PbFile
                 domain: String
                 social: PbSocialMedia
                 pages: PbSettingsPages
             }
 
             type PbSettingsResponse {
-                error: PbSettingsError
+                # This field's value is hardcoded and it's here to help frontend clients cache data more easily.
                 id: ID
+                error: PbSettingsError
                 data: PbSettings
             }
 
@@ -57,7 +59,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 facebook: String
                 twitter: String
                 instagram: String
-                image: RefInput
+                image: PbFileInput
             }
 
             input PbDefaultPageInput {
@@ -68,8 +70,8 @@ const plugin: GraphQLSchemaPlugin<Context> = {
             input PbSettingsInput {
                 name: String
                 domain: String
-                favicon: RefInput
-                logo: RefInput
+                favicon: PbFileInput
+                logo: PbFileInput
                 social: PbSocialMediaInput
                 pages: PbSettingsPagesInput
             }
@@ -89,6 +91,12 @@ const plugin: GraphQLSchemaPlugin<Context> = {
             }
         `,
         resolvers: {
+            PbSettingsResponse: {
+                id: (_, args, context) => {
+                    const { i18nContent } = context;
+                    return `${i18nContent?.locale?.code}#pb-settings`;
+                }
+            },
             PbQuery: {
                 getSettings: compose(
                     hasPermission("pb.settings"),
