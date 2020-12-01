@@ -2,33 +2,25 @@ import React, { useEffect, useState } from "react";
 import { get } from "lodash";
 import classNames from "classnames";
 import { css } from "emotion";
-import { IconButton } from "@webiny/ui/Button";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-// Icons
-// import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow_drop_up.svg";
-// import { ReactComponent as ArrowDownIcon } from "../../../assets/icons/arrow_drop_down.svg";
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
 import WrappedInput from "./WrappedInput";
+import { COLORS } from "./StyledComponents";
 
 const classes = {
     gridWrapper: css({
         "&.mdc-layout-grid": {
             padding: 0,
-            marginBottom: 24,
+            marginBottom: 16,
             "& .mdc-layout-grid__inner": {
-                gridRowGap: 4
+                gridRowGap: 8
             }
         }
     }),
     wrapper: css({
-        display: "flex",
-        /**
-         * We're applying this style here to counter the extra "padding-left"
-         * on the "Accordion Item" content.
-         */
-        marginLeft: -45
+        display: "flex"
     }),
     input: css({
         "& .mdc-text-field__input": {
@@ -37,17 +29,22 @@ const classes = {
         }
     }),
     linkSettings: css({
-        display: "flex !important",
-        height: "56px !important",
-        border: "1px solid var(--mdc-theme-on-background) !important",
+        display: "flex",
+        alignItems: "center",
+        border: `1px solid ${COLORS.gray}`,
+        padding: "0px 5px",
+        minHeight: 30,
+        minWidth: 28,
 
         "& svg": {
-            transform: "rotate(135deg)"
+            transform: "rotate(135deg)",
+            width: 16,
+            height: 16
         }
     }),
     linkSettingsActive: css({
-        backgroundColor: "var(--mdc-theme-secondary) !important",
-        color: "var(--mdc-theme-on-primary) !important"
+        backgroundColor: "var(--mdc-theme-secondary)",
+        color: "var(--mdc-theme-on-primary)"
     }),
     controllerWrapper: css({
         display: "flex",
@@ -93,7 +90,6 @@ type PMSettingsPropsType = {
     value: any;
     valueKey: string;
     getUpdateValue: any;
-    showControls?: boolean;
     sides?: Record<string, any>[];
 };
 
@@ -102,7 +98,6 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
     value,
     valueKey,
     getUpdateValue,
-    showControls,
     sides = defaultCorners
 }) => {
     const [linked, setLinked] = useState(true);
@@ -125,7 +120,7 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
     return (
         <Grid className={classes.gridWrapper}>
             <Cell span={12}>
-                <Typography use={"overline"}>{label}</Typography>
+                <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell span={12} className={classes.wrapper}>
                 <WrappedInput
@@ -138,13 +133,6 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                             : getUpdateValue(`${valueKey}.${top.key}`)
                     }
                 />
-                {showControls && (
-                    <div className={classes.controllerWrapper}>
-                        {/*<IconButton disabled={advanced} onClick={increment} icon={<ArrowUpIcon />} />*/}
-                        {/*<IconButton disabled={advanced} onClick={decrement} icon={<ArrowDownIcon />} />*/}
-                    </div>
-                )}
-
                 <WrappedInput
                     disabled={linked}
                     className={classes.input}
@@ -166,13 +154,14 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                     value={left.value}
                     onChange={getUpdateValue(`${valueKey}.${left.key}`)}
                 />
-                <IconButton
+                <button
                     className={classNames(classes.linkSettings, {
                         [classes.linkSettingsActive]: linked
                     })}
                     onClick={() => setLinked(!linked)}
-                    icon={<LinkIcon />}
-                />
+                >
+                    <LinkIcon />
+                </button>
             </Cell>
         </Grid>
     );
