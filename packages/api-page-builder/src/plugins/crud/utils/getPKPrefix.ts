@@ -12,5 +12,5 @@ export default (context: HandlerContext<SecurityContext, I18NContentContext>) =>
         throw new Error("Locale missing.");
     }
 
-    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().id}#`;
+    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().id}#PB#`;
 };
