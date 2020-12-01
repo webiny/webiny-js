@@ -53,7 +53,7 @@ export default {
     apply(context) {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}SETTINGS`;
-        const SK = () => "PB";
+        const SK = () => "default";
 
         context.settings = {
             async get() {
@@ -67,8 +67,11 @@ export default {
                     return data;
                 }
 
-                const defaultSettings = await new SettingsModel().populate().toJSON();
-                await db.create({ ...defaults.db, data: { ...defaultSettings, PK: PK(), SK: SK() } });
+                const defaultSettings = await new SettingsModel().populate({}).toJSON();
+                await db.create({
+                    ...defaults.db,
+                    data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE: "pb.settings" }
+                });
                 return defaultSettings;
             },
             async update(next) {
