@@ -22,7 +22,7 @@ import {
 } from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";
 
-import { MetaProp, SortersProp } from "./types";
+import { PaginationProp, SortersProp } from "./types";
 
 const ListContainer = styled("div")({
     position: "relative",
@@ -147,22 +147,10 @@ type Props = {
     noData?: React.ReactNode;
 
     // Provide all pagination data, options and callbacks here.
-    meta?: MetaProp;
-
-    // Triggered when previous page is requested.
-    setPreviousPage?: Function;
-
-    // Triggered when next page is requested.
-    setNextPage?: Function;
+    pagination?: PaginationProp;
 
     // Triggered once a sorter has been selected.
     setSorters?: Function;
-
-    // Triggered when number of entries per page has been changed.
-    setPerPage?: Function;
-
-    // By default, users can choose from 10, 25 or 50 entries per page.
-    perPageOptions?: number[];
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp;
@@ -267,32 +255,30 @@ const Filters = (props: Props) => {
 
     return (
         <ListHeaderItem>
-            <Menu handle={<FilterIcon />}>
-                {filters}
-            </Menu>
+            <Menu handle={<FilterIcon />}>{filters}</Menu>
         </ListHeaderItem>
     );
 };
 
 const Pagination = (props: Props) => {
-    const meta = props.meta;
-    if (!meta) {
+    const { pagination } = props;
+    if (!pagination) {
         return null;
     }
 
     return (
         <React.Fragment>
-            {props.setPreviousPage && props.setNextPage && (
+            {pagination.setNextPage && (
                 <React.Fragment>
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.hasPreviousPage
+                            disabled: !pagination.hasPreviousPage
                         })}
                     >
                         <PreviousPageIcon
                             onClick={() => {
-                                if (props.setPreviousPage && meta.hasPreviousPage) {
-                                    props.setPreviousPage(meta.cursors.previous);
+                                if (pagination.setPreviousPage && pagination.hasPreviousPage) {
+                                    pagination.setPreviousPage(pagination.cursors.previous);
                                 }
                             }}
                         />
@@ -300,13 +286,13 @@ const Pagination = (props: Props) => {
 
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.hasNextPage
+                            disabled: !pagination.hasNextPage
                         })}
                     >
                         <NextPageIcon
                             onClick={() => {
-                                if (props.setNextPage && meta.hasNextPage) {
-                                    props.setNextPage(meta.cursors.next);
+                                if (props.setNextPage && pagination.hasNextPage) {
+                                    props.setNextPage(pagination.cursors.next);
                                 }
                             }}
                         />
@@ -314,14 +300,16 @@ const Pagination = (props: Props) => {
                 </React.Fragment>
             )}
 
-            {props.setPerPage && Array.isArray(props.perPageOptions) && (
+            {Array.isArray(pagination.perPageOptions) && pagination.setPerPage && (
                 <ListHeaderItem>
                     <Menu handle={<OptionsIcon />}>
-                        {props.setPerPage &&
-                            props.perPageOptions.map(perPage => (
+                        {pagination.setPerPage &&
+                            pagination.perPageOptions.map(perPage => (
                                 <MenuItem
                                     key={perPage}
-                                    onClick={() => props.setPerPage && props.setPerPage(perPage)}
+                                    onClick={() =>
+                                        pagination.setPerPage && pagination.setPerPage(perPage)
+                                    }
                                 >
                                     {perPage}
                                 </MenuItem>
@@ -406,7 +394,7 @@ DataList.defaultProps = {
         refresh: true,
         pagination: true,
         sorters: true,
-        filters: true,
+        filters: true
     }
 };
 
