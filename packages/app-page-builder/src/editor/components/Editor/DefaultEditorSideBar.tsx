@@ -63,7 +63,7 @@ const NoElementSelected = () => {
         <div className={noActiveElementWrapper}>
             <TouchIcon className={"icon"} />
             <Typography use={"subtitle1"} className={"text"}>
-                Please select an element on the canvas to activate this panel.
+                Select an element on the canvas to activate this panel.
             </Typography>
         </div>
     );

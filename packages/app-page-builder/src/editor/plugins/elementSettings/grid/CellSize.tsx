@@ -6,6 +6,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 // Icons
 import { ReactComponent as AddIcon } from "../../../assets/icons/add.svg";
 import { ReactComponent as RemoveIcon } from "../../../assets/icons/remove.svg";
+import { COLORS } from "../components/StyledComponents";
 
 const classes = {
     grid: css({
@@ -22,7 +23,8 @@ const classes = {
     button: css({
         "&.mdc-icon-button": {
             // backgroundColor: "var(--mdc-theme-background)",
-            borderRadius: "50%"
+            // borderRadius: "50%",
+            border: `1px solid ${COLORS.gray}`
         },
         "&.mdc-icon-button:disabled": {
             cursor: "not-allowed"
@@ -60,7 +62,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
     return (
         <Grid className={classes.grid}>
             <Cell align={"middle"} span={5}>
-                <Typography use={"overline"}>{label}</Typography>
+                <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell align={"middle"} span={3}>
                 <IconButton
@@ -71,7 +73,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
                 />
             </Cell>
             <Cell align={"middle"} span={1}>
-                <Typography use={"overline"}>{value}</Typography>
+                <Typography use={"subtitle2"}>{value}</Typography>
             </Cell>
             <Cell align={"middle"} span={3}>
                 <IconButton

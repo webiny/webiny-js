@@ -4,15 +4,13 @@ import { css } from "emotion";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
-import { AccordionItem } from "@webiny/ui/Accordion";
 // Components
 import { InputContainer, ContentWrapper } from "../components/StyledComponents";
-// Icon
-import { ReactComponent as HeightIcon } from "../../../assets/icons/height-black.svg";
+import Accordion from "../components/Accordion";
+import Input from "../components/WrappedInput";
 
 const classes = {
     grid: css({
@@ -78,23 +76,20 @@ const Settings: React.FunctionComponent = () => {
     const settings = element.data.settings?.width || { value: "100%" };
 
     return (
-        <AccordionItem
-            className={classes.icon}
-            icon={<HeightIcon />}
-            title={"Width"}
-            description={"Width of the element."}
-        >
+        <Accordion title={"Width"}>
             <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
                     <ContentWrapper>
                         <Grid className={classes.grid}>
                             <Cell span={5}>
-                                <Typography use={"overline"}>Width</Typography>
+                                <Typography use={"subtitle2"}>Width</Typography>
                             </Cell>
                             <Cell span={7}>
                                 <InputContainer width={"auto"} margin={0}>
                                     <Bind name={"value"} validators={validateWidth}>
-                                        <Input />
+                                        {({ value, onChange }) => (
+                                            <Input value={value} onChange={onChange} />
+                                        )}
                                     </Bind>
                                 </InputContainer>
                             </Cell>
@@ -102,7 +97,7 @@ const Settings: React.FunctionComponent = () => {
                     </ContentWrapper>
                 )}
             </Form>
-        </AccordionItem>
+        </Accordion>
     );
 };
 export default React.memo(Settings);

@@ -1,12 +1,11 @@
 import React from "react";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import lodashGet from "lodash/get";
-import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Icon } from "@webiny/ui/Icon";
 import { Slider } from "@webiny/ui/Slider";
-import { InputContainer } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
 import { useRecoilValue } from "recoil";
+import WrappedInput from "./WrappedInput";
 
 type SliderWithInputPropsType = {
     icon: React.ReactElement;
@@ -44,9 +43,11 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
                 />
             </Cell>
             <Cell align={"middle"} span={4}>
-                <InputContainer>
-                    <Input placeholder={placeholder || "px"} value={value} onChange={updateValue} />
-                </InputContainer>
+                <WrappedInput
+                    placeholder={placeholder || "px"}
+                    value={value}
+                    onChange={updateValue}
+                />
             </Cell>
         </Grid>
     );

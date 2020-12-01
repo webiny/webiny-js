@@ -3,15 +3,13 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 // Components
-import Input from "../components/Input";
+import { InputBox } from "../components/WrappedInput";
 import { BaseColorPickerComponent } from "../components/ColorPicker";
 import { ContentWrapper } from "../components/StyledComponents";
-// Icon
-import { ReactComponent as ShadowIcon } from "@webiny/app-page-builder/editor/assets/icons/layers.svg";
+import Accordion from "../components/Accordion";
 
 const classes = {
     gridClass: css({
@@ -38,15 +36,11 @@ const Settings: React.FunctionComponent = () => {
     });
 
     return (
-        <AccordionItem
-            icon={<ShadowIcon />}
-            title={"Shadow"}
-            description={"Edit `box-shadow` property"}
-        >
+        <Accordion title={"Shadow"}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.gridClass}>
                     <Cell span={6}>
-                        <Typography use={"overline"}>Color</Typography>
+                        <Typography use={"subtitle2"}>Color</Typography>
                     </Cell>
                     <Cell span={6}>
                         <BaseColorPickerComponent
@@ -57,7 +51,9 @@ const Settings: React.FunctionComponent = () => {
                         />
                     </Cell>
                 </Grid>
-                <Input
+                <InputBox
+                    leftCellSpan={8}
+                    rightCellSpan={4}
                     containerClassName={classes.gridClass}
                     className={classes.inputWrapper}
                     label={"Horizontal offset"}
@@ -65,7 +61,9 @@ const Settings: React.FunctionComponent = () => {
                     updateValue={getUpdateValue("horizontal")}
                 />
 
-                <Input
+                <InputBox
+                    leftCellSpan={8}
+                    rightCellSpan={4}
                     containerClassName={classes.gridClass}
                     className={classes.inputWrapper}
                     label={"Vertical offset"}
@@ -73,7 +71,9 @@ const Settings: React.FunctionComponent = () => {
                     updateValue={getUpdateValue("vertical")}
                 />
 
-                <Input
+                <InputBox
+                    leftCellSpan={8}
+                    rightCellSpan={4}
                     containerClassName={classes.gridClass}
                     className={classes.inputWrapper}
                     label={"Blur"}
@@ -81,7 +81,9 @@ const Settings: React.FunctionComponent = () => {
                     updateValue={getUpdateValue("blur")}
                 />
 
-                <Input
+                <InputBox
+                    leftCellSpan={8}
+                    rightCellSpan={4}
                     containerClassName={classes.gridClass}
                     className={classes.inputWrapper}
                     label={"Spread"}
@@ -89,7 +91,7 @@ const Settings: React.FunctionComponent = () => {
                     updateValue={getUpdateValue("spread")}
                 />
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 

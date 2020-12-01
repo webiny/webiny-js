@@ -1,6 +1,6 @@
 import React from "react";
 import lodashGet from "lodash/get";
-import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker";
+import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker/ColorPicker";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -45,7 +45,7 @@ const ColorPicker = ({
     return (
         <Grid className={className}>
             <Cell span={4}>
-                <Typography use={"overline"}>{label}</Typography>
+                <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell span={8}>
                 <ColorPickerCmp

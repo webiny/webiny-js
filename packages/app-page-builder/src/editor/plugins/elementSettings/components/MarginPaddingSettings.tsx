@@ -5,24 +5,17 @@ import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/edit
 import { get } from "lodash";
 import { set, merge } from "dot-prop-immutable";
 import { useRecoilValue } from "recoil";
-import { IconButton } from "@webiny/ui/Button";
 import classNames from "classnames";
 import { css } from "emotion";
 // Icons
-import { ReactComponent as ArrowUpIcon } from "../../../assets/icons/arrow_drop_up.svg";
-import { ReactComponent as ArrowDownIcon } from "../../../assets/icons/arrow_drop_down.svg";
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
 import WrappedInput from "./WrappedInput";
+import { COLORS } from "./StyledComponents";
 
 const classes = {
     wrapper: css({
-        display: "flex",
-        /**
-         * We're applying this style here to counter the extra "padding-left"
-         * on the "Accordion Item" content.
-         */
-        marginLeft: -45
+        display: "flex"
     }),
     input: css({
         "& .mdc-text-field__input": {
@@ -31,29 +24,59 @@ const classes = {
         }
     }),
     linkSettings: css({
-        display: "flex !important",
-        height: "56px !important",
-        border: "1px solid var(--mdc-theme-on-background) !important",
+        display: "flex",
+        alignItems: "center",
+        border: `1px solid ${COLORS.gray}`,
+        padding: "0px 5px",
 
         "& svg": {
-            transform: "rotate(135deg)"
+            transform: "rotate(135deg)",
+            width: 16,
+            height: 16
         }
     }),
     linkSettingsActive: css({
-        backgroundColor: "var(--mdc-theme-secondary) !important",
-        color: "var(--mdc-theme-on-primary) !important"
+        backgroundColor: "var(--mdc-theme-secondary)",
+        color: "var(--mdc-theme-on-primary)"
     }),
     controllerWrapper: css({
         display: "flex",
         flexDirection: "column",
 
         "& button": {
-            border: "1px solid var(--mdc-theme-on-background) !important",
-            padding: "0px !important",
-            height: "28px !important"
+            color: COLORS.darkGray,
+            border: "1px solid var(--mdc-theme-on-background)",
+            padding: "0px",
+            width: 15,
+            height: 15,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+
+            "&:focus": {
+                color: "var(--mdc-theme-primary)"
+            },
+            "&:disabled": {
+                cursor: "not-allowed"
+            }
         },
         "&:first-child": {
             borderBottom: "none !important"
+        },
+
+        "& .arrow-down": {
+            // Arrow down.
+            borderTop: "5px solid currentColor",
+            borderBottom: 0,
+            borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent"
+        },
+        "& .arrow-up": {
+            // Arrow down.
+            borderTop: 0,
+            borderBottom: "5px solid currentColor",
+            borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent"
         }
     })
 };
@@ -160,8 +183,12 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
                 onChange={advanced ? getUpdateValue("desktop.top") : getUpdateValue("desktop.all")}
             />
             <div className={classes.controllerWrapper}>
-                <IconButton disabled={advanced} onClick={increment} icon={<ArrowUpIcon />} />
-                <IconButton disabled={advanced} onClick={decrement} icon={<ArrowDownIcon />} />
+                <button disabled={advanced} onClick={increment}>
+                    <div className={"arrow-up"} />
+                </button>
+                <button disabled={advanced} onClick={decrement}>
+                    <div className={"arrow-down"} />
+                </button>
             </div>
             <WrappedInput
                 disabled={!advanced}
@@ -184,13 +211,14 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
                 value={get(element, valueKey + ".desktop.left", 0)}
                 onChange={getUpdateValue("desktop.left")}
             />
-            <IconButton
+            <button
                 className={classNames(classes.linkSettings, {
                     [classes.linkSettingsActive]: !advanced
                 })}
                 onClick={toggleAdvanced}
-                icon={<LinkIcon />}
-            />
+            >
+                <LinkIcon />
+            </button>
         </div>
     );
 };
