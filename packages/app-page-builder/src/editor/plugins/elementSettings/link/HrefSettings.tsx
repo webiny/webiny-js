@@ -2,9 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
-import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
@@ -15,6 +13,8 @@ import { PbElement } from "@webiny/app-page-builder/types";
 // Components
 import Accordion from "../components/Accordion";
 import { ContentWrapper } from "../components/StyledComponents";
+import Wrapper from "../components/Wrapper";
+import InputField from "../components/InputField";
 
 const classes = {
     gridClass: css({
@@ -59,21 +59,22 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({
                                     validators={validation.create("url:allowRelative:allowHref")}
                                 >
                                     <DelayedOnChange>
-                                        {props => <Input {...props} label={"URL"} />}
+                                        {props => (
+                                            <InputField
+                                                value={props.value || ""}
+                                                onChange={props.onChange}
+                                                placeholder={"URL"}
+                                            />
+                                        )}
                                     </DelayedOnChange>
                                 </Bind>
                             </Cell>
                         </Grid>
-                        <Grid className={classes.gridClass}>
-                            <Cell span={6}>
-                                <Typography use={"overline"}>New tab</Typography>
-                            </Cell>
-                            <Cell span={6}>
-                                <Bind name={"newTab"}>
-                                    <Switch />
-                                </Bind>
-                            </Cell>
-                        </Grid>
+                        <Wrapper label={"New tab"} containerClassName={classes.gridClass}>
+                            <Bind name={"newTab"}>
+                                <Switch />
+                            </Bind>
+                        </Wrapper>
                     </ContentWrapper>
                 )}
             </Form>
