@@ -15,6 +15,7 @@ import {
 } from "../graphql/formResolvers/utils/formResolversUtils";
 import defaults from "./defaults";
 import { Form, FormBuilderSettingsCRUD, FormsCRUD, FormSubmissionsCRUD } from "../../types";
+import getPKPrefix from "./utils/getPKPrefix";
 
 // "Form Fields" data model.
 const FormFieldsModel = withFields({
@@ -99,7 +100,7 @@ export default {
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
 
-        const PK_FORMS = `FB#${i18nContent?.locale?.code}`;
+        const PK_FORM = () => `${getPKPrefix(context)}F`;
 
         if (!context?.formBuilder?.crud) {
             context.formBuilder = merge({}, context.formBuilder);
@@ -111,7 +112,7 @@ export default {
                 const [[form]] = await db.read<Form>({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     },
                     limit: 1
@@ -122,7 +123,7 @@ export default {
             async listAllForms(sort) {
                 const [forms] = await db.read<Form>({
                     ...defaults.db,
-                    query: { PK: PK_FORMS, SK: { $gt: " " } },
+                    query: { PK: PK_FORM(), SK: { $gt: " " } },
                     sort
                 });
 
@@ -131,7 +132,7 @@ export default {
             async listFormsBeginsWithId({ id, sort, limit }) {
                 const [forms] = await db.read<Form>({
                     ...defaults.db,
-                    query: { PK: PK_FORMS, SK: { $beginsWith: `${getBaseFormId(id)}#` } },
+                    query: { PK: PK_FORM(), SK: { $beginsWith: `${getBaseFormId(id)}#` } },
                     sort,
                     limit
                 });
@@ -144,7 +145,7 @@ export default {
                 batch.read(
                     ...ids.map(id => ({
                         ...defaults.db,
-                        query: { PK: PK_FORMS, SK: id },
+                        query: { PK: PK_FORM(), SK: id },
                         limit: 1
                     }))
                 );
@@ -196,9 +197,9 @@ export default {
                 // Finally create "form" entry in "DB".
                 await db.create({
                     data: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: form.id,
-                        TYPE: "formBuilder:form",
+                        TYPE: "fb.form",
                         ...form
                     }
                 });
@@ -240,7 +241,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     },
                     data
@@ -265,7 +266,7 @@ export default {
                 await db.delete({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     }
                 });
@@ -285,7 +286,7 @@ export default {
                     ...ids.map(id => ({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORMS,
+                            PK: PK_FORM(),
                             SK: id
                         }
                     }))
@@ -313,7 +314,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     },
                     data: {
@@ -349,7 +350,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     },
                     data: {
@@ -420,9 +421,9 @@ export default {
                 await db.create({
                     ...defaults.db,
                     data: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: newRevision.id,
-                        TYPE: "Form",
+                        TYPE: "fb.form",
                         ...newRevision
                     }
                 });
@@ -505,7 +506,7 @@ export default {
                     // Update "latestVersion" in DB.
                     await db.update({
                         ...defaults.db,
-                        query: { PK: PK_FORMS, SK: previousLatestRevision.id },
+                        query: { PK: PK_FORM(), SK: previousLatestRevision.id },
                         data: {
                             latestVersion
                         }
@@ -534,7 +535,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_FORMS,
+                        PK: PK_FORM(),
                         SK: id
                     },
                     data: {

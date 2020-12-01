@@ -46,9 +46,9 @@ const UpdateDataModel = withFields({
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
+        const { db } = context;
 
-        const PK_FORM_SUBMISSION = `FB#S#${i18nContent?.locale?.code}`;
+        const PK_FORM_SUBMISSION = () => getPKPrefix(context);
 
         if (!context?.formBuilder?.crud) {
             context.formBuilder = merge({}, context.formBuilder);
@@ -60,7 +60,7 @@ export default {
                 const [[formSubmission]] = await db.read<FormSubmission>({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
+                        PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(parentFormId)}`,
                         SK: `S#${submissionId}`
                     },
                     limit: 1
@@ -72,7 +72,7 @@ export default {
                 const [formSubmissions] = await db.read<FormSubmission>({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
+                        PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(parentFormId)}`,
                         SK: { $beginsWith: "S#" }
                     },
                     sort,
@@ -88,7 +88,7 @@ export default {
                     ...submissionIds.map(submissionId => ({
                         ...defaults.db,
                         query: {
-                            PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(parentFormId)}`,
+                            PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(parentFormId)}`,
                             SK: `S#${submissionId}`
                         }
                     }))
@@ -121,9 +121,11 @@ export default {
                 // Finally create "form" entry in "DB".
                 await db.create({
                     data: {
-                        PK: `${PK_FORM_SUBMISSION}#${getBaseFormId(formSubmission.form.revision)}`,
+                        PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(
+                            formSubmission.form.revision
+                        )}`,
                         SK: `S#${formSubmission.id}`,
-                        TYPE: "formBuilder:formSubmission",
+                        TYPE: "fb.formSubmission",
                         ...formSubmission
                     }
                 });
@@ -139,7 +141,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${formIdWithoutVersion}`,
+                        PK: `${PK_FORM_SUBMISSION()}${formIdWithoutVersion}`,
                         SK: `S#${data.id}`
                     },
                     data: {
@@ -153,7 +155,7 @@ export default {
                 return db.delete({
                     ...defaults.db,
                     query: {
-                        PK: `${PK_FORM_SUBMISSION}#${formId}`,
+                        PK: `${PK_FORM_SUBMISSION()}${formId}`,
                         SK: `S#${submissionId}`
                     }
                 });
