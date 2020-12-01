@@ -1,5 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-graphql";
+import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import filesPlugins from "@webiny/api-file-manager/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
@@ -49,7 +49,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
             })
         }),
         elasticSearch({ endpoint: `http://localhost:9201` }),
-        apolloServerPlugins(),
+        graphqlHandlerPlugins(),
         securityPlugins(),
         {
             type: "context",
