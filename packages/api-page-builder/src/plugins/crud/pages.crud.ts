@@ -122,7 +122,20 @@ export default {
             },
 
             async listLatest(args: PagesListArgs) {
+                await context.i18nContent.checkI18NContentPermission();
+                const pbPagePermission = await context.security.getPermission("pb.page");
+                if (!pbPagePermission || !hasRwd({ pbPagePermission, rwd: "r" })) {
+                    throw new NotAuthorizedError();
+                }
+
                 const { sort, from, size, filter } = getNormalizedListPagesArgs(args);
+
+                // If users can only manage own records, let's add the special filter.
+                const ownFilter = [];
+                if (pbPagePermission?.own === true) {
+                    const identity = context.security.getIdentity();
+                    ownFilter.push({ term: { "createdBy.id.keyword": identity.id } });
+                }
 
                 const response = await elasticSearch.search({
                     ...defaults.es,
@@ -132,7 +145,8 @@ export default {
                                 filter: [
                                     { term: { "locale.keyword": i18nContent.locale.code } },
                                     { term: { __latest: true } },
-                                    ...filter
+                                    ...filter,
+                                    ...ownFilter
                                 ]
                             }
                         },
