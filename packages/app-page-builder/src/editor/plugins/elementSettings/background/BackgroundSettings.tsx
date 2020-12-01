@@ -9,7 +9,8 @@ import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil
 import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 // Components
-import SelectBox from "../components/SelectBox";
+import Wrapper from "../components/Wrapper";
+import SelectField from "../components/SelectField";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper } from "../components/StyledComponents";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
@@ -110,20 +111,21 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                                 />
                             </Cell>
                         </Grid>
-                        <SelectBox
-                            className={classes.grid}
-                            disabled={!backgroundImageSrc}
-                            label="Scaling"
-                            value={backgroundImageScaling}
-                            updateValue={setScaling}
-                        >
-                            <option value="cover">Cover</option>
-                            <option value="contain">Contain</option>
-                            <option value="originalSize">Original size</option>
-                            <option value="tile">Tile</option>
-                            <option value="tileHorizontally">Tile Horizontally</option>
-                            <option value="tileVertically">Tile Vertically</option>
-                        </SelectBox>
+                        <Wrapper label={"Scaling"}>
+                            <SelectField
+                                disabled={!backgroundImageSrc}
+                                value={backgroundImageScaling}
+                                onChange={setScaling}
+                            >
+                                <option value="cover">Cover</option>
+                                <option value="contain">Contain</option>
+                                <option value="originalSize">Original size</option>
+                                <option value="tile">Tile</option>
+                                <option value="tileHorizontally">Tile Horizontally</option>
+                                <option value="tileVertically">Tile Vertically</option>
+                            </SelectField>
+                        </Wrapper>
+
                         <Grid className={classes.grid}>
                             <Cell span={12}>
                                 <BackgroundPositionSelector

@@ -8,10 +8,11 @@ import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper } from "../components/StyledComponents";
 import BoxInputs from "../components/BoxInputs";
-import SelectBox from "../components/SelectBox";
+import SelectField from "../components/SelectField";
+import Wrapper from "../components/Wrapper";
 
 const classes = {
-    selectWrapper: css({
+    grid: css({
         "&.mdc-layout-grid": {
             padding: 0,
             marginBottom: 24
@@ -33,20 +34,17 @@ const BorderSettings = () => {
     return (
         <Accordion title={"Border"}>
             <ContentWrapper direction={"column"}>
-                <SelectBox
-                    className={classes.selectWrapper}
-                    label={"Style"}
-                    value={border.style || "none"}
-                    updateValue={getUpdateValue("style")}
-                >
-                    {options.map(option => (
-                        <option key={option} value={option}>
-                            {option}
-                        </option>
-                    ))}
-                </SelectBox>
+                <Wrapper label={"Style"}>
+                    <SelectField value={border.style || "none"} onChange={getUpdateValue("style")}>
+                        {options.map(option => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </SelectField>
+                </Wrapper>
                 <ColorPicker
-                    className={classes.selectWrapper}
+                    className={classes.grid}
                     label={"Color"}
                     valueKey={DATA_NAMESPACE + ".color"}
                     defaultValue={"#fff"}
