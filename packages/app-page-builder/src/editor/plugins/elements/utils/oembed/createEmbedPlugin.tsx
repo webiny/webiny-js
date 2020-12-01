@@ -18,7 +18,8 @@ type EmbedPluginConfig = {
     oembed?: {
         global?: string;
         sdk?: string;
-        onData?: Function;
+        // onData?: Function;
+        onData?: (data: { [key: string]: any }) => { [key: string]: any };
         renderEmbed?: (props: OEmbedProps) => React.ReactElement;
         init?: (params: { node: HTMLElement }) => void;
     };
@@ -39,7 +40,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         elementType: config.type,
         toolbar: config.toolbar,
         settings: config.settings || ["pb-editor-page-element-settings-delete", ""],
-        target: config.target || ["column", "row", "list-item"],
+        target: config.target || ["cell", "block", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {
             return {

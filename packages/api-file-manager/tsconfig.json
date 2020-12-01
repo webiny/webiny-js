@@ -1,28 +1,39 @@
 {
-	"extends": "../../tsconfig",
-	"include": [
-		"./src"
-	],
-	"references": [
-		{
-			"path": "../api-security"
-		},
-		{
-			"path": "../handler-graphql"
-		},
-		{
-			"path": "../handler"
-		},{
-			"path": "../plugins"
-		},
-		{
-			"path": "../handler-client"
-		},
-		{
-			"path": "../handler-db"
-		},
-		{
-			"path": "../validation"
-		}
-	]
+  "extends": "../../tsconfig",
+  "include": ["./src", "./__tests__"],
+  "references": [
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../handler-http"
+    }
+  ]
 }

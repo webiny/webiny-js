@@ -1,17 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import styled from "@emotion/styled";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activePluginsByTypeNamesSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
-import { isEqual } from "lodash";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { deactivatePlugin } from "@webiny/app-page-builder/editor/actions";
-import { getActivePlugins } from "@webiny/app-page-builder/editor/selectors";
 import {
     PbEditorToolbarBottomPlugin,
     PbEditorToolbarTopPlugin
 } from "@webiny/app-page-builder/types";
+import { useRecoilValue } from "recoil";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,
@@ -20,7 +20,6 @@ const ToolbarDrawerContainer = styled("div")({
     backgroundColor: "var(--mdc-theme-surface)",
     zIndex: 2
 });
-
 const ToolbarContainer = styled("div")({
     position: "fixed",
     display: "inline-block",
@@ -32,7 +31,6 @@ const ToolbarContainer = styled("div")({
     boxShadow: "1px 0px 5px 0px var(--mdc-theme-on-background)",
     zIndex: 3
 });
-
 const DrawerContainer = styled("div")(({ open }: any) => ({
     pointerEvents: open ? "all" : "none",
     ".mdc-drawer__drawer": {
@@ -41,7 +39,6 @@ const DrawerContainer = styled("div")(({ open }: any) => ({
         }
     }
 }));
-
 const ToolbarActions = styled("div")({
     position: "relative",
     display: "flex",
@@ -49,7 +46,6 @@ const ToolbarActions = styled("div")({
     justifyContent: "space-between",
     height: "100%"
 });
-
 const drawerStyle = css({
     zIndex: 10,
     "&.mdc-drawer--dismissible": {
@@ -63,48 +59,53 @@ const drawerStyle = css({
         }
     }
 });
-
-const ToolbarDrawer = connect<any, any, any>(null, { deactivatePlugin })(
-    ({ name, active, children, deactivatePlugin }: any) => {
-        const { removeKeyHandler, addKeyHandler } = useKeyHandler();
-        const last = useRef({ active: null });
-        useEffect(() => {
-            if (active && !last.current.active) {
-                addKeyHandler("escape", e => {
-                    e.preventDefault();
-                    deactivatePlugin({ name });
-                });
-            }
-
-            if (!active && last.current.active) {
-                removeKeyHandler("escape");
-            }
-        });
-
-        useEffect(() => {
-            last.current = { active };
-        });
-
-        return (
-            <DrawerContainer open={active}>
-                <Drawer dismissible open={active} className={drawerStyle}>
-                    <DrawerContent>{children}</DrawerContent>
-                </Drawer>
-            </DrawerContainer>
-        );
-    }
-);
-
+type ToolbarDrawerProps = {
+    name: string;
+    active: boolean;
+    children: React.ReactNode;
+};
+const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children }) => {
+    const eventActionHandler = useEventActionHandler();
+    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
+    const last = useRef({ active: null });
+    useEffect(() => {
+        if (active && !last.current.active) {
+            addKeyHandler("escape", e => {
+                e.preventDefault();
+                eventActionHandler.trigger(
+                    new DeactivatePluginActionEvent({
+                        name
+                    })
+                );
+            });
+        }
+        if (!active && last.current.active) {
+            removeKeyHandler("escape");
+        }
+    });
+    useEffect(() => {
+        last.current = { active };
+    });
+    return (
+        <DrawerContainer open={active}>
+            <Drawer dismissible open={active} className={drawerStyle}>
+                <DrawerContent>{children}</DrawerContent>
+            </Drawer>
+        </DrawerContainer>
+    );
+};
 const renderPlugin = (plugin: PbEditorToolbarTopPlugin | PbEditorToolbarBottomPlugin) => {
     return React.cloneElement(plugin.renderAction(), { key: plugin.name });
 };
 
-const Toolbar = ({ activePluginsTop }) => {
-    const actionsTop = getPlugins<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
-    const actionsBottom = getPlugins<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
-
+const Toolbar = () => {
+    const activePluginsTop = useRecoilValue(
+        activePluginsByTypeNamesSelector("pb-editor-toolbar-top")
+    );
+    const actionsTop = plugins.byType<PbEditorToolbarTopPlugin>("pb-editor-toolbar-top");
+    const actionsBottom = plugins.byType<PbEditorToolbarBottomPlugin>("pb-editor-toolbar-bottom");
     return (
-        <React.Fragment>
+        <>
             <ToolbarDrawerContainer>
                 {actionsTop
                     .filter(plugin => typeof plugin.renderDrawer === "function")
@@ -124,16 +125,7 @@ const Toolbar = ({ activePluginsTop }) => {
                     <div>{actionsBottom.map(renderPlugin)}</div>
                 </ToolbarActions>
             </ToolbarContainer>
-        </React.Fragment>
+        </>
     );
 };
-
-export default connect<any, any, any>(
-    state => ({
-        activePluginsTop: getActivePlugins("pb-editor-toolbar-top")(state).map(pl => pl.name),
-        activePluginsBottom: getActivePlugins("pb-editor-toolbar-bottom")(state).map(pl => pl.name)
-    }),
-    null,
-    null,
-    { areStatePropsEqual: isEqual }
-)(Toolbar);
+export default React.memo(Toolbar);

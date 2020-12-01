@@ -22,7 +22,7 @@ export type GraphQLFieldResolver<
     TSource = any,
     TArgs = any,
     TContext = Context
-    > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
+> = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
 // `GraphQLSchemaPlugin` types.
 export type Types = string | (() => string | Promise<string>);
@@ -39,10 +39,7 @@ export type Resolvers<TContext> =
 
 export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
     type: "graphql-schema";
-
-    // TODO: is this necessary?
-    /*prepare?: (params: { context: T }) => Promise<void>;*/
-
+    prepare?: (params: { context: TContext }) => Promise<void>;
     schema: {
         typeDefs: Types;
         resolvers: Resolvers<TContext>;

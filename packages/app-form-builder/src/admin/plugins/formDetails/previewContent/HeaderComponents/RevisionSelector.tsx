@@ -7,7 +7,7 @@ import { ReactComponent as DownButton } from "@webiny/app-form-builder/admin/ico
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
-import { get } from "lodash";
+
 const buttonStyle = css({
     "&.mdc-button": {
         color: "var(--mdc-theme-text-primary-on-background) !important"
@@ -34,7 +34,7 @@ const RevisionSelector = ({ revision, form, selectRevision }) => {
                 </ButtonDefault>
             }
         >
-            {(get(form, "revisions") || []).map(rev => (
+            {(form?.revisions || []).map(rev => (
                 <MenuItem key={rev.id}>
                     <Typography use={"body2"}>v{rev.version}</Typography>
                     <Typography use={"caption"}>({rev.status})</Typography>

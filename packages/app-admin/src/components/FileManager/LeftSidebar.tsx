@@ -57,7 +57,7 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
         <div className={style.leftDrawer}>
             <Query query={LIST_TAGS}>
                 {({ data }) => {
-                    const list = get(data, "files.listTags") || [];
+                    const list = get(data, "fileManager.listTags") || [];
 
                     if (!list.length) {
                         return (

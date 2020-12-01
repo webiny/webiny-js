@@ -1,6 +1,5 @@
 import * as React from "react";
 import { FbFormModelField } from "@webiny/app-form-builder/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import HelperMessage from "../components/HelperMessage";
 import { BindComponentRenderProp } from "@webiny/form";
 
@@ -17,7 +16,7 @@ const Radio = (props: Props) => {
     return (
         <div className="webiny-fb-form-field webiny-fb-form-field--radio">
             <label className="webiny-fb-form-field__label webiny-pb-typography-body">
-                <I18NValue value={props.field.label} />
+                {props.field.label}
             </label>
             <div className="webiny-fb-form-field__radio-group">
                 {props.field.options.map(option => {
@@ -36,7 +35,7 @@ const Radio = (props: Props) => {
                                 htmlFor={"radio-" + fieldId + option.value}
                                 className="webiny-fb-form-field__radio-label"
                             >
-                                {I18NValue({ value: option.label })}
+                                {option.label}
                             </label>
                         </div>
                     );
@@ -45,7 +44,7 @@ const Radio = (props: Props) => {
             <HelperMessage
                 isValid={validation.isValid}
                 errorMessage={validation.message}
-                helperMessage={<I18NValue value={props.field.helpText} />}
+                helperMessage={props.field.helpText}
             />
         </div>
     );

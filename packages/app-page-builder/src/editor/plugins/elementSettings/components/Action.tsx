@@ -1,11 +1,18 @@
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useEffect, useCallback, ReactElement } from "react";
+import {
+    isPluginActiveSelector,
+    activePluginsByTypeTotalSelector,
+    uiAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
 import { IconButton } from "@webiny/ui/Button";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { getUi, getActivePlugins, isPluginActive } from "@webiny/app-page-builder/editor/selectors";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { useRecoilValue } from "recoil";
+
+const editorPageElementSettingsPluginType = "pb-editor-page-element-settings";
 
 const activeStyle = css({
     "&.mdc-icon-button": {
@@ -14,21 +21,28 @@ const activeStyle = css({
 });
 
 type ActionProps = {
-    togglePlugin(params: { name: string; closeOtherInGroup: boolean });
     plugin?: string;
-    icon: ReactElement;
-    active: boolean;
+    icon?: ReactElement;
     tooltip?: string;
     onClick?: () => void;
     shortcut?: string[];
-    slateFocused?: boolean;
-    settingsActive?: boolean;
     // For testing purposes.
     "data-testid"?: string;
 };
 
-const Action = (props: ActionProps) => {
-    const { togglePlugin, plugin, icon, active, tooltip, onClick } = props;
+const Action: React.FunctionComponent<ActionProps> = ({
+    plugin,
+    icon,
+    tooltip,
+    onClick,
+    shortcut = [],
+    ...props
+}) => {
+    const eventActionHandler = useEventActionHandler();
+    const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
+    const { textEditorActive } = useRecoilValue(uiAtom);
+    const settingsActive =
+        useRecoilValue(activePluginsByTypeTotalSelector(editorPageElementSettingsPluginType)) > 0;
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -36,20 +50,18 @@ const Action = (props: ActionProps) => {
         if (typeof onClick === "function") {
             return onClick();
         }
-        togglePlugin({ name: plugin, closeOtherInGroup: true });
+        eventActionHandler.trigger(
+            new TogglePluginActionEvent({
+                name: plugin,
+                closeOtherInGroup: true
+            })
+        );
     }, [plugin, onClick]);
 
     useEffect(() => {
-        let { shortcut = [] } = props;
-        const { onClick } = props;
-        if (typeof shortcut === "string") {
-            shortcut = [shortcut];
-        }
-
         shortcut.map(short => {
             addKeyHandler(short, e => {
-                const { slateFocused, settingsActive } = props;
-                if (slateFocused || settingsActive) {
+                if (textEditorActive || settingsActive) {
                     return;
                 }
 
@@ -59,39 +71,26 @@ const Action = (props: ActionProps) => {
         });
 
         return () => {
-            let { shortcut = [] } = props;
-
-            if (typeof shortcut === "string") {
-                shortcut = [shortcut];
-            }
-
             shortcut.map(short => {
                 removeKeyHandler(short);
             });
         };
-    });
+    }, []);
 
     return (
         <Tooltip
             placement={"bottom"}
             content={<span>{tooltip}</span>}
-            {...(active ? { visible: false } : {})}
+            {...(isPluginActive ? { visible: false } : {})}
         >
             <IconButton
                 icon={icon}
                 onClick={clickHandler}
-                className={active && activeStyle}
+                className={isPluginActive && activeStyle}
                 data-testid={props["data-testid"]}
             />
         </Tooltip>
     );
 };
 
-export default connect<any, any, any>(
-    (state, props: { plugin?: string }) => ({
-        active: isPluginActive(props.plugin)(state),
-        slateFocused: getUi(state).slateFocused,
-        settingsActive: getActivePlugins("pb-editor-page-element-settings")(state).length > 0
-    }),
-    { togglePlugin }
-)(Action);
+export default Action;

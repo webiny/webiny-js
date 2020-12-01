@@ -1,5 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
 
-export type Context = {
+export type ElasticSearchClientContext = {
     elasticSearch: Client;
 };

@@ -1,17 +1,17 @@
-import * as React from "react";
+import { elementPropsByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import React from "react";
+import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";
-import { getElementProps } from "@webiny/app-page-builder/editor/selectors";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import Droppable from "./../Droppable";
+import { useRecoilValue } from "recoil";
 
 type ContainerProps = {
     isOver: boolean;
     highlight: boolean;
+    children: React.ReactNode;
 };
 
 const Container = React.memo<ContainerProps>(
-    // @ts-ignore
-    styled("div")(({ isOver }) => ({
+    styled("div")(({ isOver }: ContainerProps) => ({
         backgroundColor: "transparent",
         boxSizing: "border-box",
         height: "100%",
@@ -38,22 +38,25 @@ const Add = styled("div")({
     margin: 0
 });
 
-const isVisible = () => true;
+const isVisible: DroppableIsVisiblePropType = () => true;
 
 type Props = {
+    id: string;
     type: string;
-    onDrop: Function;
+    onDrop: DroppableOnDropPropType;
     children: React.ReactNode;
-    active: boolean;
-    highlight: boolean;
 };
 
-const Center = ({ type, onDrop, children, active, highlight }: Props) => {
+const Center: React.FunctionComponent<Props> = ({ id, type, onDrop, children }) => {
+    const { isActive, isHighlighted } = useRecoilValue(elementPropsByIdSelector(id));
     return (
         <Droppable onDrop={onDrop} type={type} isVisible={isVisible}>
             {({ isOver, isDroppable, drop }) => (
                 <div style={{ width: "100%", height: "100%" }} ref={drop}>
-                    <Container isOver={(isOver && isDroppable) || active} highlight={highlight}>
+                    <Container
+                        isOver={(isOver && isDroppable) || isActive}
+                        highlight={isHighlighted}
+                    >
                         <Add>{children}</Add>
                     </Container>
                 </div>
@@ -62,6 +65,4 @@ const Center = ({ type, onDrop, children, active, highlight }: Props) => {
     );
 };
 
-export default connect<any, any, any>((state, props) => {
-    return getElementProps(state, props);
-})(React.memo(Center));
+export default React.memo(Center);

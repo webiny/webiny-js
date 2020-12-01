@@ -1,34 +1,56 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { FormBuilderSettingsCRUD } from "../../types";
 
 export const install: GraphQLFieldResolver = async (root, args, context) => {
-    const { FormSettings } = context.models;
+    const formBuilderSettings: FormBuilderSettingsCRUD =
+        context?.formBuilder?.crud?.formBuilderSettings;
 
     try {
-        const settings = await FormSettings.load();
-        if (await settings.data.installed) {
+        const existingSettings = await formBuilderSettings.getSettings();
+        if (existingSettings?.installed) {
             return new ErrorResponse({
                 code: "FORM_BUILDER_INSTALL_ABORTED",
                 message: "Form builder is already installed."
             });
         }
-
+        // Prepare "settings" data
+        const data: any = {};
         if (args.domain) {
-            settings.data.domain = args.domain;
+            data.domain = args.domain;
         }
-        settings.data.installed = true;
-        await settings.save();
+        data.installed = true;
+
+        if (!existingSettings) {
+            // Create a new settings
+            await formBuilderSettings.createSettings(data);
+        } else {
+            // Update existing one
+            await formBuilderSettings.updateSettings(data);
+        }
+
         return new Response(true);
     } catch (e) {
         return new ErrorResponse({
             code: "FORM_BUILDER_ERROR",
-            message: e.message
+            message: e.message,
+            data: e.data
         });
     }
 };
 
 export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
-    const { FormSettings } = context.models;
-    const settings = await FormSettings.load();
-    return new Response(settings.data.installed);
+    try {
+        const formBuilderSettings: FormBuilderSettingsCRUD =
+            context?.formBuilder?.crud?.formBuilderSettings;
+
+        const settings = await formBuilderSettings.getSettings();
+        return new Response(Boolean(settings?.installed));
+    } catch (e) {
+        return new ErrorResponse({
+            code: "FORM_BUILDER_ERROR",
+            message: e.message,
+            data: e.data
+        });
+    }
 };

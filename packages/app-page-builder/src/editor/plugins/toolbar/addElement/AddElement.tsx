@@ -1,16 +1,18 @@
 import React, { useCallback, useState } from "react";
-import { connect } from "@webiny/app-page-builder/editor/redux";
-import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
-import {
-    dragStart,
-    dragEnd,
-    deactivatePlugin,
-    dropElement
-} from "@webiny/app-page-builder/editor/actions";
-import { getPlugins } from "@webiny/plugins";
-import { getActivePluginParams } from "@webiny/app-page-builder/editor/selectors";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import * as Styled from "./StyledComponents";
+import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import {
+    DeactivatePluginActionEvent,
+    DragEndActionEvent,
+    DragStartActionEvent,
+    DropElementActionEvent
+} from "@webiny/app-page-builder/editor/recoil/actions";
+import { DropElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/dropElement/types";
+import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
+import { plugins } from "@webiny/plugins";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -43,18 +45,41 @@ const categoriesList = css({
     }
 });
 
-const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd }) => {
+const AddElement: React.FunctionComponent = () => {
+    const handler = useEventActionHandler();
+    const plugin = useRecoilValue(
+        activePluginParamsByNameSelector("pb-editor-toolbar-add-element")
+    );
+
+    const { params } = plugin || {};
+
+    const dragStart = useCallback(() => {
+        handler.trigger(new DragStartActionEvent());
+    }, []);
+    const dragEnd = useCallback(() => {
+        handler.trigger(new DragEndActionEvent());
+    }, []);
+    const deactivatePlugin = useCallback(() => {
+        handler.trigger(
+            new DeactivatePluginActionEvent({
+                name: ADD_ELEMENT
+            })
+        );
+    }, []);
+    const dropElement = useCallback((args: DropElementActionArgsType) => {
+        handler.trigger(new DropElementActionEvent(args));
+    }, []);
     const getGroups = useCallback(() => {
-        return getPlugins<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
+        return plugins.byType<PbEditorPageElementGroupPlugin>("pb-editor-page-element-group");
     }, []);
 
     const getGroupElements = useCallback(group => {
-        return getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element").filter(
-            el => el.toolbar && el.toolbar.group === group
-        );
+        return plugins
+            .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
+            .filter(el => el.toolbar && el.toolbar.group === group);
     }, []);
 
-    const [group, setGroup] = useState(getGroups()[0].name);
+    const [group, setGroup] = useState<string>(getGroups()[0].name);
 
     const { theme } = usePageBuilder();
 
@@ -64,49 +89,42 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
 
     const enableDragOverlay = useCallback(() => {
         const el = document.querySelector(".pb-editor");
-        if (el) {
-            el.classList.add("pb-editor-dragging");
+        if (!el) {
+            return;
         }
+        el.classList.add("pb-editor-dragging");
     }, []);
 
     const disableDragOverlay = useCallback(() => {
         const el = document.querySelector(".pb-editor");
-        if (el) {
-            el.classList.remove("pb-editor-dragging");
+        if (!el) {
+            return;
         }
+        el.classList.remove("pb-editor-dragging");
     }, []);
 
-    const renderDraggable = useCallback(
-        (element, plugin) => {
-            const { elementType } = plugin;
+    const renderDraggable = useCallback((element, plugin) => {
+        const { elementType } = plugin;
 
-            return (
-                <Draggable
-                    key={plugin.name}
-                    target={plugin.target}
-                    beginDrag={props => {
-                        dragStart({ element: { type: elementType } });
-                        setTimeout(
-                            () =>
-                                deactivatePlugin({
-                                    name: ADD_ELEMENT
-                                }),
-                            20
-                        );
-                        return { type: elementType, target: props.target };
-                    }}
-                    endDrag={(props, monitor) => {
-                        dragEnd({ element: monitor.getItem() });
-                    }}
-                >
-                    {({ drag }) => (
-                        <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
-                    )}
-                </Draggable>
-            );
-        },
-        [dragStart, deactivatePlugin, dragEnd]
-    );
+        return (
+            <Draggable
+                key={plugin.name}
+                target={plugin.target}
+                beginDrag={props => {
+                    dragStart();
+                    setTimeout(deactivatePlugin, 20);
+                    return { type: elementType, target: props.target };
+                }}
+                endDrag={() => {
+                    dragEnd();
+                }}
+            >
+                {({ drag }) => (
+                    <div ref={drag}>{renderOverlay(element, null, "Drag to Add", plugin)}</div>
+                )}
+            </Draggable>
+        );
+    }, []);
 
     const renderOverlay = useCallback(
         (element, onClick = null, label, plugin) => {
@@ -138,12 +156,10 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
                 element,
                 () => {
                     dropElement({
-                        source: { type: plugin.elementType },
+                        source: { type: plugin.elementType } as any,
                         target: { ...params }
                     });
-                    deactivatePlugin({
-                        name: ADD_ELEMENT
-                    });
+                    deactivatePlugin();
                 },
                 "Click to Add",
                 plugin
@@ -201,12 +217,4 @@ const AddElement = ({ params, dropElement, dragStart, deactivatePlugin, dragEnd 
     );
 };
 
-export default connect<any, any, any>(
-    state => {
-        const getParams = getActivePluginParams("pb-editor-toolbar-add-element");
-        return {
-            params: getParams ? getParams(state) : null
-        };
-    },
-    { dragStart, dragEnd, deactivatePlugin, dropElement }
-)(AddElement);
+export default React.memo(AddElement);

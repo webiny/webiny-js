@@ -1,7 +1,6 @@
 import React from "react";
-import { get } from "lodash";
 import { GET_PUBLISHED_FORM } from "./graphql";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import FormRender from "./FormRender";
 import { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
 
@@ -24,23 +23,34 @@ const FormLoad = (props: FormLoadComponentPropsType) => {
         variables.id = props.revisionId;
     }
 
-    return (
-        <Query query={GET_PUBLISHED_FORM} variables={variables}>
-            {({ data, loading }) => {
-                if (loading) {
-                    // TODO: handle loading
-                    return null;
-                }
+    const { data, loading, error } = useQuery(GET_PUBLISHED_FORM, {
+        variables
+    });
 
-                const formData = get(data, "forms.getPublishedForm.data");
-                if (!formData) {
-                    // TODO: handle cannot load form
-                    return <span>Form not found.</span>;
-                }
-                return <FormRender {...props} data={formData} />;
-            }}
-        </Query>
-    );
+    if (error) {
+        return (
+            <React.Fragment>
+                <details>
+                    <summary>{error.message || "Something went wrong!"}</summary>
+                    {error.stack}
+                </details>
+            </React.Fragment>
+        );
+    }
+
+    if (loading) {
+        // TODO: handle loading
+        return <span>Loading...</span>;
+    }
+
+    const formData = data?.formBuilder?.getPublishedForm?.data;
+    const formError = data?.formBuilder?.getPublishedForm?.error;
+
+    if (!formData) {
+        // TODO: handle cannot load form
+        return <span>{formError?.message || "Form not found."}</span>;
+    }
+    return <FormRender {...props} data={formData} />;
 };
 
 export default FormLoad;

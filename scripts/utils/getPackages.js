@@ -29,8 +29,8 @@ module.exports.getPackages = (args = {}) => {
             const tsConfigJsonPath = path + "/tsconfig.json";
             const tsConfigBuildJsonPath = path + "/tsconfig.build.json";
 
-            let packageJson, tsConfigJson, tsConfigBuildJson;
-            packageJson = readJson.sync(packageJsonPath);
+            let tsConfigJson, tsConfigBuildJson;
+            const packageJson = readJson.sync(packageJsonPath);
 
             try {
                 tsConfigJson = readJson.sync(tsConfigJsonPath);

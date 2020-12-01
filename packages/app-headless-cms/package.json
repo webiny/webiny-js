@@ -27,7 +27,7 @@
     "@webiny/app-i18n": "^4.14.0",
     "@webiny/app-plugin-admin-welcome-screen": "^4.14.0",
     "@webiny/app-security": "^4.14.0",
-    "@webiny/app-security-user-management": "^4.14.0",
+    "@webiny/app-security-tenancy": "^4.14.0",
     "@webiny/form": "^4.14.0",
     "@webiny/plugins": "^4.14.0",
     "@webiny/react-router": "^4.14.0",
@@ -67,8 +67,8 @@
     "graphql.macro": "^1.4.2"
   },
   "peerDependencies": {
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   },
   "publishConfig": {
     "access": "public",

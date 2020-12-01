@@ -7,7 +7,7 @@ export default (value: Record<string, any>[], i18n: I18NContextObject) => {
     }
 
     const currentLocale = i18n.getCurrentLocale();
-    const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.id);
+    const currentLocaleItemIndex = value.findIndex(item => item.locale === currentLocale.code);
 
     const output = [...value];
     const [currentLocaleItem] = output.splice(currentLocaleItemIndex, 1);

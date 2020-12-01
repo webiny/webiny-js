@@ -2,25 +2,10 @@
   "extends": "../../../tsconfig",
   "references": [
     {
-      "path": "../../../../packages/api-security"
-    },
-    {
-      "path": "../../../../packages/api-security-user-management"
-    },
-    {
-      "path": "../../../../packages/handler"
-    },
-    {
-      "path": "../../../../packages/handler-db"
-    },
-    {
-      "path": "../../../../packages/handler-aws"
-    },
-    {
-      "path": "../../../../packages/handler-graphql"
-    },
-    {
       "path": "../../../packages/api-i18n"
+    },
+    {
+      "path": "../../../packages/api-security"
     },
     {
       "path": "../../../packages/api-i18n-content"
@@ -29,19 +14,17 @@
       "path": "../../../packages/api-page-builder"
     },
     {
-      "path": "../../../packages/api-security-user-management"
-    },
-    {
-      "path": "../../../packages/db-dynamodb"
-    },
-    {
-      "path": "../../../packages/handler-aws"
-    },
-    {
-      "path": "../../../packages/handler-db"
+      "path": "../../../packages/api-security-tenancy"
     },
     {
       "path": "../../../packages/api-file-manager"
+    },
+    ,
+    {
+      "path": "../../../packages/api-file-manager-s3"
+    },
+    {
+      "path": "../../../packages/api-form-builder"
     },
     {
       "path": "../../../packages/api-plugin-elastic-search-client"
@@ -50,7 +33,16 @@
       "path": "../../../packages/api-plugin-security-cognito"
     },
     {
-      "path": "../../../packages/api-security"
+      "path": "../../../packages/db-dynamodb"
+    },
+    {
+      "path": "../../../packages/handler"
+    },
+    {
+      "path": "../../../packages/handler-aws"
+    },
+    {
+      "path": "../../../packages/handler-db"
     },
     {
       "path": "../../../packages/handler-graphql"

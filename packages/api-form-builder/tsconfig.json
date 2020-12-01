@@ -1,13 +1,47 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../plugins" },
-    { "path": "../api-i18n" },
-    { "path": "../api-security" },
-    { "path": "../commodo" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" },
-    { "path": "../handler-ssr" },
-    { "path": "../validation" }
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../handler-ssr"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../db"
+    }
   ]
 }

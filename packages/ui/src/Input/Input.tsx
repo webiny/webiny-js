@@ -27,9 +27,6 @@ export type InputProps = FormComponentProps &
 
         maxLength?: number;
 
-        // A trailing icon. Use `<InputIcon/>` component.
-        leadingIcon?: React.ReactNode;
-
         // A callback that is executed when input focus is lost.
         onBlur?: (e: React.SyntheticEvent<HTMLInputElement>) => any;
 

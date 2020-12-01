@@ -149,7 +149,7 @@ describe("PageElements Test", () => {
 
         // After deleting all pageElements, list should be empty.
         for (let i = 0; i < 3; i++) {
-            let [response] = await deletePageElement({ id: ids[i] });
+            const [response] = await deletePageElement({ id: ids[i] });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {

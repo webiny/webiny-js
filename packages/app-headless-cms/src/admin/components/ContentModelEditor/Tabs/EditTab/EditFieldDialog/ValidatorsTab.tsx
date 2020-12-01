@@ -1,3 +1,4 @@
+// TODO remove
 // @ts-nocheck
 
 import React, { useMemo } from "react";
@@ -33,7 +34,7 @@ const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, vali
                 message: {
                     values: [
                         {
-                            locale: i18n.getDefaultLocale().id,
+                            locale: i18n.getDefaultLocale().code,
                             value: validator.defaultMessage
                         }
                     ]

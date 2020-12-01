@@ -1,6 +1,6 @@
-import models from "./models";
+import crud from "./crud";
 import graphql from "./graphql";
 import triggerHandlers from "./triggerHandlers";
 import validators from "./validators";
 
-export default () => [models(), graphql, triggerHandlers, validators];
+export default () => [crud(), graphql, triggerHandlers, validators];

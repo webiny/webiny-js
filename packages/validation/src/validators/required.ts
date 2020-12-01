@@ -1,4 +1,3 @@
-import _ from "lodash";
 import ValidationError from "./../validationError";
 
 const throwError = () => {
@@ -6,15 +5,7 @@ const throwError = () => {
 };
 
 export default (value: any) => {
-    if (value === "" || value === null || value === undefined) {
-        throwError();
-    }
-
-    if (Array.isArray(value) && value.length === 0) {
-        throwError();
-    }
-
-    if (_.isEqual(value, {})) {
+    if (value === null || value === undefined) {
         throwError();
     }
 };

@@ -1,82 +1,35 @@
 import React, { useCallback } from "react";
-import { Provider } from "react-redux";
+import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
+import {
+    createElementHelper,
+    updateChildPathsHelper
+} from "@webiny/app-page-builder/editor/helpers";
 import { useRouter } from "@webiny/react-router";
-import { Query, useApolloClient } from "react-apollo";
-import { get } from "lodash";
+import { Query } from "react-apollo";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
-import { createElement } from "@webiny/app-page-builder/editor/utils";
-import { redux } from "@webiny/app-page-builder/editor/redux";
-import { SETUP_EDITOR } from "@webiny/app-page-builder/editor/actions";
+import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
-import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
-import gql from "graphql-tag";
 
-export const DATA_FIELDS = `
-    id
-    title
-    url
-    version
-    locked
-    status
-    category {
-        name
-        slug
-    }
-    revisions {
-        id
-        title
-        status
-        version
-    }
-    
-`;
-
-const GET_PAGE = gql`
-    query GetPage($id: ID!) {
-        pageBuilder {
-            getPage(id: $id) {
-                data {
-                    ${DATA_FIELDS}
-                    createdBy {
-                        id
-                    }
-                    content
-
-                }
-                error {
-                    message
-                    data
-                    code
-                }
-            }
-        }
-    }
-`;
-
-const getEmptyData = (page = {}, revisions = []) => {
-    return {
-        ui: {
-            activeElement: null,
-            dragging: false,
-            highlightElement: null,
-            plugins: {},
-            resizing: false
-        },
-        tmp: {},
-        page,
-        revisions
-    };
+const extractPageGetPage = (data: any): any => {
+    return data.pageBuilder?.getPage || {};
 };
 
-let pageSet = null;
+const extractPageData = (data: any): any => {
+    const getPageData = extractPageGetPage(data);
+    return getPageData.data;
+};
 
-const Editor = () => {
-    const client = useApolloClient();
+const extractPageErrorData = (data: any): any => {
+    const getPageData = extractPageGetPage(data);
+    return getPageData.error || {};
+};
+
+const Editor: React.FunctionComponent = () => {
     const { match, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
@@ -99,36 +52,24 @@ const Editor = () => {
                     </LoadingEditor>
                 );
             }
-
-            if (!get(data, "pageBuilder.getPage.data")) {
+            if (!data) {
                 return null;
             }
 
-            if (!redux.store) {
-                redux.initStore({}, { client });
+            const pageData = extractPageData(data);
+            if (!pageData) {
+                return null;
             }
 
-            if (!loading) {
-                const { revisions, ...page } = data.pageBuilder.getPage.data;
-                if (!page.content) {
-                    page.content = createElement("document");
-                }
-
-                if (pageSet !== page.id) {
-                    pageSet = page.id;
-                    redux.store.dispatch({
-                        type: SETUP_EDITOR,
-                        payload: getEmptyData(page, revisions)
-                    });
-                    redux.store.dispatch({ type: "@@redux-undo/INIT" });
-                }
-            }
+            const { revisions = [], content, ...restOfPageData } = pageData;
+            const page = {
+                ...restOfPageData,
+                content: content || updateChildPathsHelper(createElementHelper("document"))
+            };
 
             return (
                 <React.Fragment>
-                    <Provider store={redux.store}>
-                        <PbEditor />
-                    </Provider>
+                    <PbEditor page={page} revisions={revisions} />
                     <div style={{ zIndex: 10, position: "absolute" }}>
                         <Snackbar />
                     </div>
@@ -146,11 +87,13 @@ const Editor = () => {
             query={GET_PAGE}
             variables={{ id: params.id }}
             onCompleted={data => {
-                const error = get(data, "pageBuilder.getPage.error.message");
-                if (error) {
-                    history.push(`/page-builder/pages`);
-                    showSnackbar(error);
+                const errorData = extractPageErrorData(data);
+                const error = errorData.message;
+                if (!error) {
+                    return;
                 }
+                history.push(`/page-builder/pages`);
+                showSnackbar(error);
             }}
         >
             {renderEditor}

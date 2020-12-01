@@ -9,7 +9,7 @@ type I18NValueObject = {
 export function useI18N() {
     const context = useContext<I18NContextValue>(I18NContext);
 
-    const { state, setState, refetchLocales, updateLocaleStorage } = context;
+    const { state, setState, refetchLocales, updateLocaleStorage } = context || {};
     const self = {
         refetchLocales,
         getDefaultLocale() {

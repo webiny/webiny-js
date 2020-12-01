@@ -2,7 +2,6 @@ import React from "react";
 import styled from "@emotion/styled";
 import Spacer, { INIT_HEIGHT } from "./Spacer";
 import { ReactComponent as SpacerIcon } from "@webiny/app-page-builder/editor/assets/icons/spacer-icon.svg";
-import "./actions";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
@@ -31,7 +30,7 @@ export default (): PbEditorPageElementPlugin => {
             }
         },
         settings: ["pb-editor-page-element-settings-delete"],
-        target: ["block", "column"],
+        target: ["cell", "block"],
         create(options = {}) {
             return {
                 type: "spacer",

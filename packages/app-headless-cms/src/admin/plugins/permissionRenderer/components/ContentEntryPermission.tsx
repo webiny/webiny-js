@@ -9,7 +9,7 @@ import { Select } from "@webiny/ui/Select";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo } from "@webiny/app-security-user-management/components/permission";
+import { PermissionInfo } from "@webiny/app-security-tenancy/components/permission";
 import { Elevation } from "@webiny/ui/Elevation";
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 

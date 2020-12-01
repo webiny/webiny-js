@@ -181,7 +181,7 @@ function FileManagerView(props: FileManagerViewProps) {
                 }
                 // @ts-ignore // TODO: @adrian - what is `current` ?
                 const { data } = gqlQuery.current.getQueryResult();
-                const nextPage = get(data, "files.listFiles.meta.nextPage");
+                const nextPage = get(data, "fileManager.listFiles.meta.nextPage");
                 nextPage &&
                     fetchMore({
                         variables: { page: nextPage },
@@ -192,9 +192,9 @@ function FileManagerView(props: FileManagerViewProps) {
 
                             const next = { ...fetchMoreResult };
 
-                            next.files.listFiles.data = [
-                                ...prev.files.listFiles.data,
-                                ...fetchMoreResult.files.listFiles.data
+                            next.fileManager.listFiles.data = [
+                                ...prev.fileManager.listFiles.data,
+                                ...fetchMoreResult.fileManager.listFiles.data
                             ];
 
                             return next;
@@ -219,10 +219,10 @@ function FileManagerView(props: FileManagerViewProps) {
     }, []);
 
     const updateCacheAfterCreateFile = (cache, newFile) => {
-        const newFileData = get(newFile, "data.files.createFile.data");
+        const newFileData = get(newFile, "data.fileManager.createFile.data");
 
         const data = cloneDeep(cache.readQuery({ query: LIST_FILES, variables: queryParams }));
-        data.files.listFiles.data.unshift(newFileData);
+        data.fileManager.listFiles.data.unshift(newFileData);
 
         cache.writeQuery({
             query: LIST_FILES,
@@ -249,7 +249,7 @@ function FileManagerView(props: FileManagerViewProps) {
     const gqlQuery = useQuery(LIST_FILES, {
         variables: queryParams,
         onCompleted: response => {
-            const list = get(response, "files.listFiles.data") || [];
+            const list = get(response, "fileManager.listFiles.data") || [];
             if (hasPreviouslyUploadedFiles === null) {
                 setHasPreviouslyUploadedFiles(list.length > 0);
             }
@@ -258,7 +258,7 @@ function FileManagerView(props: FileManagerViewProps) {
 
     const { data, fetchMore } = gqlQuery;
 
-    const list = get(data, "files.listFiles.data") || [];
+    const list = get(data, "fileManager.listFiles.data") || [];
     const [createFile] = useMutation(CREATE_FILE, { update: updateCacheAfterCreateFile });
     const uploadFile = async files => {
         setUploading(true);
@@ -305,7 +305,7 @@ function FileManagerView(props: FileManagerViewProps) {
     };
 
     const settingsQuery = useQuery(GET_FILE_SETTINGS);
-    const settings = get(settingsQuery.data, "files.getSettings.data") || {};
+    const settings = get(settingsQuery.data, "fileManager.getSettings.data") || {};
     return (
         <Files
             multiple

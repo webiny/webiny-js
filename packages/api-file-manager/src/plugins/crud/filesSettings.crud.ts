@@ -1,13 +1,13 @@
-import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import { getJSON } from "./files.crud";
-import dbArgs from "./dbArgs";
+
+import defaults from "./defaults";
+import { FileManagerContextPlugin } from "@webiny/api-file-manager/plugins/context";
+import { FileManagerSettings, FileManagerSettingsCRUD } from "@webiny/api-file-manager/types";
 
 export const SETTINGS_KEY = "file-manager";
-// A simple data model
-const FilesSettings = withFields({
+
+const CreateDataModel = withFields({
     key: setOnce()(string({ value: SETTINGS_KEY })),
     installed: boolean({ value: false }),
     uploadMinFileSize: number({
@@ -32,79 +32,74 @@ const FilesSettings = withFields({
     )
 })();
 
-export const PK_FILE_SETTINGS = "S";
+const UpdateDataModel = withFields({
+    installed: boolean(),
+    uploadMinFileSize: number({
+        validation: validation.create("gte:0")
+    }),
+    uploadMaxFileSize: number(),
+    srcPrefix: onSet(value => {
+        // Make sure srcPrefix always ends with forward slash.
+        if (typeof value === "string") {
+            return value.endsWith("/") ? value : value + "/";
+        }
+        return value;
+    })(string())
+})();
 
-export type FileSettings = {
-    key: string;
-    installed: boolean;
-    uploadMinFileSize: number;
-    uploadMaxFileSize: number;
-    srcPrefix: string;
+export default (context: FileManagerContextPlugin) => {
+    const { db, security } = context;
+    const tenant = security.getTenant();
+    const PK_FILE_SETTINGS = `T#${tenant.id}#SETTINGS`;
+
+    return {
+        async getSettings() {
+            const [[settings]] = await db.read<FileManagerSettings>({
+                ...defaults.db,
+                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY },
+                limit: 1
+            });
+
+            return settings;
+        },
+        async createSettings(data) {
+            const settings = new CreateDataModel().populate(data);
+            await settings.validate();
+
+            const settingsData = await settings.toJSON();
+
+            await db.create({
+                data: {
+                    PK: PK_FILE_SETTINGS,
+                    SK: SETTINGS_KEY,
+                    TYPE: "fm.settings",
+                    ...settingsData
+                }
+            });
+
+            return settingsData;
+        },
+        async updateSettings(data) {
+            const updatedValue = new UpdateDataModel().populate(data);
+            await updatedValue.validate();
+
+            const updatedSettings = await updatedValue.toJSON({ onlyDirty: true });
+
+            await db.update({
+                ...defaults,
+                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY },
+                data: updatedSettings
+            });
+
+            return updatedSettings;
+        },
+        async deleteSettings() {
+            await db.delete({
+                ...defaults.db,
+                query: { PK: PK_FILE_SETTINGS, SK: SETTINGS_KEY }
+            });
+
+            return true;
+        }
+    } as FileManagerSettingsCRUD;
 };
-
-export default {
-    type: "context",
-    apply(context) {
-        const { db } = context;
-        context.filesSettings = {
-            async get(key: string) {
-                const [[settings]] = await db.read<FileSettings>({
-                    ...dbArgs,
-                    query: { PK: PK_FILE_SETTINGS, SK: key },
-                    limit: 1
-                });
-
-                return settings;
-            },
-            async list(args) {
-                const [settingsList] = await db.read<FileSettings>({
-                    ...dbArgs,
-                    query: { PK: PK_FILE_SETTINGS, SK: { $gt: " " } },
-                    ...args
-                });
-
-                return settingsList;
-            },
-            async create(data) {
-                // Use `WithFields` model for data validation and setting default value.
-                const filesSettings = new FilesSettings().populate(data);
-                await filesSettings.validate();
-
-                await db.create({
-                    data: {
-                        PK: PK_FILE_SETTINGS,
-                        SK: filesSettings.key,
-                        ...getJSON(filesSettings)
-                    }
-                });
-
-                return filesSettings;
-            },
-            async update({ data, existingSettings }) {
-                // Only update incoming props
-                const propsToUpdate = Object.keys(data);
-                propsToUpdate.forEach(key => {
-                    existingSettings[key] = data[key];
-                });
-
-                // Use `WithFields` model for data validation and setting default value.
-                const filesSettings = new FilesSettings().populate(existingSettings);
-                await filesSettings.validate();
-
-                await db.update({
-                    ...dbArgs,
-                    query: { PK: PK_FILE_SETTINGS, SK: filesSettings.key },
-                    data: getJSON(filesSettings)
-                });
-
-                return filesSettings;
-            },
-            delete(key: string) {
-                return db.delete({
-                    ...dbArgs,
-                    query: { PK: PK_FILE_SETTINGS, SK: key }
-                });
-            }
-        };
-    }
-} as ContextPlugin<DbContext>;

@@ -1,16 +1,20 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
+import { FileManagerResolverContext } from "../../types";
 
-export const install: GraphQLFieldResolver = async (root, args, context) => {
+export const install: GraphQLFieldResolver = async (
+    root,
+    args,
+    context: FileManagerResolverContext
+) => {
     // Start the download of initial Page Builder page / block images.
-    const { filesSettings } = context;
+    const { fileManagerSettings } = context.fileManager;
 
     try {
-        let settings = await filesSettings.get(SETTINGS_KEY);
+        let settings = await fileManagerSettings.getSettings();
 
         if (!settings) {
-            settings = await filesSettings.create();
+            settings = await fileManagerSettings.createSettings({});
         }
 
         if (settings.installed) {
@@ -25,7 +29,7 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
         }
         settings.installed = true;
 
-        await filesSettings.update({ data: {}, existingSettings: settings });
+        await fileManagerSettings.updateSettings(settings);
         return new Response(true);
     } catch (e) {
         return new ErrorResponse({
@@ -36,8 +40,12 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
     }
 };
 
-export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
-    const { filesSettings } = context;
-    const settings = await filesSettings.get(SETTINGS_KEY);
+export const isInstalled: GraphQLFieldResolver = async (
+    root,
+    args,
+    context: FileManagerResolverContext
+) => {
+    const { fileManagerSettings } = context.fileManager;
+    const settings = await fileManagerSettings.getSettings();
     return new Response(Boolean(settings?.installed));
 };

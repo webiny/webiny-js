@@ -3,7 +3,7 @@ import { HandlerApolloServerOptions } from "@webiny/handler-graphql/types";
 
 // We can rely on the default "handler" and "handler-graphql-create-schema" plugins...
 // TODO: createSchema no longer exists, @see packages/api-headless-cms/src/content/apolloHandler/createApolloHandler.ts
-import { createHandlerApolloServer, /*createSchema*/ } from "@webiny/handler-graphql/plugins";
+import { createHandlerApolloServer /*createSchema*/ } from "@webiny/handler-graphql/plugins";
 
 // ...but a custom "handler-graphql-create-handler" plugin is needed.
 import apolloHandler from "./apolloHandler";

@@ -3,7 +3,6 @@ import { ContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
 import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
 
-
 export default () => [
     {
         type: "context",
@@ -36,7 +35,7 @@ export default () => [
                     const authorizationPlugins = context.plugins.byType<
                         SecurityAuthorizationPlugin
                     >("security-authorization");
-
+                    
                     for (let i = 0; i < authorizationPlugins.length; i++) {
                         const result = await authorizationPlugins[i].getPermissions(context);
                         if (Array.isArray(result)) {

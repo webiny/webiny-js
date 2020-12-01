@@ -3,7 +3,7 @@ import Delayed from "./DelayedOnChange";
 
 export default function withDelayedOnChange() {
     return function decorator(Component) {
-        const WithDelayedOnChange = props => {
+        return function WithDelayedOnChange(props) {
             const { value, onChange, ...rest } = props;
             return (
                 <Delayed value={value} onChange={onChange}>
@@ -13,7 +13,5 @@ export default function withDelayedOnChange() {
                 </Delayed>
             );
         };
-
-        return WithDelayedOnChange;
     };
 }

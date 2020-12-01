@@ -1,12 +1,13 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { elementsInContentTotalSelector } from "@webiny/app-page-builder/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
 import { keyframes } from "emotion";
-import { connect } from "@webiny/app-page-builder/editor/redux";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { togglePlugin } from "@webiny/app-page-builder/editor/actions";
-import { getContent } from "@webiny/app-page-builder/editor/selectors";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
+import { useRecoilValue } from "recoil";
 
 const pulse = keyframes`
   0% {
@@ -45,11 +46,20 @@ const AddBlockContent = styled("div")({
     alignItems: "center"
 });
 
-const AddContent = ({ count, togglePlugin }) => {
-    if (count) {
+const AddContent = () => {
+    const totalElements = useRecoilValue(elementsInContentTotalSelector);
+    const eventActionHandler = useEventActionHandler();
+    if (totalElements) {
         return null;
     }
 
+    const onClickHandler = () => {
+        eventActionHandler.trigger(
+            new TogglePluginActionEvent({
+                name: "pb-editor-search-blocks-bar"
+            })
+        );
+    };
     return (
         <AddBlockContainer data-type={"container"}>
             <Elevation
@@ -68,7 +78,7 @@ const AddContent = ({ count, togglePlugin }) => {
                         style={{ animation: pulse + " 3s ease infinite", margin: "0 10px" }}
                         small
                         icon={<AddIcon />}
-                        onClick={() => togglePlugin({ name: "pb-editor-search-blocks-bar" })}
+                        onClick={onClickHandler}
                     />
                     to start adding content
                 </AddBlockContent>
@@ -77,6 +87,4 @@ const AddContent = ({ count, togglePlugin }) => {
     );
 };
 
-export default connect<any, any, any>(state => ({ count: getContent(state).elements.length }), {
-    togglePlugin
-})(React.memo(AddContent));
+export default AddContent;

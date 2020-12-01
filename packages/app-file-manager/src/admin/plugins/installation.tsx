@@ -16,8 +16,8 @@ const SimpleFormPlaceholder = styled.div({
 const t = i18n.ns("app-file-manager/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
-        files {
+    query IsFileManagerInstalled {
+        fileManager {
             isInstalled {
                 data
                 error {
@@ -31,7 +31,7 @@ const IS_INSTALLED = gql`
 
 const INSTALL = gql`
     mutation InstallFileManager($srcPrefix: String) {
-        files {
+        fileManager {
             install(srcPrefix: $srcPrefix) {
                 data
                 error {
@@ -54,7 +54,7 @@ const FMInstaller = ({ onInstalled }) => {
                 variables: { srcPrefix: process.env.REACT_APP_API_URL + "/files" }
             })
             .then(({ data }) => {
-                const { error } = data.files.install;
+                const { error } = data.fileManager.install;
                 if (error) {
                     setError(error.message);
                     return;
@@ -88,7 +88,7 @@ const plugin: AdminInstallationPlugin = {
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.files.isInstalled.data;
+        return data.fileManager.isInstalled.data;
     },
     render({ onInstalled }) {
         return <FMInstaller onInstalled={onInstalled} />;

@@ -1,10 +1,6 @@
 import React from "react";
-import { addReducer } from "@webiny/app-page-builder/editor/redux";
-import { DEACTIVATE_ELEMENT } from "@webiny/app-page-builder/editor/actions";
 import Bar from "./ElementSettingsBar";
 import { PbEditorBarPlugin } from "@webiny/app-page-builder/types";
-
-addReducer([DEACTIVATE_ELEMENT], "ui.plugins.element-settings", () => null);
 
 export default {
     name: "pb-editor-element-settings-bar",

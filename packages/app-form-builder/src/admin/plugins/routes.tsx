@@ -13,7 +13,7 @@ const Loader = ({ children, ...props }) => (
 const FormEditor = lazy(() => import("../views/Editor"));
 const Forms = lazy(() => import("../views/Forms/Forms"));
 
-const ROLE_FORMS_EDITOR = ["forms:form:crud"];
+const ROLE_FORMS_EDITOR = ["fb.form"];
 
 const plugins: RoutePlugin[] = [
     {

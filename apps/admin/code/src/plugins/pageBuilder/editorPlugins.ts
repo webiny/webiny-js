@@ -2,9 +2,9 @@ import contentBackground from "@webiny/app-page-builder/editor/plugins/backgroun
 import blockEditing from "@webiny/app-page-builder/editor/plugins/blockEditing";
 // Elements
 import document from "@webiny/app-page-builder/editor/plugins/elements/document";
-import row from "@webiny/app-page-builder/editor/plugins/elements/row";
 import block from "@webiny/app-page-builder/editor/plugins/elements/block";
-import column from "@webiny/app-page-builder/editor/plugins/elements/column";
+import grid from "@webiny/app-page-builder/editor/plugins/elements/grid";
+import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
 import text from "@webiny/app-page-builder/editor/plugins/elements/text";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
@@ -29,6 +29,7 @@ import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/cod
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
 import emptyBlock from "@webiny/app-page-builder/editor/plugins/blocks/emptyBlock";
+import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
 // Block categories
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
 // Toolbar
@@ -55,41 +56,38 @@ import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align
 import divider from "@webiny/app-page-builder/editor/plugins/elementSettings/divider";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
+import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
-// Slate
-import boldFactory from "@webiny/app-page-builder/editor/plugins/slate/bold";
-import italicFactory from "@webiny/app-page-builder/editor/plugins/slate/italic";
-import underlineFactory from "@webiny/app-page-builder/editor/plugins/slate/underline";
-import listsFactory from "@webiny/app-page-builder/editor/plugins/slate/lists";
-import codeFactory from "@webiny/app-page-builder/editor/plugins/slate/code";
-import breakFactory from "@webiny/app-page-builder/editor/plugins/slate/break";
-import blockFactory from "@webiny/app-page-builder/editor/plugins/slate/block";
-import linkFactory from "@webiny/app-page-builder/editor/plugins/slate/link";
-import scrollFactory from "@webiny/app-page-builder/editor/plugins/slate/scroll";
 // Page settings
 import pageSettingsPlugins from "@webiny/app-page-builder/editor/plugins/pageSettings";
 // Breadcrumbs
 import breadcrumbs from "@webiny/app-page-builder/editor/plugins/breadcrumbs";
-
-const blockPlugins = blockFactory();
-const boldPlugins = boldFactory();
-const italicPlugins = italicFactory();
-const underlinePlugins = underlineFactory();
-const codePlugins = codeFactory();
-const linkPlugins = linkFactory();
-const listsPlugins = listsFactory();
-const breakPlugins = breakFactory();
-const scrollPlugins = scrollFactory();
+// default presets for grid
+import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+// event actions
+import {
+    createElementPlugin,
+    deactivatePluginPlugin,
+    deleteElementPlugin,
+    dragPlugin,
+    dropElementPlugin,
+    resizePlugin,
+    saveRevisionPlugin,
+    togglePluginPlugin,
+    updateElementPlugin,
+    updateRevisionPlugin
+} from "@webiny/app-page-builder/editor/recoil/actions";
 
 export default [
     contentBackground,
     blockEditing,
     // Elements
     document(),
-    row(),
+    grid,
     block(),
-    column(),
+    gridBlock,
+    ...cell(),
     icon(),
     image(),
     imagesList(),
@@ -100,6 +98,8 @@ export default [
     social,
     code,
     pagesList(),
+    // grid presets
+    ...gridPresets,
     // Icons
     icons,
     // Element Actions
@@ -141,28 +141,22 @@ export default [
     height,
     save,
     link,
+    gridSettings,
     // Default bar
     defaultBarPlugins,
-    // Slate Menu plugins
-    blockPlugins.menu,
-    boldPlugins.menu,
-    italicPlugins.menu,
-    underlinePlugins.menu,
-    codePlugins.menu,
-    linkPlugins.menu,
-    listsPlugins.menu,
-    // Slate Editor plugins
-    boldPlugins.editor,
-    italicPlugins.editor,
-    underlinePlugins.editor,
-    codePlugins.editor,
-    listsPlugins.editor,
-    linkPlugins.editor,
-    breakPlugins.editor,
-    blockPlugins.editor,
-    scrollPlugins.editor,
     // Page settings
     pageSettingsPlugins,
     // Breadcrumbs
-    breadcrumbs
+    breadcrumbs,
+    // action registration
+    createElementPlugin(),
+    updateElementPlugin(),
+    togglePluginPlugin(),
+    saveRevisionPlugin(),
+    dropElementPlugin(),
+    deactivatePluginPlugin(),
+    deleteElementPlugin(),
+    updateRevisionPlugin(),
+    ...resizePlugin(),
+    ...dragPlugin()
 ];

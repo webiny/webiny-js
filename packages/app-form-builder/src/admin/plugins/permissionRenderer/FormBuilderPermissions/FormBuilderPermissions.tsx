@@ -6,7 +6,7 @@ import { i18n } from "@webiny/app/i18n";
 import {
     PermissionInfo,
     gridNoPaddingClass
-} from "@webiny/app-security-user-management/components/permission";
+} from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
@@ -16,13 +16,13 @@ import FormSubmissionPermission from "./FormSubmissionPermission";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
-const FORM_BUILDER = "forms";
+const FORM_BUILDER = "fb";
 const FORM_BUILDER_FULL_ACCESS = `${FORM_BUILDER}.*`;
 const FORM_BUILDER_SETTINGS = `${FORM_BUILDER}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["forms", "submissions"];
+const ENTITIES = ["form", "submission"];
 
 export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
     const onFormChange = useCallback(
@@ -143,13 +143,13 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
                             <FormPermission
                                 Bind={Bind}
                                 data={data}
-                                entity={"forms"}
+                                entity={"form"}
                                 title={"Form"}
                             />
                             <FormSubmissionPermission
                                 Bind={Bind}
                                 data={data}
-                                entity={"submissions"}
+                                entity={"submission"}
                                 title={"Form Submission"}
                             />
                             <Elevation z={1} style={{ marginTop: 10 }}>

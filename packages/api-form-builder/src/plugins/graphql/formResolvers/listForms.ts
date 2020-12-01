@@ -1,33 +1,102 @@
-// @ts-nocheck
-import { ListResponse} from "@webiny/handler-graphql/responses";
+import { ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { NotAuthorizedResponse } from "@webiny/api-security";
+import { FormsCRUD } from "../../../types";
+import { convertMongoSortToElasticSort, hasRwd } from "./utils/formResolversUtils";
+import defaults from "../../crud/defaults";
 
-const resolver: GraphQLFieldResolver = async (root, args, context, info) => {
-    const { Form } = context.models;
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
+    const { i18nContent, formBuilder } = context;
+    const forms: FormsCRUD = formBuilder?.crud?.forms;
+    const {
+        sort = { createdOn: -1 },
+        search = null,
+        parent = null,
+        limit = 10
+        // after,
+        // before,
+    } = args;
 
-    const { limit = 10, after, before, sort = null, search = null, parent = null } = args;
-
-    const query: any = {
-        latestVersion: true
-    };
-
-    if (parent) {
-        query.parent = parent;
+    // If permission has "rwd" property set, but "r" is not part of it, bail.
+    const formBuilderFormPermission = await context.security.getPermission("fb.form");
+    if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+        return new NotAuthorizedResponse();
     }
 
-    const findArgs = {
-        sort,
-        limit,
-        search,
-        query,
-        after,
-        before,
-        totalCount: requiresTotalCount(info)
-    };
+    const must: any = [
+        { term: { latestVersion: true } },
+        { term: { "locale.keyword": i18nContent?.locale?.code } }
+    ];
 
-    const forms = await Form.find(findArgs);
+    // If user can only manage own records, let's check if he owns the loaded one.
+    if (formBuilderFormPermission?.own === true) {
+        const identity = context.security.getIdentity();
+        // Only get records which are owned by current user.
+        must.push({
+            term: {
+                "createdBy.id": {
+                    value: identity.id
+                }
+            }
+        });
+    }
 
-    return new ListResponse(forms, forms.getMeta());
+    if (search) {
+        must.push({
+            bool: {
+                should: [
+                    { wildcard: { "name.keyword": `*${search}*` } },
+                    { wildcard: { name: `*${search}*` } },
+                    { wildcard: { "slug.keyword": `*${search}*` } },
+                    { wildcard: { slug: `*${search}*` } }
+                ]
+            }
+        });
+    }
+
+    if (parent) {
+        if (Array.isArray(parent)) {
+            must.push({ terms: { parent: parent } });
+        } else {
+            must.push({ term: { parent: parent } });
+        }
+    }
+
+    try {
+        // Get "latest" form revisions from Elasticsearch.
+        const response = await context.elasticSearch.search({
+            ...defaults.es,
+            body: {
+                query: {
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    constant_score: {
+                        filter: {
+                            bool: {
+                                must
+                            }
+                        }
+                    }
+                },
+                sort: [convertMongoSortToElasticSort(sort)],
+                size: limit
+            }
+        });
+
+        let list = response?.body?.hits?.hits?.map(item => item._source);
+        // Get complete form data for returned list.
+        if (list?.length) {
+            const formIds = list.map(item => item.id);
+            list = await forms.listFormsInBatch(formIds);
+        }
+
+        return new ListResponse(list);
+    } catch (e) {
+        return new ErrorResponse({
+            message: e.message,
+            code: e.code,
+            data: e.data
+        });
+    }
 };
 
 export default resolver;

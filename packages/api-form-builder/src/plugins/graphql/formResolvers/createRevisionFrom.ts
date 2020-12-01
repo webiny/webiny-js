@@ -1,25 +1,28 @@
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { NotAuthorizedResponse } from "@webiny/api-security";
+import { hasRwd } from "./utils/formResolversUtils";
+import { FormsCRUD } from "../../../types";
 
-export default async (root: any, args: { [key: string]: any }, context: { [key: string]: any }) => {
-    const { Form } = context.models;
-
-    const sourceRev = await Form.findById(args.revision);
-    if (!sourceRev) {
-        return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
-    }
-
-    const newRevision = new Form();
+const resolver: GraphQLFieldResolver = async (root, args, context) => {
     try {
-        newRevision.populate({
-            name: sourceRev.name,
-            slug: sourceRev.slug,
-            settings: sourceRev.settings,
-            layout: sourceRev.layout,
-            fields: sourceRev.fields,
-            triggers: sourceRev.triggers,
-            parent: sourceRev.parent
-        });
-        await newRevision.save();
+        const { formBuilder } = context;
+        const forms: FormsCRUD = formBuilder?.crud?.forms;
+
+        // If permission has "rwd" property set, but "w" is not part of it, bail.
+        const formBuilderFormPermission = await context.security.getPermission("fb.form");
+        if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "w" })) {
+            return new NotAuthorizedResponse();
+        }
+
+        const sourceRev = await forms.getForm(args.revision);
+        if (!sourceRev) {
+            return new NotFoundResponse(`Revision with id "${args.revision}" was not found!`);
+        }
+
+        const form = await forms.createFormRevision(sourceRev);
+
+        return new Response(form);
     } catch (e) {
         return new ErrorResponse({
             code: e.code,
@@ -27,5 +30,6 @@ export default async (root: any, args: { [key: string]: any }, context: { [key: 
             data: e.data
         });
     }
-    return new Response(newRevision);
 };
+
+export default resolver;

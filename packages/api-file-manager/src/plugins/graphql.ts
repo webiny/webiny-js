@@ -1,19 +1,17 @@
 import { hasPermission } from "@webiny/api-security";
-
+import { pipe } from "@webiny/handler-graphql";
+import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import getFile from "./resolvers/getFile";
 import listFiles from "./resolvers/listFiles";
 import listTags from "./resolvers/listTags";
-import uploadFile from "./resolvers/uploadFile";
-import uploadFiles from "./resolvers/uploadFiles";
 import createFile from "./resolvers/createFile";
 import updateFile from "./resolvers/updateFile";
 import createFiles from "./resolvers/createFiles";
 import deleteFile from "./resolvers/deleteFile";
 import { getSettings, updateSettings } from "./resolvers/settings";
 import { install, isInstalled } from "./resolvers/install";
-import { SETTINGS_KEY } from "@webiny/api-file-manager/plugins/crud/filesSettings.crud";
+import { FileManagerResolverContext } from "../types";
 
-const fileFetcher = ({ models }): any => models.File;
 const emptyResolver = () => ({});
 
 export default [
@@ -30,12 +28,6 @@ export default [
                     meta: JSON
                 }
 
-                input UploadFileInput {
-                    name: String!
-                    type: String!
-                    size: Int!
-                }
-
                 type UploadFileResponseDataFile {
                     name: String
                     type: String
@@ -47,16 +39,6 @@ export default [
                     # Contains data that is necessary for initiating a file upload.
                     data: JSON
                     file: UploadFileResponseDataFile
-                }
-
-                type UploadFileResponse {
-                    error: FileError
-                    data: UploadFileResponseData
-                }
-
-                type UploadFilesResponse {
-                    error: FileError
-                    data: [UploadFileResponseData]!
                 }
 
                 type FileCursors {
@@ -132,7 +114,7 @@ export default [
                     SIZE_DESC
                 }
 
-                type FilesQuery {
+                type FileManagerQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
                     listFiles(
@@ -159,9 +141,7 @@ export default [
                     error: FileError
                 }
 
-                type FilesMutation {
-                    uploadFile(data: UploadFileInput!): UploadFileResponse
-                    uploadFiles(data: [UploadFileInput]!): UploadFilesResponse
+                type FileManagerMutation {
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFile(id: ID!, data: FileInput!): FileResponse
@@ -178,45 +158,61 @@ export default [
                 }
 
                 extend type Query {
-                    files: FilesQuery
+                    fileManager: FileManagerQuery
                 }
 
                 extend type Mutation {
-                    files: FilesMutation
+                    fileManager: FileManagerMutation
                 }
             `,
             resolvers: {
                 File: {
-                    __resolveReference(reference, context) {
-                        return fileFetcher(context).findById(reference.id);
-                    },
-                    async src(file, args, context) {
-                        const settings = await context.filesSettings.get(SETTINGS_KEY);
-                        return settings?.srcPrefix + file.key;
+                    async src(file, args, context: FileManagerResolverContext) {
+                        const settings = await context.fileManager.fileManagerSettings.getSettings();
+                        return settings.srcPrefix + file.key;
                     }
                 },
                 Query: {
-                    files: emptyResolver
+                    fileManager: emptyResolver
                 },
                 Mutation: {
-                    files: emptyResolver
+                    fileManager: emptyResolver
                 },
-                FilesQuery: {
-                    getFile: hasPermission("files.file")(getFile),
-                    listFiles: hasPermission("files.file")(listFiles),
+                FileManagerQuery: {
+                    getFile: pipe(hasPermission("fm.file"), hasI18NContentPermission())(getFile),
+                    listFiles: pipe(
+                        hasPermission("fm.file"),
+                        hasI18NContentPermission()
+                    )(listFiles),
                     listTags: listTags,
                     isInstalled,
-                    getSettings: hasPermission("files.settings")(getSettings)
+                    getSettings: pipe(
+                        hasPermission("fm.settings"),
+                        hasI18NContentPermission()
+                    )(getSettings)
                 },
-                FilesMutation: {
-                    uploadFile: hasPermission("files.file")(uploadFile),
-                    uploadFiles,
-                    createFile: hasPermission("files.file")(createFile),
-                    updateFile: hasPermission("files.file")(updateFile),
-                    createFiles: hasPermission("files.file")(createFiles),
-                    deleteFile: hasPermission("files.file")(deleteFile),
+                FileManagerMutation: {
+                    createFile: pipe(
+                        hasPermission("fm.file"),
+                        hasI18NContentPermission()
+                    )(createFile),
+                    updateFile: pipe(
+                        hasPermission("fm.file"),
+                        hasI18NContentPermission()
+                    )(updateFile),
+                    createFiles: pipe(
+                        hasPermission("fm.file"),
+                        hasI18NContentPermission()
+                    )(createFiles),
+                    deleteFile: pipe(
+                        hasPermission("fm.file"),
+                        hasI18NContentPermission()
+                    )(deleteFile),
                     install,
-                    updateSettings: hasPermission("files.settings")(updateSettings)
+                    updateSettings: pipe(
+                        hasPermission("fm.settings"),
+                        hasI18NContentPermission()
+                    )(updateSettings)
                 }
             }
         }

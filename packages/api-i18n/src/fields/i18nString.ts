@@ -30,7 +30,7 @@ export default ({ context: { i18n, commodo }, ...rest }: I18NString) => {
             withProps({
                 get value() {
                     const locale = i18n.getLocale();
-                    const value = this.values.find(value => value.locale === locale.id);
+                    const value = this.values.find(value => value.locale === locale.code);
                     return value ? value.value : "";
                 }
             })
