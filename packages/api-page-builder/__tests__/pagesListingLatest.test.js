@@ -1,4 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
+import { identityB } from "./mocks";
 
 describe("listing latest pages", () => {
     const {
@@ -8,7 +9,6 @@ describe("listing latest pages", () => {
         publishPage,
         unpublishPage,
         requestReview,
-        requestChanges,
         listPages,
         updatePage,
         sleep,
@@ -31,7 +31,7 @@ describe("listing latest pages", () => {
 
         const letters = ["a", "z", "b", "x", "c"];
         for (let i = 0; i < 5; i++) {
-            let [response] = await createPage({ data: { category: "category" } });
+            let [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -165,7 +165,7 @@ describe("listing latest pages", () => {
         // Test creating, getting and updating three pages.
         for (let i = 0; i < letters.length; i++) {
             let letter = letters[i];
-            let [response] = await createPage({ data: { category: "custom" } });
+            let [response] = await createPage({ category: "custom" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -304,116 +304,108 @@ describe("listing latest pages", () => {
             })
         );
 
-        let response;
-        // 3. Check if `status: published` were returned and sorted `title: asc`.
-        while (true) {
-            await sleep();
-            [response] = await listPages({
-                sort: { title: "asc" },
-                where: { status: "published" }
-            });
-            if (response?.data?.pageBuilder?.listPages?.data[0]?.title === "page-a") {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [{ title: "page-a" }, { title: "page-z" }]
+        await tryUntil(
+            () =>
+                listPages({
+                    sort: { title: "asc" },
+                    where: { status: "published" }
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a"
+        ).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [{ title: "page-a" }, { title: "page-z" }]
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
 
         // 4. Let's unpublish first two and then again filter by `status: published`. We should not get any pages.
         await unpublishPage({ id: initiallyCreatedPagesIds[0] });
         await unpublishPage({ id: initiallyCreatedPagesIds[1] });
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({
-                sort: { title: "asc" },
-                where: { status: "published" }
-            });
-            if (response?.data?.pageBuilder?.listPages?.data?.length === 0) {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: []
+        await tryUntil(
+            () =>
+                listPages({
+                    sort: { title: "asc" },
+                    where: { status: "published" }
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 0
+        ).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: []
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
 
         // 5. Let's test filtering by `reviewRequested` and `changesNeeded` statuses.
-        await requestReview({ id: initiallyCreatedPagesIds[0] });
-        await requestReview({ id: initiallyCreatedPagesIds[1] });
+        await requestReview({ id: initiallyCreatedPagesIds[2] });
+        await requestReview({ id: initiallyCreatedPagesIds[3] });
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({
-                where: { status: "reviewRequested" }
-            });
-            if (response?.data?.pageBuilder?.listPages?.data?.length === 2) {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-z", status: "reviewRequested" },
-                            { title: "page-a", status: "reviewRequested" }
-                        ]
+        await tryUntil(
+            () =>
+                listPages({
+                    where: { status: "reviewRequested" }
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+        ).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-x", status: "reviewRequested" },
+                                { title: "page-b", status: "reviewRequested" }
+                            ]
+                        }
                     }
                 }
-            }
+            })
+        );
+
+        const { requestChanges } = useGqlHandler({
+            identity: identityB
         });
 
-        await requestChanges({ id: initiallyCreatedPagesIds[0] });
-        await requestChanges({ id: initiallyCreatedPagesIds[1] });
+        await requestChanges({ id: initiallyCreatedPagesIds[2] });
+        await requestChanges({ id: initiallyCreatedPagesIds[3] });
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({
-                where: { status: "reviewRequested" }
-            });
-            if (response?.data?.pageBuilder?.listPages?.data?.length === 0) {
-                break;
-            }
-        }
+        await tryUntil(
+            () =>
+                listPages({
+                    where: { status: "reviewRequested" }
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 0
+        );
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({
-                where: { status: "changesRequested" }
-            });
-            if (response?.data?.pageBuilder?.listPages?.data?.length === 2) {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-z", status: "changesRequested" },
-                            { title: "page-a", status: "changesRequested" }
-                        ]
+        await tryUntil(
+            () =>
+                listPages({
+                    where: { status: "changesRequested" }
+                }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+        ).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-x", status: "changesRequested" },
+                                { title: "page-b", status: "changesRequested" }
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
     });
 
     test("pagination", async () => {

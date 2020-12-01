@@ -44,7 +44,9 @@ import {
 
 import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 
-export default ({ permissions, identity } = {}) => {
+const defaultTenant = { id: "root", name: "Root", parent: null };
+
+export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
@@ -60,6 +62,14 @@ export default ({ permissions, identity } = {}) => {
         elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
+        {
+            type: "context",
+            apply(context) {
+                context.security.getTenant = () => {
+                    return tenant || defaultTenant;
+                };
+            }
+        },
         fileManagerPlugins(),
         i18nContext,
         i18nContentPlugins(),

@@ -32,6 +32,7 @@ describe("Pages Security Test", () => {
     beforeEach(async () => {
         initialPageIds = [];
         await deleteElasticSearchIndex();
+
         await createCategory({
             data: {
                 slug: `category`,

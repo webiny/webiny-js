@@ -33,11 +33,11 @@ describe("versioning and publishing pages", () => {
         const category = response.data.pageBuilder.createCategory.data.slug;
 
         // A dummy page, with which we later ensure only updates on a specific pages are made, not multiple.
-        await createPage({ data: { category } });
+        await createPage({ category });
 
         // Now this is the page we're gonna work with in the following lines.
         // 1. Create p1v1.
-        [response] = await createPage({ data: { category } });
+        [response] = await createPage({ category });
 
         expect(response.data.pageBuilder.createPage.data).toMatchObject({
             id: /^[a-f0-9]{24}#1$/,
