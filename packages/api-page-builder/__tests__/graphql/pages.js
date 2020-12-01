@@ -15,6 +15,9 @@ export const DATA_FIELD = /* GraphQL */ `
         status
         locked
         publishedOn
+        error
+        notFound
+        locked
         createdFrom
         createdOn
         createdBy {
@@ -55,9 +58,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_PAGE = /* GraphQL */ `
-    mutation CreatePage($from: ID, $data: PbCreatePageInput) {
+    mutation CreatePage($from: ID, $category: String) {
         pageBuilder {
-            createPage(from: $from, data: $data) {
+            createPage(from: $from, category: $category) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

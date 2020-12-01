@@ -44,6 +44,54 @@ describe("publishing workflow", () => {
         }
     });
 
+    test("simple workflow test (check request review and request changes)", async () => {
+        const handlerA = useGqlHandler({
+            identity: identityA
+        });
+
+        const handlerB = useGqlHandler({
+            identity: identityB
+        });
+
+        const pageFromA = await handlerA
+            .createPage({ category: initialCategory.slug })
+            .then(([res]) => res.data.pageBuilder.createPage.data);
+
+        expect(pageFromA.status).toBe('draft');
+
+        await handlerA.requestReview({ id: pageFromA.id }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        requestReview: { data: { id: pageFromA.id, status: "reviewRequested" } }
+                    }
+                }
+            })
+        );
+
+        await handlerB.requestChanges({ id: pageFromA.id }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        requestChanges: { data: { id: pageFromA.id, status: "changesRequested" } }
+                    }
+                }
+            })
+        );
+
+        await handlerB.getPage({ id: pageFromA.id }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getPage: { data: { id: pageFromA.id, status: "changesRequested" } }
+                    }
+                }
+            })
+        );
+
+
+    });
+
     test("page should change status accordingly", async () => {
         await requestReview({ id: initialPageIds[0] }).then(([res]) =>
             expect(res).toMatchObject({
@@ -457,7 +505,13 @@ describe("publishing workflow", () => {
             [[], null],
             [[], identityA],
             [[{ name: "content.i18n", locales: ["de-DE"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n", locales: ["de-DE"] }, { name: "pb.page", rcpu: "rcpu" }], identityB],
+            [
+                [
+                    { name: "content.i18n", locales: ["de-DE"] },
+                    { name: "pb.page", rcpu: "rcpu" }
+                ],
+                identityB
+            ],
             [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rpu" }], identityB],
             [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rcpu", own: true }], identityB]
         ];
@@ -485,4 +539,6 @@ describe("publishing workflow", () => {
             );
         }
     });
+
+
 });
