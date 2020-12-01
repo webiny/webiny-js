@@ -4,6 +4,7 @@ import defaults from "./defaults";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
+import getPKPrefix from "./utils/getPKPrefix";
 
 export type Settings = {
     nme: string;
@@ -50,15 +51,15 @@ const SettingsModel = withFields({
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
-        const PK = `${i18nContent?.locale?.code}#SETTINGS`;
-        const SK = `PB`;
+        const { db } = context;
+        const PK = () => `${getPKPrefix(context)}SETTINGS`;
+        const SK = () => "PB";
 
         context.settings = {
             async get() {
                 const [[data]] = await db.read<Settings>({
                     ...defaults.db,
-                    query: { PK, SK: { $gt: " " } },
+                    query: { PK: PK(), SK: { $gt: " " } },
                     limit: 1
                 });
 
@@ -67,7 +68,7 @@ export default {
                 }
 
                 const defaultSettings = await new SettingsModel().populate().toJSON();
-                await db.create({ ...defaults.db, data: { ...defaultSettings, PK, SK } });
+                await db.create({ ...defaults.db, data: { ...defaultSettings, PK: PK(), SK: SK() } });
                 return defaultSettings;
             },
             async update(next) {
@@ -79,7 +80,7 @@ export default {
 
                 await db.update({
                     ...defaults.es,
-                    query: { PK, SK },
+                    query: { PK: PK(), SK: SK() },
                     data
                 });
 

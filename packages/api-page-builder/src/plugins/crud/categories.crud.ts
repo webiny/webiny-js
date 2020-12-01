@@ -5,8 +5,7 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-
-export const PK_CATEGORY = "C";
+import getPKPrefix from "./utils/getPKPrefix";
 
 /*withHooks({
     //     async beforeDelete() {
@@ -40,7 +39,7 @@ export default {
     type: "context",
     apply(context) {
         const { db, i18nContent } = context;
-        const PK_CATEGORY = `C#${i18nContent?.locale?.code}`;
+        const PK_CATEGORY = () => `${getPKPrefix(context)}C`;
 
         const categoriesDataLoader = new DataLoader<string, Category>(async slugs => {
             const batch = db.batch();
@@ -48,7 +47,7 @@ export default {
             for (let i = 0; i < slugs.length; i++) {
                 batch.read({
                     ...defaults.db,
-                    query: { PK: PK_CATEGORY, SK: slugs[i] }
+                    query: { PK: PK_CATEGORY(), SK: slugs[i] }
                 });
             }
 
@@ -65,7 +64,7 @@ export default {
             async list(args) {
                 const [categories] = await db.read<Category>({
                     ...defaults.db,
-                    query: { PK: PK_CATEGORY, SK: { $gt: " " } },
+                    query: { PK: PK_CATEGORY(), SK: { $gt: " " } },
                     ...args
                 });
 
@@ -76,7 +75,7 @@ export default {
                 return db.create({
                     ...defaults.db,
                     data: {
-                        PK: PK_CATEGORY,
+                        PK: PK_CATEGORY(),
                         SK: slug,
                         name,
                         slug,
@@ -95,7 +94,7 @@ export default {
 
                 await db.update({
                     ...defaults.db,
-                    query: { PK: PK_CATEGORY, SK: slug },
+                    query: { PK: PK_CATEGORY(), SK: slug },
                     data
                 });
 
@@ -104,7 +103,7 @@ export default {
             delete(slug: string) {
                 return db.delete({
                     ...defaults.db,
-                    query: { PK: PK_CATEGORY, SK: slug }
+                    query: { PK: PK_CATEGORY(), SK: slug }
                 });
             }
         };

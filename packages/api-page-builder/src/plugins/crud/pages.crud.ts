@@ -10,8 +10,11 @@ import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import getNormalizedListPagesArgs from "./pages/getNormalizedListPagesArgs";
+import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
+import { SecurityContext } from "@webiny/api-security/types";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import getPKPrefix from "./utils/getPKPrefix";
 
 export type Page = {
     id: string;
@@ -96,24 +99,27 @@ export type PagesListArgs = {
     sort?: { createdOn?: SortOrder; title?: SortOrder };
 };
 
-// HOME-PAGE-STUFF
-// Has permission to change this?
-// Cannot set unpublished page as XYZ.
-// The page is already set as homepage.
+type Context = HandlerContext<
+    DbContext,
+    SecurityContext,
+    I18NContentContext,
+    ElasticSearchClientContext
+>;
 
-export default {
+const plugin: ContextPlugin<Context> = {
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
-        const PK_PAGE = `${i18nContent?.locale?.code}#P`;
-        const PK_PAGE_LATEST = `${PK_PAGE}#L`;
-        const PK_PAGE_PUBLISHED = `${PK_PAGE}#P`;
+
+        const PK_PAGE = () => `${getPKPrefix(context)}P`;
+        const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
+        const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
 
         context.pages = {
             async get(id: string) {
                 const [[page]] = await db.read<Page>({
                     ...defaults.db,
-                    query: { PK: PK_PAGE, SK: id },
+                    query: { PK: PK_PAGE(), SK: id },
                     limit: 1
                 });
 
@@ -184,7 +190,7 @@ export default {
                 const [pageIdWithoutVersion] = pageId.split("#");
                 const [pages] = await db.read<Page>({
                     ...defaults.db,
-                    query: { PK: PK_PAGE, SK: { $beginsWith: pageIdWithoutVersion } }
+                    query: { PK: PK_PAGE(), SK: { $beginsWith: pageIdWithoutVersion } }
                 });
 
                 return pages;
@@ -212,7 +218,7 @@ export default {
                 const id = `${uniqueId}#${version}`;
 
                 const data = {
-                    PK: PK_PAGE,
+                    PK: PK_PAGE(),
                     SK: id,
                     TYPE_PAGE,
                     id,
@@ -240,7 +246,7 @@ export default {
                     .create({ ...defaults.db, data })
                     .create({
                         ...defaults.db,
-                        data: { PK: PK_PAGE_LATEST, SK: uniqueId, TYPE_PAGE_LATEST, id }
+                        data: { PK: PK_PAGE_LATEST(), SK: uniqueId, TYPE_PAGE_LATEST, id }
                     })
                     .execute();
 
@@ -287,14 +293,14 @@ export default {
                     .read({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE,
+                            PK: PK_PAGE(),
                             SK: from
                         }
                     })
                     .read({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: fromUniqueId
                         }
                     })
@@ -334,11 +340,11 @@ export default {
                     .update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: fromUniqueId
                         },
                         data: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: fromUniqueId,
                             TYPE_PAGE_LATEST,
                             id: nextId
@@ -388,12 +394,12 @@ export default {
                     .batch()
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: id },
+                        query: { PK: PK_PAGE(), SK: id },
                         limit: 1
                     })
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE_LATEST, SK: uniqueId },
+                        query: { PK: PK_PAGE_LATEST(), SK: uniqueId },
                         limit: 1
                     })
                     .execute();
@@ -423,7 +429,7 @@ export default {
 
                 await db.update({
                     ...defaults.db,
-                    query: { PK: PK_PAGE, SK: id },
+                    query: { PK: PK_PAGE(), SK: id },
                     data
                 });
 
@@ -451,7 +457,7 @@ export default {
                 const [uniqueId] = id.split("#");
                 await db.delete({
                     ...defaults.db,
-                    query: { PK: PK_PAGE, SK: id }
+                    query: { PK: PK_PAGE(), SK: id }
                 });
 
                 // Delete pages from ES.
@@ -478,14 +484,14 @@ export default {
                     .batch()
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: pageId },
+                        query: { PK: PK_PAGE(), SK: pageId },
                         limit: 1
                     })
                     .read({
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId
                         }
                     })
@@ -493,7 +499,7 @@ export default {
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: pageUniqueId
                         }
                     })
@@ -523,7 +529,7 @@ export default {
                 batch.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_PAGE,
+                        PK: PK_PAGE(),
                         SK: pageId
                     },
                     data: page
@@ -532,7 +538,7 @@ export default {
                 if (publishedPageData) {
                     // If there is a `published` page already, we need to set it as `unpublished`. We need to
                     // execute two updates - update the previously published page's status and the published
-                    // page entry (PK_PAGE_PUBLISHED).
+                    // page entry (PK_PAGE_PUBLISHED()).
 
                     // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
                     // page's data so that we can update its status within a batch operation. If, hopefully,
@@ -540,7 +546,7 @@ export default {
                     // TODO: test this! publishing a new revision with a revision that has already been published.
                     const [[previouslyPublishedPage]] = await db.read<Page>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: publishedPageData.id },
+                        query: { PK: PK_PAGE(), SK: publishedPageData.id },
                         limit: 1
                     });
 
@@ -549,7 +555,7 @@ export default {
                     await db.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE,
+                            PK: PK_PAGE(),
                             SK: publishedPageData.id
                         },
                         data: omit(["PK", "SK"], previouslyPublishedPage)
@@ -558,11 +564,11 @@ export default {
                     batch.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId
                         },
                         data: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId,
                             TYPE: TYPE_PAGE_PUBLISHED,
                             id: pageId
@@ -572,7 +578,7 @@ export default {
                     batch.create({
                         ...defaults.db,
                         data: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId,
                             TYPE: TYPE_PAGE_PUBLISHED,
                             id: pageId
@@ -641,14 +647,14 @@ export default {
                     .batch()
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: pageId },
+                        query: { PK: PK_PAGE(), SK: pageId },
                         limit: 1
                     })
                     .read({
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId
                         }
                     })
@@ -656,7 +662,7 @@ export default {
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: pageUniqueId
                         }
                     })
@@ -685,14 +691,14 @@ export default {
                     .delete({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId
                         }
                     })
                     .update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE_PUBLISHED,
+                            PK: PK_PAGE_PUBLISHED(),
                             SK: pageUniqueId
                         },
                         data: page
@@ -733,14 +739,14 @@ export default {
                     .batch()
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: pageId },
+                        query: { PK: PK_PAGE(), SK: pageId },
                         limit: 1
                     })
                     .read({
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: pageUniqueId
                         }
                     })
@@ -772,7 +778,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_PAGE,
+                        PK: PK_PAGE(),
                         SK: pageId
                     },
                     data: omit(["PK", "SK"], page)
@@ -813,14 +819,14 @@ export default {
                     .batch()
                     .read({
                         ...defaults.db,
-                        query: { PK: PK_PAGE, SK: pageId },
+                        query: { PK: PK_PAGE(), SK: pageId },
                         limit: 1
                     })
                     .read({
                         ...defaults.db,
                         limit: 1,
                         query: {
-                            PK: PK_PAGE_LATEST,
+                            PK: PK_PAGE_LATEST(),
                             SK: pageUniqueId
                         }
                     })
@@ -859,7 +865,7 @@ export default {
                 await db.update({
                     ...defaults.db,
                     query: {
-                        PK: PK_PAGE,
+                        PK: PK_PAGE(),
                         SK: pageId
                     },
                     data: omit(["PK", "SK"], page)
@@ -883,7 +889,16 @@ export default {
                 }
 
                 return page;
+            },
+
+            setAsHomepage() {
+                // HOME-PAGE-STUFF
+                // Has permission to change this?
+                // Cannot set unpublished page as XYZ.
+                // The page is already set as homepage.
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+};
+
+export default plugin;
