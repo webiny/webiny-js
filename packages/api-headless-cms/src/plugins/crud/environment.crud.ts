@@ -24,14 +24,11 @@ const UpdateEnvironmentModel = withFields({
     description: string({ validation: validation.create("maxLength:255") })
 })();
 
-const TYPE = "env";
-const PARTITION_KEY_START = "CE#";
+const TYPE = "cms#env";
+const PARTITION_KEY_START = "CE";
 
 const createPartitionKey = (i18nContent: Record<string, any>) => {
-    if (!i18nContent || !i18nContent.locale) {
-        return PARTITION_KEY_START;
-    }
-    return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
+    return [i18nContent?.locale?.code, PARTITION_KEY_START].filter(value => !!value).join("#");
 };
 
 type BaseDynamoType = {
@@ -76,12 +73,16 @@ export default {
 
                 const id = mdbid();
 
-                const modelData = Object.assign(await createData.toJSON(), {
+                const createDataJson = await createData.toJSON();
+                const modelData = Object.assign(createDataJson, {
                     PK: PK_ENVIRONMENT,
                     SK: id,
                     TYPE,
                     id,
                     createdOn: new Date().toISOString(),
+                    createdFrom: {
+                        id: createDataJson.createdFrom
+                    },
                     createdBy
                 }) as CmsEnvironmentType & BaseDynamoType;
 
@@ -95,7 +96,12 @@ export default {
 
                 // before create hook
                 if (!initial && !sourceEnvironment) {
-                    throw new Error('Base environment ("createdFrom" field) not set.');
+                    if (existingEnvironments.length === 0) {
+                        throw new Error("There are no environments in the database.");
+                    }
+                    throw new Error(
+                        `Base environment ("createdFrom" field) not set or environment "${modelData.createdFrom.id}" does not exist.`
+                    );
                 }
                 const existing = existingEnvironments.some(model => {
                     return model.slug === slug;
@@ -119,7 +125,10 @@ export default {
                 }
                 //
 
-                return modelData;
+                return {
+                    ...modelData,
+                    createdFrom: sourceEnvironment
+                };
             },
             async update(id, data): Promise<CmsEnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);

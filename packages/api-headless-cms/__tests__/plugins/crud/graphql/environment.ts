@@ -6,13 +6,12 @@ const DATA_FIELD = /* GraphQL*/ `
         description
         createdOn
         changedOn
+        createdBy
         createdFrom {
             id
             name
             slug
             description
-            createdOn
-            changedOn
         }
     }
 `;

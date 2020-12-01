@@ -26,7 +26,7 @@ const UpdateEnvironmentAliasModel = withFields({
     environment: string({ validation: validation.create("maxLength:255") })
 })();
 
-const TYPE = "envAlias";
+const TYPE = "cms#envAlias";
 const PARTITION_KEY_START = "CEA#";
 const createPartitionKey = (i18nContent: Record<string, any>) => {
     if (!i18nContent || !i18nContent.locale) {

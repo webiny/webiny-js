@@ -28,16 +28,23 @@ import {
 
 type PermissionsArgType = {
     name: string;
+    rwd?: string;
 };
 type GQLHandlerCallableArgsType = {
     permissions: PermissionsArgType[];
     identity: SecurityIdentity;
 };
 
+const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9201";
+
 const createGetPermissions = (permissions: PermissionsArgType[]) => {
     return (): PermissionsArgType[] => {
         if (!permissions) {
             return [
+                {
+                    name: "cms.manage.setting",
+                    rwd: "rwd"
+                },
                 {
                     name: "*"
                 }
@@ -63,19 +70,21 @@ const createAuthenticate = (identity?: SecurityIdentity) => {
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     const { permissions, identity } = args || {};
+
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local"
+    });
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",
             driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
+                documentClient
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         apolloServerPlugins(),
         securityPlugins(),
         i18nContext,
@@ -107,8 +116,9 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
 
     return {
         elasticSearch: new Client({
-            node: "http://localhost:9201"
+            node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),
+        documentClient,
         sleep: (ms = 333) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);

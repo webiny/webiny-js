@@ -4,12 +4,32 @@ import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 
+type CmsDataManagerGenerateRevisionIndexesArgsType = {
+    revision: any;
+    contentModel: any;
+};
+type CmsDataManagerDeleteRevisionIndexesArgsType = {
+    revision: any;
+    contentModel: any;
+};
+type CmsDataManagerGenerateContentModelIndexesArgsType = {
+    contentModel: any;
+};
+type CmsDataManagerDeleteEnvironmentArgsType = {
+    environment: string;
+};
+type CmsDataManagerCopyEnvironmentArgsType = {
+    copyFrom: string;
+    copyTo: string;
+};
 export interface CmsDataManager {
-    generateRevisionIndexes({ revision }): Promise<void>;
-    deleteRevisionIndexes({ revision }): Promise<void>;
-    generateContentModelIndexes({ contentModel }): Promise<void>;
-    deleteEnvironment({ environment }): Promise<void>;
-    copyEnvironment({ copyFrom, copyTo }): Promise<void>;
+    generateRevisionIndexes(args: CmsDataManagerGenerateRevisionIndexesArgsType): Promise<void>;
+    deleteRevisionIndexes(args: CmsDataManagerDeleteRevisionIndexesArgsType): Promise<void>;
+    generateContentModelIndexes(
+        args: CmsDataManagerGenerateContentModelIndexesArgsType
+    ): Promise<void>;
+    deleteEnvironment(args: CmsDataManagerDeleteEnvironmentArgsType): Promise<void>;
+    copyEnvironment(args: CmsDataManagerCopyEnvironmentArgsType): Promise<void>;
 }
 
 export type CmsLocalizedModelFieldValue<T> = {
@@ -220,18 +240,14 @@ export type CmsFindFilterOperator = Plugin & {
 };
 //
 type BaseCmsEnvironmentType = {
-    id: string;
     name: string;
     slug: string;
     description?: string;
 };
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
+    id: string;
     createdFrom?: CmsEnvironmentType;
-    createdBy: {
-        id: string;
-        type: string;
-        displayName: string;
-    };
+    createdBy: CmsEnvironmentCreatedByType;
     createdOn: string;
     changedOn?: string;
 };
@@ -264,11 +280,7 @@ type BaseCmsEnvironmentAliasType = {
 };
 export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
     environment?: CmsEnvironmentType;
-    createdBy: {
-        id: string;
-        type: string;
-        displayName: string;
-    };
+    createdBy: CmsEnvironmentCreatedByType;
     createdOn: Date;
     changedOn?: Date;
 };
@@ -298,7 +310,6 @@ export type CmsContextType = {
     cms: {
         environment: CmsEnvironmentContextType;
         environmentAlias: CmsEnvironmentAliasContextType;
-        // TODO switch data manager to new working way
-        dataManager: any;
+        dataManager: CmsDataManager;
     };
 };

@@ -18,6 +18,7 @@ const CMS_ENVIRONMENT_PERMISSION_NAME = "cms.manage.setting";
 type CRUDType = "r" | "w" | "d";
 type HasRwdCallableArgsType = {
     permission?: {
+        name: string;
         rwd?: CRUDType;
     };
     rwd: CRUDType;
@@ -55,7 +56,7 @@ const userCanManage = (identity: SecurityIdentity, { createdBy }: CmsEnvironment
 
 const hasPermissionRwd = (rwd: CRUDType) => {
     return (resolver: GraphQLFieldResolver) => {
-        return async (parent, args, context, info) => {
+        return async (parent, args, context: ResolverContext, info) => {
             const permission = await context.security.getPermission(
                 CMS_ENVIRONMENT_PERMISSION_NAME
             );
@@ -75,10 +76,12 @@ export default {
     typeDefs: /* GraphQL */ `
         type CmsEnvironment {
             id: ID
+            changedOn: DateTime
             createdOn: DateTime
             name: String
             description: String
             createdFrom: CmsEnvironment
+            createdBy: JSON
             environmentAliases: [CmsEnvironmentAlias]
             contentModels: [CmsContentModel]
             isProduction: Boolean
@@ -191,10 +194,15 @@ export default {
                     id: identity.id,
                     name: identity.name
                 };
+
                 try {
-                    return new Response(await environmentContext.create(data, createdBy));
+                    const model = await environmentContext.create(data, createdBy);
+                    return new Response(model);
                 } catch (e) {
-                    return new ErrorResponse(e);
+                    return new ErrorResponse({
+                        code: "CREATE_ENVIRONMENT_FAILED",
+                        message: e.message
+                    });
                 }
             }),
             updateEnvironment: compose(

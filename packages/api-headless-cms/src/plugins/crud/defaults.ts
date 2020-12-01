@@ -1,6 +1,6 @@
 export default {
     db: {
-        table: process.env.DB_TABLE_CMS_ENVIRONMENT,
+        table: process.env.DB_TABLE_HEADLESS_CMS,
         keys: [
             {
                 primary: true,

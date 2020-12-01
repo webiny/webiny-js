@@ -8,18 +8,8 @@ const DATA_FIELD = /* GraphQL*/ `
         changedOn
         environment {
 	        id
-	        name
-	        slug
-	        description
-	        createdOn
-	        changedOn
 	        createdFrom {
 	            id
-	            name
-	            slug
-	            description
-	            createdOn
-	            changedOn
 	        }
         }
     }

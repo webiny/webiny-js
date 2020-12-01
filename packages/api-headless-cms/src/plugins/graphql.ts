@@ -2,8 +2,8 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
-import cmsAccessToken from "./graphql/accessToken";
-import cmsInstall from "./graphql/install";
+// import cmsAccessToken from "./graphql/accessToken";
+// import cmsInstall from "./graphql/install";
 
 const emptyResolver = () => ({});
 
@@ -63,11 +63,11 @@ export default () => [
                     _empty: String
                 }
 
-                ${cmsInstall.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
-                ${cmsAccessToken.typeDefs}
             `,
+            // ${cmsInstall.typeDefs}
+            // ${cmsAccessToken.typeDefs}
             resolvers: merge(
                 {
                     Query: {
@@ -77,10 +77,10 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
-                cmsInstall.resolvers,
+                // cmsInstall.resolvers,
                 cmsEnvironment.resolvers,
-                cmsEnvironmentAlias.resolvers,
-                cmsAccessToken.resolvers
+                cmsEnvironmentAlias.resolvers
+                // cmsAccessToken.resolvers
             )
         }
     } as GraphQLSchemaPlugin
