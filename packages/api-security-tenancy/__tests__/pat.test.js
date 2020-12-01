@@ -25,7 +25,7 @@ describe("Security Personal Access Token Test", () => {
                 token: expect.any(String),
                 createdOn: expect.any(String)
             },
-            token: expect.any(String)
+            token: expect.stringMatching(/p[a-f0-9]{47}/),
         });
 
         expect(data.pat.token.length).toBe(4);
@@ -78,7 +78,7 @@ describe("Security Personal Access Token Test", () => {
 
         let [response] = await securityUserPAT.createPAT({ data: { name: "Test token" } });
         const { token, pat } = response.data.security.createPAT.data;
-        expect(token.length).toBe(48);
+        expect(token).toMatch(/p[a-f0-9]{47}/);
 
         // "getCurrentUser" should return information about the owner of PAT
         [response] = await securityUserPAT.getCurrentUser({}, { Authorization: token });

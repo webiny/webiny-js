@@ -109,7 +109,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 data: {
                     PK: `U#${user.login}`,
                     SK: "A",
-                    TYPE: "security:user",
+                    TYPE: "security.user",
                     ...user
                 }
             });
@@ -161,7 +161,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: `LINK#T#${tenant.id}#G#${group.slug}`,
                     GSI1_PK: `T#${tenant.id}`,
                     GSI1_SK: `G#${group.slug}#U#${login}`,
-                    TYPE: "security:user2tenant",
+                    TYPE: "security.user2tenant",
                     tenant: {
                         id: tenant.id,
                         name: tenant.name
@@ -250,7 +250,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: `PAT#${tokenData.id}`,
                     GSI1_PK: `PAT`,
                     GSI1_SK: token,
-                    TYPE: "security:pat",
+                    TYPE: "security.pat",
                     ...tokenData
                 }
             });

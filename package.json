@@ -7,7 +7,7 @@
       "apps/site/code",
       "apps/theme",
       "api/code/graphqlPlayground",
-      "api/code/api",
+      "api/code/graphql",
       "api/code/fileManager/*"
     ],
     "nohoist": [

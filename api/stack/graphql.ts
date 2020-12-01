@@ -2,37 +2,20 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
 
-class Api {
-    dynamoDbTable: aws.dynamodb.Table;
+class Graphql {
     functions: {
         api: aws.lambda.Function;
         graphqlPlayground: aws.lambda.Function;
     };
     role: aws.iam.Role;
     policy: aws.iam.RolePolicyAttachment;
-    constructor({ env }: { env: Record<string, any> }) {
-        this.dynamoDbTable = new aws.dynamodb.Table("webiny", {
-            attributes: [
-                { name: "PK", type: "S" },
-                { name: "SK", type: "S" },
-                { name: "GSI1_PK", type: "S" },
-                { name: "GSI1_SK", type: "S" }
-            ],
-            billingMode: "PAY_PER_REQUEST",
-            hashKey: "PK",
-            rangeKey: "SK",
-            globalSecondaryIndexes: [
-                {
-                    name: "GSI1",
-                    hashKey: "GSI1_PK",
-                    rangeKey: "GSI1_SK",
-                    projectionType: "ALL",
-                    readCapacity: 1,
-                    writeCapacity: 1
-                }
-            ]
-        });
-
+    constructor({
+        dynamoDbTable,
+        env
+    }: {
+        dynamoDbTable: aws.dynamodb.Table;
+        env: Record<string, any>;
+    }) {
         this.role = new aws.iam.Role("api-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
@@ -54,19 +37,19 @@ class Api {
         });
 
         this.functions = {
-            api: new aws.lambda.Function("api", {
+            api: new aws.lambda.Function("graphql", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
                 role: this.role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./code/api/build")
+                    ".": new pulumi.asset.FileArchive("./code/graphql/build")
                 }),
                 environment: {
                     variables: {
                         ...env,
-                        DB_TABLE: this.dynamoDbTable.name,
+                        DB_TABLE: dynamoDbTable.name,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
@@ -93,4 +76,4 @@ class Api {
     }
 }
 
-export default Api;
+export default Graphql;

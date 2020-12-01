@@ -1,12 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
-import securityAuthenticator from "@webiny/api-security/authenticator";
-import securityTenancy from "@webiny/api-security-tenancy";
-import securityPATAuthentication from "@webiny/api-security-tenancy/authentication";
-import securityTenancyAuthorization from "@webiny/api-security-tenancy/authorization";
-import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
-import cognitoIdentityProvider from "@webiny/api-plugin-security-cognito/identityProvider";
 import i18nPlugins from "@webiny/api-i18n/plugins";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
@@ -17,6 +11,7 @@ import filesPlugins from "@webiny/api-file-manager/plugins";
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
+import securityPlugins from "./security";
 
 export const handler = createHandler(
     graphqlPlugins({
@@ -36,31 +31,7 @@ export const handler = createHandler(
             })
         })
     }),
-    // Security Tenancy API (users, groups, tenant links).
-    securityTenancy(),
-    // Adds a context plugin to process `security-authentication` plugins.
-    // NOTE: this has to be registered *after* the "securityTenancy" plugins  
-    // as some of the authentication plugins rely on tenancy context.
-    securityAuthenticator(),
-    // Authentication plugin for Personal Access Tokens
-    securityPATAuthentication({
-        identityType: "admin"
-    }),
-    // Cognito authentication plugin.
-    cognitoAuthentication({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID,
-        identityType: "admin"
-    }),
-    // Authorization plugin to load user permissions for requested tenant.
-    securityTenancyAuthorization({
-        identityType: "admin"
-    }),
-    // Cognito IDP plugin (CRUD methods for users)
-    cognitoIdentityProvider({
-        region: process.env.COGNITO_REGION,
-        userPoolId: process.env.COGNITO_USER_POOL_ID
-    }),
+    securityPlugins(),
     i18nPlugins(),
     i18nContentPlugins(),
     filesPlugins(),

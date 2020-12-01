@@ -12,7 +12,7 @@ export default ({ identityType }) => {
             const { headers } = context.http;
             const header = headers["Authorization"] || headers["authorization"];
             const token = header ? header.split(" ").pop() : null;
-            if (!token || token.length !== 48) {
+            if (!token || !token.startsWith("p")) {
                 return;
             }
 
