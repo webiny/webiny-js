@@ -403,6 +403,10 @@ export default {
                     throw new NotFoundError(`Page "${id}" not found.`);
                 }
 
+                if (page.locked) {
+                    throw new Error(`Cannot update page because it's locked.`);
+                }
+
                 // If user can only manage own records, let's check if he owns the loaded one.
                 if (pbPagePermission?.own === true) {
                     const identity = context.security.getIdentity();
