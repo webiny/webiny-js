@@ -34,10 +34,13 @@ type ContentWrapperProps = {
 
 export const ContentWrapper = styled<"div", ContentWrapperProps>("div")(props => ({
     display: "flex",
-    flexDirection: props.direction || "row",
-    /**
-     * We're applying this style here to counter the extra "padding-left"
-     * on the "Accordion Item" content.
-     */
-    marginLeft: -45
+    flexDirection: props.direction || "row"
 }));
+
+export const COLORS = {
+    lightGray: "rgb(248,248,248)",
+    gray: "rgb(234,233,234)",
+    darkGray: "rgb(179,179,179)",
+    darkestGray: "rgb(51,51,51)",
+    black: "rgb(0,14,26)"
+};
