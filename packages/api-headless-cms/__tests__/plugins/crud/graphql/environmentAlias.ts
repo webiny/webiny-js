@@ -73,9 +73,9 @@ export const DELETE_ENVIRONMENT_ALIAS_MUTATION = /* GraphQL */ `
     }
 `;
 export const LIST_ENVIRONMENT_ALIAS_QUERY = /* GraphQL */ `
-    query ListEnvironmentAliasQuery {
+    query ListEnvironmentAliasesQuery {
         cms {
-            listEnvironmentAlias {
+            listEnvironmentAliases {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

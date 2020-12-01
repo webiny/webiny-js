@@ -10,6 +10,7 @@ import {
     CmsEnvironmentAliasContextType,
     CmsContextType
 } from "@webiny/api-headless-cms/types";
+import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -40,7 +41,7 @@ export default {
         const PK_ENVIRONMENT = createPartitionKey(i18nContent);
 
         const environmentAlias: CmsEnvironmentAliasContextType = {
-            async get(id: string): Promise<CmsEnvironmentAliasType | null> {
+            async get(id): Promise<CmsEnvironmentAliasType | null> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
                     ...defaults.db,
                     query: { PK: PK_ENVIRONMENT, SK: id },
@@ -59,26 +60,44 @@ export default {
 
                 return response;
             },
-            async create(data: CmsEnvironmentAliasType): Promise<CmsEnvironmentAliasType> {
-                const identity = context.security.getIdentity();
-                const createData = new CreateEnvironmentAliasModel().populate(data);
+            async create(data, createdBy): Promise<CmsEnvironmentAliasType> {
+                const slug = toSlug(data.slug || data.name);
+                const createData = new CreateEnvironmentAliasModel().populate({
+                    ...data,
+                    slug
+                });
                 await createData.validate();
+                const createDataJson = await createData.toJSON();
 
+                const targetEnvironment = await context.cms.environment.get(
+                    createDataJson.environment
+                );
+                if (!targetEnvironment) {
+                    throw new Error(
+                        `Target Environment "${createDataJson.environment}" does not exist.`
+                    );
+                }
                 const id = mdbid();
 
-                const modelData = Object.assign(await createData.toJSON(), {
+                const modelData = Object.assign(createDataJson, {
                     PK: PK_ENVIRONMENT,
                     SK: id,
                     TYPE,
                     id,
                     createdOn: new Date().toISOString(),
-                    createdBy: {
-                        id: identity.id,
-                        type: identity.type,
-                        displayName: identity.displayName
-                    }
+                    environment: targetEnvironment,
+                    createdBy
                 });
 
+                // before create hook
+                const aliases = await context.cms.environmentAlias.list();
+                const existingAliasSlug = aliases.some(alias => {
+                    return alias.slug === slug;
+                });
+                if (existingAliasSlug) {
+                    throw Error(`Environment alias with the slug "${this.slug}" already exists.`);
+                }
+                // create
                 await db.create({
                     ...defaults.db,
                     data: modelData
@@ -86,10 +105,7 @@ export default {
 
                 return modelData;
             },
-            async update(
-                id: string,
-                data: CmsEnvironmentAliasType
-            ): Promise<CmsEnvironmentAliasType> {
+            async update(id, data): Promise<CmsEnvironmentAliasType> {
                 const updateData = new UpdateEnvironmentAliasModel().populate(data);
                 await updateData.validate();
 
@@ -98,15 +114,23 @@ export default {
                 await db.update({
                     ...defaults.es,
                     query: { PK: PK_ENVIRONMENT, SK: id },
-                    data: modelData
+                    data: {
+                        ...modelData,
+                        createdOn: new Date().toISOString()
+                    }
                 });
 
-                return data;
+                return modelData;
             },
-            async delete(id: string): Promise<void> {
+            async delete(model): Promise<void> {
+                // before delete hook
+                if (model.slug === "production") {
+                    throw new Error(`Cannot delete "production" environment alias.`);
+                }
+                // delete
                 await db.delete({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: id }
+                    query: { PK: PK_ENVIRONMENT, SK: model.id }
                 });
             }
         };

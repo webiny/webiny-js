@@ -51,6 +51,9 @@
 		},
         {
             "path": "../api-i18n-content/tsconfig.build.json"
+        },
+        {
+            "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
         }
 	]
 }

@@ -178,7 +178,7 @@ export default {
             })
         },
         CmsMutation: {
-            createEnvironmentNew: compose(
+            createEnvironment: compose(
                 hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
                 hasPermissionRwd("w"),
                 hasI18NContentPermission()
@@ -197,7 +197,7 @@ export default {
                     return new ErrorResponse(e);
                 }
             }),
-            updateEnvironmentNew: compose(
+            updateEnvironment: compose(
                 hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
                 hasPermissionRwd("w"),
                 hasI18NContentPermission()
@@ -227,7 +227,7 @@ export default {
                     return new ErrorResponse(e);
                 }
             }),
-            deleteEnvironmentNew: compose(
+            deleteEnvironment: compose(
                 hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
                 hasPermissionRwd("d"),
                 hasI18NContentPermission()

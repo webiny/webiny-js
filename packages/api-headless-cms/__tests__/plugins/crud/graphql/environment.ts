@@ -65,9 +65,9 @@ export const DELETE_ENVIRONMENT_MUTATION = /* GraphQL */ `
     }
 `;
 export const LIST_ENVIRONMENT_QUERY = /* GraphQL */ `
-    query ListEnvironmentQuery {
+    query ListEnvironmentsQuery {
         cms {
-            listEnvironment {
+            listEnvironments {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

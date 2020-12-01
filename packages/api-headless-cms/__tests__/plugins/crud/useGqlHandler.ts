@@ -26,8 +26,16 @@ import {
     UPDATE_ENVIRONMENT_ALIAS_MUTATION
 } from "./graphql/environmentAlias";
 
-const createGetPermissions = permissions => {
-    return () => {
+type PermissionsArgType = {
+    name: string;
+};
+type GQLHandlerCallableArgsType = {
+    permissions: PermissionsArgType[];
+    identity: SecurityIdentity;
+};
+
+const createGetPermissions = (permissions: PermissionsArgType[]) => {
+    return (): PermissionsArgType[] => {
         if (!permissions) {
             return [
                 {
@@ -39,8 +47,8 @@ const createGetPermissions = permissions => {
     };
 };
 
-const createAuthenticate = identity => {
-    return () => {
+const createAuthenticate = (identity?: SecurityIdentity) => {
+    return (): SecurityIdentity => {
         if (!identity) {
             return new SecurityIdentity({
                 id: "1234567890",
@@ -53,7 +61,8 @@ const createAuthenticate = identity => {
     };
 };
 
-export const useGqlHandler = ({ permissions, identity } = {}) => {
+export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
+    const { permissions, identity } = args || {};
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",
@@ -108,35 +117,35 @@ export const useGqlHandler = ({ permissions, identity } = {}) => {
         handler,
         invoke,
         // environment
-        async createEnvironmentMutation(variables) {
+        async createEnvironmentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_ENVIRONMENT_MUTATION, variables } });
         },
-        async getEnvironmentQuery(variables) {
+        async getEnvironmentQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_ENVIRONMENT_QUERY, variables } });
         },
-        async updateEnvironmentMutation(variables) {
+        async updateEnvironmentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_ENVIRONMENT_MUTATION, variables } });
         },
-        async deleteEnvironmentMutation(variables) {
+        async deleteEnvironmentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_ENVIRONMENT_MUTATION, variables } });
         },
-        async listEnvironmentQuery() {
+        async listEnvironmentsQuery() {
             return invoke({ body: { query: LIST_ENVIRONMENT_QUERY } });
         },
         // environment alias
-        async createEnvironmentAliasMutation(variables) {
+        async createEnvironmentAliasMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
         },
-        async getEnvironmentAliasQuery(variables) {
+        async getEnvironmentAliasQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_ENVIRONMENT_ALIAS_QUERY, variables } });
         },
-        async updateEnvironmentAliasMutation(variables) {
+        async updateEnvironmentAliasMutation(variables: Record<string, any>) {
             return invoke({ body: { query: UPDATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
         },
-        async deleteEnvironmentAliasMutation(variables) {
+        async deleteEnvironmentAliasMutation(variables: Record<string, any>) {
             return invoke({ body: { query: DELETE_ENVIRONMENT_ALIAS_MUTATION, variables } });
         },
-        async listEnvironmentAliasQuery() {
+        async listEnvironmentAliasesQuery() {
             return invoke({ body: { query: LIST_ENVIRONMENT_ALIAS_QUERY } });
         }
     };

@@ -9,7 +9,7 @@ const ENUM_USER_ID = "1234567890";
 const createEnvironmentPrefix = position => {
     return `${ENUM_PREFIX}-${position}`;
 };
-const createEnvironmentModel = (prefix, suffix) => {
+const createEnvironmentModel = (prefix: string, suffix?: string) => {
     const append = suffix ? `_${suffix}` : "";
     return {
         name: `${prefix}_name${append}`,
@@ -24,7 +24,7 @@ describe("Environment crud test", () => {
         getEnvironmentQuery,
         updateEnvironmentMutation,
         deleteEnvironmentMutation,
-        listEnvironmentQuery
+        listEnvironmentsQuery
     } = useGqlHandler();
 
     test("environment create, read, update, delete and list all at once", async () => {
@@ -103,7 +103,7 @@ describe("Environment crud test", () => {
             });
         }
 
-        const [listEnvironmentResponse] = await listEnvironmentQuery();
+        const [listEnvironmentResponse] = await listEnvironmentsQuery();
         expect(listEnvironmentResponse).toMatchObject({
             data: {
                 cms: {
@@ -137,7 +137,7 @@ describe("Environment crud test", () => {
             });
         }
 
-        const [afterDeleteListResponse] = await listEnvironmentQuery();
+        const [afterDeleteListResponse] = await listEnvironmentsQuery();
         expect(afterDeleteListResponse).toMatchObject({
             data: {
                 cms: {

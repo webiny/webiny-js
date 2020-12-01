@@ -224,8 +224,6 @@ type BaseCmsEnvironmentType = {
     name: string;
     slug: string;
     description?: string;
-    createdOn: string;
-    changedOn?: string;
 };
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdFrom?: CmsEnvironmentType;
@@ -234,6 +232,8 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
         type: string;
         displayName: string;
     };
+    createdOn: string;
+    changedOn?: string;
 };
 export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
     createdFrom: string;
@@ -255,11 +255,14 @@ export type CmsEnvironmentContextType = {
     update: (id: string, data: CmsEnvironmentUpdateInputType) => Promise<CmsEnvironmentType>;
     delete: (id: string) => Promise<void>;
 };
-export type CmsEnvironmentAliasType = {
+
+type BaseCmsEnvironmentAliasType = {
     id: string;
     name: string;
     slug: string;
     description?: string;
+};
+export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
     environment?: CmsEnvironmentType;
     createdBy: {
         id: string;
@@ -269,12 +272,27 @@ export type CmsEnvironmentAliasType = {
     createdOn: Date;
     changedOn?: Date;
 };
+export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasType & {
+    environment: string;
+};
+export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasType;
+
+type CmsEnvironmentAliasCreatedByType = {
+    id: string;
+    name: string;
+};
 export type CmsEnvironmentAliasContextType = {
     get: (id: string) => Promise<CmsEnvironmentAliasType>;
     list: () => Promise<CmsEnvironmentAliasType[]>;
-    create: (data: CmsEnvironmentAliasType) => Promise<CmsEnvironmentAliasType>;
-    update: (id: string, data: CmsEnvironmentAliasType) => Promise<CmsEnvironmentAliasType>;
-    delete: (id: string) => Promise<void>;
+    create: (
+        data: CmsEnvironmentAliasCreateInputType,
+        createdBy: CmsEnvironmentAliasCreatedByType
+    ) => Promise<CmsEnvironmentAliasType>;
+    update: (
+        id: string,
+        data: CmsEnvironmentAliasUpdateInputType
+    ) => Promise<CmsEnvironmentAliasType>;
+    delete: (model: CmsEnvironmentAliasType) => Promise<void>;
 };
 export type CmsContextType = {
     cms: {
