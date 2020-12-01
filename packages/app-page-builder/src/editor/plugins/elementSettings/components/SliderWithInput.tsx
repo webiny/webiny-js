@@ -5,7 +5,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Icon } from "@webiny/ui/Icon";
 import { Slider } from "@webiny/ui/Slider";
 import { useRecoilValue } from "recoil";
-import WrappedInput from "./WrappedInput";
+import InputField from "./InputField";
 
 type SliderWithInputPropsType = {
     icon: React.ReactElement;
@@ -43,7 +43,7 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
                 />
             </Cell>
             <Cell align={"middle"} span={4}>
-                <WrappedInput
+                <InputField
                     placeholder={placeholder || "px"}
                     value={value}
                     onChange={updateValue}

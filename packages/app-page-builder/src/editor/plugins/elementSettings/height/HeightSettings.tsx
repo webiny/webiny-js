@@ -11,7 +11,7 @@ import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/edit
 // Components
 import { InputContainer, ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
-import Input from "../components/WrappedInput";
+import InputField from "../components/InputField";
 
 const classes = {
     grid: css({
@@ -91,7 +91,7 @@ const Settings: React.FunctionComponent = () => {
                                     <InputContainer width={"auto"} margin={0}>
                                         <Bind name={"value"} validators={validateHeight}>
                                             {({ value, onChange }) => (
-                                                <Input value={value} onChange={onChange} />
+                                                <InputField value={value} onChange={onChange} />
                                             )}
                                         </Bind>
                                     </InputContainer>

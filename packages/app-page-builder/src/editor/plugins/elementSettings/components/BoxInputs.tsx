@@ -6,7 +6,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
-import WrappedInput from "./WrappedInput";
+import InputField from "./InputField";
 import { COLORS } from "./StyledComponents";
 
 const classes = {
@@ -123,7 +123,7 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                 <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell span={12} className={classes.wrapper}>
-                <WrappedInput
+                <InputField
                     className={classes.input}
                     description={top.label}
                     value={linked ? all : top.value}
@@ -133,21 +133,21 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                             : getUpdateValue(`${valueKey}.${top.key}`)
                     }
                 />
-                <WrappedInput
+                <InputField
                     disabled={linked}
                     className={classes.input}
                     description={right.label}
                     value={right.value}
                     onChange={getUpdateValue(`${valueKey}.${right.key}`)}
                 />
-                <WrappedInput
+                <InputField
                     disabled={linked}
                     className={classes.input}
                     description={bottom.label}
                     value={bottom.value}
                     onChange={getUpdateValue(`${valueKey}.${bottom.key}`)}
                 />
-                <WrappedInput
+                <InputField
                     disabled={linked}
                     className={classes.input}
                     description={left.label}

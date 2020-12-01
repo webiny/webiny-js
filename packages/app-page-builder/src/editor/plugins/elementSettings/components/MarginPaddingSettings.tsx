@@ -10,7 +10,7 @@ import { css } from "emotion";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
-import WrappedInput from "./WrappedInput";
+import InputField from "./InputField";
 import { COLORS } from "./StyledComponents";
 
 const classes = {
@@ -176,7 +176,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
 
     return (
         <div className={classes.wrapper}>
-            <WrappedInput
+            <InputField
                 className={classes.input}
                 description={"Top"}
                 value={get(element, valueKey + ".desktop.top", 0)}
@@ -190,21 +190,21 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
                     <div className={"arrow-down"} />
                 </button>
             </div>
-            <WrappedInput
+            <InputField
                 disabled={!advanced}
                 className={classes.input}
                 description={"Right"}
                 value={get(element, valueKey + ".desktop.right", 0)}
                 onChange={getUpdateValue("desktop.right")}
             />
-            <WrappedInput
+            <InputField
                 disabled={!advanced}
                 className={classes.input}
                 description={"Bottom"}
                 value={get(element, valueKey + ".desktop.bottom", 0)}
                 onChange={getUpdateValue("desktop.bottom")}
             />
-            <WrappedInput
+            <InputField
                 disabled={!advanced}
                 className={classes.input}
                 description={"Left"}

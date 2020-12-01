@@ -1,12 +1,14 @@
 import React from "react";
 import { css } from "emotion";
+import get from "lodash/get";
 import { useRecoilValue } from "recoil";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 // Components
-import { InputBox } from "../components/WrappedInput";
+import InputField from "../components/InputField";
+import Wrapper from "../components/Wrapper";
 import { BaseColorPickerComponent } from "../components/ColorPicker";
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -16,12 +18,6 @@ const classes = {
         "&.mdc-layout-grid": {
             padding: 0,
             marginBottom: 24
-        }
-    }),
-    inputWrapper: css({
-        "& .mdc-text-field": {
-            width: "100% !important",
-            margin: "0px !important"
         }
     })
 };
@@ -51,45 +47,53 @@ const Settings: React.FunctionComponent = () => {
                         />
                     </Cell>
                 </Grid>
-                <InputBox
-                    leftCellSpan={8}
-                    rightCellSpan={4}
+                <Wrapper
                     containerClassName={classes.gridClass}
-                    className={classes.inputWrapper}
                     label={"Horizontal offset"}
-                    valueKey={DATA_NAMESPACE + ".horizontal"}
-                    updateValue={getUpdateValue("horizontal")}
-                />
-
-                <InputBox
                     leftCellSpan={8}
                     rightCellSpan={4}
+                >
+                    <InputField
+                        value={get(element, DATA_NAMESPACE + ".horizontal", 0)}
+                        onChange={getUpdateValue("horizontal")}
+                    />
+                </Wrapper>
+
+                <Wrapper
                     containerClassName={classes.gridClass}
-                    className={classes.inputWrapper}
                     label={"Vertical offset"}
-                    valueKey={DATA_NAMESPACE + ".vertical"}
-                    updateValue={getUpdateValue("vertical")}
-                />
-
-                <InputBox
                     leftCellSpan={8}
                     rightCellSpan={4}
+                >
+                    <InputField
+                        value={get(element, DATA_NAMESPACE + ".vertical", 0)}
+                        onChange={getUpdateValue("vertical")}
+                    />
+                </Wrapper>
+
+                <Wrapper
                     containerClassName={classes.gridClass}
-                    className={classes.inputWrapper}
                     label={"Blur"}
-                    valueKey={DATA_NAMESPACE + ".blur"}
-                    updateValue={getUpdateValue("blur")}
-                />
-
-                <InputBox
                     leftCellSpan={8}
                     rightCellSpan={4}
+                >
+                    <InputField
+                        value={get(element, DATA_NAMESPACE + ".blur", 0)}
+                        onChange={getUpdateValue("blur")}
+                    />
+                </Wrapper>
+
+                <Wrapper
                     containerClassName={classes.gridClass}
-                    className={classes.inputWrapper}
                     label={"Spread"}
-                    valueKey={DATA_NAMESPACE + ".spread"}
-                    updateValue={getUpdateValue("spread")}
-                />
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                >
+                    <InputField
+                        value={get(element, DATA_NAMESPACE + ".spread", 0)}
+                        onChange={getUpdateValue("spread")}
+                    />
+                </Wrapper>
             </ContentWrapper>
         </Accordion>
     );

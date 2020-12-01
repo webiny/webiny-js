@@ -1,7 +1,7 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import classNames from "classnames";
+import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
@@ -9,9 +9,10 @@ import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import DurationInput from "../components/SliderWithInput";
 import SelectBox from "../components/SelectBox";
-import { InputBox } from "../components/WrappedInput";
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
+import Wrapper from "../components/Wrapper";
+import InputField from "../components/InputField";
 // Icon
 import { ReactComponent as TimerIcon } from "./icons/round-av_timer-24px.svg";
 
@@ -92,22 +93,22 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                         />
                     </Cell>
                     <Cell span={12}>
-                        <InputBox
-                            className={classNames("no-bottom-padding", classes.inputWrapper)}
-                            placeholder={"ms"}
-                            label={"Delay"}
-                            valueKey={DATA_NAMESPACE + ".delay"}
-                            updateValue={getUpdateValue("delay")}
-                        />
+                        <Wrapper label={"Delay"}>
+                            <InputField
+                                placeholder={"ms"}
+                                value={get(element, DATA_NAMESPACE + ".delay", 0)}
+                                onChange={getUpdateValue("delay")}
+                            />
+                        </Wrapper>
                     </Cell>
                     <Cell span={12}>
-                        <InputBox
-                            className={classNames("no-bottom-padding", classes.inputWrapper)}
-                            placeholder={"px"}
-                            label={"Offset"}
-                            valueKey={DATA_NAMESPACE + ".offset"}
-                            updateValue={getUpdateValue("offset")}
-                        />
+                        <Wrapper label={"Offset"}>
+                            <InputField
+                                placeholder={"px"}
+                                value={get(element, DATA_NAMESPACE + ".offset", 0)}
+                                onChange={getUpdateValue("offset")}
+                            />
+                        </Wrapper>
                     </Cell>
                     <Cell span={12}>
                         <SelectBox
