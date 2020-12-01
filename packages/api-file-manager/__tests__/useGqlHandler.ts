@@ -26,8 +26,15 @@ import {
     GET_SETTINGS,
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
+import { SecurityPermission } from "@webiny/api-security/types";
 
-export default ({ permissions, identity } = {}) => {
+type UseGqlHandlerParams = {
+    permissions?: SecurityPermission[];
+    identity?: SecurityIdentity;
+};
+
+export default ({ permissions, identity }: UseGqlHandlerParams) => {
+    const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
@@ -48,7 +55,7 @@ export default ({ permissions, identity } = {}) => {
             type: "context",
             apply(context) {
                 context.security.getTenant = () => {
-                    return { id: "root", name: "Root", parent: null };
+                    return tenant;
                 };
             }
         },
@@ -63,12 +70,16 @@ export default ({ permissions, identity } = {}) => {
         },
         {
             type: "security-authentication",
-            authenticate: () =>
-                identity ||
-                new SecurityIdentity({
-                    id: "mocked",
-                    displayName: "m"
-                })
+            authenticate: () => {
+                return (
+                    identity ||
+                    new SecurityIdentity({
+                        id: "mocked",
+                        displayName: "m",
+                        type: "admin"
+                    })
+                );
+            }
         }
     );
 
@@ -86,8 +97,8 @@ export default ({ permissions, identity } = {}) => {
     };
 
     return {
+        tenant,
         elasticSearch: new Client({
-            hosts: [`http://localhost:9201`],
             node: "http://localhost:9201"
         }),
         sleep: (ms = 100) => {
@@ -113,7 +124,7 @@ export default ({ permissions, identity } = {}) => {
         async getFile(variables) {
             return invoke({ body: { query: GET_FILE, variables } });
         },
-        async listFiles(variables) {
+        async listFiles(variables = {}) {
             return invoke({ body: { query: LIST_FILES, variables } });
         },
         // File Manager settings
@@ -123,7 +134,7 @@ export default ({ permissions, identity } = {}) => {
         async install(variables) {
             return invoke({ body: { query: INSTALL, variables } });
         },
-        async getSettings(variables) {
+        async getSettings(variables = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },
         async updateSettings(variables) {
