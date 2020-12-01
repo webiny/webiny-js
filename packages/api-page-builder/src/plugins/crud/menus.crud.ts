@@ -16,6 +16,8 @@ export type Menu = {
     };
 };
 
+const TYPE = 'pb.category';
+
 export default {
     type: "context",
     apply(context) {
@@ -49,6 +51,7 @@ export default {
                     data: {
                         PK: PK_MENU(),
                         SK: slug,
+                        TYPE,
                         title,
                         slug,
                         description,

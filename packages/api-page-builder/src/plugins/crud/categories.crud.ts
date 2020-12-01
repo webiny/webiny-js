@@ -35,10 +35,12 @@ const UpdateDataModel = withFields({
     layout: string({ validation: validation.create("minLength:1,maxLength:100") })
 })();
 
+const TYPE = 'pb.category';
+
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
+        const { db } = context;
         const PK_CATEGORY = () => `${getPKPrefix(context)}C`;
 
         const categoriesDataLoader = new DataLoader<string, Category>(async slugs => {
@@ -77,6 +79,7 @@ export default {
                     data: {
                         PK: PK_CATEGORY(),
                         SK: slug,
+                        TYPE,
                         name,
                         slug,
                         url,

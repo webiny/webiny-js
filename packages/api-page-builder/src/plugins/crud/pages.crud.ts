@@ -70,9 +70,9 @@ const UpdateDataModel = withFields({
     })
 })();
 
-const TYPE_PAGE = "pb#page";
-const TYPE_PAGE_LATEST = TYPE_PAGE + "#lid";
-const TYPE_PAGE_PUBLISHED = TYPE_PAGE + "#pid";
+const TYPE_PAGE = "pb.page";
+const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
+const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {

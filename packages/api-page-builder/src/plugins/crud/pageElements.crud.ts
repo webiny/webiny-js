@@ -37,7 +37,7 @@ const UpdateDataModel = withFields({
     preview: object()
 })();
 
-const TYPE = "pb#page-element";
+const TYPE = "pb.pageElement";
 
 export default {
     type: "context",

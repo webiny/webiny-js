@@ -48,6 +48,8 @@ const SettingsModel = withFields({
     })
 })();
 
+const TYPE = "pb.settings";
+
 export default {
     type: "context",
     apply(context) {
@@ -70,7 +72,7 @@ export default {
                 const defaultSettings = await new SettingsModel().populate({}).toJSON();
                 await db.create({
                     ...defaults.db,
-                    data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE: "pb.settings" }
+                    data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE }
                 });
                 return defaultSettings;
             },
