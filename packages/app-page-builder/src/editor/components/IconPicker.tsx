@@ -9,6 +9,9 @@ import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import classNames from "classnames";
+import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
+// Icons
+import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
 const COLUMN_COUNT = 6;
 
@@ -85,17 +88,47 @@ const searchInput = css({
     }
 });
 
+const iconPickerWrapper = css({
+    display: "flex",
+    justifyContent: "flex-end",
+    height: 30,
+
+    "& .menuHandler": {
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        border: `1px solid ${COLORS.gray}`
+    },
+    "& .iconContainer": {
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        border: `1px solid ${COLORS.gray}`,
+
+        "& svg": {
+            width: 16,
+            height: 16
+        }
+    }
+});
+
 type IconPickerPropsType = {
     value: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
     handlerClassName?: string;
+    useInSidebar?: boolean;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
     removable = true,
-    handlerClassName
+    handlerClassName,
+    useInSidebar
 }) => {
     const [filter, setFilter] = useState<string>("");
 
@@ -215,6 +248,25 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
         },
         [icons]
     );
+
+    if (useInSidebar) {
+        return (
+            <div className={iconPickerWrapper}>
+                <Menu
+                    handle={
+                        <div className={classNames("menuHandler", handlerClassName)}>
+                            <IconPickerIcon />
+                        </div>
+                    }
+                >
+                    {renderGrid}
+                </Menu>
+                <div className={"iconContainer"}>
+                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <Menu

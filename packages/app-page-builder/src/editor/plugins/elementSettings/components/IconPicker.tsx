@@ -45,6 +45,7 @@ const BaseIconPickerComponent: React.FunctionComponent<Partial<IconPickerProps>>
             value={value}
             onChange={updateValue}
             removable={removable}
+            useInSidebar={true}
         />
     );
 };
