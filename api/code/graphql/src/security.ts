@@ -11,11 +11,18 @@ import cognitoIdentityProvider from "@webiny/api-plugin-security-cognito/identit
 export default () => [
     /**
      * Security Tenancy API (context, users, groups, tenant links).
+     * This will setup the complete GraphQL schema to manage users, groups, access tokens,
+     * and provide you with a TenancyContext to access current Tenant data and DB operations.
      */
     tenancy(),
 
     /**
-     * Cognito IDP plugin (CRUD methods for users)
+     * Cognito IDP plugin (hooks for User CRUD methods).
+     * This plugin will perform CRUD operations on Cognito when you do something with the user
+     * via the UI or API. It's mostly to push changes to Cognito when they happen in your app.
+     * 
+     * It also extends the GraphQL schema with things like "password", which we don't handle 
+     * natively in our security, but Cognito will handle it for us.
      */
     cognitoIdentityProvider({
         region: process.env.COGNITO_REGION,
@@ -57,7 +64,8 @@ export default () => [
     }),
 
     /**
-     * Authorization plugin to load permissions for a verified access token.
+     * Authorization plugin to fetch permissions for a verified access token.
+     * The "identityType" must match the authentication plugin used to load the identity.
      */
     accessTokenAuthorization({ identityType: "access-token" }),
 
