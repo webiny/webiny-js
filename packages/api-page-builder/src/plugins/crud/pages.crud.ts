@@ -19,12 +19,11 @@ export type Page = {
     snippet: string;
     url: string;
     category: string;
-    published: boolean;
     publishedOn: string;
     version: number;
-    latestVersion: boolean;
     settings: Record<string, any>;
     locked: boolean;
+    status: string;
     home: boolean;
     error: boolean;
     notFound: boolean;
@@ -538,7 +537,8 @@ export default {
                     // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
                     // page's data so that we can update its status within a batch operation. If, hopefully,
                     // they introduce a true update batch operation, remove this `read` call.
-                    const [previouslyPublishedPage] = await db.read({
+                    // TODO: test this! publishing a new revision with a revision that has already been published.
+                    const [[previouslyPublishedPage]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE, SK: publishedPageData.id },
                         limit: 1
