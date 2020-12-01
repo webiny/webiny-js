@@ -1,8 +1,6 @@
 import React from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { Input } from "@webiny/ui/Input";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
@@ -12,13 +10,14 @@ import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 // Components
 import { InputContainer, ContentWrapper } from "../components/StyledComponents";
-// Icons
-import { ReactComponent as HeightIcon } from "../../../assets/icons/height-black.svg";
+import Accordion from "../components/Accordion";
+import Input from "../components/WrappedInput";
 
 const classes = {
     grid: css({
         "&.mdc-layout-grid": {
             padding: 0,
+            margin: 0,
             marginBottom: 24
         }
     })
@@ -67,13 +66,13 @@ const Settings: React.FunctionComponent = () => {
     const data = element.data.settings?.height || { fullHeight: false, value: "100%" };
 
     return (
-        <AccordionItem icon={<HeightIcon />} title={"Height"} description={"Edit element height."}>
+        <Accordion title={"Height"}>
             <Form data={data} onChange={updateSettings}>
                 {({ Bind, data }) => (
                     <ContentWrapper direction={"column"}>
                         <Grid className={classes.grid}>
                             <Cell span={5}>
-                                <Typography use={"overline"}>full height</Typography>
+                                <Typography use={"subtitle2"}>Full height</Typography>
                             </Cell>
                             <Cell span={7}>
                                 <InputContainer width={"auto"} margin={0}>
@@ -86,12 +85,14 @@ const Settings: React.FunctionComponent = () => {
                         {!data.fullHeight && (
                             <Grid className={classes.grid}>
                                 <Cell span={5}>
-                                    <Typography use={"overline"}>height</Typography>
+                                    <Typography use={"subtitle2"}>Height</Typography>
                                 </Cell>
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
                                         <Bind name={"value"} validators={validateHeight}>
-                                            <Input />
+                                            {({ value, onChange }) => (
+                                                <Input value={value} onChange={onChange} />
+                                            )}
                                         </Bind>
                                     </InputContainer>
                                 </Cell>
@@ -100,7 +101,7 @@ const Settings: React.FunctionComponent = () => {
                     </ContentWrapper>
                 )}
             </Form>
-        </AccordionItem>
+        </Accordion>
     );
 };
 

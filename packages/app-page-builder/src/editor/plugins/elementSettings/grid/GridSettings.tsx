@@ -2,7 +2,6 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import {
@@ -16,8 +15,7 @@ import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/edit
 // Components
 import CellSize from "./CellSize";
 import { ContentWrapper } from "../components/StyledComponents";
-// Icons
-import { ReactComponent as CellIcon } from "@webiny/app-page-builder/editor/assets/icons/column-icon.svg";
+import Accordion from "../components/Accordion";
 
 const classes = {
     grid: css({
@@ -144,12 +142,7 @@ export const GridSettings: React.FunctionComponent = () => {
     }, 0);
 
     return (
-        <AccordionItem
-            className={classes.icon}
-            icon={<CellIcon />}
-            title={"Grid"}
-            description={"Edit Grid layout."}
-        >
+        <Accordion title={"Grid"}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     {presetPlugins.map(pl => {
@@ -183,6 +176,6 @@ export const GridSettings: React.FunctionComponent = () => {
                     })}
                 </Grid>
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };

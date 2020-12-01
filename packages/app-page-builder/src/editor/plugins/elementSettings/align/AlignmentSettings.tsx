@@ -18,11 +18,9 @@ import {
     PbElementDataSettingsPaddingType,
     AlignmentTypesEnum
 } from "@webiny/app-page-builder/types";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 // Icons
-import { ReactComponent as AlignCenterIcon } from "../../../assets/icons/format_align_center.svg";
 import { ReactComponent as AlignHorizontalLeftIcon } from "../../../assets/icons/align_horizontal_left.svg";
 import { ReactComponent as AlignHorizontalCenterIcon } from "../../../assets/icons/align_horizontal_center.svg";
 import { ReactComponent as AlignHorizontalRightIcon } from "../../../assets/icons/align_horizontal_right.svg";
@@ -30,6 +28,7 @@ import { ReactComponent as AlignVerticalTopIcon } from "../../../assets/icons/al
 import { ReactComponent as AlignVerticalCenterIcon } from "../../../assets/icons/align_vertical_center.svg";
 import { ReactComponent as AlignVerticalBottomIcon } from "../../../assets/icons/align_vertical_bottom.svg";
 // Components
+import Accordion from "../components/Accordion";
 import { ContentWrapper } from "../components/StyledComponents";
 
 const classes = {
@@ -150,11 +149,7 @@ const AlignmentSettings: React.FunctionComponent<HorizontalAlignActionPropsType>
     }
 
     return (
-        <AccordionItem
-            icon={<AlignCenterIcon />}
-            title={"Alignment"}
-            description={"Align the inner content of an element."}
-        >
+        <Accordion title={"Alignment"}>
             <ContentWrapper>
                 {defaultOptions.alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>
@@ -170,7 +165,7 @@ const AlignmentSettings: React.FunctionComponent<HorizontalAlignActionPropsType>
                     </Tooltip>
                 ))}
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 

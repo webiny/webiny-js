@@ -2,18 +2,17 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import classNames from "classnames";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import DurationInput from "../components/SliderWithInput";
-import Select from "../components/Select";
-import Input from "../components/Input";
+import SelectBox from "../components/SelectBox";
+import { InputBox } from "../components/WrappedInput";
 import { ContentWrapper } from "../components/StyledComponents";
+import Accordion from "../components/Accordion";
 // Icon
-import { ReactComponent as AnimationIcon } from "./round-movie_filter-24px.svg";
 import { ReactComponent as TimerIcon } from "./icons/round-av_timer-24px.svg";
 
 const classes = {
@@ -46,15 +45,11 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
     });
 
     return (
-        <AccordionItem
-            icon={<AnimationIcon />}
-            title={"Animation"}
-            description={"Align the inner content of an element."}
-        >
+        <Accordion title={"Animation"}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     <Cell span={12}>
-                        <Select
+                        <SelectBox
                             className={classes.animationTypeSelectWrapper}
                             label={"Animation"}
                             valueKey={DATA_NAMESPACE + ".name"}
@@ -84,7 +79,7 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                                 <option value="slide-left">Slide Left</option>
                                 <option value="slide-right">Slide Right</option>
                             </optgroup>
-                        </Select>
+                        </SelectBox>
                     </Cell>
                     <Cell span={12}>
                         <DurationInput
@@ -97,7 +92,7 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                         />
                     </Cell>
                     <Cell span={12}>
-                        <Input
+                        <InputBox
                             className={classNames("no-bottom-padding", classes.inputWrapper)}
                             placeholder={"ms"}
                             label={"Delay"}
@@ -106,16 +101,16 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                         />
                     </Cell>
                     <Cell span={12}>
-                        <Input
+                        <InputBox
                             className={classNames("no-bottom-padding", classes.inputWrapper)}
                             placeholder={"px"}
-                            label={"offset"}
+                            label={"Offset"}
                             valueKey={DATA_NAMESPACE + ".offset"}
                             updateValue={getUpdateValue("offset")}
                         />
                     </Cell>
                     <Cell span={12}>
-                        <Select
+                        <SelectBox
                             className={classes.animationEasingSelectWrapper}
                             label={"Easing"}
                             valueKey={DATA_NAMESPACE + ".easing"}
@@ -142,11 +137,11 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                             <option value="ease-in-quart">In quart</option>
                             <option value="ease-out-quart">Out quart</option>
                             <option value="ease-in-out-quart">In out-quart</option>
-                        </Select>
+                        </SelectBox>
                     </Cell>
                 </Grid>
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 type AnimationSettingsPropsType = {

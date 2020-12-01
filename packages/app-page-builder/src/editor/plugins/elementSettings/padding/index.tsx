@@ -1,10 +1,12 @@
 import React from "react";
-import { ReactComponent as PaddingIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen_exit.svg";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+// Components
 import Settings from "../components/PMSettings";
 import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
-import { AccordionItem } from "@webiny/ui/Accordion";
-import MarginSettings from "../components/MarginPaddingSettings";
+import Accordion from "../components/Accordion";
+import MarginPaddingSettings from "../components/MarginPaddingSettings";
+// Icons
+import { ReactComponent as PaddingIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen_exit.svg";
 
 export default {
     name: "pb-editor-page-element-settings-padding",
@@ -17,13 +19,9 @@ export default {
     },
     render() {
         return (
-            <AccordionItem
-                icon={<PaddingIcon />}
-                title={"Padding"}
-                description={"The space between an element and the content inside it."}
-            >
-                <MarginSettings styleAttribute={"padding"} />
-            </AccordionItem>
+            <Accordion title={"Padding"}>
+                <MarginPaddingSettings styleAttribute={"padding"} />
+            </Accordion>
         );
     }
 } as PbEditorPageElementSettingsPlugin;

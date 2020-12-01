@@ -53,7 +53,7 @@ type Props = {
 const BackgroundPositionSelector = (props: Props) => {
     return (
         <PositionWrapper>
-            <Typography style={{ width: "60%" }} use={"overline"}>
+            <Typography style={{ width: "60%" }} use={"subtitle2"}>
                 Position
             </Typography>
             <Ul className={classNames({ disabled: props.disabled })}>

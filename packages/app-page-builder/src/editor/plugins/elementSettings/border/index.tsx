@@ -1,9 +1,11 @@
 import React from "react";
-import { ReactComponent as BorderIcon } from "@webiny/app-page-builder/editor/assets/icons/border_outer.svg";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+// Icon
+import { ReactComponent as BorderIcon } from "../../../assets/icons/border_outer.svg";
+// Components
+import Action from "../components/Action";
 import Settings from "./Settings";
 import BorderSettings from "./BorderSettings";
-import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default {
     name: "pb-editor-page-element-settings-border",

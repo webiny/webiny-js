@@ -2,15 +2,13 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import useUpdateHandlers from "../useUpdateHandlers";
-// Icons
-import { ReactComponent as BorderIcon } from "../../../assets/icons/border_outer.svg";
 // Components
+import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
-import Select from "../components/Select";
 import { ContentWrapper } from "../components/StyledComponents";
 import BoxInputs from "../components/BoxInputs";
+import SelectBox from "../components/SelectBox";
 
 const classes = {
     selectWrapper: css({
@@ -33,19 +31,20 @@ const BorderSettings = () => {
     const border = element.data.settings?.border || {};
 
     return (
-        <AccordionItem
-            icon={<BorderIcon />}
-            title={"Border"}
-            description={"Align the inner content of an element."}
-        >
+        <Accordion title={"Border"}>
             <ContentWrapper direction={"column"}>
-                <Select
+                <SelectBox
                     className={classes.selectWrapper}
                     label={"Style"}
                     value={border.style || "none"}
                     updateValue={getUpdateValue("style")}
-                    options={options}
-                />
+                >
+                    {options.map(option => (
+                        <option key={option} value={option}>
+                            {option}
+                        </option>
+                    ))}
+                </SelectBox>
                 <ColorPicker
                     className={classes.selectWrapper}
                     label={"Color"}
@@ -85,7 +84,7 @@ const BorderSettings = () => {
                     ]}
                 />
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 export default React.memo(BorderSettings);

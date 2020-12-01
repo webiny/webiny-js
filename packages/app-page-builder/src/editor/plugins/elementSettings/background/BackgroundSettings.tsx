@@ -3,19 +3,18 @@ import { set } from "dot-prop-immutable";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { AccordionItem } from "@webiny/ui/Accordion";
-import Select from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Select";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-// Icon
-import { ReactComponent as InvertColorsIcon } from "@webiny/app-page-builder/editor/assets/icons/invert_colors.svg";
 // Components
-import { BaseColorPicker } from "../components/ColorPicker";
+import SelectBox from "../components/SelectBox";
+import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper } from "../components/StyledComponents";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
+import Accordion from "../components/Accordion";
+import { Typography } from "@webiny/ui/Typography";
 
 const imageSelect = css({
     width: "100%"
@@ -85,15 +84,12 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
     const { src: backgroundImageSrc } = backgroundImage?.file || {};
 
     return (
-        <AccordionItem
-            icon={<InvertColorsIcon />}
-            title={"Background"}
-            description={"Edit the background."}
-        >
+        <Accordion title={"Background"}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     <Cell span={12}>
-                        <BaseColorPicker
+                        <ColorPicker
+                            label={"Color"}
                             value={backgroundColor}
                             updatePreview={onColorChange}
                             updateValue={onColorChangeComplete}
@@ -104,6 +100,9 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                     <React.Fragment>
                         <Grid className={classes.grid}>
                             <Cell span={12}>
+                                <Typography use={"subtitle2"}>Image</Typography>
+                            </Cell>
+                            <Cell span={12}>
                                 <SingleImageUpload
                                     className={imageSelect}
                                     onChange={setImage}
@@ -111,7 +110,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                                 />
                             </Cell>
                         </Grid>
-                        <Select
+                        <SelectBox
                             className={classes.grid}
                             disabled={!backgroundImageSrc}
                             label="Scaling"
@@ -124,7 +123,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                             <option value="tile">Tile</option>
                             <option value="tileHorizontally">Tile Horizontally</option>
                             <option value="tileVertically">Tile Vertically</option>
-                        </Select>
+                        </SelectBox>
                         <Grid className={classes.grid}>
                             <Cell span={12}>
                                 <BackgroundPositionSelector
@@ -137,7 +136,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                     </React.Fragment>
                 )}
             </ContentWrapper>
-        </AccordionItem>
+        </Accordion>
     );
 };
 

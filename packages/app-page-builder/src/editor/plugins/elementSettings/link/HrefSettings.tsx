@@ -4,7 +4,6 @@ import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
@@ -14,9 +13,8 @@ import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { PbElement } from "@webiny/app-page-builder/types";
 // Components
+import Accordion from "../components/Accordion";
 import { ContentWrapper } from "../components/StyledComponents";
-// Icon
-import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 
 const classes = {
     gridClass: css({
@@ -50,11 +48,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({
     };
 
     return (
-        <AccordionItem
-            icon={<LinkIcon />}
-            title={"Link"}
-            description={"Align the inner content of an element."}
-        >
+        <Accordion title={"Link"}>
             <Form data={{ href, newTab }} onChange={updateSettings}>
                 {({ Bind }) => (
                     <ContentWrapper direction={"column"}>
@@ -83,7 +77,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({
                     </ContentWrapper>
                 )}
             </Form>
-        </AccordionItem>
+        </Accordion>
     );
 };
 

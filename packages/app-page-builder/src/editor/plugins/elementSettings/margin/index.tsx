@@ -1,10 +1,12 @@
 import React from "react";
-import { ReactComponent as MarginIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen.svg";
+import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+// Components
+import Action from "../components/Action";
 import Settings from "../components/PMSettings";
 import MarginSettings from "../components/MarginPaddingSettings";
-import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
-import { AccordionItem } from "@webiny/ui/Accordion";
+import Accordion from "../components/Accordion";
+// Icon
+import { ReactComponent as MarginIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen.svg";
 
 export default {
     name: "pb-editor-page-element-settings-margin",
@@ -17,13 +19,9 @@ export default {
     },
     render() {
         return (
-            <AccordionItem
-                icon={<MarginIcon />}
-                title={"Margin"}
-                description={"The space around an element."}
-            >
+            <Accordion title={"Margin"}>
                 <MarginSettings styleAttribute={"margin"} />
-            </AccordionItem>
+            </Accordion>
         );
     }
 } as PbEditorPageElementSettingsPlugin;
