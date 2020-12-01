@@ -8,7 +8,8 @@ import { withFields, string } from "@commodo/fields";
 import {
     CmsEnvironmentAliasType,
     CmsEnvironmentAliasContextType,
-    CmsContextType
+    CmsContextType,
+    CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
@@ -33,6 +34,19 @@ const createPartitionKey = (i18nContent: Record<string, any>) => {
     }
     return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
 };
+
+const fetchTargetEnvironment = async (
+    context: CmsContextType,
+    id: string
+): Promise<CmsEnvironmentType> => {
+    const targetEnvironment = await context.cms.environment.get(id);
+    if (!targetEnvironment) {
+        throw new Error(`Target Environment "${id}" does not exist.`);
+    }
+    return targetEnvironment;
+};
+
+const productionsSlugs = ["production"];
 
 export default {
     type: "context",
@@ -69,14 +83,10 @@ export default {
                 await createData.validate();
                 const createDataJson = await createData.toJSON();
 
-                const targetEnvironment = await context.cms.environment.get(
+                const targetEnvironment = await fetchTargetEnvironment(
+                    context,
                     createDataJson.environment
                 );
-                if (!targetEnvironment) {
-                    throw new Error(
-                        `Target Environment "${createDataJson.environment}" does not exist.`
-                    );
-                }
                 const id = mdbid();
 
                 const modelData = Object.assign(createDataJson, {
@@ -111,12 +121,21 @@ export default {
 
                 const modelData = await updateData.toJSON({ onlyDirty: true });
 
+                const extraModelData: any = {};
+                if (modelData.environment) {
+                    extraModelData.environment = await fetchTargetEnvironment(
+                        context,
+                        modelData.environment
+                    );
+                }
+
                 await db.update({
                     ...defaults.es,
                     query: { PK: PK_ENVIRONMENT, SK: id },
                     data: {
                         ...modelData,
-                        createdOn: new Date().toISOString()
+                        ...extraModelData,
+                        changedOn: new Date().toISOString()
                     }
                 });
 
@@ -124,8 +143,10 @@ export default {
             },
             async delete(model): Promise<void> {
                 // before delete hook
-                if (model.slug === "production") {
-                    throw new Error(`Cannot delete "production" environment alias.`);
+                if (productionsSlugs.includes(model.slug)) {
+                    throw new Error(
+                        `Cannot delete "${model.slug}" environment alias, it is marked as a production alias.`
+                    );
                 }
                 // delete
                 await db.delete({
