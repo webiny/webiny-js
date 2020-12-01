@@ -205,7 +205,12 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     sort: PbListPagesSortInput
                 ): PbPageListResponse
 
-                listPublishedPages(sort: PbListPagesSortInput): PbPageListResponse
+                listPublishedPages(
+                    where: PbListPagesWhereInput
+                    limit: Int
+                    page: Int
+                    sort: PbListPagesSortInput
+                ): PbPageListResponse
 
                 listElements(limit: Int): PbElementListResponse
 
