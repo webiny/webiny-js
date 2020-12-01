@@ -277,13 +277,13 @@ const Pagination = (props: Props) => {
                             disabled: !pagination.hasPreviousPage
                         })}
                     >
-                        <PreviousPageIcon
+                        {/*<PreviousPageIcon
                             onClick={() => {
                                 if (pagination.setPreviousPage && pagination.hasPreviousPage) {
                                     pagination.setPreviousPage(pagination.cursors.previous);
                                 }
                             }}
-                        />
+                        />*/}
                     </ListHeaderItem>
 
                     <ListHeaderItem
@@ -291,13 +291,13 @@ const Pagination = (props: Props) => {
                             disabled: !pagination.hasNextPage
                         })}
                     >
-                        <NextPageIcon
+                       {/* <NextPageIcon
                             onClick={() => {
                                 if (props.setNextPage && pagination.hasNextPage) {
                                     props.setNextPage(pagination.cursors.next);
                                 }
                             }}
-                        />
+                        />*/}
                     </ListHeaderItem>
                 </React.Fragment>
             )}
