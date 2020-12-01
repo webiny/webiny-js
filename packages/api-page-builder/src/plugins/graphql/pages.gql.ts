@@ -1,6 +1,5 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import createRevisionFrom from "./pageResolvers/createRevisionFrom";
-import setHomePage from "./pageResolvers/setHomePage";
 import oembed from "./pageResolvers/oembed";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
@@ -38,6 +37,9 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 createdOn: DateTime
                 savedOn: DateTime
                 publishedOn: DateTime
+                error: Boolean
+                notFound: Boolean
+                locked: Boolean
                 category: PbPageCategory
                 version: Int
                 title: String
@@ -48,10 +50,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 settings: PbPageSettings
                 content: JSON
                 revisions: [PbPageRevision]
-                # isHomePage: Boolean
-                # isErrorPage: Boolean
-                # isNotFoundPage: Boolean
-                locked: Boolean
+                home: Boolean
             }
 
             type PbPageRevision {
@@ -59,6 +58,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 version: Int
                 title: String
                 status: String
+                savedOn: DateTime
             }
 
             type PbPageListItem {
@@ -66,6 +66,9 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 status: String
                 locked: Boolean
                 publishedOn: DateTime
+                home: Boolean
+                error: Boolean
+                notFound: Boolean
                 version: Int
                 category: PbPageCategory
                 title: String
@@ -115,10 +118,6 @@ const plugin: GraphQLSchemaPlugin<Context> = {
 
             input PbPageSettingsInput {
                 _empty: String
-            }
-
-            input PbCreatePageInput {
-                category: String
             }
 
             type PbPageDeleteResponse {
@@ -172,7 +171,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 reviewRequested
                 changesRequested
             }
-            
+
             input PbListPagesSortInput {
                 title: PbListPagesSortOrders
                 createdOn: PbListPagesSortOrders
@@ -182,7 +181,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 category: String
                 status: PbPageStatuses
             }
-             
+
             enum PbTagsRule {
                 ALL
                 ANY
@@ -217,10 +216,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
             }
 
             extend type PbMutation {
-                createPage(from: ID, data: PbCreatePageInput): PbPageResponse
-
-                # Sets given page as new homepage.
-                setHomePage(id: ID!): PbPageResponse
+                createPage(from: ID, category: String): PbPageResponse
 
                 # Create a new revision from an existing revision
                 createRevisionFrom(revision: ID!): PbPageResponse
@@ -273,7 +269,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 )(async (_, args: { id: string }, context: Context) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
+                    if (!hasRwd({ pbPagePermission, rwd: "r" })) {
                         return new NotAuthorizedResponse();
                     }
 
@@ -296,25 +292,24 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     return new Response(page);
                 }),
 
-                listPages: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: PagesListArgs, context: Context) => {
-                    // If permission has "rwd" property set, but "r" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
-                        return new NotAuthorizedResponse();
+                listPages: async (_, args: PagesListArgs, context) => {
+                    try {
+                        const { pages } = context;
+                        const list = await pages.listLatest(args);
+                        return new Response(list);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-
-                    const { pages } = context;
-                    const list = await pages.listLatest(args);
-                    return new Response(list);
-                }),
+                },
 
                 listPublishedPages: async (_, args, context) => {
-                    const { pages } = context;
-                    const list = await pages.listPublished(args);
-                    return new Response(list);
+                    try {
+                        const { pages } = context;
+                        const list = await pages.listPublished(args);
+                        return new Response(list);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 },
                 getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
                     const { pages } = context;
@@ -340,32 +335,20 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 createPage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(
-                    async (
-                        _,
-                        args: { from?: string; data?: Record<string, any> },
-                        context: Context
-                    ) => {
-                        // If permission has "rwd" property set, but "w" is not part of it, bail.
-                        const pbPagePermission = await context.security.getPermission("pb.page");
-                        if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                            return new NotAuthorizedResponse();
-                        }
+                )(async (_, args: { from?: string; category?: string }, context: Context) => {
+                    const { pages } = context;
+                    const { from, category } = args;
 
-                        const { pages } = context;
-                        const { from, data } = args;
-
-                        try {
-                            if (from) {
-                                return new Response(await pages.createFrom({ from }));
-                            } else {
-                                return new Response(await pages.create(data));
-                            }
-                        } catch (e) {
-                            return new ErrorResponse(e);
+                    try {
+                        if (from) {
+                            return new Response(await pages.createFrom({ from }));
+                        } else {
+                            return new Response(await pages.create({ category }));
                         }
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-                ),
+                }),
                 deletePage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
@@ -397,7 +380,6 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     return new Response(page);
                 }),
 
-                setHomePage,
                 createRevisionFrom: hasPermission("pb:page:crud")(createRevisionFrom),
 
                 updatePage: compose(
@@ -416,10 +398,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     }
                 }),
 
-                publishPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                publishPage: async (_, args: { id: string }, context) => {
                     const { pages } = context;
                     try {
                         const page = await pages.publish(args.id);
@@ -427,12 +406,9 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                }),
+                },
 
-                unpublishPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                unpublishPage: async (_, args: { id: string }, context) => {
                     const { pages } = context;
                     try {
                         const page = await pages.unpublish(args.id);
@@ -440,12 +416,9 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                }),
+                },
 
-                requestReview: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                requestReview: async (_, args: { id: string }, context) => {
                     const { pages } = context;
                     try {
                         const page = await pages.requestReview(args.id);
@@ -453,12 +426,9 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                }),
+                },
 
-                requestChanges: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                requestChanges: async (_, args: { id: string }, context) => {
                     const { pages } = context;
                     try {
                         const page = await pages.requestChanges(args.id);
@@ -466,9 +436,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
-                })
-
-                // deletePage: hasPermission("pb:page:crud")(pageFetcher)
+                }
             },
             PbPageSettings: {
                 _empty: () => ""
