@@ -20,11 +20,7 @@ const Pages = () => {
     const openDialog = useCallback(() => setCategoriesDialog(true), []);
     const closeDialog = useCallback(() => setCategoriesDialog(false), []);
 
-    // ------------
-
-    const [create /*createMutation*/] = useMutation(CREATE_PAGE, {
-        // refetchQueries: [{ query: LIST_MENUS }]
-    });
+    const [create] = useMutation(CREATE_PAGE);
 
     const createPageMutation = useCallback(async ({ slug: category }) => {
         try {
@@ -36,24 +32,30 @@ const Pages = () => {
             setCreatingPage(false);
             closeDialog();
 
-            const { data } = res.data.pageBuilder.page;
-            history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+            const { error, data } = res.data.pageBuilder.createPage;
+            if (error) {
+                showSnackbar(error.message);
+            } else {
+                history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
+            }
         } catch (e) {
             showSnackbar(e.message);
         }
     }, []);
 
     const { identity } = useSecurity();
-    const pbPagePermission = useMemo(() => {
-        return identity.getPermission("pb.page");
-    }, []);
 
     const canCreate = useMemo(() => {
-        if (typeof pbPagePermission.rwd === "string") {
-            return pbPagePermission.rwd.includes("w");
+        const permission = identity.getPermission("pb.page");
+        if (!permission) {
+            return false;
         }
 
-        return true;
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("w");
     }, []);
 
     return (
@@ -69,7 +71,9 @@ const Pages = () => {
                 <LeftPanel>
                     <PagesDataList />
                 </LeftPanel>
-                <RightPanel><PageDetails /></RightPanel>
+                <RightPanel>
+                    <PageDetails />
+                </RightPanel>
             </SplitView>
             {canCreate && (
                 <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />

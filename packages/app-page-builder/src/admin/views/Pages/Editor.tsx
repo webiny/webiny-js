@@ -7,7 +7,6 @@ import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { createElement } from "@webiny/app-page-builder/editor/utils";
 import { redux } from "@webiny/app-page-builder/editor/redux";
 import { SETUP_EDITOR } from "@webiny/app-page-builder/editor/actions";
-import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -15,6 +14,49 @@ import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
+import gql from "graphql-tag";
+
+export const DATA_FIELDS = `
+    id
+    title
+    url
+    version
+    locked
+    status
+    category {
+        name
+        slug
+    }
+    revisions {
+        id
+        title
+        status
+        version
+    }
+    
+`;
+
+const GET_PAGE = gql`
+    query GetPage($id: ID!) {
+        pageBuilder {
+            getPage(id: $id) {
+                data {
+                    ${DATA_FIELDS}
+                    createdBy {
+                        id
+                    }
+                    content
+
+                }
+                error {
+                    message
+                    data
+                    code
+                }
+            }
+        }
+    }
+`;
 
 const getEmptyData = (page = {}, revisions = []) => {
     return {
