@@ -513,7 +513,7 @@ export default {
                 }
 
                 // Change loaded page's status to published.
-                page.status = "published";
+                page.status = STATUS_PUBLISHED;
                 page.locked = true;
                 page.publishedOn = new Date().toISOString();
 
@@ -591,7 +591,7 @@ export default {
                         { update: { _id: `L#${pageUniqueId}`, _index: "page-builder" } },
                         {
                             doc: {
-                                status: "published",
+                                status: STATUS_PUBLISHED,
                                 locked: true,
                                 publishedOn: page.publishedOn
                             }
@@ -615,7 +615,7 @@ export default {
                         title: page.title,
                         url: page.url,
                         tags: page.tags,
-                        status: "published",
+                        status: STATUS_PUBLISHED,
                         locked: true,
                         publishedOn: page.publishedOn
                     }
@@ -678,7 +678,7 @@ export default {
                     throw new Error(`Page "${pageId}" is not published.`);
                 }
 
-                page.status = "unpublished";
+                page.status = STATUS_UNPUBLISHED;
 
                 await db
                     .batch()
