@@ -844,7 +844,7 @@ export default {
                         PK: PK_PAGE,
                         SK: pageId
                     },
-                    data: omit(page, ["PK", "SK"])
+                    data: omit(["PK", "SK"], page)
                 });
 
                 // If we updated the latest version, then make sure the changes are propagated to ES too.
