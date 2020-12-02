@@ -45,10 +45,14 @@ const DefaultEditorSideBar = ({ shouldRenderSettings }) => {
             <div>
                 <Tabs>
                     <Tab label={"style"}>
-                        {shouldRenderSettings ? <ElementSettingsSideBar /> : <NoElementSelected />}
+                        {shouldRenderSettings ? (
+                            <ElementSettingsSideBar tab={"style"} />
+                        ) : (
+                            <NoElementSelected />
+                        )}
                     </Tab>
-                    <Tab label={"Element"}>
-                        <p>TODO: Element tab content.</p>
+                    <Tab label={"Element"} disabled={!shouldRenderSettings}>
+                        <ElementSettingsSideBar tab={"element"} />
                     </Tab>
                 </Tabs>
             </div>

@@ -66,8 +66,16 @@ const getElementActions = plugin => {
     );
 };
 
-type ElementSettingsBarProps = { plugin: PbEditorPageElementPlugin; deactivateElement: () => void };
-const ElementSettingsSideBarContent = ({ plugin, deactivateElement }: ElementSettingsBarProps) => {
+type ElementSettingsBarProps = {
+    plugin: PbEditorPageElementPlugin;
+    deactivateElement: () => void;
+    tab: string;
+};
+const ElementSettingsSideBarContent = ({
+    plugin,
+    deactivateElement,
+    tab
+}: ElementSettingsBarProps) => {
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
     useEffect(() => {
@@ -89,6 +97,14 @@ const ElementSettingsSideBarContent = ({ plugin, deactivateElement }: ElementSet
                 If no `settings` array is defined in an `element` plugin, all settings are shown.
             */}
             {actions.map(({ plugin, options }, index) => {
+                if (tab === "element") {
+                    return (
+                        <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
+                            {typeof plugin.renderElement === "function" &&
+                                plugin.renderElement({ options })}
+                        </div>
+                    );
+                }
                 return (
                     <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
                         {typeof plugin.render === "function" && plugin.render({ options })}
@@ -101,7 +117,7 @@ const ElementSettingsSideBarContent = ({ plugin, deactivateElement }: ElementSet
 
 const ElementSettingsSideBarContentMemoized = React.memo(ElementSettingsSideBarContent);
 
-const ElementSettingsSideBar = () => {
+const ElementSettingsSideBar = props => {
     const element = useRecoilValue(activeElementSelector);
     const setUiAtomValue = useSetRecoilState(uiAtom);
     if (!element) {
@@ -128,6 +144,7 @@ const ElementSettingsSideBar = () => {
         <ElementSettingsSideBarContentMemoized
             plugin={plugin}
             deactivateElement={deactivateElement}
+            tab={props.tab}
         />
     );
 };
