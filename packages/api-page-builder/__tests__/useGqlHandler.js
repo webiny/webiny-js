@@ -70,9 +70,9 @@ export default ({ permissions, identity, tenant } = {}) => {
                 };
             }
         },
-        fileManagerPlugins(),
         i18nContext,
         i18nContentPlugins(),
+        fileManagerPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
 
