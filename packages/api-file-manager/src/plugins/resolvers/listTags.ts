@@ -5,8 +5,8 @@ import defaults from "../crud/defaults";
 
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     try {
-        const { i18nContent, security } = context;
-        const esDefaults = defaults.es(security.getTenant());
+        const { i18nContent } = context;
+        const esDefaults = defaults.es(context);
 
         const response = await context.elasticSearch.search({
             ...esDefaults,

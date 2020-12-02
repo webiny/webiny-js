@@ -101,11 +101,10 @@ const UpdateDataModel = withFields({
 
 export default (context: FileManagerContextPlugin) => {
     const { db, i18nContent, elasticSearch, security } = context;
-    const tenant = security.getTenant();
     const localeCode = i18nContent?.locale?.code;
 
     const PK_FILE = () => `${getPKPrefix(context)}F`;
-    const ES_DEFAULTS = () => defaults.es(tenant);
+    const ES_DEFAULTS = () => defaults.es(context);
 
     return {
         async getFile(id: string) {
