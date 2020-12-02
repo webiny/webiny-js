@@ -6,6 +6,6 @@ export * from "./dropElement";
 export * from "./resize";
 export * from "./togglePlugin";
 export * from "./updateElement";
-export * from "./updateRevision";
+export * from "./updatePage";
 export * from "./saveRevision";
 export * from "./plugins";

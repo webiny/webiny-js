@@ -43,7 +43,7 @@ const Title: React.FunctionComponent = () => {
     const [stateTitle, setTitle] = useState<string>(null);
     let title = stateTitle === null ? pageTitle : stateTitle;
 
-    const updateRevision = ({ title, pageTitle, pageCategoryUrl }) => {
+    const updatePage = ({ title, pageTitle, pageCategoryUrl }) => {
         handler.trigger(
             new UpdatePageRevisionActionEvent({
                 page: getRevData({ title, pageTitle, pageCategoryUrl }) as any
@@ -59,7 +59,7 @@ const Title: React.FunctionComponent = () => {
             setTitle(title);
         }
         setEdit(false);
-        updateRevision({ title, pageTitle, pageCategoryUrl });
+        updatePage({ title, pageTitle, pageCategoryUrl });
     }, [title]);
 
     const onKeyDown = useCallback(
@@ -80,7 +80,7 @@ const Title: React.FunctionComponent = () => {
                     e.preventDefault();
                     setEdit(false);
 
-                    updateRevision({ title, pageTitle, pageCategoryUrl });
+                    updatePage({ title, pageTitle, pageCategoryUrl });
                     break;
                 default:
                     return;
