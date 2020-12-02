@@ -26,19 +26,19 @@ describe("disabling error throwing test", () => {
 
     it("should not throw errors when options' throw flag is set to false", async () => {
         // Sync
-        let results = validation.validateSync("", "required", { throw: false });
+        let results = validation.validateSync(null, "required", { throw: false });
         expect(results).toBeInstanceOf(ValidationError);
 
         expect(results.message).toEqual("Value is required.");
         expect(results.validator).toEqual("required");
-        expect(results.value).toEqual("");
+        expect(results.value).toEqual(null);
 
         // Async
-        results = await validation.validate("", "required", { throw: false });
+        results = await validation.validate(null, "required", { throw: false });
         expect(results).toBeInstanceOf(ValidationError);
 
         expect(results.message).toEqual("Value is required.");
         expect(results.validator).toEqual("required");
-        expect(results.value).toEqual("");
+        expect(results.value).toEqual(null);
     });
 });
