@@ -10,6 +10,7 @@ import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
     PREFIX = "alias",
+    SUFFIX = "UPDATED",
     USER_ID = "1234567890",
     USER_NAME = "userName123"
 }
@@ -32,6 +33,29 @@ const createEnvironmentAliasModel = ({
         slug: `${prefix}slug${append}`,
         description: `${prefix}description${append}`,
         environment: environment.id
+    };
+};
+
+const createMatchableUpdatedEnvironmentAliasModel = (
+    position: number,
+    environment: CmsEnvironmentType
+) => {
+    const initialModel = createEnvironmentAliasModel({
+        prefix: createEnvironmentAliasPrefix(position),
+        environment,
+        suffix: TestHelperEnum.SUFFIX as string
+    });
+
+    return {
+        ...initialModel,
+        id: /([a-z0-9A-Z]+)/,
+        createdOn: /^20/,
+        changedOn: /^20/,
+        environment: getInitialEnvironment(),
+        createdBy: {
+            id: TestHelperEnum.USER_ID,
+            name: TestHelperEnum.USER_NAME
+        }
     };
 };
 
@@ -120,6 +144,85 @@ describe("Environment crud test", () => {
                     }
                 }
             });
+
+            const updatedModelData = createEnvironmentAliasModel({
+                prefix,
+                environment,
+                suffix: TestHelperEnum.SUFFIX as string
+            });
+
+            const [updateResponse] = await updateEnvironmentAliasMutation({
+                id: createdEnvironmentAliasId,
+                data: updatedModelData
+            });
+            expect(updateResponse).toMatchObject({
+                data: {
+                    cms: {
+                        updateEnvironmentAlias: {
+                            data: {
+                                id: /^20/,
+                                ...updatedModelData,
+                                environment: getInitialEnvironment(),
+                                createdBy: {
+                                    id: TestHelperEnum.USER_ID,
+                                    name: TestHelperEnum.USER_NAME
+                                },
+                                createdOn: /^20/,
+                                changedOn: /^20/
+                            },
+                            error: null
+                        }
+                    }
+                }
+            });
         }
+
+        const [listResponse] = await listEnvironmentAliasesQuery();
+        expect(listResponse.data.cms.listEnvironmentAliases.data).toHaveLength(
+            TestHelperEnum.MODELS_AMOUNT
+        );
+        expect(listResponse).toMatchObject({
+            data: {
+                cms: {
+                    listEnvironmentAliases: {
+                        data: [
+                            createMatchableUpdatedEnvironmentAliasModel(0, environment),
+                            createMatchableUpdatedEnvironmentAliasModel(1, environment),
+                            createMatchableUpdatedEnvironmentAliasModel(2, environment)
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        for (const id of createdEnvironmentAliasIdList) {
+            const [deleteResponse] = await deleteEnvironmentAliasMutation({
+                id
+            });
+            expect(deleteResponse).toMatchObject({
+                data: {
+                    cms: {
+                        deleteEnvironmentAlias: {
+                            data: true,
+                            error: null
+                        }
+                    }
+                }
+            });
+        }
+
+        const [afterDeleteListResponse] = await listEnvironmentAliasesQuery();
+        expect(afterDeleteListResponse.data.cms.listEnvironmentAliases.data).toHaveLength(0);
+        expect(afterDeleteListResponse).toEqual({
+            data: {
+                cms: {
+                    listEnvironmentAliases: {
+                        data: [],
+                        error: null
+                    }
+                }
+            }
+        });
     });
 });

@@ -113,11 +113,13 @@ export default {
                 const updateData = new UpdateEnvironmentAliasModel().populate(data);
                 await updateData.validate();
 
-                const modelData = await updateData.toJSON({ onlyDirty: true });
+                const modelDataJson = await updateData.toJSON({ onlyDirty: true });
+                const modelData = Object.assign(modelDataJson, {
+                    changedOn: new Date().toISOString()
+                });
 
-                const extraModelData: any = {};
                 if (modelData.environment) {
-                    extraModelData.environment = await fetchTargetEnvironment(
+                    modelData.environment = await fetchTargetEnvironment(
                         context,
                         modelData.environment
                     );
@@ -126,11 +128,7 @@ export default {
                 await db.update({
                     ...defaults.es,
                     query: { PK: createEnvironmentAliasPk(context), SK: id },
-                    data: {
-                        ...modelData,
-                        ...extraModelData,
-                        changedOn: new Date().toISOString()
-                    }
+                    data: modelData
                 });
 
                 return modelData;

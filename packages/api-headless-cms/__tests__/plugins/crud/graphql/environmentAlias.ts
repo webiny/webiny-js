@@ -57,7 +57,7 @@ export const DELETE_ENVIRONMENT_ALIAS_MUTATION = /* GraphQL */ `
     mutation DeleteEnvironmentAliasMutation($id: ID!) {
         cms {
             deleteEnvironmentAlias(id: $id) {
-                data ${DATA_FIELD}
+                data
                 error ${ERROR_FIELD}
             }
         }
