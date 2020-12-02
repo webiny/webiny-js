@@ -25,48 +25,14 @@ import {
     LIST_ENVIRONMENT_ALIAS_QUERY,
     UPDATE_ENVIRONMENT_ALIAS_MUTATION
 } from "./graphql/environmentAlias";
+import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
 
-type PermissionsArgType = {
-    name: string;
-    rwd?: string;
-};
 type GQLHandlerCallableArgsType = {
-    permissions: PermissionsArgType[];
-    identity: SecurityIdentity;
+    permissions?: PermissionsArgType[];
+    identity?: SecurityIdentity;
 };
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9201";
-
-const createGetPermissions = (permissions: PermissionsArgType[]) => {
-    return (): PermissionsArgType[] => {
-        if (!permissions) {
-            return [
-                {
-                    name: "cms.manage.setting",
-                    rwd: "rwd"
-                },
-                {
-                    name: "*"
-                }
-            ];
-        }
-        return permissions;
-    };
-};
-
-const createAuthenticate = (identity?: SecurityIdentity) => {
-    return (): SecurityIdentity => {
-        if (!identity) {
-            return new SecurityIdentity({
-                id: "1234567890",
-                displayName: "userName123",
-                login: "login",
-                type: "type"
-            });
-        }
-        return identity;
-    };
-};
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     const tenant = { id: "root", name: "Root", parent: null };

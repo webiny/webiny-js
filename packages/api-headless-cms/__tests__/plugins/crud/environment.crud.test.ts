@@ -1,7 +1,11 @@
 import { useGqlHandler } from "./useGqlHandler";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
-import { createEnvironmentPk } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
+import {
+    createEnvironmentTestPartitionKey,
+    fetchInitialEnvironment,
+    getInitialEnvironment,
+    getInitialEnvironmentId
+} from "./helpers";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
@@ -33,76 +37,31 @@ const createEnvironmentModel = ({
     };
 };
 
-const initialId = "5fc6590afb3cd80a5ae8a0ae";
-const initialEnvironmentData = {
-    id: initialId,
-    name: "initial",
-    slug: "initial",
-    description: "initial"
-};
-
 const createMatchableUpdatedEnvironmentModel = (
     position: number,
     initialEnvironment: CmsEnvironmentType
-): CmsEnvironmentType => {
-    const initial = createEnvironmentModel({
+) => {
+    const initialModel = createEnvironmentModel({
         prefix: createEnvironmentPrefix(position),
         initialEnvironment,
         suffix: TestHelperEnum.SUFFIX as string
     });
 
     return {
-        ...initial,
+        ...initialModel,
         id: /([a-z0-9A-Z]+)/,
         createdOn: /^20/,
         changedOn: /^20/,
-        createdFrom: initialEnvironmentData,
+        createdFrom: getInitialEnvironment(),
         createdBy: {
             id: TestHelperEnum.USER_ID,
             name: TestHelperEnum.USER_NAME
         }
-    } as any;
-};
-
-const createEnvironmentTestPartitionKey = () => {
-    return createEnvironmentPk({
-        security: {
-            getTenant: () => ({
-                id: "root",
-                name: "Root",
-                parent: null
-            })
-        },
-        i18nContent: {
-            locale: {
-                code: "en-US"
-            }
-        }
-    } as any);
-};
-const fetchInitialEnvironment = async (
-    documentClient: DocumentClient
-): Promise<CmsEnvironmentType> => {
-    const response = await documentClient
-        .get({
-            TableName: "HeadlessCms",
-            Key: {
-                PK: createEnvironmentTestPartitionKey(),
-                SK: initialId
-            }
-        })
-        .promise();
-    if (!response || !response.Item) {
-        throw new Error(`Missing initial environment "${initialId}".`);
-    }
-    return (response.Item as unknown) as CmsEnvironmentType;
+    };
 };
 
 const expectedInitialEnvironment = {
-    id: initialId,
-    name: "initial",
-    slug: "initial",
-    description: "initial",
+    ...getInitialEnvironment(),
     createdOn: /^20/
 };
 
@@ -122,9 +81,9 @@ describe("Environment crud test", () => {
                 TableName: "HeadlessCms",
                 Item: {
                     PK: createEnvironmentTestPartitionKey(),
-                    SK: initialId,
+                    SK: getInitialEnvironmentId(),
                     TYPE: "cms#env",
-                    ...initialEnvironmentData,
+                    ...getInitialEnvironment(),
                     createdOn: new Date().toISOString()
                 }
             })
@@ -151,7 +110,7 @@ describe("Environment crud test", () => {
                             data: {
                                 ...modelData,
                                 createdFrom: {
-                                    ...initialEnvironmentData
+                                    ...getInitialEnvironment()
                                 },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID
@@ -180,7 +139,7 @@ describe("Environment crud test", () => {
                             data: {
                                 ...modelData,
                                 createdFrom: {
-                                    ...initialEnvironmentData
+                                    ...getInitialEnvironment()
                                 },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID
@@ -210,7 +169,7 @@ describe("Environment crud test", () => {
                             data: {
                                 ...updatedModelData,
                                 createdFrom: {
-                                    ...initialEnvironmentData
+                                    ...getInitialEnvironment()
                                 },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID

@@ -247,7 +247,7 @@ type BaseCmsEnvironmentType = {
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     id: string;
     createdFrom?: CmsEnvironmentType;
-    createdBy?: CmsEnvironmentCreatedByType;
+    createdBy: CmsEnvironmentCreatedByType;
     createdOn: string;
     changedOn?: string;
 };

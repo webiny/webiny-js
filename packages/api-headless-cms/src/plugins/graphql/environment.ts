@@ -1,29 +1,18 @@
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import {
-    CmsContextType,
     CmsEnvironmentCreateInputType,
-    CmsEnvironmentType,
     CmsEnvironmentUpdateInputType
 } from "@webiny/api-headless-cms/types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-
-const CMS_ENVIRONMENT_PERMISSION_NAME = "cms.manage.setting";
-
-type CRUDType = "r" | "w" | "d";
-type HasRwdCallableArgsType = {
-    permission?: {
-        name: string;
-        rwd?: CRUDType;
-    };
-    rwd: CRUDType;
-};
-type ResolverContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
+import {
+    CmsResolverContext,
+    getCmsManageSettingsPermission,
+    hasEnvironmentPermission,
+    hasEnvironmentPermissionRwd,
+    userCanManageModel
+} from "./helpers";
 
 type CreateEnvironmentArgsType = {
     data: CmsEnvironmentCreateInputType;
@@ -36,40 +25,6 @@ type UpdateEnvironmentArgsType = ReadEnvironmentArgsType & {
 };
 type DeleteEnvironmentArgsType = {
     id: string;
-};
-
-const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
-    if (!permission || !permission.rwd) {
-        return false;
-    } else if (typeof permission.rwd !== "string") {
-        return true;
-    }
-    return permission.rwd.includes(rwd);
-};
-
-const userCanManage = (identity: SecurityIdentity, { createdBy }: CmsEnvironmentType): boolean => {
-    if (!createdBy) {
-        return false;
-    }
-    return createdBy.id === identity.id;
-};
-
-const hasPermissionRwd = (rwd: CRUDType) => {
-    return (resolver: GraphQLFieldResolver) => {
-        return async (parent, args, context: ResolverContext, info) => {
-            const permission = await context.security.getPermission(
-                CMS_ENVIRONMENT_PERMISSION_NAME
-            );
-            if (!permission || !hasRwd({ permission, rwd })) {
-                return new NotAuthorizedResponse();
-            }
-            return resolver(parent, args, context, info);
-        };
-    };
-};
-
-const getEnvironmentPermission = async (context: ResolverContext) => {
-    return await context.security.getPermission(CMS_ENVIRONMENT_PERMISSION_NAME);
 };
 
 export default {
@@ -137,11 +92,11 @@ export default {
     resolvers: {
         CmsQuery: {
             getEnvironment: compose(
-                hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
-                hasPermissionRwd("r"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, args: ReadEnvironmentArgsType, context: ResolverContext) => {
-                const permission = await getEnvironmentPermission(context);
+            )(async (_, args: ReadEnvironmentArgsType, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const { id } = args;
 
@@ -154,7 +109,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -162,11 +117,11 @@ export default {
                 return new Response(model);
             }),
             listEnvironments: compose(
-                hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
-                hasPermissionRwd("r"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, __, context: ResolverContext) => {
-                const permission = await getEnvironmentPermission(context);
+            )(async (_, __, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const environmentContext = context.cms.environment;
 
@@ -174,7 +129,7 @@ export default {
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
-                        environments.filter(model => userCanManage(identity, model))
+                        environments.filter(model => userCanManageModel(identity, model))
                     );
                 }
                 return new Response(environments);
@@ -182,10 +137,10 @@ export default {
         },
         CmsMutation: {
             createEnvironment: compose(
-                hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
-                hasPermissionRwd("w"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: CreateEnvironmentArgsType, context: ResolverContext) => {
+            )(async (_, args: CreateEnvironmentArgsType, context: CmsResolverContext) => {
                 const identity = context.security.getIdentity();
                 const environmentContext = context.cms.environment;
 
@@ -206,11 +161,11 @@ export default {
                 }
             }),
             updateEnvironment: compose(
-                hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
-                hasPermissionRwd("w"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: UpdateEnvironmentArgsType, context: ResolverContext) => {
-                const permission = await getEnvironmentPermission(context);
+            )(async (_, args: UpdateEnvironmentArgsType, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
 
@@ -223,7 +178,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -239,12 +194,12 @@ export default {
                 }
             }),
             deleteEnvironment: compose(
-                hasPermission(CMS_ENVIRONMENT_PERMISSION_NAME),
-                hasPermissionRwd("d"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("d"),
                 hasI18NContentPermission()
-            )(async (_, args: DeleteEnvironmentArgsType, context: ResolverContext) => {
+            )(async (_, args: DeleteEnvironmentArgsType, context: CmsResolverContext) => {
                 const { id } = args;
-                const permission = await getEnvironmentPermission(context);
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const environmentContext = context.cms.environment;
 
@@ -255,7 +210,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }

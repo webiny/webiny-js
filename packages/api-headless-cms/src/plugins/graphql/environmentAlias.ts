@@ -1,26 +1,19 @@
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
 import {
-    CmsContextType,
     CmsEnvironmentAliasCreateInputType,
-    CmsEnvironmentAliasType,
     CmsEnvironmentAliasUpdateInputType
 } from "@webiny/api-headless-cms/types";
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
+import {
+    CmsResolverContext,
+    getCmsManageSettingsPermission,
+    hasEnvironmentPermission,
+    hasEnvironmentPermissionRwd,
+    userCanManageModel
+} from "./helpers";
 
-type ResolverContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
-type CRUDType = "r" | "w" | "d";
-type HasRwdCallableArgsType = {
-    permission?: {
-        rwd?: CRUDType;
-    };
-    rwd: CRUDType;
-};
 type CreateEnvironmentAliasArgsType = {
     data: CmsEnvironmentAliasCreateInputType;
 };
@@ -34,44 +27,6 @@ type DeleteEnvironmentAliasArgsType = {
     id: string;
 };
 
-const CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME = "cms.manage.setting";
-
-const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
-    if (!permission || !permission.rwd) {
-        return false;
-    } else if (typeof permission.rwd !== "string") {
-        return true;
-    }
-    return permission.rwd.includes(rwd);
-};
-const hasPermissionRwd = (rwd: CRUDType) => {
-    return (resolver: GraphQLFieldResolver) => {
-        return async (parent, args, context, info) => {
-            const permission = await context.security.getPermission(
-                CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME
-            );
-            if (!permission || !hasRwd({ permission, rwd })) {
-                return new NotAuthorizedResponse();
-            }
-            return resolver(parent, args, context, info);
-        };
-    };
-};
-
-const userCanManage = (
-    identity: SecurityIdentity,
-    { createdBy }: CmsEnvironmentAliasType
-): boolean => {
-    if (!createdBy) {
-        return false;
-    }
-    return createdBy.id === identity.id;
-};
-
-const getEnvironmentAliasPermission = async (context: ResolverContext) => {
-    return await context.security.getPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME);
-};
-
 export default {
     typeDefs: /* GraphQL */ `
         type CmsEnvironmentAliasUrl {
@@ -83,12 +38,14 @@ export default {
         type CmsEnvironmentAlias {
             id: ID
             createdOn: DateTime
+            changedOn: DateTime
             name: String
             slug: String
             description: String
             url: CmsEnvironmentAliasUrl
             environment: CmsEnvironment
             isProduction: Boolean
+            createdBy: JSON
         }
 
         input CmsEnvironmentAliasInput {
@@ -137,11 +94,11 @@ export default {
     resolvers: {
         CmsQuery: {
             getEnvironmentAlias: compose(
-                hasPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME),
-                hasPermissionRwd("r"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, args: ReadEnvironmentAliasArgsType, context: ResolverContext) => {
-                const permission = await getEnvironmentAliasPermission(context);
+            )(async (_, args: ReadEnvironmentAliasArgsType, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const { id } = args;
 
@@ -153,7 +110,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -161,48 +118,54 @@ export default {
                 return new Response(model);
             }),
             listEnvironmentAliases: compose(
-                hasPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME),
-                hasPermissionRwd("r"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, __, context: ResolverContext) => {
-                const permission = await getEnvironmentAliasPermission(context);
+            )(async (_, __, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const environmentAliasContext = context.cms.environmentAlias;
 
                 const aliases = await environmentAliasContext.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
-                    return new Response(aliases.filter(model => userCanManage(identity, model)));
+                    return new Response(
+                        aliases.filter(model => userCanManageModel(identity, model))
+                    );
                 }
                 return new Response(aliases);
             })
         },
         CmsMutation: {
             createEnvironmentAlias: compose(
-                hasPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME),
-                hasPermissionRwd("w"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: CreateEnvironmentAliasArgsType, context: ResolverContext) => {
+            )(async (_, args: CreateEnvironmentAliasArgsType, context: CmsResolverContext) => {
                 const identity = context.security.getIdentity();
                 const environmentAliasContext = context.cms.environmentAlias;
 
                 const { data } = args;
                 const createdBy = {
                     id: identity.id,
-                    name: identity.name
+                    name: identity.displayName
                 };
                 try {
-                    return new Response(await environmentAliasContext.create(data, createdBy));
-                } catch (e) {
-                    return new ErrorResponse(e);
+                    const model = await environmentAliasContext.create(data, createdBy);
+                    return new Response(model);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                        message: ex.message
+                    });
                 }
             }),
             updateEnvironmentAlias: compose(
-                hasPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME),
-                hasPermissionRwd("w"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: UpdateEnvironmentAliasArgsType, context: ResolverContext) => {
-                const permission = await getEnvironmentAliasPermission(context);
+            )(async (_, args: UpdateEnvironmentAliasArgsType, context: CmsResolverContext) => {
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
 
@@ -215,7 +178,7 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
@@ -223,17 +186,20 @@ export default {
                 try {
                     const changedModel = await environmentAliasContext.update(id, data);
                     return new Response({ ...model, ...changedModel });
-                } catch (e) {
-                    return new ErrorResponse(e);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        code: "UPDATE_ENVIRONMENT_ALIAS_FAILED",
+                        message: ex.message
+                    });
                 }
             }),
             deleteEnvironmentAlias: compose(
-                hasPermission(CMS_ENVIRONMENT_ALIAS_PERMISSION_NAME),
-                hasPermissionRwd("d"),
+                hasEnvironmentPermission(),
+                hasEnvironmentPermissionRwd("d"),
                 hasI18NContentPermission()
-            )(async (_, args: DeleteEnvironmentAliasArgsType, context: ResolverContext) => {
+            )(async (_, args: DeleteEnvironmentAliasArgsType, context: CmsResolverContext) => {
                 const { id } = args;
-                const permission = await getEnvironmentAliasPermission(context);
+                const permission = await getCmsManageSettingsPermission(context);
 
                 const environmentAliasContext = context.cms.environmentAlias;
 
@@ -244,14 +210,20 @@ export default {
 
                 if (
                     permission.own === true &&
-                    !userCanManage(context.security.getIdentity(), model)
+                    !userCanManageModel(context.security.getIdentity(), model)
                 ) {
                     return new NotAuthorizedResponse();
                 }
 
-                await environmentAliasContext.delete(model);
-
-                return new Response(model);
+                try {
+                    await environmentAliasContext.delete(model);
+                    return new Response(true);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        code: "DELETE_ENVIRONMENT_ALIAS_FAILED",
+                        message: ex.message
+                    });
+                }
             })
         }
     }
