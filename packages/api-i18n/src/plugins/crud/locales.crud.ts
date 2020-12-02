@@ -2,8 +2,7 @@ import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import Error from "@webiny/error";
+import getPKPrefix from "./utils/getPKPrefix";
 
 export const dbArgs = {
     table: process.env.DB_TABLE_I18N,
@@ -15,20 +14,10 @@ export const dbArgs = {
 export default {
     type: "context",
     apply(context) {
-        const { db, security } = context;
+        const { db } = context;
 
-        const PK_LOCALE = () => {
-            if (!security.getTenant()) {
-                throw new Error("Tenant missing.");
-            }
-
-            if (!i18nContent?.locale.code) {
-                throw new Error("Locale missing.");
-            }
-
-            return `T#${security.getTenant().id}#L#${i18nContent?.locale?.code}#L`;
-        };
-        const PK_DEFAULT_LOCALE = () => `${PK_LOCALE}#D`;
+        const PK_LOCALE = () => `${getPKPrefix(context)}L`
+        const PK_DEFAULT_LOCALE = () => `${PK_LOCALE()}#D`;
 
 
         context.locales = {
@@ -143,4 +132,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, TenancyContext, I18NContentContext>;
+} as ContextPlugin<DbContext, TenancyContext>;
