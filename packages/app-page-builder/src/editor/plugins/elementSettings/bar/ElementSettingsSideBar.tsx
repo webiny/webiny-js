@@ -9,7 +9,6 @@ import { userSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpe
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { Accordion } from "@webiny/ui/Accordion";
 import { css } from "emotion";
 
 const classes = {
@@ -83,21 +82,19 @@ const ElementSettingsSideBarContent = ({ plugin, deactivateElement }: ElementSet
 
     return (
         <div className={classes.wrapper}>
-            <Accordion>
-                {/*
-                    TODO: Check whether the below statement is true anymore.
-                    Render an action button for each relevant action.
-                    Each `element` can have different `element-settings` plugins.
-                    If no `settings` array is defined in an `element` plugin, all settings are shown.
-                */}
-                {actions.map(({ plugin, options }, index) => {
-                    return (
-                        <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
-                            {typeof plugin.render === "function" && plugin.render({ options })}
-                        </div>
-                    );
-                })}
-            </Accordion>
+            {/*
+                TODO: Check whether the below statement is true anymore.
+                Render an action button for each relevant action.
+                Each `element` can have different `element-settings` plugins.
+                If no `settings` array is defined in an `element` plugin, all settings are shown.
+            */}
+            {actions.map(({ plugin, options }, index) => {
+                return (
+                    <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
+                        {typeof plugin.render === "function" && plugin.render({ options })}
+                    </div>
+                );
+            })}
         </div>
     );
 };
