@@ -93,6 +93,10 @@ const iconPickerWrapper = css({
     justifyContent: "flex-end",
     height: 30,
 
+    "& .mdc-menu-surface--anchor": {
+        position: "static"
+    },
+
     "& .menuHandler": {
         width: 30,
         height: "100%",

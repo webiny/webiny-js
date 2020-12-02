@@ -99,14 +99,14 @@ const ElementSettingsSideBarContent = ({
             {actions.map(({ plugin, options }, index) => {
                 if (tab === "element") {
                     return (
-                        <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
+                        <div key={plugin.name + "-" + index}>
                             {typeof plugin.renderElement === "function" &&
                                 plugin.renderElement({ options })}
                         </div>
                     );
                 }
                 return (
-                    <div key={plugin.name + "-" + index} style={{ position: "relative" }}>
+                    <div key={plugin.name + "-" + index}>
                         {typeof plugin.render === "function" && plugin.render({ options })}
                     </div>
                 );

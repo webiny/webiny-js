@@ -20,6 +20,9 @@ const ColorPickerStyle = styled("div")({
 const CompactColorPicker = styled("div")({
     display: "flex",
     justifyContent: "flex-end",
+    "& .mdc-menu-surface--anchor": {
+        position: "static"
+    },
     "& .mdc-menu-surface": {
         overflow: "visible"
     }
