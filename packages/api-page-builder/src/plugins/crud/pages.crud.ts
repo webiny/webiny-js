@@ -16,7 +16,7 @@ import { SecurityContext } from "@webiny/api-security/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export type Page = {
     id: string;
@@ -599,7 +599,7 @@ const plugin: ContextPlugin<Context> = {
                 // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
                 if (latestPageData.id === pageId) {
                     esOperations.push(
-                        { update: { _id: `L#${pageUniqueId}`, _index: "page-builder" } },
+                        { update: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
                         {
                             doc: {
                                 status: STATUS_PUBLISHED,
@@ -612,7 +612,7 @@ const plugin: ContextPlugin<Context> = {
 
                 // And of course, update the published revision entry in ES.
                 esOperations.push(
-                    { index: { _id: `P#${pageUniqueId}`, _index: "page-builder" } },
+                    { index: { _id: `P#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
                     {
                         __published: true,
                         id: pageId,
@@ -716,13 +716,15 @@ const plugin: ContextPlugin<Context> = {
                 // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
                 if (latestPageData.id === pageId) {
                     esOperations.push(
-                        { update: { _id: `L#${pageUniqueId}`, _index: "page-builder" } },
+                        { update: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
                         { doc: { status: STATUS_UNPUBLISHED } }
                     );
                 }
 
                 // And of course, delete the published revision entry in ES.
-                esOperations.push({ delete: { _id: `P#${pageUniqueId}`, _index: "page-builder" } });
+                esOperations.push({
+                    delete: { _id: `P#${pageUniqueId}`, _index: ES_DEFAULTS().index }
+                });
 
                 await elasticSearch.bulk({ body: esOperations });
 
