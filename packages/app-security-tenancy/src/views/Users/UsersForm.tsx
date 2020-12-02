@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { plugins } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";

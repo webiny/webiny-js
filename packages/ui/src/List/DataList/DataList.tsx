@@ -16,8 +16,8 @@ import {
     RefreshIcon,
     SortIcon,
     FilterIcon,
-    PreviousPageIcon,
-    NextPageIcon,
+    PreviousPageIcon, // eslint-disable-line
+    NextPageIcon,// eslint-disable-line
     OptionsIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";

@@ -16,7 +16,7 @@ type Params = {
     totalCount: number;
 };
 
-const createPaginationMeta = (params?: Params): PaginationMeta => {
+export default (params?: Params): PaginationMeta => {
     const meta: PaginationMeta = {
         page: 0,
         limit: 0,
