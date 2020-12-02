@@ -31,7 +31,7 @@ import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/as
 import { PbPageRevision } from "@webiny/app-page-builder/types";
 
 type RevisionProps = {
-    rev: PbPageRevision;
+    revision: PbPageRevision;
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -66,13 +66,13 @@ const Div = ({ children }) => {
     return <div>{children}</div>;
 };
 
-const Revision = ({ rev }: RevisionProps) => {
-    const { icon, text: tooltipText } = getIcon(rev);
+const Revision = ({ revision, page }: RevisionProps) => {
+    const { icon, text: tooltipText } = getIcon(revision);
     const { getDomain, getPagePreviewUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
 
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
-        rev
+        revision, page
     });
 
     const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
@@ -90,10 +90,10 @@ const Revision = ({ rev }: RevisionProps) => {
                         </Tooltip>
                     </ListItemGraphic>
                     <ListItemText>
-                        <ListItemTextPrimary>{rev.title}</ListItemTextPrimary>
+                        <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            Last modified <TimeAgo datetime={rev.savedOn} /> (#
-                            {rev.version})
+                            Last modified <TimeAgo datetime={revision.savedOn} /> (#
+                            {revision.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
@@ -108,7 +108,7 @@ const Revision = ({ rev }: RevisionProps) => {
                                 </ListItemGraphic>
                                 New from current
                             </MenuItem>
-                            {!rev.locked && (
+                            {!revision.locked && (
                                 <MenuItem onClick={editRevision}>
                                     <ListItemGraphic>
                                         <Icon icon={<EditIcon />} />
@@ -117,8 +117,8 @@ const Revision = ({ rev }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {!rev.published && (
-                                <MenuItem onClick={() => publishRevision(rev)}>
+                            {!revision.published && (
+                                <MenuItem onClick={() => publishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
@@ -129,7 +129,7 @@ const Revision = ({ rev }: RevisionProps) => {
                             <MenuItem
                                 onClick={() => {
                                     if (isSiteRunning) {
-                                        window.open(getPagePreviewUrl(rev), "_blank", "noopener");
+                                        window.open(getPagePreviewUrl(revision), "_blank", "noopener");
                                     } else {
                                         showConfigureDomainDialog();
                                     }
@@ -141,7 +141,7 @@ const Revision = ({ rev }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {!rev.locked && rev.id !== rev.parent && (
+                            {!revision.locked && revision.id !== revision.parent && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>

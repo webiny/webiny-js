@@ -1,16 +1,29 @@
 import * as React from "react";
 
-export type MetaProp = {
-    cursors?: {
-        next: string;
-        previous: string;
-    };
+export type PaginationProp = {
+    // Triggered when a page is about to be changed.
+    setPage?: (page: number) => void;
+
+    // Triggered when previous page is requested.
+    setPreviousPage?: () => void;
+
+    // Triggered when next page is requested.
+    setNextPage?: () => void;
+
+    // Triggered internally when in need to determine if there is a next page and apply UI changes accordingly.
     hasNextPage?: boolean;
+
+    // Triggered internally when in need to determine if there is a previous page and apply UI changes accordingly.
     hasPreviousPage?: boolean;
-    totalCount?: number;
+
+    // Triggered when number of entries per page has been changed.
+    setPerPage?: (amount: number) => void;
+
+    // By default, users can choose from 10, 25 or 50 entries per page.
+    perPageOptions?: number[];
 };
 
-export type SortersProp = Array<{ label: string; sorters: { [key: string]: number } }>;
+export type SortersProp = Array<{ label: string; sorters: { [key: string]: string | number } }>;
 
 export type Props = {
     // Pass a function to take full control of list render.
@@ -28,11 +41,11 @@ export type Props = {
     // If true, Loader component will be shown, disallowing any interaction.
     loading?: boolean;
 
-    // Provide a custom loader. Shown while the content is loading.
+    // Provide a custom loader. Shown while the content is being loaded.
     loader?: React.ReactNode;
 
     // Provide all pagination data, options and callbacks here.
-    meta?: MetaProp;
+    pagination?: PaginationProp;
 
     // Triggered once the page has been selected.
     setPage?: Function;
@@ -42,12 +55,6 @@ export type Props = {
 
     // Triggered once selected filters are submitted.
     setFilters?: Function;
-
-    // Triggered when number of entries per page has been changed.
-    setPerPage?: Function;
-
-    // By default, users can choose from 10, 25 or 50 entries per page.
-    perPageOptions: number[];
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp;

@@ -12,10 +12,17 @@ import { Checkbox } from "@webiny/ui/Checkbox";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { Grid, Cell } from "@webiny/ui/Grid";
 
-import { RefreshIcon, SortIcon, PreviousPageIcon, NextPageIcon, OptionsIcon } from "./icons";
+import {
+    RefreshIcon,
+    SortIcon,
+    FilterIcon,
+    PreviousPageIcon, // eslint-disable-line
+    NextPageIcon,// eslint-disable-line
+    OptionsIcon
+} from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";
 
-import { MetaProp, SortersProp } from "./types";
+import { PaginationProp, SortersProp } from "./types";
 
 const ListContainer = styled("div")({
     position: "relative",
@@ -140,31 +147,19 @@ type Props = {
     noData?: React.ReactNode;
 
     // Provide all pagination data, options and callbacks here.
-    meta?: MetaProp;
-
-    // Triggered when previous page is requested.
-    setPreviousPage?: Function;
-
-    // Triggered when next page is requested.
-    setNextPage?: Function;
+    pagination?: PaginationProp;
 
     // Triggered once a sorter has been selected.
     setSorters?: Function;
-
-    // Triggered once selected filters are submitted.
-    setFilters?: Function;
-
-    // Triggered when number of entries per page has been changed.
-    setPerPage?: Function;
-
-    // By default, users can choose from 10, 25 or 50 entries per page.
-    perPageOptions?: number[];
 
     // Provide all sorters options and callbacks here.
     sorters?: SortersProp;
 
     // Provide actions that will be shown in the top right corner (eg. export or import actions).
     actions?: React.ReactNode;
+
+    // Provide filters that will be shown in the top left corner (eg. filter by category or status).
+    filters?: React.ReactNode;
 
     // Provide actions that can be executed on one or more multi-selected list items (eg. export or delete).
     multiSelectActions?: React.ReactNode;
@@ -254,54 +249,69 @@ const Sorters = (props: Props) => {
     );
 };
 
+const Filters = (props: Props) => {
+    const filters = props.filters;
+    if (!filters) {
+        return null;
+    }
+
+    return (
+        <ListHeaderItem>
+            <Menu handle={<FilterIcon />}>{filters}</Menu>
+        </ListHeaderItem>
+    );
+};
+
 const Pagination = (props: Props) => {
-    const meta = props.meta;
-    if (!meta) {
+    const { pagination } = props;
+    if (!pagination) {
         return null;
     }
 
     return (
         <React.Fragment>
-            {props.setPreviousPage && props.setNextPage && (
+            {pagination.setNextPage && (
                 <React.Fragment>
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.hasPreviousPage
+                            disabled: !pagination.hasPreviousPage
                         })}
                     >
-                        <PreviousPageIcon
+                        {/*<PreviousPageIcon
                             onClick={() => {
-                                if (props.setPreviousPage && meta.hasPreviousPage) {
-                                    props.setPreviousPage(meta.cursors.previous);
+                                if (pagination.setPreviousPage && pagination.hasPreviousPage) {
+                                    pagination.setPreviousPage(pagination.cursors.previous);
                                 }
                             }}
-                        />
+                        />*/}
                     </ListHeaderItem>
 
                     <ListHeaderItem
                         className={classNames({
-                            disabled: !meta.hasNextPage
+                            disabled: !pagination.hasNextPage
                         })}
                     >
-                        <NextPageIcon
+                       {/* <NextPageIcon
                             onClick={() => {
-                                if (props.setNextPage && meta.hasNextPage) {
-                                    props.setNextPage(meta.cursors.next);
+                                if (props.setNextPage && pagination.hasNextPage) {
+                                    props.setNextPage(pagination.cursors.next);
                                 }
                             }}
-                        />
+                        />*/}
                     </ListHeaderItem>
                 </React.Fragment>
             )}
 
-            {props.setPerPage && Array.isArray(props.perPageOptions) && (
+            {Array.isArray(pagination.perPageOptions) && pagination.setPerPage && (
                 <ListHeaderItem>
                     <Menu handle={<OptionsIcon />}>
-                        {props.setPerPage &&
-                            props.perPageOptions.map(perPage => (
+                        {pagination.setPerPage &&
+                            pagination.perPageOptions.map(perPage => (
                                 <MenuItem
                                     key={perPage}
-                                    onClick={() => props.setPerPage && props.setPerPage(perPage)}
+                                    onClick={() =>
+                                        pagination.setPerPage && pagination.setPerPage(perPage)
+                                    }
                                 >
                                     {perPage}
                                 </MenuItem>
@@ -346,6 +356,7 @@ export const DataList = (props: Props) => {
                         <MultiSelectAll {...props} />
                         {props.showOptions.refresh && <RefreshButton {...props} />}
                         {props.showOptions.sorters && <Sorters {...props} />}
+                        {props.showOptions.filters && <Filters {...props} />}
                         <MultiSelectActions {...props} />
                     </Cell>
 
@@ -374,6 +385,7 @@ DataList.defaultProps = {
     setPage: null,
     setPerPage: null,
     perPageOptions: [10, 25, 50],
+    filters: null,
     sorters: null,
     setSorters: null,
     actions: null,
@@ -385,7 +397,8 @@ DataList.defaultProps = {
     showOptions: {
         refresh: true,
         pagination: true,
-        sorters: true
+        sorters: true,
+        filters: true
     }
 };
 

@@ -9,6 +9,11 @@ const plugin: GraphQLSchemaPlugin = {
                 domain: String
                 name: String!
             }
+               type PbBooleanResponse {
+                    data: Boolean
+                    error: PbError
+                }
+                
 
             extend type PbQuery {
                 # Is Page Builder installed?

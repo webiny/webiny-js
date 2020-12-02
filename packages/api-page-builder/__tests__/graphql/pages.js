@@ -1,7 +1,6 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
-        publishedOn
         category {
             slug
         }
@@ -12,11 +11,15 @@ export const DATA_FIELD = /* GraphQL */ `
         # settings
         content
         snippet
-        published
-        locked
-        parent
-        createdOn
         savedOn
+        status
+        locked
+        publishedOn
+        error
+        notFound
+        locked
+        createdFrom
+        createdOn
         createdBy {
             id
             displayName
@@ -31,12 +34,14 @@ const LIST_DATA_FIELD = /* GraphQL */ `
             slug
         }
         status
-        published
         title
         url
         status
-        createdOn
+        locked
+        publishedOn
         savedOn
+        createdFrom
+        createdOn
         createdBy {
             id
             displayName
@@ -53,9 +58,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_PAGE = /* GraphQL */ `
-    mutation CreatePage($data: PbCreatePageInput!) {
+    mutation CreatePage($from: ID, $category: String) {
         pageBuilder {
-            createPage(data: $data) {
+            createPage(from: $from, category: $category) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -74,10 +79,65 @@ export const UPDATE_PAGE = /* GraphQL */ `
     }
 `;
 
-export const LIST_PAGES = /* GraphQL */ `
-    query ListPages {
+export const PUBLISH_PAGE = /* GraphQL */ `
+    mutation PublishPage($id: ID!) {
         pageBuilder {
-            listPages {
+            publishPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const UNPUBLISH_PAGE = /* GraphQL */ `
+    mutation UnpublishPage($id: ID!) {
+        pageBuilder {
+            unpublishPage(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const REQUEST_REVIEW = /* GraphQL */ `
+    mutation RequestReview($id: ID!) {
+        pageBuilder {
+            requestReview(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const REQUEST_CHANGES = /* GraphQL */ `
+    mutation RequestChanges($id: ID!) {
+        pageBuilder {
+            requestChanges(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES = /* GraphQL */ `
+    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+        pageBuilder {
+            listPages(where: $where, limit: $limit, page: $page, sort: $sort) {
+                data ${LIST_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
+    query ListPublishedPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+        pageBuilder {
+            listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

@@ -45,7 +45,13 @@ export const isInstalled: GraphQLFieldResolver = async (
     args,
     context: FileManagerResolverContext
 ) => {
-    const { fileManagerSettings } = context.fileManager;
-    const settings = await fileManagerSettings.getSettings();
+    const { i18nContent, security } = context;
+    if (!security.getTenant() || !i18nContent.getLocale()) {
+        return false;
+    }
+
+    const { fileManager } = context;
+
+    const settings = await fileManager.fileManagerSettings.getSettings();
     return new Response(Boolean(settings?.installed));
 };

@@ -7,7 +7,7 @@ import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 
 import { Query, Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import graphql from "./graphql";
+import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
@@ -24,12 +24,12 @@ import { DOMAIN_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilde
 const GeneralSettings = () => {
     const { showSnackbar } = useSnackbar();
     return (
-        <Query query={graphql.query}>
+        <Query query={GET_SETTINGS}>
             {({ data, loading: queryInProgress }) => {
                 const settings = get(data, "pageBuilder.getSettings.data") || {};
                 return (
                     <Mutation
-                        mutation={graphql.mutation}
+                        mutation={UPDATE_SETTINGS}
                         update={(cache, { data }) => {
                             const dataFromCache = cache.readQuery({ query: DOMAIN_QUERY });
                             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
@@ -49,25 +49,23 @@ const GeneralSettings = () => {
                         {(update, { loading: mutationInProgress }) => (
                             <Form
                                 data={settings}
-                                onSubmit={async newData => {
-                                    newData.domain = newData.domain.replace(/\/+$/g, "");
+                                onSubmit={async data => {
+                                    data.domain = (data.domain || "").replace(/\/+$/g, "");
 
                                     if (
-                                        settings.domain !== newData.domain &&
-                                        !newData.domain.includes("localhost")
+                                        settings.domain !== data.domain &&
+                                        !data.domain.includes("localhost")
                                     ) {
                                         sendEvent("custom-domain", {
-                                            domain: newData.domain
+                                            domain: data.domain
                                         });
                                         setProperties({
-                                            domain: newData.domain
+                                            domain: data.domain
                                         });
                                     }
-                                    await update({
-                                        variables: {
-                                            data: newData
-                                        }
-                                    });
+
+                                    delete data.id;
+                                    await update({ variables: { data } });
                                     showSnackbar("Settings updated successfully.");
                                 }}
                             >
@@ -104,6 +102,7 @@ const GeneralSettings = () => {
                                                         <Cell span={6}>
                                                             <Bind name={"favicon"}>
                                                                 <SingleImageUpload
+                                                                    onChangePick={["id", "src"]}
                                                                     label="Favicon"
                                                                     accept={[
                                                                         "image/png",
@@ -123,7 +122,10 @@ const GeneralSettings = () => {
                                                         </Cell>
                                                         <Cell span={6}>
                                                             <Bind name={"logo"}>
-                                                                <SingleImageUpload label="Logo" />
+                                                                <SingleImageUpload
+                                                                    label="Logo"
+                                                                    onChangePick={["id", "src"]}
+                                                                />
                                                             </Bind>
                                                         </Cell>
                                                     </Grid>

@@ -1,11 +1,8 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery, useMutation } from "react-apollo";
-import { DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { useSecurity } from "@webiny/app-security";
+import { useQuery } from "react-apollo";
+import { LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import TimeAgo from "timeago-react";
 import {
     DataList,
@@ -18,69 +15,127 @@ import {
 } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
+import { MenuItem } from "@webiny/ui/Menu";
+import { Form } from "@webiny/form";
+import { Select } from "@webiny/ui/Select";
+import { LIST_CATEGORIES } from "./../Categories/graphql";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { AutoComplete } from "@webiny/ui/AutoComplete";
+import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
 
-const PageBuilderPagesDataList = () => {
-    const { history } = useRouter();
-    const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_PAGES);
-    const [deleteIt, deleteMutation] = useMutation(DELETE_PAGE, {
-        refetchQueries: [{ query: LIST_PAGES }]
-    });
+const sorters = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: "asc" }
+    },
+    {
+        label: t`Title A-Z`,
+        sorters: { title: "asc" }
+    },
+    {
+        label: t`Title Z-A`,
+        sorters: { title: "desc" }
+    }
+];
 
-    const { showConfirmation } = useConfirmationDialog();
+const PageBuilderPagesDataList = () => {
+    const { history, location } = useRouter();
+
+    const [where, setWhere] = useState({});
+    const [sort, setSort] = useState();
+    const [limit, setLimit] = useState(10);
+    const [page, setPage] = useState(1);
+
+    const listQuery = useQuery(LIST_PAGES, { variables: { where, sort, limit, page } });
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
-    const slug = new URLSearchParams(location.search).get("slug");
+    const selectedPageId = new URLSearchParams(location.search).get("id");
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const deleteItem = useCallback(
-        item => {
-            showConfirmation(async () => {
-                const response = await deleteIt({
-                    variables: item
-                });
+    const categoriesQuery = useQuery(LIST_CATEGORIES);
+    const categoriesData = categoriesQuery?.data?.pageBuilder?.listCategories?.data || [];
 
-                const error = response?.data?.pageBuilder?.deletePageBuilderPage?.error;
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                showSnackbar(t`Page "{slug}" deleted.`({ slug: item.slug }));
-
-                if (slug === item.slug) {
-                    history.push(`/page-builder/pages`);
-                }
-            });
-        },
-        [slug]
-    );
-
-    const { identity } = useSecurity();
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const pbPagePermission = useMemo(() => {
-        return identity.getPermission("pb.page");
-    }, []);
-
-    const loading = [listQuery, deleteMutation].find(item => item.loading);
+    const loading = [listQuery].find(item => item.loading);
     const query = new URLSearchParams(location.search);
 
     return (
         <DataList
             loading={Boolean(loading)}
             data={data}
+            pagination={{
+                perPageOptions: [10, 25, 50],
+                setPerPage: setLimit,
+                setNextPage: () => setPage(page + 1),
+                setPreviousPage: () => setPage(page - 1)
+            }}
             title={t`Pages`}
             refresh={listQuery.refetch}
+            sorters={sorters}
+            setSorters={setSort}
+            filters={
+                <MenuItem>
+                    <Form
+                        data={{ status: "all", category: categoriesData?.[0]?.slug }}
+                        onChange={({ status, category }) => {
+                            const where = { category, status: undefined };
+                            if (status !== "all") {
+                                where.status = status;
+                            }
+
+                            setWhere(where);
+                        }}
+                    >
+                        {({ Bind }) => (
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind name={"category"}>
+                                        <AutoComplete
+                                            description={"Filter by a specific category."}
+                                            label={t`Filter by category`}
+                                            options={categoriesData.map(item => ({
+                                                id: item.slug,
+                                                name: item.name
+                                            }))}
+                                        />
+                                    </Bind>
+                                </Cell>
+                                <Cell span={12}>
+                                    <Bind name={"status"}>
+                                        <Select
+                                            label={t`Filter by status`}
+                                            description={"Filter by a specific page status."}
+                                        >
+                                            <option value={"all"}>{t`All`}</option>
+                                            <option value={"draft"}>{t`Draft`}</option>
+                                            <option value={"published"}>{t`Published`}</option>
+                                            <option value={"unpublished"}>{t`Unpublished`}</option>
+                                            <option
+                                                value={"reviewRequested"}
+                                            >{t`Review requested`}</option>
+                                            <option
+                                                value={"changesRequested"}
+                                            >{t`Changes requested`}</option>
+                                        </Select>
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                        )}
+                    </Form>
+                </MenuItem>
+            }
         >
             {({ data }) => (
                 <ScrollList>
                     {data.map(page => (
-                        <ListItem key={page.id}>
+                        <ListItem key={page.id} selected={page.id === selectedPageId}>
                             <ListItemText
                                 onClick={() => {
                                     query.set("id", page.id);
@@ -88,7 +143,7 @@ const PageBuilderPagesDataList = () => {
                                 }}
                             >
                                 {page.title}
-                                <ListTextOverline>{page?.category?.name}</ListTextOverline>
+                                <ListTextOverline>{page.category.name}</ListTextOverline>
                                 {page.createdBy && (
                                     <ListItemTextSecondary>
                                         Created by: {page.createdBy.firstName || "N/A"}. Last
@@ -98,7 +153,7 @@ const PageBuilderPagesDataList = () => {
                             </ListItemText>
                             <ListItemMeta className={rightAlign}>
                                 <Typography use={"subtitle2"}>
-                                    {page.locked ? "Published" : "Draft"} (v{page.version})
+                                    {statusesLabels[page.status]} (v{page.version})
                                 </Typography>
                             </ListItemMeta>
                         </ListItem>

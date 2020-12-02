@@ -8,7 +8,7 @@ import defaults from "../crud/defaults";
 const resolver: GraphQLFieldResolver = async (root, args, context: FileManagerResolverContext) => {
     const { i18nContent, security } = context;
     const identity = security.getIdentity();
-    const esDefaults = defaults.es(security.getTenant());
+    const esDefaults = defaults.es(context);
 
     try {
         // If permission has "rwd" property set, but "r" is not part of it, bail.

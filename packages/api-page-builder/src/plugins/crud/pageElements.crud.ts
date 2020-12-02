@@ -6,6 +6,9 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./defaults";
+import getPKPrefix from "./utils/getPKPrefix";
+import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import {SecurityContext} from "@webiny/api-security/types";
 
 export type PageElement = {
     name: string;
@@ -36,19 +39,20 @@ const UpdateDataModel = withFields({
     preview: object()
 })();
 
-const TYPE = "pb#page-element";
+const TYPE = "pb.pageElement";
 
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
-        const PK_PAGE_ELEMENT = `P#${i18nContent?.locale?.code}`;
+        const { db } = context;
+
+        const PK_PAGE_ELEMENT = () => `${getPKPrefix(context)}PE`;
 
         context.pageElements = {
             async get(id: string) {
                 const [[menu]] = await db.read<PageElement>({
                     ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT, SK: id },
+                    query: { PK: PK_PAGE_ELEMENT(), SK: id },
                     limit: 1
                 });
 
@@ -58,7 +62,7 @@ export default {
             async list() {
                 const [pageElements] = await db.read<PageElement>({
                     ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT, SK: { $gt: " " } }
+                    query: { PK: PK_PAGE_ELEMENT(), SK: { $gt: " " } }
                 });
 
                 return pageElements;
@@ -72,7 +76,7 @@ export default {
                 const id = mdbid();
 
                 data = Object.assign(await createData.toJSON(), {
-                    PK: PK_PAGE_ELEMENT,
+                    PK: PK_PAGE_ELEMENT(),
                     SK: id,
                     TYPE,
                     id,
@@ -96,8 +100,8 @@ export default {
                 data = await updateData.toJSON({ onlyDirty: true });
 
                 await db.update({
-                    ...defaults.es,
-                    query: { PK: PK_PAGE_ELEMENT, SK: id },
+                    ...defaults.db,
+                    query: { PK: PK_PAGE_ELEMENT(), SK: id },
                     data
                 });
 
@@ -107,9 +111,9 @@ export default {
             async delete(id) {
                 await db.delete({
                     ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT, SK: id }
+                    query: { PK: PK_PAGE_ELEMENT(), SK: id }
                 });
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext, SecurityContext, TenancyContext>;

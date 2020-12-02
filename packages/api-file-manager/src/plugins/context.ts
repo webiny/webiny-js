@@ -2,6 +2,7 @@ import { SecurityContext } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { Context } from "@webiny/handler/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
@@ -11,12 +12,14 @@ import { FilesCRUD, FileManagerSettingsCRUD } from "../types";
 import { FileStorage } from "./FileStorage";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
-export type FileManagerContextPlugin = HttpContext &
-    SecurityContext &
-    TenancyContext &
-    I18NContentContext &
-    DbContext &
-    ElasticSearchClientContext;
+export type FileManagerContextPlugin = Context<
+    HttpContext,
+    SecurityContext,
+    TenancyContext,
+    I18NContentContext,
+    DbContext,
+    ElasticSearchClientContext
+>;
 
 export type FileManagerContext = {
     fileManager: {
@@ -31,6 +34,11 @@ export default {
         if (!context.fileManager) {
             // @ts-ignore
             context.fileManager = {};
+        }
+
+        const { i18nContent, security } = context;
+        if (!security.getTenant() || !i18nContent.getLocale()) {
+            return;
         }
 
         context.fileManager.files = filesCrud(context);

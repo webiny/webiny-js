@@ -73,30 +73,35 @@ class Batch {
             const item = operations[i];
             this.operations.push(item);
         }
+        return this;
     }
 
     create(...args: Args[]) {
         for (let i = 0; i < args.length; i++) {
             this.push(["create", args[i]]);
         }
+        return this;
     }
 
     read(...args: Args[]) {
         for (let i = 0; i < args.length; i++) {
             this.push(["read", args[i]]);
         }
+        return this;
     }
 
     update(...args: Args[]) {
         for (let i = 0; i < args.length; i++) {
             this.push(["update", args[i]]);
         }
+        return this;
     }
 
     delete(...args: Args[]) {
         for (let i = 0; i < args.length; i++) {
             this.push(["delete", args[i]]);
         }
+        return this;
     }
 
     async execute() {
