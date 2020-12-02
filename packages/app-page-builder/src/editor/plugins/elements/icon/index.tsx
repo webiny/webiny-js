@@ -1,14 +1,16 @@
 import React from "react";
-import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
-import IconSettings from "./IconSettings";
 import styled from "@emotion/styled";
-import Icon from "./Icon";
-import { getSvg } from "./utils";
-import Action from "./../../elementSettings/components/Action";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin
 } from "@webiny/app-page-builder/types";
+// Icons
+import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
+// Components
+import IconSettings from "./IconSettings";
+import Icon from "./Icon";
+import { getSvg } from "../button/buttonSettingsUtils";
+import Action from "./../../elementSettings/components/Action";
 
 export default () => {
     const PreviewBox = styled("div")({
@@ -93,6 +95,9 @@ export default () => {
                 return <Action plugin={this.name} tooltip={"Icon"} icon={<IconSvg />} />;
             },
             renderMenu() {
+                return <span>Moved to sidebar.</span>;
+            },
+            render() {
                 return <IconSettings />;
             }
         } as PbEditorPageElementSettingsPlugin
