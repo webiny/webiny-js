@@ -18,7 +18,9 @@
 		"../handler-graphql",
 		"../handler-aws",
 		"../db-dynamodb",
-		"../error"
+		"../error",
+		"../api-file-manager",
+		"../api-security-tenancy"
 	],
 	"compilerOptions": {
 		"rootDir": "./src",
@@ -67,6 +69,12 @@
 		},
 		{
 			"path": "../error/tsconfig.build.json"
+		},
+		{
+			"path": "../api-file-manager/tsconfig.build.json"
+		},
+		{
+			"path": "../api-security-tenancy/tsconfig.build.json"
 		}
 	]
 }

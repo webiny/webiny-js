@@ -21,9 +21,6 @@
       "path": "../handler"
     },
     {
-      "path": "../handler-aws"
-    },
-    {
       "path": "../handler-client"
     },
     {
