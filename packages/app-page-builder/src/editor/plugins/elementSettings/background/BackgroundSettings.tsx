@@ -111,7 +111,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                                 />
                             </Cell>
                         </Grid>
-                        <Wrapper label={"Scaling"}>
+                        <Wrapper label={"Scaling"} containerClassName={classes.grid}>
                             <SelectField
                                 disabled={!backgroundImageSrc}
                                 value={backgroundImageScaling}
