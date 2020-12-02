@@ -16,6 +16,9 @@ import {
 import defaults from "./defaults";
 import { Form, FormBuilderSettingsCRUD, FormsCRUD, FormSubmissionsCRUD } from "../../types";
 import getPKPrefix from "./utils/getPKPrefix";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 // "Form Fields" data model.
 const FormFieldsModel = withFields({
@@ -707,4 +710,4 @@ export default {
             }
         } as FormsCRUD;
     }
-} as ContextPlugin<DbContext>;
+} as ContextPlugin<DbContext, SecurityContext, TenancyContext, I18NContentContext>;

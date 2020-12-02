@@ -1,8 +1,8 @@
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { SecurityContext } from "@webiny/api-security/types";
-import { HandlerContext } from "@webiny/handler/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { Context } from "@webiny/handler/types";
 
-export default (context: HandlerContext<SecurityContext, I18NContentContext>) => {
+export default (context: Context<TenancyContext, I18NContentContext>) => {
     const { security, i18nContent } = context;
     if (!security.getTenant()) {
         throw new Error("Tenant missing.");
@@ -12,5 +12,5 @@ export default (context: HandlerContext<SecurityContext, I18NContentContext>) =>
         throw new Error("Locale missing.");
     }
 
-    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().id}#FB#`;
+    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().code}#FB#`;
 };

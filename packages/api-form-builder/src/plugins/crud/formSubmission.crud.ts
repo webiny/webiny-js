@@ -8,6 +8,10 @@ import merge from "merge";
 import { getBaseFormId } from "../graphql/formResolvers/utils/formResolversUtils";
 import defaults from "./defaults";
 import { FormSubmissionsCRUD, FormSubmission } from "../../types";
+import getPKPrefix from "./utils/getPKPrefix";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 const CreateDataModel = withFields({
     data: object({ validation: validation.create("required") }),
@@ -121,9 +125,7 @@ export default {
                 // Finally create "form" entry in "DB".
                 await db.create({
                     data: {
-                        PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(
-                            formSubmission.form.revision
-                        )}`,
+                        PK: `${PK_FORM_SUBMISSION()}${getBaseFormId(formSubmission.form.revision)}`,
                         SK: `S#${formSubmission.id}`,
                         TYPE: "fb.formSubmission",
                         ...formSubmission
@@ -169,4 +171,4 @@ export default {
             }
         } as FormSubmissionsCRUD;
     }
-} as ContextPlugin<DbContext>;
+} as ContextPlugin<DbContext, SecurityContext, TenancyContext, I18NContentContext>;

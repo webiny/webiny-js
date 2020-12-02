@@ -6,6 +6,9 @@ import merge from "merge";
 import defaults from "./defaults";
 import { FormBuilderSettingsCRUD, FormBuilderSettings } from "../../types";
 import getPKPrefix from "./utils/getPKPrefix";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
 export const FB_SETTINGS_KEY = "default";
 
@@ -96,4 +99,4 @@ export default {
             }
         } as FormBuilderSettingsCRUD;
     }
-} as ContextPlugin<DbContext>;
+} as ContextPlugin<DbContext, SecurityContext, TenancyContext, I18NContentContext>;
