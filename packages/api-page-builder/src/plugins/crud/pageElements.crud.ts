@@ -7,8 +7,8 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
-import {SecurityContext} from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 export type PageElement = {
     name: string;

@@ -57,7 +57,7 @@ describe("publishing workflow", () => {
             .createPage({ category: initialCategory.slug })
             .then(([res]) => res.data.pageBuilder.createPage.data);
 
-        expect(pageFromA.status).toBe('draft');
+        expect(pageFromA.status).toBe("draft");
 
         await handlerA.requestReview({ id: pageFromA.id }).then(([res]) =>
             expect(res).toMatchObject({
@@ -88,8 +88,6 @@ describe("publishing workflow", () => {
                 }
             })
         );
-
-
     });
 
     test("page should change status accordingly", async () => {
@@ -140,7 +138,7 @@ describe("publishing workflow", () => {
             })
         );
 
-        const [pasd] = await getPage({id: initialPageIds[0]});
+        const [pasd] = await getPage({ id: initialPageIds[0] });
 
         await until(
             listPages,
@@ -541,6 +539,4 @@ describe("publishing workflow", () => {
             );
         }
     });
-
-
 });

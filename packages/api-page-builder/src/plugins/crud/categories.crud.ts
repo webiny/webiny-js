@@ -6,8 +6,8 @@ import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
-import {SecurityContext} from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 /*withHooks({
     //     async beforeDelete() {
@@ -37,7 +37,7 @@ const UpdateDataModel = withFields({
     layout: string({ validation: validation.create("minLength:1,maxLength:100") })
 })();
 
-const TYPE = 'pb.category';
+const TYPE = "pb.category";
 
 export default {
     type: "context",

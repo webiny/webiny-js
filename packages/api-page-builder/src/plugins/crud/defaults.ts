@@ -1,6 +1,6 @@
 import { SecurityContext } from "@webiny/api-security/types";
 import { Context } from "@webiny/handler/types";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export default {
     db: {

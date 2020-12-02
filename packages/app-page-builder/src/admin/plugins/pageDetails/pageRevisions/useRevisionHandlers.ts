@@ -2,10 +2,7 @@
 import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
-import {
-    CREATE_PAGE,
-    DELETE_REVISION
-} from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE, DELETE_REVISION } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 

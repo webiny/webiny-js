@@ -13,7 +13,7 @@ import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import filesPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
@@ -39,7 +39,7 @@ export const handler = createHandler(
     // Security Tenancy API (users, groups, tenant links).
     securityTenancy(),
     // Adds a context plugin to process `security-authentication` plugins.
-    // NOTE: this has to be registered *after* the "securityTenancy" plugins  
+    // NOTE: this has to be registered *after* the "securityTenancy" plugins
     // as some of the authentication plugins rely on tenancy context.
     securityAuthenticator(),
     // Authentication plugin for Personal Access Tokens
@@ -63,7 +63,7 @@ export const handler = createHandler(
     }),
     i18nPlugins(),
     i18nContentPlugins(),
-    filesPlugins(),
+    fileManagerPlugins(),
     // Add File storage S3 plugin for API file manager.
     fileManagerS3(),
     pageBuilderPlugins(),

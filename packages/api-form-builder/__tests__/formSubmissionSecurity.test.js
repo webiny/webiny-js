@@ -322,7 +322,8 @@ describe("Forms Security Test", () => {
             id: formId,
             ...submissionMock
         });
-        const submissionId = createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
+        const submissionId =
+            createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
 
         let insufficientPermissions = [
             [[], null],

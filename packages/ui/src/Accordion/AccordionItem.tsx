@@ -108,7 +108,7 @@ export type AccordionItemProps = {
 
 const AccordionItem = (props: AccordionItemProps) => {
     const [open, setState] = useState(props.open ? props.open : false);
-    
+
     const toggleState = useCallback(() => {
         setState(!open);
     }, [open]);

@@ -53,12 +53,12 @@ const plugin: GraphQLSchemaPlugin = {
                 createPAT(
                     data: SecurityPersonalAccessTokenInput!
                 ): SecurityPersonalAccessTokenCreateResponse
-                
+
                 updatePAT(
                     id: ID!
                     data: SecurityPersonalAccessTokenInput!
                 ): SecurityPersonalAccessTokenResponse
-                
+
                 deletePAT(id: ID!): SecurityBooleanResponse
             }
         `,

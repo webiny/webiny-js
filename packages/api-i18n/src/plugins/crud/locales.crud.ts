@@ -16,9 +16,8 @@ export default {
     apply(context) {
         const { db } = context;
 
-        const PK_LOCALE = () => `${getPKPrefix(context)}L`
+        const PK_LOCALE = () => `${getPKPrefix(context)}L`;
         const PK_DEFAULT_LOCALE = () => `${PK_LOCALE()}#D`;
-
 
         context.locales = {
             async getByCode(code: string) {

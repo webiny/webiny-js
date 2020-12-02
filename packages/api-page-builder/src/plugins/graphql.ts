@@ -17,8 +17,8 @@ export default [
                 input PbFileInput {
                     id: ID!
                     src: String!
-                }  
-                
+                }
+
                 type PbFile {
                     id: ID!
                     src: String!
