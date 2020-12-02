@@ -3,6 +3,8 @@ import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import getPKPrefix from "./utils/getPKPrefix";
+import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import {SecurityContext} from "@webiny/api-security/types";
 
 export type Menu = {
     title: string;
@@ -82,4 +84,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext, SecurityContext, TenancyContext>;

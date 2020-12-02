@@ -5,6 +5,8 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
+import { SecurityContext } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export type Settings = {
     nme: string;
@@ -84,7 +86,7 @@ export default {
                 const data = await settings.toJSON();
 
                 await db.update({
-                    ...defaults.es,
+                    ...defaults.db,
                     query: { PK: PK(), SK: SK() },
                     data
                 });
@@ -93,4 +95,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext, TenancyContext, SecurityContext>;

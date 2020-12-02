@@ -7,6 +7,8 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./defaults";
 import getPKPrefix from "./utils/getPKPrefix";
+import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import {SecurityContext} from "@webiny/api-security/types";
 
 export type PageElement = {
     name: string;
@@ -98,7 +100,7 @@ export default {
                 data = await updateData.toJSON({ onlyDirty: true });
 
                 await db.update({
-                    ...defaults.es,
+                    ...defaults.db,
                     query: { PK: PK_PAGE_ELEMENT(), SK: id },
                     data
                 });
@@ -114,4 +116,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext>;
+} as ContextPlugin<DbContext, I18NContentContext, SecurityContext, TenancyContext>;

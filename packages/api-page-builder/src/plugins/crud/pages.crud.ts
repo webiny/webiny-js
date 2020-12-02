@@ -14,7 +14,9 @@ import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import { SecurityContext } from "@webiny/api-security/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { Context as HandlerContext } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
+import {TenancyContext} from "@webiny/api-security-tenancy/types";
 
 export type Page = {
     id: string;
@@ -103,7 +105,8 @@ type Context = HandlerContext<
     DbContext,
     SecurityContext,
     I18NContentContext,
-    ElasticSearchClientContext
+    ElasticSearchClientContext,
+    TenancyContext
 >;
 
 const plugin: ContextPlugin<Context> = {
@@ -114,6 +117,8 @@ const plugin: ContextPlugin<Context> = {
         const PK_PAGE = () => `${getPKPrefix(context)}P`;
         const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
+
+        const ES_DEFAULTS = () => defaults.es(context);
 
         context.pages = {
             async get(id: string) {
@@ -143,7 +148,7 @@ const plugin: ContextPlugin<Context> = {
                 }
 
                 const response = await elasticSearch.search({
-                    ...defaults.es,
+                    ...ES_DEFAULTS(),
                     body: {
                         query: {
                             bool: {
@@ -168,7 +173,7 @@ const plugin: ContextPlugin<Context> = {
                 const { limit = 10 } = args;
 
                 const response = await elasticSearch.search({
-                    ...defaults.es,
+                    ...ES_DEFAULTS(),
                     body: {
                         query: {
                             bool: {
@@ -252,7 +257,7 @@ const plugin: ContextPlugin<Context> = {
 
                 // Index file in "Elastic Search"
                 await elasticSearch.index({
-                    ...defaults.es,
+                    ...ES_DEFAULTS(),
                     id: "L#" + uniqueId,
                     body: {
                         __latest: true,
@@ -354,7 +359,7 @@ const plugin: ContextPlugin<Context> = {
 
                 // Replace existing `"L#" + fromParent` entry with the new one.
                 await elasticSearch.index({
-                    ...defaults.es,
+                    ...ES_DEFAULTS(),
                     id: "L#" + fromUniqueId,
                     body: {
                         __latest: true,
@@ -437,7 +442,7 @@ const plugin: ContextPlugin<Context> = {
                 if (latestPageData.id === id) {
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
-                        ...defaults.es,
+                        ...ES_DEFAULTS(),
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
@@ -462,7 +467,7 @@ const plugin: ContextPlugin<Context> = {
 
                 // Delete pages from ES.
                 await elasticSearch.delete({
-                    ...defaults.es,
+                    ...ES_DEFAULTS(),
                     id: `L#${uniqueId}`
                 });
 
@@ -790,7 +795,7 @@ const plugin: ContextPlugin<Context> = {
                     const [uniqueId] = pageId.split("#");
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
-                        ...defaults.es,
+                        ...ES_DEFAULTS(),
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {
@@ -877,7 +882,7 @@ const plugin: ContextPlugin<Context> = {
                     const [uniqueId] = pageId.split("#");
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
-                        ...defaults.es,
+                        ...ES_DEFAULTS(),
                         id: `L#${uniqueId}`,
                         body: {
                             doc: {

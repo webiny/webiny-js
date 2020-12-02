@@ -1,14 +1,14 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import createRevisionFrom from "./pageResolvers/createRevisionFrom";
 import oembed from "./pageResolvers/oembed";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
+import { I18NContext, I18NContextObject } from "@webiny/api-i18n/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PagesListArgs } from "@webiny/api-page-builder/plugins/crud/pages.crud";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -18,7 +18,7 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<I18NContext, SecurityContext>;
+type Context = HandlerContext<I18NContext, SecurityContext, TenancyContext, I18NContextObject>;
 
 const plugin: GraphQLSchemaPlugin<Context> = {
     type: "graphql-schema",
@@ -223,9 +223,6 @@ const plugin: GraphQLSchemaPlugin<Context> = {
             extend type PbMutation {
                 createPage(from: ID, category: String): PbPageResponse
 
-                # Create a new revision from an existing revision
-                createRevisionFrom(revision: ID!): PbPageResponse
-
                 # Update page by given ID.
                 updatePage(id: ID!, data: PbUpdatePageInput!): PbPageResponse
 
@@ -384,8 +381,6 @@ const plugin: GraphQLSchemaPlugin<Context> = {
 
                     return new Response(page);
                 }),
-
-                createRevisionFrom: hasPermission("pb:page:crud")(createRevisionFrom),
 
                 updatePage: compose(
                     hasPermission("pb.page"),

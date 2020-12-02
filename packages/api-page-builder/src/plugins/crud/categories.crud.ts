@@ -6,6 +6,8 @@ import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
+import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import {SecurityContext} from "@webiny/api-security/types";
 
 /*withHooks({
     //     async beforeDelete() {
@@ -111,4 +113,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<I18NContentContext, DbContext>;
+} as ContextPlugin<I18NContentContext, DbContext, SecurityContext, TenancyContext>;
