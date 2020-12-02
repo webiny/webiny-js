@@ -76,8 +76,8 @@ export default {
     typeDefs: /* GraphQL */ `
         type CmsEnvironment {
             id: ID
-            changedOn: DateTime
             createdOn: DateTime
+            changedOn: DateTime
             name: String
             description: String
             createdFrom: CmsEnvironment
@@ -192,16 +192,16 @@ export default {
                 const { data } = args;
                 const createdBy = {
                     id: identity.id,
-                    name: identity.name
+                    name: identity.displayName
                 };
 
                 try {
                     const model = await environmentContext.create(data, createdBy);
                     return new Response(model);
-                } catch (e) {
+                } catch (ex) {
                     return new ErrorResponse({
                         code: "CREATE_ENVIRONMENT_FAILED",
-                        message: e.message
+                        message: ex.message
                     });
                 }
             }),
@@ -229,10 +229,13 @@ export default {
                 }
 
                 try {
-                    const changedModel = await environmentContext.update(id, data);
+                    const changedModel = await environmentContext.update(id, data, model);
                     return new Response({ ...model, ...changedModel });
-                } catch (e) {
-                    return new ErrorResponse(e);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        code: "UPDATE_ENVIRONMENT_FAILED",
+                        message: ex.message
+                    });
                 }
             }),
             deleteEnvironment: compose(
@@ -257,9 +260,15 @@ export default {
                     return new NotAuthorizedResponse();
                 }
 
-                await environmentContext.delete(id);
-
-                return new Response(model);
+                try {
+                    await environmentContext.delete(id);
+                    return new Response(true);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        code: "DELETE_ENVIRONMENT_FAILED",
+                        message: ex.message
+                    });
+                }
             })
         }
     }

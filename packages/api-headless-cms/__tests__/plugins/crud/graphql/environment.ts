@@ -56,8 +56,8 @@ export const UPDATE_ENVIRONMENT_MUTATION = /* GraphQL */ `
 export const DELETE_ENVIRONMENT_MUTATION = /* GraphQL */ `
     mutation DeleteEnvironmentMutation($id: ID!) {
         cms {
-            updateEnvironment(id: $id) {
-                data ${DATA_FIELD}
+            deleteEnvironment(id: $id) {
+                data
                 error ${ERROR_FIELD}
             }
         }

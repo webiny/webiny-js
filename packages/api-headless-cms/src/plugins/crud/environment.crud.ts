@@ -56,7 +56,6 @@ export default {
                     ...defaults.db,
                     query: { PK: createEnvironmentPk(context), SK: { $gt: " " } }
                 });
-
                 return response;
             },
             async create(data, createdBy, initial): Promise<CmsEnvironmentType> {
@@ -123,46 +122,54 @@ export default {
                 //
                 return model;
             },
-            async update(id, data): Promise<CmsEnvironmentType> {
+            async update(id, data, model: CmsEnvironmentType): Promise<CmsEnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);
                 await updateData.validate();
 
-                const modelData = await updateData.toJSON({ onlyDirty: true });
+                const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
 
-                const updatedModel = {
-                    ...defaults.db,
-                    query: { PK: createEnvironmentPk(context), SK: id },
-                    data: modelData
-                };
-
-                // after change hook
-                const aliases = (await context.cms.environmentAlias.list())
-                    .filter(alias => {
-                        return alias.environment.id === id;
-                    })
-                    // update all aliases last updated time
-                    .map(alias => {
-                        return {
-                            ...defaults.db,
-                            query: { PK: createEnvironmentAliasPk(context), SK: id },
-                            data: {
-                                ...alias,
-                                changedOn: new Date()
-                            }
-                        };
-                    });
-                const dbBatch = db.batch();
-
-                dbBatch.update(updatedModel);
-                if (aliases.length > 0) {
-                    dbBatch.update(...aliases);
-                }
-                dbBatch.read({
-                    ...defaults.db
+                const updatedModel = Object.assign(updatedDataJson, {
+                    changedOn: new Date().toISOString()
                 });
-                await dbBatch.execute();
 
-                return modelData;
+                // run all updates in a batch
+                const dbBatch = db.batch();
+                const modelKeys = {
+                    PK: createEnvironmentPk(context),
+                    SK: id
+                };
+                dbBatch.update({
+                    ...defaults.db,
+                    query: modelKeys,
+                    data: {
+                        ...modelKeys,
+                        ...model,
+                        ...updatedModel
+                    }
+                });
+                // after change hook
+                const aliases = (await context.cms.environmentAlias.list()).filter(alias => {
+                    return alias.environment.id === id;
+                });
+                // update all aliases last updated time
+                const aliasPk = createEnvironmentAliasPk(context);
+                for (const alias of aliases) {
+                    const aliasKeys = {
+                        PK: aliasPk,
+                        SK: alias.id
+                    };
+                    dbBatch.update({
+                        ...defaults.db,
+                        query: aliasKeys,
+                        data: {
+                            ...aliasKeys,
+                            ...alias,
+                            changedOn: new Date().toISOString()
+                        }
+                    });
+                }
+                await dbBatch.execute();
+                return updatedModel;
             },
             async delete(id): Promise<void> {
                 // before delete hook

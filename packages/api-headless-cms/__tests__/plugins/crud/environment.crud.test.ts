@@ -1,12 +1,14 @@
 import { useGqlHandler } from "./useGqlHandler";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import { createEnvironmentPk } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
     PREFIX = "environment",
     SUFFIX = "UPDATED",
-    USER_ID = "1234567890"
+    USER_ID = "1234567890",
+    USER_NAME = "userName123"
 }
 
 const createEnvironmentPrefix = position => {
@@ -30,9 +32,54 @@ const createEnvironmentModel = ({
         createdFrom: initialEnvironment.id
     };
 };
-const initialId = "5fc6590afb3cd80a5ae8a0ae";
 
-const PARTITION_KEY = "en-US#CE";
+const initialId = "5fc6590afb3cd80a5ae8a0ae";
+const initialEnvironmentData = {
+    id: initialId,
+    name: "initial",
+    slug: "initial",
+    description: "initial"
+};
+
+const createMatchableUpdatedEnvironmentModel = (
+    position: number,
+    initialEnvironment: CmsEnvironmentType
+): CmsEnvironmentType => {
+    const initial = createEnvironmentModel({
+        prefix: createEnvironmentPrefix(position),
+        initialEnvironment,
+        suffix: TestHelperEnum.SUFFIX as string
+    });
+
+    return {
+        ...initial,
+        id: /([a-z0-9A-Z]+)/,
+        createdOn: /^20/,
+        changedOn: /^20/,
+        createdFrom: initialEnvironmentData,
+        createdBy: {
+            id: TestHelperEnum.USER_ID,
+            name: TestHelperEnum.USER_NAME
+        }
+    } as any;
+};
+
+const createEnvironmentTestPartitionKey = () => {
+    return createEnvironmentPk({
+        security: {
+            getTenant: () => ({
+                id: "root",
+                name: "Root",
+                parent: null
+            })
+        },
+        i18nContent: {
+            locale: {
+                code: "en-US"
+            }
+        }
+    } as any);
+};
 const fetchInitialEnvironment = async (
     documentClient: DocumentClient
 ): Promise<CmsEnvironmentType> => {
@@ -40,7 +87,7 @@ const fetchInitialEnvironment = async (
         .get({
             TableName: "HeadlessCms",
             Key: {
-                PK: PARTITION_KEY,
+                PK: createEnvironmentTestPartitionKey(),
                 SK: initialId
             }
         })
@@ -51,11 +98,12 @@ const fetchInitialEnvironment = async (
     return (response.Item as unknown) as CmsEnvironmentType;
 };
 
-const initialEnvironmentData = {
+const expectedInitialEnvironment = {
     id: initialId,
     name: "initial",
     slug: "initial",
-    description: "initial"
+    description: "initial",
+    createdOn: /^20/
 };
 
 describe("Environment crud test", () => {
@@ -73,7 +121,7 @@ describe("Environment crud test", () => {
             .put({
                 TableName: "HeadlessCms",
                 Item: {
-                    PK: PARTITION_KEY,
+                    PK: createEnvironmentTestPartitionKey(),
                     SK: initialId,
                     TYPE: "cms#env",
                     ...initialEnvironmentData,
@@ -161,6 +209,9 @@ describe("Environment crud test", () => {
                         updateEnvironment: {
                             data: {
                                 ...updatedModelData,
+                                createdFrom: {
+                                    ...initialEnvironmentData
+                                },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID
                                 },
@@ -174,27 +225,20 @@ describe("Environment crud test", () => {
             });
         }
 
-        const [listEnvironmentResponse] = await listEnvironmentsQuery();
-        expect(listEnvironmentResponse).toMatchObject({
+        const [listEnvironmentsResponse] = await listEnvironmentsQuery();
+        // +1 because of initial model
+        expect(listEnvironmentsResponse.data.cms.listEnvironments.data).toHaveLength(
+            TestHelperEnum.MODELS_AMOUNT + 1
+        );
+        expect(listEnvironmentsResponse).toMatchObject({
             data: {
                 cms: {
-                    listEnvironment: {
+                    listEnvironments: {
                         data: [
-                            createEnvironmentModel({
-                                prefix: createEnvironmentPrefix(0),
-                                initialEnvironment,
-                                suffix: TestHelperEnum.SUFFIX as string
-                            }),
-                            createEnvironmentModel({
-                                prefix: createEnvironmentPrefix(1),
-                                initialEnvironment,
-                                suffix: TestHelperEnum.SUFFIX as string
-                            }),
-                            createEnvironmentModel({
-                                prefix: createEnvironmentPrefix(2),
-                                initialEnvironment,
-                                suffix: TestHelperEnum.SUFFIX as string
-                            })
+                            expectedInitialEnvironment,
+                            createMatchableUpdatedEnvironmentModel(0, initialEnvironment),
+                            createMatchableUpdatedEnvironmentModel(1, initialEnvironment),
+                            createMatchableUpdatedEnvironmentModel(2, initialEnvironment)
                         ],
                         error: null
                     }
@@ -210,9 +254,7 @@ describe("Environment crud test", () => {
                 data: {
                     cms: {
                         deleteEnvironment: {
-                            data: {
-                                id
-                            },
+                            data: true,
                             error: null
                         }
                     }
@@ -221,11 +263,12 @@ describe("Environment crud test", () => {
         }
 
         const [afterDeleteListResponse] = await listEnvironmentsQuery();
+        expect(afterDeleteListResponse.data.cms.listEnvironments.data).toHaveLength(1);
         expect(afterDeleteListResponse).toMatchObject({
             data: {
                 cms: {
-                    listEnvironment: {
-                        data: [],
+                    listEnvironments: {
+                        data: [expectedInitialEnvironment],
                         error: null
                     }
                 }

@@ -1,6 +1,7 @@
 import environment from "./environment.crud";
 import environmentAlias from "./environmentAlias.crud";
 
+// TODO switch for a real one
 const dataManager = {
     type: "context",
     apply(context) {
@@ -8,6 +9,9 @@ const dataManager = {
             ...(context.cms || {}),
             dataManager: {
                 copyEnvironment: async (): Promise<void> => {
+                    return;
+                },
+                deleteEnvironment: async (): Promise<void> => {
                     return;
                 }
             }

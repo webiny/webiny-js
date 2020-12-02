@@ -7,7 +7,9 @@
 		"node_modules",
 		"../plugins",
 		"../api-i18n",
+        "../api-plugin-elastic-search-client",
 		"../api-security",
+		"../api-security-tenancy",
 		"../commodo",
 		"../handler",
 		"../handler-graphql",
@@ -54,6 +56,9 @@
         },
         {
             "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+        },
+        {
+            "path": "../api-security-tenancy/tsconfig.build.json"
         }
-	]
+    ]
 }

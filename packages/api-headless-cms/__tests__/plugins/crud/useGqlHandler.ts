@@ -69,6 +69,7 @@ const createAuthenticate = (identity?: SecurityIdentity) => {
 };
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
+    const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity } = args || {};
 
     const documentClient = new DocumentClient({
@@ -91,6 +92,14 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         i18nContentPlugins(),
         mockLocalesPlugins(),
         cmsPlugins(),
+        {
+            type: "context",
+            apply(context) {
+                context.security.getTenant = () => {
+                    return tenant;
+                };
+            }
+        },
         {
             type: "security-authorization",
             name: "security-authorization",
