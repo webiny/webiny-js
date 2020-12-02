@@ -12,6 +12,8 @@ import {
     CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import { createEnvironmentAliasPk } from "./partitionKeys";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -27,13 +29,6 @@ const UpdateEnvironmentAliasModel = withFields({
 })();
 
 const TYPE = "cms#envAlias";
-const PARTITION_KEY_START = "CEA#";
-const createPartitionKey = (i18nContent: Record<string, any>) => {
-    if (!i18nContent || !i18nContent.locale) {
-        return PARTITION_KEY_START;
-    }
-    return `${PARTITION_KEY_START}${i18nContent.locale.code}`;
-};
 
 const fetchTargetEnvironment = async (
     context: CmsContextType,
@@ -51,14 +46,13 @@ const productionsSlugs = ["production"];
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
-        const PK_ENVIRONMENT = createPartitionKey(i18nContent);
+        const { db } = context;
 
         const environmentAlias: CmsEnvironmentAliasContextType = {
             async get(id): Promise<CmsEnvironmentAliasType | null> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: id },
+                    query: { PK: createEnvironmentAliasPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -69,7 +63,7 @@ export default {
             async list(): Promise<CmsEnvironmentAliasType[]> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: { $gt: " " } }
+                    query: { PK: createEnvironmentAliasPk(context), SK: { $gt: " " } }
                 });
 
                 return response;
@@ -90,7 +84,7 @@ export default {
                 const id = mdbid();
 
                 const modelData = Object.assign(createDataJson, {
-                    PK: PK_ENVIRONMENT,
+                    PK: createEnvironmentAliasPk(context),
                     SK: id,
                     TYPE,
                     id,
@@ -131,7 +125,7 @@ export default {
 
                 await db.update({
                     ...defaults.es,
-                    query: { PK: PK_ENVIRONMENT, SK: id },
+                    query: { PK: createEnvironmentAliasPk(context), SK: id },
                     data: {
                         ...modelData,
                         ...extraModelData,
@@ -151,7 +145,7 @@ export default {
                 // delete
                 await db.delete({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: model.id }
+                    query: { PK: createEnvironmentAliasPk(context), SK: model.id }
                 });
             }
         };
@@ -160,4 +154,4 @@ export default {
             environmentAlias
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsContextType>;
+} as ContextPlugin<DbContext, I18NContentContext, CmsContextType, TenancyContext>;

@@ -11,6 +11,8 @@ import {
     CmsContextType
 } from "@webiny/api-headless-cms/types";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import { createEnvironmentAliasPk, createEnvironmentPk } from "./partitionKeys";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -25,11 +27,6 @@ const UpdateEnvironmentModel = withFields({
 })();
 
 const TYPE = "cms#env";
-const PARTITION_KEY_START = "CE";
-
-const createPartitionKey = (i18nContent: Record<string, any>) => {
-    return [i18nContent?.locale?.code, PARTITION_KEY_START].filter(value => !!value).join("#");
-};
 
 type BaseDynamoType = {
     PK: string;
@@ -40,14 +37,13 @@ type BaseDynamoType = {
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent } = context;
-        const PK_ENVIRONMENT = createPartitionKey(i18nContent);
+        const { db } = context;
 
         const environment: CmsEnvironmentContextType = {
             async get(id): Promise<CmsEnvironmentType | null> {
                 const [response] = await db.read<CmsEnvironmentType>({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: id },
+                    query: { PK: createEnvironmentPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -58,7 +54,7 @@ export default {
             async list(): Promise<CmsEnvironmentType[]> {
                 const [response] = await db.read<CmsEnvironmentType>({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: { $gt: " " } }
+                    query: { PK: createEnvironmentPk(context), SK: { $gt: " " } }
                 });
 
                 return response;
@@ -74,24 +70,13 @@ export default {
                 const id = mdbid();
 
                 const createDataJson = await createData.toJSON();
-                const modelData = Object.assign(createDataJson, {
-                    PK: PK_ENVIRONMENT,
-                    SK: id,
-                    TYPE,
-                    id,
-                    createdOn: new Date().toISOString(),
-                    createdFrom: {
-                        id: createDataJson.createdFrom
-                    },
-                    createdBy
-                }) as CmsEnvironmentType & BaseDynamoType;
 
                 // need to read all environments
                 // because we need to check if environment with exact slug already exists
                 // and to check if source environment environment actually exists - when required to
                 const existingEnvironments = await context.cms.environment.list();
                 const sourceEnvironment = existingEnvironments.find(model => {
-                    return model.id === modelData.createdFrom.id;
+                    return model.id === createDataJson.createdFrom;
                 });
 
                 // before create hook
@@ -100,19 +85,31 @@ export default {
                         throw new Error("There are no environments in the database.");
                     }
                     throw new Error(
-                        `Base environment ("createdFrom" field) not set or environment "${modelData.createdFrom.id}" does not exist.`
+                        `Base environment ("createdFrom" field) not set or environment "${createDataJson.createdFrom}" does not exist.`
                     );
                 }
+
                 const existing = existingEnvironments.some(model => {
                     return model.slug === slug;
                 });
                 if (existing) {
                     throw Error(`Environment with slug "${slug}" already exists.`);
                 }
+
+                const model = Object.assign(createDataJson, {
+                    PK: createEnvironmentPk(context),
+                    SK: id,
+                    TYPE,
+                    id,
+                    createdOn: new Date().toISOString(),
+                    createdFrom: sourceEnvironment,
+                    createdBy
+                }) as CmsEnvironmentType & BaseDynamoType;
+
                 // save
                 await db.create({
                     ...defaults.db,
-                    data: modelData
+                    data: model
                 });
 
                 // after create hook
@@ -124,11 +121,7 @@ export default {
                     });
                 }
                 //
-
-                return {
-                    ...modelData,
-                    createdFrom: sourceEnvironment
-                };
+                return model;
             },
             async update(id, data): Promise<CmsEnvironmentType> {
                 const updateData = new UpdateEnvironmentModel().populate(data);
@@ -136,11 +129,11 @@ export default {
 
                 const modelData = await updateData.toJSON({ onlyDirty: true });
 
-                await db.update({
-                    ...defaults.es,
-                    query: { PK: PK_ENVIRONMENT, SK: id },
+                const updatedModel = {
+                    ...defaults.db,
+                    query: { PK: createEnvironmentPk(context), SK: id },
                     data: modelData
-                });
+                };
 
                 // after change hook
                 const aliases = (await context.cms.environmentAlias.list())
@@ -150,17 +143,24 @@ export default {
                     // update all aliases last updated time
                     .map(alias => {
                         return {
+                            ...defaults.db,
+                            query: { PK: createEnvironmentAliasPk(context), SK: id },
                             data: {
                                 ...alias,
                                 changedOn: new Date()
                             }
                         };
                     });
+                const dbBatch = db.batch();
+
+                dbBatch.update(updatedModel);
                 if (aliases.length > 0) {
-                    const dbBatch = db.batch();
                     dbBatch.update(...aliases);
-                    await dbBatch.execute();
                 }
+                dbBatch.read({
+                    ...defaults.db
+                });
+                await dbBatch.execute();
 
                 return modelData;
             },
@@ -181,7 +181,7 @@ export default {
                 // delete
                 await db.delete({
                     ...defaults.db,
-                    query: { PK: PK_ENVIRONMENT, SK: id }
+                    query: { PK: createEnvironmentPk(context), SK: id }
                 });
                 // after delete hook
                 await context.cms.dataManager.deleteEnvironment({ environment: id });
@@ -192,4 +192,4 @@ export default {
             environment
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsContextType>;
+} as ContextPlugin<DbContext, I18NContentContext, CmsContextType, TenancyContext>;

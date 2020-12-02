@@ -30,6 +30,7 @@ export default {
         return new SecurityIdentity({
             id: token.id,
             login: accessToken,
+            displayName: "cms-access-token",
             type: "cms-access-token"
         });
     }

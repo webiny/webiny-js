@@ -86,8 +86,6 @@ describe("Environment crud test", () => {
     test("environment create, read, update, delete and list all at once", async () => {
         const initialEnvironment = await fetchInitialEnvironment(documentClient);
 
-        console.log(initialEnvironment);
-
         const createdEnvironmentIdList = [];
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createEnvironmentPrefix(prefix);
@@ -133,7 +131,13 @@ describe("Environment crud test", () => {
                         getEnvironment: {
                             data: {
                                 ...modelData,
-                                createdOn: null
+                                createdFrom: {
+                                    ...initialEnvironmentData
+                                },
+                                createdBy: {
+                                    id: TestHelperEnum.USER_ID
+                                },
+                                createdOn: /^20/
                             },
                             error: null
                         }
