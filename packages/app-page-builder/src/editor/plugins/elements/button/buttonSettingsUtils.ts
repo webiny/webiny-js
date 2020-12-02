@@ -2,7 +2,7 @@ import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
-import { PostModifyElementArgs } from "../useUpdateHandlers";
+import { PostModifyElementArgs } from "../../elementSettings/useUpdateHandlers";
 // TODO: check is it possible to dynamically add icons?
 // if yes, this wont work
 let icons;
