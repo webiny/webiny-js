@@ -8,10 +8,15 @@ const inputStyle = css({
     border: "1px solid var(--mdc-theme-on-background)",
     width: "100%",
     height: "100%",
-    padding: 4,
-    textAlign: "center",
+    padding: "4px 8px",
+    textAlign: "left",
     minHeight: 32,
-    backgroundColor: COLORS.lightGray
+    backgroundColor: COLORS.lightGray,
+
+    "&.text-center": {
+        textAlign: "center",
+        padding: 4
+    }
 });
 
 type InputBoxProps = {
