@@ -12,7 +12,7 @@ describe("listing latest pages", () => {
         listPages,
         updatePage,
         sleep,
-        tryUntil
+        until
     } = useGqlHandler();
 
     let initiallyCreatedPagesIds;
@@ -267,7 +267,7 @@ describe("listing latest pages", () => {
 
         // We should still get all results when no filters are applied.
         // 1. Check if all were returned and sorted `createdOn: desc`.
-        await tryUntil(
+        await until(
             () => listPages(),
             ([res]) => res.data.pageBuilder.listPages.data.length
         ).then(([res]) =>
@@ -289,7 +289,7 @@ describe("listing latest pages", () => {
         );
 
         // 2. We should only get two results here because we published two pages.
-        await tryUntil(
+        await until(
             () => listPages({ where: { status: "published" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
@@ -304,7 +304,7 @@ describe("listing latest pages", () => {
             })
         );
 
-        await tryUntil(
+        await until(
             () =>
                 listPages({
                     sort: { title: "asc" },
@@ -327,7 +327,7 @@ describe("listing latest pages", () => {
         await unpublishPage({ id: initiallyCreatedPagesIds[0] });
         await unpublishPage({ id: initiallyCreatedPagesIds[1] });
 
-        await tryUntil(
+        await until(
             () =>
                 listPages({
                     sort: { title: "asc" },
@@ -350,7 +350,7 @@ describe("listing latest pages", () => {
         await requestReview({ id: initiallyCreatedPagesIds[2] });
         await requestReview({ id: initiallyCreatedPagesIds[3] });
 
-        await tryUntil(
+        await until(
             () =>
                 listPages({
                     where: { status: "reviewRequested" }
@@ -378,7 +378,7 @@ describe("listing latest pages", () => {
         await requestChanges({ id: initiallyCreatedPagesIds[2] });
         await requestChanges({ id: initiallyCreatedPagesIds[3] });
 
-        await tryUntil(
+        await until(
             () =>
                 listPages({
                     where: { status: "reviewRequested" }
@@ -386,7 +386,7 @@ describe("listing latest pages", () => {
             ([res]) => res.data.pageBuilder.listPages.data.length === 0
         );
 
-        await tryUntil(
+        await until(
             () =>
                 listPages({
                     where: { status: "changesRequested" }
@@ -409,27 +409,27 @@ describe("listing latest pages", () => {
     });
 
     test("pagination", async () => {
-        await tryUntil(
+        await until(
             () => listPages(),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
         );
 
-        await tryUntil(
+        await until(
             () => listPages({ limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-c"));
 
-        await tryUntil(
+        await until(
             () => listPages({ page: 3, limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-b"));
 
-        await tryUntil(
+        await until(
             () => listPages({ page: 5, limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-a"));
 
-        await tryUntil(
+        await until(
             () => listPages({ page: 2, limit: 2, sort: { title: "asc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
@@ -444,7 +444,7 @@ describe("listing latest pages", () => {
             })
         );
 
-        await tryUntil(
+        await until(
             () => listPages({ page: 3, limit: 2, sort: { title: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {

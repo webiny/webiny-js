@@ -123,12 +123,13 @@ export default ({ permissions, identity, tenant } = {}) => {
         elasticSearch: elasticSearch,
         deleteElasticSearchIndex: async () => {
             try {
+                const tenantId = tenant ? tenant.id : defaultTenant.id;
                 await sleep();
-                await elasticSearch.indices.delete({ index: "page-builder" });
+                await elasticSearch.indices.delete({ index: tenantId + "-page-builder" });
             } catch {}
         },
         sleep,
-        tryUntil: async (execute, until, options = {}) => {
+        until: async (execute, until, options = {}) => {
             const tries = options.tries ?? 5;
             const wait = options.wait ?? 333;
 

@@ -2,18 +2,18 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("CRUD Test", () => {
     const {
-        elasticSearch,
         createCategory,
         createPage,
         deletePage,
         listPages,
         getPage,
         updatePage,
-        sleep
+        sleep,
+        deleteElasticSearchIndex
     } = useGqlHandler();
 
     beforeAll(async () => {
-        await elasticSearch.indices.delete({ index: "page-builder" });
+        await deleteElasticSearchIndex();
     });
 
     test("create, read, update and delete pages", async () => {

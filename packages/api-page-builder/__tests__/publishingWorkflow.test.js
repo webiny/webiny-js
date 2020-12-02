@@ -12,7 +12,7 @@ describe("publishing workflow", () => {
         requestChanges,
         listPages,
         updatePage,
-        tryUntil
+        until
     } = useGqlHandler();
 
     let initialPageIds, initialCategory;
@@ -121,7 +121,7 @@ describe("publishing workflow", () => {
             })
         );
 
-        await tryUntil(
+        await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data[2].status === "reviewRequested"
         );
@@ -140,7 +140,9 @@ describe("publishing workflow", () => {
             })
         );
 
-        await tryUntil(
+        const [pasd] = await getPage({id: initialPageIds[0]});
+
+        await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data[2].status === "published"
         );

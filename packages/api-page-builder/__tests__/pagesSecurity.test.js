@@ -17,14 +17,7 @@ describe("Pages Security Test", () => {
     const {
         deleteElasticSearchIndex,
         createCategory,
-        createPage,
-        getPage,
-        publishPage,
-        requestReview,
-        requestChanges,
-        listPages,
-        updatePage,
-        tryUntil
+        until
     } = useGqlHandler();
 
     let initialPageIds, initialCategory;
@@ -64,7 +57,7 @@ describe("Pages Security Test", () => {
             ]
         ];
 
-        await tryUntil(
+        await until(
             useGqlHandler().listPages,
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         );
