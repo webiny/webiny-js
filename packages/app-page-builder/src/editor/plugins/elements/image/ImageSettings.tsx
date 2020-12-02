@@ -1,11 +1,23 @@
 import React, { useMemo, useCallback } from "react";
-import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
+import { useRecoilValue } from "recoil";
+
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { useRecoilValue } from "recoil";
-import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
+// Components
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import InputField from "../../elementSettings/components/InputField";
+import { css } from "emotion";
+
+const classes = {
+    grid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            marginBottom: 24
+        }
+    })
+};
 
 const ImageSettings = () => {
     const handler = useEventActionHandler();
@@ -45,32 +57,27 @@ const ImageSettings = () => {
     const updateHeight = useCallback(value => setData("height", value), [id, image]);
 
     return (
-        <Tabs>
-            <Tab icon={<ImageIcon />} label="Image">
-                <Input
-                    label="Title"
-                    value={image?.title || ""}
-                    updateValue={updateTitle}
-                    inputWidth={"max-content"}
-                />
-                <Input
-                    label="Width"
-                    placeholder="auto"
-                    description="eg. 300 or 50%"
-                    value={image?.width || ""}
-                    updateValue={updateWidth}
-                    inputWidth={80}
-                />
-                <Input
-                    label="Height"
-                    placeholder="auto"
-                    description="eg. 300 or 50%"
-                    value={image?.height || ""}
-                    updateValue={updateHeight}
-                    inputWidth={80}
-                />
-            </Tab>
-        </Tabs>
+        <Accordion title={"Image"}>
+            <>
+                <Wrapper containerClassName={classes.grid} label={"Title"}>
+                    <InputField value={image?.title || ""} onChange={updateTitle} />
+                </Wrapper>
+                <Wrapper containerClassName={classes.grid} label={"Width"}>
+                    <InputField
+                        placeholder={"auto"}
+                        value={image?.width || ""}
+                        onChange={updateWidth}
+                    />
+                </Wrapper>
+                <Wrapper containerClassName={classes.grid} label={"Height"}>
+                    <InputField
+                        placeholder={"auto"}
+                        value={image?.height || ""}
+                        onChange={updateHeight}
+                    />
+                </Wrapper>
+            </>
+        </Accordion>
     );
 };
 export default React.memo(ImageSettings);

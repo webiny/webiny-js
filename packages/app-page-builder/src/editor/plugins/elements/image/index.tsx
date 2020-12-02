@@ -91,6 +91,9 @@ export default (): Plugin[] => {
                 return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
             },
             renderMenu() {
+                return <span>Moved to sidebar.</span>;
+            },
+            render() {
                 return <ImageSettings />;
             }
         } as PbEditorPageElementSettingsPlugin,
