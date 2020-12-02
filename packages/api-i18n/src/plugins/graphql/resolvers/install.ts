@@ -26,11 +26,12 @@ export const isInstalled = async (
     args: { [key: string]: any },
     context: { [key: string]: any }
 ) => {
-    const { locales, security } = context;
+    const { security } = context;
     if (!security.getTenant()) {
         return false;
     }
 
+    const { locales } = context;
     const defaultLocale = await locales.getDefault();
     return new Response(Boolean(defaultLocale));
 };
