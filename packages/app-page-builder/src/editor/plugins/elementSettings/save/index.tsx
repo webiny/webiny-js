@@ -2,6 +2,7 @@ import React from "react";
 import { ReactComponent as FavoriteIcon } from "@webiny/app-page-builder/editor/assets/icons/round-favorite-24px.svg";
 import Action from "../components/Action";
 import SaveAction from "./SaveAction";
+import SaveElementSetting from "./SaveElementSetting";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default {
@@ -13,5 +14,8 @@ export default {
                 <Action tooltip={"Save element"} icon={<FavoriteIcon />} />
             </SaveAction>
         );
+    },
+    renderElement() {
+        return <SaveElementSetting />;
     }
 } as PbEditorPageElementSettingsPlugin;

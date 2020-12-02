@@ -481,6 +481,7 @@ export type PbEditorPageElementSettingsPlugin = Plugin & {
     renderAction(params: { options?: any }): ReactElement;
     renderMenu?: (params: { options?: any }) => ReactElement;
     render?(params: { options?: any }): ReactElement;
+    renderElement?(params: { options?: any }): ReactElement;
     elements?: boolean | string[];
 };
 
