@@ -84,7 +84,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
             body: JSON.stringify(body),
             ...rest
         });
-
         // The first element is the response body, and the second is the raw response.
         return [JSON.parse(response.body), response];
     };

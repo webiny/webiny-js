@@ -225,4 +225,24 @@ describe("Environment crud test", () => {
             }
         });
     });
+
+    test("error on get non-existing alias", async () => {
+        const [response] = await getEnvironmentAliasQuery({
+            id: "nonExistingId"
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    getEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            message: `CMS EnvironmentAlias "nonExistingId" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

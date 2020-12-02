@@ -234,4 +234,24 @@ describe("Environment crud test", () => {
             }
         });
     });
+
+    test("error on get non-existing environment", async () => {
+        const [response] = await getEnvironmentQuery({
+            id: "nonExistingId"
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    getEnvironment: {
+                        data: null,
+                        error: {
+                            message: `CMS Environment "nonExistingId" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
 });
