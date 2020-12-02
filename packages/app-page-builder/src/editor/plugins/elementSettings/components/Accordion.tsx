@@ -9,6 +9,7 @@ const classes = {
         borderBottom: `1px solid ${COLORS.gray}`
     }),
     accordionTitle: css({
+        position: "relative",
         color: "var(--mdc-theme-text-secondary-on-background)",
         cursor: "pointer",
         padding: "12px 16px",
@@ -16,11 +17,18 @@ const classes = {
         display: "flex",
         alignItems: "center",
 
+        "& span": {
+            marginLeft: 16
+        },
+
         "&::before": {
+            position: "absolute",
+            top: 20,
+            left: 16,
             content: '""',
             width: 0,
             height: 0,
-            marginRight: 16,
+
             // Arrow right.
             borderTop: "5px solid transparent",
             borderBottom: "5px solid transparent",
@@ -32,12 +40,7 @@ const classes = {
             paddingBottom: 0,
 
             "&::before": {
-                content: '""',
-                // Arrow down.
-                borderTop: "5px solid currentColor",
-                borderBottom: 0,
-                borderLeft: "5px solid transparent",
-                borderRight: "5px solid transparent"
+                transform: "rotate(90deg)"
             }
         }
     }),
