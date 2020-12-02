@@ -6,7 +6,6 @@ import {
 } from "@webiny/app-page-builder/types";
 import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
-import ButtonSettingsNew from "./ButtonSettingsNew";
 import Button from "./Button";
 import Action from "../../elementSettings/components/Action";
 
@@ -73,11 +72,12 @@ export default () => {
             renderAction() {
                 return <Action plugin={this.name} tooltip={"Button"} icon={<ButtonIcon />} />;
             },
+            // TODO: Remove these.
             renderMenu() {
-                return <ButtonSettings />;
+                return <p>Moved to sidebar.</p>;
             },
             render() {
-                return <ButtonSettingsNew />;
+                return <ButtonSettings />;
             }
         } as PbEditorPageElementSettingsPlugin
     ];
