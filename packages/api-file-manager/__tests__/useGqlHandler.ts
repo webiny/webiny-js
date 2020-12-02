@@ -48,7 +48,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:9200` }),
         graphqlHandlerPlugins(),
         securityPlugins(),
         {
@@ -99,7 +99,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
     return {
         tenant,
         elasticSearch: new Client({
-            node: "http://localhost:9201"
+            node: "http://localhost:9200"
         }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {
