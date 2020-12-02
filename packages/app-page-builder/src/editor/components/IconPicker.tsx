@@ -98,19 +98,25 @@ const iconPickerWrapper = css({
     },
 
     "& .menuHandler": {
+        boxSizing: "border-box",
         width: 30,
         height: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
         border: `1px solid ${COLORS.gray}`
     },
     "& .iconContainer": {
+        boxSizing: "border-box",
         width: 30,
         height: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
         border: `1px solid ${COLORS.gray}`,
 
         "& svg": {

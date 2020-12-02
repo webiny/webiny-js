@@ -9,6 +9,7 @@ import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 // Icons
 import { ReactComponent as IconPalette } from "@webiny/app-page-builder/editor/assets/icons/round-color_lens-24px.svg";
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
+import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
 
 const ColorPickerStyle = styled("div")({
@@ -38,13 +39,18 @@ const ColorPreview = styled("div")({
     justifyContent: "center",
     alignItems: "center",
     padding: 4,
-    border: `1px solid ${COLORS.darkGray}`,
+    border: `1px solid ${COLORS.gray}`,
     backgroundColor: COLORS.lightGray,
 
     ".color": {
         width: 20,
         height: 20,
         cursor: "not-allowed"
+    },
+
+    "& .not-selected": {
+        width: 20,
+        height: 20
     }
 });
 
@@ -119,7 +125,7 @@ const styles = {
     button: css({
         backgroundColor: COLORS.lightGray,
         borderRadius: 1,
-        border: `1px solid ${COLORS.darkGray}`,
+        border: `1px solid ${COLORS.gray}`,
         cursor: "pointer",
         height: 30,
         boxSizing: "border-box",
@@ -250,7 +256,11 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
                     </ColorList>
                 </Menu>
                 <ColorPreview>
-                    <div className={"color"} style={{ backgroundColor: value }} />
+                    {value ? (
+                        <div className={"color"} style={{ backgroundColor: value }} />
+                    ) : (
+                        <NoColorSelectedIcon className={"not-selected"} />
+                    )}
                 </ColorPreview>
             </CompactColorPicker>
         );
