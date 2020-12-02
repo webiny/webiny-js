@@ -32,9 +32,23 @@ import {
     UPDATE_CURRENT_SECURITY_USER_PAT
 } from "./graphql/pat";
 
+import {
+    CREATE_ACCESS_TOKEN,
+    DELETE_ACCESS_TOKEN,
+    GET_ACCESS_TOKEN,
+    LIST_ACCESS_TOKENS,
+    UPDATE_ACCESS_TOKEN
+} from "./graphql/accessTokens";
+
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
-export default (opts = {}) => {
+type UseGqlHandlerParams = {
+    mockUser?: boolean;
+    fullAccess?: boolean;
+    plugins?: Array<Plugin>;
+};
+
+export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { mockUser: true, fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
     const documentClient = new DocumentClient({
@@ -179,6 +193,24 @@ export default (opts = {}) => {
         }
     };
 
+    const securityAccessTokens = {
+        async list(variables = {}) {
+            return invoke({ body: { query: LIST_ACCESS_TOKENS, variables } });
+        },
+        async get(variables) {
+            return invoke({ body: { query: GET_ACCESS_TOKEN, variables } });
+        },
+        async create(variables) {
+            return invoke({ body: { query: CREATE_ACCESS_TOKEN, variables } });
+        },
+        async update(variables) {
+            return invoke({ body: { query: UPDATE_ACCESS_TOKEN, variables } });
+        },
+        async delete(variables) {
+            return invoke({ body: { query: DELETE_ACCESS_TOKEN, variables } });
+        }
+    };
+
     const install = {
         async isInstalled() {
             return invoke({ body: { query: IS_INSTALLED } });
@@ -194,6 +226,7 @@ export default (opts = {}) => {
         securityGroup,
         securityUser,
         securityUserPAT,
+        securityAccessTokens,
         install,
         documentClient
     };

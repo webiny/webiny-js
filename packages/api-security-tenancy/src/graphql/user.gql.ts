@@ -1,10 +1,10 @@
 import md5 from "md5";
 import { hasPermission } from "@webiny/api-security";
 import {
-    CreateUser,
+    CreateUserInput,
     TenancyContext,
     SecurityIdentityProviderPlugin,
-    UpdateUser,
+    UpdateUserInput,
     User
 } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -261,7 +261,7 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                updateCurrentUser: async (_, args: { data: UpdateUser }, context: Context) => {
+                updateCurrentUser: async (_, args: { data: UpdateUserInput }, context: Context) => {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         throw new Error("Not authorized!");
@@ -307,7 +307,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
                 },
                 createUser: hasPermission("security.user.manage")(
-                    async (_, { data }: { data: CreateUser }, context: Context) => {
+                    async (_, { data }: { data: CreateUserInput }, context: Context) => {
                         try {
                             const authPlugin = context.plugins.byName<
                                 SecurityIdentityProviderPlugin
@@ -345,7 +345,7 @@ const plugin: GraphQLSchemaPlugin = {
                 updateUser: hasPermission("security.user.manage")(
                     async (
                         root,
-                        { data, login }: { login: string; data: UpdateUser },
+                        { data, login }: { login: string; data: UpdateUserInput },
                         context: Context
                     ) => {
                         try {

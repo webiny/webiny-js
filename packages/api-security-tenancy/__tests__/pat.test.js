@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import patAuthentication from "../src/authentication";
+import patAuthentication from "../src/authentication/personalAccessToken";
 
 describe("Security Personal Access Token Test", () => {
     const { install, securityUserPAT } = useGqlHandler();

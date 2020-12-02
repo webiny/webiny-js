@@ -21,7 +21,7 @@ export default (config: AccessTokenAuthentication = {}) => {
             }
 
             // Try loading a User using the value from header
-            const user = await context.security.users.getUserByPAT(token);
+            const user = await context.security.users.getUserByPersonalAccessToken(token);
 
             if (user) {
                 const identityType = config.identityType || "access-token";

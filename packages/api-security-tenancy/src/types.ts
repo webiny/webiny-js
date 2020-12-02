@@ -9,12 +9,12 @@ export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin
     onLogin?: (params: { user: User; firstLogin: boolean }, context: Context) => Promise<void>;
     // Create user in a 3rd party identity provider
     createUser: (
-        params: { data: CreateUser & TData; permanent?: boolean },
+        params: { data: CreateUserInput & TData; permanent?: boolean },
         context: Context
     ) => Promise<void>;
     // Update user in a 3rd party identity provider
     updateUser: (
-        params: { data: UpdateUser & TData; user: User },
+        params: { data: UpdateUserInput & TData; user: User },
         context: Context
     ) => Promise<void>;
     // Delete user from a 3rd party identity provider
@@ -53,7 +53,7 @@ export type User = {
     createdBy: CreatedBy;
 };
 
-export type UserAccessToken = {
+export type UserPersonalAccessToken = {
     id: string;
     name: string;
     token: string;
@@ -61,7 +61,7 @@ export type UserAccessToken = {
     createdOn: string;
 };
 
-type TenantAccess = {
+export type TenantAccess = {
     tenant: {
         id: string;
         name: string;
@@ -73,17 +73,17 @@ type TenantAccess = {
     };
 };
 
-type CreateTenant = {
+type CreateTenantInput = {
     id?: string;
     name: string;
     parent: string | null;
 };
 
-type UpdateTenant = {
+type UpdateTenantInput = {
     name: string;
 };
 
-export type CreateUser = {
+export type CreateUserInput = {
     login: string;
     firstName: string;
     lastName: string;
@@ -91,9 +91,9 @@ export type CreateUser = {
     group?: string;
 };
 
-export type UpdateUser = Partial<Omit<CreateUser, "login">>;
+export type UpdateUserInput = Partial<Omit<CreateUserInput, "login">>;
 
-export type GroupData = {
+export type GroupInput = {
     name: string;
     slug: string;
     description: string;
@@ -101,28 +101,43 @@ export type GroupData = {
     permissions: SecurityPermission[];
 };
 
-export type CreateUserAccessToken = {
+export type CreatePersonalAccessTokenInput = {
     name: string;
     token: string;
 };
-export type UpdateUserAccessToken = {
+export type UpdatePersonalAccessTokenInput = {
     name: string;
+};
+
+export type AccessToken = {
+    id: string;
+    name: string;
+    description: string;
+    token: string;
+    permissions: SecurityPermission[];
+    createdBy: CreatedBy;
+};
+
+export type AccessTokenInput = {
+    name: string;
+    description: string;
+    permissions: SecurityPermission[];
 };
 
 export type TenantsCRUD = {
     getRootTenant(): Promise<Tenant>;
     getTenant(id: string): Promise<Tenant>;
     listTenants(params: { parent?: string }): Promise<Tenant[]>;
-    createTenant(data: CreateTenant): Promise<Tenant>;
-    updateTenant(id: string, data: UpdateTenant): Promise<boolean>;
+    createTenant(data: CreateTenantInput): Promise<Tenant>;
+    updateTenant(id: string, data: UpdateTenantInput): Promise<boolean>;
     deleteTenant(id: string): Promise<boolean>;
 };
 
 export type GroupsCRUD = {
     getGroup(tenant: Tenant, slug: string): Promise<Group>;
     listGroups(tenant: Tenant): Promise<Group[]>;
-    createGroup(tenant: Tenant, data: GroupData): Promise<Group>;
-    updateGroup(tenant: Tenant, slug: string, data: Partial<GroupData>): Promise<boolean>;
+    createGroup(tenant: Tenant, data: GroupInput): Promise<Group>;
+    updateGroup(tenant: Tenant, slug: string, data: Partial<GroupInput>): Promise<boolean>;
     deleteGroup(tenant: Tenant, slug: string): Promise<boolean>;
     updateUserLinks(tenant: Tenant, group: Group): Promise<void>;
 };
@@ -130,22 +145,30 @@ export type GroupsCRUD = {
 export type UsersCRUD = {
     getUser(login: string): Promise<User>;
     listUsers(params?: { tenant: string }): Promise<User[]>;
-    createUser(data: CreateUser): Promise<User>;
-    updateUser(login: string, data: UpdateUser): Promise<UpdateUser>;
+    createUser(data: CreateUserInput): Promise<User>;
+    updateUser(login: string, data: UpdateUserInput): Promise<UpdateUserInput>;
     deleteUser(login: string): Promise<boolean>;
     linkUserToTenant(login: string, tenant: Tenant, group: Group): Promise<void>;
     unlinkUserFromTenant(login: string, tenant: Tenant): Promise<void>;
     getUserAccess(login: string): Promise<TenantAccess[]>;
-    getAccessToken(login: string, tokenId: string): Promise<UserAccessToken>;
-    getUserByPAT(token: string): Promise<User>;
-    listTokens(login: string): Promise<UserAccessToken[]>;
-    createToken(login: string, data: CreateUserAccessToken): Promise<UserAccessToken>;
+    getPersonalAccessToken(login: string, tokenId: string): Promise<UserPersonalAccessToken>;
+    getUserByPersonalAccessToken(token: string): Promise<User>;
+    listTokens(login: string): Promise<UserPersonalAccessToken[]>;
+    createToken(login: string, data: CreatePersonalAccessTokenInput): Promise<UserPersonalAccessToken>;
     updateToken(
         login: string,
         tokenId: string,
-        data: UpdateUserAccessToken
-    ): Promise<UpdateUserAccessToken>;
+        data: UpdatePersonalAccessTokenInput
+    ): Promise<UpdatePersonalAccessTokenInput>;
     deleteToken(login: string, tokenId: string): Promise<boolean>;
+};
+
+export type AccessTokensCRUD = {
+    getAccessToken(id: string): Promise<AccessToken>;
+    listAccessTokens(): Promise<AccessToken[]>;
+    createAccessToken(data: AccessTokenInput): Promise<AccessToken>;
+    updateAccessToken(data: AccessTokenInput): Promise<AccessToken>;
+    deleteAccessToken(id: string): Promise<boolean>;
 };
 
 export type TenancyContextObject = {
@@ -156,6 +179,7 @@ export type TenancyContextObject = {
     tenants?: TenantsCRUD;
     users?: UsersCRUD;
     groups?: GroupsCRUD;
+    accessTokens?: AccessTokensCRUD;
 };
 
 export type TenancyContext = {

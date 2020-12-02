@@ -9,14 +9,6 @@
       "api/code/graphqlPlayground",
       "api/code/graphql",
       "api/code/fileManager/*"
-    ],
-    "nohoist": [
-      "**/inquirer/**",
-      "**/mime/**",
-      "**/@types/mocha",
-      "**/semver",
-      "**/slate",
-      "**/slate-react"
     ]
   },
   "contributors": [

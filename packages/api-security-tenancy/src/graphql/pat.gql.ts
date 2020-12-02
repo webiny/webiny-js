@@ -114,7 +114,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const existingToken = await context.security.users.getAccessToken(
+                        const existingToken = await context.security.users.getPersonalAccessToken(
                             identity.id,
                             id
                         );
@@ -145,7 +145,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const existingToken = await context.security.users.getAccessToken(
+                        const existingToken = await context.security.users.getPersonalAccessToken(
                             identity.id,
                             id
                         );

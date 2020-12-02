@@ -7,7 +7,7 @@ import {
     DbItemSecurityUser2Tenant,
     TenancyContext,
     User,
-    UserAccessToken,
+    UserPersonalAccessToken,
     UsersCRUD
 } from "../types";
 import dbArgs from "./dbArgs";
@@ -44,7 +44,7 @@ type DbItem<T> = T & {
 };
 
 type DbUser = DbItem<User>;
-type DbUserAccessToken = DbItem<UserAccessToken>;
+type DbUserAccessToken = DbItem<UserPersonalAccessToken>;
 
 export default (context: DbContext & SecurityContext & TenancyContext): UsersCRUD => {
     const { db } = context;
@@ -206,7 +206,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 tenant: link.tenant
             }));
         },
-        async getUserByPAT(token) {
+        async getUserByPersonalAccessToken(token) {
             const [[pat]] = await db.read<DbUserAccessToken>({
                 ...dbArgs,
                 query: {
@@ -221,7 +221,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
 
             return await this.getUser(pat.login);
         },
-        async getAccessToken(login, tokenId) {
+        async getPersonalAccessToken(login, tokenId) {
             const [[token]] = await db.read<DbUserAccessToken>({
                 ...dbArgs,
                 query: {

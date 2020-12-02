@@ -17,7 +17,7 @@ export default ({ identityType }) => {
             }
 
             // Try loading a User using the value from header
-            const user = await context.security.users.getUserByPAT(token);
+            const user = await context.security.users.getUserByPersonalAccessToken(token);
 
             if (user) {
                 return new SecurityIdentity({

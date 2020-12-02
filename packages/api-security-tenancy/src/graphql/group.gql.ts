@@ -7,7 +7,7 @@ import {
     NotFoundResponse,
     Response
 } from "@webiny/handler-graphql/responses";
-import { GroupData, TenancyContext } from "../types";
+import { GroupInput, TenancyContext } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -99,7 +99,7 @@ const plugin: GraphQLSchemaPlugin = {
             },
             SecurityMutation: {
                 createGroup: hasPermission("security.group.manage")(
-                    async (_, { data }: { data: GroupData }, context: Context) => {
+                    async (_, { data }: { data: GroupInput }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
                             const groupData = await context.security.groups.createGroup(
@@ -120,7 +120,7 @@ const plugin: GraphQLSchemaPlugin = {
                 updateGroup: hasPermission("security.group.manage")(
                     async (
                         _,
-                        { slug, data }: { slug: string; data: Omit<GroupData, "slug" | "system"> },
+                        { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
                         context: Context
                     ) => {
                         try {
