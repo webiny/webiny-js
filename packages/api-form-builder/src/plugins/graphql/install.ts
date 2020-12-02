@@ -40,6 +40,11 @@ export const install: GraphQLFieldResolver = async (root, args, context) => {
 };
 
 export const isInstalled: GraphQLFieldResolver = async (root, args, context) => {
+    const { i18nContent, security } = context;
+    if (!security.getTenant() || !i18nContent.getLocale()) {
+        return false;
+    }
+
     try {
         const formBuilderSettings: FormBuilderSettingsCRUD =
             context?.formBuilder?.crud?.formBuilderSettings;
