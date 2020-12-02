@@ -9,7 +9,7 @@ import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 // Components
 import IconSettings from "./IconSettings";
 import Icon from "./Icon";
-import { getSvg } from "../button/buttonSettingsUtils";
+import { getSvg } from "../utils/iconUtils";
 import Action from "./../../elementSettings/components/Action";
 
 export default () => {

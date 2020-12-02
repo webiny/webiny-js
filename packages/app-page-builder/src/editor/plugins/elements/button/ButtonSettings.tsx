@@ -11,7 +11,7 @@ import { ContentWrapper } from "../../elementSettings/components/StyledComponent
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
 import SelectField from "../../elementSettings/components/SelectField";
-import { updateButtonElementIcon } from "../../elements/button/buttonSettingsUtils";
+import { updateButtonElementIcon } from "../utils/iconUtils";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 
 const classes = {

@@ -1,6 +1,7 @@
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
+import get from "lodash/get";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import { PostModifyElementArgs } from "../../elementSettings/useUpdateHandlers";
 // TODO: check is it possible to dynamically add icons?
@@ -43,7 +44,7 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
         }
 
         const updatedIcon = isSelectedIcon ? {} : newElement.data.icon || {};
-
+        // Modify the element directly.
         newElement.data.icon = {
             ...updatedIcon,
             svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : undefined
@@ -51,4 +52,10 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
     }
 };
 
-export { updateButtonElementIcon };
+const updateIconElement = ({ newElement }: PostModifyElementArgs) => {
+    const { id, width, color } = get(newElement, "data.icon");
+    // Modify the element directly.
+    newElement.data.icon.svg = getSvg(id, { width, color });
+};
+
+export { getSvg, updateButtonElementIcon, updateIconElement };

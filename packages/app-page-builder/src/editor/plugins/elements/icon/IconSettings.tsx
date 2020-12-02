@@ -9,7 +9,7 @@ import InputField from "../../elementSettings/components/InputField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
-import { updateIconElement } from "../button/buttonSettingsUtils";
+import { updateIconElement } from "../utils/iconUtils";
 
 const classes = {
     grid: css({
