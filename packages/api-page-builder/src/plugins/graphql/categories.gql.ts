@@ -93,8 +93,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 }),
                 listCategories: async (_, args, context) => {
                     const { categories } = context;
-                    const list = await categories.list();
                     try {
+                        const list = await categories.list();
                         return new Response(list);
                     } catch (e) {
                         return new ErrorResponse(e);
