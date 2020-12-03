@@ -12,31 +12,29 @@ const SidebarActions = () => {
     return (
         <React.Fragment>
             <SidebarActionsWrapper>
-                {elementSettings &&
-                    elementSettings
-                        // FIXME: Remove this after element settings cleanup.
-                        .filter(
-                            ({ plugin }) =>
-                                plugin.name.includes("delete") || plugin.name.includes("clone")
-                        )
-                        .map(({ plugin, options }, index) => {
-                            return (
-                                <div key={plugin.name + "-" + index}>
-                                    {typeof plugin.renderAction === "function" &&
-                                        plugin.renderAction({ options })}
-                                </div>
-                            );
-                        })}
+                {elementSettings
+                    // FIXME: Remove this after element settings cleanup.
+                    .filter(
+                        ({ plugin }) =>
+                            plugin.name.includes("delete") || plugin.name.includes("clone")
+                    )
+                    .map(({ plugin, options }, index) => {
+                        return (
+                            <div key={plugin.name + "-" + index}>
+                                {typeof plugin.renderAction === "function" &&
+                                    plugin.renderAction({ options })}
+                            </div>
+                        );
+                    })}
             </SidebarActionsWrapper>
-            {elementSettings &&
-                elementSettings.map(({ plugin, options }, index) => {
-                    return (
-                        <div key={plugin.name + "-" + index}>
-                            {typeof plugin.renderElement === "function" &&
-                                plugin.renderElement({ options })}
-                        </div>
-                    );
-                })}
+            {elementSettings.map(({ plugin, options }, index) => {
+                return (
+                    <div key={plugin.name + "-" + index}>
+                        {typeof plugin.renderElement === "function" &&
+                            plugin.renderElement({ options })}
+                    </div>
+                );
+            })}
         </React.Fragment>
     );
 };

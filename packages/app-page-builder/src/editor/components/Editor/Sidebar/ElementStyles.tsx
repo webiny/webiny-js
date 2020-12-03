@@ -12,21 +12,13 @@ const ElementStyles = () => {
     const elementSettings = useElementSettings();
     return (
         <SidebarActionsWrapper>
-            {elementSettings &&
-                elementSettings
-                    // FIXME: Remove this after element settings cleanup.
-                    .filter(
-                        ({ plugin }) =>
-                            plugin.name.includes("delete") || plugin.name.includes("clone")
-                    )
-                    .map(({ plugin, options }, index) => {
-                        return (
-                            <div key={plugin.name + "-" + index}>
-                                {typeof plugin.renderAction === "function" &&
-                                    plugin.renderAction({ options })}
-                            </div>
-                        );
-                    })}
+            {elementSettings.map(({ plugin, options }, index) => {
+                return (
+                    <div key={plugin.name + "-" + index}>
+                        {typeof plugin.render === "function" && plugin.render({ options })}
+                    </div>
+                );
+            })}
         </SidebarActionsWrapper>
     );
 };

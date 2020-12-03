@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as TouchIcon } from "../../assets/icons/touch_app.svg";
+import { ReactComponent as TouchIcon } from "../../../assets/icons/touch_app.svg";
 
 const noActiveElementWrapper = css({
     padding: 16,
