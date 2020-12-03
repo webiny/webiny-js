@@ -65,7 +65,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         query: { slug: this.slug }
                     });
                     if (existingGroup) {
-                        throw Error(`Environment with slug "${this.slug}" already exists.`);
+                        throw new Error(`Environment with slug "${this.slug}" already exists.`);
                     }
                     return;
                 }

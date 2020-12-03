@@ -15,7 +15,7 @@ export default () => ({
         const driver = context.commodo && context.commodo.driver;
 
         if (!driver) {
-            throw Error(
+            throw new Error(
                 `Commodo driver is not configured! Make sure you add a Commodo driver plugin to your service.`
             );
         }

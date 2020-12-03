@@ -92,7 +92,7 @@ export default {
                     return model.slug === slug;
                 });
                 if (existing) {
-                    throw Error(`Environment with slug "${slug}" already exists.`);
+                    throw new Error(`Environment with slug "${slug}" already exists.`);
                 }
 
                 const model = Object.assign(createDataJson, {

@@ -39,7 +39,9 @@ export default ({ createBase, context }) => {
                     query: { slug: this.slug }
                 });
                 if (existingGroup > 0) {
-                    throw Error(`Environment alias with the slug "${this.slug}" already exists.`);
+                    throw new Error(
+                        `Environment alias with the slug "${this.slug}" already exists.`
+                    );
                 }
             },
             async beforeSave() {

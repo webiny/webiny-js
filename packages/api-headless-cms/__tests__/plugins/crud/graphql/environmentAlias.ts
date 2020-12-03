@@ -18,7 +18,6 @@ const DATA_FIELD = /* GraphQL*/ `
 const ERROR_FIELD = /* GraphQL */ `
     {
         code
-        data
         message
     }
 `;

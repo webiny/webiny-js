@@ -99,7 +99,7 @@ export default {
                     return alias.slug === slug;
                 });
                 if (existingAliasSlug) {
-                    throw Error(`Environment alias with the slug "${this.slug}" already exists.`);
+                    throw new Error(`Environment alias with the slug "${slug}" already exists.`);
                 }
                 // create
                 await db.create({
@@ -110,11 +110,21 @@ export default {
                 return modelData;
             },
             async update(id, data): Promise<CmsEnvironmentAliasType> {
-                const updateData = new UpdateEnvironmentAliasModel().populate(data);
+                const slugValue = data.slug || data.name;
+                const updateData = new UpdateEnvironmentAliasModel().populate({
+                    ...data,
+                    slug: !!slugValue ? toSlug(slugValue) : undefined
+                });
                 await updateData.validate();
 
-                const modelDataJson = await updateData.toJSON({ onlyDirty: true });
-                const modelData = Object.assign(modelDataJson, {
+                const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
+
+                // no need to continue if no values were changed
+                if (Object.keys(updatedDataJson).length === 0) {
+                    return {} as any;
+                }
+
+                const modelData = Object.assign(updatedDataJson, {
                     changedOn: new Date().toISOString()
                 });
 
@@ -137,7 +147,7 @@ export default {
                 // before delete hook
                 if (productionsSlugs.includes(model.slug)) {
                     throw new Error(
-                        `Cannot delete "${model.slug}" environment alias, it is marked as a production alias.`
+                        `Cannot delete "${model.name}" environment alias, it is marked as a production alias.`
                     );
                 }
                 // delete

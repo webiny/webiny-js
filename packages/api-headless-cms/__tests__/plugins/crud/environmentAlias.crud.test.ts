@@ -70,7 +70,7 @@ describe("Environment crud test", () => {
         documentClient
     } = useGqlHandler();
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         await documentClient
             .put({
                 TableName: "HeadlessCms",
@@ -238,8 +238,226 @@ describe("Environment crud test", () => {
                         data: null,
                         error: {
                             message: `CMS EnvironmentAlias "nonExistingId" not found.`,
+                            code: "NOT_FOUND"
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when no name and slug sent when creating new environment alias", async () => {
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                environment: getInitialEnvironmentId()
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: "slugify: string argument expected"
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when missing name when creating new environment alias", async () => {
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                slug: "alias-slug",
+                environment: getInitialEnvironmentId()
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: "Validation failed."
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when missing environment when creating new environment alias", async () => {
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                name: "alias name",
+                slug: "alias-slug"
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: "Validation failed."
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when environment sent does not exist in the database when creating new environment alias", async () => {
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                name: "alias name",
+                slug: "alias-slug",
+                environment: "nonExistingId"
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: `Target Environment "nonExistingId" does not exist.`
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when environment alias with same slug already exists", async () => {
+        await createEnvironmentAliasMutation({
+            data: {
+                name: "alias name",
+                slug: "alias-slug",
+                environment: getInitialEnvironmentId()
+            }
+        });
+
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                name: "alias name",
+                slug: "alias-slug",
+                environment: getInitialEnvironmentId()
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "CREATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: `Environment alias with the slug "alias-slug" already exists.`
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when updating non-existing environment alias", async () => {
+        const [response] = await updateEnvironmentAliasMutation({
+            id: "nonExistingId",
+            data: {}
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    updateEnvironmentAlias: {
+                        data: null,
+                        error: {
                             code: "NOT_FOUND",
-                            data: null
+                            message: `CMS EnvironmentAlias "nonExistingId" not found.`
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when updating environment alias with non-existing environment", async () => {
+        const environment = await fetchInitialEnvironment(documentClient);
+        const modelData = createEnvironmentAliasModel({ prefix: "prefix", environment });
+        const [createResponse] = await createEnvironmentAliasMutation({
+            data: modelData
+        });
+        const id = createResponse.data.cms.createEnvironmentAlias.data.id;
+
+        const [response] = await updateEnvironmentAliasMutation({
+            id: id,
+            data: {
+                environment: "nonExistingEnvironmentId"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    updateEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "UPDATE_ENVIRONMENT_ALIAS_FAILED",
+                            message: `Target Environment "nonExistingEnvironmentId" does not exist.`
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when deleting non-existing environment alias", async () => {
+        const [response] = await deleteEnvironmentAliasMutation({
+            id: "nonExistingId"
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    deleteEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            message: `CMS EnvironmentAlias "nonExistingId" not found.`
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when deleting production environment alias", async () => {
+        const [createResponse] = await createEnvironmentAliasMutation({
+            data: {
+                name: "production",
+                slug: "production",
+                environment: getInitialEnvironmentId()
+            }
+        });
+
+        const id = createResponse.data.cms.createEnvironmentAlias.data.id;
+
+        const [response] = await deleteEnvironmentAliasMutation({
+            id: id
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    deleteEnvironmentAlias: {
+                        data: null,
+                        error: {
+                            code: "DELETE_ENVIRONMENT_ALIAS_FAILED",
+                            message: `Cannot delete "production" environment alias, it is marked as a production alias.`
                         }
                     }
                 }
