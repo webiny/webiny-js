@@ -1,9 +1,10 @@
 import { merge } from "lodash";
-import menus from "./graphql/menus";
-import pages from "./graphql/pages";
-import pageElements from "./graphql/pageElements";
-import categories from "./graphql/categories";
-import install from "./graphql/install";
+import menus from "./graphql/menus.gql";
+import pages from "./graphql/pages.gql";
+import pageElements from "./graphql/pageElements.gql";
+import categories from "./graphql/categories.gql";
+import settings from "./graphql/settings.gql";
+import install from "./graphql/install.gql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -13,6 +14,16 @@ export default [
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
+                input PbFileInput {
+                    id: ID!
+                    src: String!
+                }
+
+                type PbFile {
+                    id: ID!
+                    src: String!
+                }
+
                 type PbCreatedBy {
                     id: ID
                     displayName: String
@@ -27,16 +38,6 @@ export default [
                 type PbDeleteResponse {
                     data: Boolean
                     error: PbError
-                }
-
-                type PbBooleanResponse {
-                    data: Boolean
-                    error: PbError
-                }
-
-                type PbCursors {
-                    next: String
-                    previous: String
                 }
 
                 type PbQuery {
@@ -69,5 +70,6 @@ export default [
     categories,
     pages,
     pageElements,
+    settings,
     install
 ] as GraphQLSchemaPlugin[];

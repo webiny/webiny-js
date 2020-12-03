@@ -13,11 +13,16 @@ const BASE_FIELDS = `
 `;
 
 export const LIST_CATEGORIES = gql`
-    query listCategories {
+    query ListCategories {
         pageBuilder {
             listCategories {
                 data {
                     ${BASE_FIELDS}
+                }
+                error {
+                    data
+                    code
+                    message
                 }
             }
         }
@@ -25,7 +30,7 @@ export const LIST_CATEGORIES = gql`
 `;
 
 export const GET_CATEGORY = gql`
-    query getCategory($slug: String!) {
+    query GetCategory($slug: String!) {
         pageBuilder {
             getCategory(slug: $slug){
                 data {
@@ -42,7 +47,7 @@ export const GET_CATEGORY = gql`
 `;
 
 export const CREATE_CATEGORY = gql`
-    mutation createCategory($data: PbCategoryInput!){
+    mutation CreateCategory($data: PbCategoryInput!){
         pageBuilder {
             category: createCategory(data: $data) {
                 data {
@@ -59,7 +64,7 @@ export const CREATE_CATEGORY = gql`
 `;
 
 export const UPDATE_CATEGORY = gql`
-    mutation updateCategory($slug: String!, $data: PbCategoryInput!){
+    mutation UpdateCategory($slug: String!, $data: PbCategoryInput!){
         pageBuilder {
             category: updateCategory(slug: $slug, data: $data) {
                 data {
@@ -76,7 +81,7 @@ export const UPDATE_CATEGORY = gql`
 `;
 
 export const DELETE_CATEGORY = gql`
-    mutation deleteCategory($slug: String!) {
+    mutation DeleteCategory($slug: String!) {
         pageBuilder {
             deleteCategory(slug: $slug) {
                 error {

@@ -1,7 +1,5 @@
 import cloneDeep from "lodash/cloneDeep";
 
-import { listPublishedPages } from "../pageResolvers/listPublishedPages";
-
 const applyCleanup = async items => {
     if (!Array.isArray(items)) {
         return;
@@ -88,6 +86,7 @@ export default async ({ menu, context }: { [key: string]: any }) => {
                         if (!context.distinctParents.loaded) {
                             const ids = Object.keys(context.distinctParents.data);
 
+                            // @ts-ignore
                             await listPublishedPages({
                                 limit: 200,
                                 args: { parent: ids },
@@ -113,6 +112,7 @@ export default async ({ menu, context }: { [key: string]: any }) => {
                     case "pages-list": {
                         const { category, sortBy, sortDir, tags } = item;
 
+                        // @ts-ignore
                         item.children = await listPublishedPages({
                             limit: 200,
                             args: { tags, category, sort: { [sortBy]: parseInt(sortDir) } },

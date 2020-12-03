@@ -1,13 +1,18 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Response } from "@webiny/handler-graphql/responses";
+import { PbContext } from "@webiny/api-page-builder/types";
 
-const plugin: GraphQLSchemaPlugin = {
+const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
             input PbInstallInput {
                 domain: String
                 name: String!
+            }
+            type PbBooleanResponse {
+                data: Boolean
+                error: PbError
             }
 
             extend type PbQuery {

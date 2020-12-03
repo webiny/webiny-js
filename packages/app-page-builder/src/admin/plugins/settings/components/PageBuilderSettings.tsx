@@ -4,7 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { Query, Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import graphql from "./graphql";
+import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql";
 import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
@@ -21,12 +21,12 @@ const PageBuilderSettings = () => {
     const { showSnackbar } = useSnackbar();
 
     return (
-        <Query query={graphql.query}>
+        <Query query={GET_SETTINGS}>
             {({ data, loading: queryInProgress }) => {
                 const settings = get(data, "pageBuilder.getSettings.data") || {};
 
                 return (
-                    <Mutation mutation={graphql.mutation}>
+                    <Mutation mutation={UPDATE_SETTINGS}>
                         {(update, { loading: mutationInProgress }) => (
                             <Form
                                 data={settings}
@@ -82,6 +82,7 @@ const PageBuilderSettings = () => {
                                                         <Cell span={12}>
                                                             <Bind name={"social.image"}>
                                                                 <SingleImageUpload
+                                                                    onChangePick={["id", "src"]}
                                                                     label="Default Open Graph image"
                                                                     description={`The default OG image for all pages. Recommended resolution 1596x545.`}
                                                                     // TODO: @adrian

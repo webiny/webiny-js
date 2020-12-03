@@ -1,5 +1,5 @@
 import { UpdatePageRevisionActionEvent } from "./event";
-import { updateRevisionAction } from "./action";
+import { updatePageAction } from "./action";
 import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
 
 export default () => {
@@ -7,7 +7,7 @@ export default () => {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-update-revision",
         onEditorMount: handler => {
-            return handler.on(UpdatePageRevisionActionEvent, updateRevisionAction);
+            return handler.on(UpdatePageRevisionActionEvent, updatePageAction);
         }
     } as PbEditorEventActionPlugin;
 };

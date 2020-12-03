@@ -1,5 +1,5 @@
 import useGqlHandler from "./useGqlHandler";
-import { SecurityIdentity } from "@webiny/api-security";
+import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
 function Mock(prefix) {
     this.slug = `${prefix}slug`;
@@ -7,35 +7,6 @@ function Mock(prefix) {
     this.description = `${prefix}description`;
     this.items = { [`${prefix}items`]: "items" };
 }
-
-const NOT_AUTHORIZED_RESPONSE = operation => ({
-    data: {
-        pageBuilder: {
-            [operation]: {
-                data: null,
-                error: {
-                    code: "SECURITY_NOT_AUTHORIZED",
-                    data: null,
-                    message: "Not authorized!"
-                }
-            }
-        }
-    }
-});
-
-const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
-    type: "test",
-    displayName: "Aa"
-});
-
-const identityB = new SecurityIdentity({
-    id: "b",
-    login: "b",
-    type: "test",
-    displayName: "Bb"
-});
 
 const defaultHandler = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],

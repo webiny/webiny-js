@@ -57,6 +57,9 @@ type SingleImageUploadProps = FormComponentProps & {
 
     // Is the wrapper round?
     round?: boolean;
+
+    // Define the needed properties that are returned on file(s) selection.
+    onChangePick?: string[];
 };
 
 export default class SingleImageUpload extends React.Component<SingleImageUploadProps> {
@@ -73,6 +76,7 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
             label,
             description,
             accept,
+            onChangePick,
             maxSize,
             multipleMaxCount,
             multipleMaxSize,
@@ -90,6 +94,7 @@ export default class SingleImageUpload extends React.Component<SingleImageUpload
 
                 <FileManager
                     onChange={onChange}
+                    onChangePick={onChangePick}
                     accept={accept}
                     images={!accept}
                     maxSize={maxSize}

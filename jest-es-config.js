@@ -3,7 +3,7 @@ module.exports = () => {
         esVersion: "7.6.0",
         clusterName: "test-cluster",
         nodeName: "test-node",
-        port: 9201,
+        port: 9200,
         indexes: []
     };
 };

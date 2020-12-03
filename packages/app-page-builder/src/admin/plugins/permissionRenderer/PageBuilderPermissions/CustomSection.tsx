@@ -2,13 +2,21 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo } from "@webiny/app-security-tenancy/components/permission";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
-const CustomSection = ({ Bind, data, entity, title }) => {
+const rwdOptions = [
+    { id: "r", name: t`Read` },
+    { id: "w", name: t`Write` },
+    { id: "d", name: t`Delete` }
+];
+
+const CustomSection = ({ Bind, data, entity, title, children = null }) => {
+    const rwdCheckboxesEnabled = ["full", "own"].includes(data[`${entity}AccessLevel`]);
+
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
             <Grid>
@@ -18,32 +26,40 @@ const CustomSection = ({ Bind, data, entity, title }) => {
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={6}>
-                            <PermissionInfo title={t`Access Level`} />
-                        </Cell>
-                        <Cell span={6} align={"middle"}>
                             <Bind name={`${entity}AccessLevel`}>
-                                <Select label={t`Access Level`}>
-                                    <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`All`}</option>
-                                    <option value={"own"}>{t`Only the one they created`}</option>
-                                </Select>
-                            </Bind>
-                        </Cell>
-                        <Cell span={6}>
-                            <PermissionInfo title={t`Permissions`} />
-                        </Cell>
-                        <Cell span={6} align={"middle"}>
-                            <Bind name={`${entity}Rwd`}>
                                 <Select
-                                    label={t`Permissions`}
-                                    disabled={data[`${entity}AccessLevel`] !== "full"}
+                                    label={t`Access Scope`}
+                                    description={t`The scope of the content that can be accessed.`}
                                 >
-                                    <option value={"r"}>{t`Read`}</option>
-                                    <option value={"rw"}>{t`Read, write`}</option>
-                                    <option value={"rwd"}>{t`Read, write, delete`}</option>
+                                    <option value={"no"}>{t`None`}</option>
+                                    <option value={"full"}>{t`All content`}</option>
+                                    <option
+                                        value={"own"}
+                                    >{t`Only content created by the user`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
+                        <Cell span={12}>
+                            <Bind name={`${entity}Rwd`}>
+                                <CheckboxGroup
+                                    label={t`Primary actions`}
+                                    description={t`Primary actions that can be performed on the content.`}
+                                >
+                                    {({ getValue, onChange }) =>
+                                        rwdOptions.map(({ id, name }) => (
+                                            <Checkbox
+                                                disabled={!rwdCheckboxesEnabled}
+                                                key={id}
+                                                label={name}
+                                                value={getValue(id)}
+                                                onChange={onChange(id)}
+                                            />
+                                        ))
+                                    }
+                                </CheckboxGroup>
+                            </Bind>
+                        </Cell>
+                        {children}
                     </Grid>
                 </Cell>
             </Grid>

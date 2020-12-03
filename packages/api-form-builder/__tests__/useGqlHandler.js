@@ -39,7 +39,9 @@ import {
     EXPORT_FROM_SUBMISSION
 } from "./graphql/formSubmission";
 
-export default ({ permissions, identity } = {}) => {
+const defaultTenant = { id: "root", name: "Root", parent: null };
+
+export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "FormBuilder",
@@ -52,9 +54,17 @@ export default ({ permissions, identity } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
+        {
+            type: "context",
+            apply(context) {
+                context.security.getTenant = () => {
+                    return tenant || defaultTenant;
+                };
+            }
+        },
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
@@ -90,8 +100,8 @@ export default ({ permissions, identity } = {}) => {
 
     return {
         elasticSearch: new Client({
-            hosts: [`http://localhost:9201`],
-            node: "http://localhost:9201"
+            hosts: [`http://localhost:9200`],
+            node: "http://localhost:9200"
         }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {

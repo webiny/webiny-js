@@ -2,10 +2,7 @@
 import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
-import {
-    CREATE_REVISION_FORM,
-    DELETE_REVISION
-} from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE, DELETE_REVISION } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
@@ -13,13 +10,13 @@ export function useRevisionHandlers(props) {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const client = useApolloClient();
-    const { page } = props;
+    const { page, revision } = props;
     const { publishRevision } = usePublishRevisionHandler({ page });
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
-            mutation: CREATE_REVISION_FORM,
-            variables: { revision: rev.id },
+            mutation: CREATE_PAGE,
+            variables: { revision: revision.id },
             refetchQueries: ["PbListPages"],
             awaitRefetchQueries: true
         });
@@ -30,16 +27,16 @@ export function useRevisionHandlers(props) {
         }
 
         history.push(`/page-builder/editor/${data.id}`);
-    }, [rev]);
+    }, [revision]);
 
     const editRevision = useCallback(() => {
-        history.push(`/page-builder/editor/${rev.id}`);
-    }, [rev]);
+        history.push(`/page-builder/editor/${revision.id}`);
+    }, [revision]);
 
     const deleteRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
             mutation: DELETE_REVISION,
-            variables: { id: rev.id },
+            variables: { id: revision.id },
             refetchQueries: ["PbListPages"],
             awaitRefetchQueries: true
         });
@@ -48,10 +45,10 @@ export function useRevisionHandlers(props) {
             return showSnackbar(error.message);
         }
 
-        if (rev.id === page.id) {
+        if (revision.id === page.id) {
             history.push("/page-builder/pages");
         }
-    }, [rev, page]);
+    }, [revision, page]);
 
     return {
         publishRevision,

@@ -26,21 +26,18 @@ const fields = /* GraphQL */ `
     }
 `;
 
-const graphql = {
-    query: gql`
+export const GET_SETTINGS = gql`
         query GetSettings {
             pageBuilder {
                 getSettings ${fields}
             }
         }
-    `,
-    mutation: gql`
-        mutation updateSettings($data: PbSettingsInput) {
-            pageBuilder {
-                updateSettings(data: $data) ${fields}
-            }
-        }
-    `
-};
+    `;
 
-export default graphql;
+export const UPDATE_SETTINGS = gql`
+    mutation updateSettings($data: PbSettingsInput!) {
+        pageBuilder {
+            updateSettings(data: $data) ${fields}
+        }
+    }
+`;

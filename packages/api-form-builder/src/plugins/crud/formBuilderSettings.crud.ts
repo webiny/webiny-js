@@ -1,16 +1,18 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
-import { withFields, string, boolean, fields, setOnce } from "@commodo/fields";
+import { withFields, string, boolean, fields } from "@commodo/fields";
 import merge from "merge";
 import defaults from "./defaults";
 import { FormBuilderSettingsCRUD, FormBuilderSettings } from "../../types";
+import getPKPrefix from "./utils/getPKPrefix";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
 
-export const PK_SETTINGS = "S";
-export const FB_SETTINGS_KEY = "formBuilder";
+export const FB_SETTINGS_KEY = "default";
 
 const CreateDataModel = withFields({
-    key: setOnce()(string({ value: FB_SETTINGS_KEY })),
     installed: boolean({ value: false }),
     domain: string(),
     reCaptcha: fields({
@@ -45,11 +47,13 @@ export default {
             context.formBuilder.crud = {};
         }
 
+        const PK_SETTINGS = () => `${getPKPrefix(context)}SETTINGS`;
+
         context.formBuilder.crud.formBuilderSettings = {
             async getSettings() {
                 const [[settings]] = await db.read<FormBuilderSettings>({
                     ...defaults.db,
-                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY },
+                    query: { PK: PK_SETTINGS(), SK: FB_SETTINGS_KEY },
                     limit: 1
                 });
 
@@ -63,9 +67,9 @@ export default {
 
                 await db.create({
                     data: {
-                        PK: PK_SETTINGS,
-                        SK: formBuilderSettings.key,
-                        TYPE: "formBuilder:FormBuilderSettings",
+                        PK: PK_SETTINGS(),
+                        SK: FB_SETTINGS_KEY,
+                        TYPE: "fb.settings",
                         ...dataJSON
                     }
                 });
@@ -81,7 +85,7 @@ export default {
 
                 await db.update({
                     ...defaults.db,
-                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY },
+                    query: { PK: PK_SETTINGS(), SK: FB_SETTINGS_KEY },
                     data: dataJSON
                 });
 
@@ -90,9 +94,9 @@ export default {
             deleteSettings() {
                 return db.delete({
                     ...defaults.db,
-                    query: { PK: PK_SETTINGS, SK: FB_SETTINGS_KEY }
+                    query: { PK: PK_SETTINGS(), SK: FB_SETTINGS_KEY }
                 });
             }
         } as FormBuilderSettingsCRUD;
     }
-} as ContextPlugin<DbContext>;
+} as ContextPlugin<DbContext, SecurityContext, TenancyContext, I18NContentContext>;

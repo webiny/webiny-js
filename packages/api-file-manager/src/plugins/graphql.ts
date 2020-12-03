@@ -114,7 +114,7 @@ export default [
                     SIZE_DESC
                 }
 
-                type FileManagerQuery {
+                type FmQuery {
                     getFile(id: ID, where: JSON, sort: String): FileResponse
 
                     listFiles(
@@ -141,7 +141,7 @@ export default [
                     error: FileError
                 }
 
-                type FileManagerMutation {
+                type FmMutation {
                     createFile(data: FileInput!): FileResponse
                     createFiles(data: [FileInput]!): CreateFilesResponse
                     updateFile(id: ID!, data: FileInput!): FileResponse
@@ -158,11 +158,11 @@ export default [
                 }
 
                 extend type Query {
-                    fileManager: FileManagerQuery
+                    fileManager: FmQuery
                 }
 
                 extend type Mutation {
-                    fileManager: FileManagerMutation
+                    fileManager: FmMutation
                 }
             `,
             resolvers: {
@@ -178,7 +178,7 @@ export default [
                 Mutation: {
                     fileManager: emptyResolver
                 },
-                FileManagerQuery: {
+                FmQuery: {
                     getFile: pipe(hasPermission("fm.file"), hasI18NContentPermission())(getFile),
                     listFiles: pipe(
                         hasPermission("fm.file"),
@@ -191,7 +191,7 @@ export default [
                         hasI18NContentPermission()
                     )(getSettings)
                 },
-                FileManagerMutation: {
+                FmMutation: {
                     createFile: pipe(
                         hasPermission("fm.file"),
                         hasI18NContentPermission()

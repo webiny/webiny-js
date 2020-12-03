@@ -1,11 +1,9 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { compose } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 const hasRwd = ({ pbMenuPermission, rwd }) => {
     if (typeof pbMenuPermission.rwd !== "string") {
@@ -15,9 +13,7 @@ const hasRwd = ({ pbMenuPermission, rwd }) => {
     return pbMenuPermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<I18NContext, SecurityContext>;
-
-const plugin: GraphQLSchemaPlugin = {
+const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -69,7 +65,7 @@ const plugin: GraphQLSchemaPlugin = {
                 getMenu: compose(
                     hasPermission("pb.menu"),
                     hasI18NContentPermission()
-                )(async (_, args: { slug: string }, context: Context) => {
+                )(async (_, args: { slug: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbMenuPermission = await context.security.getPermission("pb.menu");
                     if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "r" })) {
@@ -95,7 +91,7 @@ const plugin: GraphQLSchemaPlugin = {
                 listMenus: compose(
                     hasPermission("pb.menu"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbMenuPermission = await context.security.getPermission("pb.menu");
                     if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "r" })) {
@@ -119,7 +115,7 @@ const plugin: GraphQLSchemaPlugin = {
                 createMenu: compose(
                     hasPermission("pb.menu"),
                     hasI18NContentPermission()
-                )(async (_, args: { data: Record<string, any> }, context: Context) => {
+                )(async (_, args: { data: Record<string, any> }, context: PbContext) => {
                     // If permission has "rwd" property set, but "w" is not part of it, bail.
                     const pbMenuPermission = await context.security.getPermission("pb.menu");
                     if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "w" })) {
@@ -158,7 +154,7 @@ const plugin: GraphQLSchemaPlugin = {
                     async (
                         _,
                         args: { slug: string; data: Record<string, any> },
-                        context: Context
+                        context: PbContext
                     ) => {
                         // If permission has "rwd" property set, but "w" is not part of it, bail.
                         const pbMenuPermission = await context.security.getPermission("pb.menu");
@@ -191,7 +187,7 @@ const plugin: GraphQLSchemaPlugin = {
                 deleteMenu: compose(
                     hasPermission("pb.menu"),
                     hasI18NContentPermission()
-                )(async (_, args: { slug: string }, context: Context) => {
+                )(async (_, args: { slug: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "d" is not part of it, bail.
                     const pbMenuPermission = await context.security.getPermission("pb.menu");
                     if (pbMenuPermission && !hasRwd({ pbMenuPermission, rwd: "d" })) {

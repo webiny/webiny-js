@@ -1,66 +1,93 @@
-import React, { useState, useCallback } from "react";
-import { usePublishRevisionHandler } from "../../utils/usePublishRevisionHandler";
-import PublishRevisionDialog from "./PublishRevisionDialog";
+import React, { useMemo } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
-import { get } from "lodash";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { i18n } from "@webiny/app/i18n";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useMutation } from "react-apollo";
+import gql from "graphql-tag";
+import { useSecurity } from "@webiny/app-security";
 
-function getPublishSuggestion(page, revisions) {
-    if (!page.published) {
-        return page.id;
+const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/publish");
+
+const PUBLISH_PAGE = gql`
+    mutation updateMenu($id: ID!) {
+        pageBuilder {
+            publishPage(id: $id) {
+                data {
+                    id
+                    status
+                    locked
+                }
+                error {
+                    code
+                    message
+                    data
+                }
+            }
+        }
     }
-
-    if (revisions[0]) {
-        return revisions[0].id;
-    }
-
-    return "";
-}
-
-function getPublishableRevisions(revisions) {
-    return revisions
-        .filter(r => !r.published)
-        .sort((a, b) => {
-            // @ts-ignore
-            return new Date(b.savedOn) - new Date(a.savedOn);
-        });
-}
+`;
 
 const PublishRevision = props => {
+    const { identity } = useSecurity();
     const { page } = props;
-    const { publishRevision } = usePublishRevisionHandler({ page });
-    const publishableRevisions = getPublishableRevisions(get(page, "revisions") || []);
-    const publishSuggestion = getPublishSuggestion(page, publishableRevisions);
-    const [openDialog, setOpenDialog] = useState(false);
 
-    const showDialog = useCallback(() => setOpenDialog(true), []);
-    const hideDialog = useCallback(() => setOpenDialog(false), []);
+    const { showSnackbar } = useSnackbar();
 
-    const onSubmit = useCallback(
-        revision => {
-            hideDialog();
-            return publishRevision(revision);
-        },
-        [publishRevision]
-    );
+    const [publishPage] = useMutation(PUBLISH_PAGE);
 
-    if (!publishableRevisions.length) {
+    const { showConfirmation } = useConfirmationDialog({
+        title: t`Publish page`,
+        message: (
+            <p>
+                {t`You are about to publish {title} page. Are you sure you want to continue?`({
+                    title: <strong>{page.title}</strong>
+                })}
+            </p>
+        )
+    });
+
+    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
+    if (!pbPagePermission) {
         return null;
     }
 
+    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+        return null;
+    }
+
+    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("p")) {
+        return null;
+    }
+
+    const buttonDisabled = page.status === "published";
+
     return (
         <React.Fragment>
-            <Tooltip content={"Publish"} placement={"top"}>
-                <IconButton icon={<PublishIcon />} onClick={showDialog} />
+            <Tooltip content={t`Publish`} placement={"top"}>
+                <IconButton
+                    disabled={buttonDisabled}
+                    icon={<PublishIcon />}
+                    onClick={() =>
+                        showConfirmation(async () => {
+                            const response = await publishPage({
+                                variables: {
+                                    id: page.id
+                                }
+                            });
+
+                            const { error } = response.data.pageBuilder.publishPage;
+                            if (error) {
+                                showSnackbar(error.message);
+                            } else {
+                                showSnackbar(t`Page published successfully.`);
+                            }
+                        })
+                    }
+                />
             </Tooltip>
-            <PublishRevisionDialog
-                open={openDialog}
-                onClose={hideDialog}
-                onSubmit={onSubmit}
-                selected={publishSuggestion}
-                revisions={publishableRevisions}
-            />
         </React.Fragment>
     );
 };

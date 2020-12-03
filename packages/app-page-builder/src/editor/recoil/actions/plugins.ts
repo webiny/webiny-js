@@ -6,7 +6,7 @@ import dropElementPlugin from "./dropElement/plugin";
 import saveRevisionPlugin from "./saveRevision/plugin";
 import togglePluginPlugin from "./togglePlugin/plugin";
 import updateElementPlugin from "./updateElement/plugin";
-import updateRevisionPlugin from "./updateRevision/plugin";
+import updatePagePlugin from "./updatePage/plugin";
 import resizePlugin from "./resize/plugin";
 
 export {
@@ -18,6 +18,6 @@ export {
     saveRevisionPlugin,
     togglePluginPlugin,
     updateElementPlugin,
-    updateRevisionPlugin,
+    updatePagePlugin,
     resizePlugin
 };
