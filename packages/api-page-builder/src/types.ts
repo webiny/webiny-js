@@ -1,5 +1,5 @@
 import { Plugin } from "@webiny/plugins/types";
-import { Context, ContextPlugin } from "@webiny/handler/types";
+import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -19,5 +19,3 @@ export type PbContext = Context<
     SecurityContext,
     TenancyContext
 >;
-
-export type PbContextPlugin = ContextPlugin<PbContext>;
