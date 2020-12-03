@@ -4,7 +4,6 @@ import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/type
 import Action from "../components/Action";
 import Settings from "../components/PMSettings";
 import MarginSettings from "../components/MarginPaddingSettings";
-import Accordion from "../components/Accordion";
 // Icon
 import { ReactComponent as MarginIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen.svg";
 
@@ -18,10 +17,6 @@ export default {
         return <Settings title="Margin" styleAttribute="margin" />;
     },
     render() {
-        return (
-            <Accordion title={"Margin"}>
-                <MarginSettings styleAttribute={"margin"} />
-            </Accordion>
-        );
+        return <MarginSettings styleAttribute={"margin"} />;
     }
 } as PbEditorPageElementSettingsPlugin;

@@ -1,21 +1,48 @@
 import React, { useMemo } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { get } from "lodash";
+import { get, startCase } from "lodash";
 import { set, merge } from "dot-prop-immutable";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import { css } from "emotion";
+import { Typography } from "@webiny/ui/Typography";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
-import InputField from "./InputField";
-import { COLORS } from "./StyledComponents";
+import SpacingPicker from "./SpacingPicker";
+import {
+    COLORS,
+    SpacingGrid,
+    TopLeft,
+    Top,
+    TopRight,
+    Left,
+    Center,
+    Right,
+    BottomLeft,
+    Bottom,
+    BottomRight
+} from "./StyledComponents";
+import Accordion from "./Accordion";
+import {
+    PbElementDataSettingsPaddingUnitType,
+    PbElementDataSettingsMarginUnitType
+} from "@webiny/app-page-builder/types";
 
 const classes = {
+    gridContainerClass: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            margin: "16px 0px 24px"
+        }
+    }),
     wrapper: css({
-        display: "flex"
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
     }),
     input: css({
         "& .mdc-text-field__input": {
@@ -28,6 +55,7 @@ const classes = {
         alignItems: "center",
         border: `1px solid ${COLORS.gray}`,
         padding: "0px 5px",
+        minHeight: 30,
 
         "& svg": {
             transform: "rotate(135deg)",
@@ -38,46 +66,6 @@ const classes = {
     linkSettingsActive: css({
         backgroundColor: "var(--mdc-theme-secondary)",
         color: "var(--mdc-theme-on-primary)"
-    }),
-    controllerWrapper: css({
-        display: "flex",
-        flexDirection: "column",
-
-        "& button": {
-            color: COLORS.darkGray,
-            border: "1px solid var(--mdc-theme-on-background)",
-            padding: "0px",
-            width: 15,
-            height: 15,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-
-            "&:focus": {
-                color: "var(--mdc-theme-primary)"
-            },
-            "&:disabled": {
-                cursor: "not-allowed"
-            }
-        },
-        "&:first-child": {
-            borderBottom: "none !important"
-        },
-
-        "& .arrow-down": {
-            // Arrow down.
-            borderTop: "5px solid currentColor",
-            borderBottom: 0,
-            borderLeft: "5px solid transparent",
-            borderRight: "5px solid transparent"
-        },
-        "& .arrow-up": {
-            // Arrow down.
-            borderTop: 0,
-            borderBottom: "5px solid currentColor",
-            borderLeft: "5px solid transparent",
-            borderRight: "5px solid transparent"
-        }
     })
 };
 
@@ -88,6 +76,64 @@ const classes = {
 
 type PMSettingsPropsType = {
     styleAttribute: "margin" | "padding";
+};
+
+type spacingUnitOptionType<T> = {
+    label: string;
+    value: T;
+};
+const paddingUnitOptions: spacingUnitOptionType<PbElementDataSettingsPaddingUnitType>[] = [
+    {
+        label: "%",
+        value: "%"
+    },
+    {
+        label: "px",
+        value: "px"
+    },
+    {
+        label: "em",
+        value: "em"
+    },
+    {
+        label: "vh",
+        value: "vh"
+    },
+    {
+        label: "vw",
+        value: "vw"
+    }
+];
+const marginUnitOptions: spacingUnitOptionType<PbElementDataSettingsMarginUnitType>[] = [
+    {
+        label: "%",
+        value: "%"
+    },
+    {
+        label: "px",
+        value: "px"
+    },
+    {
+        label: "em",
+        value: "em"
+    },
+    {
+        label: "vh",
+        value: "vh"
+    },
+    {
+        label: "vw",
+        value: "vw"
+    },
+    {
+        label: "auto",
+        value: "auto"
+    }
+];
+
+const options = {
+    padding: paddingUnitOptions,
+    margin: marginUnitOptions
 };
 
 const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
@@ -103,7 +149,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
         const propName = `${valueKey}.${name}`;
 
         if (name !== "advanced") {
-            newValue = parseInt(newValue) || 0;
+            newValue = parseFloat(newValue) || 0;
         }
         // "padding" cannot be negative.
         if (styleAttribute === "padding" && newValue < 0) {
@@ -132,6 +178,31 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
         );
     };
 
+    const updateUnits = (name: string, newValue: any, history = false) => {
+        const propName = `${valueKey}.${name}`;
+
+        let newElement = set(element, propName, newValue);
+
+        // Update all values in advanced settings
+        if (propName.endsWith(".all")) {
+            const prefix = propName.includes("desktop") ? "desktop.units" : "mobile.units";
+            newElement = merge(newElement, `${valueKey}.${prefix}`, {
+                top: newValue,
+                right: newValue,
+                bottom: newValue,
+                left: newValue
+            });
+        }
+
+        handler.trigger(
+            new UpdateElementActionEvent({
+                element: newElement,
+                history,
+                merge: true
+            })
+        );
+    };
+
     const getUpdateValue = useMemo(() => {
         const handlers = {};
         return (name: string) => {
@@ -143,83 +214,101 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
         };
     }, [updateSettings]);
 
-    const increment = useMemo(
-        () => () => {
-            if (!advanced) {
-                const value = get(element, `${valueKey}.desktop.all`, 0);
-                getUpdateValue("desktop.all")(value + 1);
-            } else {
-                console.log("Cannot use these.");
+    const getUpdateUnit = useMemo(() => {
+        const handlers = {};
+        return (name: string) => {
+            if (!handlers[name]) {
+                handlers[name] = value => updateUnits(name, value, true);
             }
-        },
-        [advanced, element]
-    );
 
-    const decrement = useMemo(
-        () => () => {
-            if (!advanced) {
-                const value = get(element, `${valueKey}.desktop.all`, 0);
-                getUpdateValue("desktop.all")(value - 1);
-            } else {
-                console.log("Cannot use these.");
-            }
-        },
-        [advanced, element]
-    );
+            return handlers[name];
+        };
+    }, [updateUnits]);
 
     const toggleAdvanced = useMemo(
-        () => () => {
+        () => event => {
+            // Don't need to propagate further.
+            event.stopPropagation();
             getUpdateValue("advanced")(!advanced);
         },
         [advanced]
     );
 
     return (
-        <div className={classes.wrapper}>
-            <InputField
-                className={classes.input}
-                description={"Top"}
-                value={get(element, valueKey + ".desktop.top", 0)}
-                onChange={advanced ? getUpdateValue("desktop.top") : getUpdateValue("desktop.all")}
-            />
-            <div className={classes.controllerWrapper}>
-                <button disabled={advanced} onClick={increment}>
-                    <div className={"arrow-up"} />
-                </button>
-                <button disabled={advanced} onClick={decrement}>
-                    <div className={"arrow-down"} />
-                </button>
-            </div>
-            <InputField
-                disabled={!advanced}
-                className={classes.input}
-                description={"Right"}
-                value={get(element, valueKey + ".desktop.right", 0)}
-                onChange={getUpdateValue("desktop.right")}
-            />
-            <InputField
-                disabled={!advanced}
-                className={classes.input}
-                description={"Bottom"}
-                value={get(element, valueKey + ".desktop.bottom", 0)}
-                onChange={getUpdateValue("desktop.bottom")}
-            />
-            <InputField
-                disabled={!advanced}
-                className={classes.input}
-                description={"Left"}
-                value={get(element, valueKey + ".desktop.left", 0)}
-                onChange={getUpdateValue("desktop.left")}
-            />
-            <button
-                className={classNames(classes.linkSettings, {
-                    [classes.linkSettingsActive]: !advanced
-                })}
-                onClick={toggleAdvanced}
-            >
-                <LinkIcon />
-            </button>
-        </div>
+        <Accordion
+            title={startCase(styleAttribute)}
+            action={
+                <Tooltip content={"link all sides"}>
+                    <button
+                        className={classNames(classes.linkSettings, {
+                            [classes.linkSettingsActive]: !advanced
+                        })}
+                        onClick={toggleAdvanced}
+                    >
+                        <LinkIcon />
+                    </button>
+                </Tooltip>
+            }
+        >
+            <SpacingGrid>
+                <TopLeft />
+                <Top className="align-center">
+                    <SpacingPicker
+                        options={options[styleAttribute]}
+                        value={get(element, valueKey + ".desktop.top", 0)}
+                        onChange={
+                            advanced ? getUpdateValue("desktop.top") : getUpdateValue("desktop.all")
+                        }
+                        unitValue={get(element, valueKey + ".desktop.units.top", "px")}
+                        unitOnChange={
+                            advanced
+                                ? getUpdateUnit("desktop.units.top")
+                                : getUpdateUnit("desktop.units.all")
+                        }
+                    />
+                </Top>
+                <TopRight />
+                <Left>
+                    <SpacingPicker
+                        options={options[styleAttribute]}
+                        disabled={!advanced}
+                        value={get(element, valueKey + ".desktop.left", 0)}
+                        onChange={getUpdateValue("desktop.left")}
+                        unitValue={get(element, valueKey + ".desktop.units.left", "px")}
+                        unitOnChange={getUpdateUnit("desktop.units.left")}
+                    />
+                </Left>
+                <Center className="align-center">
+                    <Typography className={"text mono"} use={"subtitle2"}>
+                        {get(element, "data.settings.width.value", "100%")}
+                        &nbsp;x&nbsp;
+                        {get(element, "data.settings.height.value", "100%")}
+                    </Typography>
+                </Center>
+                <Right>
+                    <SpacingPicker
+                        options={options[styleAttribute]}
+                        disabled={!advanced}
+                        value={get(element, valueKey + ".desktop.right", 0)}
+                        onChange={getUpdateValue("desktop.right")}
+                        unitValue={get(element, valueKey + ".desktop.units.right", "px")}
+                        unitOnChange={getUpdateUnit("desktop.units.right")}
+                    />
+                </Right>
+                <BottomLeft />
+                <Bottom className={"align-center"}>
+                    <SpacingPicker
+                        options={options[styleAttribute]}
+                        disabled={!advanced}
+                        value={get(element, valueKey + ".desktop.bottom", 0)}
+                        onChange={getUpdateValue("desktop.bottom")}
+                        unitValue={get(element, valueKey + ".desktop.units.bottom", "px")}
+                        unitOnChange={getUpdateUnit("desktop.units.bottom")}
+                    />
+                </Bottom>
+                <BottomRight />
+            </SpacingGrid>
+        </Accordion>
     );
 };
 

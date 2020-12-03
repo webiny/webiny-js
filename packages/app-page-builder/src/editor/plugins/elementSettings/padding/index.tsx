@@ -3,7 +3,6 @@ import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/type
 // Components
 import Settings from "../components/PMSettings";
 import Action from "../components/Action";
-import Accordion from "../components/Accordion";
 import MarginPaddingSettings from "../components/MarginPaddingSettings";
 // Icons
 import { ReactComponent as PaddingIcon } from "@webiny/app-page-builder/editor/assets/icons/fullscreen_exit.svg";
@@ -18,10 +17,6 @@ export default {
         return <Settings title="Padding" styleAttribute="padding" />;
     },
     render() {
-        return (
-            <Accordion title={"Padding"}>
-                <MarginPaddingSettings styleAttribute={"padding"} />
-            </Accordion>
-        );
+        return <MarginPaddingSettings styleAttribute={"padding"} />;
     }
 } as PbEditorPageElementSettingsPlugin;
