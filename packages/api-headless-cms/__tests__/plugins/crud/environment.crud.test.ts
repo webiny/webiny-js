@@ -7,6 +7,7 @@ import {
     getInitialEnvironment,
     getInitialEnvironmentId
 } from "./helpers";
+import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
@@ -32,7 +33,7 @@ const createEnvironmentModel = ({
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,
-        slug: `${prefix}slug${append}`,
+        slug: toSlug(`${prefix}slug${append}`),
         description: `${prefix}description${append}`,
         createdFrom: initialEnvironment.id
     };
@@ -73,6 +74,7 @@ describe("Environment crud test", () => {
         updateEnvironmentMutation,
         deleteEnvironmentMutation,
         listEnvironmentsQuery,
+        createEnvironmentAliasMutation,
         documentClient
     } = useGqlHandler();
 
@@ -443,6 +445,33 @@ describe("Environment crud test", () => {
                             message: `Environment with slug "environment-name" already exists.`,
                             code: "CREATE_ENVIRONMENT_FAILED",
                             data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when deleting environment that has alias attached", async () => {
+        await createEnvironmentAliasMutation({
+            data: {
+                name: "environment alias",
+                environment: getInitialEnvironmentId()
+            }
+        });
+
+        const [response] = await deleteEnvironmentMutation({
+            id: getInitialEnvironmentId()
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                cms: {
+                    deleteEnvironment: {
+                        data: null,
+                        error: {
+                            code: "DELETE_ENVIRONMENT_FAILED",
+                            message: `Cannot delete the environment because it's currently linked to the "environment alias" environment aliases.`
                         }
                     }
                 }

@@ -3,11 +3,11 @@ import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import {
     CmsEnvironmentAliasCreateInputType,
-    CmsEnvironmentAliasUpdateInputType
+    CmsEnvironmentAliasUpdateInputType,
+    HeadlessCmsContext
 } from "@webiny/api-headless-cms/types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import {
-    CmsResolverContext,
     getCmsManageSettingsPermission,
     hasEnvironmentPermission,
     hasEnvironmentPermissionRwd,
@@ -97,7 +97,7 @@ export default {
                 hasEnvironmentPermission(),
                 hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, args: ReadEnvironmentAliasArgsType, context: CmsResolverContext) => {
+            )(async (_, args: ReadEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id } = args;
@@ -121,7 +121,7 @@ export default {
                 hasEnvironmentPermission(),
                 hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, __, context: CmsResolverContext) => {
+            )(async (_, __, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const environmentAliasContext = context.cms.environmentAlias;
@@ -141,7 +141,7 @@ export default {
                 hasEnvironmentPermission(),
                 hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: CreateEnvironmentAliasArgsType, context: CmsResolverContext) => {
+            )(async (_, args: CreateEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const identity = context.security.getIdentity();
                 const environmentAliasContext = context.cms.environmentAlias;
 
@@ -164,7 +164,7 @@ export default {
                 hasEnvironmentPermission(),
                 hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: UpdateEnvironmentAliasArgsType, context: CmsResolverContext) => {
+            )(async (_, args: UpdateEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
@@ -197,7 +197,7 @@ export default {
                 hasEnvironmentPermission(),
                 hasEnvironmentPermissionRwd("d"),
                 hasI18NContentPermission()
-            )(async (_, args: DeleteEnvironmentAliasArgsType, context: CmsResolverContext) => {
+            )(async (_, args: DeleteEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 

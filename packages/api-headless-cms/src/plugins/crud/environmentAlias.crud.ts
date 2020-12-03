@@ -17,8 +17,8 @@ import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
-    slug: string({ validation: validation.create("required,maxLength:100") }),
-    description: string({ validation: validation.create("required,maxLength:255") }),
+    slug: string({ validation: validation.create("maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:255") }),
     environment: string({ validation: validation.create("required,maxLength:255") })
 })();
 const UpdateEnvironmentAliasModel = withFields({

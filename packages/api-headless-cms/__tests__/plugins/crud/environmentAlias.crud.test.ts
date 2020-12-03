@@ -6,6 +6,7 @@ import {
     getInitialEnvironmentId
 } from "./helpers";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -30,7 +31,7 @@ const createEnvironmentAliasModel = ({
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,
-        slug: `${prefix}slug${append}`,
+        slug: toSlug(`${prefix}slug${append}`),
         description: `${prefix}description${append}`,
         environment: environment.id
     };

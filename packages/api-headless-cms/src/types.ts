@@ -3,6 +3,7 @@ import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
+import { SecurityContext } from "@webiny/api-security/types";
 
 type CmsDataManagerGenerateRevisionIndexesArgsType = {
     revision: any;
@@ -239,6 +240,10 @@ export type CmsFindFilterOperator = Plugin & {
     }): { [key: string]: any };
 };
 //
+type CreatedByType = {
+    id: string;
+    name: string;
+};
 type BaseCmsEnvironmentType = {
     name: string;
     slug: string;
@@ -247,7 +252,7 @@ type BaseCmsEnvironmentType = {
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     id: string;
     createdFrom?: CmsEnvironmentType;
-    createdBy: CmsEnvironmentCreatedByType;
+    createdBy: CreatedByType;
     createdOn: string;
     changedOn?: string;
 };
@@ -256,16 +261,12 @@ export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
 };
 export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
 
-type CmsEnvironmentCreatedByType = {
-    id: string;
-    name: string;
-};
 export type CmsEnvironmentContextType = {
     get: (id: string) => Promise<CmsEnvironmentType>;
     list: () => Promise<CmsEnvironmentType[]>;
     create: (
         data: CmsEnvironmentCreateInputType,
-        createdBy: CmsEnvironmentCreatedByType,
+        createdBy: CreatedByType,
         initial?: boolean
     ) => Promise<CmsEnvironmentType>;
     update: (
@@ -277,14 +278,14 @@ export type CmsEnvironmentContextType = {
 };
 
 type BaseCmsEnvironmentAliasType = {
-    id: string;
     name: string;
     slug: string;
     description?: string;
 };
 export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
+    id: string;
     environment?: CmsEnvironmentType;
-    createdBy: CmsEnvironmentCreatedByType;
+    createdBy: CreatedByType;
     createdOn: Date;
     changedOn?: Date;
 };
@@ -293,16 +294,12 @@ export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasType & {
 };
 export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasType;
 
-type CmsEnvironmentAliasCreatedByType = {
-    id: string;
-    name: string;
-};
 export type CmsEnvironmentAliasContextType = {
     get: (id: string) => Promise<CmsEnvironmentAliasType>;
     list: () => Promise<CmsEnvironmentAliasType[]>;
     create: (
         data: CmsEnvironmentAliasCreateInputType,
-        createdBy: CmsEnvironmentAliasCreatedByType
+        createdBy: CreatedByType
     ) => Promise<CmsEnvironmentAliasType>;
     update: (
         id: string,
@@ -317,3 +314,5 @@ export type CmsContextType = {
         dataManager: CmsDataManager;
     };
 };
+
+export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;

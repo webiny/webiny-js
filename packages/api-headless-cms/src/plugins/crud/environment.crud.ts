@@ -124,7 +124,11 @@ export default {
                 return model;
             },
             async update(id, data, model: CmsEnvironmentType): Promise<CmsEnvironmentType> {
-                const updateData = new UpdateEnvironmentModel().populate(data);
+                const slugValue = data.slug || data.name;
+                const updateData = new UpdateEnvironmentModel().populate({
+                    ...data,
+                    slug: !!slugValue ? toSlug(slugValue) : undefined
+                });
                 await updateData.validate();
 
                 const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
