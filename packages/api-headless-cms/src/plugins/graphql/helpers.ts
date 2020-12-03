@@ -23,7 +23,7 @@ export const getCmsManageSettingsPermission = async (context: CmsContext) => {
     return await context.security.getPermission(CMS_MANAGE_SETTINGS_PERMISSION);
 };
 
-export const hasEnvironmentPermission = () => {
+export const hasManageSettingsPermission = () => {
     return hasPermission(CMS_MANAGE_SETTINGS_PERMISSION);
 };
 

@@ -8,7 +8,9 @@ type CreatePkCallableFactoryType = (pkType: string) => CreatePkCallableType;
 
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
-    CMS_ENVIRONMENT_ALIAS = "CEA"
+    CMS_ENVIRONMENT_ALIAS = "CEA",
+    CMS_SETTINGS = "CS",
+    CMS_CONTENT_MODEL_GROUP = "CMG"
 }
 
 const getLocaleKey = ({ i18nContent }: CrudContextType): string => {
@@ -44,4 +46,9 @@ const createPkCallableFactory: CreatePkCallableFactoryType = pkType => {
 export const createEnvironmentPk = createPkCallableFactory(PartitionKeysEnum.CMS_ENVIRONMENT);
 export const createEnvironmentAliasPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_ENVIRONMENT_ALIAS
+);
+
+export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS);
+export const createContentModelGroupPk = createPkCallableFactory(
+    PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP
 );

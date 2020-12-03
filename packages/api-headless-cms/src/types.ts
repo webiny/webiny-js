@@ -257,7 +257,7 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     changedOn?: string;
 };
 export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
-    createdFrom: string;
+    createdFrom?: string;
 };
 export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
 
@@ -307,11 +307,22 @@ export type CmsEnvironmentAliasContextType = {
     ) => Promise<CmsEnvironmentAliasType>;
     delete: (model: CmsEnvironmentAliasType) => Promise<void>;
 };
+
+export type CmsSettingsType = {
+    isInstalled: boolean;
+    environment: string;
+    environmentAlias: string;
+};
+export type CmsSettingsContextType = {
+    get: () => Promise<CmsSettingsType>;
+    install: () => Promise<void>;
+};
 export type CmsContextType = {
     cms: {
         environment: CmsEnvironmentContextType;
         environmentAlias: CmsEnvironmentAliasContextType;
         dataManager: CmsDataManager;
+        settings: CmsSettingsContextType;
     };
 };
 

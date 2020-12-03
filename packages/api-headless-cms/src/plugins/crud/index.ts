@@ -1,5 +1,6 @@
 import environment from "./environment.crud";
 import environmentAlias from "./environmentAlias.crud";
+import settings from "./settings.crud";
 
 // TODO switch for a real one
 const dataManager = {
@@ -19,4 +20,4 @@ const dataManager = {
     }
 };
 
-export default () => [environment, environmentAlias, dataManager];
+export default () => [environment, environmentAlias, dataManager, settings];

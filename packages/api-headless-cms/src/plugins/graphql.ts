@@ -3,7 +3,7 @@ import { merge } from "lodash";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 // import cmsAccessToken from "./graphql/accessToken";
-// import cmsInstall from "./graphql/install";
+import cmsSettings from "./graphql/settings";
 
 const emptyResolver = () => ({});
 
@@ -63,10 +63,10 @@ export default () => [
                     _empty: String
                 }
 
+                ${cmsSettings.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
             `,
-            // ${cmsInstall.typeDefs}
             // ${cmsAccessToken.typeDefs}
             resolvers: merge(
                 {
@@ -77,7 +77,7 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
-                // cmsInstall.resolvers,
+                cmsSettings.resolvers,
                 cmsEnvironment.resolvers,
                 cmsEnvironmentAlias.resolvers
                 // cmsAccessToken.resolvers

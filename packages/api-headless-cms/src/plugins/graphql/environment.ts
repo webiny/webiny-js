@@ -9,7 +9,7 @@ import {
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import {
     getCmsManageSettingsPermission,
-    hasEnvironmentPermission,
+    hasManageSettingsPermission,
     hasEnvironmentPermissionRwd,
     userCanManageModel
 } from "./helpers";
@@ -92,7 +92,7 @@ export default {
     resolvers: {
         CmsQuery: {
             getEnvironment: compose(
-                hasEnvironmentPermission(),
+                hasManageSettingsPermission(),
                 hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
             )(async (_, args: ReadEnvironmentArgsType, context: HeadlessCmsContext) => {
@@ -117,7 +117,7 @@ export default {
                 return new Response(model);
             }),
             listEnvironments: compose(
-                hasEnvironmentPermission(),
+                hasManageSettingsPermission(),
                 hasEnvironmentPermissionRwd("r"),
                 hasI18NContentPermission()
             )(async (_, __, context: HeadlessCmsContext) => {
@@ -137,7 +137,7 @@ export default {
         },
         CmsMutation: {
             createEnvironment: compose(
-                hasEnvironmentPermission(),
+                hasManageSettingsPermission(),
                 hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
             )(async (_, args: CreateEnvironmentArgsType, context: HeadlessCmsContext) => {
@@ -161,7 +161,7 @@ export default {
                 }
             }),
             updateEnvironment: compose(
-                hasEnvironmentPermission(),
+                hasManageSettingsPermission(),
                 hasEnvironmentPermissionRwd("w"),
                 hasI18NContentPermission()
             )(async (_, args: UpdateEnvironmentArgsType, context: HeadlessCmsContext) => {
@@ -194,7 +194,7 @@ export default {
                 }
             }),
             deleteEnvironment: compose(
-                hasEnvironmentPermission(),
+                hasManageSettingsPermission(),
                 hasEnvironmentPermissionRwd("d"),
                 hasI18NContentPermission()
             )(async (_, args: DeleteEnvironmentArgsType, context: HeadlessCmsContext) => {
