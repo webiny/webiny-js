@@ -12,10 +12,53 @@ export type PbInstallPlugin = Plugin & {
     after: (params: { context: Context; data: any }) => void;
 };
 
+export type PagesCrud = {};
+export type PageElementsCrud = {};
+export type CategoriesCrud = {};
+export type MenusCrud = {};
+
+export type File = {
+    id: string;
+    src: string;
+};
+
+export type Settings = {
+    name: string;
+    domain: string;
+    favicon: File;
+    logo: File;
+    social: {
+        facebook: string;
+        twitter: string;
+        instagram: string;
+        image: File;
+    };
+    pages: {
+        home: string;
+        notFound: string;
+        error: string;
+    };
+};
+
+export type SettingsCrud = {
+    get: () => Promise<Settings>;
+    update: (data: Record<string, any>) => Promise<Settings>;
+    getSettingsCacheKey: () => string;
+};
+
 export type PbContext = Context<
     I18NContentContext,
     I18NContext,
     DbContext,
     SecurityContext,
-    TenancyContext
+    TenancyContext,
+    {
+        pageBuilder: Record<string, any> & {
+            pages: PagesCrud;
+            pageElements: PagesCrud;
+            categories: PagesCrud;
+            menus: PagesCrud;
+            settings: SettingsCrud;
+        };
+    }
 >;
