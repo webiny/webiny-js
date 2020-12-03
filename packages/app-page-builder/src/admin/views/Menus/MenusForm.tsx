@@ -88,7 +88,7 @@ const MenusForm = () => {
 
     const canSave = useMemo(() => {
         if (pbMenuPermission.own) {
-            return loadedMenu?.createdBy?.id === identity.id;
+            return loadedMenu?.createdBy?.id === identity.login;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {

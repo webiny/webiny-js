@@ -54,7 +54,7 @@ const PublishRevision = props => {
         return null;
     }
 
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
         return null;
     }
 
