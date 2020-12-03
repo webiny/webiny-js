@@ -20,7 +20,7 @@ const PublishPageButton: React.FunctionComponent = () => {
         return null;
     }
 
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+    if (pbPagePermission.own && page.createdBy.id !== identity.id) {
         return null;
     }
 
