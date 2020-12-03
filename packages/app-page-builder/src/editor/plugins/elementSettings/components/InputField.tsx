@@ -16,6 +16,15 @@ const inputStyle = css({
     "&.text-center": {
         textAlign: "center",
         padding: 4
+    },
+
+    "&::-webkit-inner-spin-button": {
+        "-webkit-appearance": "none",
+        margin: 0
+    },
+    "&::-webkit-outer-spin-button": {
+        "-webkit-appearance": "none",
+        margin: 0
     }
 });
 
