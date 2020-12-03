@@ -79,7 +79,7 @@ describe("Forms Security Test", () => {
         });
 
         const form1Id = createFormResponse.data.formBuilder.createForm.data.id;
-        
+
         [createFormResponse] = await createForm({
             data: new Mock("list-forms-2-")
         });

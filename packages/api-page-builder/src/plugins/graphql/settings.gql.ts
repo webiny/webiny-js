@@ -1,16 +1,11 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { hasPermission } from "@webiny/api-security";
 import { compose } from "@webiny/handler-graphql";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
-type Context = HandlerContext<I18NContext, I18NContentContext, SecurityContext>;
-
-const plugin: GraphQLSchemaPlugin<Context> = {
+const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -101,7 +96,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 getSettings: compose(
                     hasPermission("pb.settings"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args, context: PbContext) => {
                     try {
                         const { settings } = context;
                         return new Response(await settings.get());
@@ -114,7 +109,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 updateSettings: compose(
                     hasPermission("pb.settings"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args, context: PbContext) => {
                     try {
                         const { settings } = context;
                         return new Response(await settings.update(args.data));

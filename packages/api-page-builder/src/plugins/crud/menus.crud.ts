@@ -1,10 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import getPKPrefix from "./utils/getPKPrefix";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
-import {SecurityContext} from "@webiny/api-security/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 export type Menu = {
     title: string;
@@ -18,9 +15,9 @@ export type Menu = {
     };
 };
 
-const TYPE = 'pb.category';
+const TYPE = "pb.category";
 
-export default {
+const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
         const { db } = context;
@@ -84,4 +81,6 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, SecurityContext, TenancyContext>;
+};
+
+export default plugin;

@@ -1,6 +1,4 @@
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
@@ -12,11 +10,10 @@ import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
-import { SecurityContext } from "@webiny/api-security/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
-import { Context as HandlerContext } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import hasRwd from "./utils/hasRwd";
+import hasRcpu from "./utils/hasRcpu";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 export type Page = {
     id: string;
@@ -76,22 +73,6 @@ const TYPE_PAGE = "pb.page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
 
-const hasRwd = ({ pbPagePermission, rwd }) => {
-    if (typeof pbPagePermission.rwd !== "string") {
-        return true;
-    }
-
-    return pbPagePermission.rwd.includes(rwd);
-};
-
-const hasRcpu = ({ pbPagePermission, rcpu }) => {
-    if (typeof pbPagePermission.rcpu !== "string") {
-        return true;
-    }
-
-    return pbPagePermission.rcpu.includes(rcpu);
-};
-
 type SortOrder = "asc" | "desc";
 
 export type PagesListArgs = {
@@ -101,15 +82,7 @@ export type PagesListArgs = {
     sort?: { createdOn?: SortOrder; title?: SortOrder };
 };
 
-type Context = HandlerContext<
-    DbContext,
-    SecurityContext,
-    I18NContentContext,
-    ElasticSearchClientContext,
-    TenancyContext
->;
-
-const plugin: ContextPlugin<Context> = {
+const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
@@ -134,7 +107,7 @@ const plugin: ContextPlugin<Context> = {
             async listLatest(args: PagesListArgs) {
                 await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (!pbPagePermission || !hasRwd({ pbPagePermission, rwd: "r" })) {
+                if (!pbPagePermission || !hasRwd(pbPagePermission, "r")) {
                     throw new NotAuthorizedError();
                 }
 
@@ -204,7 +177,7 @@ const plugin: ContextPlugin<Context> = {
             async create({ category: categorySlug }) {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (pbPagePermission && !hasRwd(pbPagePermission, "w")) {
                     return new NotAuthorizedError();
                 }
 
@@ -287,7 +260,7 @@ const plugin: ContextPlugin<Context> = {
             async createFrom({ from }) {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (pbPagePermission && !hasRwd(pbPagePermission, "w")) {
                     return new NotAuthorizedError();
                 }
 
@@ -389,7 +362,7 @@ const plugin: ContextPlugin<Context> = {
             async update(id, data) {
                 // If permission has "rwd" property set, but "w" is not part of it, bail.
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
+                if (pbPagePermission && !hasRwd(pbPagePermission, "w")) {
                     throw new NotAuthorizedError();
                 }
 
@@ -477,7 +450,7 @@ const plugin: ContextPlugin<Context> = {
             async publish(pageId: string) {
                 await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "p" })) {
+                if (!pbPagePermission || !hasRcpu(pbPagePermission, "p")) {
                     throw new NotAuthorizedError();
                 }
 
@@ -640,7 +613,7 @@ const plugin: ContextPlugin<Context> = {
             async unpublish(pageId: string) {
                 await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "u" })) {
+                if (!pbPagePermission || !hasRcpu(pbPagePermission, "u")) {
                     throw new NotAuthorizedError();
                 }
 
@@ -734,7 +707,7 @@ const plugin: ContextPlugin<Context> = {
             async requestReview(pageId: string) {
                 await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "r" })) {
+                if (!pbPagePermission || !hasRcpu(pbPagePermission, "r")) {
                     throw new NotAuthorizedError();
                 }
 
@@ -814,7 +787,7 @@ const plugin: ContextPlugin<Context> = {
             async requestChanges(pageId: string) {
                 await context.i18nContent.checkI18NContentPermission();
                 const pbPagePermission = await context.security.getPermission("pb.page");
-                if (!pbPagePermission || !hasRcpu({ pbPagePermission, rcpu: "c" })) {
+                if (!pbPagePermission || !hasRcpu(pbPagePermission, "c")) {
                     throw new NotAuthorizedError();
                 }
 

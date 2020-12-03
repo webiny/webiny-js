@@ -63,7 +63,7 @@ const PageBuilderMenusDataList = () => {
 
     const canDelete = useCallback(item => {
         if (pbMenuPermission.own) {
-            return item.createdBy.id === identity.id;
+            return item.createdBy.id === identity.login;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {

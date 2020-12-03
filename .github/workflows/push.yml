@@ -1,8 +1,9 @@
-name: Push (v5)
+name: Push
 
 on:
   push:
-    branches: [v5]
+    branches:
+      - "*"
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096

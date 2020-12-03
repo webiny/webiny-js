@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -7,11 +7,27 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { useRecoilValue } from "recoil";
 import { PUBLISH_REVISION } from "./PublishPageButton/graphql";
+import { useSecurity } from "@webiny/app-security";
 
 const PublishPageButton: React.FunctionComponent = () => {
+    const { identity } = useSecurity();
     const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
+
+    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
+    if (!pbPagePermission) {
+        return null;
+    }
+
+    if (pbPagePermission.own && page.createdBy.id !== identity.login) {
+        return null;
+    }
+
+    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("p")) {
+        return null;
+    }
+
     return (
         <ConfirmationDialog
             data-testid={"pb-editor-publish-confirmation-dialog"}

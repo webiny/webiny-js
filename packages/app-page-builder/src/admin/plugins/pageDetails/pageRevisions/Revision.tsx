@@ -72,7 +72,8 @@ const Revision = ({ revision, page }: RevisionProps) => {
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
 
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
-        revision, page
+        revision,
+        page
     });
 
     const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
@@ -129,7 +130,11 @@ const Revision = ({ revision, page }: RevisionProps) => {
                             <MenuItem
                                 onClick={() => {
                                     if (isSiteRunning) {
-                                        window.open(getPagePreviewUrl(revision), "_blank", "noopener");
+                                        window.open(
+                                            getPagePreviewUrl(revision),
+                                            "_blank",
+                                            "noopener"
+                                        );
                                     } else {
                                         showConfigureDomainDialog();
                                     }

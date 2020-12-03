@@ -138,7 +138,6 @@ describe("versioning and publishing pages", () => {
             })
         );
 
-
         await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
@@ -153,7 +152,6 @@ describe("versioning and publishing pages", () => {
                 id: p1v2.id,
                 status: "published"
             });
-
         });
 
         // 5. Let's try creating a new version (v4) from published p1v2 and publish that.

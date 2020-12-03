@@ -54,7 +54,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9201` }),
+        elasticSearch({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -100,8 +100,8 @@ export default ({ permissions, identity, tenant } = {}) => {
 
     return {
         elasticSearch: new Client({
-            hosts: [`http://localhost:9201`],
-            node: "http://localhost:9201"
+            hosts: [`http://localhost:9200`],
+            node: "http://localhost:9200"
         }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {

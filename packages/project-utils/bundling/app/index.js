@@ -8,7 +8,7 @@ const applyDefaults = () => {
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
         process.env.INLINE_RUNTIME_CHUNK = true;
     }
-}
+};
 
 module.exports.buildApp = options => {
     applyDefaults();

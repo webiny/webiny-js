@@ -25,7 +25,11 @@ export type PageAtomType = {
     savedOn?: Date;
     snippet: string | null;
     category?: PageCategoryType;
+    createdBy: {
+        id: string;
+    };
 };
+
 export const pageAtom = connectedAtom<PageAtomType>({
     key: "pageAtom",
     default: {
@@ -35,6 +39,9 @@ export const pageAtom = connectedAtom<PageAtomType>({
         isHomePage: false,
         isErrorPage: false,
         isNotFoundPage: false,
-        snippet: null
+        snippet: null,
+        createdBy: {
+            id: null
+        }
     }
 });

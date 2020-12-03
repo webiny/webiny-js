@@ -1,6 +1,4 @@
-import { SecurityContext } from "@webiny/api-security/types";
-import { Context } from "@webiny/handler/types";
-import {TenancyContext} from "@webiny/api-security-tenancy/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 export default {
     db: {
@@ -14,7 +12,7 @@ export default {
             }
         ]
     },
-    es(context: Context<SecurityContext, TenancyContext>) {
+    es(context: PbContext) {
         const tenant = context.security.getTenant();
         if (tenant) {
             return {

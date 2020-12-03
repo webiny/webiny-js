@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as RequestChangesIcon } from "@webiny/app-page-builder/admin/assets/rule-24px.svg"
+import { ReactComponent as RequestChangesIcon } from "@webiny/app-page-builder/admin/assets/rule-24px.svg";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -55,7 +55,7 @@ const RequestChanges = props => {
         return null;
     }
 
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
         return null;
     }
 

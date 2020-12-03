@@ -40,7 +40,7 @@ const mocks = {
         firstName: "Arturo",
         lastName: "Surace",
         avatar: avatars.userB
-    } 
+    }
 };
 
 export default mocks;
