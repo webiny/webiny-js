@@ -1,5 +1,15 @@
 import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import {
+    PbElementDataSettingsMarginUnitType,
+    PbRenderElementStylePlugin
+} from "@webiny/app-page-builder/types";
+
+const validateSpacingValue = (value, unit) => {
+    if (unit === "auto") {
+        return "";
+    }
+    return value || 0;
+};
 
 export default {
     name: "pb-render-page-element-style-margin",
@@ -15,8 +25,20 @@ export default {
         const { desktop = {}, mobile = {} } = margin;
 
         ["top", "right", "bottom", "left"].forEach(side => {
-            style[`--desktop-margin-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";
-            style[`--mobile-margin-${side}`] = ((adv ? mobile[side] : mobile.all) || 0) + "px";
+            const desktopValue = adv ? desktop[side] : desktop.all;
+            const mobileValue = adv ? mobile[side] : mobile.all;
+
+            const desktopUnit: PbElementDataSettingsMarginUnitType = adv
+                ? get(desktop, "units." + side, "px")
+                : get(desktop, "units.all", "px");
+            const mobileUnit: PbElementDataSettingsMarginUnitType = adv
+                ? get(mobile, "units." + side, "px")
+                : get(mobile, "units.all", "px");
+
+            style[`--desktop-margin-${side}`] =
+                validateSpacingValue(desktopValue, desktopUnit) + desktopUnit;
+            style[`--mobile-margin-${side}`] =
+                validateSpacingValue(mobileValue, mobileUnit) + mobileUnit;
         });
 
         return style;

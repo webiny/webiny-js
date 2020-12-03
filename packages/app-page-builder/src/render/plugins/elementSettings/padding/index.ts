@@ -1,5 +1,12 @@
 import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import {
+    PbElementDataSettingsPaddingUnitType,
+    PbRenderElementStylePlugin
+} from "@webiny/app-page-builder/types";
+
+const validateSpacingValue = value => {
+    return value || 0;
+};
 
 export default {
     name: "pb-render-page-element-style-padding",
@@ -15,8 +22,18 @@ export default {
         const { desktop = {}, mobile = {} } = padding;
 
         ["top", "right", "bottom", "left"].forEach(side => {
-            style[`--desktop-padding-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";
-            style[`--mobile-padding-${side}`] = ((adv ? mobile[side] : mobile.all) || 0) + "px";
+            const desktopValue = adv ? desktop[side] : desktop.all;
+            const mobileValue = adv ? mobile[side] : mobile.all;
+
+            const desktopUnit: PbElementDataSettingsPaddingUnitType = adv
+                ? get(desktop, "units." + side, "px")
+                : get(desktop, "units.all", "px");
+            const mobileUnit: PbElementDataSettingsPaddingUnitType = adv
+                ? get(mobile, "units." + side, "px")
+                : get(mobile, "units.all", "px");
+
+            style[`--desktop-padding-${side}`] = validateSpacingValue(desktopValue) + desktopUnit;
+            style[`--mobile-padding-${side}`] = validateSpacingValue(mobileValue) + mobileUnit;
         });
 
         return style;
