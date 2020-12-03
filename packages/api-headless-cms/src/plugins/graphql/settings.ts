@@ -48,7 +48,7 @@ export default {
                         return ex;
                     }
                     return new ErrorResponse({
-                        code: "CMS_INSTALL_ABORTED",
+                        code: "CMS_INSTALLATION_ERROR",
                         message: ex.message
                     });
                 }

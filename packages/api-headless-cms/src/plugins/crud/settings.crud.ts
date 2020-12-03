@@ -57,7 +57,7 @@ export default {
             install: async (): Promise<void> => {
                 const settings = await context.cms.settings.get();
                 if (!!settings?.isInstalled) {
-                    throw new Error("Cms -> The app is already installed.");
+                    throw new Error("The app is already installed.");
                 }
                 const identity = context.security.getIdentity();
                 const createdBy = {

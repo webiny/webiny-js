@@ -83,6 +83,30 @@ describe("Settings crud test", () => {
         });
     });
 
+    test("cms is already installed", async () => {
+        expect.assertions(1);
+        await insertCmsSettings(documentClient, {
+            isInstalled: true,
+            environment: "environment",
+            environmentAlias: "environmentAlias"
+        });
+
+        const [response] = await installMutation();
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    install: {
+                        data: null,
+                        error: {
+                            message: "The app is already installed.",
+                            code: "CMS_INSTALLATION_ERROR"
+                        }
+                    }
+                }
+            }
+        });
+    });
+
     test("cms install mutation", async () => {
         expect.assertions(4);
 
