@@ -1,6 +1,7 @@
 import {
     createEnvironmentAliasPk,
-    createEnvironmentPk
+    createEnvironmentPk,
+    createSettingsPk
 } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
@@ -37,6 +38,7 @@ const getDummyContext = (): any => ({
 export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDummyContext());
 export const createEnvironmentAliasTestPartitionKey = () =>
     createEnvironmentAliasPk(getDummyContext());
+export const createSettingsTestPartitionKey = () => createSettingsPk(getDummyContext());
 
 export const deleteInitialEnvironment = async (documentClient: DocumentClient): Promise<void> => {
     await documentClient

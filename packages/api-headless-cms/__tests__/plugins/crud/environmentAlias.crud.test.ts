@@ -60,7 +60,7 @@ const createMatchableUpdatedEnvironmentAliasModel = (
     };
 };
 
-describe("Environment crud test", () => {
+describe("Environment alias crud test", () => {
     const {
         createEnvironmentAliasMutation,
         getEnvironmentAliasQuery,

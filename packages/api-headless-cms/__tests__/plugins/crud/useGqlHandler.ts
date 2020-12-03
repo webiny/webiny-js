@@ -26,6 +26,7 @@ import {
     UPDATE_ENVIRONMENT_ALIAS_MUTATION
 } from "./graphql/environmentAlias";
 import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
+import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
@@ -53,19 +54,22 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         }),
         elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         apolloServerPlugins(),
-        securityPlugins(),
-        i18nContext,
-        i18nContentPlugins(),
-        mockLocalesPlugins(),
-        cmsPlugins(),
         {
             type: "context",
             apply(context) {
+                if (!context.security) {
+                    context.security = {};
+                }
                 context.security.getTenant = () => {
                     return tenant;
                 };
             }
         },
+        securityPlugins(),
+        i18nContext,
+        i18nContentPlugins(),
+        mockLocalesPlugins(),
+        cmsPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -131,6 +135,13 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         },
         async listEnvironmentAliasesQuery() {
             return invoke({ body: { query: LIST_ENVIRONMENT_ALIAS_QUERY } });
+        },
+        // settings
+        async isInstalledQuery() {
+            return invoke({ body: { query: IS_INSTALLED_QUERY } });
+        },
+        async installMutation() {
+            return invoke({ body: { query: INSTALL_MUTATION } });
         }
     };
 };

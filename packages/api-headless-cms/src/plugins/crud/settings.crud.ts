@@ -87,7 +87,8 @@ export default {
                         PK: createContentModelGroupPk(context),
                         SK: contentModelGroupId,
                         TYPE: CONTENT_MODEL_GROUP_TYPE,
-                        ...initialContentModelGroup
+                        ...initialContentModelGroup,
+                        environment: environment.id
                     }
                 });
                 // mark as installed in settings

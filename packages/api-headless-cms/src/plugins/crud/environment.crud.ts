@@ -20,11 +20,23 @@ const CreateEnvironmentModel = withFields({
     description: string({ validation: validation.create("maxLength:255") }),
     createdFrom: string({ validation: validation.create("required,maxLength:255") })
 })();
+const CreateInitialEnvironmentModel = withFields({
+    name: string({ validation: validation.create("required,maxLength:100") }),
+    slug: string({ validation: validation.create("maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:255") })
+})();
 const UpdateEnvironmentModel = withFields({
     name: string({ validation: validation.create("maxLength:100") }),
     slug: string({ validation: validation.create("maxLength:100") }),
     description: string({ validation: validation.create("maxLength:255") })
 })();
+
+const createEnvironmentValidationModel = (initial?: boolean) => {
+    if (initial) {
+        return new CreateInitialEnvironmentModel();
+    }
+    return new CreateEnvironmentModel();
+};
 
 const TYPE = "cms#env";
 
@@ -60,7 +72,8 @@ export default {
             },
             async create(data, createdBy, initial): Promise<CmsEnvironmentType> {
                 const slug = toSlug(data.slug || data.name);
-                const createData = new CreateEnvironmentModel().populate({
+                const environmentValidationModel = createEnvironmentValidationModel(initial);
+                const createData = environmentValidationModel.populate({
                     ...data,
                     slug
                 });
