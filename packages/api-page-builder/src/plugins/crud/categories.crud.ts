@@ -3,10 +3,30 @@ import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { CategorySecurityPermission, PbContext } from "@webiny/api-page-builder/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
+import { NotFoundError } from "@webiny/handler-graphql";
+
+const checkBasePermissions = async (
+    context: PbContext,
+    check: { rwd: string }
+): Promise<CategorySecurityPermission> => {
+    await context.i18nContent.checkI18NContentPermission();
+    const categoryPermission = await context.security.getPermission<CategorySecurityPermission>(
+        "pb.category"
+    );
+    if (!categoryPermission) {
+        throw new NotAuthorizedError();
+    }
+
+    if (check.rwd && !hasRwd(categoryPermission, check.rwd)) {
+        throw new NotAuthorizedError();
+    }
+
+    return categoryPermission;
+};
 
 /*withHooks({
     //     async beforeDelete() {
@@ -29,6 +49,13 @@ export type Category = {
         displayName: string;
     };
 };
+
+const CreateDataModel = withFields({
+    slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
+    name: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
+    url: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
+    layout: string({ validation: validation.create("required,minLength:1,maxLength:100") })
+})();
 
 const UpdateDataModel = withFields({
     name: string({ validation: validation.create("minLength:1,maxLength:100") }),
@@ -62,82 +89,164 @@ const plugin: ContextPlugin<PbContext> = {
 
         const { getPermission } = context.security;
 
-        context.categories = {
-            async get(slug: string) {
-                return categoriesDataLoader.load(slug);
-            },
-            async list(args) {
-                await context.i18nContent.checkI18NContentPermission();
+        context.pageBuilder = {
+            ...context.pageBuilder,
+            categories: {
+                async get(slug: string) {
+                    await context.i18nContent.checkI18NContentPermission();
 
-                let permission;
-
-                const categoryPermission = await getPermission("pb.category");
-                if (categoryPermission && hasRwd(categoryPermission, "r")) {
-                    permission = categoryPermission;
-                } else {
-                    // If we don't have the necessary `categoryPermission` permission, let's still check if the
-                    // user has the permission to create pages. If so, we still want to allow listing categories,
-                    // because this is needed in order to create a page.
-                    const pagePermission = await getPermission("pb.page");
-                    if (pagePermission && hasRwd(pagePermission, "w")) {
-                        permission = pagePermission;
+                    let permission;
+                    const categoryPermission = await getPermission("pb.category");
+                    if (categoryPermission && hasRwd(categoryPermission, "r")) {
+                        permission = categoryPermission;
+                    } else {
+                        // If we don't have the necessary `categoryPermission` permission, let's still check if the
+                        // user has the permission to write pages. If so, we still want to allow listing categories,
+                        // because this is needed in order to create a page.
+                        const pagePermission = await getPermission("pb.page");
+                        if (pagePermission && hasRwd(pagePermission, "w")) {
+                            permission = pagePermission;
+                        }
                     }
-                }
 
-                if (!permission) {
-                    throw new NotAuthorizedError();
-                }
+                    if (!permission) {
+                        throw new NotAuthorizedError();
+                    }
 
-                const [categories] = await db.read<Category>({
-                    ...defaults.db,
-                    query: { PK: PK_CATEGORY(), SK: { $gt: " " } },
-                    ...args
-                });
+                    const category = await categoriesDataLoader.load(slug);
 
-                // If user can only manage own records, let's check if he owns the loaded one.
-                if (permission.own) {
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (permission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (category.createdBy.id !== identity.id) {
+                            throw new NotAuthorizedError();
+                        }
+                    }
+
+                    return category;
+                },
+                async list() {
+                    await context.i18nContent.checkI18NContentPermission();
+
+                    let permission;
+                    const categoryPermission = await getPermission("pb.category");
+                    if (categoryPermission && hasRwd(categoryPermission, "r")) {
+                        permission = categoryPermission;
+                    } else {
+                        // If we don't have the necessary `categoryPermission` permission, let's still check if the
+                        // user has the permission to write pages. If so, we still want to allow listing categories,
+                        // because this is needed in order to create a page.
+                        const pagePermission = await getPermission("pb.page");
+                        if (pagePermission && hasRwd(pagePermission, "w")) {
+                            permission = pagePermission;
+                        }
+                    }
+
+                    if (!permission) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    const [categories] = await db.read({
+                        ...defaults.db,
+                        query: { PK: PK_CATEGORY(), SK: { $gt: " " } }
+                    });
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (permission.own) {
+                        const identity = context.security.getIdentity();
+                        return categories.filter(category => category.createdBy.id === identity.id);
+                    }
+
+                    return categories;
+                },
+                async create(data) {
+                    await checkBasePermissions(context, { rwd: "w" });
+
+                    const existingCategory = await categoriesDataLoader.load(data.slug);
+                    if (existingCategory) {
+                        throw new NotFoundError(
+                            `Category with slug "${data.slug}" already exists.`
+                        );
+                    }
+
+                    const createDataModel = new CreateDataModel().populate(data);
+                    await createDataModel.validate();
+
                     const identity = context.security.getIdentity();
-                    return categories.filter(category => category.createdBy.id === identity.id);
-                }
 
-                return categories;
-            },
-            create(data) {
-                const { name, slug, url, layout, createdOn, createdBy } = data;
-                return db.create({
-                    ...defaults.db,
-                    data: {
-                        PK: PK_CATEGORY(),
-                        SK: slug,
-                        TYPE,
-                        name,
-                        slug,
-                        url,
-                        layout,
-                        createdOn,
-                        createdBy
+                    const createData = Object.assign(await createDataModel.toJSON(), {
+                        createdOn: new Date().toISOString(),
+                        createdBy: {
+                            id: identity.id,
+                            type: identity.type,
+                            displayName: identity.displayName
+                        }
+                    });
+
+                    await db.create({
+                        ...defaults.db,
+                        data: {
+                            ...createData,
+                            PK: PK_CATEGORY(),
+                            SK: createDataModel.slug,
+                            TYPE
+                        }
+                    });
+
+                    return createData;
+                },
+                async update(slug, data) {
+                    const permission = await checkBasePermissions(context, { rwd: "w" });
+
+                    const category = await categoriesDataLoader.load(slug);
+                    if (!category) {
+                        throw new NotFoundError(`Category "${slug}" not found.`);
                     }
-                });
-            },
-            async update(slug, data) {
-                const updateData = new UpdateDataModel().populate(data);
-                await updateData.validate();
 
-                data = await updateData.toJSON({ onlyDirty: true });
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (permission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (category.createdBy.id !== identity.id) {
+                            throw new NotAuthorizedError();
+                        }
+                    }
 
-                await db.update({
-                    ...defaults.db,
-                    query: { PK: PK_CATEGORY(), SK: slug },
-                    data
-                });
+                    const updateDataModel = new UpdateDataModel().populate(data);
+                    await updateDataModel.validate();
 
-                return data;
-            },
-            delete(slug: string) {
-                return db.delete({
-                    ...defaults.db,
-                    query: { PK: PK_CATEGORY(), SK: slug }
-                });
+                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
+
+                    await db.update({
+                        ...defaults.db,
+                        query: { PK: PK_CATEGORY(), SK: slug },
+                        data: updateData
+                    });
+
+                    return { ...category, ...updateData };
+                },
+                async delete(slug: string) {
+                    const permission = await checkBasePermissions(context, { rwd: "d" });
+
+                    const category = await categoriesDataLoader.load(slug);
+                    if (!category) {
+                        throw new NotFoundError(`Category "${slug}" not found.`);
+                    }
+
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (permission?.own === true) {
+                        const identity = context.security.getIdentity();
+                        if (category.createdBy.id !== identity.id) {
+                            throw new NotAuthorizedError();
+                        }
+                    }
+
+                    await db.delete({
+                        ...defaults.db,
+                        query: { PK: PK_CATEGORY(), SK: slug }
+                    });
+
+                    return category;
+                }
             }
         };
     }

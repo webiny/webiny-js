@@ -1,18 +1,14 @@
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import oembed from "./pageResolvers/oembed";
-import { compose } from "@webiny/handler-graphql";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PagesListArgs } from "@webiny/api-page-builder/plugins/crud/pages.crud";
 import { PbContext } from "@webiny/api-page-builder/types";
+import Error from "@webiny/error";
 
-const hasRwd = ({ pbPagePermission, rwd }) => {
-    if (typeof pbPagePermission.rwd !== "string") {
-        return true;
+const resolve = async fn => {
+    try {
+        return new Response(await fn());
+    } catch (e) {
+        return new ErrorResponse(e);
     }
-
-    return pbPagePermission.rwd.includes(rwd);
 };
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
@@ -245,198 +241,90 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbPage: {
                 category: async (page: { category: string }, args, context) => {
-                    const { categories } = context;
-                    return categories.get(page.category);
+                    return context.pageBuilder.categories.get(page.category);
                 },
                 revisions: async (page: { id: string }, args, context) => {
-                    const { pages } = context;
-                    return pages.listRevisionsForPage(page.id);
+                    return context.pageBuider.pages.listPageRevisions(page.id);
                 }
             },
             PbPageListItem: {
                 category: async (page: { category: string }, args, context) => {
-                    const { categories } = context;
-                    return categories.get(page.category);
+                    return context.pageBuilder.categories.get(page.category);
                 }
             },
             PbQuery: {
-                getPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "r" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (!hasRwd({ pbPagePermission, rwd: "r" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
+                getPage: async (_, args: { id: string }, context) => {
                     const id = decodeURIComponent(args.id);
+                    return resolve(() => context.pageBuilder.pages.get(id));
+                },
 
-                    const { pages } = context;
-                    const page = await pages.get(id);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    return new Response(page);
-                }),
-
-                listPages: async (_, args: PagesListArgs, context) => {
-                    try {
-                        const { pages } = context;
-                        const list = await pages.listLatest(args);
-                        return new Response(list);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                listPages: async (_, args, context) => {
+                    return resolve(() => context.pageBuilder.pages.listLatest(args));
                 },
 
                 listPublishedPages: async (_, args, context) => {
-                    try {
-                        const { pages } = context;
-                        const list = await pages.listPublished(args);
-                        return new Response(list);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.listPublished(args));
                 },
-                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
-                    const { pages } = context;
-                    const page = await pages.getPublished(args);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${args.id}" not found.`);
-                    }
-                    return new Response(page);
-                },
-                searchTags: async (
-                    root: any,
-                    args: { [key: string]: any },
-                    context: { [key: string]: any },
-                    info: { [key: string]: any }
-                ) => {
-                    const resolver = context.plugins.byName("pb-resolver-search-tags");
 
-                    return { data: await resolver.resolve({ root, args, context, info }) };
+                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
+                    return resolve(() => context.pageBuilder.pages.getPublished(args));
                 },
-                oembedData: hasPermission("pb:oembed:read")(oembed)
+
+                // TODO
+                searchTags: async () => null,
+
+                // TODO
+                oembedData: () => null
             },
             PbMutation: {
-                createPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { from?: string; category?: string }, context: PbContext) => {
-                    const { pages } = context;
-                    const { from, category } = args;
+                createPage: async (_, args: { from?: string; category?: string }, context) => {
+                    return resolve(() => {
+                        const { from, category } = args;
+                        if (!from && !category) {
+                            throw new Error(
+                                `Cannot create page - you must provide either "from" or "category" input.`
+                            );
+                        }
 
-                    try {
                         if (from) {
-                            return new Response(await pages.createFrom({ from }));
-                        } else {
-                            return new Response(await pages.create({ category }));
+                            return context.pageBuilder.pages.createFrom(from);
                         }
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
-                }),
-                deletePage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "d" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
-                        return new NotAuthorizedResponse();
-                    }
+                        return context.pageBuilder.pages.create(category);
+                    });
+                },
+                deletePage: async (_, args: { id: string }, context: PbContext) => {
+                    return resolve(() => {
+                        const id = decodeURIComponent(args.id);
+                        return context.pageBuilder.pages.delete(id);
+                    });
+                },
 
-                    const { pages } = context;
-                    const id = decodeURIComponent(args.id);
-
-                    const page = await pages.get(id);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${args.id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    await pages.delete(id);
-
-                    return new Response(page);
-                }),
-
-                updatePage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(
-                    async (
-                        _,
-                        args: { id: string; data: Record<string, any> },
-                        context: PbContext
-                    ) => {
-                        const { pages } = context;
+                updatePage: async (
+                    _,
+                    args: { id: string; data: Record<string, any> },
+                    context: PbContext
+                ) => {
+                    return resolve(() => {
                         const { data } = args;
                         const id = decodeURIComponent(args.id);
-
-                        try {
-                            const page = await pages.update(id, data);
-                            return new Response(page);
-                        } catch (e) {
-                            return new ErrorResponse(e);
-                        }
-                    }
-                ),
+                        return context.pageBuilder.pages.update(id, data);
+                    });
+                },
 
                 publishPage: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.publish(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.publish(args.id));
                 },
 
                 unpublishPage: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.unpublish(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.unpublish(args.id));
                 },
 
                 requestReview: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.requestReview(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.requestReview(args.id));
                 },
 
                 requestChanges: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.requestChanges(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
                 }
             },
             PbPageSettings: {

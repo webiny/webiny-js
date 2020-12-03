@@ -1,16 +1,13 @@
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { compose } from "@webiny/handler-graphql";
 import { PbContext } from "@webiny/api-page-builder/types";
 
-const hasRwd = ({ pbCategoryPermission, rwd }) => {
-    if (typeof pbCategoryPermission.rwd !== "string") {
-        return true;
+const resolve = async fn => {
+    try {
+        return new Response(await fn());
+    } catch (e) {
+        return new ErrorResponse(e);
     }
-
-    return pbCategoryPermission.rwd.includes(rwd);
 };
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
@@ -62,152 +59,35 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         `,
         resolvers: {
             PbQuery: {
-                getCategory: compose(
-                    hasPermission("pb.category"),
-                    hasI18NContentPermission()
-                )(async (_, args: { slug: string }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "r" is not part of it, bail.
-                    const pbCategoryPermission = await context.security.getPermission(
-                        "pb.category"
-                    );
-
-                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const { categories } = context;
-                    const category = await categories.get(args.slug);
-                    if (!category) {
-                        return new NotFoundResponse(`Category "${args.slug}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbCategoryPermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (category.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    return new Response(category);
-                }),
+                getCategory: async (_, args: { slug: string }, context) => {
+                    return resolve(() => {
+                        return context.pageBuilder.categories.get(args.slug);
+                    });
+                },
                 listCategories: async (_, args, context) => {
-                    const { categories } = context;
-                    try {
-                        const list = await categories.list();
-                        return new Response(list);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.categories.list());
                 }
             },
             PbMutation: {
-                createCategory: compose(
-                    hasPermission("pb.category"),
-                    hasI18NContentPermission()
-                )(async (_, args, context: PbContext) => {
-                    // If permission has "rwd" property set, but "w" is not part of it, bail.
-                    const pbCategoryPermission = await context.security.getPermission(
-                        "pb.category"
-                    );
-                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const { categories } = context;
-                    const { data } = args;
-
-                    if (await categories.get(data.slug)) {
-                        return new NotFoundResponse(
-                            `Category with slug "${data.slug}" already exists.`
-                        );
-                    }
-
-                    const identity = context.security.getIdentity();
-
-                    const newData = {
-                        ...data,
-                        createdOn: new Date().toISOString(),
-                        createdBy: {
-                            id: identity.id,
-                            displayName: identity.displayName
-                        }
-                    };
-
-                    await categories.create(newData);
-
-                    return new Response(newData);
-                }),
-                updateCategory: compose(
-                    hasPermission("pb.category"),
-                    hasI18NContentPermission()
-                )(
-                    async (
-                        _,
-                        args: { slug: string; data: Record<string, any> },
-                        context: PbContext
-                    ) => {
-                        // If permission has "rwd" property set, but "w" is not part of it, bail.
-                        const pbCategoryPermission = await context.security.getPermission(
-                            "pb.category"
-                        );
-                        if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "w" })) {
-                            return new NotAuthorizedResponse();
-                        }
-
-                        const { categories } = context;
-                        const { slug, data } = args;
-
-                        const category = await categories.get(slug);
-                        if (!category) {
-                            return new NotFoundResponse(`Category "${slug}" not found.`);
-                        }
-
-                        // If user can only manage own records, let's check if he owns the loaded one.
-                        if (pbCategoryPermission?.own === true) {
-                            const identity = context.security.getIdentity();
-                            if (category.createdBy.id !== identity.id) {
-                                return new NotAuthorizedResponse();
-                            }
-                        }
-
-                        const changed = await categories.update(slug, data);
-
-                        return new Response({ ...category, ...changed });
-                    }
-                ),
-                deleteCategory: compose<any, { slug: string }, PbContext>(
-                    hasPermission("pb.category"),
-                    hasI18NContentPermission()
-                )(async (_, args, context) => {
-                    // If permission has "rwd" property set, but "d" is not part of it, bail.
-                    const pbCategoryPermission = await context.security.getPermission(
-                        "pb.category"
-                    );
-                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "d" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const { categories } = context;
-                    const { slug } = args;
-
-                    const category = await categories.get(slug);
-                    if (!category) {
-                        return new NotFoundResponse(`Category "${args.slug}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbCategoryPermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (category.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    await categories.delete(slug);
-
-                    return new Response(category);
-                })
+                createCategory: async (_, args: { data: Record<string, any> }, context) => {
+                    return resolve(() => {
+                        return context.pageBuilder.categories.create(args.data);
+                    });
+                },
+                updateCategory: async (
+                    _,
+                    args: { slug: string; data: Record<string, any> },
+                    context
+                ) => {
+                    return resolve(() => {
+                        return context.pageBuilder.categories.update(args.slug, args.data);
+                    });
+                },
+                deleteCategory: async (_, args: { slug: string }, context) => {
+                    return resolve(() => {
+                        return context.pageBuilder.categories.delete(args.slug);
+                    });
+                }
             }
         }
     }
