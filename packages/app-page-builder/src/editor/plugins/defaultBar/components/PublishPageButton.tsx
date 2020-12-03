@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useMemo } from "react";
 import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -21,7 +20,7 @@ const PublishPageButton: React.FunctionComponent = () => {
         return null;
     }
 
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.id) {
+    if (pbPagePermission.own && page.createdBy.id !== identity.id) {
         return null;
     }
 
