@@ -135,37 +135,43 @@ const plugin: GraphQLSchemaPlugin = {
                 updatePageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string; data: Record<string, any> }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "w" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const { pageElements } = context;
-                    const { data } = args;
-                    const id = args.id;
-
-                    const pageElement = await pageElements.get(id);
-                    if (!pageElement) {
-                        return new NotFoundResponse(`Page element "${id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (pageElement.createdBy.id !== identity.id) {
+                )(
+                    async (
+                        _,
+                        args: { id: string; data: Record<string, any> },
+                        context: PbContext
+                    ) => {
+                        // If permission has "rwd" property set, but "w" is not part of it, bail.
+                        const pbPagePermission = await context.security.getPermission("pb.page");
+                        if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
                             return new NotAuthorizedResponse();
                         }
-                    }
 
-                    try {
-                        const changed = await pageElements.update(id, data);
-                        return new Response({ ...pageElement, ...changed });
-                    } catch (e) {
-                        return new ErrorResponse(e);
+                        const { pageElements } = context;
+                        const { data } = args;
+                        const id = args.id;
+
+                        const pageElement = await pageElements.get(id);
+                        if (!pageElement) {
+                            return new NotFoundResponse(`Page element "${id}" not found.`);
+                        }
+
+                        // If user can only manage own records, let's check if he owns the loaded one.
+                        if (pbPagePermission?.own === true) {
+                            const identity = context.security.getIdentity();
+                            if (pageElement.createdBy.id !== identity.id) {
+                                return new NotAuthorizedResponse();
+                            }
+                        }
+
+                        try {
+                            const changed = await pageElements.update(id, data);
+                            return new Response({ ...pageElement, ...changed });
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     }
-                }),
+                ),
                 deletePageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
