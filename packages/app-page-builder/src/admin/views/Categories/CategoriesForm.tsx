@@ -93,7 +93,7 @@ const CategoriesForm = () => {
 
     const canSave = useMemo(() => {
         if (pbMenuPermission.own) {
-            return loadedCategory?.createdBy?.id === identity.id;
+            return loadedCategory?.createdBy?.id === identity.login;
         }
 
         if (typeof pbMenuPermission.rwd === "string") {
