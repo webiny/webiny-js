@@ -14,7 +14,7 @@ const ElementStyles = () => {
         <SidebarActionsWrapper>
             {elementSettings.map(({ plugin, options }, index) => {
                 return (
-                    <div key={plugin.name + "-" + index}>
+                    <div key={plugin.name + "-" + index} style={{ width: "100%" }}>
                         {typeof plugin.render === "function" && plugin.render({ options })}
                     </div>
                 );
