@@ -38,6 +38,18 @@ export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDu
 export const createEnvironmentAliasTestPartitionKey = () =>
     createEnvironmentAliasPk(getDummyContext());
 
+export const deleteInitialEnvironment = async (documentClient: DocumentClient): Promise<void> => {
+    await documentClient
+        .delete({
+            TableName: "HeadlessCms",
+            Key: {
+                PK: createEnvironmentTestPartitionKey(),
+                SK: getInitialEnvironmentId()
+            }
+        })
+        .promise();
+};
+
 export const fetchInitialEnvironment = async (
     documentClient: DocumentClient
 ): Promise<CmsEnvironmentType> => {

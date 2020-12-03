@@ -2,6 +2,7 @@ import { useGqlHandler } from "./useGqlHandler";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import {
     createEnvironmentTestPartitionKey,
+    deleteInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
@@ -75,7 +76,7 @@ describe("Environment crud test", () => {
         documentClient
     } = useGqlHandler();
 
-    beforeAll(async () => {
+    beforeEach(async () => {
         await documentClient
             .put({
                 TableName: "HeadlessCms",
@@ -247,6 +248,200 @@ describe("Environment crud test", () => {
                         error: {
                             message: `CMS Environment "nonExistingId" not found.`,
                             code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error on update of non-existing environment", async () => {
+        const [response] = await updateEnvironmentMutation({
+            id: "nonExistingId",
+            data: {}
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    updateEnvironment: {
+                        data: null,
+                        error: {
+                            message: `CMS Environment "nonExistingId" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error on delete of non-existing environment", async () => {
+        const [response] = await deleteEnvironmentMutation({
+            id: "nonExistingId",
+            data: {}
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    deleteEnvironment: {
+                        data: null,
+                        error: {
+                            message: `CMS Environment "nonExistingId" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error on creating a new environment when no environments in the database", async () => {
+        await deleteInitialEnvironment(documentClient);
+        const [response] = await createEnvironmentMutation({
+            data: {
+                name: "environment name",
+                slug: "environment-name",
+                description: "environment-description",
+                createdFrom: getInitialEnvironmentId()
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `There are no environments in the database.`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when faulty data is sent when creating new environment", async () => {
+        const [nameResponse] = await createEnvironmentMutation({
+            data: {
+                slug: "environment-slug",
+                createdFrom: getInitialEnvironmentId()
+            }
+        });
+
+        expect(nameResponse).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `Validation failed.`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [createdFromResponse] = await createEnvironmentMutation({
+            data: {
+                name: "environment name",
+                slug: "environment-slug"
+            }
+        });
+
+        expect(createdFromResponse).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `Validation failed.`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when no slug or name sent when creating new environment", async () => {
+        const [response] = await createEnvironmentMutation({
+            data: {
+                createdFrom: getInitialEnvironmentId()
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `slugify: string argument expected`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when non-existing createdFrom id sent when creating new environment", async () => {
+        const [response] = await createEnvironmentMutation({
+            data: {
+                name: "environment name",
+                slug: "environment-name",
+                description: "environment-description",
+                createdFrom: "nonExistingEnvironmentId"
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `Base environment ("createdFrom" field) not set or environment "nonExistingEnvironmentId" does not exist.`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to create a new environment with same slug as existing one in the database", async () => {
+        await createEnvironmentMutation({
+            data: {
+                name: "environment name",
+                description: "environment description",
+                createdFrom: getInitialEnvironmentId()
+            }
+        });
+
+        const [response] = await createEnvironmentMutation({
+            data: {
+                name: "environment name",
+                description: "environment description",
+                createdFrom: getInitialEnvironmentId()
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createEnvironment: {
+                        data: null,
+                        error: {
+                            message: `Environment with slug "environment-name" already exists.`,
+                            code: "CREATE_ENVIRONMENT_FAILED",
                             data: null
                         }
                     }

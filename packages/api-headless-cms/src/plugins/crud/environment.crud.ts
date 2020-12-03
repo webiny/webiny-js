@@ -16,8 +16,8 @@ import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
-    slug: string({ validation: validation.create("required,maxLength:100") }),
-    description: string({ validation: validation.create("required,maxLength:255") }),
+    slug: string({ validation: validation.create("maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:255") }),
     createdFrom: string({ validation: validation.create("required,maxLength:255") })
 })();
 const UpdateEnvironmentModel = withFields({
@@ -113,12 +113,13 @@ export default {
 
                 // after create hook
                 // there is a possibility that there is no sourceEnvironment - installation process
-                if (sourceEnvironment) {
-                    await context.cms.dataManager.copyEnvironment({
-                        copyFrom: sourceEnvironment.id,
-                        copyTo: id
-                    });
+                if (!sourceEnvironment) {
+                    return model;
                 }
+                await context.cms.dataManager.copyEnvironment({
+                    copyFrom: sourceEnvironment.id,
+                    copyTo: id
+                });
                 //
                 return model;
             },
@@ -127,6 +128,11 @@ export default {
                 await updateData.validate();
 
                 const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
+
+                // no need to continue if no values were changed
+                if (Object.keys(updatedDataJson).length === 0) {
+                    return {} as any;
+                }
 
                 const updatedModel = Object.assign(updatedDataJson, {
                     changedOn: new Date().toISOString()
