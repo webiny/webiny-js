@@ -13,9 +13,8 @@ export type SecurityAuthenticationPlugin = Plugin & {
     authenticate(context: Context): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export type SecurityPermission = {
+export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
-    [key: string]: any;
 };
 
 export type SecurityAuthorizationPlugin = Plugin & {
