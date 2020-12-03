@@ -1,12 +1,9 @@
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
 import defaults from "./defaults";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
-import { SecurityContext } from "@webiny/api-security/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 export type Settings = {
     nme: string;
@@ -52,7 +49,7 @@ const SettingsModel = withFields({
 
 const TYPE = "pb.settings";
 
-export default {
+const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
         const { db } = context;
@@ -95,4 +92,6 @@ export default {
             }
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, TenancyContext, SecurityContext>;
+};
+
+export default plugin;
