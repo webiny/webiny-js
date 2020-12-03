@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from "react";
 import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
