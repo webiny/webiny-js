@@ -1,6 +1,6 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
+import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { compose } from "@webiny/handler-graphql";
 import { PbContext } from "@webiny/api-page-builder/types";
@@ -94,7 +94,11 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 listCategories: async (_, args, context) => {
                     const { categories } = context;
                     const list = await categories.list();
-                    return new Response(list);
+                    try {
+                        return new Response(list);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 }
             },
             PbMutation: {
