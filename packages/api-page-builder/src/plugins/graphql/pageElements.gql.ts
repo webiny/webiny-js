@@ -1,11 +1,9 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { compose } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -14,8 +12,6 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
 
     return pbPagePermission.rwd.includes(rwd);
 };
-
-type Context = HandlerContext<I18NContext, SecurityContext>;
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
@@ -68,7 +64,7 @@ const plugin: GraphQLSchemaPlugin = {
                 getPageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                )(async (_, args: { id: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
@@ -96,7 +92,7 @@ const plugin: GraphQLSchemaPlugin = {
                 listPageElements: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "r" })) {
@@ -120,7 +116,7 @@ const plugin: GraphQLSchemaPlugin = {
                 createPageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { data: Record<string, any> }, context: Context) => {
+                )(async (_, args: { data: Record<string, any> }, context: PbContext) => {
                     // If permission has "rwd" property set, but "w" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
@@ -139,7 +135,7 @@ const plugin: GraphQLSchemaPlugin = {
                 updatePageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string; data: Record<string, any> }, context: Context) => {
+                )(async (_, args: { id: string; data: Record<string, any> }, context: PbContext) => {
                     // If permission has "rwd" property set, but "w" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "w" })) {
@@ -173,7 +169,7 @@ const plugin: GraphQLSchemaPlugin = {
                 deletePageElement: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                )(async (_, args: { id: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "d" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {

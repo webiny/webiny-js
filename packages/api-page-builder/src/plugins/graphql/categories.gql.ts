@@ -1,11 +1,9 @@
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { compose } from "@webiny/handler-graphql";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 const hasRwd = ({ pbCategoryPermission, rwd }) => {
     if (typeof pbCategoryPermission.rwd !== "string") {
@@ -15,9 +13,7 @@ const hasRwd = ({ pbCategoryPermission, rwd }) => {
     return pbCategoryPermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<I18NContext, SecurityContext>;
-
-const plugin: GraphQLSchemaPlugin = {
+const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -69,7 +65,7 @@ const plugin: GraphQLSchemaPlugin = {
                 getCategory: compose(
                     hasPermission("pb.category"),
                     hasI18NContentPermission()
-                )(async (_, args: { slug: string }, context: Context) => {
+                )(async (_, args: { slug: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbCategoryPermission = await context.security.getPermission(
                         "pb.category"
@@ -95,36 +91,17 @@ const plugin: GraphQLSchemaPlugin = {
 
                     return new Response(category);
                 }),
-                listCategories: compose(
-                    hasPermission("pb.category"),
-                    hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
-                    // If permission has "rwd" property set, but "r" is not part of it, bail.
-                    const pbCategoryPermission = await context.security.getPermission(
-                        "pb.category"
-                    );
-                    if (pbCategoryPermission && !hasRwd({ pbCategoryPermission, rwd: "r" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
+                listCategories: async (_, args, context) => {
                     const { categories } = context;
-
-                    let list = await categories.list();
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbCategoryPermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        list = list.filter(category => category.createdBy.id === identity.id);
-                    }
-
+                    const list = await categories.list();
                     return new Response(list);
-                })
+                }
             },
             PbMutation: {
                 createCategory: compose(
                     hasPermission("pb.category"),
                     hasI18NContentPermission()
-                )(async (_, args, context: Context) => {
+                )(async (_, args, context: PbContext) => {
                     // If permission has "rwd" property set, but "w" is not part of it, bail.
                     const pbCategoryPermission = await context.security.getPermission(
                         "pb.category"
@@ -164,7 +141,7 @@ const plugin: GraphQLSchemaPlugin = {
                     async (
                         _,
                         args: { slug: string; data: Record<string, any> },
-                        context: Context
+                        context: PbContext
                     ) => {
                         // If permission has "rwd" property set, but "w" is not part of it, bail.
                         const pbCategoryPermission = await context.security.getPermission(
@@ -195,7 +172,7 @@ const plugin: GraphQLSchemaPlugin = {
                         return new Response({ ...category, ...changed });
                     }
                 ),
-                deleteCategory: compose<any, { slug: string }, Context>(
+                deleteCategory: compose<any, { slug: string }, PbContext>(
                     hasPermission("pb.category"),
                     hasI18NContentPermission()
                 )(async (_, args, context) => {

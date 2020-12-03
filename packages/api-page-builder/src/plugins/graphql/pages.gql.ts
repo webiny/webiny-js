@@ -2,13 +2,10 @@ import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import oembed from "./pageResolvers/oembed";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Context as HandlerContext } from "@webiny/handler/types";
-import { I18NContext, I18NContextObject } from "@webiny/api-i18n/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PagesListArgs } from "@webiny/api-page-builder/plugins/crud/pages.crud";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 
 const hasRwd = ({ pbPagePermission, rwd }) => {
     if (typeof pbPagePermission.rwd !== "string") {
@@ -18,9 +15,7 @@ const hasRwd = ({ pbPagePermission, rwd }) => {
     return pbPagePermission.rwd.includes(rwd);
 };
 
-type Context = HandlerContext<I18NContext, SecurityContext, TenancyContext, I18NContextObject>;
-
-const plugin: GraphQLSchemaPlugin<Context> = {
+const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
@@ -268,7 +263,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 getPage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                )(async (_, args: { id: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "r" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (!hasRwd({ pbPagePermission, rwd: "r" })) {
@@ -337,7 +332,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 createPage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { from?: string; category?: string }, context: Context) => {
+                )(async (_, args: { from?: string; category?: string }, context: PbContext) => {
                     const { pages } = context;
                     const { from, category } = args;
 
@@ -354,7 +349,7 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 deletePage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: Context) => {
+                )(async (_, args: { id: string }, context: PbContext) => {
                     // If permission has "rwd" property set, but "d" is not part of it, bail.
                     const pbPagePermission = await context.security.getPermission("pb.page");
                     if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
@@ -385,18 +380,24 @@ const plugin: GraphQLSchemaPlugin<Context> = {
                 updatePage: compose(
                     hasPermission("pb.page"),
                     hasI18NContentPermission()
-                )(async (_, args: { id: string; data: Record<string, any> }, context: Context) => {
-                    const { pages } = context;
-                    const { data } = args;
-                    const id = decodeURIComponent(args.id);
+                )(
+                    async (
+                        _,
+                        args: { id: string; data: Record<string, any> },
+                        context: PbContext
+                    ) => {
+                        const { pages } = context;
+                        const { data } = args;
+                        const id = decodeURIComponent(args.id);
 
-                    try {
-                        const page = await pages.update(id, data);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
+                        try {
+                            const page = await pages.update(id, data);
+                            return new Response(page);
+                        } catch (e) {
+                            return new ErrorResponse(e);
+                        }
                     }
-                }),
+                ),
 
                 publishPage: async (_, args: { id: string }, context) => {
                     const { pages } = context;
