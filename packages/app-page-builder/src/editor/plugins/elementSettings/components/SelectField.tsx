@@ -41,7 +41,7 @@ type SelectProps = {
     [key: string]: any;
 };
 
-const SelectField = ({ value, onChange, children, className }: SelectProps) => {
+const SelectField = ({ value, onChange, children, className, ...props }: SelectProps) => {
     return (
         <select
             className={classNames(selectStyle, className)}
@@ -49,6 +49,7 @@ const SelectField = ({ value, onChange, children, className }: SelectProps) => {
             onChange={({ target: { value } }) => {
                 onChange(value);
             }}
+            {...props}
         >
             {children}
         </select>
