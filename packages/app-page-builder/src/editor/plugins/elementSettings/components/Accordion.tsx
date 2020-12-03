@@ -6,6 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 
 const classes = {
     accordionWrapper: css({
+        width: "100%",
         borderBottom: `1px solid ${COLORS.gray}`
     }),
     accordionTitle: css({
@@ -16,6 +17,7 @@ const classes = {
 
         display: "flex",
         alignItems: "center",
+        justifyContent: "space-between",
 
         "& span": {
             marginLeft: 16
@@ -34,6 +36,9 @@ const classes = {
             borderBottom: "5px solid transparent",
             borderLeft: "5px solid currentColor"
         },
+        "& .action-container": {
+            display: "none"
+        },
 
         "&.open": {
             color: COLORS.black,
@@ -41,6 +46,10 @@ const classes = {
 
             "&::before": {
                 transform: "rotate(90deg)"
+            },
+
+            "& .action-container": {
+                display: "block"
             }
         }
     }),
@@ -64,9 +73,10 @@ const classes = {
 type AccordionProps = {
     title: string;
     children: ReactElement;
+    action?: ReactElement;
 };
 
-const Accordion = ({ title, children }: AccordionProps) => {
+const Accordion = ({ title, children, action }: AccordionProps) => {
     const [isOpen, setOpen] = useState(false);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
@@ -76,7 +86,10 @@ const Accordion = ({ title, children }: AccordionProps) => {
                 className={classNames(classes.accordionTitle, { open: isOpen })}
                 onClick={toggleOpen}
             >
-                <Typography use={"subtitle1"}>{title}</Typography>
+                <div>
+                    <Typography use={"subtitle1"}>{title}</Typography>
+                </div>
+                <div className={"action-container"}>{action}</div>
             </div>
             <div className={classNames(classes.accordionItem, { collapsed: !isOpen })}>
                 <div className="accordion-content">{children}</div>
