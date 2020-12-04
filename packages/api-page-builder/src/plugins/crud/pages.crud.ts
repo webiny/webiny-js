@@ -115,11 +115,11 @@ const getESPageData = (context: PbContext, page) => {
 };
 
 const getESLatestPageData = (context: PbContext, page) => {
-    return getESPageData(context, { ...page, __latest: true });
+    return { ...getESPageData(context, page), __latest: true };
 };
 
 const getESPublishedPageData = (context: PbContext, page) => {
-    return getESPageData(context, { ...page, __published: true });
+    return { ...getESPageData(context, page), __published: true };
 };
 
 const plugin: ContextPlugin<PbContext> = {
@@ -500,7 +500,7 @@ const plugin: ContextPlugin<PbContext> = {
                         })
                         .execute();
 
-                    // 2. Do some checks.
+                    // 2. Do a couple of checks.
                     if (!page) {
                         throw new NotFoundError(`Page "${pageId}" not found.`);
                     }
@@ -537,7 +537,7 @@ const plugin: ContextPlugin<PbContext> = {
                                 });
                             }
 
-                            await batch.delete();
+                            await batch.execute();
                         }
 
                         // 4.2. Delete latest / published data.
@@ -591,8 +591,8 @@ const plugin: ContextPlugin<PbContext> = {
                     // We need to update / delete data in ES too.
                     const esOperations = [];
 
-                    const isLatest = latestPageData?.id === pageUniqueId;
-                    const isPublished = publishedPageData?.id === pageUniqueId;
+                    const isLatest = latestPageData?.id === pageId;
+                    const isPublished = publishedPageData?.id === pageId;
                     let newLatestPage = null;
 
                     // 6.2. If the page is published, remove published data, both from DB and ES.
@@ -616,6 +616,7 @@ const plugin: ContextPlugin<PbContext> = {
                         [[newLatestPage]] = await db.read({
                             ...defaults.db,
                             query: { PK: PK_PAGE(), SK: { $lt: pageId } },
+                            sort: { SK: -1 },
                             limit: 1
                         });
 
@@ -623,6 +624,10 @@ const plugin: ContextPlugin<PbContext> = {
                         batch.update({
                             ...defaults.db,
                             query: {
+                                PK: PK_PAGE_LATEST(),
+                                SK: pageUniqueId
+                            },
+                            data: {
                                 PK: PK_PAGE_LATEST(),
                                 SK: pageUniqueId,
                                 TYPE: TYPE_PAGE_LATEST,
