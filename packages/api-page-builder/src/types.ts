@@ -53,7 +53,7 @@ export type PagesCrud = {
     create(category: string): Promise<Page>;
     createFrom(page: string): Promise<Page>;
     update(id: string, data: Record<string, any>): Promise<Page>;
-    delete(id: string): Promise<Page>;
+    delete(id: string): Promise<[Page, Page]>;
     publish(id: string): Promise<Page>;
     unpublish(id: string): Promise<Page>;
     requestReview(id: string): Promise<Page>;
