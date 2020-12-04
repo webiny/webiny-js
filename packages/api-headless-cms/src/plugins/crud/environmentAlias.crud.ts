@@ -14,6 +14,7 @@ import {
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 import { createEnvironmentAliasPk } from "./partitionKeys";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -27,8 +28,6 @@ const UpdateEnvironmentAliasModel = withFields({
     description: string({ validation: validation.create("maxLength:255") }),
     environment: string({ validation: validation.create("maxLength:255") })
 })();
-
-const TYPE = "cms#envAlias";
 
 const fetchTargetEnvironment = async (
     context: CmsContextType,
@@ -86,7 +85,7 @@ export default {
                 const modelData = Object.assign(createDataJson, {
                     PK: createEnvironmentAliasPk(context),
                     SK: id,
-                    TYPE,
+                    TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS,
                     id,
                     createdOn: new Date().toISOString(),
                     environment: targetEnvironment,

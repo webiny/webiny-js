@@ -2,9 +2,9 @@ import { useGqlHandler } from "./useGqlHandler";
 import { createSettingsTestPartitionKey } from "./helpers";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsSettingsType } from "@webiny/api-headless-cms/types";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 const SETTINGS_SECONDARY_KEY = "settings";
-const SETTINGS_TYPE = "cms#settings";
 
 const insertCmsSettings = async (documentClient: DocumentClient, settings: CmsSettingsType) => {
     await documentClient
@@ -13,7 +13,7 @@ const insertCmsSettings = async (documentClient: DocumentClient, settings: CmsSe
             Item: {
                 PK: createSettingsTestPartitionKey(),
                 SK: SETTINGS_SECONDARY_KEY,
-                TYPE: SETTINGS_TYPE,
+                TYPE: DbItemTypes.CMS_SETTINGS,
                 ...settings
             }
         })

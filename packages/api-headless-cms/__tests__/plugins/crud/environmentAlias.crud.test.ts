@@ -1,6 +1,6 @@
 import { useGqlHandler } from "./useGqlHandler";
 import {
-    createEnvironmentTestPartitionKey,
+    createInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
@@ -48,18 +48,7 @@ describe("Environment alias crud test", () => {
     } = useGqlHandler();
 
     beforeEach(async () => {
-        await documentClient
-            .put({
-                TableName: "HeadlessCms",
-                Item: {
-                    PK: createEnvironmentTestPartitionKey(),
-                    SK: getInitialEnvironmentId(),
-                    TYPE: "cms#env",
-                    ...getInitialEnvironment(),
-                    createdOn: new Date().toISOString()
-                }
-            })
-            .promise();
+        await createInitialEnvironment(documentClient);
     });
 
     test("environment alias create, read, update, delete and list all at once", async () => {

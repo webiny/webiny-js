@@ -6,6 +6,7 @@ import {
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 export type PermissionsArgType = {
     name: string;
@@ -47,6 +48,21 @@ export const deleteInitialEnvironment = async (documentClient: DocumentClient): 
             Key: {
                 PK: createEnvironmentTestPartitionKey(),
                 SK: getInitialEnvironmentId()
+            }
+        })
+        .promise();
+};
+
+export const createInitialEnvironment = async (documentClient: DocumentClient) => {
+    await documentClient
+        .put({
+            TableName: "HeadlessCms",
+            Item: {
+                PK: createEnvironmentTestPartitionKey(),
+                SK: getInitialEnvironmentId(),
+                TYPE: DbItemTypes.CMS_ENVIRONMENT,
+                ...getInitialEnvironment(),
+                createdOn: new Date().toISOString()
             }
         })
         .promise();

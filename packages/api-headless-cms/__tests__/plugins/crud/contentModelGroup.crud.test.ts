@@ -1,9 +1,5 @@
 import { useGqlHandler } from "./useGqlHandler";
-import {
-    createEnvironmentTestPartitionKey,
-    getInitialEnvironment,
-    getInitialEnvironmentId
-} from "./helpers";
+import { createInitialEnvironment } from "./helpers";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 enum TestHelperEnum {
@@ -46,18 +42,7 @@ describe("Content model group crud test", () => {
     } = useGqlHandler();
 
     beforeEach(async () => {
-        await documentClient
-            .put({
-                TableName: "HeadlessCms",
-                Item: {
-                    PK: createEnvironmentTestPartitionKey(),
-                    SK: getInitialEnvironmentId(),
-                    TYPE: "cms#env",
-                    ...getInitialEnvironment(),
-                    createdOn: new Date().toISOString()
-                }
-            })
-            .promise();
+        await createInitialEnvironment(documentClient);
     });
 
     test("content model group create, read, update, delete and list all at once", async () => {

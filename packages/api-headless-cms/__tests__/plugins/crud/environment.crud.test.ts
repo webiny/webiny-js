@@ -1,7 +1,7 @@
 import { useGqlHandler } from "./useGqlHandler";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import {
-    createEnvironmentTestPartitionKey,
+    createInitialEnvironment,
     deleteInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
@@ -56,18 +56,7 @@ describe("Environment crud test", () => {
     } = useGqlHandler();
 
     beforeEach(async () => {
-        await documentClient
-            .put({
-                TableName: "HeadlessCms",
-                Item: {
-                    PK: createEnvironmentTestPartitionKey(),
-                    SK: getInitialEnvironmentId(),
-                    TYPE: "cms#env",
-                    ...getInitialEnvironment(),
-                    createdOn: new Date().toISOString()
-                }
-            })
-            .promise();
+        await createInitialEnvironment(documentClient);
     });
 
     test("environment create, read, update, delete and list all at once", async () => {

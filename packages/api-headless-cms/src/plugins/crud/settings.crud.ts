@@ -14,6 +14,7 @@ import {
     createSettingsPk
 } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
 import { SecurityContext } from "@webiny/api-security/types";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 const initialEnvironment = {
     name: "Production",
@@ -34,8 +35,6 @@ const initialContentModelGroup = {
 };
 
 const SETTINGS_SECONDARY_KEY = "settings";
-const SETTINGS_TYPE = "cms#settings";
-const CONTENT_MODEL_GROUP_TYPE = "cms#cmg";
 
 export default {
     type: "context",
@@ -86,7 +85,7 @@ export default {
                     data: {
                         PK: createContentModelGroupPk(context),
                         SK: contentModelGroupId,
-                        TYPE: CONTENT_MODEL_GROUP_TYPE,
+                        TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
                         ...initialContentModelGroup,
                         environment: environment.id
                     }
@@ -97,7 +96,7 @@ export default {
                     data: {
                         PK: createSettingsPk(context),
                         SK: SETTINGS_SECONDARY_KEY,
-                        TYPE: SETTINGS_TYPE,
+                        TYPE: DbItemTypes.CMS_SETTINGS,
                         isInstalled: true,
                         environment: environment.id,
                         environmentAlias: environmentAlias.id

@@ -13,6 +13,7 @@ import {
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 import { createEnvironmentAliasPk, createEnvironmentPk } from "./partitionKeys";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -37,8 +38,6 @@ const createEnvironmentValidationModel = (initial?: boolean) => {
     }
     return new CreateEnvironmentModel();
 };
-
-const TYPE = "cms#env";
 
 type BaseDynamoType = {
     PK: string;
@@ -111,7 +110,7 @@ export default {
                 const model = Object.assign(createDataJson, {
                     PK: createEnvironmentPk(context),
                     SK: id,
-                    TYPE,
+                    TYPE: DbItemTypes.CMS_ENVIRONMENT,
                     id,
                     createdOn: new Date().toISOString(),
                     createdFrom: sourceEnvironment,

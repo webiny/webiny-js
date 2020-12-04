@@ -13,6 +13,7 @@ import { createContentModelGroupPk } from "@webiny/api-headless-cms/plugins/crud
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
+import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -27,8 +28,6 @@ const UpdateContentModelGroupModel = withFields({
     description: string({ validation: validation.create("maxLength:255") }),
     icon: string({ validation: validation.create("maxLength:255") })
 })();
-
-const TYPE = "cms#cmg";
 
 export default {
     type: "context",
@@ -76,7 +75,7 @@ export default {
                 const model = {
                     PK: createContentModelGroupPk(context),
                     SK: id,
-                    TYPE,
+                    TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
                     id,
                     ...createdDataJson,
                     createdOn: new Date().toISOString(),
