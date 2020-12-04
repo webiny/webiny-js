@@ -39,29 +39,6 @@ const createEnvironmentModel = ({
     };
 };
 
-const createMatchableUpdatedEnvironmentModel = (
-    position: number,
-    initialEnvironment: CmsEnvironmentType
-) => {
-    const initialModel = createEnvironmentModel({
-        prefix: createEnvironmentPrefix(position),
-        initialEnvironment,
-        suffix: TestHelperEnum.SUFFIX as string
-    });
-
-    return {
-        ...initialModel,
-        id: /([a-z0-9A-Z]+)/,
-        createdOn: /^20/,
-        changedOn: /^20/,
-        createdFrom: getInitialEnvironment(),
-        createdBy: {
-            id: TestHelperEnum.USER_ID,
-            name: TestHelperEnum.USER_NAME
-        }
-    };
-};
-
 const expectedInitialEnvironment = {
     ...getInitialEnvironment(),
     createdOn: /^20/
@@ -96,17 +73,17 @@ describe("Environment crud test", () => {
     test("environment create, read, update, delete and list all at once", async () => {
         const initialEnvironment = await fetchInitialEnvironment(documentClient);
 
-        const createdEnvironmentIdList = [];
+        const updatedEnvironments = [];
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createEnvironmentPrefix(prefix);
         });
         for (const prefix of prefixes) {
             const modelData = createEnvironmentModel({ prefix, initialEnvironment });
 
-            const [createEnvironmentResponse] = await createEnvironmentMutation({
+            const [createResponse] = await createEnvironmentMutation({
                 data: modelData
             });
-            expect(createEnvironmentResponse).toMatchObject({
+            expect(createResponse).toMatchObject({
                 data: {
                     cms: {
                         createEnvironment: {
@@ -126,28 +103,31 @@ describe("Environment crud test", () => {
                 }
             });
 
-            const createdEnvironmentId =
-                createEnvironmentResponse.data.cms.createEnvironment.data.id;
+            const {
+                id: createdEnvironmentId,
+                createdOn
+            } = createResponse.data.cms.createEnvironment.data;
 
-            createdEnvironmentIdList.push(createdEnvironmentId);
-
-            const [getEnvironmentResponse] = await getEnvironmentQuery({
+            const [getResponse] = await getEnvironmentQuery({
                 id: createdEnvironmentId
             });
 
-            expect(getEnvironmentResponse).toMatchObject({
+            expect(getResponse).toEqual({
                 data: {
                     cms: {
                         getEnvironment: {
                             data: {
+                                id: createdEnvironmentId,
                                 ...modelData,
                                 createdFrom: {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: {
-                                    id: TestHelperEnum.USER_ID
+                                    id: TestHelperEnum.USER_ID,
+                                    name: TestHelperEnum.USER_NAME
                                 },
-                                createdOn: /^20/
+                                createdOn,
+                                changedOn: null
                             },
                             error: null
                         }
@@ -161,23 +141,25 @@ describe("Environment crud test", () => {
                 suffix: TestHelperEnum.SUFFIX as string
             });
 
-            const [updateEnvironmentResponse] = await updateEnvironmentMutation({
+            const [updateResponse] = await updateEnvironmentMutation({
                 id: createdEnvironmentId,
                 data: updatedModelData
             });
-            expect(updateEnvironmentResponse).toMatchObject({
+            expect(updateResponse).toMatchObject({
                 data: {
                     cms: {
                         updateEnvironment: {
                             data: {
+                                id: createdEnvironmentId,
                                 ...updatedModelData,
                                 createdFrom: {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: {
-                                    id: TestHelperEnum.USER_ID
+                                    id: TestHelperEnum.USER_ID,
+                                    name: TestHelperEnum.USER_NAME
                                 },
-                                createdOn: /^20/,
+                                createdOn,
                                 changedOn: /^20/
                             },
                             error: null
@@ -185,6 +167,8 @@ describe("Environment crud test", () => {
                     }
                 }
             });
+
+            updatedEnvironments.push(updateResponse.data.cms.updateEnvironment.data);
         }
 
         const [listEnvironmentsResponse] = await listEnvironmentsQuery();
@@ -196,23 +180,18 @@ describe("Environment crud test", () => {
             data: {
                 cms: {
                     listEnvironments: {
-                        data: [
-                            expectedInitialEnvironment,
-                            createMatchableUpdatedEnvironmentModel(0, initialEnvironment),
-                            createMatchableUpdatedEnvironmentModel(1, initialEnvironment),
-                            createMatchableUpdatedEnvironmentModel(2, initialEnvironment)
-                        ],
+                        data: [expectedInitialEnvironment, ...updatedEnvironments],
                         error: null
                     }
                 }
             }
         });
 
-        for (const id of createdEnvironmentIdList) {
+        for (const { id } of updatedEnvironments) {
             const [deleteEnvironmentResponse] = await deleteEnvironmentMutation({
                 id
             });
-            expect(deleteEnvironmentResponse).toMatchObject({
+            expect(deleteEnvironmentResponse).toEqual({
                 data: {
                     cms: {
                         deleteEnvironment: {
@@ -464,13 +443,14 @@ describe("Environment crud test", () => {
             id: getInitialEnvironmentId()
         });
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 cms: {
                     deleteEnvironment: {
                         data: null,
                         error: {
                             code: "DELETE_ENVIRONMENT_FAILED",
+                            data: null,
                             message: `Cannot delete the environment because it's currently linked to the "environment alias" environment aliases.`
                         }
                     }

@@ -4,6 +4,7 @@ import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 // import cmsAccessToken from "./graphql/accessToken";
 import cmsSettings from "./graphql/settings";
+import cmsContentModelGroup from "./graphql/contentModelGroup";
 
 const emptyResolver = () => ({});
 
@@ -66,6 +67,7 @@ export default () => [
                 ${cmsSettings.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
+                ${cmsContentModelGroup.typeDefs}
             `,
             // ${cmsAccessToken.typeDefs}
             resolvers: merge(
@@ -79,7 +81,8 @@ export default () => [
                 },
                 cmsSettings.resolvers,
                 cmsEnvironment.resolvers,
-                cmsEnvironmentAlias.resolvers
+                cmsEnvironmentAlias.resolvers,
+                cmsContentModelGroup.resolvers
                 // cmsAccessToken.resolvers
             )
         }

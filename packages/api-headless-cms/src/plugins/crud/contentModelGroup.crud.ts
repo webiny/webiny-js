@@ -3,8 +3,7 @@ import mdbid from "mdbid";
 import {
     CmsContentModelGroupContextType,
     CmsContentModelGroupType,
-    CmsContextType,
-    CmsEnvironmentType
+    CmsContextType
 } from "@webiny/api-headless-cms/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -19,8 +18,7 @@ const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
     slug: string({ validation: validation.create("maxLength:100") }),
     description: string({ validation: validation.create("maxLength:255") }),
-    icon: string({ validation: validation.create("required,maxLength:255") }),
-    environment: string({ validation: validation.create("required,maxLength:255") })
+    icon: string({ validation: validation.create("required,maxLength:255") })
 })();
 
 const UpdateContentModelGroupModel = withFields({
@@ -29,17 +27,6 @@ const UpdateContentModelGroupModel = withFields({
     description: string({ validation: validation.create("maxLength:255") }),
     icon: string({ validation: validation.create("maxLength:255") })
 })();
-
-const fetchTargetEnvironment = async (
-    context: CmsContextType,
-    id: string
-): Promise<CmsEnvironmentType> => {
-    const env = await context.cms.environment.get(id);
-    if (!env) {
-        throw new Error(`There is no environment "${id}".`);
-    }
-    return env;
-};
 
 const TYPE = "cms#cmg";
 
@@ -79,18 +66,12 @@ export default {
 
                 const id = mdbid();
 
-                const targetEnvironment = await fetchTargetEnvironment(
-                    context,
-                    createdDataJson.environment
-                );
-
                 const model = {
                     PK: createContentModelGroupPk(context),
                     SK: id,
                     TYPE,
                     id,
                     ...createdDataJson,
-                    environment: targetEnvironment,
                     createdOn: new Date().toISOString(),
                     createdBy
                 };

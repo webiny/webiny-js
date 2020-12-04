@@ -27,6 +27,13 @@ import {
 } from "./graphql/environmentAlias";
 import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import {
+    CREATE_CONTENT_MODEL_GROUP_MUTATION,
+    DELETE_CONTENT_MODEL_GROUP_MUTATION,
+    GET_CONTENT_MODEL_GROUP_QUERY,
+    LIST_CONTENT_MODEL_GROUP_QUERY,
+    UPDATE_CONTENT_MODEL_GROUP_MUTATION
+} from "./graphql/contentModelGroup";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
@@ -142,6 +149,22 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        // content model group
+        async createContentModelGroupMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
+        },
+        async getContentModelGroupQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CONTENT_MODEL_GROUP_QUERY, variables } });
+        },
+        async updateContentModelGroupMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_CONTENT_MODEL_GROUP_MUTATION, variables } });
+        },
+        async deleteContentModelGroupMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_CONTENT_MODEL_GROUP_MUTATION, variables } });
+        },
+        async listContentModelGroupsQuery() {
+            return invoke({ body: { query: LIST_CONTENT_MODEL_GROUP_QUERY } });
         }
     };
 };

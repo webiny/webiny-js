@@ -31,12 +31,14 @@ export default {
         type CmsContentModelGroup {
             id: ID
             createdOn: DateTime
+            changedOn: DateTime
             name: String
             contentModels: [CmsContentModel]
             totalContentModels: Int
             slug: String
             description: String
             icon: String
+            createdBy: JSON
         }
         input CmsContentModelGroupInput {
             name: String
@@ -56,7 +58,7 @@ export default {
             error: CmsError
         }
 
-        extend type Query {
+        extend type CmsQuery {
             getContentModelGroup(id: ID, where: JSON, sort: String): CmsContentModelGroupResponse
 
             listContentModelGroups(
@@ -69,7 +71,7 @@ export default {
             ): CmsContentModelGroupListResponse
         }
 
-        extend type Mutation {
+        extend type CmsMutation {
             createContentModelGroup(data: CmsContentModelGroupInput!): CmsContentModelGroupResponse
 
             updateContentModelGroup(

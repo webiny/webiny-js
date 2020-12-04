@@ -37,29 +37,6 @@ const createEnvironmentAliasModel = ({
     };
 };
 
-const createMatchableUpdatedEnvironmentAliasModel = (
-    position: number,
-    environment: CmsEnvironmentType
-) => {
-    const initialModel = createEnvironmentAliasModel({
-        prefix: createEnvironmentAliasPrefix(position),
-        environment,
-        suffix: TestHelperEnum.SUFFIX as string
-    });
-
-    return {
-        ...initialModel,
-        id: /([a-z0-9A-Z]+)/,
-        createdOn: /^20/,
-        changedOn: /^20/,
-        environment: getInitialEnvironment(),
-        createdBy: {
-            id: TestHelperEnum.USER_ID,
-            name: TestHelperEnum.USER_NAME
-        }
-    };
-};
-
 describe("Environment alias crud test", () => {
     const {
         createEnvironmentAliasMutation,
@@ -85,10 +62,10 @@ describe("Environment alias crud test", () => {
             .promise();
     });
 
-    test("environment create, read, update, delete and list all at once", async () => {
+    test("environment alias create, read, update, delete and list all at once", async () => {
         const environment = await fetchInitialEnvironment(documentClient);
 
-        const createdEnvironmentAliasIdList: string[] = [];
+        const updatedEnvironmentAliases = [];
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createEnvironmentAliasPrefix(prefix);
         });
@@ -117,27 +94,28 @@ describe("Environment alias crud test", () => {
                     }
                 }
             });
-            const createdEnvironmentAliasId =
-                createResponse.data.cms.createEnvironmentAlias.data.id;
-            createdEnvironmentAliasIdList.push(createdEnvironmentAliasId);
+            const {
+                id: createdEnvironmentAliasId,
+                createdOn
+            } = createResponse.data.cms.createEnvironmentAlias.data;
 
             const [getResponse] = await getEnvironmentAliasQuery({
                 id: createdEnvironmentAliasId
             });
 
-            expect(getResponse).toMatchObject({
+            expect(getResponse).toEqual({
                 data: {
                     cms: {
                         getEnvironmentAlias: {
                             data: {
-                                id: /([a-zA-Z0-9]+)/,
+                                id: createdEnvironmentAliasId,
                                 ...modelData,
                                 environment: getInitialEnvironment(),
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
                                     name: TestHelperEnum.USER_NAME
                                 },
-                                createdOn: /^20/,
+                                createdOn,
                                 changedOn: null
                             },
                             error: null
@@ -161,14 +139,14 @@ describe("Environment alias crud test", () => {
                     cms: {
                         updateEnvironmentAlias: {
                             data: {
-                                id: /^20/,
+                                id: createdEnvironmentAliasId,
                                 ...updatedModelData,
                                 environment: getInitialEnvironment(),
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
                                     name: TestHelperEnum.USER_NAME
                                 },
-                                createdOn: /^20/,
+                                createdOn,
                                 changedOn: /^20/
                             },
                             error: null
@@ -176,32 +154,29 @@ describe("Environment alias crud test", () => {
                     }
                 }
             });
+            updatedEnvironmentAliases.push(updateResponse.data.cms.updateEnvironmentAlias.data);
         }
 
         const [listResponse] = await listEnvironmentAliasesQuery();
         expect(listResponse.data.cms.listEnvironmentAliases.data).toHaveLength(
             TestHelperEnum.MODELS_AMOUNT
         );
-        expect(listResponse).toMatchObject({
+        expect(listResponse).toEqual({
             data: {
                 cms: {
                     listEnvironmentAliases: {
-                        data: [
-                            createMatchableUpdatedEnvironmentAliasModel(0, environment),
-                            createMatchableUpdatedEnvironmentAliasModel(1, environment),
-                            createMatchableUpdatedEnvironmentAliasModel(2, environment)
-                        ],
+                        data: updatedEnvironmentAliases,
                         error: null
                     }
                 }
             }
         });
 
-        for (const id of createdEnvironmentAliasIdList) {
+        for (const { id } of updatedEnvironmentAliases) {
             const [deleteResponse] = await deleteEnvironmentAliasMutation({
                 id
             });
-            expect(deleteResponse).toMatchObject({
+            expect(deleteResponse).toEqual({
                 data: {
                     cms: {
                         deleteEnvironmentAlias: {
