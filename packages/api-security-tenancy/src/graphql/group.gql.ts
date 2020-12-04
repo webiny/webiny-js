@@ -58,7 +58,7 @@ const plugin: GraphQLSchemaPlugin = {
 
         resolvers: {
             SecurityQuery: {
-                getGroup: hasPermission("security.group.manage")(
+                getGroup: hasPermission("security.group")(
                     async (_, { slug }: { slug: string }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -80,7 +80,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                listGroups: hasPermission("security.group.manage")(
+                listGroups: hasPermission("security.group")(
                     async (_, args, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -98,7 +98,7 @@ const plugin: GraphQLSchemaPlugin = {
                 )
             },
             SecurityMutation: {
-                createGroup: hasPermission("security.group.manage")(
+                createGroup: hasPermission("security.group")(
                     async (_, { data }: { data: GroupInput }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -117,7 +117,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                updateGroup: hasPermission("security.group.manage")(
+                updateGroup: hasPermission("security.group")(
                     async (
                         _,
                         { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
@@ -159,7 +159,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                deleteGroup: hasPermission("security.group.manage")(
+                deleteGroup: hasPermission("security.group")(
                     async (_, { slug }: { slug: string }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();

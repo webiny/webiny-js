@@ -1,6 +1,9 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
 import { SecurityPermission } from "@webiny/api-security/types";
+import { DbContext } from "@webiny/handler-db/types";
+import { SecurityContext } from "@webiny/api-security/types";
+import { HttpContext } from "@webiny/handler-http/types";
 
 export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin & {
     name: "security-identity-provider";
@@ -109,16 +112,17 @@ export type UpdatePersonalAccessTokenInput = {
     name: string;
 };
 
-export type AccessToken = {
+export type ApiKey = {
     id: string;
     name: string;
     description: string;
     token: string;
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
+    createdOn: string;
 };
 
-export type AccessTokenInput = {
+export type ApiKeyInput = {
     name: string;
     description: string;
     permissions: SecurityPermission[];
@@ -154,7 +158,10 @@ export type UsersCRUD = {
     getPersonalAccessToken(login: string, tokenId: string): Promise<UserPersonalAccessToken>;
     getUserByPersonalAccessToken(token: string): Promise<User>;
     listTokens(login: string): Promise<UserPersonalAccessToken[]>;
-    createToken(login: string, data: CreatePersonalAccessTokenInput): Promise<UserPersonalAccessToken>;
+    createToken(
+        login: string,
+        data: CreatePersonalAccessTokenInput
+    ): Promise<UserPersonalAccessToken>;
     updateToken(
         login: string,
         tokenId: string,
@@ -163,12 +170,13 @@ export type UsersCRUD = {
     deleteToken(login: string, tokenId: string): Promise<boolean>;
 };
 
-export type AccessTokensCRUD = {
-    getAccessToken(id: string): Promise<AccessToken>;
-    listAccessTokens(): Promise<AccessToken[]>;
-    createAccessToken(data: AccessTokenInput): Promise<AccessToken>;
-    updateAccessToken(data: AccessTokenInput): Promise<AccessToken>;
-    deleteAccessToken(id: string): Promise<boolean>;
+export type ApiKeysCRUD = {
+    getApiKey(id: string): Promise<ApiKey>;
+    getApiKeyByToken(token: string): Promise<ApiKey>;
+    listApiKeys(): Promise<ApiKey[]>;
+    createApiKey(data: ApiKeyInput): Promise<ApiKey>;
+    updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
+    deleteApiKey(id: string): Promise<boolean>;
 };
 
 export type TenancyContextObject = {
@@ -179,12 +187,17 @@ export type TenancyContextObject = {
     tenants?: TenantsCRUD;
     users?: UsersCRUD;
     groups?: GroupsCRUD;
-    accessTokens?: AccessTokensCRUD;
+    apiKeys?: ApiKeysCRUD;
 };
 
-export type TenancyContext = {
-    security: TenancyContextObject;
-};
+export type TenancyContext = Context<
+    HttpContext,
+    DbContext,
+    SecurityContext,
+    {
+        security: TenancyContextObject;
+    }
+>;
 
 // Helper types when working with database
 export type DbItemSecurityUser2Tenant = {
@@ -201,3 +214,5 @@ export type DbItemSecurityUser2Tenant = {
         permissions: SecurityPermission[];
     };
 };
+
+export type APIKeyPermission = SecurityPermission<{ name: "security.apiKey" }>;

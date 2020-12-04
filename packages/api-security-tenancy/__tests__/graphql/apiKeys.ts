@@ -1,13 +1,14 @@
-export const CREATE_ACCESS_TOKEN = /* GraphQL */ `
-    mutation CreateAccessToken($data: SecurityAccessTokenInput!) {
+export const CREATE_API_KEY = /* GraphQL */ `
+    mutation CreateApiKey($data: SecurityApiKeyInput!) {
         security {
-            createAccessToken(data: $data) {
+            createApiKey(data: $data) {
                 data {
                     id
                     name
                     description
                     token
                     permissions
+                    createdOn
                 }
                 error {
                     code
@@ -19,10 +20,10 @@ export const CREATE_ACCESS_TOKEN = /* GraphQL */ `
     }
 `;
 
-export const LIST_ACCESS_TOKENS = /* GraphQL */ `
-    query ListAccessTokens {
+export const LIST_API_KEYS = /* GraphQL */ `
+    query ListApiKeys {
         security {
-            listAccessTokens {
+            listApiKeys {
                 data {
                     id
                     name
@@ -39,10 +40,10 @@ export const LIST_ACCESS_TOKENS = /* GraphQL */ `
     }
 `;
 
-export const GET_ACCESS_TOKEN = /* GraphQL */ `
-    query GetAccessToken($id: ID!) {
+export const GET_API_KEY = /* GraphQL */ `
+    query GetApiKey($id: ID!) {
         security {
-            getAccessToken(id: $id) {
+            getApiKey(id: $id) {
                 data {
                     id
                     name
@@ -55,13 +56,15 @@ export const GET_ACCESS_TOKEN = /* GraphQL */ `
     }
 `;
 
-export const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
-    mutation UpdateAccessToken($id: ID!, $data: SecurityAccessTokenInput!) {
+export const UPDATE_API_KEY = /* GraphQL */ `
+    mutation UpdateApiKey($id: ID!, $data: SecurityApiKeyInput!) {
         security {
-            updateAccessToken(id: $id, data: $data) {
+            updateApiKey(id: $id, data: $data) {
                 data {
+                    id
                     name
                     description
+                    token
                     permissions
                 }
             }
@@ -69,10 +72,10 @@ export const UPDATE_ACCESS_TOKEN = /* GraphQL */ `
     }
 `;
 
-export const DELETE_ACCESS_TOKEN = /* GraphQL */ `
-    mutation DeleteAccessToken($id: ID!) {
+export const DELETE_API_KEY = /* GraphQL */ `
+    mutation DeleteApiKey($id: ID!) {
         security {
-            deleteAccessToken(id: $id) {
+            deleteApiKey(id: $id) {
                 data
             }
         }

@@ -5,35 +5,34 @@ import { SecurityIdentity } from "@webiny/api-security";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 type Context = HandlerContext<HttpContext, TenancyContext>;
 
-type AccessTokenAuthentication = {
+type APIKeyAuthentication = {
     identityType?: string;
 };
 
-export default (config: AccessTokenAuthentication = {}) => {
+export default (config: APIKeyAuthentication = {}): SecurityAuthenticationPlugin => {
     return {
         type: "security-authentication",
         async authenticate(context: Context) {
             const { headers } = context.http;
             const header = headers["Authorization"] || headers["authorization"];
             const token = header ? header.split(" ").pop() : null;
-            if (!token || !token.startsWith("p")) {
+            if (!token || !token.startsWith("a")) {
                 return;
             }
 
-            // Try loading a User using the value from header
-            const user = await context.security.users.getUserByPersonalAccessToken(token);
-
-            if (user) {
-                const identityType = config.identityType || "access-token";
-
+            const identityType = config.identityType || "api-key";
+            const apiKey = await context.security.apiKeys.getApiKeyByToken(token);
+            
+            if (apiKey) {
                 return new SecurityIdentity({
-                    id: user.login,
+                    id: apiKey.id,
+                    displayName: apiKey.name,
                     type: identityType,
-                    displayName: `${user.firstName} ${user.lastName}`,
-                    firstName: user.firstName,
-                    lastName: user.lastName
+                    // Add permissions directly to the identity so we don't have to load them
+                    // again when authorization kicks in.
+                    permissions: apiKey.permissions
                 });
             }
         }
-    } as SecurityAuthenticationPlugin;
+    };
 };

@@ -3,6 +3,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
+import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import tenancyPlugins from "../src/index";
@@ -33,19 +34,19 @@ import {
 } from "./graphql/pat";
 
 import {
-    CREATE_ACCESS_TOKEN,
-    DELETE_ACCESS_TOKEN,
-    GET_ACCESS_TOKEN,
-    LIST_ACCESS_TOKENS,
-    UPDATE_ACCESS_TOKEN
-} from "./graphql/accessTokens";
+    CREATE_API_KEY,
+    DELETE_API_KEY,
+    GET_API_KEY,
+    LIST_API_KEYS,
+    UPDATE_API_KEY
+} from "./graphql/apiKeys";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
 type UseGqlHandlerParams = {
     mockUser?: boolean;
     fullAccess?: boolean;
-    plugins?: Array<Plugin>;
+    plugins?: PluginCollection;
 };
 
 export default (opts: UseGqlHandlerParams = {}) => {
@@ -93,9 +94,12 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 }
 
                 const tenant = context.security.getTenant();
-                const allPermissions = await context.security.users.getUserAccess(
-                    context.security.getIdentity().id
-                );
+                const identity = context.security.getIdentity();
+                if (!identity) {
+                    return null;
+                }
+
+                const allPermissions = await context.security.users.getUserAccess(identity.id);
                 const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
                 return tenantAccess ? tenantAccess.group.permissions : null;
             }
@@ -161,8 +165,8 @@ export default (opts: UseGqlHandlerParams = {}) => {
         async delete(variables) {
             return invoke({ body: { query: DELETE_SECURITY_USER, variables } });
         },
-        async list(variables) {
-            return invoke({ body: { query: LIST_SECURITY_USERS, variables } });
+        async list(variables, headers = {}) {
+            return invoke({ body: { query: LIST_SECURITY_USERS, variables }, headers });
         },
         async get(variables) {
             return invoke({ body: { query: GET_SECURITY_USER, variables } });
@@ -193,21 +197,21 @@ export default (opts: UseGqlHandlerParams = {}) => {
         }
     };
 
-    const securityAccessTokens = {
+    const securityApiKeys = {
         async list(variables = {}) {
-            return invoke({ body: { query: LIST_ACCESS_TOKENS, variables } });
+            return invoke({ body: { query: LIST_API_KEYS, variables } });
         },
         async get(variables) {
-            return invoke({ body: { query: GET_ACCESS_TOKEN, variables } });
+            return invoke({ body: { query: GET_API_KEY, variables } });
         },
         async create(variables) {
-            return invoke({ body: { query: CREATE_ACCESS_TOKEN, variables } });
+            return invoke({ body: { query: CREATE_API_KEY, variables } });
         },
         async update(variables) {
-            return invoke({ body: { query: UPDATE_ACCESS_TOKEN, variables } });
+            return invoke({ body: { query: UPDATE_API_KEY, variables } });
         },
         async delete(variables) {
-            return invoke({ body: { query: DELETE_ACCESS_TOKEN, variables } });
+            return invoke({ body: { query: DELETE_API_KEY, variables } });
         }
     };
 
@@ -226,7 +230,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         securityGroup,
         securityUser,
         securityUserPAT,
-        securityAccessTokens,
+        securityApiKeys,
         install,
         documentClient
     };

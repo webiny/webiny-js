@@ -168,7 +168,7 @@ const plugin: GraphQLSchemaPlugin = {
                 }
             },
             SecurityQuery: {
-                getUser: hasPermission("security.user.manage")(
+                getUser: hasPermission("security.user")(
                     async (_, args: { login: string }, context: Context) => {
                         const { login } = args;
 
@@ -201,7 +201,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                     return new Response(user);
                 },
-                listUsers: hasPermission("security.user.manage")(
+                listUsers: hasPermission("security.user")(
                     async (_, args, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -306,7 +306,7 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                createUser: hasPermission("security.user.manage")(
+                createUser: hasPermission("security.user")(
                     async (_, { data }: { data: CreateUserInput }, context: Context) => {
                         try {
                             const authPlugin = context.plugins.byName<
@@ -342,7 +342,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                updateUser: hasPermission("security.user.manage")(
+                updateUser: hasPermission("security.user")(
                     async (
                         root,
                         { data, login }: { login: string; data: UpdateUserInput },
@@ -401,7 +401,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                deleteUser: hasPermission("security.user.manage")(
+                deleteUser: hasPermission("security.user")(
                     async (root, { login }: { login: string }, context: Context) => {
                         try {
                             const user = await context.security.users.getUser(login);

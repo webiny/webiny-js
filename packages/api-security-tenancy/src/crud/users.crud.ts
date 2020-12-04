@@ -61,7 +61,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
         async listUsers({ tenant }) {
             const [users] = await db.read<DbUser>({
                 ...dbArgs,
-                query: { GSI1_PK: `T#${tenant}`, GSI1_SK: { $gt: " " } }
+                query: { GSI1_PK: `T#${tenant}`, GSI1_SK: { $beginsWith: "G#" } }
             });
 
             const batch = db.batch();
