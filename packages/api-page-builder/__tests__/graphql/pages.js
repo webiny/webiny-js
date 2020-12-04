@@ -128,6 +128,16 @@ export const LIST_PAGES = /* GraphQL */ `
         pageBuilder {
             listPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
+                meta {
+                    page
+                    limit
+                    totalCount
+                    totalPages
+                    from
+                    to
+                    nextPage
+                    previousPage
+                }
                 error ${ERROR_FIELD}
             }
         }

@@ -412,27 +412,74 @@ describe("listing latest pages", () => {
         await until(
             () => listPages(),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.meta).toEqual({
+                from: 1,
+                limit: 10,
+                nextPage: null,
+                page: 1,
+                previousPage: null,
+                to: 5,
+                totalCount: 5,
+                totalPages: 1
+            })
         );
 
         await until(
             () => listPages({ limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-c"));
+        ).then(([res]) => {
+            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-c");
+            expect(res.data.pageBuilder.listPages.meta).toEqual({
+                from: 1,
+                limit: 1,
+                nextPage: 2,
+                page: 1,
+                previousPage: null,
+                to: 1,
+                totalCount: 5,
+                totalPages: 5
+            });
+        });
 
         await until(
             () => listPages({ page: 3, limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-b"));
+        ).then(([res]) => {
+            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-b");
+            expect(res.data.pageBuilder.listPages.meta).toEqual({
+                from: 3,
+                limit: 1,
+                nextPage: 4,
+                page: 3,
+                previousPage: 2,
+                to: 3,
+                totalCount: 5,
+                totalPages: 5
+            });
+        });
 
         await until(
             () => listPages({ page: 5, limit: 1 }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
-        ).then(([res]) => expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-a"));
+        ).then(([res]) => {
+            expect(res.data.pageBuilder.listPages.data[0].title).toBe("page-a");
+            expect(res.data.pageBuilder.listPages.meta).toEqual({
+                from: 5,
+                limit: 1,
+                nextPage: null,
+                page: 5,
+                previousPage: 4,
+                to: 5,
+                totalCount: 5,
+                totalPages: 5
+            });
+        });
 
         await until(
             () => listPages({ page: 2, limit: 2, sort: { title: "asc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
-        ).then(([res]) =>
+        ).then(([res]) => {
             expect(res).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -441,22 +488,44 @@ describe("listing latest pages", () => {
                         }
                     }
                 }
-            })
-        );
+            });
+            expect(res.data.pageBuilder.listPages.meta).toEqual({
+                from: 3,
+                limit: 2,
+                nextPage: 3,
+                page: 2,
+                previousPage: 1,
+                to: 4,
+                totalCount: 5,
+                totalPages: 3
+            });
+        });
 
         await until(
             () => listPages({ page: 3, limit: 2, sort: { title: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 1
         ).then(([res]) => {
-            expect(res).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        listPages: {
-                            data: [{ title: "page-a" }]
+            {
+                expect(res).toMatchObject({
+                    data: {
+                        pageBuilder: {
+                            listPages: {
+                                data: [{ title: "page-a" }]
+                            }
                         }
                     }
-                }
-            });
+                });
+                expect(res.data.pageBuilder.listPages.meta).toEqual({
+                    from: 5,
+                    limit: 2,
+                    nextPage: null,
+                    page: 3,
+                    previousPage: 2,
+                    to: 5,
+                    totalCount: 5,
+                    totalPages: 3
+                });
+            }
         });
     });
 });
