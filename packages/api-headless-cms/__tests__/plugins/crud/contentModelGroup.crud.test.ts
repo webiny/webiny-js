@@ -194,4 +194,210 @@ describe("Content model group crud test", () => {
             }
         });
     });
+
+    test("error when getting non-existing content model group", async () => {
+        const [response] = await getContentModelGroupQuery({
+            id: "nonExistingId"
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    getContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `CMS Content model group "nonExistingId" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to update non-existing content model group", async () => {
+        const [response] = await updateContentModelGroupMutation({
+            id: "nonExistingIdUpdate",
+            data: {}
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    updateContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `CMS Content model group "nonExistingIdUpdate" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to delete non-existing content model group", async () => {
+        const [response] = await deleteContentModelGroupMutation({
+            id: "nonExistingIdDelete"
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    deleteContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `CMS Content model group "nonExistingIdDelete" not found.`,
+                            code: "NOT_FOUND",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to create a content model group with incomplete data", async () => {
+        const [nameResponse] = await createContentModelGroupMutation({
+            data: {
+                slug: "slug",
+                description: `description`,
+                icon: `icon`
+            }
+        });
+        expect(nameResponse).toEqual({
+            data: {
+                cms: {
+                    createContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `Validation failed.`,
+                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+
+        const [iconResponse] = await createContentModelGroupMutation({
+            data: {
+                name: "name",
+                slug: "slug",
+                description: `description`
+            }
+        });
+
+        expect(iconResponse).toEqual({
+            data: {
+                cms: {
+                    createContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `Validation failed.`,
+                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to create a new content model group with no name or slug", async () => {
+        const [response] = await createContentModelGroupMutation({
+            data: {
+                description: "description"
+            }
+        });
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `slugify: string argument expected`,
+                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to create a new content model group with same slug as existing one in the database", async () => {
+        await createContentModelGroupMutation({
+            data: {
+                name: "content model group",
+                description: "description",
+                icon: "icon"
+            }
+        });
+
+        const [response] = await createContentModelGroupMutation({
+            data: {
+                name: "content model group",
+                description: "description",
+                icon: "icon"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    createContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `Content model group with the slug "content-model-group" already exists.`,
+                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("error when trying to update content model group to a slug that already exists in the database", async () => {
+        const [createResponse] = await createContentModelGroupMutation({
+            data: {
+                name: "content model group new",
+                description: "description",
+                icon: "icon"
+            }
+        });
+
+        const { id } = createResponse.data.cms.createContentModelGroup.data;
+
+        await createContentModelGroupMutation({
+            data: {
+                name: "content model group second one",
+                slug: "content-model-group-second-one",
+                description: "description",
+                icon: "icon"
+            }
+        });
+
+        const [response] = await updateContentModelGroupMutation({
+            id,
+            data: {
+                slug: "content-model-group-second-one"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    updateContentModelGroup: {
+                        data: null,
+                        error: {
+                            message: `Content model group with the slug "content-model-group-second-one" already exists.`,
+                            code: "UPDATE_CONTENT_MODEL_GROUP_FAILED",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

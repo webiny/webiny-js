@@ -61,11 +61,18 @@ export default {
                     slug
                 });
                 await createdData.validate();
-
                 const createdDataJson = await createdData.toJSON();
 
-                const id = mdbid();
+                const contentModelGroups = await context.cms.groups.list();
 
+                const existingGroupSlug = contentModelGroups.some(group => {
+                    return group.slug === slug;
+                });
+                if (existingGroupSlug) {
+                    throw new Error(`Content model group with the slug "${slug}" already exists.`);
+                }
+
+                const id = mdbid();
                 const model = {
                     PK: createContentModelGroupPk(context),
                     SK: id,
@@ -94,6 +101,20 @@ export default {
                 // no need to continue if no values were changed
                 if (Object.keys(updatedDataJson).length === 0) {
                     return {} as any;
+                }
+
+                if (updatedDataJson.slug) {
+                    const contentModelGroups = (await context.cms.groups.list()).filter(group => {
+                        return group.id !== id;
+                    });
+                    const existingGroupSlug = contentModelGroups.some(group => {
+                        return group.slug === updatedDataJson.slug;
+                    });
+                    if (existingGroupSlug) {
+                        throw new Error(
+                            `Content model group with the slug "${updatedDataJson.slug}" already exists.`
+                        );
+                    }
                 }
 
                 const modelData = Object.assign(updatedDataJson, {
