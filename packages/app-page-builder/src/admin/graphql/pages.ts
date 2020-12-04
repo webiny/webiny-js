@@ -139,7 +139,13 @@ export const DELETE_PAGE = gql`
     mutation PbDeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
-                data
+                data {
+                    latestPage {
+                        id
+                        status
+                        version
+                    }
+                }
                 ${error}
             }
         }
