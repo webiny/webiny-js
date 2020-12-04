@@ -7,11 +7,11 @@ export default args => {
         filter: getFilter(args.where),
         sort: getSort(args.sort),
         size: args.limit ?? 10,
-        from: 0
+        from: 0,
+        page: args.page || 1,
     };
 
-    const page = args.page ?? 1;
-    normalized.from = (page - 1) * normalized.size;
+    normalized.from = (normalized.page - 1) * normalized.size;
     return normalized;
 };
 

@@ -45,10 +45,22 @@ export type ListPagesArgs = {
     sort?: { createdOn?: SortOrder; title?: SortOrder };
 };
 
+export type ListMeta = {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages?: number;
+    from?: number;
+    to?: number;
+    nextPage?: number;
+    previousPage?: number;
+};
+
 export type PagesCrud = {
     get(id: string): Promise<Page>;
-    listLatest(args: ListPagesArgs): Promise<Page>;
-    listPublished(args: ListPagesArgs): Promise<Page>;
+    listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
+    listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
+    getPublished(args: { id?: string; url?: string }): Promise<Page>;
     listPageRevisions(id: string): Promise<Page[]>;
     create(category: string): Promise<Page>;
     createFrom(page: string): Promise<Page>;

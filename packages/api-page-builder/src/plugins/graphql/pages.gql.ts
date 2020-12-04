@@ -70,6 +70,17 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 createdBy: PbCreatedBy
             }
 
+            type PbPageListMeta {
+                page: Int
+                limit: Int
+                totalCount: Int
+                totalPages: Int
+                from: Int
+                to: Int
+                nextPage: Int
+                previousPage: Int
+            }
+
             type PbPageSettings {
                 _empty: String
             }
@@ -244,7 +255,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.categories.get(page.category);
                 },
                 revisions: async (page: { id: string }, args, context) => {
-                    return context.pageBuider.pages.listPageRevisions(page.id);
+                    return context.pageBuilder.pages.listPageRevisions(page.id);
                 }
             },
             PbPageListItem: {
@@ -255,15 +266,29 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbQuery: {
                 getPage: async (_, args: { id: string }, context) => {
                     const id = decodeURIComponent(args.id);
-                    return resolve(() => context.pageBuilder.pages.get(id));
+                    try {
+                        return new Response(await context.pageBuilder.pages.get(id));
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 },
 
                 listPages: async (_, args, context) => {
-                    return resolve(() => context.pageBuilder.pages.listLatest(args));
+                    try {
+                        const [data, meta] = await context.pageBuilder.pages.listLatest(args);
+                        return new ListResponse(data, meta);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 },
 
                 listPublishedPages: async (_, args, context) => {
-                    return resolve(() => context.pageBuilder.pages.listPublished(args));
+                    try {
+                        const [data, meta] = await context.pageBuilder.pages.listPublished(args);
+                        return new ListResponse(data, meta);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
                 },
 
                 getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {

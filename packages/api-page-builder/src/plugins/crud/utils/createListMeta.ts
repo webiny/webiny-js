@@ -1,13 +1,4 @@
-type PaginationMeta = {
-    page: number;
-    limit: number;
-    totalCount: number;
-    totalPages?: number;
-    from?: number;
-    to?: number;
-    nextPage?: number;
-    previousPage?: number;
-};
+import { ListMeta } from "@webiny/api-page-builder/types";
 
 type Params = {
     page: number;
@@ -15,8 +6,8 @@ type Params = {
     totalCount: number;
 };
 
-export default (params?: Params): PaginationMeta => {
-    const meta: PaginationMeta = {
+export default (params?: Params): ListMeta => {
+    const meta: ListMeta = {
         page: 0,
         limit: 0,
         totalCount: 0,

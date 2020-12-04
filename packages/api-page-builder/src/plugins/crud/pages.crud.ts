@@ -14,6 +14,7 @@ import getPKPrefix from "./utils/getPKPrefix";
 import hasRwd from "./utils/hasRwd";
 import hasRcpu from "./utils/hasRcpu";
 import { PbContext, PageSecurityPermission } from "@webiny/api-page-builder/types";
+import createListMeta from "./utils/createListMeta";
 
 export type Page = {
     id: string;
@@ -155,7 +156,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                 async listLatest(args) {
                     const permission = await checkBasePermissions(context, { rwd: "r" });
-                    const { sort, from, size, filter } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, filter, page } = getNormalizedListPagesArgs(args);
 
                     // If users can only manage own records, let's add the special filter.
                     const ownFilter = [];
@@ -185,11 +186,16 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    return response?.body?.hits?.hits?.map(item => item._source);
+                    const results = response.body.hits;
+                    const total = results.total.value;
+                    const data = total > 0 ? results.hits.map(item => item._source) : [];
+
+                    const meta = createListMeta({ page, limit: size, totalCount: total });
+                    return [data, meta];
                 },
 
                 async listPublished(args) {
-                    const { limit = 10 } = args;
+                    const { sort, from, size, filter, page } = getNormalizedListPagesArgs(args);
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
@@ -200,16 +206,23 @@ const plugin: ContextPlugin<PbContext> = {
                                         {
                                             term: { "locale.keyword": i18nContent.getLocale().code }
                                         },
-                                        { term: { __published: true } }
+                                        { term: { __published: true } },
+                                        ...filter
                                     ]
                                 }
                             },
-                            size: limit,
-                            sort: { createdOn: "desc" }
+                            from,
+                            size,
+                            sort
                         }
                     });
 
-                    return response?.body?.hits?.hits?.map(item => item._source);
+                    const results = response.body.hits;
+                    const total = results.total.value;
+                    const data = total > 0 ? results.hits.map(item => item._source) : [];
+
+                    const meta = createListMeta({ page, limit: size, totalCount: total });
+                    return [data, meta];
                 },
 
                 async listPageRevisions(pageId) {
