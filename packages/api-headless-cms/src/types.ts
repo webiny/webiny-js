@@ -262,7 +262,7 @@ export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
 export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
 
 export type CmsEnvironmentContextType = {
-    get: (id: string) => Promise<CmsEnvironmentType>;
+    get: (id: string) => Promise<CmsEnvironmentType | null>;
     list: () => Promise<CmsEnvironmentType[]>;
     create: (
         data: CmsEnvironmentCreateInputType,
@@ -295,7 +295,7 @@ export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasType & {
 export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasType;
 
 export type CmsEnvironmentAliasContextType = {
-    get: (id: string) => Promise<CmsEnvironmentAliasType>;
+    get: (id: string) => Promise<CmsEnvironmentAliasType | null>;
     list: () => Promise<CmsEnvironmentAliasType[]>;
     create: (
         data: CmsEnvironmentAliasCreateInputType,
@@ -317,13 +317,52 @@ export type CmsSettingsContextType = {
     get: () => Promise<CmsSettingsType>;
     install: () => Promise<void>;
 };
+
+export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
+
+export type CmsContentModelGroupCreateInputType = {
+    name: string;
+    slug?: string;
+    description?: string;
+    icon: string;
+    environment: string;
+};
+export type CmsContentModelGroupUpdateInputType = {
+    name?: string;
+    slug?: string;
+    description?: string;
+    icon?: string;
+    environment?: string;
+};
+export type CmsContentModelGroupType = {
+    id: string;
+    name: string;
+    slug: string;
+    description: string;
+    icon: string;
+    environment: CmsEnvironmentType;
+    createdBy: CreatedByType;
+};
+export type CmsContentModelGroupContextType = {
+    get: (id: string) => Promise<CmsContentModelGroupType | null>;
+    list: () => Promise<CmsContentModelGroupType[]>;
+    create: (
+        data: CmsContentModelGroupCreateInputType,
+        createdBy: CreatedByType
+    ) => Promise<CmsContentModelGroupType>;
+    update: (
+        id: string,
+        data: CmsContentModelGroupUpdateInputType
+    ) => Promise<CmsContentModelGroupType>;
+    delete: (id: string) => Promise<void>;
+};
+
 export type CmsContextType = {
     cms: {
         environment: CmsEnvironmentContextType;
         environmentAlias: CmsEnvironmentAliasContextType;
         dataManager: CmsDataManager;
         settings: CmsSettingsContextType;
+        groups: CmsContentModelGroupContextType;
     };
 };
-
-export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;

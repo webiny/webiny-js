@@ -35,7 +35,7 @@ const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
     }
     return permission.rwd.includes(rwd);
 };
-export const hasEnvironmentPermissionRwd = (rwd: CRUDType) => {
+export const hasCmsManageSettingsPermissionRwd = (rwd: CRUDType) => {
     return (resolver: GraphQLFieldResolver) => {
         return async (parent, args, context: CmsContext, info) => {
             const permission = await getCmsManageSettingsPermission(context);
@@ -51,5 +51,10 @@ export const userCanManageModel = (
     identity: SecurityIdentity,
     model: ModelCreatableByUserType
 ): boolean => {
+    if (!model.createdBy || !model.createdBy.id) {
+        throw new Error(
+            `Object you are checking for access rights does not have "createdBy" property assigned.`
+        );
+    }
     return model.createdBy.id === identity.id;
 };
