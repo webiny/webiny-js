@@ -46,7 +46,17 @@ describe("deleting pages", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
         );
 
-        await deletePage({ id: p1v1.id });
+        await deletePage({ id: p1v1.id }).then(([res]) => {
+            expect(res.data.pageBuilder.deletePage).toMatchObject({
+                error: null,
+                data: {
+                    latestPage: null,
+                    page: {
+                        version: 1
+                    }
+                }
+            });
+        });
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0);
         await until(
@@ -63,7 +73,19 @@ describe("deleting pages", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
         );
 
-        await deletePage({ id: p1v3.id });
+        await deletePage({ id: p1v3.id }).then(([res]) => {
+            expect(res.data.pageBuilder.deletePage).toMatchObject({
+                error: null,
+                data: {
+                    latestPage: {
+                        version: 2
+                    },
+                    page: {
+                        version: 3
+                    }
+                }
+            });
+        });
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id);
         await until(
@@ -80,7 +102,19 @@ describe("deleting pages", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id
         );
 
-        await deletePage({ id: p1v3.id });
+        await deletePage({ id: p1v3.id }).then(([res]) => {
+            expect(res.data.pageBuilder.deletePage).toMatchObject({
+                error: null,
+                data: {
+                    latestPage: {
+                        version: 2
+                    },
+                    page: {
+                        version: 3
+                    }
+                }
+            });
+        });
 
         await until(listPages, ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id);
         await until(

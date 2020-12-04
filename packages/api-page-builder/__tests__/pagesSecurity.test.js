@@ -391,7 +391,9 @@ describe("Pages Security Test", () => {
                     pageBuilder: {
                         deletePage: {
                             data: {
-                                id: page.id
+                                page: {
+                                    id: page.id
+                                }
                             },
                             error: null
                         }

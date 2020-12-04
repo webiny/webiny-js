@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PbContext } from "@webiny/api-page-builder/types";
 import Error from "@webiny/error";
@@ -132,8 +132,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
+            type PbDeletePageResponseData {
+                page: PbPage
+                latestPage: PbPage
+            }
+
+            type PbDeletePageResponse {
+                data: PbDeletePageResponseData
+                error: PbError
+            }
+
             type PbPageListResponse {
                 data: [PbPageListItem]
+                meta: PbPageListMeta
                 error: PbError
             }
 
@@ -241,7 +252,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 requestChanges(id: ID!): PbPageResponse
 
                 # Delete page and all of its revisions
-                deletePage(id: ID!): PbPageResponse
+                deletePage(id: ID!): PbDeletePageResponse
 
                 # Delete a single revision
                 deleteRevision(id: ID!): PbDeleteResponse
@@ -318,9 +329,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     });
                 },
                 deletePage: async (_, args: { id: string }, context: PbContext) => {
-                    return resolve(() => {
+                    return resolve(async () => {
                         const id = decodeURIComponent(args.id);
-                        return context.pageBuilder.pages.delete(id);
+                        const [page, latestPage] = await context.pageBuilder.pages.delete(id);
+                        return { page, latestPage };
                     });
                 },
 

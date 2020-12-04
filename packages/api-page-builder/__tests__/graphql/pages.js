@@ -170,7 +170,10 @@ export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
-                data ${DATA_FIELD}
+                data {
+                    page ${DATA_FIELD}
+                    latestPage ${DATA_FIELD}
+                }
                 error ${ERROR_FIELD}
             }
         }

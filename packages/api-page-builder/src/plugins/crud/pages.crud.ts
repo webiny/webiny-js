@@ -590,7 +590,7 @@ const plugin: ContextPlugin<PbContext> = {
                             ]
                         });
 
-                        return page;
+                        return [page, null];
                     }
 
                     // 5. If we are deleting a specific version (version > 1)...
@@ -606,7 +606,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const isLatest = latestPageData?.id === pageId;
                     const isPublished = publishedPageData?.id === pageId;
-                    let newLatestPage = null;
+                    let latestPage = null;
 
                     // 6.2. If the page is published, remove published data, both from DB and ES.
                     if (isPublished) {
@@ -626,7 +626,7 @@ const plugin: ContextPlugin<PbContext> = {
                     // 6.3. If the page is latest, assign the previously latest page as the new latest.
                     // Updates must be made again both on DB and ES side.
                     if (isLatest) {
-                        [[newLatestPage]] = await db.read({
+                        [[latestPage]] = await db.read({
                             ...defaults.db,
                             query: { PK: PK_PAGE(), SK: { $lt: pageId } },
                             sort: { SK: -1 },
@@ -644,14 +644,14 @@ const plugin: ContextPlugin<PbContext> = {
                                 PK: PK_PAGE_LATEST(),
                                 SK: pageUniqueId,
                                 TYPE: TYPE_PAGE_LATEST,
-                                id: newLatestPage.id
+                                id: latestPage.id
                             }
                         });
 
                         // And of course, update the published revision entry in ES.
                         esOperations.push(
                             { index: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
-                            getESLatestPageData(context, newLatestPage)
+                            getESLatestPageData(context, latestPage)
                         );
                     }
 
@@ -660,7 +660,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     // TODO: after-delete hook
                     // 7. Done. We return both the deleted page, and the new latest one (if there is one).
-                    return [page, newLatestPage];
+                    return [page, latestPage];
                 },
 
                 async publish(pageId: string) {

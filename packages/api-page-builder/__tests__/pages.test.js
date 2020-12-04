@@ -197,9 +197,12 @@ describe("CRUD Test", () => {
                     pageBuilder: {
                         deletePage: {
                             data: {
-                                id,
-                                createdOn: /^20.*/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                latestPage: null,
+                                page: {
+                                    id,
+                                    createdOn: /^20.*/,
+                                    createdBy: { displayName: "m", id: "mocked" }
+                                }
                             },
                             error: null
                         }
@@ -219,7 +222,17 @@ describe("CRUD Test", () => {
                 pageBuilder: {
                     listPages: {
                         data: [],
-                        error: null
+                        error: null,
+                        meta: {
+                            from: 0,
+                            limit: 10,
+                            nextPage: null,
+                            page: 1,
+                            previousPage: null,
+                            to: 0,
+                            totalCount: 0,
+                            totalPages: 0
+                        }
                     }
                 }
             }
