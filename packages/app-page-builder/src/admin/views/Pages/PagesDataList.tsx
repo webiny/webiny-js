@@ -58,10 +58,11 @@ const PageBuilderPagesDataList = () => {
     const listQuery = useQuery(LIST_PAGES, { variables: { where, sort, limit, page } });
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
+    const meta = listQuery?.data?.pageBuilder?.listPages?.meta || {};
     const selectedPageId = new URLSearchParams(location.search).get("id");
 
     const categoriesQuery = useQuery(LIST_CATEGORIES);
-    const categoriesData = categoriesQuery?.data?.pageBuilder?.listCategories?.data || [];
+    const categoriesData = categoriesQuery?.data?.pageBuilder.listCategories.data || [];
 
     const loading = [listQuery].find(item => item.loading);
     const query = new URLSearchParams(location.search);
@@ -71,8 +72,10 @@ const PageBuilderPagesDataList = () => {
             loading={Boolean(loading)}
             data={data}
             pagination={{
-                perPageOptions: [10, 25, 50],
+                perPageOptions: [1, 2, 10, 25, 50],
                 setPerPage: setLimit,
+                hasNextPage: meta.nextPage,
+                hasPreviousPage: meta.previousPage,
                 setNextPage: () => setPage(page + 1),
                 setPreviousPage: () => setPage(page - 1)
             }}
@@ -83,7 +86,7 @@ const PageBuilderPagesDataList = () => {
             filters={
                 <MenuItem>
                     <Form
-                        data={{ status: "all", category: categoriesData?.[0]?.slug }}
+                        data={{ status: "all" }}
                         onChange={({ status, category }) => {
                             const where = { category, status: undefined };
                             if (status !== "all") {
