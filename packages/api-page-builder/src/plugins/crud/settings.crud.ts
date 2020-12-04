@@ -4,9 +4,7 @@ import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
 import { PbContext } from "@webiny/api-page-builder/types";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { hasPermission, NotAuthorizedError } from "@webiny/api-security";
-import { compose } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 const SettingsModel = withFields({
     name: string({ validation: "required,maxLength:500" }),
