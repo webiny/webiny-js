@@ -10,7 +10,7 @@ import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graph
 import {
     getCmsManageSettingsPermission,
     hasManageSettingsPermission,
-    hasEnvironmentPermissionRwd,
+    hasCmsManageSettingsPermissionRwd,
     userCanManageModel
 } from "./helpers";
 
@@ -95,15 +95,14 @@ export default {
         CmsQuery: {
             getEnvironmentAlias: compose(
                 hasManageSettingsPermission(),
-                hasEnvironmentPermissionRwd("r"),
+                hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
             )(async (_, args: ReadEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id } = args;
 
-                const environmentAliasContext = context.cms.environmentAlias;
-                const model = await environmentAliasContext.get(id);
+                const model = await context.cms.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -119,14 +118,12 @@ export default {
             }),
             listEnvironmentAliases: compose(
                 hasManageSettingsPermission(),
-                hasEnvironmentPermissionRwd("r"),
+                hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
             )(async (_, __, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const environmentAliasContext = context.cms.environmentAlias;
-
-                const aliases = await environmentAliasContext.list();
+                const aliases = await context.cms.environmentAlias.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
@@ -139,11 +136,10 @@ export default {
         CmsMutation: {
             createEnvironmentAlias: compose(
                 hasManageSettingsPermission(),
-                hasEnvironmentPermissionRwd("w"),
+                hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
             )(async (_, args: CreateEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const identity = context.security.getIdentity();
-                const environmentAliasContext = context.cms.environmentAlias;
 
                 const { data } = args;
                 const createdBy = {
@@ -151,7 +147,7 @@ export default {
                     name: identity.displayName
                 };
                 try {
-                    const model = await environmentAliasContext.create(data, createdBy);
+                    const model = await context.cms.environmentAlias.create(data, createdBy);
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
@@ -162,16 +158,14 @@ export default {
             }),
             updateEnvironmentAlias: compose(
                 hasManageSettingsPermission(),
-                hasEnvironmentPermissionRwd("w"),
+                hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
             )(async (_, args: UpdateEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
 
-                const environmentAliasContext = context.cms.environmentAlias;
-
-                const model = await environmentAliasContext.get(id);
+                const model = await context.cms.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -184,7 +178,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await environmentAliasContext.update(id, data);
+                    const changedModel = await context.cms.environmentAlias.update(id, data);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -195,15 +189,13 @@ export default {
             }),
             deleteEnvironmentAlias: compose(
                 hasManageSettingsPermission(),
-                hasEnvironmentPermissionRwd("d"),
+                hasCmsManageSettingsPermissionRwd("d"),
                 hasI18NContentPermission()
             )(async (_, args: DeleteEnvironmentAliasArgsType, context: HeadlessCmsContext) => {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const environmentAliasContext = context.cms.environmentAlias;
-
-                const model = await environmentAliasContext.get(id);
+                const model = await context.cms.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -216,7 +208,7 @@ export default {
                 }
 
                 try {
-                    await environmentAliasContext.delete(model);
+                    await context.cms.environmentAlias.delete(model);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({
