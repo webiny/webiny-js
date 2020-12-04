@@ -5,17 +5,6 @@ import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { SecurityContext } from "@webiny/api-security/types";
 
-type CmsDataManagerGenerateRevisionIndexesArgsType = {
-    revision: any;
-    contentModel: any;
-};
-type CmsDataManagerDeleteRevisionIndexesArgsType = {
-    revision: any;
-    contentModel: any;
-};
-type CmsDataManagerGenerateContentModelIndexesArgsType = {
-    contentModel: any;
-};
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
 };
@@ -23,12 +12,7 @@ type CmsDataManagerCopyEnvironmentArgsType = {
     copyFrom: string;
     copyTo: string;
 };
-export interface CmsDataManager {
-    generateRevisionIndexes(args: CmsDataManagerGenerateRevisionIndexesArgsType): Promise<void>;
-    deleteRevisionIndexes(args: CmsDataManagerDeleteRevisionIndexesArgsType): Promise<void>;
-    generateContentModelIndexes(
-        args: CmsDataManagerGenerateContentModelIndexesArgsType
-    ): Promise<void>;
+export interface CmsDataManagerType {
     deleteEnvironment(args: CmsDataManagerDeleteEnvironmentArgsType): Promise<void>;
     copyEnvironment(args: CmsDataManagerCopyEnvironmentArgsType): Promise<void>;
 }
@@ -72,8 +56,6 @@ export type Context = {
         MANAGE: boolean;
         // This is a PREVIEW API
         PREVIEW: boolean;
-        // Data manager instance
-        dataManager: CmsDataManager;
     };
 };
 
@@ -256,10 +238,15 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdOn: string;
     changedOn?: string;
 };
-export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentType & {
+type BaseCmsEnvironmentInputType = {
+    name: string;
+    description?: string;
+};
+export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentInputType & {
+    slug?: string;
     createdFrom?: string;
 };
-export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentType;
+export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentInputType;
 
 export type CmsEnvironmentContextType = {
     get: (id: string) => Promise<CmsEnvironmentType | null>;
@@ -289,10 +276,15 @@ export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
     createdOn: Date;
     changedOn?: Date;
 };
-export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasType & {
-    environment: string;
+type BaseCmsEnvironmentAliasUpdateType = {
+    name: string;
+    description?: string;
+    environment?: string;
 };
-export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasType;
+export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasUpdateType & {
+    slug?: string;
+};
+export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasUpdateType;
 
 export type CmsEnvironmentAliasContextType = {
     get: (id: string) => Promise<CmsEnvironmentAliasType | null>;
@@ -359,7 +351,7 @@ export type CmsContextType = {
     cms: {
         environment: CmsEnvironmentContextType;
         environmentAlias: CmsEnvironmentAliasContextType;
-        dataManager: CmsDataManager;
+        dataManager: CmsDataManagerType;
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
     };

@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsContext, CmsDataManager } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContext, CmsDataManagerType } from "@webiny/api-headless-cms/types";
 import { Action } from "../types";
 import { ClientContext } from "@webiny/handler-client/types";
 
@@ -8,7 +8,7 @@ interface DataManagerOperation {
     [key: string]: any;
 }
 
-export class DataManagerClient implements CmsDataManager {
+export class DataManagerClient implements CmsDataManagerType {
     dataManagerFunction: string;
     context: CmsContext & ClientContext;
 

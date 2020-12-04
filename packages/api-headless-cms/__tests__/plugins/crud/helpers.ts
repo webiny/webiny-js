@@ -91,7 +91,7 @@ export const createGetPermissions = (permissions: PermissionsArgType[]) => {
         if (!permissions) {
             return [
                 {
-                    name: "cms.manage.setting",
+                    name: "cms.manage.settings",
                     rwd: "rwd"
                 },
                 {

@@ -4,8 +4,8 @@ import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
 type ModelCreatableByUserType = {
-    createdBy: {
-        id: string;
+    createdBy?: {
+        id?: string;
     };
 };
 type CRUDType = "r" | "w" | "d";
@@ -17,7 +17,7 @@ type HasRwdCallableArgsType = {
     rwd: CRUDType;
 };
 
-const CMS_MANAGE_SETTINGS_PERMISSION = "cms.manage.setting";
+const CMS_MANAGE_SETTINGS_PERMISSION = "cms.manage.settings";
 
 export const getCmsManageSettingsPermission = async (context: CmsContext) => {
     return await context.security.getPermission(CMS_MANAGE_SETTINGS_PERMISSION);

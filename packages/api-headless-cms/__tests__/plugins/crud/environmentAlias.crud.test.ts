@@ -31,7 +31,7 @@ const createEnvironmentAliasModel = ({
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,
-        slug: toSlug(`${prefix}slug${append}`),
+        slug: toSlug(`${prefix}slug`),
         description: `${prefix}description${append}`,
         environment: environment.id
     };

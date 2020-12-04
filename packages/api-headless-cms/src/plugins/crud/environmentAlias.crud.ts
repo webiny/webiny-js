@@ -24,7 +24,6 @@ const CreateEnvironmentAliasModel = withFields({
 })();
 const UpdateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("maxLength:100") }),
-    slug: string({ validation: validation.create("maxLength:100") }),
     description: string({ validation: validation.create("maxLength:255") }),
     environment: string({ validation: validation.create("maxLength:255") })
 })();
@@ -109,11 +108,7 @@ export default {
                 return modelData;
             },
             async update(id, data): Promise<CmsEnvironmentAliasType> {
-                const slugValue = data.slug || data.name;
-                const updateData = new UpdateEnvironmentAliasModel().populate({
-                    ...data,
-                    slug: !!slugValue ? toSlug(slugValue) : undefined
-                });
+                const updateData = new UpdateEnvironmentAliasModel().populate(data);
                 await updateData.validate();
 
                 const updatedDataJson = await updateData.toJSON({ onlyDirty: true });

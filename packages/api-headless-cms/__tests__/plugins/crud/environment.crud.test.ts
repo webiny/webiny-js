@@ -33,7 +33,7 @@ const createEnvironmentModel = ({
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,
-        slug: toSlug(`${prefix}slug${append}`),
+        slug: toSlug(`${prefix}slug`),
         description: `${prefix}description${append}`,
         createdFrom: initialEnvironment.id
     };
