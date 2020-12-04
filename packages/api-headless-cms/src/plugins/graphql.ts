@@ -2,7 +2,6 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
-// import cmsAccessToken from "./graphql/accessToken";
 import cmsSettings from "./graphql/settings";
 import cmsContentModelGroup from "./graphql/contentModelGroup";
 
@@ -69,7 +68,6 @@ export default () => [
                 ${cmsEnvironmentAlias.typeDefs}
                 ${cmsContentModelGroup.typeDefs}
             `,
-            // ${cmsAccessToken.typeDefs}
             resolvers: merge(
                 {
                     Query: {
@@ -83,7 +81,6 @@ export default () => [
                 cmsEnvironment.resolvers,
                 cmsEnvironmentAlias.resolvers,
                 cmsContentModelGroup.resolvers
-                // cmsAccessToken.resolvers
             )
         }
     } as GraphQLSchemaPlugin

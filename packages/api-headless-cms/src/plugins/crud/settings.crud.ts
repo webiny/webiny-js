@@ -1,4 +1,3 @@
-import mdbid from "mdbid";
 import {
     CmsContextType,
     CmsSettingsContextType,
@@ -9,10 +8,7 @@ import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import {
-    createContentModelGroupPk,
-    createSettingsPk
-} from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
+import { createSettingsPk } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
 import { SecurityContext } from "@webiny/api-security/types";
 import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
 
@@ -64,7 +60,7 @@ export default {
                     name: identity.displayName
                 };
 
-                // base environment
+                // create base environment
                 const environment = await context.cms.environment.create(
                     initialEnvironment,
                     createdBy,
@@ -79,17 +75,7 @@ export default {
                     createdBy
                 );
                 // then add default content model group
-                const contentModelGroupId = mdbid();
-                await db.create({
-                    ...defaults.db,
-                    data: {
-                        PK: createContentModelGroupPk(context),
-                        SK: contentModelGroupId,
-                        TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
-                        ...initialContentModelGroup,
-                        environment: environment.id
-                    }
-                });
+                await context.cms.groups.create(initialContentModelGroup, createdBy);
                 // mark as installed in settings
                 await db.create({
                     ...defaults.db,

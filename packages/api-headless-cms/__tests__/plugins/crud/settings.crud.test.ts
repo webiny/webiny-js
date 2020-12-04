@@ -107,14 +107,26 @@ describe("Settings crud test", () => {
         });
     });
 
-    test("cms install mutation", async () => {
-        expect.assertions(4);
+    test("cms install", async () => {
+        expect.assertions(5);
 
         const [response] = await installMutation();
         expect(response).toEqual({
             data: {
                 cms: {
                     install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [isInstalledResponse] = await isInstalledQuery();
+        expect(isInstalledResponse).toEqual({
+            data: {
+                cms: {
+                    isInstalled: {
                         data: true,
                         error: null
                     }

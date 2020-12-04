@@ -3,8 +3,8 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 type CrudContextType = Context<I18NContentContext, TenancyContext>;
-type CreatePkCallableType = (context: CrudContextType, keys?: string[]) => string;
-type CreatePkCallableFactoryType = (pkType: string) => CreatePkCallableType;
+type CreatePkCallableType = (context: CrudContextType) => string;
+type CreatePkCallableFactoryType = (type: string) => CreatePkCallableType;
 
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
@@ -32,23 +32,34 @@ const getTenantKey = ({ security }: CrudContextType): string | undefined => {
     return `T#${tenant.id}`;
 };
 
-const createPartitionKey = (context: CrudContextType, pkType: string, keys: string[]) => {
+const createPartitionKey = (context: CrudContextType, pkType: string) => {
     const locale = getLocaleKey(context);
     const tenant = getTenantKey(context);
-    return [tenant, locale, pkType].concat(keys).join("#");
+    return [tenant, locale, pkType].join("#");
+};
+const createTenantOnlyPartitionKeyOnly = (context: CrudContextType, pkType: string) => {
+    const tenant = getTenantKey(context);
+    return [tenant, pkType].join("#");
 };
 
-const createPkCallableFactory: CreatePkCallableFactoryType = pkType => {
-    return (context: CrudContextType, keys: string[] = []): string => {
-        return createPartitionKey(context, pkType, keys);
+const createPkCallableFactory: CreatePkCallableFactoryType = type => {
+    return (context: CrudContextType): string => {
+        return createPartitionKey(context, type);
     };
 };
+const createPkTenantCallableFactory: CreatePkCallableFactoryType = type => {
+    return (context: CrudContextType): string => {
+        return createTenantOnlyPartitionKeyOnly(context, type);
+    };
+};
+// tenant and locale in pk
 export const createEnvironmentPk = createPkCallableFactory(PartitionKeysEnum.CMS_ENVIRONMENT);
 export const createEnvironmentAliasPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_ENVIRONMENT_ALIAS
 );
 
-export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS);
 export const createContentModelGroupPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP
 );
+// with tenant only
+export const createSettingsPk = createPkTenantCallableFactory(PartitionKeysEnum.CMS_SETTINGS);

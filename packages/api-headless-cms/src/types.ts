@@ -325,14 +325,12 @@ export type CmsContentModelGroupCreateInputType = {
     slug?: string;
     description?: string;
     icon: string;
-    environment: string;
 };
 export type CmsContentModelGroupUpdateInputType = {
     name?: string;
     slug?: string;
     description?: string;
     icon?: string;
-    environment?: string;
 };
 export type CmsContentModelGroupType = {
     id: string;
