@@ -96,6 +96,32 @@ const checkBasePermissions = async (
     return pbPagePermission;
 };
 
+const getESPageData = (context: PbContext, page) => {
+    return {
+        id: page.id,
+        locale: context.i18nContent.getLocale().code,
+        createdOn: page.createdOn,
+        savedOn: page.savedOn,
+        createdBy: page.createdBy,
+        category: page.category,
+        version: page.version,
+        title: page.title,
+        url: page.url,
+        tags: page.tags,
+        status: page.status,
+        locked: page.locked,
+        publishedOn: page.publishedOn
+    };
+};
+
+const getESLatestPageData = (context: PbContext, page) => {
+    return getESPageData(context, { ...page, __latest: true });
+};
+
+const getESPublishedPageData = (context: PbContext, page) => {
+    return getESPageData(context, { ...page, __published: true });
+};
+
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
@@ -144,7 +170,9 @@ const plugin: ContextPlugin<PbContext> = {
                             query: {
                                 bool: {
                                     filter: [
-                                        { term: { "locale.keyword": i18nContent.locale.code } },
+                                        {
+                                            term: { "locale.keyword": i18nContent.getLocale().code }
+                                        },
                                         { term: { __latest: true } },
                                         ...filter,
                                         ...ownFilter
@@ -169,7 +197,9 @@ const plugin: ContextPlugin<PbContext> = {
                             query: {
                                 bool: {
                                     filter: [
-                                        { term: { "locale.keyword": i18nContent.locale.code } },
+                                        {
+                                            term: { "locale.keyword": i18nContent.getLocale().code }
+                                        },
                                         { term: { __published: true } }
                                     ]
                                 }
@@ -238,7 +268,7 @@ const plugin: ContextPlugin<PbContext> = {
                         .create({ ...defaults.db, data })
                         .create({
                             ...defaults.db,
-                            data: { PK: PK_PAGE_LATEST(), SK: uniqueId, TYPE_PAGE_LATEST, id }
+                            data: { PK: PK_PAGE_LATEST(), SK: uniqueId, TYPE: TYPE_PAGE_LATEST, id }
                         })
                         .execute();
 
@@ -249,8 +279,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: {
                             __latest: true,
                             id,
-                            locale: i18nContent?.locale?.code,
-                            // TODO: tenant
+                            locale: i18nContent.getLocale().code,
                             createdOn: data.createdOn,
                             savedOn: data.savedOn,
                             createdBy: data.createdBy,
@@ -342,7 +371,7 @@ const plugin: ContextPlugin<PbContext> = {
                             data: {
                                 PK: PK_PAGE_LATEST(),
                                 SK: fromUniqueId,
-                                TYPE_PAGE_LATEST,
+                                TYPE: TYPE_PAGE_LATEST,
                                 id: nextId
                             }
                         })
@@ -355,8 +384,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: {
                             __latest: true,
                             id: nextId,
-                            locale: i18nContent?.locale?.code,
-                            // TODO: tenant
+                            locale: i18nContent.getLocale().code,
                             createdOn: data.createdOn,
                             savedOn: data.savedOn,
                             createdBy: data.createdBy,
@@ -445,14 +473,37 @@ const plugin: ContextPlugin<PbContext> = {
                     return { ...page, ...data };
                 },
 
-                async delete(id) {
+                async delete(pageId) {
+                    // TODO: before-delete hook
+
                     const permission = await checkBasePermissions(context, { rwd: "d" });
 
-                    const [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: id },
-                        limit: 1
-                    });
+                    const [pageUniqueId, pageVersion] = pageId.split("#");
+
+                    // 1. Load the page and latest / published page (revision) data.
+                    const [[[page]], [[latestPageData]], [[publishedPageData]]] = await db
+                        .batch()
+                        .read({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: pageId },
+                            limit: 1
+                        })
+                        .read({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_LATEST(), SK: pageUniqueId },
+                            limit: 1
+                        })
+                        .read({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_PUBLISHED(), SK: pageUniqueId },
+                            limit: 1
+                        })
+                        .execute();
+
+                    // 2. Do some checks.
+                    if (!page) {
+                        throw new NotFoundError(`Page "${pageId}" not found.`);
+                    }
 
                     // If user can only manage own records, let's check if he owns the loaded one.
                     if (permission?.own === true) {
@@ -462,20 +513,136 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
 
-                    const [uniqueId] = id.split("#");
-                    await db.delete({
+                    // 3. Let's start updating.
+
+                    // If we are deleting the initial version, we need to remove all versions and all of the extra data.
+                    if (pageVersion === "1") {
+                        // 4.1. We delete pages in batches of 10.
+                        while (true) {
+                            const [pagesBatch] = await db.read({
+                                ...defaults.db,
+                                query: { PK: PK_PAGE(), SK: { $beginsWith: pageUniqueId } }
+                            });
+
+                            if (pagesBatch.length === 0) {
+                                break;
+                            }
+
+                            const batch = db.batch();
+                            for (let i = 0; i < pagesBatch.length; i++) {
+                                const page = pagesBatch[i];
+                                batch.delete({
+                                    ...defaults.db,
+                                    query: { PK: PK_PAGE(), SK: page.id }
+                                });
+                            }
+
+                            await batch.delete();
+                        }
+
+                        // 4.2. Delete latest / published data.
+                        await db
+                            .batch()
+                            .delete({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_LATEST(),
+                                    SK: pageUniqueId
+                                }
+                            })
+                            .delete({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId
+                                }
+                            })
+                            .execute();
+
+                        // 4.3. Finally, delete data from ES.
+                        await elasticSearch.bulk({
+                            body: [
+                                {
+                                    delete: {
+                                        _id: `L#${pageUniqueId}`,
+                                        _index: ES_DEFAULTS().index
+                                    }
+                                },
+                                {
+                                    delete: {
+                                        _id: `P#${pageUniqueId}`,
+                                        _index: ES_DEFAULTS().index
+                                    }
+                                }
+                            ]
+                        });
+
+                        return page;
+                    }
+
+                    // 5. If we are deleting a specific version (version > 1)...
+
+                    // 6.1. Delete the actual page entry.
+                    const batch = db.batch().delete({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: id }
+                        query: { PK: PK_PAGE(), SK: pageId }
                     });
 
-                    // Delete pages from ES.
-                    await elasticSearch.delete({
-                        ...ES_DEFAULTS(),
-                        id: `L#${uniqueId}`
-                    });
+                    // We need to update / delete data in ES too.
+                    const esOperations = [];
 
-                    return page;
-                    // TODO: finish this.
+                    const isLatest = latestPageData?.id === pageUniqueId;
+                    const isPublished = publishedPageData?.id === pageUniqueId;
+                    let newLatestPage = null;
+
+                    // 6.2. If the page is published, remove published data, both from DB and ES.
+                    if (isPublished) {
+                        batch.delete({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_PAGE_PUBLISHED(),
+                                SK: pageUniqueId
+                            }
+                        });
+
+                        esOperations.push({
+                            delete: { _id: `P#${pageUniqueId}`, _index: ES_DEFAULTS().index }
+                        });
+                    }
+
+                    // 6.3. If the page is latest, assign the previously latest page as the new latest.
+                    // Updates must be made again both on DB and ES side.
+                    if (isLatest) {
+                        [[newLatestPage]] = await db.read({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: { $lt: pageId } },
+                            limit: 1
+                        });
+
+                        // Update latest page data.
+                        batch.update({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_PAGE_LATEST(),
+                                SK: pageUniqueId,
+                                TYPE: TYPE_PAGE_LATEST,
+                                id: newLatestPage.id
+                            }
+                        });
+
+                        // And of course, update the published revision entry in ES.
+                        esOperations.push(
+                            { index: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
+                            getESLatestPageData(context, newLatestPage)
+                        );
+                    }
+
+                    await batch.execute();
+                    await elasticSearch.bulk({ body: esOperations });
+
+                    // TODO: after-delete hook
+                    // 7. Done. We return both the deleted page, and the new latest one (if there is one).
+                    return [page, newLatestPage];
                 },
 
                 async publish(pageId: string) {
@@ -597,7 +764,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const esOperations = [];
 
                     // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
-                    if (latestPageData.id === pageId) {
+                    if (latestPageData?.id === pageId) {
                         esOperations.push(
                             { update: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
                             {
@@ -613,23 +780,12 @@ const plugin: ContextPlugin<PbContext> = {
                     // And of course, update the published revision entry in ES.
                     esOperations.push(
                         { index: { _id: `P#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
-                        {
-                            __published: true,
+                        getESPublishedPageData(context, {
+                            ...page,
                             id: pageId,
-                            locale: i18nContent?.locale?.code,
-                            // TODO: tenant
-                            createdOn: page.createdOn,
-                            savedOn: page.savedOn,
-                            createdBy: page.createdBy,
-                            category: page.category,
-                            version: page.version,
-                            title: page.title,
-                            url: page.url,
-                            tags: page.tags,
                             status: STATUS_PUBLISHED,
-                            locked: true,
-                            publishedOn: page.publishedOn
-                        }
+                            locked: true
+                        })
                     );
 
                     await elasticSearch.bulk({ body: esOperations });
