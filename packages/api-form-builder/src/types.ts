@@ -1,5 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Result } from "@webiny/db";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 type FbFormTriggerData = { [key: string]: any };
 type FbFormSubmissionData = { [key: string]: any };
@@ -217,3 +218,10 @@ export type FormBuilderSettingsCRUD = {
     updateSettings(data: FormBuilderSettingsUpdateData): Promise<boolean>;
     deleteSettings(): Promise<Result<true>>;
 };
+
+export type FormPermission = SecurityPermission<{ name: "fb.form"; rwd: string; own: boolean }>;
+export type FormSubmissionPermission = SecurityPermission<{
+    name: "fb.submission";
+    rwd: string;
+    own: boolean;
+}>;

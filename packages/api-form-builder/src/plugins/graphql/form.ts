@@ -15,7 +15,7 @@ import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import { SecurityContext } from "@webiny/api-security/types";
 import { pipe } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { FormBuilderSettingsCRUD, FormsCRUD } from "../../types";
+import { FormBuilderSettingsCRUD, FormPermission, FormsCRUD } from "../../types";
 import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
 type ResolverContext = Context<I18NContext, SecurityContext>;
@@ -346,8 +346,8 @@ export default {
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const formBuilderFormPermission = await context.security.getPermission("fb.form");
-                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                const permission = await context.security.getPermission<FormPermission>("fb.form");
+                if (permission && !hasRwd({ formBuilderFormPermission: permission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
                 }
                 try {
@@ -359,7 +359,7 @@ export default {
                     }
 
                     // If user can only manage own records, let's check if he owns the loaded one.
-                    if (formBuilderFormPermission?.own === true) {
+                    if (permission?.own === true) {
                         const identity = context.security.getIdentity();
                         if (form.createdBy.id !== identity.id) {
                             return new NotAuthorizedResponse();

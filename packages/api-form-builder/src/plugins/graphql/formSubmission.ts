@@ -8,7 +8,7 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import exportFormSubmissions from "./formSubmissionResolvers/exportFormSubmissions";
 import createFormSubmission from "./formSubmissionResolvers/createFormSubmission";
 import { getBaseFormId } from "./formResolvers/utils/formResolversUtils";
-import { FormsCRUD, FormSubmissionsCRUD } from "../../types";
+import { FormsCRUD, FormSubmissionPermission, FormSubmissionsCRUD } from "../../types";
 import { hasRwd } from "./formResolvers/utils/formResolversUtils";
 
 type ResolverContext = Context<I18NContext, SecurityContext>;
@@ -107,10 +107,10 @@ export default {
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const formBuilderFormPermission = await context.security.getPermission(
+                const permission = await context.security.getPermission<FormSubmissionPermission>(
                     "fb.submission"
                 );
-                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                if (permission && !hasRwd({ formBuilderFormPermission: permission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
                 }
 
@@ -122,7 +122,7 @@ export default {
                     const [SK] = Object.values(sort);
 
                     // If user can only manage own records, let's check if he owns the loaded one.
-                    if (formBuilderFormPermission?.own === true) {
+                    if (permission?.own === true) {
                         const identity = context.security.getIdentity();
                         const form = await forms.getForm(where.form.parent);
                         if (form.createdBy.id !== identity.id) {
@@ -145,10 +145,10 @@ export default {
                 hasI18NContentPermission()
             )(async (_, args, context: ResolverContext) => {
                 // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const formBuilderFormPermission = await context.security.getPermission(
+                const permission = await context.security.getPermission<FormSubmissionPermission>(
                     "fb.submission"
                 );
-                if (formBuilderFormPermission && !hasRwd({ formBuilderFormPermission, rwd: "r" })) {
+                if (permission && !hasRwd({ formBuilderFormPermission: permission, rwd: "r" })) {
                     return new NotAuthorizedResponse();
                 }
 
@@ -160,7 +160,7 @@ export default {
                     const { id, where } = args;
 
                     // If user can only manage own records, let's check if he owns the loaded one.
-                    if (formBuilderFormPermission?.own === true) {
+                    if (permission?.own === true) {
                         const identity = context.security.getIdentity();
                         const form = await forms.getForm(where.formId);
                         if (form.createdBy.id !== identity.id) {
