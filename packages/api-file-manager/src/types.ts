@@ -60,7 +60,6 @@ export type FilesListOpts = {
     types?: string[];
     tags?: string[];
     ids?: string[];
-    sort?: Sort;
     limit?: number;
     after?: string;
 };

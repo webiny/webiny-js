@@ -97,25 +97,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 error: FileError
             }
 
-            enum ListFilesSort {
-                CREATED_ON_ASC
-                CREATED_ON_DESC
-                SIZE_ASC
-                SIZE_DESC
-            }
-
             type FmQuery {
                 getFile(id: ID, where: JSON, sort: String): FileResponse
 
                 listFiles(
                     limit: Int
                     after: String
-                    before: String
                     types: [String]
                     tags: [String]
                     ids: [ID]
                     search: String
-                    sort: ListFilesSort
                 ): FileListResponse
 
                 listTags: [String]
