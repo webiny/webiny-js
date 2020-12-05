@@ -1,6 +1,5 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import filesPlugins from "@webiny/api-file-manager/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/plugins/context";
@@ -11,6 +10,8 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
+import filesPlugins from "../src/plugins";
+
 // Graphql
 import {
     CREATE_FILE,

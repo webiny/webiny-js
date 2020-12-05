@@ -1,11 +1,9 @@
 import { withFields, string, boolean, number, setOnce, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import getPKPrefix from "./utils/getPKPrefix";
-import defaults from "./defaults";
-import { FileManagerContextPlugin } from "@webiny/api-file-manager/plugins/context";
-import { FileManagerSettings, FileManagerSettingsCRUD } from "@webiny/api-file-manager/types";
+import defaults from "./utils/defaults";
+import { FileManagerContext, Settings, SettingsCRUD } from "../../types";
 
-export const SETTINGS_KEY = "default";
+export const SETTINGS_KEY = "file-manager";
 
 const CreateDataModel = withFields({
     key: setOnce()(string({ value: SETTINGS_KEY })),
@@ -47,13 +45,13 @@ const UpdateDataModel = withFields({
     })(string())
 })();
 
-export default (context: FileManagerContextPlugin) => {
-    const { db } = context;
-    const PK_FILE_SETTINGS = () => `${getPKPrefix(context)}SETTINGS`;
+export default (context: FileManagerContext): SettingsCRUD => {
+    const { db, security } = context;
+    const PK_FILE_SETTINGS = () => `T#${security.getTenant().id}#SETTINGS`;
 
     return {
         async getSettings() {
-            const [[settings]] = await db.read<FileManagerSettings>({
+            const [[settings]] = await db.read<Settings>({
                 ...defaults.db,
                 query: { PK: PK_FILE_SETTINGS(), SK: SETTINGS_KEY },
                 limit: 1
@@ -65,7 +63,7 @@ export default (context: FileManagerContextPlugin) => {
             const settings = new CreateDataModel().populate(data);
             await settings.validate();
 
-            const settingsData = await settings.toJSON();
+            const settingsData: Settings = await settings.toJSON();
 
             await db.create({
                 data: {
@@ -82,7 +80,11 @@ export default (context: FileManagerContextPlugin) => {
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const updatedSettings = await updatedValue.toJSON({ onlyDirty: true });
+            const existingSettings: Settings = await this.getSettings();
+
+            const updatedSettings: Partial<Settings> = await updatedValue.toJSON({
+                onlyDirty: true
+            });
 
             await db.update({
                 ...defaults,
@@ -90,7 +92,7 @@ export default (context: FileManagerContextPlugin) => {
                 data: updatedSettings
             });
 
-            return updatedSettings;
+            return { ...existingSettings, ...updatedSettings };
         },
         async deleteSettings() {
             await db.delete({
@@ -100,5 +102,5 @@ export default (context: FileManagerContextPlugin) => {
 
             return true;
         }
-    } as FileManagerSettingsCRUD;
+    };
 };

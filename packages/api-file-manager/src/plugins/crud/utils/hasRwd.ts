@@ -1,4 +1,4 @@
-export default ({ filesFilePermission, rwd }) => {
+export default (filesFilePermission, rwd) => {
     if (typeof filesFilePermission.rwd !== "string") {
         return true;
     }
