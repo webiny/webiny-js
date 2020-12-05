@@ -215,4 +215,4 @@ export type DbItemSecurityUser2Tenant = {
     };
 };
 
-export type APIKeyPermission = SecurityPermission<{ name: "security.apiKey" }>;
+export type ApiKeyPermission = SecurityPermission<{ name: "security.apiKey" }>;

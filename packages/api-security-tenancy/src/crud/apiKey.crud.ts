@@ -6,7 +6,7 @@ import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
 import {
     ApiKey,
-    APIKeyPermission,
+    ApiKeyPermission,
     ApiKeysCRUD,
     TenancyContext
 } from "@webiny/api-security-tenancy/types";
@@ -56,7 +56,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         async getApiKey(id) {
             // Check if it's an ID or an actual API key (API keys start with a letter "a")
             const tenant = security.getTenant();
-            const permission = await security.getPermission<APIKeyPermission>("security.apiKey");
+            const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
                 throw new NotAuthorizedError();
@@ -74,7 +74,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         },
         async listApiKeys() {
             const tenant = security.getTenant();
-            const permission = await security.getPermission<APIKeyPermission>("security.apiKey");
+            const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
                 throw new NotAuthorizedError();
@@ -93,7 +93,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         async createApiKey(data) {
             const identity = security.getIdentity();
             const tenant = security.getTenant();
-            const permission = await security.getPermission<APIKeyPermission>("security.apiKey");
+            const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
                 throw new NotAuthorizedError();
@@ -129,7 +129,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         },
         async updateApiKey(id, data) {
             const tenant = security.getTenant();
-            const permission = await security.getPermission<APIKeyPermission>("security.apiKey");
+            const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
                 throw new NotAuthorizedError();
@@ -157,7 +157,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         },
         async deleteApiKey(id) {
             const tenant = security.getTenant();
-            const permission = await security.getPermission<APIKeyPermission>("security.apiKey");
+            const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
                 throw new NotAuthorizedError();
