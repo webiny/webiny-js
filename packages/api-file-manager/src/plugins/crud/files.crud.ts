@@ -362,7 +362,7 @@ export default (context: FileManagerContext) => {
                 }
             });
 
-            return response.body.aggregations.listTags.buckets.map(item => item.key);
+            return response.body.aggregations.listTags.buckets.map(item => item.key) || [];
         }
     } as FilesCRUD;
 };
