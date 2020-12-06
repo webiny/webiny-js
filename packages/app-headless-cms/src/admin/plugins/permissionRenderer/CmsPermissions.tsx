@@ -24,7 +24,7 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries", "environments"];
 
-export const CMSPermissions = ({ securityGroup, value, onChange }) => {
+export const CMSPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -76,7 +76,7 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -149,7 +149,7 @@ export const CMSPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         return returnData;
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>

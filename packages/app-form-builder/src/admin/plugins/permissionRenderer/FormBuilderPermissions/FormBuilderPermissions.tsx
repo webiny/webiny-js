@@ -24,7 +24,7 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 const ENTITIES = ["form", "submission"];
 
-export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
+export const FormBuilderPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -71,7 +71,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -118,7 +118,7 @@ export const FormBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         return returnData;
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>
