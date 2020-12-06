@@ -27,15 +27,16 @@ type DbItem<T> = T & {
 };
 
 const generateToken = (tokenLength = 48) => {
-    const token = crypto
-        .randomBytes(Math.ceil(tokenLength / 2))
-        .toString("hex")
-        .slice(0, tokenLength - 1);
+    const token = crypto.randomBytes(Math.ceil(tokenLength / 2)).toString("hex");
 
     // API Keys are prefixed with a letter "a" to make token verification easier.
     // When authentication plugins kick in, they will be able to tell if they should handle the token by
     // checking the first letter and either process the token or skip authentication completely.
-    return `a${token}`;
+    if (token.startsWith("a")) {
+        return token;
+    }
+    
+    return `a${token.slice(0, tokenLength - 1)}`;
 };
 
 export default (context: TenancyContext): ApiKeysCRUD => {

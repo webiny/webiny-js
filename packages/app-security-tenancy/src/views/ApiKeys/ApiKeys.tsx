@@ -1,29 +1,29 @@
 import * as React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import GroupsDataList from "./GroupsDataList";
-import GroupsForm from "./GroupsForm";
+import ApiKeysDataList from "./ApiKeysDataList";
+import ApiKeyForm from "./ApiKeyForm";
 import { useRouter } from "@webiny/react-router";
 
-const Groups = ({ formProps, listProps }: any) => {
+const ApiKeys = ({ formProps, listProps }: any) => {
     const { history } = useRouter();
 
     return (
         <>
             <SplitView>
                 <LeftPanel>
-                    <GroupsDataList {...listProps} />
+                    <ApiKeysDataList {...listProps} />
                 </LeftPanel>
                 <RightPanel>
-                    <GroupsForm {...formProps} />
+                    <ApiKeyForm {...formProps} />
                 </RightPanel>
             </SplitView>
             <FloatingActionButton
                 data-testid="new-record-button"
-                onClick={() => history.push("/security/groups")}
+                onClick={() => history.push("/security/api-keys")}
             />
         </>
     );
 };
 
-export default Groups;
+export default ApiKeys;
