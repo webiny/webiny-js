@@ -13,6 +13,7 @@ export type File = {
 };
 
 export type Settings = {
+    installed: boolean;
     name: string;
     domain: string;
     favicon: File;
@@ -98,8 +99,9 @@ export type MenusCrud = {
 };
 
 export type SettingsCrud = {
-    get: () => Promise<Settings>;
-    update: (data: Record<string, any>) => Promise<Settings>;
+    __cachedSettings: Settings;
+    get: (options?: { auth: boolean }) => Promise<Settings>;
+    update: (data: Record<string, any>, options?: { auth: boolean }) => Promise<Settings>;
     getSettingsCacheKey: () => string;
 };
 

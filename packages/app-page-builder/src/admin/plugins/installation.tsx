@@ -17,7 +17,7 @@ import {
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
 
-const t = i18n.ns("app-pb/admin/installation");
+const t = i18n.ns("api-page-builder/admin/installation");
 
 const IS_INSTALLED = gql`
     query IsPageBuilderInstalled {
@@ -34,9 +34,9 @@ const IS_INSTALLED = gql`
 `;
 
 const INSTALL = gql`
-    mutation InstallPageBuilder($step: Int!, $data: PbInstallInput!) {
+    mutation InstallPageBuilder($data: PbInstallInput!) {
         pageBuilder {
-            install(step: $step, data: $data) {
+            install(data: $data) {
                 data
                 error {
                     code
@@ -47,6 +47,7 @@ const INSTALL = gql`
     }
 `;
 
+// eslint-disable-next-line
 const installationSteps = {
     1: t`Creating page categories...`,
     2: t`Creating page blocks...`,
@@ -59,60 +60,43 @@ const PBInstaller = ({ onInstalled }) => {
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [installationStep, setInstallationStep] = useState(0);
 
-    const onSubmit = useCallback(
-        async form => {
-            setLoading(true);
-            setError(null);
+    const onSubmit = useCallback(async form => {
+        setLoading(true);
+        setError(null);
+        const { data: res } = await client.mutate({ mutation: INSTALL, variables: { data: form } });
+        setLoading(false);
+        const { error } = res.pageBuilder.install;
+        if (error) {
+            setError(error.message);
+            return;
+        }
 
-            try {
-                for (let step = 1; step <= 5; step++) {
-                    setInstallationStep(step);
-                    const response = await client.mutate({
-                        mutation: INSTALL,
-                        variables: { step: step, data: form }
-                    });
-
-                    const { error } = response.data.pageBuilder.install;
-                    if (error) {
-                        throw new Error(error.message);
-                    }
-                }
-            } catch (e) {
-                setError(e.message);
-                setLoading(false);
-                return;
-            }
-
-            setLoading(false);
-            onInstalled();
-        },
-        [installationStep]
-    );
+        onInstalled();
+    }, []);
 
     return (
         <Form onSubmit={onSubmit} submitOnEnter>
             {({ Bind, submit }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress label={installationSteps[installationStep]} />}
+                    {loading && <CircularProgress label={t`Installing Page Builder...`} />}
                     {error && (
                         <Grid>
                             <Cell span={12}>
-                                <Alert title={"Something went wrong"} type={"danger"}>
+                                <Alert title={t`Something went wrong`} type={"danger"}>
                                     {error}
                                 </Alert>
                             </Cell>
                         </Grid>
                     )}
-                    <SimpleFormHeader title={"Install Page Builder"} />
+                    <SimpleFormHeader title={t`Install Page Builder`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
                                 <Bind name="name" validators={validation.create("required")}>
                                     <Input
                                         label={t`Site Name`}
-                                        description={`Name of your site, eg: "My Site"`}
+                                        description={t`Name of your site, eg: "My Site"`}
                                     />
                                 </Bind>
                             </Cell>
@@ -133,7 +117,7 @@ const PBInstaller = ({ onInstalled }) => {
 export default {
     name: "admin-installation-pb",
     type: "admin-installation",
-    title: "Page Builder app",
+    title: t`Page Builder app`,
     dependencies: [],
     secure: true,
     async isInstalled({ client }) {
