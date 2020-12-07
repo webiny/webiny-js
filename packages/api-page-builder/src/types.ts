@@ -73,7 +73,13 @@ export type PagesCrud = {
     setAsHomepage(id: string): Promise<Page>;
 };
 
-export type PageElementsCrud = {};
+export type PageElementsCrud = {
+    get(id: string): Promise<Category>;
+    list(): Promise<Category[]>;
+    create(data: Record<string, any>): Promise<Category>;
+    update(id: string, data: Record<string, any>): Promise<Category>;
+    delete(id: string): Promise<Category>;
+};
 
 export type CategoriesCrud = {
     get(slug: string): Promise<Category>;
@@ -83,7 +89,13 @@ export type CategoriesCrud = {
     delete(slug: string): Promise<Category>;
 };
 
-export type MenusCrud = {};
+export type MenusCrud = {
+    get(slug: string): Promise<Category>;
+    list(): Promise<Category[]>;
+    create(data: Record<string, any>): Promise<Category>;
+    update(slug: string, data: Record<string, any>): Promise<Category>;
+    delete(slug: string): Promise<Category>;
+};
 
 export type SettingsCrud = {
     get: () => Promise<Settings>;
@@ -100,9 +112,9 @@ export type PbContext = Context<
     {
         pageBuilder: Record<string, any> & {
             pages: PagesCrud;
-            pageElements: PagesCrud;
+            pageElements: PageElementsCrud;
             categories: CategoriesCrud;
-            menus: PagesCrud;
+            menus: MenusCrud;
             settings: SettingsCrud;
         };
     }
@@ -139,9 +151,20 @@ export type PageSecurityPermission = PbSecurityPermission<
     }
 >;
 
-// Installer plugin.
-export type PbInstallPlugin = Plugin & {
+// Plugins.
+export type InstallPlugin = Plugin<{
     name: "pb-install";
     before: (params: { context: Context; data: any }) => void;
     after: (params: { context: Context; data: any }) => void;
-};
+}>;
+
+// Installer plugin.
+export type PageHookPlugin = Plugin<{
+    type: "pb-page-hook";
+    beforeDelete?: (page: Page) => void | Promise<void>;
+    afterDelete?: (page: Page) => void | Promise<void>;
+    beforePublish?: (page: Page) => void | Promise<void>;
+    afterPublish?: (page: Page) => void | Promise<void>;
+    beforeUnpublish?: (page: Page) => void | Promise<void>;
+    afterUnpublish?: (page: Page) => void | Promise<void>;
+}>;
