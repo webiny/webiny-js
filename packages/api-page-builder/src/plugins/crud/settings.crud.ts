@@ -1,12 +1,13 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
-import { withFields, string, fields } from "@commodo/fields";
+import { withFields, string, fields, boolean } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
 import { PbContext } from "@webiny/api-page-builder/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 const SettingsModel = withFields({
+    installed: boolean({ value: false }),
     name: string({ validation: "required,maxLength:500" }),
     domain: string({ validation: "url,maxLength:500" }),
     favicon: object({}),
@@ -50,12 +51,16 @@ const plugin: ContextPlugin<PbContext> = {
         context.pageBuilder = {
             ...context.pageBuilder,
             settings: {
+                __cachedSettings: null,
                 getSettingsCacheKey() {
                     return PK();
                 },
-                async get() {
-                    // Must have base permissions before continuing.
-                    await checkBasePermissions(context);
+                async get({ auth } = { auth: true }) {
+                    if (this.__cachedSettings) {
+                        return this.__cachedSettings;
+                    }
+
+                    auth !== false && (await checkBasePermissions(context));
 
                     const [[data]] = await db.read({
                         ...defaults.db,
@@ -72,13 +77,14 @@ const plugin: ContextPlugin<PbContext> = {
                         ...defaults.db,
                         data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE }
                     });
-                    return defaultSettings;
-                },
-                async update(next) {
-                    // Must have base permissions before continuing.
-                    await checkBasePermissions(context);
 
-                    const current = await this.get();
+                    this.__cachedSettings = defaultSettings;
+                    return this.__cachedSettings;
+                },
+                async update(next, { auth } = { auth: true }) {
+                    auth !== false && (await checkBasePermissions(context));
+
+                    const current = await this.get({ auth });
                     const settings = new SettingsModel().populate(current).populate(next);
                     await settings.validate();
 
