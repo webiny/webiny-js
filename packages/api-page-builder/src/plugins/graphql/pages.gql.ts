@@ -2,14 +2,7 @@ import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/r
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PbContext } from "@webiny/api-page-builder/types";
 import Error from "@webiny/error";
-
-const resolve = async fn => {
-    try {
-        return new Response(await fn());
-    } catch (e) {
-        return new ErrorResponse(e);
-    }
-};
+import resolve from "./utils/resolve";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -23,6 +16,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPage {
                 id: ID
+                editor: String
                 createdFrom: ID
                 createdBy: PbCreatedBy
                 createdOn: DateTime
@@ -54,6 +48,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPageListItem {
                 id: ID
+                editor: String
                 status: String
                 locked: Boolean
                 publishedOn: DateTime
@@ -194,6 +189,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 category: String
                 status: PbPageStatuses
             }
+            
+            input PbListPublishedPagesWhereInput {
+                category: String
+            }
 
             enum PbTagsRule {
                 ALL
@@ -219,7 +218,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ): PbPageListResponse
 
                 listPublishedPages(
-                    where: PbListPagesWhereInput
+                    where: PbListPublishedPagesWhereInput
                     limit: Int
                     page: Int
                     sort: PbListPagesSortInput
