@@ -22,7 +22,7 @@ export default {
                 hasI18NContentPermission()
             )(async (_, __, context: HeadlessCmsContext) => {
                 try {
-                    const settings = await context.cms.settings.get();
+                    const settings = await context.crud.settings.get();
                     return new Response(!!settings?.isInstalled);
                 } catch (ex) {
                     if (ex instanceof ErrorResponse) {
@@ -41,7 +41,7 @@ export default {
                 hasI18NContentPermission()
             )(async (_, __, context: HeadlessCmsContext) => {
                 try {
-                    await context.cms.settings.install();
+                    await context.crud.settings.install();
                     return new Response(true);
                 } catch (ex) {
                     if (ex instanceof ErrorResponse) {

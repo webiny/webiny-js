@@ -100,7 +100,7 @@ export default {
 
                 const { id } = args;
 
-                const model = await context.cms.environment.get(id);
+                const model = await context.crud.environment.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -121,7 +121,7 @@ export default {
             )(async (_, __, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const environments = await context.cms.environment.list();
+                const environments = await context.crud.environment.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
@@ -146,7 +146,7 @@ export default {
                 };
 
                 try {
-                    const model = await context.cms.environment.create(data, createdBy);
+                    const model = await context.crud.environment.create(data, createdBy);
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
@@ -164,7 +164,7 @@ export default {
 
                 const { id, data } = args;
 
-                const model = await context.cms.environment.get(id);
+                const model = await context.crud.environment.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -177,7 +177,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await context.cms.environment.update(id, data, model);
+                    const changedModel = await context.crud.environment.update(id, data, model);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -194,7 +194,7 @@ export default {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const model = await context.cms.environment.get(id);
+                const model = await context.crud.environment.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -207,7 +207,7 @@ export default {
                 }
 
                 try {
-                    await context.cms.environment.delete(id);
+                    await context.crud.environment.delete(id);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({

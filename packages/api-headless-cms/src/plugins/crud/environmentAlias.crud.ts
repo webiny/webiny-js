@@ -8,7 +8,7 @@ import { withFields, string } from "@commodo/fields";
 import {
     CmsEnvironmentAliasType,
     CmsEnvironmentAliasContextType,
-    CmsContextType,
+    CrudContextType,
     CmsEnvironmentType
 } from "../../types";
 import toSlug from "../../utils/toSlug";
@@ -29,10 +29,10 @@ const UpdateEnvironmentAliasModel = withFields({
 })();
 
 const fetchTargetEnvironment = async (
-    context: CmsContextType,
+    context: CrudContextType,
     id: string
 ): Promise<CmsEnvironmentType> => {
-    const targetEnvironment = await context.cms.environment.get(id);
+    const targetEnvironment = await context.crud.environment.get(id);
     if (!targetEnvironment) {
         throw new Error(`Target Environment "${id}" does not exist.`);
     }
@@ -92,7 +92,7 @@ export default {
                 });
 
                 // before create hook
-                const aliases = await context.cms.environmentAlias.list();
+                const aliases = await context.crud.environmentAlias.list();
                 const existingAliasSlug = aliases.some(alias => {
                     return alias.slug === slug;
                 });
@@ -151,9 +151,9 @@ export default {
                 });
             }
         };
-        context.cms = {
-            ...(context.cms || ({} as any)),
+        context.crud = {
+            ...(context.crud || ({} as any)),
             environmentAlias
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsContextType, TenancyContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext>;

@@ -5,7 +5,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContextType } from "../../types";
+import { CmsEnvironmentType, CmsEnvironmentContextType, CrudContextType } from "../../types";
 import toSlug from "../../utils/toSlug";
 import { createEnvironmentAliasPk, createEnvironmentPk } from "../../common/partitionKeys";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
@@ -74,7 +74,7 @@ export default {
                 // need to read all environments
                 // because we need to check if environment with exact slug already exists
                 // and to check if source environment environment actually exists - when required to
-                const existingEnvironments = await context.cms.environment.list();
+                const existingEnvironments = await context.crud.environment.list();
                 const sourceEnvironment = existingEnvironments.find(model => {
                     return model.id === createDataJson.createdFrom;
                 });
@@ -119,7 +119,7 @@ export default {
                 if (!sourceEnvironment) {
                     return model;
                 }
-                await context.cms.dataManager.copyEnvironment({
+                await context.crud.dataManager.copyEnvironment({
                     copyFrom: sourceEnvironment.id,
                     copyTo: id
                 });
@@ -157,7 +157,7 @@ export default {
                     }
                 });
                 // after change hook
-                const aliases = (await context.cms.environmentAlias.list()).filter(alias => {
+                const aliases = (await context.crud.environmentAlias.list()).filter(alias => {
                     return alias.environment.id === id;
                 });
                 // update all aliases last updated time
@@ -182,7 +182,7 @@ export default {
             },
             async delete(id): Promise<void> {
                 // before delete hook
-                const aliases = (await context.cms.environmentAlias.list())
+                const aliases = (await context.crud.environmentAlias.list())
                     .filter(alias => {
                         return alias.environment.id === id;
                     })
@@ -200,12 +200,12 @@ export default {
                     query: { PK: createEnvironmentPk(context), SK: id }
                 });
                 // after delete hook
-                await context.cms.dataManager.deleteEnvironment({ environment: id });
+                await context.crud.dataManager.deleteEnvironment({ environment: id });
             }
         };
-        context.cms = {
-            ...(context.cms || ({} as any)),
+        context.crud = {
+            ...(context.crud || ({} as any)),
             environment
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsContextType, TenancyContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext>;
