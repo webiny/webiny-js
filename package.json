@@ -182,6 +182,8 @@
     }
   },
   "resolutions": {
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "apollo-server-core": "2.17.0"
   }
