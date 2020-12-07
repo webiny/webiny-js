@@ -9,7 +9,7 @@ import i18nContentPlugins from "./i18nContent";
 import securityPlugins from "./security";
 import pageBuilderPlugins from "./pageBuilder";
 import formBuilderPlugins from "./formBuilder";
-// import headlessCmsPlugins from "./headlessCms";
+import headlessCmsPlugins from "./headlessCms";
 import theme from "theme";
 
 plugins.register([
@@ -52,7 +52,7 @@ plugins.register([
     /**
      * Headless CMS app.
      */
-    // TODO: headlessCmsPlugins,
+    headlessCmsPlugins,
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */

@@ -39,7 +39,7 @@ export default {
             install: compose(
                 hasManageSettingsPermission(),
                 hasI18NContentPermission()
-            )(async (_, __, context) => {
+            )(async (_, __, context: HeadlessCmsContext) => {
                 try {
                     await context.cms.settings.install();
                     return new Response(true);
