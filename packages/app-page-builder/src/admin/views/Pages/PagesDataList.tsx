@@ -55,7 +55,10 @@ const PageBuilderPagesDataList = () => {
     const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(1);
 
-    const listQuery = useQuery(LIST_PAGES, { variables: { where, sort, limit, page } });
+    const listQuery = useQuery(LIST_PAGES, {
+        fetchPolicy: "no-cache",
+        variables: { where, sort, limit, page }
+    });
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
     const meta = listQuery?.data?.pageBuilder?.listPages?.meta || {};
@@ -72,7 +75,7 @@ const PageBuilderPagesDataList = () => {
             loading={Boolean(loading)}
             data={data}
             pagination={{
-                perPageOptions: [1, 2, 10, 25, 50],
+                perPageOptions: [10, 25, 50],
                 setPerPage: setLimit,
                 hasNextPage: meta.nextPage,
                 hasPreviousPage: meta.previousPage,
