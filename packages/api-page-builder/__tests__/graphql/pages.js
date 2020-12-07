@@ -1,6 +1,7 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
+        editor
         category {
             slug
         }
@@ -30,6 +31,7 @@ export const DATA_FIELD = /* GraphQL */ `
 const LIST_DATA_FIELD = /* GraphQL */ `
     {
         id
+        editor
         category {
             slug
         }
@@ -145,11 +147,21 @@ export const LIST_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
-    query ListPublishedPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
         pageBuilder {
             listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
+                meta {
+                    page
+                    limit
+                    totalCount
+                    totalPages
+                    from
+                    to
+                    nextPage
+                    previousPage
+                }
             }
         }
     }
