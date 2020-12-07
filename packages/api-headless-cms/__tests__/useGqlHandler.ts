@@ -17,23 +17,23 @@ import {
     GET_ENVIRONMENT_QUERY,
     LIST_ENVIRONMENT_QUERY,
     UPDATE_ENVIRONMENT_MUTATION
-} from "./graphql/environment";
+} from "./plugins/crud/graphql/environment";
 import {
     CREATE_ENVIRONMENT_ALIAS_MUTATION,
     DELETE_ENVIRONMENT_ALIAS_MUTATION,
     GET_ENVIRONMENT_ALIAS_QUERY,
     LIST_ENVIRONMENT_ALIAS_QUERY,
     UPDATE_ENVIRONMENT_ALIAS_MUTATION
-} from "./graphql/environmentAlias";
+} from "./plugins/crud/graphql/environmentAlias";
 import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
-import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./plugins/crud/graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
     GET_CONTENT_MODEL_GROUP_QUERY,
     LIST_CONTENT_MODEL_GROUP_QUERY,
     UPDATE_CONTENT_MODEL_GROUP_MUTATION
-} from "./graphql/contentModelGroup";
+} from "./common/crud/graphql/contentModelGroup";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];

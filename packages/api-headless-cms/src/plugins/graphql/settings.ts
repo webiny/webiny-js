@@ -1,7 +1,7 @@
 import { compose, ErrorResponse, Response } from "@webiny/handler-graphql";
-import { hasManageSettingsPermission } from "@webiny/api-headless-cms/plugins/graphql/helpers";
+import { hasManageSettingsPermission } from "../../common/helpers";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { HeadlessCmsContext } from "@webiny/api-headless-cms/types";
+import { HeadlessCmsContext } from "../../types";
 
 export default {
     typeDefs: /* GraphQL */ `

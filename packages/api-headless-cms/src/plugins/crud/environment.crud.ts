@@ -1,19 +1,15 @@
-import defaults from "./defaults";
+import defaults from "../../common/defaults";
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import {
-    CmsEnvironmentType,
-    CmsEnvironmentContextType,
-    CmsContextType
-} from "@webiny/api-headless-cms/types";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
-import { createEnvironmentAliasPk, createEnvironmentPk } from "./partitionKeys";
+import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContextType } from "../../types";
+import toSlug from "../../utils/toSlug";
+import { createEnvironmentAliasPk, createEnvironmentPk } from "../../common/partitionKeys";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "../../common/dbItemTypes";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -36,12 +32,6 @@ const createEnvironmentValidationModel = (initial?: boolean) => {
         return new CreateInitialEnvironmentModel();
     }
     return new CreateEnvironmentModel();
-};
-
-type BaseDynamoType = {
-    PK: string;
-    SK: string;
-    TYPE: string;
 };
 
 export default {
@@ -106,20 +96,22 @@ export default {
                     throw new Error(`Environment with slug "${slug}" already exists.`);
                 }
 
-                const model = Object.assign(createDataJson, {
-                    PK: createEnvironmentPk(context),
-                    SK: id,
-                    TYPE: DbItemTypes.CMS_ENVIRONMENT,
+                const model: CmsEnvironmentType = Object.assign(createDataJson, {
                     id,
                     createdOn: new Date().toISOString(),
                     createdFrom: sourceEnvironment,
                     createdBy
-                }) as CmsEnvironmentType & BaseDynamoType;
+                });
 
                 // save
                 await db.create({
                     ...defaults.db,
-                    data: model
+                    data: {
+                        PK: createEnvironmentPk(context),
+                        SK: id,
+                        TYPE: DbItemTypes.CMS_ENVIRONMENT,
+                        ...model
+                    }
                 });
 
                 // after create hook

@@ -1,4 +1,4 @@
-import { useGqlHandler } from "./useGqlHandler";
+import { useGqlHandler } from "../../useGqlHandler";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import {
     createInitialEnvironment,
@@ -6,7 +6,7 @@ import {
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
-} from "./helpers";
+} from "../../helpers";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 enum TestHelperEnum {

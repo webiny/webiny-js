@@ -5,14 +5,14 @@ import {
     CmsEnvironmentCreateInputType,
     CmsEnvironmentUpdateInputType,
     HeadlessCmsContext
-} from "@webiny/api-headless-cms/types";
+} from "../../types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import {
     getCmsManageSettingsPermission,
     hasManageSettingsPermission,
     hasCmsManageSettingsPermissionRwd,
     userCanManageModel
-} from "./helpers";
+} from "../../common/helpers";
 
 type CreateEnvironmentArgsType = {
     data: CmsEnvironmentCreateInputType;

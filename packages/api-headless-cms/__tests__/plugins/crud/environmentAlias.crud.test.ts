@@ -1,10 +1,10 @@
-import { useGqlHandler } from "./useGqlHandler";
+import { useGqlHandler } from "../../useGqlHandler";
 import {
     createInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
-} from "./helpers";
+} from "../../helpers";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 

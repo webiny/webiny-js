@@ -2,11 +2,11 @@ import {
     createEnvironmentAliasPk,
     createEnvironmentPk,
     createSettingsPk
-} from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
+} from "@webiny/api-headless-cms/common/partitionKeys";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
 
 export type PermissionsArgType = {
     name: string;

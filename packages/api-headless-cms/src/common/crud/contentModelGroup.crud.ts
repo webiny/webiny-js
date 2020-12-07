@@ -1,19 +1,19 @@
-import defaults from "./defaults";
+import defaults from "../defaults";
 import mdbid from "mdbid";
 import {
     CmsContentModelGroupContextType,
     CmsContentModelGroupType,
     CmsContextType
-} from "@webiny/api-headless-cms/types";
+} from "../../types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { createContentModelGroupPk } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import { createContentModelGroupPk } from "../partitionKeys";
+import toSlug from "../../utils/toSlug";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "../dbItemTypes";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),

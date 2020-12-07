@@ -1,16 +1,12 @@
-import {
-    CmsContextType,
-    CmsSettingsContextType,
-    CmsSettingsType
-} from "@webiny/api-headless-cms/types";
-import defaults from "@webiny/api-headless-cms/plugins/crud/defaults";
+import { CmsContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
+import defaults from "../../common/defaults";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { createSettingsPk } from "@webiny/api-headless-cms/plugins/crud/partitionKeys";
+import { createSettingsPk } from "../../common/partitionKeys";
 import { SecurityContext } from "@webiny/api-security/types";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "../../common/dbItemTypes";
 
 const initialEnvironment = {
     name: "Production",
@@ -66,6 +62,11 @@ export default {
                     createdBy,
                     true
                 );
+                // need to attach environment to the context
+                // so cms content group can be created
+                if (!context.environment) {
+                    context.environment = environment;
+                }
                 // and its alias
                 const environmentAlias = await context.cms.environmentAlias.create(
                     {

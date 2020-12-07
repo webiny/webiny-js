@@ -1,7 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../types";
 
 type ModelCreatableByUserType = {
     createdBy?: {

@@ -3,7 +3,7 @@ import { merge } from "lodash";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 import cmsSettings from "./graphql/settings";
-import cmsContentModelGroup from "./graphql/contentModelGroup";
+import cmsContentModelGroup from "../common/graphql/contentModelGroup";
 
 const emptyResolver = () => ({});
 

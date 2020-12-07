@@ -2,13 +2,13 @@ import {
     CmsContentModelGroupCreateInputType,
     CmsContentModelGroupUpdateInputType,
     HeadlessCmsContext
-} from "@webiny/api-headless-cms/types";
+} from "../../types";
 import {
     getCmsManageSettingsPermission,
     hasCmsManageSettingsPermissionRwd,
     hasManageSettingsPermission,
     userCanManageModel
-} from "@webiny/api-headless-cms/plugins/graphql/helpers";
+} from "../helpers";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { compose, ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql";
 import { NotAuthorizedResponse } from "@webiny/api-security";

@@ -1,8 +1,8 @@
-import { useGqlHandler } from "./useGqlHandler";
-import { createSettingsTestPartitionKey } from "./helpers";
+import { useGqlHandler } from "../../useGqlHandler";
+import { createSettingsTestPartitionKey } from "../../helpers";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsSettingsType } from "@webiny/api-headless-cms/types";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
 
 const SETTINGS_SECONDARY_KEY = "settings";
 

@@ -1,4 +1,4 @@
-import defaults from "./defaults";
+import defaults from "../../common/defaults";
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -10,11 +10,11 @@ import {
     CmsEnvironmentAliasContextType,
     CmsContextType,
     CmsEnvironmentType
-} from "@webiny/api-headless-cms/types";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
-import { createEnvironmentAliasPk } from "./partitionKeys";
+} from "../../types";
+import toSlug from "../../utils/toSlug";
+import { createEnvironmentAliasPk } from "../../common/partitionKeys";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { DbItemTypes } from "@webiny/api-headless-cms/plugins/crud/dbItemTypes";
+import { DbItemTypes } from "../../common/dbItemTypes";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),

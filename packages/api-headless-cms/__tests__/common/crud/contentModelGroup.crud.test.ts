@@ -1,5 +1,5 @@
-import { useGqlHandler } from "./useGqlHandler";
-import { createInitialEnvironment } from "./helpers";
+import { useGqlHandler } from "../../useGqlHandler";
+import { createInitialEnvironment } from "../../helpers";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 
 enum TestHelperEnum {
