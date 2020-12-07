@@ -3,7 +3,7 @@ import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import defaults from "./defaults";
+import defaults from "./utils/defaults";
 import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
@@ -11,10 +11,10 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import getPKPrefix from "./utils/getPKPrefix";
-import hasRwd from "./utils/hasRwd";
-import hasRcpu from "./utils/hasRcpu";
-import { PbContext, PageSecurityPermission } from "@webiny/api-page-builder/types";
+import { PageHookPlugin, PbContext } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
+import checkBasePermissions from "./utils/checkBasePermissions";
+import checkOwnPermissions from "./utils/checkOwnPermissions";
 
 export type Page = {
     id: string;
@@ -33,6 +33,7 @@ export type Page = {
     createdOn: string;
     savedOn: string;
     createdBy: {
+        type: string;
         id: string;
         displayName: string;
     };
@@ -43,6 +44,8 @@ const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
+
+const DEFAULT_EDITOR = "page-builder";
 
 const CreateDataModel = withFields({
     category: string({ validation: validation.create("required,maxLength:100") })
@@ -74,32 +77,12 @@ const TYPE_PAGE = "pb.page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
 
-const checkBasePermissions = async (
-    context: PbContext,
-    check: { rwd?: string; rcpu?: string }
-): Promise<PageSecurityPermission> => {
-    await context.i18nContent.checkI18NContentPermission();
-    const pbPagePermission = await context.security.getPermission<PageSecurityPermission>(
-        "pb.page"
-    );
-    if (!pbPagePermission) {
-        throw new NotAuthorizedError();
-    }
-
-    if (check.rwd && !hasRwd(pbPagePermission, check.rwd)) {
-        throw new NotAuthorizedError();
-    }
-
-    if (check.rcpu && !hasRcpu(pbPagePermission, check.rcpu)) {
-        throw new NotAuthorizedError();
-    }
-
-    return pbPagePermission;
-};
+const PERMISSION_NAME = TYPE_PAGE;
 
 const getESPageData = (context: PbContext, page) => {
     return {
         id: page.id,
+        editor: page.editor,
         locale: context.i18nContent.getLocale().code,
         createdOn: page.createdOn,
         savedOn: page.savedOn,
@@ -133,29 +116,40 @@ const plugin: ContextPlugin<PbContext> = {
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
         const ES_DEFAULTS = () => defaults.es(context);
 
+        // Used in a couple of key events - (un)publishing and pages deletion.
+        const pageHooksPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hooks");
+        const executeHookCallbacks = async (hook: string, ...callbackArgs) => {
+            for (let i = 0; i < pageHooksPlugins.length; i++) {
+                const plugin = pageHooksPlugins[i];
+                if (typeof plugin[hook] === "function") {
+                    await plugin[hook].beforeDelete(...callbackArgs);
+                }
+            }
+        };
+
         context.pageBuilder = {
             ...context.pageBuilder,
             pages: {
                 async get(id) {
-                    const permission = await checkBasePermissions(context, { rwd: "r" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "r"
+                    });
                     const [[page]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE(), SK: id },
                         limit: 1
                     });
 
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
                     return page;
                 },
 
                 async listLatest(args) {
-                    const permission = await checkBasePermissions(context, { rwd: "r" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "r"
+                    });
                     const { sort, from, size, filter, page } = getNormalizedListPagesArgs(args);
 
                     // If users can only manage own records, let's add the special filter.
@@ -236,7 +230,7 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async create(categorySlug) {
-                    await checkBasePermissions(context, { rwd: "w" });
+                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
                     const category = await context.pageBuilder.categories.get(categorySlug);
                     if (!category) {
@@ -257,6 +251,7 @@ const plugin: ContextPlugin<PbContext> = {
                         SK: id,
                         TYPE_PAGE,
                         id,
+                        editor: DEFAULT_EDITOR,
                         category: category.slug,
                         title,
                         url,
@@ -272,7 +267,8 @@ const plugin: ContextPlugin<PbContext> = {
                         createdOn: new Date().toISOString(),
                         createdBy: {
                             id: identity.id,
-                            displayName: identity.displayName
+                            displayName: identity.displayName,
+                            type: identity.type
                         }
                     };
 
@@ -292,6 +288,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: {
                             __latest: true,
                             id,
+                            editor: DEFAULT_EDITOR,
                             locale: i18nContent.getLocale().code,
                             createdOn: data.createdOn,
                             savedOn: data.savedOn,
@@ -314,7 +311,9 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async createFrom(from) {
-                    const permission = await checkBasePermissions(context, { rwd: "w" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
 
                     const [fromUniqueId] = from.split("#");
 
@@ -368,7 +367,8 @@ const plugin: ContextPlugin<PbContext> = {
                         createdOn: new Date().toISOString(),
                         createdBy: {
                             id: identity.id,
-                            displayName: identity.displayName
+                            displayName: identity.displayName,
+                            type: identity.type
                         }
                     };
 
@@ -397,6 +397,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: {
                             __latest: true,
                             id: nextId,
+                            editor: data.editor,
                             locale: i18nContent.getLocale().code,
                             createdOn: data.createdOn,
                             savedOn: data.savedOn,
@@ -419,7 +420,9 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async update(id, data) {
-                    const permission = await checkBasePermissions(context, { rwd: "w" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
 
                     const [uniqueId] = id.split("#");
 
@@ -445,13 +448,8 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Cannot update page because it's locked.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
                     const updateData = new UpdateDataModel().populate(data);
                     await updateData.validate();
@@ -487,9 +485,9 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async delete(pageId) {
-                    // TODO: before-delete hook
-
-                    const permission = await checkBasePermissions(context, { rwd: "d" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "d"
+                    });
 
                     const [pageUniqueId, pageVersion] = pageId.split("#");
 
@@ -518,15 +516,11 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotFoundError(`Page "${pageId}" not found.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
-                    // 3. Let's start updating.
+                    // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
+                    await executeHookCallbacks("beforeDelete", page);
 
                     // If we are deleting the initial version, we need to remove all versions and all of the extra data.
                     if (pageVersion === "1") {
@@ -658,13 +652,16 @@ const plugin: ContextPlugin<PbContext> = {
                     await batch.execute();
                     await elasticSearch.bulk({ body: esOperations });
 
-                    // TODO: after-delete hook
+                    await executeHookCallbacks("afterDelete", page);
+
                     // 7. Done. We return both the deleted page, and the new latest one (if there is one).
                     return [page, latestPage];
                 },
 
                 async publish(pageId: string) {
-                    const permission = await checkBasePermissions(context, { rcpu: "p" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rcpu: "p"
+                    });
 
                     pageId = decodeURIComponent(pageId);
 
@@ -699,13 +696,10 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotFoundError(`Page "${pageId}" not found.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
+
+                    await executeHookCallbacks("beforePublish", page);
 
                     // Change loaded page's status to published.
                     page.status = STATUS_PUBLISHED;
@@ -808,11 +802,15 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await elasticSearch.bulk({ body: esOperations });
 
+                    await executeHookCallbacks("afterPublish", page);
+
                     return page;
                 },
 
                 async unpublish(pageId: string) {
-                    const permission = await checkBasePermissions(context, { rcpu: "u" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rcpu: "u"
+                    });
 
                     pageId = decodeURIComponent(pageId);
 
@@ -847,17 +845,14 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotFoundError(`Page "${pageId}" not found.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
                     if (!publishedPageData || publishedPageData.id !== pageId) {
                         throw new Error(`Page "${pageId}" is not published.`);
                     }
+
+                    await executeHookCallbacks("beforeUnpublish", page);
 
                     page.status = STATUS_UNPUBLISHED;
 
@@ -898,11 +893,15 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await elasticSearch.bulk({ body: esOperations });
 
+                    await executeHookCallbacks("afterUnpublish", page);
+
                     return page;
                 },
 
                 async requestReview(pageId: string) {
-                    const permission = await checkBasePermissions(context, { rcpu: "r" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rcpu: "r"
+                    });
 
                     pageId = decodeURIComponent(pageId);
 
@@ -936,13 +935,8 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
                     // Change loaded page's status to `reviewRequested`.
                     page.status = STATUS_REVIEW_REQUESTED;
@@ -978,7 +972,9 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async requestChanges(pageId: string) {
-                    const permission = await checkBasePermissions(context, { rcpu: "c" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rcpu: "c"
+                    });
 
                     pageId = decodeURIComponent(pageId);
 
@@ -1020,12 +1016,7 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    checkOwnPermissions(identity, permission, page);
 
                     // Change loaded page's status to published.
                     page.status = STATUS_CHANGES_REQUESTED;
@@ -1061,16 +1052,14 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async setAsHomepage(id) {
-                    const permission = await checkBasePermissions(context, { rwd: "d" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "d"
+                    });
 
                     const page: any = {};
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, page);
 
                     const [uniqueId] = id.split("#");
                     await db.delete({

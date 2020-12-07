@@ -1,32 +1,15 @@
-import defaults from "./defaults";
+import defaults from "./utils/defaults";
 import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
-import { CategorySecurityPermission, PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "@webiny/api-page-builder/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
-
-const checkBasePermissions = async (
-    context: PbContext,
-    check: { rwd: string }
-): Promise<CategorySecurityPermission> => {
-    await context.i18nContent.checkI18NContentPermission();
-    const categoryPermission = await context.security.getPermission<CategorySecurityPermission>(
-        "pb.category"
-    );
-    if (!categoryPermission) {
-        throw new NotAuthorizedError();
-    }
-
-    if (check.rwd && !hasRwd(categoryPermission, check.rwd)) {
-        throw new NotAuthorizedError();
-    }
-
-    return categoryPermission;
-};
+import checkBasePermissions from "./utils/checkBasePermissions";
+import checkOwnPermissions from "./utils/checkOwnPermissions";
 
 /*withHooks({
     //     async beforeDelete() {
@@ -45,6 +28,7 @@ export type Category = {
     layout: string;
     createdOn: string;
     createdBy: {
+        type: string;
         id: string;
         displayName: string;
     };
@@ -64,12 +48,13 @@ const UpdateDataModel = withFields({
 })();
 
 const TYPE = "pb.category";
+const PERMISSION_NAME = TYPE;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
         const { db } = context;
-        const PK_CATEGORY = () => `${getPKPrefix(context)}C`;
+        const PK = () => `${getPKPrefix(context)}C`;
 
         const categoriesDataLoader = new DataLoader<string, Category>(async slugs => {
             const batch = db.batch();
@@ -77,7 +62,7 @@ const plugin: ContextPlugin<PbContext> = {
             for (let i = 0; i < slugs.length; i++) {
                 batch.read({
                     ...defaults.db,
-                    query: { PK: PK_CATEGORY(), SK: slugs[i] }
+                    query: { PK: PK(), SK: slugs[i] }
                 });
             }
 
@@ -115,13 +100,8 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const category = await categoriesDataLoader.load(slug);
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (category.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, category);
 
                     return category;
                 },
@@ -148,7 +128,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const [categories] = await db.read({
                         ...defaults.db,
-                        query: { PK: PK_CATEGORY(), SK: { $gt: " " } }
+                        query: { PK: PK(), SK: { $gt: " " } }
                     });
 
                     // If user can only manage own records, let's check if he owns the loaded one.
@@ -160,7 +140,7 @@ const plugin: ContextPlugin<PbContext> = {
                     return categories;
                 },
                 async create(data) {
-                    await checkBasePermissions(context, { rwd: "w" });
+                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
                     const existingCategory = await categoriesDataLoader.load(data.slug);
                     if (existingCategory) {
@@ -187,7 +167,7 @@ const plugin: ContextPlugin<PbContext> = {
                         ...defaults.db,
                         data: {
                             ...createData,
-                            PK: PK_CATEGORY(),
+                            PK: PK(),
                             SK: createDataModel.slug,
                             TYPE
                         }
@@ -196,20 +176,15 @@ const plugin: ContextPlugin<PbContext> = {
                     return createData;
                 },
                 async update(slug, data) {
-                    const permission = await checkBasePermissions(context, { rwd: "w" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-                    const category = await categoriesDataLoader.load(slug);
+                    const category = await this.get(slug);
                     if (!category) {
                         throw new NotFoundError(`Category "${slug}" not found.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (category.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, category);
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -218,31 +193,26 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await db.update({
                         ...defaults.db,
-                        query: { PK: PK_CATEGORY(), SK: slug },
+                        query: { PK: PK(), SK: slug },
                         data: updateData
                     });
 
                     return { ...category, ...updateData };
                 },
-                async delete(slug: string) {
-                    const permission = await checkBasePermissions(context, { rwd: "d" });
+                async delete(slug) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, { rwd: "d" });
 
-                    const category = await categoriesDataLoader.load(slug);
+                    const category = await this.get(slug);
                     if (!category) {
                         throw new NotFoundError(`Category "${slug}" not found.`);
                     }
 
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (category.createdBy.id !== identity.id) {
-                            throw new NotAuthorizedError();
-                        }
-                    }
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, category);
 
                     await db.delete({
                         ...defaults.db,
-                        query: { PK: PK_CATEGORY(), SK: slug }
+                        query: { PK: PK(), SK: slug }
                     });
 
                     return category;
