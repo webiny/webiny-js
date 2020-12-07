@@ -14,13 +14,7 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 
 export const handler = createHandler(
-    graphqlPlugins({
-        debug: process.env.DEBUG,
-        server: {
-            introspection: process.env.GRAPHQL_INTROSPECTION,
-            playground: process.env.GRAPHQL_PLAYGROUND
-        }
-    }),
+    graphqlPlugins({ debug: process.env.DEBUG }),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,
