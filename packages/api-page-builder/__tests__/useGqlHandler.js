@@ -12,6 +12,7 @@ import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 
+import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
@@ -169,6 +170,15 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
 
         // GraphQL queries and mutations.
+        // Install.
+        async install(variables) {
+            return invoke({ body: { query: INSTALL, variables } });
+        },
+
+        async isInstalled(variables) {
+            return invoke({ body: { query: IS_INSTALLED, variables } });
+        },
+
         // Menus.
         async createMenu(variables) {
             return invoke({ body: { query: CREATE_MENU, variables } });
