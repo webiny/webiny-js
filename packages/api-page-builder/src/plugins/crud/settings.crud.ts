@@ -1,5 +1,5 @@
 import { ContextPlugin } from "@webiny/handler/types";
-import defaults from "./defaults";
+import defaults from "./utils/defaults";
 import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
