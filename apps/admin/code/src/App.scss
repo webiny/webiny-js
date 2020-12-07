@@ -40,4 +40,9 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
 
 .codex-editor {
   color: $webiny-theme-light-text-primary-on-background;
+
+  .codex-editor__redactor {
+    padding: 0 !important;
+    margin: 0;
+  }
 }
