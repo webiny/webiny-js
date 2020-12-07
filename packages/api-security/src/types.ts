@@ -13,8 +13,9 @@ export type SecurityAuthenticationPlugin = Plugin & {
     authenticate(context: Context): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export type SecurityPermission = {
+export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
+    // TODO: remove this when all apps have proper permission types in place
     [key: string]: any;
 };
 
@@ -26,6 +27,6 @@ export type SecurityAuthorizationPlugin = Plugin & {
 export type SecurityContext = {
     security: {
         getIdentity: () => SecurityIdentity;
-        getPermission: (name: string) => Promise<SecurityPermission>;
+        getPermission<T>(name: string): Promise<SecurityPermission<T>>;
     };
 };

@@ -20,7 +20,6 @@ import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import { pickDataForAPI } from "./utils";
 import { useMutation, useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import get from "lodash/get";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";
 
 const t = i18n.ns("app-security/admin/groups/form");
@@ -35,7 +34,11 @@ const GroupForm = () => {
         variables: { slug },
         skip: !slug,
         onCompleted: data => {
-            const error = data?.security?.group?.error;
+            if(!data) {
+                return;
+            }
+            
+            const { error } = data.security.group;
             if (error) {
                 history.push("/security/groups");
                 showSnackbar(error.message);
@@ -122,12 +125,7 @@ const GroupForm = () => {
                                                 {permissionPlugins.map(pl => (
                                                     <React.Fragment key={pl.name + data.slug}>
                                                         {pl.render({
-                                                            id: get(
-                                                                props,
-                                                                "form.state.data.slug",
-                                                                pl.name
-                                                            ),
-                                                            securityGroup: data,
+                                                            parent: { id: data.id || "new" },
                                                             value: props.value,
                                                             onChange: props.onChange
                                                         })}

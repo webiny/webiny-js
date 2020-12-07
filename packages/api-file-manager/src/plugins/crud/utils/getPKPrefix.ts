@@ -1,8 +1,6 @@
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { Context } from "@webiny/handler/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
-export default (context: Context<TenancyContext, I18NContentContext>) => {
+export default (context: FileManagerContext) => {
     const { security, i18nContent } = context;
     if (!security.getTenant()) {
         throw new Error("Tenant missing.");

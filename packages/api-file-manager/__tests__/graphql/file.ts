@@ -39,7 +39,7 @@ export const CREATE_FILE = /* GraphQL */ `
 `;
 
 export const CREATE_FILES = /* GraphQL */ `
-    mutation CreateFile($data: [FileInput]!) {
+    mutation CreateFiles($data: [FileInput]!) {
         fileManager {
             createFiles(data: $data) {
                 data ${DATA_FIELD_WITH_ID}
@@ -86,7 +86,6 @@ export const LIST_FILES = /* GraphQL */ `
     query ListFiles(
         $limit: Int,
         $after: String,
-        $before: String,
         $types: [String],
         $tags: [String],
         $ids: [ID],
@@ -96,13 +95,16 @@ export const LIST_FILES = /* GraphQL */ `
             listFiles(
                 limit: $limit,
                 after: $after,
-                before: $before,
                 types: $types,
                 tags: $tags,
                 ids: $ids,
                 search: $search
             ) {
                 data ${DATA_FIELD_WITH_ID}
+                meta {
+                    cursor
+                    totalCount
+                }
                 error ${ERROR_FIELD}
             }
         }

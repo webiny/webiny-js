@@ -23,17 +23,12 @@ const ERROR_FIELDS = /* GraphQL */ `
 `;
 
 export const LIST_FILES = gql`
-     query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String, $before: String) {
+     query ListFiles($types: [String], $tags: [String], $limit: Int, $search: String, $after: String) {
         fileManager {
-            listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after, before: $before) {
+            listFiles(types: $types, limit: $limit, search: $search, tags: $tags, after: $after) {
                 data ${FILE_FIELDS}
                 meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
+                    cursor
                     totalCount
                 }
             }

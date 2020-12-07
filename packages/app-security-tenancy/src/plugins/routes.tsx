@@ -6,21 +6,20 @@ import { SecureRoute } from "@webiny/app-security/components";
 import { RoutePlugin } from "@webiny/app/types";
 import { Users } from "../views/Users";
 import { Groups } from "../views/Groups";
+import { ApiKeys } from "../views/ApiKeys";
 import { Account } from "../views/Account";
-
-const PERMISSION_SECURITY_GROUPS = "security.group.manage";
-const PERMISSION_SECURITY_USERS = "security.user.manage";
+import { Permission } from "./constants";
 
 const plugins: RoutePlugin[] = [
     {
-        name: "route-groups",
+        name: "route-security-groups",
         type: "route",
         route: (
             <Route
                 exact
                 path={"/security/groups"}
                 render={() => (
-                    <SecureRoute permission={PERMISSION_SECURITY_GROUPS}>
+                    <SecureRoute permission={Permission.Groups}>
                         <AdminLayout>
                             <Helmet title={"Security - Groups"} />
                             <Groups />
@@ -31,14 +30,14 @@ const plugins: RoutePlugin[] = [
         )
     },
     {
-        name: "route-users",
+        name: "route-security-users",
         type: "route",
         route: (
             <Route
                 exact
                 path={"/security/users"}
                 render={() => (
-                    <SecureRoute permission={PERMISSION_SECURITY_USERS}>
+                    <SecureRoute permission={Permission.Users}>
                         <AdminLayout>
                             <Helmet title={"Security - Users"} />
                             <Users />
@@ -49,7 +48,25 @@ const plugins: RoutePlugin[] = [
         )
     },
     {
-        name: "route-account",
+        name: "route-security-api-keys",
+        type: "route",
+        route: (
+            <Route
+                exact
+                path={"/security/api-keys"}
+                render={() => (
+                    <SecureRoute permission={Permission.ApiKeys}>
+                        <AdminLayout>
+                            <Helmet title={"Security - API Keys"} />
+                            <ApiKeys />
+                        </AdminLayout>
+                    </SecureRoute>
+                )}
+            />
+        )
+    },
+    {
+        name: "route-security-account",
         type: "route",
         route: (
             <Route

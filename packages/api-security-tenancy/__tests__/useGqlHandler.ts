@@ -3,6 +3,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
+import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import tenancyPlugins from "../src/index";
@@ -32,9 +33,23 @@ import {
     UPDATE_CURRENT_SECURITY_USER_PAT
 } from "./graphql/pat";
 
+import {
+    CREATE_API_KEY,
+    DELETE_API_KEY,
+    GET_API_KEY,
+    LIST_API_KEYS,
+    UPDATE_API_KEY
+} from "./graphql/apiKeys";
+
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 
-export default (opts = {}) => {
+type UseGqlHandlerParams = {
+    mockUser?: boolean;
+    fullAccess?: boolean;
+    plugins?: PluginCollection;
+};
+
+export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { mockUser: true, fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
     const documentClient = new DocumentClient({
@@ -79,9 +94,12 @@ export default (opts = {}) => {
                 }
 
                 const tenant = context.security.getTenant();
-                const allPermissions = await context.security.users.getUserAccess(
-                    context.security.getIdentity().id
-                );
+                const identity = context.security.getIdentity();
+                if (!identity) {
+                    return null;
+                }
+
+                const allPermissions = await context.security.users.getUserAccess(identity.id);
                 const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
                 return tenantAccess ? tenantAccess.group.permissions : null;
             }
@@ -147,8 +165,8 @@ export default (opts = {}) => {
         async delete(variables) {
             return invoke({ body: { query: DELETE_SECURITY_USER, variables } });
         },
-        async list(variables) {
-            return invoke({ body: { query: LIST_SECURITY_USERS, variables } });
+        async list(variables, headers = {}) {
+            return invoke({ body: { query: LIST_SECURITY_USERS, variables }, headers });
         },
         async get(variables) {
             return invoke({ body: { query: GET_SECURITY_USER, variables } });
@@ -179,6 +197,24 @@ export default (opts = {}) => {
         }
     };
 
+    const securityApiKeys = {
+        async list(variables = {}) {
+            return invoke({ body: { query: LIST_API_KEYS, variables } });
+        },
+        async get(variables) {
+            return invoke({ body: { query: GET_API_KEY, variables } });
+        },
+        async create(variables) {
+            return invoke({ body: { query: CREATE_API_KEY, variables } });
+        },
+        async update(variables) {
+            return invoke({ body: { query: UPDATE_API_KEY, variables } });
+        },
+        async delete(variables) {
+            return invoke({ body: { query: DELETE_API_KEY, variables } });
+        }
+    };
+
     const install = {
         async isInstalled() {
             return invoke({ body: { query: IS_INSTALLED } });
@@ -194,6 +230,7 @@ export default (opts = {}) => {
         securityGroup,
         securityUser,
         securityUserPAT,
+        securityApiKeys,
         install,
         documentClient
     };
