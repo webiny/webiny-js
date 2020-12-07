@@ -34,6 +34,9 @@ const getDummyContext = (): any => ({
         locale: {
             code: "en-US"
         }
+    },
+    environment: {
+        slug: "production"
     }
 });
 export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDummyContext());

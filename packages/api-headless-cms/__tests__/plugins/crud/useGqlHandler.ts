@@ -85,6 +85,17 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         {
             type: "security-authentication",
             authenticate: createAuthenticate(identity)
+        },
+        {
+            type: "context",
+            apply(context) {
+                if (context.environment) {
+                    return;
+                }
+                context.environment = {
+                    slug: "production"
+                };
+            }
         }
     );
 

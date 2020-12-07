@@ -30,8 +30,6 @@ describe("Settings crud test", () => {
     } = useGqlHandler();
 
     test("cms is not installed", async () => {
-        expect.assertions(2);
-
         const [response] = await isInstalledQuery();
         expect(response).toEqual({
             data: {
@@ -62,8 +60,6 @@ describe("Settings crud test", () => {
     });
 
     test("cms is installed", async () => {
-        expect.assertions(1);
-
         await insertCmsSettings(documentClient, {
             isInstalled: true,
             environment: "environment",
@@ -84,7 +80,6 @@ describe("Settings crud test", () => {
     });
 
     test("cms is already installed", async () => {
-        expect.assertions(1);
         await insertCmsSettings(documentClient, {
             isInstalled: true,
             environment: "environment",
@@ -108,8 +103,6 @@ describe("Settings crud test", () => {
     });
 
     test("cms install", async () => {
-        expect.assertions(5);
-
         const [response] = await installMutation();
         expect(response).toEqual({
             data: {

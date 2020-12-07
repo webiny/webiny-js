@@ -2,9 +2,15 @@ import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
+type KeyGettersType = {
+    tenant: (context: CrudContextType) => string;
+    locale: (context: CrudContextType) => string;
+    environment: (context: CrudContextType) => string;
+};
+type KeyGetterValue = keyof KeyGettersType;
 type CrudContextType = Context<I18NContentContext, TenancyContext>;
 type CreatePkCallableType = (context: CrudContextType) => string;
-type CreatePkCallableFactoryType = (type: string) => CreatePkCallableType;
+type CreatePkCallableFactoryType = (type: string, keys: KeyGetterValue[]) => CreatePkCallableType;
 
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
@@ -32,34 +38,47 @@ const getTenantKey = ({ security }: CrudContextType): string | undefined => {
     return `T#${tenant.id}`;
 };
 
-const createPartitionKey = (context: CrudContextType, pkType: string) => {
-    const locale = getLocaleKey(context);
-    const tenant = getTenantKey(context);
-    return [tenant, locale, pkType].join("#");
-};
-const createTenantOnlyPartitionKeyOnly = (context: CrudContextType, pkType: string) => {
-    const tenant = getTenantKey(context);
-    return [tenant, pkType].join("#");
+const getEnvironmentKey = ({ environment }: CrudContextType): string => {
+    if (!environment || !environment.slug) {
+        throw new Error("Missing environment in the context.");
+    }
+    return environment.slug;
 };
 
-const createPkCallableFactory: CreatePkCallableFactoryType = type => {
+const keysGetters: KeyGettersType = {
+    tenant: getTenantKey,
+    locale: getLocaleKey,
+    environment: getEnvironmentKey
+};
+
+const createPartitionKey = (context: CrudContextType, type: string, keys: KeyGetterValue[]) => {
+    return keys
+        .map(key => {
+            return keysGetters[key](context);
+        })
+        .concat([type])
+        .join("#");
+};
+
+const createPkCallableFactory: CreatePkCallableFactoryType = (type, keys: KeyGetterValue[]) => {
     return (context: CrudContextType): string => {
-        return createPartitionKey(context, type);
+        return createPartitionKey(context, type, keys);
     };
 };
-const createPkTenantCallableFactory: CreatePkCallableFactoryType = type => {
-    return (context: CrudContextType): string => {
-        return createTenantOnlyPartitionKeyOnly(context, type);
-    };
-};
+
 // tenant and locale in pk
-export const createEnvironmentPk = createPkCallableFactory(PartitionKeysEnum.CMS_ENVIRONMENT);
+export const createEnvironmentPk = createPkCallableFactory(PartitionKeysEnum.CMS_ENVIRONMENT, [
+    "tenant",
+    "locale"
+]);
 export const createEnvironmentAliasPk = createPkCallableFactory(
-    PartitionKeysEnum.CMS_ENVIRONMENT_ALIAS
+    PartitionKeysEnum.CMS_ENVIRONMENT_ALIAS,
+    ["tenant", "locale"]
 );
-
+// tenant, locale and environment in pk
 export const createContentModelGroupPk = createPkCallableFactory(
-    PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP
+    PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP,
+    ["tenant", "locale", "environment"]
 );
 // with tenant only
-export const createSettingsPk = createPkTenantCallableFactory(PartitionKeysEnum.CMS_SETTINGS);
+export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS, ["tenant"]);
