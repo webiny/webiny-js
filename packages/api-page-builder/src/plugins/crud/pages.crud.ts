@@ -107,7 +107,7 @@ const getESPageData = (context: PbContext, page) => {
         version: page.version,
         title: page.title,
         url: page.url,
-        tags: page.tags,
+        tags: page?.settings?.general?.tags || [],
         status: page.status,
         locked: page.locked,
         publishedOn: page.publishedOn
@@ -168,6 +168,13 @@ const plugin: ContextPlugin<PbContext> = {
                     });
                     const { sort, from, size, must, page } = getNormalizedListPagesArgs(args);
 
+                    must.push(
+                        {
+                            term: { "locale.keyword": i18nContent.getLocale().code }
+                        },
+                        { term: { __latest: true } }
+                    );
+
                     // If users can only manage own records, let's add the special filter.
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
@@ -202,20 +209,26 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async listPublished(args) {
-                    const { sort, from, size, filter, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, must, page } = getNormalizedListPagesArgs(args);
+
+                    must.push(
+                        {
+                            term: { "locale.keyword": i18nContent.getLocale().code }
+                        },
+                        { term: { __published: true } }
+                    );
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query: {
-                                bool: {
-                                    filter: [
-                                        {
-                                            term: { "locale.keyword": i18nContent.getLocale().code }
-                                        },
-                                        { term: { __published: true } },
-                                        ...filter
-                                    ]
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                constant_score: {
+                                    filter: {
+                                        bool: {
+                                            must
+                                        }
+                                    }
                                 }
                             },
                             from,

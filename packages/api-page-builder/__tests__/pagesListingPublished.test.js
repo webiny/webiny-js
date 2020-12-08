@@ -358,4 +358,78 @@ describe("listing latest pages", () => {
             }
         });
     });
+
+    test("filtering by tags", async () => {
+        const letters = ["j", "n", "k", "m", "l"];
+        for (let i = 0; i < 5; i++) {
+            let [response] = await createPage({ category: "category" });
+            const { id } = response.data.pageBuilder.createPage.data;
+
+            await updatePage({
+                id,
+                data: {
+                    title: `page-${letters[i]}`
+                }
+            });
+
+            // Add tags and publish pages.
+            const tags = {
+                j: ["news"],
+                k: ["news", "world"],
+                l: ["news", "local"]
+            };
+
+            if (["j", "k", "l"].includes(letters[i])) {
+                await updatePage({
+                    id,
+                    data: {
+                        settings: {
+                            general: {
+                                tags: tags[letters[i]]
+                            }
+                        }
+                    }
+                });
+
+                await publishPage({
+                    id
+                });
+            }
+        }
+
+        // Just in case, ensure all pages are present.
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].title === "page-l"
+        ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(6));
+
+        await until(
+            () => listPublishedPages({ where: { tags: ["news"] } }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-l" },
+                { title: "page-k" },
+                { title: "page-j" }
+            ])
+        );
+
+        await until(
+            () => listPublishedPages({ where: { tags: ["world", "news"] } }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 1
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-k" }
+            ])
+        );
+
+        await until(
+            () => listPublishedPages({ where: { tags: ["local", "news"] } }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 1
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-l" }
+            ])
+        );
+    });
 });

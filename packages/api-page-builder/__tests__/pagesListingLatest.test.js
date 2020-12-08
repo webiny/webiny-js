@@ -643,7 +643,7 @@ describe("listing latest pages", () => {
         await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-c"
-        );
+        ).then(([res]) => expect(res.data.pageBuilder.listPages.data.length).toBe(5));
 
         const tags = {
             [initiallyCreatedPagesIds[0]]: ["news", "world"],
