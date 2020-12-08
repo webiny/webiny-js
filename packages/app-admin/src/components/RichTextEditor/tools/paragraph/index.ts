@@ -1,5 +1,5 @@
 import { API } from "@editorjs/editorjs";
-import { Alignment, alignments, TextAlign, alignmentIcons } from "../utils";
+import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
 
 /**
  * Build styles
@@ -82,7 +82,7 @@ class Paragraph {
         this._element = this.drawView();
         this._preserveBlank = config.preserveBlank !== undefined ? config.preserveBlank : false;
         this.settingsButtons = [];
-        this.alignments = alignments;
+        this.alignments = ALIGNMENTS;
 
         this.data = this.normalizeData(data);
     }
@@ -346,7 +346,7 @@ class Paragraph {
         let alignment = this.alignments.find(levelItem => levelItem.name === this._data.alignment);
 
         if (!alignment) {
-            alignment = { name: TextAlign.LEFT, svg: alignmentIcons.left };
+            alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
         }
 
         return alignment;

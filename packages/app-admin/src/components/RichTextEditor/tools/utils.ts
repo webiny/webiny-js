@@ -9,7 +9,7 @@ export type Alignment = {
     svg: string;
 };
 
-export const alignmentIcons = {
+export const ALIGNMENT_ICONS = {
     left:
         '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">\n' +
         '  <path fill="none" d="M0 0h24v24H0V0z"/>\n' +
@@ -40,17 +40,17 @@ export const alignmentIcons = {
         "</svg>"
 };
 
-export const alignments = [
+export const ALIGNMENTS = [
     {
         name: TextAlign.LEFT,
-        svg: alignmentIcons.left
+        svg: ALIGNMENT_ICONS.left
     },
     {
         name: TextAlign.CENTER,
-        svg: alignmentIcons.center
+        svg: ALIGNMENT_ICONS.center
     },
     {
         name: TextAlign.RIGHT,
-        svg: alignmentIcons.right
+        svg: ALIGNMENT_ICONS.right
     }
 ];
