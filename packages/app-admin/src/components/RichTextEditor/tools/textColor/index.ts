@@ -1,21 +1,36 @@
 import { API } from "@editorjs/editorjs";
 
+/**
+ * Build styles
+ */
+require("./index.css").toString();
+
 class TextColorTool {
     _state: boolean;
     color: string;
     api: API;
     tag: string;
     class: string;
-    colorPicker: HTMLInputElement;
+    colorPicker: HTMLDivElement;
     button: HTMLButtonElement;
+    config: {
+        themeColors: string[];
+    };
+    _CSS: any;
 
-    constructor({ api }) {
+    constructor({ api, config }) {
         this.api = api;
         this.button = null;
         this._state = false;
         this.tag = "SPAN";
         this.color = "red";
         this.class = "cdx-text-color";
+        this.config = config || { themeColors: ["#44bd32"] };
+        this._CSS = {
+            colorPicker: "ce-text-color-tool",
+            colorBox: "ce-text-color-tool__color-box",
+            colorBoxActive: "ce-text-color-tool__color-box--active"
+        };
     }
 
     static get isInline() {
@@ -54,11 +69,41 @@ class TextColorTool {
      * Input for the link
      */
     public renderActions(): HTMLElement {
-        this.colorPicker = document.createElement("input");
-        this.colorPicker.type = "color";
-        this.colorPicker.value = "#f5f1cc";
-        this.colorPicker.hidden = true;
+        // Create action element
+        this.colorPicker = document.createElement("div");
+        // Add element properties
+        this.colorPicker.classList.add(this._CSS.colorPicker);
 
+        this.config.themeColors.forEach(color => {
+            // create element
+            const colorBox = document.createElement("button");
+            // add properties
+            colorBox.style.backgroundColor = color;
+            colorBox.classList.add(this._CSS.colorBox);
+
+            colorBox.addEventListener("click", () => {
+                if (this.color === color) {
+                    // reset the color
+                    this.color = "unset";
+                } else {
+                    // set color
+                    this.color = color;
+                }
+
+                this.colorPicker.childNodes.forEach((node: HTMLElement) => {
+                    if (node.classList.contains(this._CSS.colorBoxActive)) {
+                        // remove active class
+                        node.classList.remove(this._CSS.colorBoxActive);
+                    }
+                });
+                // add active class
+                colorBox.classList.add(this._CSS.colorBoxActive);
+            });
+            // save element
+            this.colorPicker.appendChild(colorBox);
+        });
+
+        // Return element
         return this.colorPicker;
     }
 
@@ -95,10 +140,8 @@ class TextColorTool {
     }
 
     showActions(mark) {
-        this.colorPicker.value = mark.style.color ? this.convertToHex(mark.style.color) : "orange";
-
-        this.colorPicker.onchange = () => {
-            mark.style.color = this.colorPicker.value;
+        this.colorPicker.onclick = () => {
+            mark.style.color = this.color;
         };
         this.colorPicker.hidden = false;
     }
