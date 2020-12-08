@@ -7,12 +7,6 @@ const vertical = {
     end: "flex-end"
 };
 
-const TEXT_ALIGN = {
-    horizontalLeft: "left",
-    horizontalCenter: "center",
-    horizontalRight: "right"
-};
-
 const plugins: PbRenderElementStylePlugin[] = [
     {
         name: "pb-render-page-element-style-horizontal-align",
@@ -45,17 +39,6 @@ const plugins: PbRenderElementStylePlugin[] = [
                 return style;
             }
             return { ...style, justifyContent: vertical[verticalAlign] };
-        }
-    },
-    {
-        name: "pb-render-page-element-style-alignment",
-        type: "pb-render-page-element-style",
-        renderStyle({ element, style }) {
-            const { alignment } = get(element, "data.settings", {});
-            if (!alignment) {
-                return style;
-            }
-            return { ...style, textAlign: TEXT_ALIGN[alignment] };
         }
     }
 ];

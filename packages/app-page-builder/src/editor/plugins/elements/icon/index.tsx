@@ -48,10 +48,6 @@ export default () => {
                     "pb-editor-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                [
-                    "pb-editor-page-element-settings-alignment",
-                    { alignments: ["horizontalLeft", "horizontalCenter", "horizontalRight"] }
-                ],
                 "",
                 "pb-editor-page-element-settings-clone",
                 "pb-editor-page-element-settings-delete",
@@ -70,7 +66,7 @@ export default () => {
                         },
                         settings: {
                             alignment: "horizontalLeft",
-                            horizontalAlign: "horizontalCenter",
+                            horizontalAlign: "center",
                             margin: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }
