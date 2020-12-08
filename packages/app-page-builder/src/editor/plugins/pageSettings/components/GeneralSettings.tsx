@@ -42,6 +42,8 @@ const GeneralSettings = ({ form, data, Bind, setValue }) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
+                    {/* We need this hidden field because of the `appendOgImageDimensions` callback and because
+                    of the fact that it sts values into the `settings.social.meta` array. */}
                     <Bind name={"settings.social.meta"} />
                     <Bind name={"title"} validators={validation.create("required")}>
                         <Input label="Title" description="Page title" />
