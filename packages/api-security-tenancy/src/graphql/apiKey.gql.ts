@@ -16,7 +16,7 @@ const plugin: GraphQLSchemaPlugin<TenancyContext> = {
                 createdOn: DateTime
                 createdBy: SecurityCreatedBy
             }
-           
+
             input SecurityApiKeyInput {
                 name: String
                 description: String
@@ -27,7 +27,7 @@ const plugin: GraphQLSchemaPlugin<TenancyContext> = {
                 data: SecurityApiKey
                 error: SecurityError
             }
-            
+
             type SecurityApiKeyListResponse {
                 data: [SecurityApiKey]
                 error: SecurityError

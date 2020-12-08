@@ -201,24 +201,22 @@ const plugin: GraphQLSchemaPlugin = {
 
                     return new Response(user);
                 },
-                listUsers: hasPermission("security.user")(
-                    async (_, args, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const userList = await context.security.users.listUsers({
-                                tenant: tenant.id
-                            });
+                listUsers: hasPermission("security.user")(async (_, args, context: Context) => {
+                    try {
+                        const tenant = context.security.getTenant();
+                        const userList = await context.security.users.listUsers({
+                            tenant: tenant.id
+                        });
 
-                            return new ListResponse(userList);
-                        } catch (e) {
-                            return new ListErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data || null
-                            });
-                        }
+                        return new ListResponse(userList);
+                    } catch (e) {
+                        return new ListErrorResponse({
+                            code: e.code,
+                            message: e.message,
+                            data: e.data || null
+                        });
                     }
-                )
+                })
             },
             SecurityMutation: {
                 login: async (root, args, context: Context) => {
