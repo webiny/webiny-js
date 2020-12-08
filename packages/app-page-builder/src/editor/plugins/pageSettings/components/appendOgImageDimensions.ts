@@ -1,15 +1,16 @@
 const OG_IMAGE_DIMENSIONS_PROPERTIES = ["image:width", "image:height"];
+import { get } from "lodash";
 
-export default async ({ form, value }) => {
-    if (!value || value.src.startsWith("data:")) {
-        form.setState(state => {
-            const next = { ...state };
-            // Remove previously set og:image:width / og:image:height.
-            next.data.settings.social.meta = next.data.settings.social.meta.filter(item => {
-                return item.property && !OG_IMAGE_DIMENSIONS_PROPERTIES.includes(item.property);
-            });
-            return next;
+export default async ({ data, value, setValue }) => {
+    let meta = [];
+    if (Array.isArray(get(data, "settings.social.meta"))) {
+        meta = [...data.settings.social.meta];
+        meta = data.settings.social.meta.filter(item => {
+            return !OG_IMAGE_DIMENSIONS_PROPERTIES.includes(item.property);
         });
+    }
+
+    if (!value || value.src.startsWith("data:")) {
         return;
     }
 
@@ -22,28 +23,16 @@ export default async ({ form, value }) => {
         image.src = value.src;
     });
 
-    form.setState(state => {
-        const next = { ...state };
-        // Remove previously set og:image:width / og:image:height.
-        if (Array.isArray(next.data.settings.social.meta)) {
-            next.data.settings.social.meta = next.data.settings.social.meta.filter(item => {
-                return !OG_IMAGE_DIMENSIONS_PROPERTIES.includes(item.property);
-            });
-        } else {
-            next.data.settings.social.meta = [];
+    meta.push(
+        {
+            property: "og:image:width",
+            content: String(image.width)
+        },
+        {
+            property: "og:image:height",
+            content: String(image.height)
         }
+    );
 
-        next.data.settings.social.meta.push(
-            {
-                property: "og:image:width",
-                content: String(image.width)
-            },
-            {
-                property: "og:image:height",
-                content: String(image.height)
-            }
-        );
-
-        return next;
-    });
+    setValue("settings.social.meta", meta);
 };
