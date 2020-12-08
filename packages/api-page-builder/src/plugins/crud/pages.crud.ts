@@ -458,6 +458,8 @@ const plugin: ContextPlugin<PbContext> = {
                         savedOn: new Date().toISOString()
                     });
 
+                    await executeHookCallbacks("beforeUpdate", page);
+
                     await db.update({
                         ...defaults.db,
                         query: { PK: PK_PAGE(), SK: id },
@@ -480,6 +482,8 @@ const plugin: ContextPlugin<PbContext> = {
                             }
                         });
                     }
+
+                    await executeHookCallbacks("afterUpdate", page);
 
                     return { ...page, ...data };
                 },
