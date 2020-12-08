@@ -237,8 +237,8 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     description?: string;
     createdFrom?: CmsEnvironmentType;
     createdBy: CreatedByType;
-    createdOn: string;
-    changedOn?: string;
+    createdOn: Date;
+    changedOn?: Date;
 };
 type BaseCmsEnvironmentInputType = {
     name: string;
@@ -334,6 +334,8 @@ export type CmsContentModelGroupType = {
     icon: string;
     environment: CmsEnvironmentType;
     createdBy: CreatedByType;
+    createdOn: Date;
+    changedOn?: Date;
 };
 export type CmsContentModelGroupContextType = {
     get: (id: string) => Promise<CmsContentModelGroupType | null>;

@@ -11,9 +11,14 @@ import { ClientContext } from "@webiny/handler-client/types";
 import { HttpContext } from "@webiny/handler-http/types";
 
 // Setup plugins for given environment
-async function setupEnvironment(context, environment) {
-    context.plugins.register(await headlessPlugins({ type: "manage", environment }));
-    // await applyContextPlugins(context);
+async function setupEnvironment(context, environment: string) {
+    if (!context.i18n) {
+        throw new Error(`Missing "i18n" on context.`);
+    }
+    const locale = context.i18n.getCurrentLocale();
+    context.plugins.register(
+        await headlessPlugins({ type: "manage", environment, locale: locale.code })
+    );
 }
 
 const processEntryHooks = async (payload, context: Context) => {
@@ -21,8 +26,7 @@ const processEntryHooks = async (payload, context: Context) => {
         "cms-data-manager-entry-hook"
     );
 
-    for (let i = 0; i < plugins.length; i++) {
-        const plugin = plugins[i];
+    for (const plugin of plugins) {
         try {
             await plugin.hook(payload, context);
         } catch {
