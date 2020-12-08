@@ -16,37 +16,62 @@ import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
 
 import gql from "graphql-tag";
 
-export const DATA_FIELDS = `
-    id
-    title
-    url
-    version
-    locked
-    status
-    category {
-        name
-        slug
-    }
-    revisions {
-        id
-        title
-        status
-        version
-    }
-    
-`;
-
 const GET_PAGE = gql`
     query GetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {
-                    ${DATA_FIELDS}
+                    id
+                    title
+                    url
+                    snippet
+                    version
+                    locked
+                    status
+                    category {
+                        name
+                        slug
+                    }
+                    revisions {
+                        id
+                        title
+                        status
+                        version
+                    }
+                    settings {
+                        general {
+                            tags
+                            layout
+                            image {
+                                id
+                                src
+                            }
+                        }
+                        social {
+                            meta {
+                                property
+                                content
+                            }
+                            title
+                            description
+                            image {
+                                id
+                                src
+                            }
+                        }
+                        seo {
+                            title
+                            description
+                            meta {
+                                name
+                                content
+                            }
+                        }
+                    }
                     createdBy {
                         id
                     }
                     content
-
                 }
                 error {
                     message
