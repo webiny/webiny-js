@@ -17,6 +17,9 @@
       "path": "../../../packages/api-security-tenancy"
     },
     {
+      "path": "../../../packages/api-headless-cms"
+    },
+    {
       "path": "../../../packages/api-file-manager"
     },
     ,

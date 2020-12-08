@@ -312,7 +312,7 @@ export type CmsSettingsContextType = {
     install: () => Promise<void>;
 };
 
-export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CmsContextType>;
+export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CrudContextType>;
 
 export type CmsContentModelGroupCreateInputType = {
     name: string;
@@ -349,8 +349,8 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
-export type CmsContextType = {
-    cms: {
+export type CrudContextType = {
+    crud: {
         environment: CmsEnvironmentContextType;
         environmentAlias: CmsEnvironmentAliasContextType;
         dataManager: CmsDataManagerType;

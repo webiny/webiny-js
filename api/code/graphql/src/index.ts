@@ -12,6 +12,9 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
+// headless cms
+import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
+import headlessCmsHandler from "@webiny/api-headless-cms/content";
 
 export const handler = createHandler(
     graphqlPlugins({ debug: process.env.DEBUG }),
@@ -32,5 +35,13 @@ export const handler = createHandler(
     // Add File storage S3 plugin for API file manager.
     fileManagerS3(),
     pageBuilderPlugins(),
-    formBuilderPlugins()
+    formBuilderPlugins(),
+    headlessCmsPlugins(),
+    headlessCmsHandler({
+        debug: process.env.DEBUG,
+        server: {
+            introspection: process.env.GRAPHQL_INTROSPECTION,
+            playground: process.env.GRAPHQL_PLAYGROUND
+        }
+    })
 );

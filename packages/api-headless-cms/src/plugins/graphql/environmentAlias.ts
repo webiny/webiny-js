@@ -102,7 +102,7 @@ export default {
 
                 const { id } = args;
 
-                const model = await context.cms.environmentAlias.get(id);
+                const model = await context.crud.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -123,7 +123,7 @@ export default {
             )(async (_, __, context: HeadlessCmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const aliases = await context.cms.environmentAlias.list();
+                const aliases = await context.crud.environmentAlias.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
@@ -147,7 +147,7 @@ export default {
                     name: identity.displayName
                 };
                 try {
-                    const model = await context.cms.environmentAlias.create(data, createdBy);
+                    const model = await context.crud.environmentAlias.create(data, createdBy);
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
@@ -165,7 +165,7 @@ export default {
 
                 const { id, data } = args;
 
-                const model = await context.cms.environmentAlias.get(id);
+                const model = await context.crud.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -178,7 +178,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await context.cms.environmentAlias.update(id, data);
+                    const changedModel = await context.crud.environmentAlias.update(id, data);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -195,7 +195,7 @@ export default {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const model = await context.cms.environmentAlias.get(id);
+                const model = await context.crud.environmentAlias.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
                 }
@@ -208,7 +208,7 @@ export default {
                 }
 
                 try {
-                    await context.cms.environmentAlias.delete(model);
+                    await context.crud.environmentAlias.delete(model);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({

@@ -1,4 +1,4 @@
-import { CmsContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
+import { CrudContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
 import defaults from "../../common/defaults";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -46,7 +46,7 @@ export default {
                 return settings.find(() => true);
             },
             install: async (): Promise<void> => {
-                const settings = await context.cms.settings.get();
+                const settings = await context.crud.settings.get();
                 if (!!settings?.isInstalled) {
                     throw new Error("The app is already installed.");
                 }
@@ -57,7 +57,7 @@ export default {
                 };
 
                 // create base environment
-                const environment = await context.cms.environment.create(
+                const environment = await context.crud.environment.create(
                     initialEnvironment,
                     createdBy,
                     true
@@ -68,7 +68,7 @@ export default {
                     context.environment = environment;
                 }
                 // and its alias
-                const environmentAlias = await context.cms.environmentAlias.create(
+                const environmentAlias = await context.crud.environmentAlias.create(
                     {
                         ...initialEnvironmentAlias,
                         environment: environment.id
@@ -76,7 +76,7 @@ export default {
                     createdBy
                 );
                 // then add default content model group
-                await context.cms.groups.create(initialContentModelGroup, createdBy);
+                await context.crud.groups.create(initialContentModelGroup, createdBy);
                 // mark as installed in settings
                 await db.create({
                     ...defaults.db,
@@ -91,9 +91,9 @@ export default {
                 });
             }
         };
-        context.cms = {
-            ...(context.cms || ({} as any)),
+        context.crud = {
+            ...(context.crud || ({} as any)),
             settings
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsContextType, TenancyContext, SecurityContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext, SecurityContext>;

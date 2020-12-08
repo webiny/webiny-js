@@ -83,10 +83,9 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-cms",
     type: "admin-installation",
     title: t`Headless CMS`,
-    dependencies: [],
+    dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
     async isInstalled({ client }) {
-        return true;
         const { data } = await client.query({ query: IS_INSTALLED });
         return data.cms.isInstalled.data;
     },
