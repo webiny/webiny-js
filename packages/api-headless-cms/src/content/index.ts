@@ -14,7 +14,6 @@ import { createGraphQLHandler } from "./createGraphQLHandler";
 import { extractHandlerHttpParameters } from "@webiny/api-headless-cms/content/helpers";
 
 export default (options: any) => [
-    // export default () => [
     {
         type: "handler",
         name: "handler-setup-headless-plugins",

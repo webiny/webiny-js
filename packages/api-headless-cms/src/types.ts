@@ -105,13 +105,6 @@ export type CmsModelFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
-export type FieldId = string;
-
-export type CmsContentModelIndex = {
-    fields: FieldId[];
-    createdOn: Date;
-};
-
 export type LockedField = {
     fieldId: string;
     multipleValues: boolean;
@@ -126,9 +119,7 @@ export type CmsContentModel = {
     modelId: string;
     lockedFields: LockedField[];
     titleFieldId: string;
-    indexes: CmsContentModelIndex[];
     fields: CmsContentModelField[];
-    getUniqueIndexFields(): FieldId[];
     save(): Promise<boolean>;
 };
 
