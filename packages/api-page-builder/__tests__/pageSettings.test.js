@@ -118,5 +118,78 @@ describe("Page Settings Test", () => {
             })
         );
 
+        // Note that partial updates don't work correctly because of the way how `populate` works.
+        // When sending an object to a `fields` Commodo fields, it wont take it and try to merge it with the
+        // current value. Instead, it will just create a new model instance, populate it, and assign that as
+        // the new field value. For now, we didn't bother with this behaviour.
+        await updatePage({
+            id: page.id,
+            data: {
+                settings: {
+                    general: {
+                        tags: ["a", "b", "c", "d"],
+                        image: {
+                            id: "settings.general.image.id-UPDATED",
+                            src: "settings.general.image.src-UPDATED"
+                        }
+                    },
+                    social: {
+                        meta: [
+                            { property: "p1", content: "c1" },
+                            { property: "p2", content: "c2" },
+                            { property: "p3", content: "c3-UPDATED" }
+                        ],
+                        image: {
+                            id: "settings.social.image.id-UPDATED",
+                            src: "settings.social.image.src-UPDATED"
+                        }
+                    },
+                    seo: {
+                        title: "SEO Title",
+                        description: "SEO Description-UPDATED"
+                    }
+                }
+            }
+        });
+
+        await getPage({ id: page.id }).then(([res]) =>
+            expect(res.data.pageBuilder.getPage.data.settings).toEqual({
+                general: {
+                    image: {
+                        id: "settings.general.image.id-UPDATED",
+                        src: "settings.general.image.src-UPDATED"
+                    },
+                    layout: null,
+                    tags: ["a", "b", "c", "d"]
+                },
+                seo: {
+                    description: "SEO Description-UPDATED",
+                    meta: [],
+                    title: "SEO Title"
+                },
+                social: {
+                    description: null,
+                    image: {
+                        id: "settings.social.image.id-UPDATED",
+                        src: "settings.social.image.src-UPDATED"
+                    },
+                    meta: [
+                        {
+                            content: "c1",
+                            property: "p1"
+                        },
+                        {
+                            content: "c2",
+                            property: "p2"
+                        },
+                        {
+                            content: "c3-UPDATED",
+                            property: "p3"
+                        }
+                    ],
+                    title: null
+                }
+            })
+        );
     });
 });
