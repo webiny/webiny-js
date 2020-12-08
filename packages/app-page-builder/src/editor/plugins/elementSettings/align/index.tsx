@@ -1,8 +1,11 @@
 import React from "react";
 import Action from "../components/Action";
 import HorizontalAlignAction from "./HorizontalAlignAction";
+import HorizontalAlignSettings from "./HorizontalAlignSettings";
 import HorizontalAlignFlexAction from "./HorizontalAlignFlex";
+import HorizontalAlignFlexSettings from "./HorizontalAlignFlexSettings";
 import VerticalAlignAction from "./VerticalAlignAction";
+import VerticalAlignSettings from "./VerticalAlignSettings";
 import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
 
 export default [
@@ -15,6 +18,9 @@ export default [
                     <Action plugin={this.name} tooltip={"Horizontal align"} />
                 </HorizontalAlignAction>
             );
+        },
+        render({ options }) {
+            return <HorizontalAlignSettings options={options} />;
         }
     } as PbEditorPageElementSettingsPlugin,
     {
@@ -26,6 +32,9 @@ export default [
                     <Action plugin={this.name} tooltip={"Horizontal align"} />
                 </HorizontalAlignFlexAction>
             );
+        },
+        render() {
+            return <HorizontalAlignFlexSettings />;
         }
     } as PbEditorPageElementSettingsPlugin,
     {
@@ -37,6 +46,9 @@ export default [
                     <Action plugin={this.name} tooltip={"Vertical align"} />
                 </VerticalAlignAction>
             );
+        },
+        render() {
+            return <VerticalAlignSettings />;
         }
     } as PbEditorPageElementSettingsPlugin
 ];
