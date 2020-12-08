@@ -12,7 +12,7 @@ const rightSideBar = css({
     position: "fixed",
     right: 0,
     top: 65,
-    height: "100vh",
+    height: "100%",
     width: 300,
     zIndex: 1
 });
@@ -20,16 +20,14 @@ const rightSideBar = css({
 const DefaultEditorSideBar = ({ shouldRenderSettings }) => {
     return (
         <Elevation z={1} className={rightSideBar}>
-            <div>
-                <Tabs>
-                    <Tab label={"style"}>
-                        {shouldRenderSettings ? <ElementStyles /> : <NoActiveElement />}
-                    </Tab>
-                    <Tab label={"Element"} disabled={!shouldRenderSettings}>
-                        <SidebarActions />
-                    </Tab>
-                </Tabs>
-            </div>
+            <Tabs>
+                <Tab label={"style"}>
+                    {shouldRenderSettings ? <ElementStyles /> : <NoActiveElement />}
+                </Tab>
+                <Tab label={"Element"} disabled={!shouldRenderSettings}>
+                    <SidebarActions />
+                </Tab>
+            </Tabs>
         </Elevation>
     );
 };
