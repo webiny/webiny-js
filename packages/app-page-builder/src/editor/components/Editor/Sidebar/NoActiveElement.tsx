@@ -12,6 +12,7 @@ const noActiveElementWrapper = css({
     margin: "48px 16px",
     backgroundColor: "var(--mdc-theme-background)",
     color: "var(--mdc-theme-text-primary-on-background)",
+    maxHeight: 150,
     "& .icon": {
         fill: "var(--mdc-theme-text-icon-on-background)",
         width: 36,
@@ -24,12 +25,14 @@ const noActiveElementWrapper = css({
     }
 });
 
-const NoActiveElement = () => {
+type NoActiveElementProp = { message?: string };
+
+const NoActiveElement = ({ message }: NoActiveElementProp) => {
     return (
         <div className={noActiveElementWrapper}>
             <TouchIcon className={"icon"} />
             <Typography use={"subtitle1"} className={"text"}>
-                Select an element on the canvas to activate this panel.
+                {message}
             </Typography>
         </div>
     );

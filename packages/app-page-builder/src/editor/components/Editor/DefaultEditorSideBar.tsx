@@ -22,7 +22,13 @@ const DefaultEditorSideBar = ({ shouldRenderSettings }) => {
         <Elevation z={1} className={rightSideBar}>
             <Tabs>
                 <Tab label={"style"}>
-                    {shouldRenderSettings ? <ElementStyles /> : <NoActiveElement />}
+                    {shouldRenderSettings ? (
+                        <ElementStyles />
+                    ) : (
+                        <NoActiveElement
+                            message={"Select an element on the canvas to activate this panel."}
+                        />
+                    )}
                 </Tab>
                 <Tab label={"Element"} disabled={!shouldRenderSettings}>
                     <SidebarActions />
