@@ -1,4 +1,14 @@
 import styled from "@emotion/styled";
+import { css } from "emotion";
+
+export const classes = {
+    simpleGrid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            margin: "0px 0px 16px"
+        }
+    })
+};
 
 export const Footer = styled("div")({
     backgroundColor: "var(--mdc-theme-background)",

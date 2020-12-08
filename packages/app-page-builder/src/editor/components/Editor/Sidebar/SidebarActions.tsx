@@ -4,7 +4,8 @@ import useElementSettings from "../../../plugins/elementSettings/bar/useElementS
 
 const SidebarActionsWrapper = styled("div")({
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    borderBottom: "1px solid rgb(234,233,234)"
 });
 
 const SidebarActions = () => {

@@ -12,7 +12,7 @@ import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/edit
 import Wrapper from "../components/Wrapper";
 import SelectField from "../components/SelectField";
 import ColorPicker from "../components/ColorPicker";
-import { ContentWrapper } from "../components/StyledComponents";
+import { ContentWrapper, classes } from "../components/StyledComponents";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
 import Accordion from "../components/Accordion";
 import { Typography } from "@webiny/ui/Typography";
@@ -20,15 +20,6 @@ import { Typography } from "@webiny/ui/Typography";
 const imageSelect = css({
     width: "100%"
 });
-
-const classes = {
-    grid: css({
-        "&.mdc-layout-grid": {
-            padding: 0,
-            marginBottom: 24
-        }
-    })
-};
 
 const root = "data.settings.background";
 
@@ -87,7 +78,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
     return (
         <Accordion title={"Background"}>
             <ContentWrapper direction={"column"}>
-                <Grid className={classes.grid}>
+                <Grid className={classes.simpleGrid}>
                     <Cell span={12}>
                         <ColorPicker
                             label={"Color"}
@@ -99,7 +90,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                 </Grid>
                 {options.image !== false && (
                     <React.Fragment>
-                        <Grid className={classes.grid}>
+                        <Grid className={classes.simpleGrid}>
                             <Cell span={12}>
                                 <Typography use={"subtitle2"}>Image</Typography>
                             </Cell>
@@ -111,7 +102,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                                 />
                             </Cell>
                         </Grid>
-                        <Wrapper label={"Scaling"} containerClassName={classes.grid}>
+                        <Wrapper label={"Scaling"} containerClassName={classes.simpleGrid}>
                             <SelectField
                                 disabled={!backgroundImageSrc}
                                 value={backgroundImageScaling}
@@ -126,7 +117,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                             </SelectField>
                         </Wrapper>
 
-                        <Grid className={classes.grid}>
+                        <Grid className={classes.simpleGrid}>
                             <Cell span={12}>
                                 <BackgroundPositionSelector
                                     disabled={!backgroundImageSrc}

@@ -1,24 +1,14 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { css } from "emotion";
 import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
-import { ContentWrapper } from "../components/StyledComponents";
+import { ContentWrapper, classes } from "../components/StyledComponents";
 import BoxInputs from "../components/BoxInputs";
 import SelectField from "../components/SelectField";
 import Wrapper from "../components/Wrapper";
-
-const classes = {
-    grid: css({
-        "&.mdc-layout-grid": {
-            padding: 0,
-            marginBottom: 24
-        }
-    })
-};
 
 const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
@@ -34,7 +24,7 @@ const BorderSettings = () => {
     return (
         <Accordion title={"Border"}>
             <ContentWrapper direction={"column"}>
-                <Wrapper label={"Style"}>
+                <Wrapper label={"Style"} containerClassName={classes.simpleGrid}>
                     <SelectField value={border.style || "none"} onChange={getUpdateValue("style")}>
                         {options.map(option => (
                             <option key={option} value={option}>
@@ -44,7 +34,7 @@ const BorderSettings = () => {
                     </SelectField>
                 </Wrapper>
                 <ColorPicker
-                    className={classes.grid}
+                    className={classes.simpleGrid}
                     label={"Color"}
                     valueKey={DATA_NAMESPACE + ".color"}
                     defaultValue={"#fff"}
