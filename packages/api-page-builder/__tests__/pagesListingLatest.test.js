@@ -528,4 +528,173 @@ describe("listing latest pages", () => {
             }
         });
     });
+
+    test("filtering by category", async () => {
+        await createCategory({
+            data: {
+                slug: `custom`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const letters = ["j", "n", "k", "m", "l"];
+        // Test creating, getting and updating three pages.
+        for (let i = 0; i < letters.length; i++) {
+            let letter = letters[i];
+            let [response] = await createPage({ category: "custom" });
+            const { id } = response.data.pageBuilder.createPage.data;
+
+            await updatePage({
+                id,
+                data: {
+                    title: `page-${letter}`
+                }
+            });
+        }
+
+        // List should show all ten pages.
+        let response;
+        while (true) {
+            await sleep();
+            [response] = await listPages();
+            if (response?.data?.pageBuilder?.listPages?.data?.[0]?.title === "page-l") {
+                break;
+            }
+        }
+
+        // 1. Check if all were returned and sorted `createdOn: desc`.
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-l" },
+                            { title: "page-m" },
+                            { title: "page-k" },
+                            { title: "page-n" },
+                            { title: "page-j" },
+                            { title: "page-c" },
+                            { title: "page-x" },
+                            { title: "page-b" },
+                            { title: "page-z" },
+                            { title: "page-a" }
+                        ]
+                    }
+                }
+            }
+        });
+
+        while (true) {
+            await sleep();
+            [response] = await listPages({ where: { category: "custom" } });
+            if (response?.data?.pageBuilder?.listPages?.data[0].title === "page-l") {
+                break;
+            }
+        }
+
+        // 1. Check if `category: custom` were returned and sorted `createdOn: desc`.
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-l" },
+                            { title: "page-m" },
+                            { title: "page-k" },
+                            { title: "page-n" },
+                            { title: "page-j" }
+                        ]
+                    }
+                }
+            }
+        });
+
+        // 2. Check if `category: custom` were returned and sorted `title: asc`.
+        while (true) {
+            await sleep();
+            [response] = await listPages({ sort: { title: "asc" }, where: { category: "custom" } });
+            if (response?.data?.pageBuilder?.listPages?.data[0].title === "page-j") {
+                break;
+            }
+        }
+
+        // 1. Check if all were returned and sorted `createdOn: desc`.
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    listPages: {
+                        data: [
+                            { title: "page-j" },
+                            { title: "page-k" },
+                            { title: "page-l" },
+                            { title: "page-m" },
+                            { title: "page-n" }
+                        ]
+                    }
+                }
+            }
+        });
+    });
+
+    test("filtering by tags", async () => {
+        // Just in case, ensure all pages are present.
+        await until(
+            listPages,
+            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-c"
+        );
+
+        const tags = {
+            [initiallyCreatedPagesIds[0]]: ["news", "world"],
+            [initiallyCreatedPagesIds[1]]: ["news", "world"],
+            [initiallyCreatedPagesIds[2]]: ["news", "local"],
+            [initiallyCreatedPagesIds[3]]: ["news", "local"]
+        };
+
+        for (let i = 0; i < initiallyCreatedPagesIds.length; i++) {
+            await updatePage({
+                id: initiallyCreatedPagesIds[i],
+                data: {
+                    settings: {
+                        general: {
+                            tags: tags[initiallyCreatedPagesIds[i]]
+                        }
+                    }
+                }
+            });
+        }
+
+        await until(
+            () => listPages({ where: { tags: ["news"] } }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 4
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                { title: "page-x" },
+                { title: "page-b" },
+                { title: "page-z" },
+                { title: "page-a" }
+            ])
+        );
+
+        await until(
+            () => listPages({ where: { tags: ["world", "news"] } }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                { title: "page-z" },
+                { title: "page-a" }
+            ])
+        );
+
+        await until(
+            () => listPages({ where: { tags: ["local", "news"] } }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                { title: "page-x" },
+                { title: "page-b" }
+            ])
+        );
+    });
 });

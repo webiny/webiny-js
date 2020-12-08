@@ -30,7 +30,6 @@ const CreateDataModel = withFields({
 
 const UpdateDataModel = withFields({
     title: string({
-        value: "Untitled",
         validation: validation.create("maxLength:150")
     }),
     snippet: string({ validation: validation.create("maxLength:500") }),
@@ -167,28 +166,25 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
-                    const { sort, from, size, filter, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, must, page } = getNormalizedListPagesArgs(args);
 
                     // If users can only manage own records, let's add the special filter.
-                    const ownFilter = [];
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
-                        ownFilter.push({ term: { "createdBy.id.keyword": identity.id } });
+                        must.push({ term: { "createdBy.id.keyword": identity.id } });
                     }
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query: {
-                                bool: {
-                                    filter: [
-                                        {
-                                            term: { "locale.keyword": i18nContent.getLocale().code }
-                                        },
-                                        { term: { __latest: true } },
-                                        ...filter,
-                                        ...ownFilter
-                                    ]
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                constant_score: {
+                                    filter: {
+                                        bool: {
+                                            must
+                                        }
+                                    }
                                 }
                             },
                             from,
@@ -479,7 +475,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await updateSettingsModel.validate();
 
-                    updateData.settings = await updateSettingsModel.toJSON({ onlyDirty: true });
+                    updateData.settings = await updateSettingsModel.toJSON();
                     updateData.savedOn = new Date().toISOString();
 
                     await executeHookCallbacks("beforeUpdate", page);
@@ -498,10 +494,10 @@ const plugin: ContextPlugin<PbContext> = {
                             id: `L#${uniqueId}`,
                             body: {
                                 doc: {
-                                    tags: data.tags,
-                                    title: data.title,
-                                    url: data.url,
-                                    savedOn: data.savedOn
+                                    tags: updateData?.settings?.general?.tags || [],
+                                    title: updateData.title,
+                                    url: updateData.url,
+                                    savedOn: updateData.savedOn
                                 }
                             }
                         });

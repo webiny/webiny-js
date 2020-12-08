@@ -188,11 +188,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbListPagesWhereInput {
                 category: String
-                status: PbPageStatuses
+                status: PbPageStatuses,
+                tags: [String]
             }
 
             input PbListPublishedPagesWhereInput {
                 category: String
+                tags: [String]
             }
 
             enum PbTagsRule {
