@@ -5,6 +5,7 @@ import Underline from "@editorjs/underline";
 import Image from "@webiny/app-admin/components/RichTextEditor/tools/image";
 import TextColor from "@webiny/app-admin/components/RichTextEditor/tools/textColor";
 import Header from "@webiny/app-admin/components/RichTextEditor/tools/header";
+import Paragraph from "@webiny/app-admin/components/RichTextEditor/tools/paragraph";
 
 /**
  * This file contains a RichTextEditor configuration used in Page Builder app.
@@ -16,6 +17,10 @@ export default {
         tools: {
             delimiter: {
                 class: Delimiter
+            },
+            paragraph: {
+                class: Paragraph,
+                inlineToolbar: true
             },
             header: {
                 class: Header,
@@ -40,6 +45,10 @@ export default {
                 class: TextColor,
                 shortcut: "CMD+M"
             }
-        }
+        },
+        /**
+         * This Tool will be used as default
+         */
+        defaultBlock: "paragraph"
     }
 };
