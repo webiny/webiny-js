@@ -146,25 +146,25 @@ export const createGraphQLHandler = (
             return next();
         }
 
-        const {
-            environment: currentEnvironment,
-            locale,
-            type: currentType
-        } = extractHandlerHttpParameters(context);
-        // TODO possibly extract getters outside of this plugin scope
-        // possibly a plugin that will set up these variables onto the context?
-        const environment = await getEnvironment(context, currentEnvironment);
-        const environmentAliases = await getEnvironmentAliases(context, environment);
-        const type = await getContentModelGroup(context, currentType);
-        // TODO we should get environment and its aliases, content model group (type) and locale here
-        const schema = await getSchema({
-            context,
-            locale: context.i18n.getCurrentLocale(locale),
-            environment,
-            environmentAliases,
-            type
-        });
         try {
+            const {
+                environment: currentEnvironment,
+                locale,
+                type: currentType
+            } = extractHandlerHttpParameters(context);
+            // TODO possibly extract getters outside of this plugin scope
+            // possibly a plugin that will set up these variables onto the context?
+            const environment = await getEnvironment(context, currentEnvironment);
+            const environmentAliases = await getEnvironmentAliases(context, environment);
+            const type = await getContentModelGroup(context, currentType);
+            // TODO we should get environment and its aliases, content model group (type) and locale here
+            const schema = await getSchema({
+                context,
+                locale: context.i18n.getCurrentLocale(locale),
+                environment,
+                environmentAliases,
+                type
+            });
             const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);
 
             if (Array.isArray(body)) {

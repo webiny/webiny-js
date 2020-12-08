@@ -3,25 +3,29 @@ export type CmsHttpParametersType = {
     environment: string;
     locale: string;
 };
-const throwError = (type: string): void => {
-    throw new Error(`Missing path parameter "${type}".`);
+const throwPlainError = (type: string): void => {
+    throw new Error(`Missing context.http.path.parameter "${type}".`);
+};
+const throwRegexError = (type: string, regex: string): void => {
+    throw new Error(`Parameter part "${type}" does not match a "${regex}" regex.`);
 };
 export const extractHandlerHttpParameters = (context: any): CmsHttpParametersType => {
     const { key = "" } = context.http.path.parameters || {};
     const [type, environment, locale] = key.split("/");
     if (!type) {
-        throwError("type");
-    } else if (!environment || environment.match(/^([a-zA-Z0-9\-]+)$/) === null) {
-        throwError("environment");
-    } else if (!locale || locale.match(/^([a-zA-Z]{2})-([a-zA-Z]{2})$/) === null) {
-        throwError("locale");
+        throwPlainError("type");
+    } else if (!environment) {
+        throwPlainError("environment");
+    } else if (environment.match(/^([a-zA-Z0-9\-]+)$/) === null) {
+        throwRegexError("environment", "^([a-zA-Z0-9\\-]+)$");
+    } else if (!locale) {
+        throwPlainError("locale");
+    } else if (locale.match(/^([a-zA-Z]{2})-([a-zA-Z]{2})$/) === null) {
+        throwRegexError("locale", "^([a-zA-Z]{2})-([a-zA-Z]{2})$");
     }
     return {
-        // content model group?
         type,
-        // environment slug?
         environment,
-        // locale slug?
         locale
     };
 };
