@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../i18n"
+		},
+		{
+			"path": "../graphql-client"
+		}
+	]
+}
