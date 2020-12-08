@@ -1,4 +1,4 @@
-const OG_IMAGE_DIMENSIONS_PROPERTIES = ["image:width", "image:height"];
+const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
 import { get } from "lodash";
 
 export default async ({ data, value, setValue }) => {
