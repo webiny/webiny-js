@@ -115,11 +115,11 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                 </LeftPanel>
                 <RightPanel span={7}>
                     <Form data={pageAtomValue} onSubmit={savePage}>
-                        {({ Bind, submit, form, data }) => (
+                        {({ Bind, submit, form, data, setValue }) => (
                             <SimpleForm>
                                 <SimpleFormHeader title={activePlugin.title} />
                                 <SimpleFormContent>
-                                    {activePlugin.render({ Bind, form, data } as any)}
+                                    {activePlugin.render({ Bind, form, data, setValue } as any)}
                                 </SimpleFormContent>
                                 <SimpleFormFooter>
                                     <ButtonPrimary onClick={submit}>Save settings</ButtonPrimary>
