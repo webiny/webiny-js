@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
