@@ -7,7 +7,7 @@ import {
     DbItemSecurityUser2Tenant,
     TenancyContext,
     User,
-    UserAccessToken,
+    UserPersonalAccessToken,
     UsersCRUD
 } from "../types";
 import dbArgs from "./dbArgs";
@@ -44,7 +44,7 @@ type DbItem<T> = T & {
 };
 
 type DbUser = DbItem<User>;
-type DbUserAccessToken = DbItem<UserAccessToken>;
+type DbUserAccessToken = DbItem<UserPersonalAccessToken>;
 
 export default (context: DbContext & SecurityContext & TenancyContext): UsersCRUD => {
     const { db } = context;
@@ -61,7 +61,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
         async listUsers({ tenant }) {
             const [users] = await db.read<DbUser>({
                 ...dbArgs,
-                query: { GSI1_PK: `T#${tenant}`, GSI1_SK: { $gt: " " } }
+                query: { GSI1_PK: `T#${tenant}`, GSI1_SK: { $beginsWith: "G#" } }
             });
 
             const batch = db.batch();
@@ -109,7 +109,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 data: {
                     PK: `U#${user.login}`,
                     SK: "A",
-                    TYPE: "security:user",
+                    TYPE: "security.user",
                     ...user
                 }
             });
@@ -161,7 +161,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: `LINK#T#${tenant.id}#G#${group.slug}`,
                     GSI1_PK: `T#${tenant.id}`,
                     GSI1_SK: `G#${group.slug}#U#${login}`,
-                    TYPE: "security:user2tenant",
+                    TYPE: "security.user2tenant",
                     tenant: {
                         id: tenant.id,
                         name: tenant.name
@@ -206,7 +206,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 tenant: link.tenant
             }));
         },
-        async getUserByPAT(token) {
+        async getUserByPersonalAccessToken(token) {
             const [[pat]] = await db.read<DbUserAccessToken>({
                 ...dbArgs,
                 query: {
@@ -221,7 +221,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
 
             return await this.getUser(pat.login);
         },
-        async getAccessToken(login, tokenId) {
+        async getPersonalAccessToken(login, tokenId) {
             const [[token]] = await db.read<DbUserAccessToken>({
                 ...dbArgs,
                 query: {
@@ -250,7 +250,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: `PAT#${tokenData.id}`,
                     GSI1_PK: `PAT`,
                     GSI1_SK: token,
-                    TYPE: "security:pat",
+                    TYPE: "security.pat",
                     ...tokenData
                 }
             });

@@ -1,4 +1,4 @@
-import { FileManagerResolverContext } from "../types";
+import { FileManagerContext } from "../types";
 
 export type Args = {
     name: string;
@@ -24,7 +24,7 @@ export interface FileStoragePlugin {
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
     settings: FileManagerSettings;
-    context: FileManagerResolverContext;
+    context: FileManagerContext;
     constructor({ storagePlugin, settings, context }) {
         this.storagePlugin = storagePlugin;
         this.settings = settings;

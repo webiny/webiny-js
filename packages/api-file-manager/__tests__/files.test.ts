@@ -1,5 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { SecurityIdentity } from "@webiny/api-security";
+import testFiles from "./data";
 
 const identityA = new SecurityIdentity({
     id: "a",
@@ -55,29 +56,29 @@ describe("Files CRUD test", () => {
         } catch (e) {}
     });
 
-    test("create, read, update and delete files", async () => {
-        let [response] = await createFile({ data: fileAData });
-        expect(response).toEqual({
+    test("should create, read, update and delete files", async () => {
+        const [create] = await createFile({ data: fileAData });
+        expect(create).toEqual({
             data: {
                 fileManager: {
                     createFile: {
-                        data: { ...fileAData, id: response.data.fileManager.createFile.data.id },
+                        data: { ...fileAData, id: create.data.fileManager.createFile.data.id },
                         error: null
                     }
                 }
             }
         });
-        const fileAId = response.data.fileManager.createFile.data.id;
+        const fileAId = create.data.fileManager.createFile.data.id;
 
         // Let's update File tags with too long tag.
-        [response] = await updateFile({
+        const [update1] = await updateFile({
             id: fileAId,
             data: {
                 ...fileAData,
                 tags: [...fileAData.tags, LONG_STRING]
             }
         });
-        expect(response).toEqual({
+        expect(update1).toEqual({
             data: {
                 fileManager: {
                     updateFile: {
@@ -101,11 +102,11 @@ describe("Files CRUD test", () => {
         });
 
         // Let's update File tags.
-        [response] = await updateFile({
+        const [update2] = await updateFile({
             id: fileAId,
             data: { tags: [...fileAData.tags, "design"] }
         });
-        expect(response).toEqual({
+        expect(update2).toEqual({
             data: {
                 fileManager: {
                     updateFile: {
@@ -115,12 +116,14 @@ describe("Files CRUD test", () => {
                 }
             }
         });
+
         // Only update "tags"
-        [response] = await updateFile({
+        const [update3] = await updateFile({
             id: fileAId,
             data: { tags: ["sketch"] }
         });
-        expect(response).toEqual({
+
+        expect(update3).toEqual({
             data: {
                 fileManager: {
                     updateFile: {
@@ -132,12 +135,12 @@ describe("Files CRUD test", () => {
         });
 
         // Let's create multiple files
-        [response] = await createFiles({
+        const [create2] = await createFiles({
             data: [fileBData]
         });
 
-        const fileBId = response.data.fileManager.createFiles.data[0].id;
-        expect(response).toEqual({
+        const fileBId = create2.data.fileManager.createFiles.data[0].id;
+        expect(create2).toEqual({
             data: {
                 fileManager: {
                     createFiles: {
@@ -149,10 +152,11 @@ describe("Files CRUD test", () => {
         });
 
         // Let's get a file by ID
-        [response] = await getFile({
+        const [get] = await getFile({
             id: fileAId
         });
-        expect(response).toEqual({
+
+        expect(get).toEqual({
             data: {
                 fileManager: {
                     getFile: {
@@ -164,27 +168,71 @@ describe("Files CRUD test", () => {
         });
 
         while (true) {
-            await sleep();
-            const [response] = await listFiles({});
-            if (response?.data?.fileManager?.listFiles?.data?.length) {
+            await sleep(1000);
+            const [list1] = await listFiles({});
+            if (Array.isArray(list1.data.fileManager.listFiles.data)) {
                 break;
             }
         }
 
         // Let's get a all files
-        [response] = await listFiles({});
-        expect(response).toEqual({
+        const [list2] = await listFiles();
+        expect(list2).toEqual({
             data: {
                 fileManager: {
                     listFiles: {
                         data: [
-                            { ...fileAData, id: fileAId },
-                            { ...fileBData, id: fileBId }
+                            // Files are sorted by `id` in descending order
+                            { ...fileBData, id: fileBId },
+                            { ...fileAData, id: fileAId }
                         ],
+                        meta: {
+                            cursor: expect.any(String),
+                            totalCount: expect.any(Number)
+                        },
                         error: null
                     }
                 }
             }
         });
+    });
+
+    test("should create files in bulk and paginate using cursor", async () => {
+        // Bulk insert test data
+        const pages = Math.ceil(testFiles.length / 20);
+        for (let i = 0; i < pages; i++) {
+            const files = testFiles.slice(i * 20, i * 20 + 20);
+            const [{ data }] = await createFiles({ data: files });
+            const createdFiles = data.fileManager.createFiles.data;
+            for (let j = 0; j < createdFiles.length; j++) {
+                testFiles[i * 20 + j]["id"] = createdFiles[j].id;
+            }
+        }
+
+        await sleep(1000);
+
+        const inElastic = testFiles.reverse();
+
+        const [page1] = await listFiles({ limit: 20 });
+
+        const meta1 = page1.data.fileManager.listFiles.meta;
+        expect(meta1.totalCount).toBe(100);
+        expect(page1.data.fileManager.listFiles.data.length).toBe(20);
+        expect(page1.data.fileManager.listFiles.data).toEqual(inElastic.slice(0, 20));
+
+        const [page2] = await listFiles({ limit: 20, after: meta1.cursor });
+        const meta2 = page2.data.fileManager.listFiles.meta;
+        expect(page2.data.fileManager.listFiles.data.length).toBe(20);
+        expect(page2.data.fileManager.listFiles.data).toEqual(inElastic.slice(20, 40));
+
+        const [page3] = await listFiles({ limit: 60, after: meta2.cursor });
+        const meta3 = page3.data.fileManager.listFiles.meta;
+        expect(page3.data.fileManager.listFiles.data.length).toBe(60);
+        expect(page3.data.fileManager.listFiles.data).toEqual(inElastic.slice(40, 100));
+
+        // This query must return empty array
+        const [page4] = await listFiles({ limit: 60, after: meta3.cursor });
+        expect(page4.data.fileManager.listFiles.data.length).toBe(0);
+        expect(page4.data.fileManager.listFiles.meta.cursor).toBe(null);
     });
 });

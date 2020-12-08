@@ -5,7 +5,7 @@ import GroupsDataList from "./GroupsDataList";
 import GroupsForm from "./GroupsForm";
 import { useRouter } from "@webiny/react-router";
 
-const Groups = ({ scopes, formProps, listProps }: any) => {
+const Groups = ({ formProps, listProps }: any) => {
     const { history } = useRouter();
 
     return (
@@ -15,7 +15,7 @@ const Groups = ({ scopes, formProps, listProps }: any) => {
                     <GroupsDataList {...listProps} />
                 </LeftPanel>
                 <RightPanel>
-                    <GroupsForm scopes={scopes} {...formProps} />
+                    <GroupsForm {...formProps} />
                 </RightPanel>
             </SplitView>
             <FloatingActionButton

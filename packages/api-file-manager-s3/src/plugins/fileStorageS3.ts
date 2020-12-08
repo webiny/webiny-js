@@ -7,7 +7,7 @@ const S3_BUCKET = process.env.S3_BUCKET;
 
 export default {
     type: "api-file-manager-storage",
-    name: "api-file-manager-storage-s3",
+    name: "api-file-manager-storage",
     async upload(args) {
         const { settings, buffer, ...data } = args;
 

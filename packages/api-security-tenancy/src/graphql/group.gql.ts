@@ -7,7 +7,7 @@ import {
     NotFoundResponse,
     Response
 } from "@webiny/handler-graphql/responses";
-import { GroupData, TenancyContext } from "../types";
+import { GroupInput, TenancyContext } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -58,7 +58,7 @@ const plugin: GraphQLSchemaPlugin = {
 
         resolvers: {
             SecurityQuery: {
-                getGroup: hasPermission("security.group.manage")(
+                getGroup: hasPermission("security.group")(
                     async (_, { slug }: { slug: string }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -80,26 +80,24 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                listGroups: hasPermission("security.group.manage")(
-                    async (_, args, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const groupList = await context.security.groups.listGroups(tenant);
+                listGroups: hasPermission("security.group")(async (_, args, context: Context) => {
+                    try {
+                        const tenant = context.security.getTenant();
+                        const groupList = await context.security.groups.listGroups(tenant);
 
-                            return new ListResponse(groupList);
-                        } catch (e) {
-                            return new ListErrorResponse({
-                                message: e.message,
-                                code: e.code,
-                                data: e.data || null
-                            });
-                        }
+                        return new ListResponse(groupList);
+                    } catch (e) {
+                        return new ListErrorResponse({
+                            message: e.message,
+                            code: e.code,
+                            data: e.data || null
+                        });
                     }
-                )
+                })
             },
             SecurityMutation: {
-                createGroup: hasPermission("security.group.manage")(
-                    async (_, { data }: { data: GroupData }, context: Context) => {
+                createGroup: hasPermission("security.group")(
+                    async (_, { data }: { data: GroupInput }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
                             const groupData = await context.security.groups.createGroup(
@@ -117,10 +115,10 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                updateGroup: hasPermission("security.group.manage")(
+                updateGroup: hasPermission("security.group")(
                     async (
                         _,
-                        { slug, data }: { slug: string; data: Omit<GroupData, "slug" | "system"> },
+                        { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
                         context: Context
                     ) => {
                         try {
@@ -159,7 +157,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                deleteGroup: hasPermission("security.group.manage")(
+                deleteGroup: hasPermission("security.group")(
                     async (_, { slug }: { slug: string }, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();

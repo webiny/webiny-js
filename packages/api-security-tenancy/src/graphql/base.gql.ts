@@ -22,6 +22,11 @@ const plugin: GraphQLSchemaPlugin = {
             extend type Mutation {
                 security: SecurityMutation
             }
+            
+            type SecurityCreatedBy {
+                id: ID
+                displayName: String
+            }
 
             type SecurityError {
                 code: String

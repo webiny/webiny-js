@@ -22,7 +22,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
+export const FileManagerPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -66,7 +66,7 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -109,7 +109,7 @@ export const FileManagerPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         return data;
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>

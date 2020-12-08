@@ -12,7 +12,10 @@ export default () =>
                 locale: context.i18n.getCurrentLocale("content"),
                 getLocale: () => context.i18n.getCurrentLocale("content"),
                 hasI18NContentPermission: async () => {
-                    const contentPermission = await context.security.getPermission("content.i18n");
+                    // TODO: define permission type
+                    const contentPermission: any = await context.security.getPermission(
+                        "content.i18n"
+                    );
                     if (!contentPermission) {
                         return false;
                     }

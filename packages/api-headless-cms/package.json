@@ -19,6 +19,7 @@
     "@webiny/api-i18n": "^4.14.0",
     "@webiny/api-i18n-content": "^4.14.0",
     "@webiny/api-security": "^4.14.0",
+    "@webiny/api-security-tenancy": "^4.14.0",
     "@webiny/commodo": "^4.14.0",
     "@webiny/db-dynamodb": "^4.14.0",
     "@webiny/plugins": "^4.14.0",
