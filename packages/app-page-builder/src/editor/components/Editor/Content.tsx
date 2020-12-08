@@ -16,6 +16,7 @@ import { useRecoilValue } from "recoil";
 
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
+    position: "relative",
     ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible"
