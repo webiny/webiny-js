@@ -19,6 +19,36 @@ export const DATA_FIELD = /* GraphQL */ `
         error
         notFound
         locked
+        settings {
+            general {
+                tags
+                layout
+                image {
+                    id
+                    src
+                }
+            }
+            social {
+                meta {
+                    property
+                    content
+                }
+                title
+                description
+                image {
+                    id
+                    src
+                }
+            }
+            seo {
+                title
+                description
+                meta {
+                    name
+                    content
+                }
+            }
+        }
         createdFrom
         createdOn
         createdBy {

@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import mdbid from "mdbid";
-import { withFields, string } from "@commodo/fields";
+import { withFields, string, fields } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
@@ -11,33 +11,10 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PageHookPlugin, PbContext } from "@webiny/api-page-builder/types";
+import { PageHookPlugin, PbContext, Page } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-
-export type Page = {
-    id: string;
-    title: string;
-    snippet: string;
-    url: string;
-    category: string;
-    publishedOn: string;
-    version: number;
-    settings: Record<string, any>;
-    locked: boolean;
-    status: string;
-    home: boolean;
-    error: boolean;
-    notFound: boolean;
-    createdOn: string;
-    savedOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -59,17 +36,57 @@ const UpdateDataModel = withFields({
     snippet: string({ validation: validation.create("maxLength:500") }),
     url: string({ validation: validation.create("maxLength:100") }),
     category: string({ validation: validation.create("maxLength:100") }),
-    content: object(),
-    settings: object(),
-    tags: string({
-        list: true,
-        validation: value => {
-            if (Array.isArray(value)) {
-                for (let i = 0; i < value.length; i++) {
-                    validation.validateSync(value[i], "maxLength:50");
+    content: object()
+})();
+
+const UpdateSettingsModel = withFields({
+    general: fields({
+        value: {},
+        instanceOf: withFields({
+            tags: string({
+                list: true,
+                validation: value => {
+                    if (Array.isArray(value)) {
+                        for (let i = 0; i < value.length; i++) {
+                            validation.validateSync(value[i], "maxLength:50");
+                        }
+                    }
                 }
-            }
-        }
+            }),
+            layout: string(),
+            image: object()
+        })()
+    }),
+    seo: fields({
+        value: {},
+        instanceOf: withFields({
+            title: string(),
+            description: string(),
+            meta: fields({
+                list: true,
+                value: [],
+                instanceOf: withFields({
+                    name: string(),
+                    content: string()
+                })()
+            })
+        })()
+    }),
+    social: fields({
+        value: {},
+        instanceOf: withFields({
+            meta: fields({
+                value: [],
+                list: true,
+                instanceOf: withFields({
+                    property: string(),
+                    content: string()
+                })()
+            }),
+            title: string(),
+            description: string(),
+            image: object()
+        })()
     })
 })();
 
@@ -451,19 +468,26 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page);
 
-                    const updateData = new UpdateDataModel().populate(data);
-                    await updateData.validate();
+                    const updateDataModel = new UpdateDataModel().populate(data);
+                    await updateDataModel.validate();
 
-                    data = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
-                        savedOn: new Date().toISOString()
-                    });
+                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
+
+                    const updateSettingsModel = new UpdateSettingsModel()
+                        .populate(page.settings)
+                        .populate(data.settings);
+
+                    await updateSettingsModel.validate();
+
+                    updateData.settings = await updateSettingsModel.toJSON({ onlyDirty: true });
+                    updateData.savedOn = new Date().toISOString();
 
                     await executeHookCallbacks("beforeUpdate", page);
 
                     await db.update({
                         ...defaults.db,
                         query: { PK: PK_PAGE(), SK: id },
-                        data
+                        data: updateData
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.

@@ -1,28 +1,4 @@
-import { withFields, string, fields } from "@webiny/commodo";
-
 export default [
-    {
-        name: "pb-page-settings-social",
-        type: "pb-page-settings-model",
-        apply({ fields: settingsFields, context }) {
-            settingsFields.social = fields({
-                value: {},
-                instanceOf: withFields({
-                    meta: fields({
-                        value: [],
-                        list: true,
-                        instanceOf: withFields({
-                            property: string(),
-                            content: string()
-                        })()
-                    }),
-                    title: string(),
-                    description: string(),
-                    image: context.commodo.fields.id()
-                })()
-            });
-        }
-    },
     {
         type: "graphql-schema",
         schema: {
@@ -41,14 +17,14 @@ export default [
                     title: String
                     description: String
                     meta: [PbOpenGraphTag]
-                    image: File
+                    image: PbFile
                 }
 
                 input PbSocialSettingsInput {
                     title: String
                     description: String
                     meta: [PbOpenGraphTagInput!]
-                    image: RefInput
+                    image: PbFileInput
                 }
 
                 extend type PbPageSettings {

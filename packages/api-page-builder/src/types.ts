@@ -32,10 +32,49 @@ export type Settings = {
 };
 
 // TODO
-export type Page = Record<string, any>;
 export type PageElement = Record<string, any>;
 export type Menu = Record<string, any>;
 export type Category = Record<string, any>;
+
+export type Page = {
+    id: string;
+    title: string;
+    snippet: string;
+    url: string;
+    category: string;
+    publishedOn: string;
+    version: number;
+    settings: {
+        social: {
+            title: string;
+            description: string;
+            image: Record<string, any>; // TODO: define types
+            meta: Array<{ property: string; content: string }>;
+        };
+        seo: {
+            title: string;
+            description: string;
+            meta: Array<{ name: string; content: string }>;
+        };
+        general: {
+            tags: string[];
+            layout: string;
+            image: Record<string, any>; // TODO: define types
+        };
+    };
+    locked: boolean;
+    status: string;
+    home: boolean;
+    error: boolean;
+    notFound: boolean;
+    createdOn: string;
+    savedOn: string;
+    createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+};
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
@@ -163,6 +202,8 @@ export type InstallPlugin = Plugin<{
 // Installer plugin.
 export type PageHookPlugin = Plugin<{
     type: "pb-page-hook";
+    beforeUpdate?: (page: Page) => void | Promise<void>;
+    afterUpdate?: (page: Page) => void | Promise<void>;
     beforeDelete?: (page: Page) => void | Promise<void>;
     afterDelete?: (page: Page) => void | Promise<void>;
     beforePublish?: (page: Page) => void | Promise<void>;

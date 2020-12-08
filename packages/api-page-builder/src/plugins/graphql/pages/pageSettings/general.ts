@@ -1,20 +1,4 @@
-import { string, fields, withFields } from "@webiny/commodo";
-
-export default [
-    {
-        name: "pb-page-settings-general",
-        type: "pb-page-settings-model",
-        apply({ fields: settingsFields, context }) {
-            settingsFields.general = fields({
-                value: {},
-                instanceOf: withFields({
-                    tags: string({ list: true }),
-                    layout: string(),
-                    image: context.commodo.fields.id()
-                })()
-            });
-        }
-    },
+export default  [
     {
         type: "graphql-schema",
         schema: {
@@ -22,13 +6,13 @@ export default [
                 type PbGeneralPageSettings {
                     tags: [String]
                     layout: String
-                    image: File
+                    image: PbFile
                 }
 
                 input PbGeneralPageSettingsInput {
                     tags: [String]
                     layout: String
-                    image: RefInput
+                    image: PbFileInput
                 }
 
                 extend type PbPageSettings {

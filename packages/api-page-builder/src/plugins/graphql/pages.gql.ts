@@ -3,6 +3,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { PbContext } from "@webiny/api-page-builder/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
+import pageSettings from "./pages/pageSettings";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -189,7 +190,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 category: String
                 status: PbPageStatuses
             }
-            
+
             input PbListPublishedPagesWhereInput {
                 category: String
             }
@@ -370,4 +371,4 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     }
 };
 
-export default plugin;
+export default [plugin, pageSettings];

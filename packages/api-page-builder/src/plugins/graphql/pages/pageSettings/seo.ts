@@ -1,27 +1,4 @@
-import { withFields, string, fields } from "@webiny/commodo";
-
 export default [
-    {
-        name: "pb-page-settings-seo",
-        type: "pb-page-settings-model",
-        apply({ fields: settingsFields }) {
-            settingsFields.seo = fields({
-                value: {},
-                instanceOf: withFields({
-                    title: string(),
-                    description: string(),
-                    meta: fields({
-                        list: true,
-                        value: [],
-                        instanceOf: withFields({
-                            name: string(),
-                            content: string()
-                        })()
-                    })
-                })()
-            });
-        }
-    },
     {
         type: "graphql-schema",
         schema: {
