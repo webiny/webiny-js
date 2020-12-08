@@ -4,6 +4,7 @@ import { PbContext } from "@webiny/api-page-builder/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
+import { fetchEmbed, findProvider } from "./pages/oEmbed";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -162,12 +163,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
-            input PbOEmbedInput {
-                url: String!
-                width: Int
-                height: Int
-            }
-
             enum PbListPagesSortOrders {
                 desc
                 asc
@@ -188,7 +183,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbListPagesWhereInput {
                 category: String
-                status: PbPageStatuses,
+                status: PbPageStatuses
                 tags: [String]
             }
 
@@ -311,8 +306,24 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 // TODO
                 searchTags: async () => null,
 
-                // TODO
-                oembedData: () => null
+                oembedData: async (_, args: { url: string; width?: string; height?: string }) => {
+                    try {
+                        const provider = findProvider(args.url);
+                        if (!provider) {
+                            return new ErrorResponse({
+                                code: "OEMBED_PROVIDER_NOT_FOUND",
+                                message: "OEmbed provider for the requested URL was not found."
+                            });
+                        }
+
+                        return new Response(await fetchEmbed(args, provider));
+                    } catch (e) {
+                        return new ErrorResponse({
+                            code: "OEMBED_ERROR",
+                            message: e.message
+                        });
+                    }
+                }
             },
             PbMutation: {
                 createPage: async (_, args: { from?: string; category?: string }, context) => {

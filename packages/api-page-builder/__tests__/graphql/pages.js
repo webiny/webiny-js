@@ -144,12 +144,15 @@ export const REQUEST_REVIEW = /* GraphQL */ `
     }
 `;
 
-export const REQUEST_CHANGES = /* GraphQL */ `
-    mutation RequestChanges($id: ID!) {
+export const OEMBED_DATA = /* GraphQL */ `
+    query GetOEmbedData($url: String!, $width: String, $height: String) {
         pageBuilder {
-            requestChanges(id: $id) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
+            oembedData(url: $url, width: $width, height: $height) {
+                data
+                error {
+                    code
+                    message
+                }
             }
         }
     }

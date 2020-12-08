@@ -31,7 +31,8 @@ import {
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
     REQUEST_REVIEW,
-    REQUEST_CHANGES
+    REQUEST_CHANGES,
+    OEMBED_DATA
 } from "./graphql/pages";
 
 import { SecurityIdentity } from "@webiny/api-security";
@@ -243,6 +244,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
+        },
+        async oEmbedData(variables) {
+            return invoke({ body: { query: OEMBED_DATA, variables } });
         },
 
         // PageElements.

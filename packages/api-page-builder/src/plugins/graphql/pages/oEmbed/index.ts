@@ -63,18 +63,6 @@ export const fetchEmbed = async (
             .map(k => `${k}=${encodeURIComponent(params[k])}`)
             .join("&");
 
-    return new Promise((resolve, reject) => {
-        fetch(
-            {
-                url: link,
-                json: true
-            },
-            (error, response, body) => {
-                if (!error && response.statusCode === 200) {
-                    return resolve({ ...body, source: params });
-                }
-                reject(error);
-            }
-        );
-    });
+    const json = await fetch(link).then(res => res.json());
+    return { ...json, source: params };
 };
