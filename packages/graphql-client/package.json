@@ -7,11 +7,19 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A simple GraphQL client.",
+  "description": "A simple GraphQL client with normalized in-memory cache.",
   "license": "MIT",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
+  },
+  "devDependencies": {
+    "graphql-tag": "^2.10.1",
+    "cross-fetch": "^3.0.6",
+    "@webiny/error": "^4.14.0"
+  },
+  "peerDependencies": {
+    "graphql": "^14.0.0 || ^15.0.0"
   },
   "scripts": {
     "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
