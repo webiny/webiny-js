@@ -31,7 +31,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
-                snippet: String
                 url: String
                 fullUrl: String
                 settings: PbPageSettings
@@ -108,7 +107,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbUpdatePageInput {
                 title: String
-                snippet: String
                 category: ID
                 url: String
                 settings: PbPageSettingsInput

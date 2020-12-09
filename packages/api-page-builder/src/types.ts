@@ -39,25 +39,25 @@ export type Category = Record<string, any>;
 export type Page = {
     id: string;
     title: string;
-    snippet: string;
     url: string;
     category: string;
     publishedOn: string;
     version: number;
-    settings: {
-        social: {
+    settings?: {
+        social?: {
             title: string;
             description: string;
             image: Record<string, any>; // TODO: define types
             meta: Array<{ property: string; content: string }>;
         };
-        seo: {
+        seo?: {
             title: string;
             description: string;
             meta: Array<{ name: string; content: string }>;
         };
-        general: {
+        general?: {
             tags: string[];
+            snippet: string;
             layout: string;
             image: Record<string, any>; // TODO: define types
         };
