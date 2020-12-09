@@ -7,8 +7,8 @@ import contentModelGroup from "../../common/crud/contentModelGroup.crud";
 const dataManager = {
     type: "context",
     apply(context) {
-        context.crud = {
-            ...(context.crud || {}),
+        context.cms = {
+            ...(context.cms || {}),
             dataManager: {
                 copyEnvironment: async (): Promise<void> => {
                     return;

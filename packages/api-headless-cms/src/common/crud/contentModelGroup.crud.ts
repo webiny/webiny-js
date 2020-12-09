@@ -3,7 +3,7 @@ import mdbid from "mdbid";
 import {
     CmsContentModelGroupContextType,
     CmsContentModelGroupType,
-    CrudContextType
+    CmsCrudContextType
 } from "../../types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -62,7 +62,7 @@ export default {
                 await createdData.validate();
                 const createdDataJson = await createdData.toJSON();
 
-                const contentModelGroups = await context.crud.groups.list();
+                const contentModelGroups = await context.cms.groups.list();
 
                 const existingGroupSlug = contentModelGroups.some(group => {
                     return group.slug === slug;
@@ -103,7 +103,7 @@ export default {
                 }
 
                 if (updatedDataJson.slug) {
-                    const contentModelGroups = (await context.crud.groups.list()).filter(group => {
+                    const contentModelGroups = (await context.cms.groups.list()).filter(group => {
                         return group.id !== id;
                     });
                     const existingGroupSlug = contentModelGroups.some(group => {
@@ -137,9 +137,9 @@ export default {
                 });
             }
         };
-        context.crud = {
-            ...(context.crud || ({} as any)),
+        context.cms = {
+            ...(context.cms || ({} as any)),
             groups
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CmsCrudContextType, TenancyContext>;

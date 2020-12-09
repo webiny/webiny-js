@@ -1,7 +1,7 @@
 import { compose, ErrorResponse, Response } from "@webiny/handler-graphql";
 import { hasManageSettingsPermission } from "../../common/helpers";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { HeadlessCmsContext } from "../../types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -20,9 +20,9 @@ export default {
             isInstalled: compose(
                 hasManageSettingsPermission(),
                 hasI18NContentPermission()
-            )(async (_, __, context: HeadlessCmsContext) => {
+            )(async (_, __, context: CmsContext) => {
                 try {
-                    const settings = await context.crud.settings.get();
+                    const settings = await context.cms.settings.get();
                     return new Response(!!settings?.isInstalled);
                 } catch (ex) {
                     if (ex instanceof ErrorResponse) {
@@ -39,9 +39,9 @@ export default {
             install: compose(
                 hasManageSettingsPermission(),
                 hasI18NContentPermission()
-            )(async (_, __, context: HeadlessCmsContext) => {
+            )(async (_, __, context: CmsContext) => {
                 try {
-                    await context.crud.settings.install();
+                    await context.cms.settings.install();
                     return new Response(true);
                 } catch (ex) {
                     if (ex instanceof ErrorResponse) {

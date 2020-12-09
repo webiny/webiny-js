@@ -121,15 +121,15 @@ export const createDataModel = (
                 if (mustUpdateIndexes || mustDeleteIndexes) {
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
-                        if (mustUpdateIndexes) {
-                            await context.cms.dataManager.generateRevisionIndexes({
-                                revision: this
-                            });
-                        } else if (mustDeleteIndexes) {
-                            await context.cms.dataManager.deleteRevisionIndexes({
-                                revision: this
-                            });
-                        }
+                        // if (mustUpdateIndexes) {
+                        //     await context.cms.dataManager.generateRevisionIndexes({
+                        //         revision: this
+                        //     });
+                        // } else if (mustDeleteIndexes) {
+                        //     await context.cms.dataManager.deleteRevisionIndexes({
+                        //         revision: this
+                        //     });
+                        // }
                     });
                 }
 
@@ -267,9 +267,9 @@ export const createDataModel = (
             },
             async afterDelete() {
                 // Delete indexes for this revision
-                await context.cms.dataManager.deleteRevisionIndexes({
-                    revision: this
-                });
+                // await context.cms.dataManager.deleteRevisionIndexes({
+                //     revision: this
+                // });
 
                 // If the deleted page is the parent page - delete its revisions.
                 if (this.id === this.meta.parent) {
@@ -345,9 +345,9 @@ export const createDataModel = (
                                         await instance.hook("afterPublish");
 
                                         // When publishing a revision, we need to generate its indexes
-                                        await context.cms.dataManager.generateRevisionIndexes({
-                                            revision: instance
-                                        });
+                                        // await context.cms.dataManager.generateRevisionIndexes({
+                                        //     revision: instance
+                                        // });
                                     });
                                 }
                                 return value;

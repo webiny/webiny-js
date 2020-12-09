@@ -8,7 +8,7 @@ import { withFields, string } from "@commodo/fields";
 import {
     CmsEnvironmentAliasType,
     CmsEnvironmentAliasContextType,
-    CrudContextType,
+    CmsCrudContextType,
     CmsEnvironmentType
 } from "../../types";
 import toSlug from "../../utils/toSlug";
@@ -29,10 +29,10 @@ const UpdateEnvironmentAliasModel = withFields({
 })();
 
 const fetchTargetEnvironment = async (
-    context: CrudContextType,
+    context: CmsCrudContextType,
     id: string
 ): Promise<CmsEnvironmentType> => {
-    const targetEnvironment = await context.crud.environment.get(id);
+    const targetEnvironment = await context.cms.environments.get(id);
     if (!targetEnvironment) {
         throw new Error(`Target Environment "${id}" does not exist.`);
     }
@@ -46,7 +46,7 @@ export default {
     apply(context) {
         const { db } = context;
 
-        const environmentAlias: CmsEnvironmentAliasContextType = {
+        const environmentAliases: CmsEnvironmentAliasContextType = {
             async get(id): Promise<CmsEnvironmentAliasType | null> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
                     ...defaults.db,
@@ -92,7 +92,7 @@ export default {
                 });
 
                 // before create hook
-                const aliases = await context.crud.environmentAlias.list();
+                const aliases = await context.cms.environmentAliases.list();
                 const existingAliasSlug = aliases.some(alias => {
                     return alias.slug === slug;
                 });
@@ -151,9 +151,9 @@ export default {
                 });
             }
         };
-        context.crud = {
-            ...(context.crud || ({} as any)),
-            environmentAlias
+        context.cms = {
+            ...(context.cms || ({} as any)),
+            environmentAliases
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext>;
+} as ContextPlugin<DbContext, I18NContentContext, CmsCrudContextType, TenancyContext>;

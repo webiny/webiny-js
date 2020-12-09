@@ -3,9 +3,9 @@ import { boolean } from "boolean";
 import { graphql, GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import {
+    CmsContext,
     CmsEnvironmentAliasType,
-    CmsEnvironmentType,
-    HeadlessCmsContext
+    CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 
@@ -17,7 +17,7 @@ type SchemaCacheType = {
     schema: GraphQLSchema;
 };
 type ArgsType = {
-    context: HeadlessCmsContext;
+    context: CmsContext;
     type: string;
     environment: CmsEnvironmentType;
     environmentAlias: CmsEnvironmentAliasType;
@@ -39,7 +39,7 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST"
 };
-const respond = (http, result: any) => {
+const respond = (http, result: unknown) => {
     return http.response({
         body: JSON.stringify(result),
         statusCode: 200,
@@ -110,10 +110,10 @@ const filterEnvironment = (list: CmsEnvironmentType[], id: string): CmsEnvironme
     return environment;
 };
 const fetchEnvironmentAndItsAlias = async (
-    context: HeadlessCmsContext
+    context: CmsContext
 ): Promise<EnvironmentAndAliasResponseType> => {
-    const environmentList = await context.crud.environment.list();
-    const environmentAliasList = await context.crud.environmentAlias.list();
+    const environmentList = await context.cms.environments.list();
+    const environmentAliasList = await context.cms.environmentAliases.list();
 
     const value = context.cms.environment;
     // alias is always checked by slug
@@ -147,7 +147,7 @@ export const createGraphQLHandler = (
 ): HandlerPlugin => ({
     type: "handler",
     name: "handler-graphql-content-model",
-    async handle(context: HeadlessCmsContext, next) {
+    async handle(context: CmsContext, next) {
         const { http } = context;
 
         if (!http || !http.path || !http.path.parameters) {

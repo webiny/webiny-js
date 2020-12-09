@@ -1,7 +1,7 @@
 import {
     CmsContentModelGroupCreateInputType,
     CmsContentModelGroupUpdateInputType,
-    HeadlessCmsContext
+    CmsContext
 } from "../../types";
 import {
     getCmsManageSettingsPermission,
@@ -88,10 +88,10 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, args: ReadContentModelGroupArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: ReadContentModelGroupArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
                 const { id } = args;
-                const model = await context.crud.groups.get(id);
+                const model = await context.cms.groups.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Content model group "${id}" not found.`);
                 }
@@ -107,9 +107,9 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, __, context: HeadlessCmsContext) => {
+            )(async (_, __, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
-                const models = await context.crud.groups.list();
+                const models = await context.cms.groups.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
@@ -124,7 +124,7 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: CreateContentModelGroupArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: CreateContentModelGroupArgsType, context: CmsContext) => {
                 const identity = context.security.getIdentity();
 
                 const { data } = args;
@@ -134,7 +134,7 @@ export default {
                 };
 
                 try {
-                    const model = await context.crud.groups.create(data, createdBy);
+                    const model = await context.cms.groups.create(data, createdBy);
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
@@ -147,12 +147,12 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: UpdateContentModelGroupArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: UpdateContentModelGroupArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
 
-                const model = await context.crud.groups.get(id);
+                const model = await context.cms.groups.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Content model group "${id}" not found.`);
                 }
@@ -165,7 +165,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await context.crud.groups.update(id, data);
+                    const changedModel = await context.cms.groups.update(id, data);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -178,11 +178,11 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("d"),
                 hasI18NContentPermission()
-            )(async (_, args: DeleteContentModelGroupArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: DeleteContentModelGroupArgsType, context: CmsContext) => {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const model = await context.crud.groups.get(id);
+                const model = await context.cms.groups.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Content model group "${id}" not found.`);
                 }
@@ -195,7 +195,7 @@ export default {
                 }
 
                 try {
-                    await context.crud.groups.delete(id);
+                    await context.cms.groups.delete(id);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({

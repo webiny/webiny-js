@@ -38,16 +38,16 @@ export type CmsEnvironmentAlias = {
     description: string;
 };
 
-export type Context = {
+type CmsValuesContext = {
     cms: {
         // API type
         type: string;
         // Requested environment
         environment: string;
         // Returns an instance of current environment.
-        getEnvironment: () => CmsEnvironment;
+        getEnvironment: () => CmsEnvironmentType;
         // Returns an instance of current environment alias.
-        getEnvironmentAlias: () => CmsEnvironmentAlias;
+        getEnvironmentAlias: () => CmsEnvironmentAliasType;
         // Requested locale
         locale: I18NLocale;
         // This is a READ API
@@ -56,13 +56,19 @@ export type Context = {
         MANAGE: boolean;
         // This is a PREVIEW API
         PREVIEW: boolean;
+        dataManagerFunction?: string;
     };
 };
 
 /**
  * This combines all contexts used in the CMS into a single type.
  */
-export type CmsContext = I18NContext & HandlerContext;
+export type CmsContext = HandlerContext<
+    I18NContext,
+    TenancyContext,
+    CmsValuesContext,
+    CmsCrudContextType
+>;
 
 export type CmsModelFieldValue<T> = {
     values: CmsLocalizedModelFieldValue<T>[];
@@ -303,8 +309,6 @@ export type CmsSettingsContextType = {
     install: () => Promise<void>;
 };
 
-export type HeadlessCmsContext = HandlerContext<I18NContext, TenancyContext, CrudContextType>;
-
 export type CmsContentModelGroupCreateInputType = {
     name: string;
     slug?: string;
@@ -342,10 +346,10 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
-export type CrudContextType = {
-    crud: {
-        environment: CmsEnvironmentContextType;
-        environmentAlias: CmsEnvironmentAliasContextType;
+export type CmsCrudContextType = {
+    cms: {
+        environments: CmsEnvironmentContextType;
+        environmentAliases: CmsEnvironmentAliasContextType;
         dataManager: CmsDataManagerType;
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;

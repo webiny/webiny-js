@@ -2,9 +2,9 @@ import { NotAuthorizedResponse } from "@webiny/api-security";
 import { compose } from "@webiny/handler-graphql";
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import {
+    CmsContext,
     CmsEnvironmentCreateInputType,
-    CmsEnvironmentUpdateInputType,
-    HeadlessCmsContext
+    CmsEnvironmentUpdateInputType
 } from "../../types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
 import {
@@ -95,12 +95,12 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, args: ReadEnvironmentArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: ReadEnvironmentArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id } = args;
 
-                const model = await context.crud.environment.get(id);
+                const model = await context.cms.environments.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -118,10 +118,10 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("r"),
                 hasI18NContentPermission()
-            )(async (_, __, context: HeadlessCmsContext) => {
+            )(async (_, __, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const environments = await context.crud.environment.list();
+                const environments = await context.cms.environments.list();
                 if (permission.own === true) {
                     const identity = context.security.getIdentity();
                     return new Response(
@@ -136,7 +136,7 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: CreateEnvironmentArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: CreateEnvironmentArgsType, context: CmsContext) => {
                 const identity = context.security.getIdentity();
 
                 const { data } = args;
@@ -146,7 +146,7 @@ export default {
                 };
 
                 try {
-                    const model = await context.crud.environment.create(data, createdBy);
+                    const model = await context.cms.environments.create(data, createdBy);
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
@@ -159,12 +159,12 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("w"),
                 hasI18NContentPermission()
-            )(async (_, args: UpdateEnvironmentArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: UpdateEnvironmentArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
                 const { id, data } = args;
 
-                const model = await context.crud.environment.get(id);
+                const model = await context.cms.environments.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -177,7 +177,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await context.crud.environment.update(id, data, model);
+                    const changedModel = await context.cms.environments.update(id, data, model);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -190,11 +190,11 @@ export default {
                 hasManageSettingsPermission(),
                 hasCmsManageSettingsPermissionRwd("d"),
                 hasI18NContentPermission()
-            )(async (_, args: DeleteEnvironmentArgsType, context: HeadlessCmsContext) => {
+            )(async (_, args: DeleteEnvironmentArgsType, context: CmsContext) => {
                 const { id } = args;
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const model = await context.crud.environment.get(id);
+                const model = await context.cms.environments.get(id);
                 if (!model) {
                     return new NotFoundResponse(`CMS Environment "${id}" not found.`);
                 }
@@ -207,7 +207,7 @@ export default {
                 }
 
                 try {
-                    await context.crud.environment.delete(id);
+                    await context.cms.environments.delete(id);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({

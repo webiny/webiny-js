@@ -85,16 +85,16 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
             async afterDelete() {
                 const environment = context.cms.getEnvironment();
                 environment.changedOn = new Date();
-                await environment.save();
+                // await environment.save();
             },
             async beforeSave() {
                 if (this.getField("indexes").isDirty()) {
                     const removeCallback = this.hook("afterSave", async () => {
                         removeCallback();
 
-                        await context.cms.dataManager.generateContentModelIndexes({
-                            contentModel: this
-                        });
+                        // await context.cms.dataManager.generateContentModelIndexes({
+                        //     contentModel: this
+                        // });
                     });
                 }
 
@@ -238,7 +238,7 @@ export default ({ createBase, context }: { createBase: Function; context: CmsCon
                         removeCallback();
                         const environment = context.cms.getEnvironment();
                         environment.changedOn = new Date();
-                        await environment.save();
+                        // await environment.save();
                     });
                 }
             },

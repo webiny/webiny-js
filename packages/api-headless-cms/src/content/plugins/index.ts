@@ -20,8 +20,8 @@ export default (options: HeadlessPluginsOptions) => [
     {
         name: "context-cms-context",
         type: "context",
-        apply(context) {
-            context.cms = context.cms || {};
+        apply(context: CmsContext) {
+            context.cms = context.cms || ({} as any);
             context.cms.type = options.type;
             context.cms.environment = options.environment;
             context.cms.dataManagerFunction = options.dataManagerFunction;

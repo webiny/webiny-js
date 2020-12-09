@@ -1,7 +1,6 @@
-import { CrudContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
+import { CmsCrudContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
 import defaults from "../../common/defaults";
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { createSettingsPk } from "../../common/partitionKeys";
@@ -46,7 +45,7 @@ export default {
                 return settings.find(() => true);
             },
             install: async (): Promise<void> => {
-                const settings = await context.crud.settings.get();
+                const settings = await context.cms.settings.get();
                 if (!!settings?.isInstalled) {
                     throw new Error("The app is already installed.");
                 }
@@ -57,7 +56,7 @@ export default {
                 };
 
                 // create base environment
-                const environment = await context.crud.environment.create(
+                const environment = await context.cms.environments.create(
                     initialEnvironment,
                     createdBy,
                     true
@@ -68,7 +67,7 @@ export default {
                     context.environment = environment;
                 }
                 // and its alias
-                const environmentAlias = await context.crud.environmentAlias.create(
+                const environmentAlias = await context.cms.environmentAliases.create(
                     {
                         ...initialEnvironmentAlias,
                         environment: environment.id
@@ -76,7 +75,7 @@ export default {
                     createdBy
                 );
                 // then add default content model group
-                await context.crud.groups.create(initialContentModelGroup, createdBy);
+                await context.cms.groups.create(initialContentModelGroup, createdBy);
                 // mark as installed in settings
                 await db.create({
                     ...defaults.db,
@@ -91,9 +90,9 @@ export default {
                 });
             }
         };
-        context.crud = {
-            ...(context.crud || ({} as any)),
+        context.cms = {
+            ...(context.cms || ({} as any)),
             settings
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CrudContextType, TenancyContext, SecurityContext>;
+} as ContextPlugin<I18NContentContext, CmsCrudContextType, TenancyContext, SecurityContext>;
