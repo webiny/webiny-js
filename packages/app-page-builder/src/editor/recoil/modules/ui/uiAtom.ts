@@ -7,6 +7,7 @@ export type UiAtomType = {
     highlightElement: string | null;
     isSaving: boolean;
     textEditorActive: boolean;
+    sidebarActiveTabIndex: number;
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
@@ -16,6 +17,7 @@ export const uiAtom = connectedAtom<UiAtomType>({
         activeElement: null,
         highlightElement: null,
         isSaving: false,
-        textEditorActive: false
+        textEditorActive: false,
+        sidebarActiveTabIndex: 0
     }
 });
