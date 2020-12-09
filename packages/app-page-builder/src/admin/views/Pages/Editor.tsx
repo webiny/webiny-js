@@ -24,7 +24,6 @@ const GET_PAGE = gql`
                     id
                     title
                     url
-                    snippet
                     version
                     locked
                     status
@@ -40,6 +39,7 @@ const GET_PAGE = gql`
                     }
                     settings {
                         general {
+                            snippet
                             tags
                             layout
                             image {

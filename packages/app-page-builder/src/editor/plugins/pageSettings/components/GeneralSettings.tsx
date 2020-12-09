@@ -59,7 +59,7 @@ const GeneralSettings = ({ form, data, Bind, setValue }) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"snippet"}>
+                    <Bind name={"settings.general.snippet"}>
                         <Input rows={4} label="Snippet" description="Page snippet" />
                     </Bind>
                 </Cell>
