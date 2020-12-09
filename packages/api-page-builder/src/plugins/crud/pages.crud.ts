@@ -37,6 +37,8 @@ const UpdateDataModel = withFields({
     content: object()
 })();
 
+const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
+
 const UpdateSettingsModel = withFields({
     general: fields({
         value: {},
@@ -272,7 +274,7 @@ const plugin: ContextPlugin<PbContext> = {
                     new CreateDataModel().populate({ category: category.slug }).validate();
 
                     const [uniqueId, version] = [mdbid(), 1];
-                    const id = `${uniqueId}#${version}`;
+                    const id = `${uniqueId}#${getZeroPaddedVersionNumber(version)}`;
 
                     const data = {
                         PK: PK_PAGE(),
@@ -283,7 +285,7 @@ const plugin: ContextPlugin<PbContext> = {
                         category: category.slug,
                         title,
                         url,
-                        version,
+                        version: 1,
                         status: STATUS_DRAFT,
                         locked: false,
                         publishedOn: null,
@@ -358,7 +360,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const [, latestPageVersion] = latestPageData.id.split("#");
                     const nextVersion = parseInt(latestPageVersion) + 1;
-                    const nextId = `${fromUniqueId}#${nextVersion}`;
+                    const nextId = `${fromUniqueId}#${getZeroPaddedVersionNumber(nextVersion)}`;
                     const identity = context.security.getIdentity();
                     const data = {
                         ...page,
@@ -525,7 +527,7 @@ const plugin: ContextPlugin<PbContext> = {
                     await executeHookCallbacks("beforeDelete", page);
 
                     // If we are deleting the initial version, we need to remove all versions and all of the extra data.
-                    if (pageVersion === "1") {
+                    if (pageVersion === getZeroPaddedVersionNumber(1)) {
                         // 4.1. We delete pages in batches of 10.
                         while (true) {
                             const [pagesBatch] = await db.read({
