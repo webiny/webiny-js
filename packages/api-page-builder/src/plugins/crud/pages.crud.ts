@@ -32,7 +32,6 @@ const UpdateDataModel = withFields({
     title: string({
         validation: validation.create("maxLength:150")
     }),
-    snippet: string({ validation: validation.create("maxLength:500") }),
     url: string({ validation: validation.create("maxLength:100") }),
     category: string({ validation: validation.create("maxLength:100") }),
     content: object()
@@ -52,6 +51,7 @@ const UpdateSettingsModel = withFields({
                     }
                 }
             }),
+            snippet: string({ validation: validation.create("maxLength:500") }),
             layout: string(),
             image: object()
         })()
@@ -107,10 +107,16 @@ const getESPageData = (context: PbContext, page) => {
         version: page.version,
         title: page.title,
         url: page.url,
-        tags: page?.settings?.general?.tags || [],
         status: page.status,
         locked: page.locked,
-        publishedOn: page.publishedOn
+        publishedOn: page.publishedOn,
+        home: page.home || false,
+        error: page.error || false,
+        notFound: page.notFound || false,
+
+        // Pull tags & snippet from settings.general.
+        tags: page?.settings?.general?.tags || [],
+        snippet: page?.settings?.general?.snippet || null
     };
 };
 
@@ -227,6 +233,16 @@ const plugin: ContextPlugin<PbContext> = {
                     return [data, meta];
                 },
 
+                async getPublished(args) {
+                    const [[page]] = await db.read<Page>({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE(), SK: args.id },
+                        limit: 1
+                    });
+
+                    return page;
+                },
+
                 async listPageRevisions(pageId) {
                     const [pageIdWithoutVersion] = pageId.split("#");
                     const [pages] = await db.read<Page>({
@@ -270,8 +286,8 @@ const plugin: ContextPlugin<PbContext> = {
                         home: false,
                         error: false,
                         notFound: false,
-                        savedOn: new Date().toISOString(),
                         createdFrom: null,
+                        savedOn: new Date().toISOString(),
                         createdOn: new Date().toISOString(),
                         createdBy: {
                             id: identity.id,
@@ -289,30 +305,11 @@ const plugin: ContextPlugin<PbContext> = {
                         })
                         .execute();
 
-                    // Index file in "Elastic Search"
+                    // Index page in "Elastic Search"
                     await elasticSearch.index({
                         ...ES_DEFAULTS(),
                         id: "L#" + uniqueId,
-                        body: {
-                            __latest: true,
-                            id,
-                            editor: DEFAULT_EDITOR,
-                            locale: i18nContent.getLocale().code,
-                            createdOn: data.createdOn,
-                            savedOn: data.savedOn,
-                            createdBy: data.createdBy,
-                            category: data.category,
-                            version: data.version,
-                            title: data.title,
-                            url: data.url,
-                            status: data.status,
-                            locked: data.locked,
-                            publishedOn: data.publishedOn,
-                            home: false,
-                            error: false,
-                            notFound: false,
-                            tags: []
-                        }
+                        body: getESLatestPageData(context, data)
                     });
 
                     return data;
@@ -402,26 +399,7 @@ const plugin: ContextPlugin<PbContext> = {
                     await elasticSearch.index({
                         ...ES_DEFAULTS(),
                         id: "L#" + fromUniqueId,
-                        body: {
-                            __latest: true,
-                            id: nextId,
-                            editor: data.editor,
-                            locale: i18nContent.getLocale().code,
-                            createdOn: data.createdOn,
-                            savedOn: data.savedOn,
-                            createdBy: data.createdBy,
-                            category: data.category,
-                            version: data.version,
-                            title: data.title,
-                            url: data.url,
-                            tags: data.tags,
-                            status: data.status,
-                            locked: data.locked,
-                            publishedOn: data.publishedOn,
-                            home: false,
-                            error: false,
-                            notFound: false
-                        }
+                        body: getESLatestPageData(context, data)
                     });
 
                     return data;
@@ -490,6 +468,7 @@ const plugin: ContextPlugin<PbContext> = {
                             body: {
                                 doc: {
                                     tags: updateData?.settings?.general?.tags || [],
+                                    snippet: updateData?.settings?.general?.snippet || null,
                                     title: updateData.title,
                                     url: updateData.url,
                                     savedOn: updateData.savedOn
@@ -991,7 +970,6 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async requestChanges(pageId: string) {
-                    const noiceee = 123;
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });
@@ -1071,30 +1049,84 @@ const plugin: ContextPlugin<PbContext> = {
                     return page;
                 },
 
-                async setAsHomepage(id) {
+                async setAsHomepage(pageId) {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "d"
+                        rcpu: "c"
                     });
 
-                    const page: any = {};
+                    pageId = decodeURIComponent(pageId);
+
+                    const [pageUniqueId] = pageId.split("#");
+
+                    const [[[page]], [[latestPageData]]] = await db
+                        .batch()
+                        .read({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: pageId },
+                            limit: 1
+                        })
+                        .read({
+                            ...defaults.db,
+                            limit: 1,
+                            query: {
+                                PK: PK_PAGE_LATEST(),
+                                SK: pageUniqueId
+                            }
+                        })
+                        .execute();
+
+                    if (!page) {
+                        throw new NotFoundError(`Page "${pageId}" not found.`);
+                    }
+
+                    if (page.status !== STATUS_REVIEW_REQUESTED) {
+                        throw new Error(
+                            `Cannot request changes on a page that's not in review.`,
+                            "REQUESTED_CHANGES_ON_NOT_IN_REVIEW_PAGE"
+                        );
+                    }
 
                     const identity = context.security.getIdentity();
+                    if (page.createdBy.id === identity.id) {
+                        throw new Error(
+                            "Cannot request changes on own page.",
+                            "REQUEST_CHANGES_ON_OWN_PAGE"
+                        );
+                    }
+
                     checkOwnPermissions(identity, permission, page);
 
-                    const [uniqueId] = id.split("#");
-                    await db.delete({
+                    // Change loaded page's status to published.
+                    page.status = STATUS_CHANGES_REQUESTED;
+                    page.locked = false;
+
+                    await db.update({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: id }
+                        query: {
+                            PK: PK_PAGE(),
+                            SK: pageId
+                        },
+                        data: omit(["PK", "SK"], page)
                     });
 
-                    // Delete pages from ES.
-                    await elasticSearch.delete({
-                        ...ES_DEFAULTS(),
-                        id: `L#${uniqueId}`
-                    });
+                    // If we updated the latest version, then make sure the changes are propagated to ES too.
+                    if (latestPageData.id === pageId) {
+                        // todo: should eliminate probably and store this flag into PAGE
+                        const [uniqueId] = pageId.split("#");
+                        // Index file in "Elastic Search"
+                        await elasticSearch.update({
+                            ...ES_DEFAULTS(),
+                            id: `L#${uniqueId}`,
+                            body: {
+                                doc: {
+                                    status: STATUS_CHANGES_REQUESTED,
+                                    locked: false
+                                }
+                            }
+                        });
+                    }
 
-                    return {};
-                    // TODO: finish this.
+                    return page;
                 }
             }
         };
