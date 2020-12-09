@@ -1,7 +1,6 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
-import { ReactComponent as TouchIcon } from "../../../assets/icons/touch_app.svg";
 
 const noActiveElementWrapper = css({
     padding: 16,
@@ -25,12 +24,12 @@ const noActiveElementWrapper = css({
     }
 });
 
-type NoActiveElementProp = { message?: string };
+type NoActiveElementProp = { message: string; icon?: ReactElement };
 
-const NoActiveElement = ({ message }: NoActiveElementProp) => {
+const NoActiveElement = ({ message, icon }: NoActiveElementProp) => {
     return (
         <div className={noActiveElementWrapper}>
-            <TouchIcon className={"icon"} />
+            {icon && React.cloneElement(icon, { className: "icon" })}
             <Typography use={"subtitle1"} className={"text"}>
                 {message}
             </Typography>
