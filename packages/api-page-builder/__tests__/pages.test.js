@@ -63,7 +63,7 @@ describe("CRUD Test", () => {
                                 publishedOn: null,
                                 locked: false,
                                 version: 1,
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 createdOn: expect.stringMatching(/^20.*/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -86,7 +86,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -115,7 +115,7 @@ describe("CRUD Test", () => {
                         updatePage: {
                             data: {
                                 ...data,
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -128,7 +128,7 @@ describe("CRUD Test", () => {
 
         while (true) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPages?.data.length) {
                 break;
             }
@@ -140,7 +140,7 @@ describe("CRUD Test", () => {
                     listPages: {
                         data: [
                             {
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -156,7 +156,7 @@ describe("CRUD Test", () => {
                                 url: "url-UPDATED-2"
                             },
                             {
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -172,7 +172,7 @@ describe("CRUD Test", () => {
                                 url: "url-UPDATED-1"
                             },
                             {
-                                editor: 'page-builder',
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -206,7 +206,7 @@ describe("CRUD Test", () => {
                                 latestPage: null,
                                 page: {
                                     id,
-                                    editor: 'page-builder',
+                                    editor: "page-builder",
                                     createdOn: /^20.*/,
                                     createdBy: { displayName: "m", id: "mocked" }
                                 }
@@ -221,7 +221,7 @@ describe("CRUD Test", () => {
         // List should show zero pages.
         while (response.data.pageBuilder.listPages.data.length !== 0) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
         }
 
         expect(response).toEqual({

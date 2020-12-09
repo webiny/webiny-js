@@ -47,16 +47,18 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            listPublishedPages,
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
         );
 
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 2).then(
-            ([res]) =>
-                expect(res.data.pageBuilder.listPages.data[0]).toMatchObject({
-                    id: p1v1.id,
-                    status: "draft"
-                })
+        await until(
+            () => listPages({ sort: { createdOn: "desc" } }),
+            ([res]) => res.data.pageBuilder.listPages.data.length === 2
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.data[0]).toMatchObject({
+                id: p1v1.id,
+                status: "draft"
+            })
         );
 
         // 2. Create p1v2 from p1v1.
@@ -73,12 +75,12 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            listPublishedPages,
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
-            listPages,
+            () => listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v2.id
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
@@ -100,12 +102,12 @@ describe("versioning and publishing pages", () => {
         });
 
         await until(
-            listPublishedPages,
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.error).toBe(null));
 
         await until(
-            listPages,
+            () => listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data[0].id === p1v3.id
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPages.data.length).toBe(2);
@@ -139,12 +141,12 @@ describe("versioning and publishing pages", () => {
         );
 
         await until(
-            listPages,
+            () => listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) => expect(res.data.pageBuilder.listPages.error).toBe(null));
 
         await until(
-            listPublishedPages,
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v2.id
         ).then(([res]) => {
             expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(1);
@@ -166,7 +168,7 @@ describe("versioning and publishing pages", () => {
         // 5.1. Make sure pages list includes the new p1v4 page in the list.
         while (true) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPages?.data[0].id === p1v4.id) {
                 break;
             }
@@ -175,7 +177,7 @@ describe("versioning and publishing pages", () => {
         // 5.2. Make sure published pages doesn't include the new p1v4 page in the list.
         while (true) {
             await sleep();
-            [response] = await listPublishedPages();
+            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPublishedPages?.data?.[0]?.id === p1v2.id) {
                 break;
             }
@@ -208,7 +210,7 @@ describe("versioning and publishing pages", () => {
 
         while (true) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPages?.data[0].id === p1v4.id) {
                 break;
             }
@@ -216,7 +218,7 @@ describe("versioning and publishing pages", () => {
 
         while (true) {
             await sleep();
-            [response] = await listPublishedPages();
+            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPublishedPages?.data?.[0]?.id === p1v4.id) {
                 break;
             }
@@ -269,7 +271,7 @@ describe("versioning and publishing pages", () => {
         // The list should not return any records.
         while (true) {
             await sleep();
-            [response] = await listPublishedPages();
+            [response] = await listPublishedPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPublishedPages?.data.length === 0) {
                 break;
             }

@@ -47,14 +47,14 @@ describe("Pages Security Test", () => {
         ];
 
         await until(
-            useGqlHandler().listPages,
+            () => useGqlHandler().listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         );
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { listPages } = useGqlHandler({ permissions, identity });
-            const [response] = await listPages();
+            const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPages"));
         }
 
@@ -70,7 +70,7 @@ describe("Pages Security Test", () => {
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listPages } = useGqlHandler({ permissions, identity });
-            const [response] = await listPages();
+            const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -125,7 +125,7 @@ describe("Pages Security Test", () => {
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listPages();
+        let [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
@@ -161,7 +161,7 @@ describe("Pages Security Test", () => {
             identity: identityB
         });
 
-        [response] = await identityAHandler.listPages();
+        [response] = await identityAHandler.listPages({sort: { createdOn: "desc" }});
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {

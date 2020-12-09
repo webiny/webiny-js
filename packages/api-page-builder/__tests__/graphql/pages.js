@@ -144,6 +144,17 @@ export const REQUEST_REVIEW = /* GraphQL */ `
     }
 `;
 
+export const REQUEST_CHANGES = /* GraphQL */ `
+    mutation RequestChanges($id: ID!) {
+        pageBuilder {
+            requestChanges(id: $id) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const OEMBED_DATA = /* GraphQL */ `
     query GetOEmbedData($url: String!, $width: String, $height: String) {
         pageBuilder {
@@ -159,9 +170,9 @@ export const OEMBED_DATA = /* GraphQL */ `
 `;
 
 export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput, $search: PbListPagesSearchInput) {
         pageBuilder {
-            listPages(where: $where, limit: $limit, page: $page, sort: $sort) {
+            listPages(where: $where, limit: $limit, page: $page, sort: $sort, search: $search) {
                 data ${LIST_DATA_FIELD}
                 meta {
                     page
