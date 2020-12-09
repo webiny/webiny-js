@@ -1,8 +1,8 @@
 // import models from "./models";
-import modelFields from "./modelFields";
+// import modelFields from "./modelFields";
 // import filterOperators from "./filterOperators";
-import graphqlFields from "./graphqlFields";
-import graphql from "./graphql";
+// import graphqlFields from "./graphqlFields";
+// import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 // import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 // import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
@@ -34,7 +34,7 @@ export default (options: HeadlessPluginsOptions) => [
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
-    } as ContextPlugin<CmsContext>,
+    } as ContextPlugin<CmsContext>
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),
     // models(),
@@ -83,8 +83,8 @@ export default (options: HeadlessPluginsOptions) => [
     //         }
     //     }
     // },
-    graphql(options),
-    modelFields,
-    graphqlFields
+    // graphql(options),
+    // modelFields,
+    // graphqlFields
     // filterOperators()
 ];

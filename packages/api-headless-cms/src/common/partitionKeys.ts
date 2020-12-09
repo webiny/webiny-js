@@ -10,7 +10,6 @@ type KeyGettersType = {
 type KeyGetterValue = keyof KeyGettersType;
 type CrudContextType = Context<I18NContentContext, TenancyContext>;
 type CreatePkCallableType = (context: CrudContextType) => string;
-type CreatePkCallableFactoryType = (type: string, keys: KeyGetterValue[]) => CreatePkCallableType;
 
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
@@ -60,7 +59,7 @@ const createPartitionKey = (context: CrudContextType, type: string, keys: KeyGet
         .join("#");
 };
 
-const createPkCallableFactory: CreatePkCallableFactoryType = (type, keys: KeyGetterValue[]) => {
+const createPkCallableFactory = (type: string, keys: KeyGetterValue[]): CreatePkCallableType => {
     return (context: CrudContextType): string => {
         return createPartitionKey(context, type, keys);
     };

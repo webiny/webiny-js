@@ -7,6 +7,7 @@ type APIKeyAuthorization = {
 
 export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin => ({
     type: "security-authorization",
+    name: "security-authorization-api-key",
     async getPermissions({ security }: SecurityContext & TenancyContext) {
         const identityType = config.identityType || "api-key";
 
