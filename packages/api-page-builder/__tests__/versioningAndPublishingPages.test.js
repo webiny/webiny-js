@@ -69,7 +69,7 @@ describe("versioning and publishing pages", () => {
         const [p1v1UniqueId] = p1v1.id.split("#");
 
         expect(p1v2).toMatchObject({
-            id: p1v1UniqueId + "#2",
+            id: p1v1UniqueId + "#0002",
             createdFrom: p1v1.id,
             version: 2
         });
@@ -96,7 +96,7 @@ describe("versioning and publishing pages", () => {
         );
 
         expect(p1v3).toMatchObject({
-            id: p1v1UniqueId + "#3",
+            id: p1v1UniqueId + "#0003",
             createdFrom: p1v1.id,
             version: 3
         });
@@ -160,7 +160,7 @@ describe("versioning and publishing pages", () => {
         [response] = await createPage({ from: p1v2.id });
         let p1v4 = response.data.pageBuilder.createPage.data;
         expect(p1v4).toMatchObject({
-            id: p1v1UniqueId + "#4",
+            id: p1v1UniqueId + "#0004",
             createdFrom: p1v2.id,
             version: 4
         });
