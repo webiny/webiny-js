@@ -7,6 +7,12 @@ export const classes = {
             padding: 0,
             margin: "0px 0px 16px"
         }
+    }),
+    grid: css({
+        "& .mdc-layout-grid": {
+            padding: 0,
+            margin: "0px 0px 16px"
+        }
     })
 };
 

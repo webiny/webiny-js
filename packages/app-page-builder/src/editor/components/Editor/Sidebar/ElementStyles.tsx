@@ -2,7 +2,8 @@ import React from "react";
 import styled from "@emotion/styled";
 
 import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
-import NoActiveElement from "@webiny/app-page-builder/editor/components/Editor/Sidebar/NoActiveElement";
+import NoActiveElement from "./NoActiveElement";
+import { ReactComponent as WarningIcon } from "./icons/warning-black.svg";
 
 const SidebarActionsWrapper = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -37,7 +38,10 @@ const ElementStyles = () => {
                     );
                 })
             ) : (
-                <NoActiveElement message={"No style settings found for selected element."} />
+                <NoActiveElement
+                    icon={<WarningIcon />}
+                    message={"No style settings found for selected element."}
+                />
             )}
         </SidebarActionsWrapper>
     );
