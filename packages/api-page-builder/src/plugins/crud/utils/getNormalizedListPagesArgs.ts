@@ -1,8 +1,10 @@
+import { ListPagesArgs } from "@webiny/api-page-builder/types";
+
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
  * @param args
  */
-export default args => {
+export default (args: ListPagesArgs) => {
     const normalized = {
         must: getMust(args.where),
         sort: getSort(args.sort),
