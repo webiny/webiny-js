@@ -247,7 +247,11 @@ const plugin: ContextPlugin<PbContext> = {
                     const [pageIdWithoutVersion] = pageId.split("#");
                     const [pages] = await db.read<Page>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: { $beginsWith: pageIdWithoutVersion } }
+                        query: {
+                            PK: PK_PAGE(),
+                            SK: { $beginsWith: pageIdWithoutVersion },
+                            sort: { SK: -1 }
+                        }
                     });
 
                     return pages;
