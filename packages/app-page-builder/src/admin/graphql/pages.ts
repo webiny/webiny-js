@@ -46,11 +46,12 @@ export const LIST_PAGES = gql`
     query ListPages(
         $where: PbListPagesWhereInput
         $sort: PbListPagesSortInput
+        $search: PbListPagesSearchInput
         $limit: Int
         $page: Int
     ) {
         pageBuilder {
-            listPages(where: $where, sort: $sort, limit: $limit, page: $page) {
+            listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
                     id
                     status

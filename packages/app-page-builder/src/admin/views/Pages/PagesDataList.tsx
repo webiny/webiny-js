@@ -49,6 +49,7 @@ const sorters = [
 
 const PageBuilderPagesDataList = () => {
     const { history, location } = useRouter();
+    const query = new URLSearchParams(location.search);
 
     const [where, setWhere] = useState({});
     const [sort, setSort] = useState({ createdOn: "desc" });
@@ -57,7 +58,15 @@ const PageBuilderPagesDataList = () => {
 
     const listQuery = useQuery(LIST_PAGES, {
         fetchPolicy: "no-cache",
-        variables: { where, sort, limit, page }
+        variables: {
+            where,
+            sort,
+            limit,
+            page,
+            search: {
+                query: query.get("search") || undefined
+            }
+        }
     });
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
@@ -68,7 +77,6 @@ const PageBuilderPagesDataList = () => {
     const categoriesData = categoriesQuery?.data?.pageBuilder.listCategories.data || [];
 
     const loading = [listQuery].find(item => item.loading);
-    const query = new URLSearchParams(location.search);
 
     return (
         <DataList
