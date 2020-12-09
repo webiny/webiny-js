@@ -6,19 +6,19 @@ import AdvancedSettings from "./AdvancedSettings";
 import Action from "../components/Action";
 import AdvancedAction from "./AdvancedAction";
 import {
-    PbEditorContentPlugin,
     PbEditorPageElementSettingsPlugin,
-    PbEditorEventActionPlugin
+    PbEditorEventActionPlugin,
+    PbEditorSidebarContentPlugin
 } from "@webiny/app-page-builder/types";
 
 export default [
     {
-        name: "pb-editor-content-element-advanced-settings",
-        type: "pb-editor-content",
+        name: "pb-editor-sidebar-content-element-advanced-settings",
+        type: "pb-editor-sidebar-content",
         render() {
             return <AdvancedSettings />;
         }
-    } as PbEditorContentPlugin,
+    } as PbEditorSidebarContentPlugin,
     {
         name: "pb-editor-event-action-advanced-settings",
         type: "pb-editor-event-action-plugin",

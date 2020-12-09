@@ -1,44 +1,28 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { useRecoilValue } from "recoil";
+import { cloneDeep } from "lodash";
+import { merge } from "dot-prop-immutable";
+import { ButtonDefault } from "@webiny/ui/Button";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import {
     DeactivatePluginActionEvent,
     UpdateElementActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { cloneDeep } from "lodash";
-import { merge } from "dot-prop-immutable";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { css } from "emotion";
-import {
-    Dialog,
-    DialogContent,
-    DialogActions,
-    DialogButton,
-    DialogCancel,
-    DialogTitle
-} from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
 import { Tabs } from "@webiny/ui/Tabs";
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
     PbElement
 } from "@webiny/app-page-builder/types";
-import { useRecoilValue } from "recoil";
+import Accordion from "../components/Accordion";
+import { classes } from "../components/StyledComponents";
 
 const emptyElement = { data: {}, type: null };
-
-const dialogStyle = css({
-    ".mdc-dialog__surface": {
-        maxWidth: 865
-    },
-    ".webiny-ui-dialog__content": {
-        width: 865,
-        maxHeight: "70vh"
-    }
-});
 
 type AdvancedSettingsPropsType = {
     element: PbElement;
@@ -61,13 +45,17 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
         );
     }, []);
 
-    const onSubmit = (formData: FormData) => {
-        // Get element settings plugins
-        const plugins = getPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
-            "pb-editor-page-element-advanced-settings"
-        ).filter(pl => pl.elementType === element.type);
+    // Get element settings plugins
+    const advancedSettingsPlugin = useMemo(() => {
+        return plugins
+            .byType<PbEditorPageElementAdvancedSettingsPlugin>(
+                "pb-editor-page-element-advanced-settings"
+            )
+            .filter(pl => pl.elementType === element.type);
+    }, [element.type]);
 
-        formData = plugins.reduce((formData, pl) => {
+    const onSubmit = (formData: FormData) => {
+        formData = advancedSettingsPlugin.reduce((formData, pl) => {
             if (pl.onSave) {
                 return pl.onSave(formData);
             }
@@ -96,34 +84,31 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
         };
     }, []);
 
+    if (!advancedSettingsPlugin.length) {
+        return null;
+    }
+
     return (
-        <Dialog
-            open={isPluginActive}
-            onClose={closeDialog}
-            className={dialogStyle}
-            data-testid={"pb-editor-advanced-element-settings-dialog"}
-        >
-            <DialogTitle>Settings</DialogTitle>
+        <Accordion title={"Advance settings"} defaultValue={true}>
             <Form key={element && element.id} data={data} onSubmit={onSubmit}>
                 {({ submit, Bind, data, form }) => (
                     <>
-                        <DialogContent>
-                            <Tabs>
+                        <div>
+                            <Tabs className={classes.grid}>
                                 {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
                                     "pb-editor-page-element-advanced-settings",
                                     { Bind, data, form },
                                     { wrapper: false, filter: pl => pl.elementType === type }
                                 )}
                             </Tabs>
-                        </DialogContent>
-                        <DialogActions>
-                            <DialogCancel>Cancel</DialogCancel>
-                            <DialogButton onClick={submit}>Save</DialogButton>
-                        </DialogActions>
+                        </div>
+                        <div>
+                            <ButtonDefault onClick={submit}>Save</ButtonDefault>
+                        </div>
                     </>
                 )}
             </Form>
-        </Dialog>
+        </Accordion>
     );
 };
 
