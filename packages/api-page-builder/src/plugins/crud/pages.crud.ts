@@ -654,7 +654,11 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     await batch.execute();
-                    await elasticSearch.bulk({ body: esOperations });
+
+                    // When deleting a non-published and non-latest revision, we mustn't execute the bulk operation.
+                    if (esOperations.length) {
+                        await elasticSearch.bulk({ body: esOperations });
+                    }
 
                     await executeHookCallbacks("afterDelete", page);
 
