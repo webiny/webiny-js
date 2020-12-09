@@ -2,6 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("deleting pages", () => {
     const {
+        getPage,
         createCategory,
         createPage,
         deletePage,
@@ -132,5 +133,15 @@ describe("deleting pages", () => {
             listPublishedPages,
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].id === p1v3.id
         );
+    });
+
+    test("deleting a revision in the middle of all revisions, should not affect other revisions", async () => {
+        await deletePage({ id: p1v2.id });
+
+        const page = await getPage({ id: p1v1.id }).then(
+            ([res]) => res.data.pageBuilder.getPage.data
+        );
+
+        expect(page.revisions.length).toBe(2);
     });
 });
