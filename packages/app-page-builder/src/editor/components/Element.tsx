@@ -64,7 +64,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             return;
         }
         setUiAtomValue(prev => activateElementMutation(prev, elementId));
-    }, [elementId]);
+    }, [elementId, isActive]);
 
     const onMouseEnter = React.useCallback(
         (ev): void => {
