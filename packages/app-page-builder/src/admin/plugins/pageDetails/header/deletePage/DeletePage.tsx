@@ -7,7 +7,7 @@ import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
-import { DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
+import { DELETE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
@@ -35,38 +35,11 @@ const DeletePage = props => {
     const confirmDelete = useCallback(
         () =>
             showConfirmation(async () => {
+                const [uniquePageId] = page.id.split("#");
+                const id = `${uniquePageId}#0001`;
                 const { data: res } = await client.mutate({
                     mutation: DELETE_PAGE,
-                    variables: { id: page.id },
-                    update: (cache: any, { data }) => {
-                        // Don't do anything if there was an error during publishing!
-                        if (data.pageBuilder.deletePage.error) {
-                            return;
-                        }
-
-                        const inMemoryCacheData: Record<string, any> = cache.data.data;
-
-                        console.log("prije deletea", inMemoryCacheData);
-                        // Delete the page from cached responses.
-                        for (const key in inMemoryCacheData) {
-                            if (!key.includes("pageBuilder.listPages")) {
-                                continue;
-                            }
-
-                            if (Array.isArray(inMemoryCacheData[key].data)) {
-                                const data = inMemoryCacheData[key].data.filter(item => {
-                                    item.id !== page.id;
-                                });
-
-                                console.log('dejta',data, page.id, inMemoryCacheData[key].data)
-
-                                inMemoryCacheData[key].data = data;
-                            }
-                        }
-
-                        console.log("poslije delete-a", inMemoryCacheData);
-                        return;
-                    }
+                    variables: { id }
                 });
 
                 const { error } = res?.pageBuilder?.deletePage;

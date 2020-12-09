@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
-import { CREATE_PAGE, DELETE_REVISION } from "@webiny/app-page-builder/admin/graphql/pages";
-import { usePublishRevisionHandler } from "../utils/usePublishRevisionHandler";
+import { CREATE_PAGE, DELETE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { usePublishRevisionHandler } from "./usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 
 export function useRevisionHandlers(props) {
@@ -16,31 +15,27 @@ export function useRevisionHandlers(props) {
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
             mutation: CREATE_PAGE,
-            variables: { revision: revision.id },
-            refetchQueries: ["PbListPages"],
-            awaitRefetchQueries: true
+            variables: { from: revision.id }
         });
-        const { data, error } = res.pageBuilder.revision;
+        const { data, error } = res.pageBuilder.createPage;
 
         if (error) {
             return showSnackbar(error.message);
         }
 
-        history.push(`/page-builder/editor/${data.id}`);
+        history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [revision]);
 
     const editRevision = useCallback(() => {
-        history.push(`/page-builder/editor/${revision.id}`);
+        history.push(`/page-builder/editor/${encodeURIComponent(revision.id)}`);
     }, [revision]);
 
     const deleteRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
-            mutation: DELETE_REVISION,
-            variables: { id: revision.id },
-            refetchQueries: ["PbListPages"],
-            awaitRefetchQueries: true
+            mutation: DELETE_PAGE,
+            variables: { id: revision.id }
         });
-        const { error } = res.pageBuilder.deleteRevision;
+        const { error } = res.pageBuilder.deletePage;
         if (error) {
             return showSnackbar(error.message);
         }

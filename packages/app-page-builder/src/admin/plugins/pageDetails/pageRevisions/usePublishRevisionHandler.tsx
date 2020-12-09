@@ -12,10 +12,9 @@ export function usePublishRevisionHandler({ page }) {
         const { data: res } = await client.mutate({
             mutation: PUBLISH_PAGE,
             variables: { id: revision.id },
-            refetchQueries: ["PbListPages"],
             update: (cache, { data }) => {
                 // Don't do anything if there was an error during publishing!
-                if (data.pageBuilder.publishRevision.error) {
+                if (data.pageBuilder.publishPage.error) {
                     return;
                 }
 
@@ -28,14 +27,14 @@ export function usePublishRevisionHandler({ page }) {
                 page.revisions.forEach(r => {
                     // Update published/locked fields on the revision that was just published.
                     if (r.id === revision.id) {
-                        r.published = true;
+                        r.status = "published";
                         r.locked = true;
                         return;
                     }
 
                     // Unpublish other published revisions
-                    if (r.published) {
-                        r.published = false;
+                    if (r.status === "published") {
+                        r.status = "unpublished";
                     }
                 });
 
@@ -47,7 +46,7 @@ export function usePublishRevisionHandler({ page }) {
             }
         });
 
-        const { error } = res.pageBuilder.publishRevision;
+        const { error } = res.pageBuilder.publishPage;
         if (error) {
             return showSnackbar(error.message);
         }
