@@ -74,10 +74,11 @@ type AccordionProps = {
     title: string;
     children: ReactElement;
     action?: ReactElement;
+    defaultValue?: boolean;
 };
 
-const Accordion = ({ title, children, action }: AccordionProps) => {
-    const [isOpen, setOpen] = useState(false);
+const Accordion = ({ title, children, action, defaultValue = false }: AccordionProps) => {
+    const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
     return (
