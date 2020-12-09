@@ -9,9 +9,7 @@ export const DATA_FIELD = /* GraphQL */ `
         title
         url
         fullUrl
-        # settings
         content
-        snippet
         savedOn
         status
         locked
@@ -21,6 +19,7 @@ export const DATA_FIELD = /* GraphQL */ `
         locked
         settings {
             general {
+                snippet
                 tags
                 layout
                 image {

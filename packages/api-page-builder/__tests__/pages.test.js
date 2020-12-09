@@ -101,7 +101,11 @@ describe("CRUD Test", () => {
             data = {
                 title: "title-UPDATED-" + i,
                 url: "url-UPDATED-" + i,
-                snippet: "snippet-UPDATED-" + i
+                settings: {
+                    general: {
+                        snippet: "snippet-UPDATED-" + i
+                    }
+                }
             };
 
             [response] = await updatePage({
