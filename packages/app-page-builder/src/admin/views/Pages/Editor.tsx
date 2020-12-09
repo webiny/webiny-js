@@ -35,6 +35,7 @@ const GET_PAGE = gql`
                         id
                         title
                         status
+                        locked
                         version
                     }
                     settings {

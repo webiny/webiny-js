@@ -22,6 +22,7 @@ export const DATA_FIELDS = `
     revisions {
         id
         savedOn
+        locked
         title
         status
         version
@@ -63,6 +64,7 @@ export const LIST_PAGES = gql`
                         slug
                     }
                     createdBy {
+                        id
                         displayName
                     }
                 }
@@ -118,23 +120,12 @@ export const GET_PAGE = gql`
 `;
 
 export const PUBLISH_PAGE = gql`
-    mutation PublishRevision($id: ID!) {
+    mutation PublishPage($id: ID!) {
         pageBuilder {
-            publishRevision(id: $id) {
+            publishPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
                 }
-                ${error}
-            }
-        }
-    }
-`;
-
-export const DELETE_REVISION = gql`
-    mutation PbDeleteRevision($id: ID!) {
-        pageBuilder {
-            deleteRevision(id: $id) {
-                data
                 ${error}
             }
         }
