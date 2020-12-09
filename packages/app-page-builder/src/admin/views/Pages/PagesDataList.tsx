@@ -51,7 +51,7 @@ const PageBuilderPagesDataList = () => {
     const { history, location } = useRouter();
 
     const [where, setWhere] = useState({});
-    const [sort, setSort] = useState();
+    const [sort, setSort] = useState({ createdOn: "desc" });
     const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(1);
 
