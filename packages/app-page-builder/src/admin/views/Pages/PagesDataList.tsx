@@ -47,7 +47,7 @@ const sorters = [
     }
 ];
 
-const PageBuilderPagesDataList = () => {
+const PagesDataList = () => {
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
@@ -57,7 +57,7 @@ const PageBuilderPagesDataList = () => {
     const [page, setPage] = useState(1);
 
     const listQuery = useQuery(LIST_PAGES, {
-        fetchPolicy: "no-cache",
+        fetchPolicy: "network-only",
         variables: {
             where,
             sort,
@@ -180,4 +180,4 @@ const PageBuilderPagesDataList = () => {
     );
 };
 
-export default PageBuilderPagesDataList;
+export default PagesDataList;
