@@ -85,7 +85,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbSettingsResponse: {
                 id: (_, args, context) => {
-                    return context.settings.getSettingsCacheKey();
+                    return context.pageBuilder.settings.getSettingsCacheKey();
                 }
             },
             PbQuery: {
