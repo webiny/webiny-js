@@ -34,17 +34,19 @@ import {
     LIST_CONTENT_MODEL_GROUP_QUERY,
     UPDATE_CONTENT_MODEL_GROUP_MUTATION
 } from "./common/crud/graphql/contentModelGroup";
+import { GET_CONTENT_MODEL_QUERY } from "./content/graphql/contentModel";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
     identity?: SecurityIdentity;
+    plugins?: any[];
 };
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9201";
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     const tenant = { id: "root", name: "Root", parent: null };
-    const { permissions, identity } = args || {};
+    const { permissions, identity, plugins = [] } = args || {};
 
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
@@ -96,7 +98,8 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
                     slug: "production"
                 };
             }
-        }
+        },
+        ...plugins
     );
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
@@ -176,6 +179,10 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         },
         async listContentModelGroupsQuery() {
             return invoke({ body: { query: LIST_CONTENT_MODEL_GROUP_QUERY } });
+        },
+        // dynamic content models
+        async getContentModelQuery(variables: Record<string, any>) {
+            return invoke({ body: { query: GET_CONTENT_MODEL_QUERY, variables } });
         }
     };
 };

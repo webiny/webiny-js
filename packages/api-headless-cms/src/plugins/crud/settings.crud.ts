@@ -1,10 +1,7 @@
-import { CmsCrudContextType, CmsSettingsContextType, CmsSettingsType } from "../../types";
+import { CmsContext, CmsSettingsContextType, CmsSettingsType } from "../../types";
 import defaults from "../../common/defaults";
 import { ContextPlugin } from "@webiny/handler/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { createSettingsPk } from "../../common/partitionKeys";
-import { SecurityContext } from "@webiny/api-security/types";
 import { DbItemTypes } from "../../common/dbItemTypes";
 
 const initialEnvironment = {
@@ -95,4 +92,4 @@ export default {
             settings
         };
     }
-} as ContextPlugin<I18NContentContext, CmsCrudContextType, TenancyContext, SecurityContext>;
+} as ContextPlugin<CmsContext>;

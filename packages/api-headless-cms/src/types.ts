@@ -2,7 +2,7 @@ import { GraphQLSchemaModule } from "apollo-graphql";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
-import { Context as HandlerContext } from "@webiny/handler/types";
+import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 type CmsDataManagerDeleteEnvironmentArgsType = {
@@ -20,22 +20,6 @@ export interface CmsDataManagerType {
 export type CmsLocalizedModelFieldValue<T> = {
     locale: string;
     value: T;
-};
-
-export type CmsEnvironment = {
-    id: string;
-    name: string;
-    slug: string;
-    description: string;
-    changedOn: Date;
-    save(): Promise<boolean>;
-};
-
-export type CmsEnvironmentAlias = {
-    id: string;
-    name: string;
-    slug: string;
-    description: string;
 };
 
 type CmsValuesContext = {
@@ -63,7 +47,7 @@ type CmsValuesContext = {
 /**
  * This combines all contexts used in the CMS into a single type.
  */
-export type CmsContext = HandlerContext<
+export type CmsContext = BaseContext<
     I18NContext,
     TenancyContext,
     CmsValuesContext,
@@ -146,12 +130,12 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
     }): void;
 };
 
-export type ContextBeforeContentModelsPlugin<T = HandlerContext> = Plugin & {
+export type ContextBeforeContentModelsPlugin<T = BaseContext> = Plugin & {
     type: "context-before-content-models";
     apply?: (context: T) => void | Promise<void>;
 };
 
-export type ContextAfterContentModelsPlugin<T = HandlerContext> = Plugin & {
+export type ContextAfterContentModelsPlugin<T = BaseContext> = Plugin & {
     type: "context-after-content-models";
     apply?: (context: T) => void | Promise<void>;
 };
@@ -346,6 +330,72 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
+type CmsContentModelFieldTypesType =
+    | "text"
+    | "number"
+    | "boolean"
+    | "datetime"
+    | "richText"
+    | "longText"
+    | "files"
+    | "reference";
+type CmsContentModelFieldValidationType = {
+    type: string;
+    message: string;
+};
+type CmsContentModelFieldType = {
+    id: string;
+    type: CmsContentModelFieldTypesType;
+    label: string;
+    validation: CmsContentModelFieldValidationType[];
+    multipleValues: boolean;
+};
+export type CmsContentModelType = {
+    id: string;
+    title: string;
+    code: string;
+    group: string;
+    description?: string;
+    createdOn: Date;
+    changedOn?: Date;
+    createdBy?: CreatedByType;
+    fields: CmsContentModelFieldType[];
+};
+
+export type CmsContentModelCreateInputType = {
+    title: string;
+};
+
+export type CmsContentModelUpdateInputType = {
+    title?: string;
+};
+
+export type CmsContentModelManagerListContextArgsType = {
+    search?: Record<string, any>;
+    pagination?: {
+        offset?: number;
+        limit?: number;
+    };
+};
+export interface CmsContentModelManagerContextType<TModel> {
+    list(args?: CmsContentModelManagerListContextArgsType): Promise<TModel[]>;
+    get(id: string): Promise<TModel>;
+    create<TData>(data: TData): Promise<TModel>;
+    update<TData>(data: TData): Promise<TModel>;
+    delete(id: string): Promise<boolean>;
+}
+export type CmsContentModelContextType = {
+    get: (id: string) => Promise<CmsContentModelType | null>;
+    list: () => Promise<CmsContentModelType[]>;
+    create: (
+        data: CmsContentModelCreateInputType,
+        createdBy: CreatedByType
+    ) => Promise<CmsContentModelType>;
+    update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
+    delete: (id: string) => Promise<void>;
+    getManager: <T>(code: string) => Promise<CmsContentModelManagerContextType<T>>;
+};
+
 export type CmsCrudContextType = {
     cms: {
         environments: CmsEnvironmentContextType;
@@ -353,5 +403,6 @@ export type CmsCrudContextType = {
         dataManager: CmsDataManagerType;
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
+        models: CmsContentModelContextType;
     };
 };

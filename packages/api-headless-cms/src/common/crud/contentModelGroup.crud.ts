@@ -1,14 +1,7 @@
 import defaults from "../defaults";
 import mdbid from "mdbid";
-import {
-    CmsContentModelGroupContextType,
-    CmsContentModelGroupType,
-    CmsCrudContextType
-} from "../../types";
+import { CmsContentModelGroupContextType, CmsContentModelGroupType, CmsContext } from "../../types";
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { createContentModelGroupPk } from "../partitionKeys";
 import toSlug from "../../utils/toSlug";
 import { validation } from "@webiny/validation";
@@ -142,4 +135,4 @@ export default {
             groups
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsCrudContextType, TenancyContext>;
+} as ContextPlugin<CmsContext>;

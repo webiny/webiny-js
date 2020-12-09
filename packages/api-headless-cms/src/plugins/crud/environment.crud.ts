@@ -1,14 +1,11 @@
 import defaults from "../../common/defaults";
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { CmsEnvironmentType, CmsEnvironmentContextType, CmsCrudContextType } from "../../types";
+import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContext } from "../../types";
 import toSlug from "../../utils/toSlug";
 import { createEnvironmentAliasPk, createEnvironmentPk } from "../../common/partitionKeys";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { DbItemTypes } from "../../common/dbItemTypes";
 
 const CreateEnvironmentModel = withFields({
@@ -208,4 +205,4 @@ export default {
             environments
         };
     }
-} as ContextPlugin<DbContext, I18NContentContext, CmsCrudContextType, TenancyContext>;
+} as ContextPlugin<CmsContext>;

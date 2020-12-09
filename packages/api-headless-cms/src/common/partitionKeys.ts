@@ -1,15 +1,12 @@
-import { Context } from "@webiny/handler/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
 type KeyGettersType = {
-    tenant: (context: CrudContextType) => string;
-    locale: (context: CrudContextType) => string;
-    environment: (context: CrudContextType) => string;
+    tenant: (context: CmsContext) => string;
+    locale: (context: CmsContext) => string;
+    environment: (context: CmsContext) => string;
 };
 type KeyGetterValue = keyof KeyGettersType;
-type CrudContextType = Context<I18NContentContext, TenancyContext>;
-type CreatePkCallableType = (context: CrudContextType) => string;
+type CreatePkCallableType = (context: CmsContext) => string;
 
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
@@ -18,13 +15,13 @@ enum PartitionKeysEnum {
     CMS_CONTENT_MODEL_GROUP = "CMG"
 }
 
-const getLocaleKey = ({ i18nContent }: CrudContextType): string => {
+const getLocaleKey = ({ i18nContent }: CmsContext): string => {
     if (!i18nContent || !i18nContent.locale || !i18nContent.locale.code) {
         throw new Error("Locale missing.");
     }
     return `L#${i18nContent.locale.code}`;
 };
-const getTenantKey = ({ security }: CrudContextType): string | undefined => {
+const getTenantKey = ({ security }: CmsContext): string | undefined => {
     if (typeof security.getTenant !== "function") {
         throw new Error(
             "There is no getTenant() on context.security. Check if tenancy is included in the context."
@@ -37,7 +34,7 @@ const getTenantKey = ({ security }: CrudContextType): string | undefined => {
     return `T#${tenant.id}`;
 };
 
-const getEnvironmentKey = ({ environment }: CrudContextType): string => {
+const getEnvironmentKey = ({ environment }: CmsContext): string => {
     if (!environment || !environment.slug) {
         throw new Error("Missing environment in the context.");
     }
@@ -50,7 +47,7 @@ const keysGetters: KeyGettersType = {
     environment: getEnvironmentKey
 };
 
-const createPartitionKey = (context: CrudContextType, type: string, keys: KeyGetterValue[]) => {
+const createPartitionKey = (context: CmsContext, type: string, keys: KeyGetterValue[]) => {
     return keys
         .map(key => {
             return keysGetters[key](context);
@@ -60,7 +57,7 @@ const createPartitionKey = (context: CrudContextType, type: string, keys: KeyGet
 };
 
 const createPkCallableFactory = (type: string, keys: KeyGetterValue[]): CreatePkCallableType => {
-    return (context: CrudContextType): string => {
+    return (context: CmsContext): string => {
         return createPartitionKey(context, type, keys);
     };
 };
