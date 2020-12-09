@@ -82,6 +82,7 @@ export type ListPagesArgs = {
     limit?: number;
     page?: number;
     where?: { category?: string; status?: string; tags?: string[] };
+    search?: { query?: string };
     sort?: { createdOn?: SortOrder; title?: SortOrder };
 };
 

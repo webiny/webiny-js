@@ -187,6 +187,11 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 tags: [String]
             }
 
+            input PbListPagesSearchInput {
+                # By specifying "query", the search will be performed against pages' "title" and "snippet" fields. 
+                query: String
+            }
+
             input PbListPublishedPagesWhereInput {
                 category: String
                 tags: [String]
@@ -213,6 +218,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     limit: Int
                     page: Int
                     sort: PbListPagesSortInput
+                    search: PbListPagesSearchInput
                 ): PbPageListResponse
 
                 listPublishedPages(
@@ -220,6 +226,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     limit: Int
                     page: Int
                     sort: PbListPagesSortInput
+                    search: PbListPagesSearchInput
                 ): PbPageListResponse
 
                 listElements(limit: Int): PbElementListResponse

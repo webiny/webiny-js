@@ -166,9 +166,9 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
-                    const { sort, from, size, must, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(args);
 
-                    must.push(
+                    query.bool.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
@@ -178,22 +178,13 @@ const plugin: ContextPlugin<PbContext> = {
                     // If users can only manage own records, let's add the special filter.
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
-                        must.push({ term: { "createdBy.id.keyword": identity.id } });
+                        query.bool.filter.push({ term: { "createdBy.id.keyword": identity.id } });
                     }
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query: {
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                constant_score: {
-                                    filter: {
-                                        bool: {
-                                            must
-                                        }
-                                    }
-                                }
-                            },
+                            query,
                             from,
                             size,
                             sort
@@ -209,9 +200,9 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async listPublished(args) {
-                    const { sort, from, size, must, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(args);
 
-                    must.push(
+                    query.bool.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
@@ -221,16 +212,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query: {
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                constant_score: {
-                                    filter: {
-                                        bool: {
-                                            must
-                                        }
-                                    }
-                                }
-                            },
+                            query,
                             from,
                             size,
                             sort
@@ -275,7 +257,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const data = {
                         PK: PK_PAGE(),
                         SK: id,
-                        TYPE_PAGE,
+                        TYPE: TYPE_PAGE,
                         id,
                         editor: DEFAULT_EDITOR,
                         category: category.slug,
@@ -915,7 +897,7 @@ const plugin: ContextPlugin<PbContext> = {
                     // Update data in ES.
                     const esOperations = [];
 
-                    // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
+                    // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
                     if (latestPageData.id === pageId) {
                         esOperations.push(
                             { update: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
@@ -1009,6 +991,7 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async requestChanges(pageId: string) {
+                    const noiceee = 123;
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });

@@ -6,7 +6,7 @@ import { ListPagesArgs } from "@webiny/api-page-builder/types";
  */
 export default (args: ListPagesArgs) => {
     const normalized = {
-        must: getMust(args.where),
+        query: getQuery(args),
         sort: getSort(args.sort),
         size: args.limit ?? 10,
         from: 0,
@@ -17,36 +17,51 @@ export default (args: ListPagesArgs) => {
     return normalized;
 };
 
-const getMust = where => {
-    if (!where) {
-        return [];
+const getQuery = args => {
+    const { where, search } = args;
+    const query: Record<string, any> = {
+        bool: {
+            filter: []
+        }
+    };
+
+    if (where) {
+        if (where.category) {
+            query.bool.filter.push({ term: { "category.keyword": where.category } });
+        }
+
+        if (where.status) {
+            query.bool.filter.push({ term: { "status.keyword": where.status } });
+        }
+
+        if (Array.isArray(where.tags) && where.tags.length > 0) {
+            query.bool.filter.push({
+                bool: {
+                    must: where.tags.map(tag => ({
+                        term: { "tags.keyword": tag }
+                    }))
+                }
+            });
+        }
     }
 
-    const must = [];
-    if (where.category) {
-        must.push({ term: { "category.keyword": where.category } });
-    }
-
-    if (where.status) {
-        must.push({ term: { "status.keyword": where.status } });
-    }
-
-    if (Array.isArray(where.tags) && where.tags.length > 0) {
-        must.push({
-            bool: {
-                must: where.tags.map(tag => ({
-                    term: { "tags.keyword": tag }
-                }))
+    if (search && search.query) {
+        query.bool.must = {
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            multi_match: {
+                query: search.query,
+                type: "most_fields",
+                fields: ["title", "snippet"]
             }
-        });
+        };
     }
 
-    return must;
+    return query;
 };
 
 const getSort = sort => {
     if (!sort) {
-        return { createdOn: "desc" };
+        return {};
     }
 
     const normalizedSort: Record<string, any> = {};
