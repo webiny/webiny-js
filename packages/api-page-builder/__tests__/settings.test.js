@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("CRUD Test", () => {
+describe("Settings Test", () => {
     const { getSettings, updateSettings } = useGqlHandler();
 
     test("get and update settings", async () => {
@@ -20,7 +20,8 @@ describe("CRUD Test", () => {
                                 image: null
                             }
                         },
-                        error: null
+                        error: null,
+                        id: "T#root#L#en-US#PB#SETTINGS"
                     }
                 }
             }
@@ -62,7 +63,8 @@ describe("CRUD Test", () => {
                                 }
                             }
                         },
-                        error: null
+                        error: null,
+                        id: "T#root#L#en-US#PB#SETTINGS"
                     }
                 }
             }
@@ -88,7 +90,8 @@ describe("CRUD Test", () => {
                                 }
                             }
                         },
-                        error: null
+                        error: null,
+                        id: "T#root#L#en-US#PB#SETTINGS"
                     }
                 }
             }
