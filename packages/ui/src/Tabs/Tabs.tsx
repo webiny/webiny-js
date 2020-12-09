@@ -59,7 +59,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         }
     }
 
-    renderChildren(children) {
+    renderChildren(children, activeIndex) {
         const tabs = React.Children.toArray(children)
             .filter(c => c !== null)
             .map((child: React.ReactElement<TabProps>) => {
@@ -75,9 +75,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         const tabBar = (
             <TabBar
                 className="webiny-ui-tabs__tab-bar"
-                activeTabIndex={
-                    !Number.isNaN(this.props.value) ? this.props.value : this.state.activeTabIndex
-                }
+                activeTabIndex={activeIndex}
                 onActivate={evt => {
                     if (typeof this.props.updateValue === "function") {
                         this.props.updateValue(evt.detail.index);
@@ -109,7 +107,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         const content = [];
         for (let i = 0; i < tabs.length; i++) {
             const current = tabs[i];
-            if (this.state.activeTabIndex === i) {
+            if (activeIndex === i) {
                 content.push(<div key={i}>{current.children}</div>);
             } else {
                 content.push(
@@ -129,12 +127,16 @@ export class Tabs extends React.Component<TabsProps, State> {
     }
 
     render() {
+        const activeIndex = Number.isNaN(this.props.value)
+            ? this.state.activeTabIndex
+            : this.props.value;
+
         let children = this.props.children;
         if (typeof this.props.children === "function") {
             // @ts-ignore
             children = this.props.children({ switchTab: this.switchTab.bind(this) });
         }
 
-        return this.renderChildren(children);
+        return this.renderChildren(children, activeIndex);
     }
 }
