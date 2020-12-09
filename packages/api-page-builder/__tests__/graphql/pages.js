@@ -17,6 +17,12 @@ export const DATA_FIELD = /* GraphQL */ `
         error
         notFound
         locked
+        revisions {
+            id
+            status
+            locked
+            version
+        }
         settings {
             general {
                 snippet
