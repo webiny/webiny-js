@@ -6,6 +6,7 @@ import Image from "@webiny/app-admin/components/RichTextEditor/tools/image";
 import TextColor from "@webiny/app-admin/components/RichTextEditor/tools/textColor";
 import Header from "@webiny/app-admin/components/RichTextEditor/tools/header";
 import Paragraph from "@webiny/app-admin/components/RichTextEditor/tools/paragraph";
+import { plugins } from "@webiny/plugins";
 
 /**
  * This file contains a RichTextEditor configuration used in Page Builder app.
@@ -43,7 +44,18 @@ export default {
             },
             color: {
                 class: TextColor,
-                shortcut: "CMD+M"
+                shortcut: "CMD+M",
+                config: () => {
+                    const [pbTheme] = plugins.byType("pb-theme");
+
+                    const themeColors = pbTheme
+                        ? Object.values(pbTheme.theme.colors)
+                        : ["#8c7ae6", "#0097e6", "#44bd32"];
+
+                    return {
+                        themeColors
+                    };
+                }
             }
         },
         /**

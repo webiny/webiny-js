@@ -70,6 +70,8 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 tools[name] = tool;
                 if (!tool.config) {
                     tool.config = { context };
+                } else if (typeof tool.config === "function") {
+                    tool.config = tool.config();
                 } else {
                     tool.config = { ...tool.config, context };
                 }
