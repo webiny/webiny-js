@@ -43,7 +43,12 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query ListPages($where: PbListPagesWhereInput, $sort: PbListPagesSortInput, $limit: Int, $page: Int) {
+    query ListPages(
+        $where: PbListPagesWhereInput
+        $sort: PbListPagesSortInput
+        $limit: Int
+        $page: Int
+    ) {
         pageBuilder {
             listPages(where: $where, sort: $sort, limit: $limit, page: $page) {
                 data {
