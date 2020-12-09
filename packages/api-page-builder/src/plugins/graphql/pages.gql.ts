@@ -44,6 +44,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
+                locked: Boolean
                 savedOn: DateTime
             }
 
