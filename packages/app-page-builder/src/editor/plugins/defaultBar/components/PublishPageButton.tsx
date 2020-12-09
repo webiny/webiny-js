@@ -6,7 +6,7 @@ import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { useRecoilValue } from "recoil";
-import { PUBLISH_REVISION } from "./PublishPageButton/graphql";
+import { PUBLISH_PAGE } from "./PublishPageButton/graphql";
 import { useSecurity } from "@webiny/app-security";
 
 const PublishPageButton: React.FunctionComponent = () => {
@@ -35,7 +35,7 @@ const PublishPageButton: React.FunctionComponent = () => {
             message="You are about to publish this page, are you sure want to continue?"
         >
             {({ showConfirmation }) => (
-                <Mutation mutation={PUBLISH_REVISION} refetchQueries={["PbListPages"]}>
+                <Mutation mutation={PUBLISH_PAGE} refetchQueries={["PbListPages"]}>
                     {update => (
                         <ButtonPrimary
                             onClick={async () => {
@@ -46,12 +46,14 @@ const PublishPageButton: React.FunctionComponent = () => {
                                         }
                                     });
 
-                                    const { error } = response.data.pageBuilder.publishRevision;
+                                    const { error } = response.data.pageBuilder.publishPage;
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }
 
-                                    history.push(`/page-builder/pages?id=${page.id}`);
+                                    history.push(
+                                        `/page-builder/pages?id=${encodeURIComponent(page.id)}`
+                                    );
 
                                     // Let's wait a bit, because we are also redirecting the user.
                                     setTimeout(() => {
