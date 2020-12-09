@@ -5,8 +5,6 @@ import useElementSettings from "../../../plugins/elementSettings/bar/useElementS
 import NoActiveElement from "@webiny/app-page-builder/editor/components/Editor/Sidebar/NoActiveElement";
 
 const SidebarActionsWrapper = styled("div")({
-    display: "flex",
-    flexWrap: "wrap",
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
     overflowY: "auto",
     // Style scrollbar
@@ -33,9 +31,9 @@ const ElementStyles = () => {
             {styleSettings.length ? (
                 styleSettings.map(({ plugin, options }, index) => {
                     return (
-                        <div key={plugin.name + "-" + index} style={{ width: "100%" }}>
+                        <React.Fragment key={index}>
                             {typeof plugin.render === "function" && plugin.render({ options })}
-                        </div>
+                        </React.Fragment>
                     );
                 })
             ) : (
