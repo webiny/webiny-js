@@ -40,11 +40,11 @@ export const ConfigureDomainMessage = ({ domain }) => {
             <br />
             {isLocalHost ? (
                 <span>
-                    {t`Either start the server by running`} <code>cd apps/site && yarn start</code>{" "}
+                    {t`Either start the server by running`} <code>cd apps/site/code && yarn start</code>{" "}
                 </span>
             ) : (
                 <span>
-                    {t`Either deploy the site by running`} <code>yarn webiny deploy apps</code>{" "}
+                    {t`Either deploy the site by running`} <code>yarn webiny deploy apps/admin</code>{" "}
                 </span>
             )}
             <br />
