@@ -30,7 +30,9 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallableType 
                 state: {
                     ui: {
                         ...state.ui,
-                        activeElement: element.id
+                        activeElement: element.id,
+                        // Mark "Element" settings tab active in sidebar.
+                        sidebarActiveTabIndex: 1
                     },
                     plugins: activatePluginByNameMutation(
                         state.plugins,
