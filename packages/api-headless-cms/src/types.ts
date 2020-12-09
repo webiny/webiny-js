@@ -3,7 +3,7 @@ import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
-import { SecurityContext } from "@webiny/api-security/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
@@ -303,7 +303,7 @@ export type CmsSettingsContextType = {
     install: () => Promise<void>;
 };
 
-export type HeadlessCmsContext = HandlerContext<I18NContext, SecurityContext, CrudContextType>;
+export type HeadlessCmsContext = HandlerContext<I18NContext, TenancyContext, CrudContextType>;
 
 export type CmsContentModelGroupCreateInputType = {
     name: string;

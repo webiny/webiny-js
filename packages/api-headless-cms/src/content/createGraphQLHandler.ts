@@ -3,13 +3,11 @@ import { boolean } from "boolean";
 import { graphql, GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import {
-    CmsContentModelGroupType,
     CmsEnvironmentAliasType,
     CmsEnvironmentType,
     HeadlessCmsContext
 } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { extractHandlerHttpParameters } from "@webiny/api-headless-cms/content/helpers";
 
 type CreateGraphQLHandlerOptionsType = {
     debug?: boolean;
@@ -20,15 +18,20 @@ type SchemaCacheType = {
 };
 type ArgsType = {
     context: HeadlessCmsContext;
-    type: CmsContentModelGroupType;
+    type: string;
     environment: CmsEnvironmentType;
-    environmentAliases: CmsEnvironmentAliasType[];
+    environmentAlias: CmsEnvironmentAliasType;
     locale: I18NLocale;
 };
 type ParsedBody = {
     query: string;
     variables: any;
     operationName: string;
+};
+
+type EnvironmentAndAliasResponseType = {
+    environment: CmsEnvironmentType;
+    environmentAlias?: CmsEnvironmentAliasType;
 };
 
 const DEFAULT_HEADERS = {
@@ -50,9 +53,13 @@ const schemaList = new Map<string, SchemaCacheType>();
  * TODO check if it needs to be hashed with sha1 or some other fast hashing algorithm
  */
 const generateCacheKey = (args: ArgsType): string => {
-    const { environment, environmentAliases, locale, type } = args;
-    return [String(environment.changedOn), locale.code, String(type.changedOn)]
-        .concat(environmentAliases.map(alias => String(alias.changedOn)))
+    const { environment, environmentAlias, locale, type } = args;
+    return [
+        String(environment.changedOn || environment.createdOn),
+        environmentAlias ? String(environmentAlias.changedOn || environmentAlias.createdOn) : null,
+        locale.code,
+        String(type)
+    ]
         .filter(value => !!value)
         .join("#");
 };
@@ -72,7 +79,7 @@ const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
 // depending on the schemaId created from type, environment and locale parameters
 const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     const { type, environment, locale } = args;
-    const id = `${type.slug}#${environment.slug}#${locale.code}`;
+    const id = `${type}#${environment.slug}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(args);
     if (!schemaList.has(id)) {
@@ -95,34 +102,46 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     return schema;
 };
 
-const getEnvironment = async (
-    context: HeadlessCmsContext,
-    id: string
-): Promise<CmsEnvironmentType> => {
-    const environment = (await context.crud.environment.list()).find(model => model.slug === id);
+const filterEnvironment = (list: CmsEnvironmentType[], id: string): CmsEnvironmentType => {
+    const environment = list.find(env => env.id === id);
     if (!environment) {
         throw new Error(`There is no environment "${id}".`);
     }
     return environment;
 };
-const getEnvironmentAliases = async (
-    context: HeadlessCmsContext,
-    environment: CmsEnvironmentType
-): Promise<CmsEnvironmentAliasType[]> => {
-    return (await context.crud.environmentAlias.list()).filter(
-        alias => alias.environment.id === environment.id
-    );
-};
-const getContentModelGroup = async (
-    context: HeadlessCmsContext,
-    id: string
-): Promise<CmsContentModelGroupType> => {
-    const group = (await context.crud.groups.list()).find(model => model.id === id);
-    if (!group) {
-        throw new Error(`There is no content model group "${id}".`);
+const fetchEnvironmentAndItsAlias = async (
+    context: HeadlessCmsContext
+): Promise<EnvironmentAndAliasResponseType> => {
+    const environmentList = await context.crud.environment.list();
+    const environmentAliasList = await context.crud.environmentAlias.list();
+
+    const value = context.cms.environment;
+    // alias is always checked by slug
+    const environmentAlias = environmentAliasList.find(model => {
+        return model.slug === value;
+    });
+    if (environmentAlias) {
+        const environment = filterEnvironment(environmentList, environmentAlias.environment.id);
+        return {
+            environmentAlias,
+            environment
+        };
     }
-    return group;
+    // environment is always checked by id
+    const environment = environmentList.find(model => {
+        return model.id === value;
+    });
+    if (!environment) {
+        throw new Error(`There is no environment or environment alias "${value}".`);
+    }
+    return {
+        environment,
+        environmentAlias: environmentAliasList.find(
+            alias => alias.environment.id === environment.id
+        )
+    };
 };
+
 export const createGraphQLHandler = (
     options: CreateGraphQLHandlerOptionsType = {}
 ): HandlerPlugin => ({
@@ -147,23 +166,19 @@ export const createGraphQLHandler = (
         }
 
         try {
-            const {
-                environment: currentEnvironment,
-                locale,
-                type: currentType
-            } = extractHandlerHttpParameters(context);
-            // TODO possibly extract getters outside of this plugin scope
-            // possibly a plugin that will set up these variables onto the context?
-            const environment = await getEnvironment(context, currentEnvironment);
-            const environmentAliases = await getEnvironmentAliases(context, environment);
-            const type = await getContentModelGroup(context, currentType);
-            // TODO we should get environment and its aliases, content model group (type) and locale here
+            const { environment, environmentAlias } = await fetchEnvironmentAndItsAlias(context);
+            // need to attach environment and environment alias getters to the context for later use
+            // and attach real environment slug to the context
+            context.cms.environment = environment.slug;
+            context.cms.getEnvironment = () => environment;
+            context.cms.getEnvironmentAlias = () => environmentAlias;
+
             const schema = await getSchema({
                 context,
-                locale: context.i18n.getCurrentLocale(locale),
+                locale: context.i18n.getCurrentLocale(),
                 environment,
-                environmentAliases,
-                type
+                environmentAlias,
+                type: context.cms.type
             });
             const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);
 

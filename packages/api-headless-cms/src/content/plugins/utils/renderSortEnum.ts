@@ -6,7 +6,7 @@ interface RenderSortEnum {
 
 export const renderSortEnum: RenderSortEnum = ({ model }) => {
     const sorters = [];
-    model.getUniqueIndexFields().forEach(fieldId => {
+    (model as any).getUniqueIndexFields().forEach(fieldId => {
         sorters.push(`${fieldId}_ASC`);
         sorters.push(`${fieldId}_DESC`);
     });

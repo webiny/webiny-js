@@ -13,7 +13,7 @@ export const renderListFilterFields: RenderListFilterFields = ({
     type,
     fieldTypePlugins
 }) => {
-    const uniqueIndexFields = model.getUniqueIndexFields();
+    const uniqueIndexFields = (model as any).getUniqueIndexFields();
 
     return uniqueIndexFields
         .map(fieldId => {

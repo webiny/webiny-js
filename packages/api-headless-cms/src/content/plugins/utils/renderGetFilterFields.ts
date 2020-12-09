@@ -5,7 +5,7 @@ interface RenderGetFilterFields {
 }
 
 export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypePlugins }) => {
-    const uniqueIndexFields = model.getUniqueIndexFields();
+    const uniqueIndexFields = (model as any).getUniqueIndexFields();
 
     return uniqueIndexFields
         .map(fieldId => {

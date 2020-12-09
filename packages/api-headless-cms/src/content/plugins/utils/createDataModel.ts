@@ -103,7 +103,7 @@ export const createDataModel = (
 
                     // 3. Finally, if non of the above was matched, let's check if there where changes on
                     // fields that are included in the defined list of indexes. If so, we must do updates.
-                    const indexFields = contentModel.getUniqueIndexFields();
+                    const indexFields = (contentModel as any).getUniqueIndexFields();
 
                     const relFields = indexFields
                         .filter(f => Boolean(this[f]))
