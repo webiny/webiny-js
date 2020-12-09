@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { css } from "emotion";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { activeElementWithChildrenSelector } from "../../recoil/modules";
+import {
+    activeElementWithChildrenSelector,
+    sidebarActiveTabIndexSelector,
+    uiAtom,
+    updateSidebarActiveTabIndexMutation
+} from "../../recoil/modules"; // TODO: Do we need "tree-shaking" here?
 import NoActiveElement from "./Sidebar/NoActiveElement";
 import SidebarActions from "./Sidebar/SidebarActions";
 import ElementStyles from "./Sidebar/ElementStyles";
@@ -21,10 +26,16 @@ const rightSideBar = css({
 
 const EditorSideBar = () => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeTabIndex = useRecoilValue(sidebarActiveTabIndexSelector);
+    const [, setUiAtomValue] = useRecoilState(uiAtom);
+
+    const setActiveTabIndex = useCallback(index => {
+        setUiAtomValue(prev => updateSidebarActiveTabIndexMutation(prev, index));
+    }, []);
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs>
+            <Tabs value={activeTabIndex} updateValue={setActiveTabIndex}>
                 <Tab label={"style"}>
                     {element ? (
                         <ElementStyles />
