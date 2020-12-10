@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { ButtonDefault } from "@webiny/ui/Button";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import {
     DeactivatePluginActionEvent,
@@ -14,13 +13,10 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { Form } from "@webiny/form";
-import { Tabs } from "@webiny/ui/Tabs";
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
     PbElement
 } from "@webiny/app-page-builder/types";
-import Accordion from "../components/Accordion";
-import { classes } from "../components/StyledComponents";
 
 const emptyElement = { data: {}, type: null };
 
@@ -89,26 +85,17 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
     }
 
     return (
-        <Accordion title={"Advance settings"} defaultValue={true}>
-            <Form key={element && element.id} data={data} onSubmit={onSubmit}>
-                {({ submit, Bind, data, form }) => (
-                    <>
-                        <div>
-                            <Tabs className={classes.grid}>
-                                {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
-                                    "pb-editor-page-element-advanced-settings",
-                                    { Bind, data, form },
-                                    { wrapper: false, filter: pl => pl.elementType === type }
-                                )}
-                            </Tabs>
-                        </div>
-                        <div>
-                            <ButtonDefault onClick={submit}>Save</ButtonDefault>
-                        </div>
-                    </>
-                )}
-            </Form>
-        </Accordion>
+        <Form key={element && element.id} data={data} onSubmit={onSubmit}>
+            {({ submit, Bind, data, form }) => (
+                <>
+                    {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
+                        "pb-editor-page-element-advanced-settings",
+                        { Bind, data, form, submit },
+                        { wrapper: false, filter: pl => pl.elementType === type }
+                    )}
+                </>
+            )}
+        </Form>
     );
 };
 
