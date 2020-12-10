@@ -19,7 +19,7 @@ export default (): PbEditorPageElementPlugin => {
         elementType: "block",
         settings: [
             "pb-editor-page-element-style-settings-background",
-            "pb-editor-page-element-settings-animation",
+            "pb-editor-page-element-style-settings-animation",
             "",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",

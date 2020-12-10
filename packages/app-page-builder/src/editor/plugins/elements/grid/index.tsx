@@ -51,7 +51,7 @@ export default {
     settings: [
         "pb-editor-page-element-style-settings-grid",
         "pb-editor-page-element-style-settings-background",
-        "pb-editor-page-element-settings-animation",
+        "pb-editor-page-element-style-settings-animation",
         "",
         "pb-editor-page-element-style-settings-border",
         "pb-editor-page-element-style-settings-shadow",
