@@ -2,6 +2,8 @@ import { GraphQLClientCache } from "./types";
 import normalize from "./InMemoryCache/normalize";
 import denormalize from "./InMemoryCache/denormalize";
 import getQueryCacheKey from "./InMemoryCache/getQueryCacheKey";
+import mergeNormalizedEntities from "./InMemoryCache/mergeNormalizedEntities";
+import mergeNormalizedQueries from "./InMemoryCache/mergeNormalizedQueries";
 
 export type InMemoryCacheConfiguration = {
     cacheKeyFields?: string[];
@@ -26,13 +28,13 @@ export default class InMemoryCache implements GraphQLClientCache {
         const [normalizedResult, normalizedEntities] = normalize(result);
 
         const [queryKey, variablesKey] = getQueryCacheKey(query, variables);
-        const queries = {
+        const normalizedQueries = {
             [queryKey]: {
                 [variablesKey]: normalizedResult
             }
         };
 
-        this.import(queries, normalizedEntities);
+        this.import(normalizedQueries, normalizedEntities);
     }
 
     readQuery<TResult = Record<string, any>>({ query, variables = {} }) {
@@ -89,23 +91,8 @@ export default class InMemoryCache implements GraphQLClientCache {
     }
 
     import(queries, entities) {
-        for (const queryKey in queries) {
-            if (!this.queries[queryKey]) {
-                this.queries[queryKey] = {};
-            }
-
-            for (const variablesKey in queries[queryKey]) {
-                this.queries[queryKey][variablesKey] = queries[queryKey][variablesKey];
-            }
-        }
-
-        for (const entityId in entities) {
-            if (!this.entities[entityId]) {
-                this.entities[entityId] = {};
-            }
-
-            Object.assign(this.entities[entityId], entities[entityId]);
-        }
+        mergeNormalizedQueries(this.queries, queries);
+        mergeNormalizedEntities(this.entities, entities);
     }
 
     export() {
@@ -117,13 +104,13 @@ export default class InMemoryCache implements GraphQLClientCache {
         this.entities = {};
     }
 
-    writeEntity(id, data) {
-        this.entities[id] = data;
+    writeEntity(typename, id, data) {
+        this.entities[typename][id] = data;
     }
-    readEntity(id) {
-        return this.entities[id];
+    readEntity(typename, id) {
+        return this.entities[typename][id];
     }
-    deleteEntity(id) {
-        delete this.entities[id];
+    deleteEntity(typename, id) {
+        delete this.entities[typename][id];
     }
 }

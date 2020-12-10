@@ -1,11 +1,30 @@
-import isPrimitiveValue from "./isPrimitiveValue";
+import getTypename from "./getTypename";
+import getId from "./getId";
+import mergeNormalizedEntities from "./mergeNormalizedEntities";
 
-const getId = data => data && data.id;
+const normalizeFragment = resultFragment => {
+    if (Array.isArray(resultFragment)) {
+        const normalizedResultFragmentEntities: Record<string, any> = {};
+        const normalizedResultFragment: Record<string, any> = [];
 
-const normalize = resultFragment => {
+        resultFragment.forEach(item => {
+            const [normalizedItem, normalizedItemEntities] = normalizeFragment(item);
+            normalizedResultFragment.push(normalizedItem);
+            mergeNormalizedEntities(normalizedResultFragmentEntities, normalizedItemEntities);
+        });
+
+        return [normalizedResultFragment, normalizedResultFragmentEntities];
+    }
+
+    const typename = getTypename(resultFragment);
+    if (!typename) {
+        return [resultFragment, {}];
+    }
+
     const id = getId(resultFragment);
 
     if (id) {
+        const entity = {};
         const normalizedResultFragmentEntities: Record<string, any> = {};
         const normalizedResultFragment: Record<string, any> = {
             __entity: {
@@ -14,34 +33,33 @@ const normalize = resultFragment => {
             }
         };
 
-        const entity: Record<string, any> = {};
         for (const key in resultFragment) {
             const value = resultFragment[key];
-            if (isPrimitiveValue(value)) {
-                entity[key] = value;
-                normalizedResultFragment.__entity.fields.push(key);
+            if (key === "__typename") {
+                normalizedResultFragment[key] = value;
                 continue;
             }
 
-            if (Array.isArray(value)) {
-                normalizedResultFragment[key] = [];
-                value.forEach(item => {
-                    const [normalizedItem, normalizedItemEntities] = normalize(item);
-                    normalizedResultFragment[key].push(normalizedItem);
-                    Object.assign(normalizedResultFragmentEntities, normalizedItemEntities);
-                });
+            const [normalizedValue, normalizedValueEntities] = normalizeFragment(value);
+            if (Object.keys(normalizedValueEntities).length > 0) {
+                normalizedResultFragment[key] = normalizedValue;
+                mergeNormalizedEntities(normalizedResultFragmentEntities, normalizedValueEntities);
                 continue;
             }
 
-            const [normalizedValue, normalizedValueEntities] = normalize(value);
-            normalizedResultFragment[key] = normalizedValue;
-            Object.assign(normalizedResultFragmentEntities, normalizedValueEntities);
+            entity[key] = normalizedValue;
+            normalizedResultFragment.__entity.fields.push(key);
         }
 
-        if (!normalizedResultFragmentEntities[entity.id]) {
-            normalizedResultFragmentEntities[entity.id] = {};
+        if (!normalizedResultFragmentEntities[typename]) {
+            normalizedResultFragmentEntities[typename] = {};
         }
-        Object.assign(normalizedResultFragmentEntities[entity.id], entity);
+
+        if (!normalizedResultFragmentEntities[typename][id]) {
+            normalizedResultFragmentEntities[typename][id] = {};
+        }
+
+        Object.assign(normalizedResultFragmentEntities[typename][id], entity);
 
         return [normalizedResultFragment, normalizedResultFragmentEntities];
     }
@@ -50,27 +68,27 @@ const normalize = resultFragment => {
     const normalizedResultFragment: Record<string, any> = {};
     for (const key in resultFragment) {
         const value = resultFragment[key];
-        if (isPrimitiveValue(value)) {
-            normalizedResultFragment[key] = value;
-            continue;
-        }
-
-        if (Array.isArray(value)) {
-            normalizedResultFragment[key] = [];
-            value.forEach(item => {
-                const [normalizedItem, normalizedItemEntities] = normalize(item);
-                normalizedResultFragment[key].push(normalizedItem);
-                Object.assign(normalizedResultFragmentEntities, normalizedItemEntities);
-            });
-            continue;
-        }
-
-        const [normalizedValue, normalizedValueEntities] = normalize(value);
+        const [normalizedValue, normalizedValueEntities] = normalizeFragment(value);
         normalizedResultFragment[key] = normalizedValue;
-        Object.assign(normalizedResultFragmentEntities, normalizedValueEntities);
+        mergeNormalizedEntities(normalizedResultFragmentEntities, normalizedValueEntities);
     }
 
     return [normalizedResultFragment, normalizedResultFragmentEntities];
+};
+
+const normalize = result => {
+    const normalizedResult: Record<string, any> = {};
+    const normalizedResultEntities: Record<string, any> = {};
+    for (const fragmentKey in result) {
+        const [normalizedFragment, normalizedFragmentEntities] = normalizeFragment(
+            result[fragmentKey]
+        );
+
+        normalizedResult[fragmentKey] = normalizedFragment;
+        mergeNormalizedEntities(normalizedResultEntities, normalizedFragmentEntities);
+    }
+
+    return [normalizedResult, normalizedResultEntities];
 };
 
 export default normalize;

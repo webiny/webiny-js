@@ -7,26 +7,31 @@ test("must properly cache results from queries that included args", async () => 
     await cache.writeQuery({ query, result });
 
     expect(cache.export()).toEqual({
-        "entities": {},
-        "queries": {
-            "587088053": {
+        entities: {},
+        queries: {
+            "822877595": {
                 "5864093": {
-                    "i18n": {
-                        "getI18NInformation": {
-                            "currentLocales": [
+                    i18n: {
+                        __typename: "I18NQuery",
+                        getI18NInformation: {
+                            __typename: "I18NInformationResponse",
+                            currentLocales: [
                                 {
-                                    "context": "default",
-                                    "locale": "en-US"
+                                    __typename: "I18NInformationCurrentLocale",
+                                    context: "default",
+                                    locale: "en-US"
                                 },
                                 {
-                                    "context": "content",
-                                    "locale": "en-US"
+                                    __typename: "I18NInformationCurrentLocale",
+                                    context: "content",
+                                    locale: "en-US"
                                 }
                             ],
-                            "locales": [
+                            locales: [
                                 {
-                                    "code": "en-US",
-                                    "default": true
+                                    __typename: "I18NInformationLocale",
+                                    code: "en-US",
+                                    default: true
                                 }
                             ]
                         }
@@ -38,18 +43,28 @@ test("must properly cache results from queries that included args", async () => 
 
     expect(await cache.readQuery({ query })).toEqual({
         i18n: {
+            __typename: "I18NQuery",
             getI18NInformation: {
+                __typename: "I18NInformationResponse",
                 currentLocales: [
                     {
+                        __typename: "I18NInformationCurrentLocale",
                         context: "default",
                         locale: "en-US"
                     },
                     {
+                        __typename: "I18NInformationCurrentLocale",
                         context: "content",
                         locale: "en-US"
                     }
                 ],
-                locales: [{ code: "en-US", default: true }]
+                locales: [
+                    {
+                        __typename: "I18NInformationLocale",
+                        code: "en-US",
+                        default: true
+                    }
+                ]
             }
         }
     });
