@@ -118,7 +118,12 @@ const getESPageData = (context: PbContext, page) => {
 
         // Pull tags & snippet from settings.general.
         tags: page?.settings?.general?.tags || [],
-        snippet: page?.settings?.general?.snippet || null
+        snippet: page?.settings?.general?.snippet || null,
+
+        // Save some images that could maybe be used on listing pages.
+        images: {
+            general: page?.settings?.general?.image
+        }
     };
 };
 
@@ -505,7 +510,12 @@ const plugin: ContextPlugin<PbContext> = {
                                     snippet: updateData?.settings?.general?.snippet || null,
                                     title: updateData.title,
                                     url: updateData.url,
-                                    savedOn: updateData.savedOn
+                                    savedOn: updateData.savedOn,
+
+                                    // Save some images that could maybe be used on listing pages.
+                                    images: {
+                                        general: updateData?.settings?.general?.image
+                                    }
                                 }
                             }
                         });

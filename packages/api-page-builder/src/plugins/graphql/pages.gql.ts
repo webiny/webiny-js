@@ -48,6 +48,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 savedOn: DateTime
             }
 
+            type PbPageListItemImages {
+                general: PbFile
+            }
+            
             type PbPageListItem {
                 id: ID
                 editor: String
@@ -57,6 +61,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 home: Boolean
                 error: Boolean
                 notFound: Boolean
+                images: PbPageListItemImages
                 version: Int
                 category: PbPageCategory
                 title: String
@@ -169,7 +174,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 category: String
                 tags: [String]
             }
-            
+
             input PbListPageTagsSearchInput {
                 query: String!
             }
@@ -207,7 +212,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ): PbPageListResponse
 
                 listPageTags(search: PbListPageTagsSearchInput!): PbPageTagsListResponse
-                
+
                 # Returns existing tags based on given search term.
                 searchTags(query: String!): PbSearchTagsResponse
 
