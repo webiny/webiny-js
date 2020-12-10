@@ -86,6 +86,7 @@ export default class InMemoryCache implements GraphQLClientCache {
         }
 
         for (let i = 0; i < entitiesToDelete.length; i++) {
+            // @ts-ignore
             this.deleteEntity(entitiesToDelete[i]);
         }
     }
