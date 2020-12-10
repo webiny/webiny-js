@@ -12,10 +12,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
 import { validation } from "@webiny/validation";
-import { Input } from "@webiny/ui/Input";
-import { ButtonSecondary } from "@webiny/ui/Button";
 import { Form } from "@webiny/form";
-import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FileUploaderPlugin } from "@webiny/app/types";
 import {
@@ -30,6 +27,10 @@ import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockP
 import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
 // Components
 import Accordion from "../components/Accordion";
+import Wrapper from "../components/Wrapper";
+import InputField from "../components/InputField";
+import SelectField from "../components/SelectField";
+import { SimpleButton } from "../components/StyledComponents";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import ElementPreview from "./SaveDialog/ElementPreview";
 
@@ -210,30 +211,25 @@ const SaveElementSettings = () => {
                             </Grid>
                         )}
                         {!data.overwrite && (
-                            <Grid className={gridClass}>
-                                <Cell span={12}>
-                                    <Bind name={"name"} validators={validation.create("required")}>
-                                        <Input label={"Name"} autoFocus />
-                                    </Bind>
-                                </Cell>
-                            </Grid>
+                            <Wrapper label={"Name"} containerClassName={gridClass}>
+                                <Bind name={"name"} validators={validation.create("required")}>
+                                    <InputField autoFocus />
+                                </Bind>
+                            </Wrapper>
                         )}
                         {data.type === "block" && !data.overwrite && (
                             <>
-                                <Grid className={gridClass}>
-                                    <Cell span={12}>
-                                        <Bind
-                                            name="category"
-                                            validators={validation.create("required")}
-                                        >
-                                            <Select
-                                                label="Category"
-                                                description="Select a block category"
-                                                options={blockCategoriesOptions}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
+                                <Wrapper label={"Category"} containerClassName={gridClass}>
+                                    <Bind
+                                        name="category"
+                                        validators={validation.create("required")}
+                                    >
+                                        <SelectField
+                                            description="Select a block category"
+                                            options={blockCategoriesOptions}
+                                        />
+                                    </Bind>
+                                </Wrapper>
                             </>
                         )}
                         <Grid className={gridClass}>
@@ -257,7 +253,7 @@ const SaveElementSettings = () => {
                         </Grid>
                         <Grid className={gridClass}>
                             <Cell span={12}>
-                                <ButtonSecondary onClick={submit}>Save</ButtonSecondary>
+                                <SimpleButton onClick={submit}>Save</SimpleButton>
                             </Cell>
                         </Grid>
                     </React.Fragment>
