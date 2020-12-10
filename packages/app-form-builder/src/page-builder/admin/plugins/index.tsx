@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
 import FormElementAdvancedSettings from "./components/FormElementAdvancedSettings";
 import formElement from "../../../page-builder/render/plugins/formElement";
 import FormElement from "./components/FormElement";
@@ -60,11 +59,7 @@ export default () => [
         type: "pb-editor-page-element-advanced-settings",
         elementType: "form",
         render(props) {
-            return (
-                <Tab label="Form">
-                    <FormElementAdvancedSettings {...props} />
-                </Tab>
-            );
+            return <FormElementAdvancedSettings {...props} />;
         }
     } as PbEditorPageElementAdvancedSettingsPlugin
 ];
