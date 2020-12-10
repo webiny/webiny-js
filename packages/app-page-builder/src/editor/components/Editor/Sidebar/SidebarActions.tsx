@@ -4,6 +4,22 @@ import { plugins } from "@webiny/plugins";
 import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
 import { PbEditorSidebarContentPlugin, PbElement } from "../../../../types";
 
+const RootElement = styled("div")({
+    height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
+    overflowY: "auto",
+    // Style scrollbar
+    "&::-webkit-scrollbar": {
+        width: 1
+    },
+    "&::-webkit-scrollbar-track": {
+        boxShadow: "inset 0 0 6px rgba(0, 0, 0, 0.3)"
+    },
+    "&::-webkit-scrollbar-thumb": {
+        backgroundColor: "darkgrey",
+        outline: "1px solid slategrey"
+    }
+});
+
 const SidebarActionsWrapper = styled("div")({
     display: "flex",
     flexWrap: "wrap",
@@ -17,7 +33,7 @@ const SidebarActions = ({ element }: { element: PbElement }) => {
     );
 
     return (
-        <React.Fragment>
+        <RootElement>
             <SidebarActionsWrapper>
                 {elementSettings
                     // FIXME: Remove this after element settings cleanup.
@@ -45,7 +61,7 @@ const SidebarActions = ({ element }: { element: PbElement }) => {
             {sidebarContentPlugins.map((plugin, index) => {
                 return React.cloneElement(plugin.render(), { key: index, element });
             })}
-        </React.Fragment>
+        </RootElement>
     );
 };
 
