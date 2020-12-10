@@ -28,7 +28,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     const { textEditorActive } = uiAtomValue;
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {}, text: dataText } = element.data || {};
-    const { alignItems } = elementStyle;
+    const { justifyContent } = elementStyle;
     const defaultValue = typeof dataText === "string" ? dataText : "Click me";
     const value = useRef<string>(defaultValue);
 
@@ -69,7 +69,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         <div
             style={{
                 display: "flex",
-                justifyContent: alignItems
+                justifyContent
             }}
         >
             <a
