@@ -207,14 +207,9 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async deleteFile(_, args, context) {
                     return resolve(() => context.fileManager.files.deleteFile(args.id));
                 },
-                async install(_, args, context) {
-                    // Start the download of initial Page Builder page / block images.
+                async install(_, args, { fileManager }) {
                     try {
-                        let settings = await context.fileManager.settings.getSettings();
-
-                        if (!settings) {
-                            settings = await context.fileManager.settings.createSettings();
-                        }
+                        const settings = await fileManager.settings.getSettings();
 
                         if (settings.installed) {
                             return new ErrorResponse({
@@ -223,13 +218,20 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             });
                         }
 
+                        const data: Partial<Settings> = {
+                            installed: true
+                        };
+
                         if (args.srcPrefix) {
-                            settings.srcPrefix = args.srcPrefix;
+                            data.srcPrefix = args.srcPrefix;
                         }
 
-                        settings.installed = true;
+                        if (!settings) {
+                            await fileManager.settings.createSettings(data);
+                        } else {
+                            await fileManager.settings.updateSettings(data);
+                        }
 
-                        await context.fileManager.settings.updateSettings(settings);
                         return new Response(true);
                     } catch (error) {
                         return new ErrorResponse(error);
