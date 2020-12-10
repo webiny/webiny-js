@@ -6,9 +6,9 @@ import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components

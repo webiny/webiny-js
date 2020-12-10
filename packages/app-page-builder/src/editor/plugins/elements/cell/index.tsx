@@ -31,7 +31,7 @@ const cellPlugin: PbEditorPageElementPlugin = {
         "pb-editor-page-element-settings-border",
         "pb-editor-page-element-style-settings-shadow",
         "",
-        "pb-editor-page-element-settings-padding",
+        "pb-editor-page-element-style-settings-padding",
         "pb-editor-page-element-settings-margin",
         ""
     ],

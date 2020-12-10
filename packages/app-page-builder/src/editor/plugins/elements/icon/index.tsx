@@ -42,7 +42,7 @@ export default () => {
             settings: [
                 "pb-editor-page-element-settings-icon",
                 "",
-                "pb-editor-page-element-settings-padding",
+                "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-settings-margin",
                 [
                     "pb-editor-page-element-settings-horizontal-align",

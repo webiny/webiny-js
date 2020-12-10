@@ -51,7 +51,7 @@ export default (): Plugin[] => {
                     "pb-editor-page-element-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "pb-editor-page-element-settings-padding",
+                "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-settings-margin",
                 "",
                 "pb-editor-page-element-settings-clone",
