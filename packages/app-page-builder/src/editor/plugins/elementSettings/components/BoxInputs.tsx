@@ -13,7 +13,7 @@ const classes = {
     gridWrapper: css({
         "&.mdc-layout-grid": {
             padding: 0,
-            marginBottom: 16,
+            marginBottom: 36,
             "& .mdc-layout-grid__inner": {
                 gridRowGap: 8
             }
@@ -21,6 +21,9 @@ const classes = {
     }),
     wrapper: css({
         display: "flex"
+    }),
+    inputWrapper: css({
+        height: 32
     }),
     input: css({
         "& .mdc-text-field__input": {
@@ -123,37 +126,45 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                 <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
             <Cell span={12} className={classes.wrapper}>
-                <InputField
-                    className={classes.input}
-                    description={top.label}
-                    value={linked ? all : top.value}
-                    onChange={
-                        linked
-                            ? getUpdateValue(valueKey + ".all")
-                            : getUpdateValue(`${valueKey}.${top.key}`)
-                    }
-                />
-                <InputField
-                    disabled={linked}
-                    className={classes.input}
-                    description={right.label}
-                    value={right.value}
-                    onChange={getUpdateValue(`${valueKey}.${right.key}`)}
-                />
-                <InputField
-                    disabled={linked}
-                    className={classes.input}
-                    description={bottom.label}
-                    value={bottom.value}
-                    onChange={getUpdateValue(`${valueKey}.${bottom.key}`)}
-                />
-                <InputField
-                    disabled={linked}
-                    className={classes.input}
-                    description={left.label}
-                    value={left.value}
-                    onChange={getUpdateValue(`${valueKey}.${left.key}`)}
-                />
+                <div className={classes.inputWrapper}>
+                    <InputField
+                        className={classes.input}
+                        description={top.label}
+                        value={linked ? all : top.value}
+                        onChange={
+                            linked
+                                ? getUpdateValue(valueKey + ".all")
+                                : getUpdateValue(`${valueKey}.${top.key}`)
+                        }
+                    />
+                </div>
+                <div className={classes.inputWrapper}>
+                    <InputField
+                        disabled={linked}
+                        className={classes.input}
+                        description={right.label}
+                        value={right.value}
+                        onChange={getUpdateValue(`${valueKey}.${right.key}`)}
+                    />
+                </div>
+                <div className={classes.inputWrapper}>
+                    <InputField
+                        disabled={linked}
+                        className={classes.input}
+                        description={bottom.label}
+                        value={bottom.value}
+                        onChange={getUpdateValue(`${valueKey}.${bottom.key}`)}
+                    />
+                </div>
+                <div className={classes.inputWrapper}>
+                    <InputField
+                        disabled={linked}
+                        className={classes.input}
+                        description={left.label}
+                        value={left.value}
+                        onChange={getUpdateValue(`${valueKey}.${left.key}`)}
+                    />
+                </div>
                 <button
                     className={classNames(classes.linkSettings, {
                         [classes.linkSettingsActive]: linked
