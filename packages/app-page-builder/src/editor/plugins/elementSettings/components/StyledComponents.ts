@@ -112,3 +112,10 @@ export const SpacingGrid = styled("div")({
         justifyContent: "center"
     }
 });
+export const SimpleButton = styled("button")({
+    border: "none",
+    padding: "4px 12px"
+});
+export const ButtonContainer = styled("div")({
+    marginTop: 16
+});
