@@ -507,6 +507,12 @@ export type PbEditorPageElementSettingsPlugin = Plugin & {
     elements?: boolean | string[];
 };
 
+export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-style-settings";
+    render(params: { options?: any }): ReactElement;
+    elements?: boolean | string[];
+};
+
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
