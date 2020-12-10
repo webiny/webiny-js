@@ -204,7 +204,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     search: PbListPagesSearchInput
                 ): PbPageListResponse
 
-                listPageTags(search: PbListPageTagsSearchInput): PbPageTagsListResponse
+                listPageTags(search: PbListPageTagsSearchInput!): PbPageTagsListResponse
                 
                 # Returns existing tags based on given search term.
                 searchTags(query: String!): PbSearchTagsResponse
