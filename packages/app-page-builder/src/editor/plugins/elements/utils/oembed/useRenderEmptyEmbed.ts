@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { plugins } from "@webiny/plugins";
-import { PbElement } from "../../../../../types";
+import { PbElement, PbShallowElement } from "../../../../../types";
 
-export default (element: PbElement) => {
+export default (element: PbElement | PbShallowElement) => {
     return useCallback(() => {
         const [pageElementPlugin] = plugins
             .byType("pb-editor-page-element")
