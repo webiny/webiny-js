@@ -60,6 +60,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 category: PbPageCategory
                 title: String
+                snippet: String
+                tags: [String]
                 url: String
                 savedOn: DateTime
                 createdFrom: ID

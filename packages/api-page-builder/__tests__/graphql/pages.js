@@ -72,6 +72,14 @@ const LIST_DATA_FIELD = /* GraphQL */ `
         }
         status
         title
+        snippet
+        tags
+        images {
+            general {
+                id
+                src
+            }
+        }
         url
         status
         locked
