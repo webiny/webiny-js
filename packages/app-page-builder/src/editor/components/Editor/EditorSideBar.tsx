@@ -9,10 +9,8 @@ import {
     uiAtom,
     updateSidebarActiveTabIndexMutation
 } from "../../recoil/modules"; // TODO: Do we need "tree-shaking" here?
-import NoActiveElement from "./Sidebar/NoActiveElement";
-import SidebarActions from "./Sidebar/SidebarActions";
-import ElementStyles from "./Sidebar/ElementStyles";
-import { ReactComponent as TouchIcon } from "./Sidebar/icons/touch_app.svg";
+import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
+import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
 
 const rightSideBar = css({
     boxShadow: "1px 0px 5px 0px rgba(128,128,128,1)",
@@ -37,17 +35,10 @@ const EditorSideBar = () => {
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={activeTabIndex} updateValue={setActiveTabIndex}>
                 <Tab label={"style"}>
-                    {element ? (
-                        <ElementStyles />
-                    ) : (
-                        <NoActiveElement
-                            icon={<TouchIcon />}
-                            message={"Select an element on the canvas to activate this panel."}
-                        />
-                    )}
+                    <StyleSettingsTabContent element={element} />
                 </Tab>
-                <Tab label={"Element"} disabled={!element}>
-                    {element && <SidebarActions element={element} />}
+                <Tab label={"element"} disabled={!element}>
+                    <ElementSettingsTabContent element={element} />
                 </Tab>
             </Tabs>
         </Elevation>

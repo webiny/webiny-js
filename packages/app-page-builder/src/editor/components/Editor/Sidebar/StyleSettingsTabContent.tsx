@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
-
 import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
 import NoActiveElement from "./NoActiveElement";
+import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { ReactComponent as WarningIcon } from "./icons/warning-black.svg";
 
-const SidebarActionsWrapper = styled("div")({
+const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
     overflowY: "auto",
     // Style scrollbar
@@ -21,14 +21,23 @@ const SidebarActionsWrapper = styled("div")({
     }
 });
 
-const ElementStyles = () => {
+const StyleSettingsTabContent = ({ element }) => {
     const elementSettings = useElementSettings();
-    const styleSettings = elementSettings.filter(({ plugin }) =>
-        Boolean(typeof plugin.render === "function")
-    );
+    const styleSettings = useMemo(() => {
+        return elementSettings.filter(({ plugin }) => Boolean(typeof plugin.render === "function"));
+    }, [elementSettings]);
+
+    if (!element) {
+        return (
+            <NoActiveElement
+                icon={<TouchIcon />}
+                message={"Select an element on the canvas to activate this panel."}
+            />
+        );
+    }
 
     return (
-        <SidebarActionsWrapper>
+        <RootElement>
             {styleSettings.length ? (
                 styleSettings.map(({ plugin, options }, index) => {
                     return (
@@ -43,8 +52,8 @@ const ElementStyles = () => {
                     message={"No style settings found for selected element."}
                 />
             )}
-        </SidebarActionsWrapper>
+        </RootElement>
     );
 };
 
-export default React.memo(ElementStyles);
+export default React.memo(StyleSettingsTabContent);

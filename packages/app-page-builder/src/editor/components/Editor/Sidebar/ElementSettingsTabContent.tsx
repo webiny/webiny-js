@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { plugins } from "@webiny/plugins";
 import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
-import { PbEditorSidebarContentPlugin, PbElement } from "../../../../types";
+import { PbEditorSidebarContentPlugin } from "../../../../types";
 
 const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -26,11 +26,15 @@ const SidebarActionsWrapper = styled("div")({
     borderBottom: "1px solid rgb(234,233,234)"
 });
 
-const SidebarActions = ({ element }: { element: PbElement }) => {
+const ElementSettingsTabContent = ({ element }) => {
     const elementSettings = useElementSettings();
     const sidebarContentPlugins = plugins.byType<PbEditorSidebarContentPlugin>(
         "pb-editor-sidebar-content"
     );
+
+    if (!element) {
+        return null;
+    }
 
     return (
         <RootElement>
@@ -50,6 +54,7 @@ const SidebarActions = ({ element }: { element: PbElement }) => {
                         );
                     })}
             </SidebarActionsWrapper>
+            {/* TODO: Convert "Save" to "element settings" */}
             {elementSettings.map(({ plugin, options }, index) => {
                 return (
                     <div key={plugin.name + "-" + index}>
@@ -65,4 +70,4 @@ const SidebarActions = ({ element }: { element: PbElement }) => {
     );
 };
 
-export default React.memo(SidebarActions);
+export default React.memo(ElementSettingsTabContent);
