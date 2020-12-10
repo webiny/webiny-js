@@ -41,7 +41,6 @@ import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undo
 // Element settings
 import advanced from "@webiny/app-page-builder/editor/plugins/elementSettings/advanced";
 import animation from "@webiny/app-page-builder/editor/plugins/elementSettings/animation";
-import bar from "@webiny/app-page-builder/editor/plugins/elementSettings/bar";
 import deleteElement from "@webiny/app-page-builder/editor/plugins/elementSettings/delete";
 import clone from "@webiny/app-page-builder/editor/plugins/elementSettings/clone";
 import background from "@webiny/app-page-builder/editor/plugins/elementSettings/background";
@@ -126,7 +125,6 @@ export default [
     // Element settings
     advanced,
     animation,
-    bar,
     divider,
     background,
     border,
