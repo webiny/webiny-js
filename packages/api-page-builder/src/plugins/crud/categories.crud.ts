@@ -176,7 +176,9 @@ const plugin: ContextPlugin<PbContext> = {
                     return createData;
                 },
                 async update(slug, data) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
 
                     const category = await this.get(slug);
                     if (!category) {
@@ -200,7 +202,9 @@ const plugin: ContextPlugin<PbContext> = {
                     return { ...category, ...updateData };
                 },
                 async delete(slug) {
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, { rwd: "d" });
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "d"
+                    });
 
                     const category = await this.get(slug);
                     if (!category) {

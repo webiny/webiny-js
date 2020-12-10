@@ -161,7 +161,7 @@ describe("Pages Security Test", () => {
             identity: identityB
         });
 
-        [response] = await identityAHandler.listPages({sort: { createdOn: "desc" }});
+        [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {

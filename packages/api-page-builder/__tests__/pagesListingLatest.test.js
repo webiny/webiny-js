@@ -400,7 +400,7 @@ describe("listing latest pages", () => {
 
     test("pagination", async () => {
         await until(
-            () => listPages({sort: { createdOn: "desc" }}),
+            () => listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 5
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.meta).toEqual({
@@ -521,10 +521,7 @@ describe("listing latest pages", () => {
 
     test("filtering by tags", async () => {
         // Just in case, ensure all pages are present.
-        await until(
-            listPages,
-            ([res]) => res.data.pageBuilder.listPages.data[0].title === "page-a"
-        ).then(([res]) => expect(res.data.pageBuilder.listPages.data.length).toBe(5));
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 5);
 
         const tags = {
             [initiallyCreatedPagesIds[0]]: ["news", "world"],

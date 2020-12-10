@@ -77,7 +77,6 @@ const Revision = ({ revision, page }: RevisionProps) => {
         page
     });
 
-    console.log("revision.locked", revision);
     const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
 
     return (
@@ -120,7 +119,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status !== 'published' && (
+                            {revision.status !== "published" && (
                                 <MenuItem onClick={() => publishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />

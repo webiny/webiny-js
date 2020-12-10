@@ -187,7 +187,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             input PbListPagesSearchInput {
-                # By specifying "query", the search will be performed against pages' "title" and "snippet" fields. 
+                # By specifying "query", the search will be performed against pages' "title" and "snippet" fields.
                 query: String
             }
 

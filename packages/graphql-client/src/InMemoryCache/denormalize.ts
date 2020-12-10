@@ -16,10 +16,7 @@ const denormalizeFragment = (normalizedDataFragment, entities) => {
         }
 
         if (key === "__entity") {
-            const {
-                id: entityId,
-                fields: entityFields,
-            } = normalizedDataFragment[key];
+            const { id: entityId, fields: entityFields } = normalizedDataFragment[key];
 
             entityFields.forEach(field => {
                 denormalizedDataFragment[field] = entities[typename][entityId][field];

@@ -32,7 +32,7 @@ describe("Page Settings Test", () => {
             data: {
                 settings: {
                     general: {
-                        snippet: 'snippet',
+                        snippet: "snippet",
                         tags: ["a", "b", "c"],
                         layout: "some-layout",
                         image: {
@@ -69,7 +69,7 @@ describe("Page Settings Test", () => {
         await getPage({ id: page.id }).then(([res]) =>
             expect(res.data.pageBuilder.getPage.data.settings).toEqual({
                 general: {
-                    snippet: 'snippet',
+                    snippet: "snippet",
                     image: {
                         id: "settings.general.image.id",
                         src: "settings.general.image.src"

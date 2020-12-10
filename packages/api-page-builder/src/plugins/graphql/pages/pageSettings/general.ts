@@ -1,4 +1,4 @@
-export default  [
+export default [
     {
         type: "graphql-schema",
         schema: {

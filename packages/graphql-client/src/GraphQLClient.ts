@@ -129,5 +129,4 @@ export default class GraphQLClient {
 
         return data;
     }
-
 }

@@ -273,8 +273,7 @@ describe("Menus Security Test", () => {
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
                 identityA
             ],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA], // will fail - missing "r"
-
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -325,7 +324,7 @@ describe("Menus Security Test", () => {
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
                 identityA
             ],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA], // will fail - missing "r"
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
