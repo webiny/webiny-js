@@ -370,15 +370,15 @@ export type CmsContentModelUpdateInputType = {
     title?: string;
 };
 
-export type CmsContentModelManagerListContextArgsType = {
+export type CmsContentModelManagerListArgsType = {
     search?: Record<string, any>;
     pagination?: {
         offset?: number;
         limit?: number;
     };
 };
-export interface CmsContentModelManagerContextType<TModel> {
-    list(args?: CmsContentModelManagerListContextArgsType): Promise<TModel[]>;
+export interface CmsContentModelManagerInterface<TModel> {
+    list(args?: CmsContentModelManagerListArgsType): Promise<TModel[]>;
     get(id: string): Promise<TModel>;
     create<TData>(data: TData): Promise<TModel>;
     update<TData>(data: TData): Promise<TModel>;
@@ -391,9 +391,13 @@ export type CmsContentModelContextType = {
         data: CmsContentModelCreateInputType,
         createdBy: CreatedByType
     ) => Promise<CmsContentModelType>;
-    update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
-    delete: (id: string) => Promise<void>;
-    getManager: <T>(code: string) => Promise<CmsContentModelManagerContextType<T>>;
+    update: (
+        model: CmsContentModelType,
+        data: CmsContentModelUpdateInputType
+    ) => Promise<CmsContentModelType>;
+    delete: (model: CmsContentModelType) => Promise<void>;
+    getManager: <T>(code: string) => Promise<CmsContentModelManagerInterface<T>>;
+    managers: Map<string, CmsContentModelManagerInterface<any>>;
 };
 
 export type CmsCrudContextType = {

@@ -1,12 +1,11 @@
-/* eslint-disable */
 import {
-    CmsContentModelManagerContextType,
-    CmsContentModelManagerListContextArgsType,
+    CmsContentModelManagerInterface,
+    CmsContentModelManagerListArgsType,
     CmsContentModelType,
     CmsContext
 } from "@webiny/api-headless-cms/types";
 
-export class ContentModelManager<T> implements CmsContentModelManagerContextType<T> {
+export class ContentModelManager<T> implements CmsContentModelManagerInterface<T> {
     private readonly _context: CmsContext;
     private readonly _model: CmsContentModelType;
 
@@ -15,22 +14,27 @@ export class ContentModelManager<T> implements CmsContentModelManagerContextType
         this._model = model;
     }
 
+    // eslint-disable-next-line
     public async create<TData>(data: TData): Promise<T> {
         return ({} as unknown) as T;
     }
 
+    // eslint-disable-next-line
     public async delete(id: string): Promise<boolean> {
         return false;
     }
 
+    // eslint-disable-next-line
     public async get(id: string): Promise<T> {
         return ({} as unknown) as T;
     }
 
-    public async list(args?: CmsContentModelManagerListContextArgsType): Promise<T[]> {
+    // eslint-disable-next-line
+    public async list(args?: CmsContentModelManagerListArgsType): Promise<T[]> {
         return ([] as unknown) as T[];
     }
 
+    // eslint-disable-next-line
     public async update<TData>(data: TData): Promise<T> {
         return ({} as unknown) as T;
     }

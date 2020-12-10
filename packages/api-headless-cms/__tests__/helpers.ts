@@ -4,7 +4,7 @@ import {
     createSettingsPk
 } from "@webiny/api-headless-cms/common/partitionKeys";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
 import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
 
@@ -20,29 +20,46 @@ export const getInitialEnvironment = () => ({
     id: INITIAL_ENVIRONMENT_ID,
     name: "initial Environment",
     slug: "initial-environment",
-    description: "initial environment description"
-});
-const getDummyContext = (): any => ({
-    security: {
-        getTenant: () => ({
-            id: "root",
-            name: "Root",
-            parent: null
-        })
-    },
-    i18nContent: {
-        locale: {
-            code: "en-US"
-        }
-    },
-    environment: {
-        slug: "production"
+    description: "initial environment description",
+    createdBy: {
+        id: "1234567890",
+        name: "userName123"
     }
 });
-export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDummyContext());
+const getSecurityIdentity = () => {
+    return new SecurityIdentity({
+        id: "1234567890",
+        displayName: "userName123",
+        login: "login",
+        type: "type"
+    });
+};
+const getDummyCmsContext = (): CmsContext => {
+    return {
+        security: {
+            getIdentity: () => {
+                return getSecurityIdentity();
+            },
+            getTenant: () => ({
+                id: "root",
+                name: "Root",
+                parent: null
+            })
+        },
+        i18nContent: {
+            locale: {
+                code: "en-US"
+            }
+        },
+        environment: {
+            slug: "production"
+        }
+    } as any;
+};
+export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDummyCmsContext());
 export const createEnvironmentAliasTestPartitionKey = () =>
-    createEnvironmentAliasPk(getDummyContext());
-export const createSettingsTestPartitionKey = () => createSettingsPk(getDummyContext());
+    createEnvironmentAliasPk(getDummyCmsContext());
+export const createSettingsTestPartitionKey = () => createSettingsPk(getDummyCmsContext());
 
 export const deleteInitialEnvironment = async (documentClient: DocumentClient): Promise<void> => {
     await documentClient
@@ -56,7 +73,13 @@ export const deleteInitialEnvironment = async (documentClient: DocumentClient): 
         .promise();
 };
 
-export const createInitialEnvironment = async (documentClient: DocumentClient) => {
+export const createInitialEnvironment = async (
+    documentClient: DocumentClient
+): Promise<CmsEnvironmentType> => {
+    const model: CmsEnvironmentType = {
+        ...getInitialEnvironment(),
+        createdOn: new Date()
+    };
     await documentClient
         .put({
             TableName: "HeadlessCms",
@@ -64,11 +87,11 @@ export const createInitialEnvironment = async (documentClient: DocumentClient) =
                 PK: createEnvironmentTestPartitionKey(),
                 SK: getInitialEnvironmentId(),
                 TYPE: DbItemTypes.CMS_ENVIRONMENT,
-                ...getInitialEnvironment(),
-                createdOn: new Date().toISOString()
+                ...model
             }
         })
         .promise();
+    return model;
 };
 
 export const fetchInitialEnvironment = async (
@@ -109,12 +132,7 @@ export const createGetPermissions = (permissions: PermissionsArgType[]) => {
 export const createAuthenticate = (identity?: SecurityIdentity) => {
     return (): SecurityIdentity => {
         if (!identity) {
-            return new SecurityIdentity({
-                id: "1234567890",
-                displayName: "userName123",
-                login: "login",
-                type: "type"
-            });
+            return getSecurityIdentity();
         }
         return identity;
     };

@@ -18,6 +18,17 @@ export default {
     apply(context) {
         const { db } = context;
 
+        // manager per request - something similar to dataloader
+        const managers = new Map<string, ContentModelManager<any>>();
+        const updateManager = <T>(
+            context: CmsContext,
+            model: CmsContentModelType
+        ): ContentModelManager<T> => {
+            managers.delete(model.code);
+            managers.set(model.code, new ContentModelManager<T>(context, model));
+            return managers.get(model.code);
+        };
+
         const models: CmsContentModelContextType = {
             async get(id) {
                 const [response] = await db.read<CmsContentModelType>({
@@ -38,22 +49,34 @@ export default {
                 return response;
             },
             async create() {
-                return {} as any;
+                const model = {} as any;
+
+                updateManager(context, model);
+                return model;
             },
-            async update() {
-                return {} as any;
+            async update(model, data) {
+                updateManager(context, model);
+                return {
+                    ...model,
+                    ...data
+                };
             },
-            async delete() {
+            async delete(model) {
+                managers.delete(model.code);
                 return;
             },
-            async getManager<T>(code) {
+            async getManager<T extends any>(code) {
+                if (managers.has(code)) {
+                    return managers.get(code);
+                }
                 const models = await context.cms.models.list();
                 const model = models.find(m => m.code === code);
                 if (!model) {
                     throw new Error(`There is no content model "${code}".`);
                 }
-                return new ContentModelManager<T>(context, model);
-            }
+                return updateManager<T>(context, model);
+            },
+            managers
         };
 
         context.cms = {

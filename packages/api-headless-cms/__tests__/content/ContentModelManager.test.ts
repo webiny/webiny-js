@@ -1,4 +1,10 @@
+import mdbid from "mdbid";
 import { ContentModelManager } from "@webiny/api-headless-cms/content/crud/ContentModelManager";
+import { useContentGqlHandler } from "../useContentGqlHandler";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
+import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { createInitialEnvironment } from "../helpers";
 
 type DummyModelType = {
     id: string;
@@ -10,18 +16,67 @@ type DummyModelUpdateType = {
     name?: string;
 };
 
+const createContentModelGroup = async (
+    documentClient: DocumentClient
+): Promise<CmsContentModelGroupType> => {
+    const environment = await createInitialEnvironment(documentClient);
+    const model: CmsContentModelGroupType = {
+        id: mdbid(),
+        name: "group",
+        description: "description",
+        changedOn: null,
+        createdBy: {
+            id: "user123",
+            name: "userName123"
+        },
+        createdOn: new Date(),
+        environment,
+        icon: "icon/icon",
+        slug: "group-slug"
+    };
+    await documentClient
+        .put({
+            TableName: "HeadlessCms",
+            Item: {
+                PK: "pk#group",
+                SK: model.id,
+                TYPE: DbItemTypes.CMS_CONTENT_MODEL,
+                ...model
+            }
+        })
+        .promise();
+    return model;
+};
+
 describe("ContentModelManager", () => {
+    const { documentClient } = useContentGqlHandler();
+    // TODO need to get either real context or create a dummy one
     const context: any = {};
     let manager: ContentModelManager<DummyModelType>;
+    let contentModel;
     beforeEach(async () => {
-        const model = {} as any;
-        manager = new ContentModelManager<DummyModelType>(context, model);
+        const group = await createContentModelGroup(documentClient);
+        contentModel = {
+            id: mdbid(),
+            title: "model",
+            code: "model",
+            group,
+            description: "description",
+            createdOn: new Date(),
+            changedOn: null,
+            createdBy: {
+                id: "user123",
+                name: "userName123"
+            },
+            fields: []
+        };
+        manager = new ContentModelManager(context, contentModel);
     });
 
     it("should get content model target by id", async () => {
-        const model = await manager.get("1234");
+        const result = await manager.get("1234");
 
-        expect(model).toMatchObject({
+        expect(result).toMatchObject({
             id: /^([a-zA-Z0-9]+)$/,
             name: "model",
             createdOn: /^20/,
@@ -30,10 +85,10 @@ describe("ContentModelManager", () => {
     });
 
     it("should list content model target", async () => {
-        const models = await manager.list();
+        const result = await manager.list();
 
-        expect(models).toHaveLength(1);
-        expect(models[0]).toEqual({
+        expect(result).toHaveLength(1);
+        expect(result[0]).toEqual({
             id: /^([a-zA-Z0-9]+)$/,
             name: "model",
             createdOn: /^20/,
@@ -44,27 +99,27 @@ describe("ContentModelManager", () => {
     it("should update content model target", async () => {
         const model = await manager.get("1234");
 
-        const updatedModel = await manager.update<DummyModelUpdateType>({
+        const result = await manager.update<DummyModelUpdateType>({
             name: "modelUpdated"
         });
 
-        expect(updatedModel).toEqual({
+        expect(result).toEqual({
             ...model,
             name: "modelUpdated",
             changedOn: /^20/
         });
 
         const modelAfterUpdate = await manager.get("1234");
-        expect(modelAfterUpdate).toEqual(updatedModel);
+        expect(modelAfterUpdate).toEqual(result);
     });
 
     it("should delete content model target", async () => {
         const model = await manager.get("1234");
 
-        const response = await manager.delete(model.id);
-        expect(response).toEqual(true);
+        const result = await manager.delete(model.id);
+        expect(result).toEqual(true);
 
-        const modelAfterDelete = await manager.get("1234");
-        expect(modelAfterDelete).toBeNull();
+        const resultAfterDelete = await manager.get("1234");
+        expect(resultAfterDelete).toBeNull();
     });
 });

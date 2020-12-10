@@ -162,7 +162,7 @@ export default {
                 }
 
                 try {
-                    const changedModel = await context.cms.models.update(id, data);
+                    const changedModel = await context.cms.models.update(model, data);
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
@@ -192,7 +192,7 @@ export default {
                 }
 
                 try {
-                    await context.cms.models.delete(id);
+                    await context.cms.models.delete(model);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({

@@ -8,10 +8,11 @@ const createModel = async (documentClient: DocumentClient): Promise<CmsContentMo
     const model: CmsContentModelType = {
         id: mdbid(),
         title: "model",
-        createdOn: new Date(),
         group: "group",
+        code: "model",
+        createdOn: new Date(),
         createdBy: {
-            id: "123",
+            id: "1234567890",
             name: "userName123"
         },
         fields: []
