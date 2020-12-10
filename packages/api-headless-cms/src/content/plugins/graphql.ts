@@ -1,11 +1,11 @@
 import { merge } from "lodash";
-import contentModelGroup from "./graphql/contentModelGroup";
 import contentModel from "./graphql/contentModel";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
 const emptyResolver = () => ({});
 
+// eslint-disable-next-line
 export default ({ type }) => [
     {
         name: "graphql-schema-headless",
@@ -38,14 +38,12 @@ export default ({ type }) => [
                     data: Boolean
                     error: CmsError
                 }
-                ${contentModelGroup.getTypeDefs(type)}
                 ${contentModel.typeDefs}
             `,
             resolvers: merge(
                 {
                     _empty: emptyResolver
                 },
-                contentModelGroup.getResolvers(type),
                 contentModel.resolvers
             )
         }

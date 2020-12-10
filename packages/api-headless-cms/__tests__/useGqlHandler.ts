@@ -105,7 +105,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
                 };
             }
         },
-        ...plugins
+        plugins
     );
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
