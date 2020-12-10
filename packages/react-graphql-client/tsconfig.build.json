@@ -1,25 +1,15 @@
 {
-	"extends": "../../tsconfig.build.json",
-	"include": [
-		"./src",
-		"./custom.d.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"../i18n",
-		"../graphql-client"
-	],
-	"compilerOptions": {
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"declarationDir": "./dist"
-	},
-	"references": [
-		{
-			"path": "../i18n/tsconfig.build.json"
-		},
-		{
-			"path": "../graphql-client/tsconfig.build.json"
-		}
-	]
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src", "./custom.d.ts"],
+  "exclude": ["node_modules", "../graphql-client"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    {
+      "path": "../graphql-client/tsconfig.build.json"
+    }
+  ]
 }

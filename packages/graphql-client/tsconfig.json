@@ -1,4 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": []
+  "references": [{ "path": "../error" }]
 }
