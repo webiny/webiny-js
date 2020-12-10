@@ -47,7 +47,7 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
             .byType<PbEditorPageElementAdvancedSettingsPlugin>(
                 "pb-editor-page-element-advanced-settings"
             )
-            .filter(pl => pl.elementType === element.type);
+            .filter(pl => pl.elementType === element.type || pl.elementType === "all");
     }, [element.type]);
 
     const onSubmit = (formData: FormData) => {
@@ -91,7 +91,10 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
                     {renderPlugins<PbEditorPageElementAdvancedSettingsPlugin>(
                         "pb-editor-page-element-advanced-settings",
                         { Bind, data, form, submit },
-                        { wrapper: false, filter: pl => pl.elementType === type }
+                        {
+                            wrapper: false,
+                            filter: pl => pl.elementType === type || pl.elementType === "all"
+                        }
                     )}
                 </>
             )}
