@@ -501,9 +501,6 @@ export type PbEditorBlockCategoryPlugin = Plugin & {
 export type PbEditorPageElementSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-settings";
     renderAction(params: { options?: any }): ReactElement;
-    renderMenu?: (params: { options?: any }) => ReactElement;
-    render?(params: { options?: any }): ReactElement;
-    renderElement?(params: { options?: any }): ReactElement;
     elements?: boolean | string[];
 };
 
