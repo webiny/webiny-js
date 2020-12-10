@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
 // Icons
 import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
@@ -10,7 +10,6 @@ import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
 import IconSettings from "./IconSettings";
 import Icon from "./Icon";
 import { getSvg } from "../utils/iconUtils";
-import Action from "./../../elementSettings/components/Action";
 
 export default () => {
     const PreviewBox = styled("div")({
@@ -40,7 +39,7 @@ export default () => {
                 }
             },
             settings: [
-                "pb-editor-page-element-settings-icon",
+                "pb-editor-page-element-style-settings-icon",
                 "",
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
@@ -85,17 +84,11 @@ export default () => {
             }
         } as PbEditorPageElementPlugin,
         {
-            name: "pb-editor-page-element-settings-icon",
-            type: "pb-editor-page-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Icon"} icon={<IconSvg />} />;
-            },
-            renderMenu() {
-                return <span>Moved to sidebar.</span>;
-            },
+            name: "pb-editor-page-element-style-settings-icon",
+            type: "pb-editor-page-element-style-settings",
             render() {
                 return <IconSettings />;
             }
-        } as PbEditorPageElementSettingsPlugin
+        } as PbEditorPageElementStyleSettingsPlugin
     ];
 };

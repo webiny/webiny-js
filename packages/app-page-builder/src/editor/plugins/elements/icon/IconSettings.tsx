@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
