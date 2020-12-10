@@ -46,14 +46,10 @@ export default () => [
                 <Accordion title={"CodePen"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://codepen.io/"}
-                                    description={"Enter a CodePen URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://codepen.io/"}
+                                description={"Enter a CodePen URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>

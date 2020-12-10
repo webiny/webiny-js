@@ -61,16 +61,10 @@ export default () => [
                                 name={"source.url"}
                                 validators={validation.create("required,url")}
                             >
-                                {({ value, onChange }) => (
-                                    <InputField
-                                        value={value}
-                                        onChange={onChange}
-                                        placeholder={
-                                            "https://pinterest.com/pin/823666219335767857/"
-                                        }
-                                        description={"Enter a Pinterest URL"}
-                                    />
-                                )}
+                                <InputField
+                                    placeholder={"https://pinterest.com/pin/823666219335767857/"}
+                                    description={"Enter a Pinterest URL"}
+                                />
                             </Bind>
                         </Wrapper>
                         <Wrapper

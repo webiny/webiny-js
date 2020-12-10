@@ -38,7 +38,7 @@ const PagesListDesignSettings = ({ Bind }) => {
                 </Wrapper>
                 <Wrapper label={"Results per page"} containerClassName={classes.simpleGrid}>
                     <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
-                        {({ value, onChange }) => <InputField value={value} onChange={onChange} />}
+                        <InputField />
                     </Bind>
                 </Wrapper>
             </React.Fragment>

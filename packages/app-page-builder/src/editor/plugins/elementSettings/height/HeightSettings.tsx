@@ -90,9 +90,7 @@ const Settings: React.FunctionComponent = () => {
                                 <Cell span={7}>
                                     <InputContainer width={"auto"} margin={0}>
                                         <Bind name={"value"} validators={validateHeight}>
-                                            {({ value, onChange }) => (
-                                                <InputField value={value} onChange={onChange} />
-                                            )}
+                                            <InputField />
                                         </Bind>
                                     </InputContainer>
                                 </Cell>

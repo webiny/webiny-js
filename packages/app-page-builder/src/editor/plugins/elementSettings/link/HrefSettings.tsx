@@ -64,6 +64,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({
                                                 value={props.value || ""}
                                                 onChange={props.onChange}
                                                 placeholder={"URL"}
+                                                {...props}
                                             />
                                         )}
                                     </DelayedOnChange>

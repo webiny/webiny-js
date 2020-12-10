@@ -57,14 +57,10 @@ export default () => [
                 <Accordion title={"Instagram"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://www.instagram.com/marvel/"}
-                                    description={"Enter a Instagram URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://www.instagram.com/marvel/"}
+                                description={"Enter a Instagram URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>

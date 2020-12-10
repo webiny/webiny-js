@@ -80,14 +80,10 @@ export default () => [
                 <Accordion title={t`Typeform`} defaultValue={true}>
                     <React.Fragment>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    description={t`Enter a Typeform URL`}
-                                    placeholder={"https://typeform.com"}
-                                />
-                            )}
+                            <InputField
+                                description={t`Enter a Typeform URL`}
+                                placeholder={"https://typeform.com"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>Save</SimpleButton>

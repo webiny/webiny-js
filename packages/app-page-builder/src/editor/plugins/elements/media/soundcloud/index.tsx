@@ -45,14 +45,10 @@ export default () => [
                 <Accordion title={"SoundCloud"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://soundcloud.com/xyz"}
-                                    description={"Enter a song URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://soundcloud.com/xyz"}
+                                description={"Enter a song URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>

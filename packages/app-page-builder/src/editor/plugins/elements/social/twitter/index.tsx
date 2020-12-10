@@ -62,14 +62,10 @@ export default () => [
                 <Accordion title={"Twitter"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://twitter.com/"}
-                                    description={"Enter a Tweet URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://twitter.com/"}
+                                description={"Enter a Tweet URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>

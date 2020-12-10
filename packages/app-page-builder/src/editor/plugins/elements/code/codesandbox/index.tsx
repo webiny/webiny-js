@@ -51,14 +51,10 @@ export default () => [
                 <Accordion title={"CodeSandbox"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://codesandbox.io/"}
-                                    description={"Enter a CodeSandbox URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://codesandbox.io/"}
+                                description={"Enter a CodeSandbox URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>
