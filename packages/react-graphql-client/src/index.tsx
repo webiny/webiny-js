@@ -61,7 +61,6 @@ export function useQuery<TResult = Record<string, any>, TVariables = Record<stri
                     onCompleted(result, client);
                 }
             });
-
     }, [skip, JSON.stringify(clientArgs.variables)]);
 
     return { data, loading };
