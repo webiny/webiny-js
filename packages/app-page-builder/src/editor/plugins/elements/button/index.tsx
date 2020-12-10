@@ -2,12 +2,10 @@ import React from "react";
 import { css } from "emotion";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
-import { ReactComponent as ButtonIcon } from "./round-toggle_on-24px.svg";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";
-import Action from "../../elementSettings/components/Action";
 
 const buttonWrapper = css({
     display: "flex",
@@ -32,7 +30,7 @@ export default () => {
                 }
             },
             settings: [
-                "pb-editor-page-element-settings-button",
+                "pb-editor-page-element-style-settings-button",
                 "pb-editor-page-element-settings-link",
                 "",
                 "pb-editor-page-element-settings-horizontal-align-flex",
@@ -67,18 +65,11 @@ export default () => {
             }
         } as PbEditorPageElementPlugin,
         {
-            name: "pb-editor-page-element-settings-button",
-            type: "pb-editor-page-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Button"} icon={<ButtonIcon />} />;
-            },
-            // TODO: Remove these.
-            renderMenu() {
-                return <p>Moved to sidebar.</p>;
-            },
+            name: "pb-editor-page-element-style-settings-button",
+            type: "pb-editor-page-element-style-settings",
             render() {
                 return <ButtonSettings />;
             }
-        } as PbEditorPageElementSettingsPlugin
+        } as PbEditorPageElementStyleSettingsPlugin
     ];
 };
