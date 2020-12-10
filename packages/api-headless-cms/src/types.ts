@@ -352,7 +352,7 @@ type CmsContentModelFieldType = {
 };
 export type CmsContentModelType = {
     id: string;
-    title: string;
+    name: string;
     code: string;
     group: string;
     description?: string;
@@ -363,11 +363,22 @@ export type CmsContentModelType = {
 };
 
 export type CmsContentModelCreateInputType = {
-    title: string;
+    name: string;
+    description?: string;
 };
 
+// TODO fix types
+// type CmsContentModelFieldInputType = {
+//     name: string;
+//     type: string;
+//     label: string;
+//     validation: CmsContentModelFieldValidationType[];
+//     multipleValues: boolean;
+// };
 export type CmsContentModelUpdateInputType = {
-    title?: string;
+    name?: string;
+    description?: string;
+    fields?: any[];
 };
 
 export type CmsContentModelManagerListArgsType = {
@@ -408,6 +419,7 @@ export type CmsCrudContextType = {
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
+        getModel: <T>(code: string) => Promise<CmsContentModelManagerInterface<T>>;
     };
 };
 

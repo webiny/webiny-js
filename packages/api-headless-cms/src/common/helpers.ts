@@ -27,7 +27,7 @@ export const hasManageSettingsPermission = () => {
     return hasPermission(CMS_MANAGE_SETTINGS_PERMISSION);
 };
 
-const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
+const hasRwdOnPermission = ({ permission, rwd }: HasRwdCallableArgsType) => {
     if (!permission || !permission.rwd) {
         return false;
     } else if (typeof permission.rwd !== "string") {
@@ -36,10 +36,13 @@ const hasRwd = ({ permission, rwd }: HasRwdCallableArgsType) => {
     return permission.rwd.includes(rwd);
 };
 export const hasCmsManageSettingsPermissionRwd = (rwd: CRUDType) => {
+    return hasRwdPermission(CMS_MANAGE_SETTINGS_PERMISSION, rwd);
+};
+export const hasRwdPermission = (permissionName: string, rwd: CRUDType) => {
     return (resolver: GraphQLFieldResolver) => {
         return async (parent, args, context: CmsContext, info) => {
-            const permission = await getCmsManageSettingsPermission(context);
-            if (!permission || !hasRwd({ permission, rwd })) {
+            const permission = await context.security.getPermission(permissionName);
+            if (!permission || !hasRwdOnPermission({ permission, rwd })) {
                 return new NotAuthorizedResponse();
             }
             return resolver(parent, args, context, info);

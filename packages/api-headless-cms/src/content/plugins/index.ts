@@ -2,7 +2,7 @@
 // import modelFields from "./modelFields";
 // import filterOperators from "./filterOperators";
 // import graphqlFields from "./graphqlFields";
-// import graphql from "./graphql";
+import graphql from "./graphql";
 import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 // import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 // import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
@@ -36,7 +36,7 @@ export default (options: HeadlessPluginsOptions) => [
             }
         }
     } as ContextPlugin<CmsContext>,
-    contentModelManager
+    contentModelManager,
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),
     // models(),
@@ -85,7 +85,7 @@ export default (options: HeadlessPluginsOptions) => [
     //         }
     //     }
     // },
-    // graphql(options),
+    graphql(options)
     // modelFields,
     // graphqlFields
     // filterOperators()

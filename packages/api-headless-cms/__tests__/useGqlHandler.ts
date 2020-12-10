@@ -34,7 +34,13 @@ import {
     LIST_CONTENT_MODEL_GROUP_QUERY,
     UPDATE_CONTENT_MODEL_GROUP_MUTATION
 } from "./common/crud/graphql/contentModelGroup";
-import { GET_CONTENT_MODEL_QUERY } from "./content/graphql/contentModel";
+import {
+    CREATE_CONTENT_MODEL_MUTATION,
+    DELETE_CONTENT_MODEL_MUTATION,
+    GET_CONTENT_MODEL_QUERY,
+    LIST_CONTENT_MODELS_QUERY,
+    UPDATE_CONTENT_MODEL_MUTATION
+} from "./content/graphql/contentModel";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
@@ -180,9 +186,21 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         async listContentModelGroupsQuery() {
             return invoke({ body: { query: LIST_CONTENT_MODEL_GROUP_QUERY } });
         },
-        // dynamic content models
+        // content models definitions
         async getContentModelQuery(variables: Record<string, any>) {
             return invoke({ body: { query: GET_CONTENT_MODEL_QUERY, variables } });
+        },
+        async listContentModelsQuery(variables: Record<string, any> = {}) {
+            return invoke({ body: { query: LIST_CONTENT_MODELS_QUERY, variables } });
+        },
+        async createContentModelMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: CREATE_CONTENT_MODEL_MUTATION, variables } });
+        },
+        async updateContentModelMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: UPDATE_CONTENT_MODEL_MUTATION, variables } });
+        },
+        async deleteContentModelMutation(variables: Record<string, any>) {
+            return invoke({ body: { query: DELETE_CONTENT_MODEL_MUTATION, variables } });
         }
     };
 };

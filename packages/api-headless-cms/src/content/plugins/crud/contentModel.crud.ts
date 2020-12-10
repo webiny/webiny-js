@@ -74,6 +74,7 @@ export default {
             },
             async update(model, data) {
                 await updateManager(context, model);
+
                 return {
                     ...model,
                     ...data
@@ -99,7 +100,10 @@ export default {
 
         context.cms = {
             ...(context.cms || ({} as any)),
-            models
+            models,
+            getModel: (code: string) => {
+                return models.getManager(code);
+            }
         };
     }
 } as ContextPlugin<CmsContext>;

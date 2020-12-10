@@ -1,6 +1,6 @@
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { compose, ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql";
-import { NotAuthorizedResponse } from "@webiny/api-security";
+import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 import {
     CmsContentModelCreateInputType,
     CmsContentModelUpdateInputType,
@@ -8,8 +8,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import {
     getCmsManageSettingsPermission,
-    hasCmsManageSettingsPermissionRwd,
-    hasManageSettingsPermission,
+    hasRwdPermission,
     userCanManageModel
 } from "@webiny/api-headless-cms/common/helpers";
 
@@ -26,25 +25,32 @@ type DeleteContentModelArgsType = {
     id: string;
 };
 
+const PERMISSION_NAME = "cms.manage.contentModel";
+
 export default {
     typeDefs: /* GraphQL */ `
         type CmsContentModel {
-            id: ID
-            createdOn: DateTime
+            id: ID!
+            name: String!
+            code: String!
+            description: String
+            createdOn: DateTime!
             changedOn: DateTime
-            name: String
-            contentModels: [CmsContentModel]
-            totalContentModels: Int
-            slug: String
-            description: String
-            icon: String
-            createdBy: JSON
+            createdBy: JSON!
         }
-        input CmsContentModelInput {
-            name: String
-            slug: String
+
+        input CmsContentModelCreateInput {
+            name: String!
+            code: String!
+            group: ID!
             description: String
-            icon: String
+        }
+
+        input CmsContentModelUpdateInput {
+            name: String!
+            code: String!
+            group: ID!
+            description: String
         }
 
         type CmsContentModelResponse {
@@ -72,9 +78,9 @@ export default {
         }
 
         extend type CmsMutation {
-            createContentModel(data: CmsContentModelInput!): CmsContentModelResponse
+            createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
 
-            updateContentModel(id: ID!, data: CmsContentModelInput!): CmsContentModelResponse
+            updateContentModel(id: ID!, data: CmsContentModelUpdateInput!): CmsContentModelResponse
 
             deleteContentModel(id: ID!): CmsDeleteResponse
         }
@@ -82,8 +88,8 @@ export default {
     resolvers: {
         CmsQuery: {
             getContentModel: compose(
-                hasManageSettingsPermission(),
-                hasCmsManageSettingsPermissionRwd("r"),
+                hasPermission(PERMISSION_NAME),
+                hasRwdPermission(PERMISSION_NAME, "r"),
                 hasI18NContentPermission()
             )(async (_, args: ReadContentModelArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
@@ -101,8 +107,8 @@ export default {
                 return new Response(model);
             }),
             listContentModel: compose(
-                hasManageSettingsPermission(),
-                hasCmsManageSettingsPermissionRwd("r"),
+                hasPermission(PERMISSION_NAME),
+                hasRwdPermission(PERMISSION_NAME, "r"),
                 hasI18NContentPermission()
             )(async (_, __, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
@@ -118,8 +124,8 @@ export default {
         },
         CmsMutation: {
             createContentModel: compose(
-                hasManageSettingsPermission(),
-                hasCmsManageSettingsPermissionRwd("w"),
+                hasPermission(PERMISSION_NAME),
+                hasRwdPermission(PERMISSION_NAME, "w"),
                 hasI18NContentPermission()
             )(async (_, args: CreateContentModelArgsType, context: CmsContext) => {
                 const identity = context.security.getIdentity();
@@ -135,14 +141,14 @@ export default {
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "CREATE_CONTENT_GROUP_FAILED",
+                        code: "CREATE_CONTENT_MODEL_FAILED",
                         message: ex.message
                     });
                 }
             }),
             updateContentModel: compose(
-                hasManageSettingsPermission(),
-                hasCmsManageSettingsPermissionRwd("w"),
+                hasPermission(PERMISSION_NAME),
+                hasRwdPermission(PERMISSION_NAME, "w"),
                 hasI18NContentPermission()
             )(async (_, args: UpdateContentModelArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
@@ -166,14 +172,14 @@ export default {
                     return new Response({ ...model, ...changedModel });
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "UPDATE_CONTENT_GROUP_FAILED",
+                        code: "UPDATE_CONTENT_MODEL_FAILED",
                         message: ex.message
                     });
                 }
             }),
             deleteContentModel: compose(
-                hasManageSettingsPermission(),
-                hasCmsManageSettingsPermissionRwd("d"),
+                hasPermission(PERMISSION_NAME),
+                hasRwdPermission(PERMISSION_NAME, "d"),
                 hasI18NContentPermission()
             )(async (_, args: DeleteContentModelArgsType, context: CmsContext) => {
                 const { id } = args;
@@ -196,7 +202,7 @@ export default {
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "DELETE_CONTENT_GROUP_FAILED",
+                        code: "DELETE_CONTENT_MODEL_FAILED",
                         message: ex.message
                     });
                 }
