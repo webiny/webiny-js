@@ -1,6 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("listing latest pages", () => {
+describe("listing published pages", () => {
     const {
         deleteElasticSearchIndex,
         createCategory,
