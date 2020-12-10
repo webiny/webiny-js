@@ -1,27 +1,20 @@
 import React from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { Typography } from "@webiny/ui/Typography";
-import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
-import { InputContainer, ContentWrapper } from "../components/StyledComponents";
+import { classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
+import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 
-const classes = {
-    grid: css({
-        "&.mdc-layout-grid": {
-            padding: 0,
-            margin: 0,
-            marginBottom: 24
-        }
-    })
-};
+const rightCellStyle = css({
+    justifySelf: "end"
+});
 
 const validateHeight = (value: string | undefined) => {
     if (!value) {
@@ -69,34 +62,24 @@ const Settings: React.FunctionComponent = () => {
         <Accordion title={"Height"}>
             <Form data={data} onChange={updateSettings}>
                 {({ Bind, data }) => (
-                    <ContentWrapper direction={"column"}>
-                        <Grid className={classes.grid}>
-                            <Cell span={5}>
-                                <Typography use={"subtitle2"}>Full height</Typography>
-                            </Cell>
-                            <Cell span={7}>
-                                <InputContainer width={"auto"} margin={0}>
-                                    <Bind name={"fullHeight"}>
-                                        <Switch />
-                                    </Bind>
-                                </InputContainer>
-                            </Cell>
-                        </Grid>
+                    <>
+                        <Wrapper
+                            label={"Full height"}
+                            containerClassName={classes.simpleGrid}
+                            rightCellClassName={rightCellStyle}
+                        >
+                            <Bind name={"fullHeight"}>
+                                <Switch />
+                            </Bind>
+                        </Wrapper>
                         {!data.fullHeight && (
-                            <Grid className={classes.grid}>
-                                <Cell span={5}>
-                                    <Typography use={"subtitle2"}>Height</Typography>
-                                </Cell>
-                                <Cell span={7}>
-                                    <InputContainer width={"auto"} margin={0}>
-                                        <Bind name={"value"} validators={validateHeight}>
-                                            <InputField />
-                                        </Bind>
-                                    </InputContainer>
-                                </Cell>
-                            </Grid>
+                            <Wrapper label={"Height"} containerClassName={classes.simpleGrid}>
+                                <Bind name={"value"} validators={validateHeight}>
+                                    <InputField />
+                                </Bind>
+                            </Wrapper>
                         )}
-                    </ContentWrapper>
+                    </>
                 )}
             </Form>
         </Accordion>
