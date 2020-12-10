@@ -225,7 +225,7 @@ export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PAGE_TAGS = /* GraphQL */ `
-    query ListPageTags($search: PbListPageTagsSearchInput) {
+    query ListPageTags($search: PbListPageTagsSearchInput!) {
         pageBuilder {
             listPageTags(search: $search) {
                 data
