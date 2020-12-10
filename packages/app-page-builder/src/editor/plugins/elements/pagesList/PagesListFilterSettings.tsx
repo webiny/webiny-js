@@ -1,52 +1,65 @@
 import * as React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import SelectField from "../../elementSettings/components/SelectField";
+import { classes } from "../../elementSettings/components/StyledComponents";
 
 const PagesListFilterSettings = ({ Bind }) => {
     return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={12}>
+        <Accordion title={"Filter"} defaultValue={true}>
+            <React.Fragment>
+                <Wrapper label={"Category"} containerClassName={classes.simpleGrid}>
                     <Bind name={"category"}>
                         <CategoriesAutocomplete label="Category" />
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Sort By"} containerClassName={classes.simpleGrid}>
                     <Bind name={"sortBy"} defaultValue={"publishedOn"}>
-                        <Select label={"Sort by"}>
-                            <option value={"publishedOn"}>Publishing date</option>
-                            <option value={"title"}>Title</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={"publishedOn"}>Publishing date</option>
+                                <option value={"title"}>Title</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Sort Direction"} containerClassName={classes.simpleGrid}>
                     <Bind name={"sortDirection"} defaultValue={-1}>
-                        <Select label={"Sort direction"}>
-                            <option value={-1}>Descending</option>
-                            <option value={1}>Ascending</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={-1}>Descending</option>
+                                <option value={1}>Ascending</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Tags"} containerClassName={classes.simpleGrid}>
                     <Bind name="tags">
                         <TagsMultiAutocomplete
                             label="Filter by tags"
                             description="Enter tags to filter pages"
                         />
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper
+                    label={"Filter by tags rule"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={12}
+                    rightCellSpan={12}
+                >
                     <Bind name={"tagsRule"} defaultValue={"ALL"}>
-                        <Select label={"Filter by tags rule"}>
-                            <option value={"ALL"}>Page must include all tags</option>
-                            <option value={"ANY"}>Page must include any of the tags</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={"ALL"}>Page must include all tags</option>
+                                <option value={"ANY"}>Page must include any of the tags</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-            </Grid>
-        </React.Fragment>
+                </Wrapper>
+            </React.Fragment>
+        </Accordion>
     );
 };
 

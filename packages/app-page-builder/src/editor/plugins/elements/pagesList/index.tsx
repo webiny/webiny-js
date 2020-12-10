@@ -1,17 +1,14 @@
 import React from "react";
+import styled from "@emotion/styled";
+import { PluginCollection } from "@webiny/plugins/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
-import { Tab } from "@webiny/ui/Tabs";
-import { ReactComponent as DesignIcon } from "./icons/round-style-24px.svg";
-import { ReactComponent as FilterIcon } from "./icons/round-filter_list-24px.svg";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
 import PagesListFilterSettings from "./PagesListFilterSettings";
 import PagesListDesignSettings from "./PagesListDesignSettings";
-import styled from "@emotion/styled";
-import { PluginCollection } from "@webiny/plugins/types";
 
 export default (): PluginCollection => {
     const PreviewBox = styled("div")({
@@ -71,11 +68,7 @@ export default (): PluginCollection => {
             type: "pb-editor-page-element-advanced-settings",
             elementType: "pages-list",
             render(props) {
-                return (
-                    <Tab icon={<FilterIcon />} label="Filter">
-                        <PagesListFilterSettings {...props} />
-                    </Tab>
-                );
+                return <PagesListFilterSettings {...props} />;
             }
         } as PbEditorPageElementAdvancedSettingsPlugin,
         {
@@ -83,11 +76,7 @@ export default (): PluginCollection => {
             type: "pb-editor-page-element-advanced-settings",
             elementType: "pages-list",
             render(props) {
-                return (
-                    <Tab icon={<DesignIcon />} label="Design">
-                        <PagesListDesignSettings {...props} />
-                    </Tab>
-                );
+                return <PagesListDesignSettings {...props} />;
             }
         } as PbEditorPageElementAdvancedSettingsPlugin
     ];
