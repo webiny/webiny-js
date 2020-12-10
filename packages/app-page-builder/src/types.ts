@@ -510,7 +510,7 @@ export type PbEditorPageElementSettingsPlugin = Plugin & {
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
-    render(params?: { Bind: BindComponent; data: any }): ReactElement;
+    render(params?: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
 

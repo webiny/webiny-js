@@ -69,7 +69,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
 type EmbedPluginSidebarConfig = {
     type: string;
-    render(params?: { Bind: BindComponent }): React.ReactElement;
+    render(params?: { Bind: BindComponent; submit: () => void }): React.ReactElement;
 };
 
 export const createEmbedSettingsPlugin = ({
