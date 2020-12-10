@@ -49,7 +49,7 @@ export type FbFormFieldValidator = {
 };
 
 export type FbFormFieldValidatorPlugin = Plugin & {
-    type: "form-field-validator";
+    type: "fb-form-field-validator";
     validator: {
         name: string;
         validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;

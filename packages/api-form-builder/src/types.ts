@@ -1,18 +1,22 @@
 import { Plugin } from "@webiny/plugins/types";
-import { Result } from "@webiny/db";
+import { Context } from "@webiny/handler/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { SecurityPermission } from "@webiny/api-security/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
-type FbFormTriggerData = { [key: string]: any };
-type FbFormSubmissionData = { [key: string]: any };
+type FbFormTriggerData = Record<string, any>;
+type FbSubmissionData = Record<string, any>;
 
 type FbFormFieldValidator = {
     name: string;
     message: any;
-    settings: any;
+    settings: Record<string, any>;
 };
 
 export type FbFormFieldValidatorPlugin = Plugin & {
-    type: "form-field-validator";
+    type: "fb-form-field-validator";
     validator: {
         name: string;
         validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
@@ -20,7 +24,7 @@ export type FbFormFieldValidatorPlugin = Plugin & {
 };
 
 export type FbFormFieldPatternValidatorPlugin = Plugin & {
-    type: "form-field-validator-pattern";
+    type: "fb-form-field-validator-pattern";
     pattern: {
         name: string;
         regex: string;
@@ -31,8 +35,8 @@ export type FbFormFieldPatternValidatorPlugin = Plugin & {
 export type FbFormTriggerHandlerParams = {
     addLog: (log: Record<string, any>) => void;
     trigger: FbFormTriggerData;
-    data: FbFormSubmissionData;
-    form: Form;
+    data: FbSubmissionData;
+    form: FbForm;
 };
 
 /**
@@ -45,19 +49,20 @@ export type FbFormTriggerHandlerPlugin = Plugin & {
     handle: (args: FbFormTriggerHandlerParams) => Promise<void>;
 };
 
-export type Form = {
+export type FbForm = {
     id: string;
+    tenant: string;
+    locale: string;
     createdBy: CreatedBy;
+    ownedBy: OwnedBy;
     savedOn: string;
     createdOn: string;
     name: string;
     slug: string;
     version: number;
-    parent: string;
     locked: boolean;
     published: boolean;
     publishedOn: string;
-    latestVersion: boolean;
     status: string;
     fields: Record<string, any>[];
     layout: string[][];
@@ -72,11 +77,13 @@ export type CreatedBy = {
     type: string;
 };
 
-export type FormCreateData = {
+export type OwnedBy = CreatedBy;
+
+type FormCreateInput = {
     name: string;
 };
 
-export type FormUpdateData = {
+type FormUpdateInput = {
     name: string;
     fields: Record<string, any>[];
     layout: string[][];
@@ -84,115 +91,70 @@ export type FormUpdateData = {
     triggers: Record<string, any>;
 };
 
-export type Sort = {
-    SK: 1 | -1;
+type Sort = Record<string, 1 | -1>;
+
+type FbFormStats = {
+    submissions: number;
+    views: number;
+    conversionRate: number;
 };
 
 export type FormsCRUD = {
-    getForm(id: string): Promise<Form>;
-    listAllForms(sort: Sort): Promise<Form[]>;
-    listFormsBeginsWithId({
-        id,
-        sort
-    }: {
-        id: string;
-        sort?: Sort;
-        [key: string]: any;
-    }): Promise<Form[]>;
-    listFormsInBatch(ids: string[]): Promise<Form[]>;
-    createForm(data: FormCreateData): Promise<Form>;
-    updateForm(id: string, data: Partial<FormUpdateData>): Promise<boolean>;
+    getForm(id: string): Promise<FbForm>;
+    getFormStats(id: string): Promise<FbFormStats>;
+    listForms(sort?: Sort): Promise<FbForm[]>;
+    createForm(data: FormCreateInput): Promise<FbForm>;
+    updateForm(id: string, data: Partial<FormUpdateInput>): Promise<FbForm>;
     deleteForm(id: string): Promise<boolean>;
-    deleteForms(ids: string[]): Promise<boolean>;
-    publishForm(id: string): Promise<boolean>;
-    unPublishForm(id: string): Promise<boolean>;
-    createFormRevision(revision: Form): Promise<Form>;
-    getNextVersion(id: string): Promise<number>;
-    markPreviousLatestVersion({
-        parentId,
-        version,
-        latestVersion
-    }: {
-        parentId: string;
-        version: number;
-        latestVersion: boolean;
-    }): Promise<boolean>;
-    saveFormStats(id: string, stats: any): Promise<boolean>;
-    submit({
-        form,
-        reCaptchaResponseToken,
-        data,
-        meta
-    }: {
-        form: Form;
-        reCaptchaResponseToken: string;
-        data: any;
-        meta: any;
-    }): Promise<FormSubmission>;
+    publishForm(id: string): Promise<FbForm>;
+    unpublishForm(id: string): Promise<FbForm>;
+    createFormRevision(fromRevisionId: string): Promise<FbForm>;
+    incrementFormViews(id: string): Promise<boolean>;
+    incrementFormSubmissions(id: string): Promise<boolean>;
+    getFormRevisions(id: string): Promise<FbForm[]>;
+    getPublishedFormRevisionById(revisionId: string): Promise<FbForm>;
+    getLatestPublishedFormRevision(formId: string): Promise<FbForm>;
+    deleteRevision(id: string): Promise<boolean>;
+    getSubmissionsByIds(formId: string, submissionIds: string[]): Promise<FbSubmission[]>;
+    listFormSubmissions(
+        formId: string,
+        options?: {
+            perPage?: number;
+            page?: number;
+            sort?: Sort;
+        }
+    ): Promise<FbSubmission[]>;
+    createSubmission(
+        formId: string,
+        reCaptchaResponseToken: string,
+        data: any,
+        meta: any
+    ): Promise<FbSubmission>;
+    updateSubmission(formId: string, data: FbSubmission): Promise<boolean>;
+    deleteSubmission(formId: string, submissionId: string): Promise<boolean>;
 };
 
-export type FormSubmission = {
+export type FbSubmission = {
     id: string;
+    locale: string;
+    ownedBy: OwnedBy;
     data: Record<string, any>;
     meta: Record<string, any>;
-    form: {
-        parent: string;
-        revision: string;
-    };
+    form: string;
     logs: Record<string, any>[];
 };
 
-export type FormSubmissionCreateData = {
-    form: {
-        parent: string;
-        revision: string;
-    };
+export type SubmissionInput = {
     data: Record<string, any>;
-    reCaptchaResponseToken: string;
     meta: Record<string, any>;
+    reCaptchaResponseToken: string;
 };
 
-export type FormSubmissionsCRUD = {
-    getSubmission({
-        parentFormId,
-        submissionId
-    }: {
-        parentFormId: string;
-        submissionId: string;
-    }): Promise<FormSubmission>;
-    listAllSubmissions({
-        parentFormId,
-        sort,
-        limit
-    }: {
-        parentFormId: string;
-        sort: Sort;
-        limit: number;
-    }): Promise<FormSubmission[]>;
-    listSubmissionsWithIds({
-        parentFormId,
-        submissionIds
-    }: {
-        parentFormId: string;
-        submissionIds: string[];
-    }): Promise<FormSubmission[]>;
-    createSubmission(data: FormSubmissionCreateData): Promise<FormSubmission>;
-    updateSubmission({ formId, data }: { formId: string; data: FormSubmission }): Promise<boolean>;
-    deleteSubmission({
-        formId,
-        submissionId
-    }: {
-        formId: string;
-        submissionId: string;
-    }): Promise<Result<true>>;
-    addLog(formSubmission: FormSubmission, log: Record<string, any>): FormSubmission;
-};
-
-export type FormSubmissionUpdateData = {
+export type SubmissionUpdateData = {
     logs: Record<string, any>;
 };
 
-export type FormBuilderSettings = {
+export type Settings = {
     key: "form-builder";
     installed: boolean;
     domain: string;
@@ -203,25 +165,32 @@ export type FormBuilderSettings = {
     };
 };
 
-export type FormBuilderSettingsUpdateData = {
-    domain: string;
-    reCaptcha: {
-        enabled: boolean;
-        siteKey: string;
-        secretKey: string;
-    };
+export type SettingsCRUD = {
+    getSettings(): Promise<Settings>;
+    createSettings(data: Partial<Settings>): Promise<Settings>;
+    updateSettings(data: Partial<Settings>): Promise<Settings>;
 };
 
-export type FormBuilderSettingsCRUD = {
-    getSettings(): Promise<FormBuilderSettings>;
-    createSettings(data: FormBuilderSettings): Promise<FormBuilderSettings>;
-    updateSettings(data: FormBuilderSettingsUpdateData): Promise<boolean>;
-    deleteSettings(): Promise<Result<true>>;
-};
-
-export type FormPermission = SecurityPermission<{ name: "fb.form"; rwd: string; own: boolean }>;
-export type FormSubmissionPermission = SecurityPermission<{
-    name: "fb.submission";
-    rwd: string;
+export type FbFormPermission = SecurityPermission<{
+    name: "fb.form";
+    permissions: string;
     own: boolean;
+    submissions: string;
 }>;
+
+export type FbFormSettingsPermission = SecurityPermission<{
+    name: "fb.settings";
+}>;
+
+export type FormBuilderContext = Context<
+    TenancyContext,
+    I18NContentContext,
+    FileManagerContext,
+    ElasticSearchClientContext,
+    {
+        formBuilder: {
+            forms: FormsCRUD;
+            settings: SettingsCRUD;
+        };
+    }
+>;

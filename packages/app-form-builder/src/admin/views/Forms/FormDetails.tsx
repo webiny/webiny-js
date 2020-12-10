@@ -7,6 +7,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM } from "@webiny/app-form-builder/admin/viewsGraphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
+import { CircularProgress } from "@webiny/ui/Progress";
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -54,28 +55,34 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
 
-    if (!formId) {
-        return <EmptyFormDetails />;
-    }
-
     const { data, loading } = useQuery(GET_FORM, {
         variables: {
             id: formId
         },
+        skip: !formId,
         onCompleted: data => {
-            const error = data?.formBuilder?.form?.error?.message;
+            if (!data) {
+                return;
+            }
+
+            const { error } = data.formBuilder.form;
             if (error) {
                 query.delete("id");
                 history.push({ search: query.toString() });
-                showSnackbar(error);
+                showSnackbar(error.message);
             }
         }
     });
 
-    const form = data?.formBuilder?.form?.data || null;
+    if (!formId) {
+        return <EmptyFormDetails />;
+    }
+
+    const form = loading ? null : data.formBuilder.form.data;
 
     return (
         <DetailsContainer>
+            {loading && <CircularProgress label={"Loading details..."} />}
             {form && (
                 <Tabs>
                     {renderPlugins(

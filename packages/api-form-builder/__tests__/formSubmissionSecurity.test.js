@@ -46,336 +46,118 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
-const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
-    identity: identityA
-});
-
-beforeEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.create({ index: "form-builder" });
-    } catch (e) {}
-});
-
-afterEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.delete({ index: "form-builder" });
-    } catch (e) {}
-});
+const esFbIndex = "root-form-builder";
 
 describe("Forms Security Test", () => {
+    const handlerA = useGqlHandler({
+        permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
+        identity: identityA
+    });
+
+    beforeEach(async () => {
+        try {
+            await handlerA.install();
+            await handlerA.elasticSearch.indices.create({ index: esFbIndex });
+        } catch (e) {}
+    });
+
+    afterEach(async () => {
+        try {
+            await handlerA.elasticSearch.indices.delete({ index: esFbIndex });
+        } catch (e) {}
+    });
+
     test(`"listFormSubmissions" only returns entries to which the identity has access to`, async () => {
-        const {
-            sleep,
-            createForm,
-            updateRevision,
-            listForms,
-            publishRevision,
-            listPublishedForms,
-            createFormSubmission
-        } = defaultHandler;
-        const mockA = new Mock("get-form-submission-A-");
-        const [createFormResponseA] = await createForm({ data: mockA });
-        const formIdA = createFormResponseA.data.formBuilder.createForm.data.id;
-        const formDataA = createFormResponseA.data.formBuilder.createForm.data;
+        // Create form as Identity A
+        const [createFormA] = await handlerA.createForm({ data: new Mock("A1-") });
+        const { data: formA } = createFormA.data.formBuilder.createForm;
+
         // Let's add some fields.
-        await updateRevision({
-            id: formIdA,
+        await handlerA.updateRevision({
+            id: formA.id,
             data: {
                 fields: mocks.fields
             }
         });
 
-        const defaultHandlerWithIdentityB = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
+        await handlerA.publishRevision({ id: formA.id });
+
+        // Create form as Identity B (this guy can only access his own forms)
+        const handlerB = useGqlHandler({
+            permissions: [{ name: "content.i18n" }, { name: "fb.*", own: true }],
             identity: identityB
         });
 
-        const mockB = new Mock("get-form-submission-B-");
-        const [createFormResponseB] = await defaultHandlerWithIdentityB.createForm({ data: mockB });
-        const formIdB = createFormResponseB.data.formBuilder.createForm.data.id;
-        const formDataB = createFormResponseB.data.formBuilder.createForm.data;
+        const [createFormB] = await handlerB.createForm({ data: new Mock("B1-") });
+        const { data: formB } = createFormB.data.formBuilder.createForm;
+
         // Let's add some fields.
-        await updateRevision({
-            id: formIdB,
+        await handlerB.updateRevision({
+            id: formB.id,
             data: {
                 fields: mocks.fields
             }
         });
 
-        // List should not be empty.
-        // Wait for the "Elasticsearch" to finish indexing.
-        while (true) {
-            await sleep();
-            const [response] = await listForms();
-            if (response.data.formBuilder.listForms.data.length === 2) {
-                break;
-            }
-        }
-        // Let's also publish this form.
-        await publishRevision({ id: formIdA });
-        await publishRevision({ id: formIdB });
+        await handlerB.publishRevision({ id: formB.id });
 
-        // List should not be empty.
-        // Wait for the "Elasticsearch" to finish indexing.
-        while (true) {
-            await sleep();
-            const [response] = await listPublishedForms();
-            if (response.data.formBuilder.listPublishedForms.data.length === 2) {
-                break;
-            }
-        }
-        // Let's right the real test.
-        const submissionMockData = [];
-        const formSubmissionIds = [];
-        for (let i = 0; i < 2; i++) {
-            // add mock data
-            submissionMockData.push(new MockSubmission(`list-form-submissions-${i}-`));
-            const [createFormSubmissionResponse] = await createFormSubmission({
-                id: formIdA,
-                ...submissionMockData[i]
-            });
-            // Save submission "id".
-            formSubmissionIds.push(
-                createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id
-            );
-        }
+        // Create submissions
+        // NOTE: response variables are unused but left here for debugging purposes!
+        
+        const [a1] = await handlerA.createFormSubmission({
+            form: formA.id,
+            ...new MockSubmission("A1-")
+        });
 
-        const identityBHandler = useGqlHandler({ identity: identityB });
-        for (let i = 2; i < 4; i++) {
-            // add mock data
-            submissionMockData.push(new MockSubmission(`list-form-submissions-${i}-`));
-            const [createFormSubmissionResponse] = await identityBHandler.createFormSubmission({
-                id: formIdB,
-                ...submissionMockData[i]
-            });
-            // Save submission "id".
-            formSubmissionIds.push(
-                createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id
-            );
-        }
+        const [a2] = await handlerA.createFormSubmission({
+            form: formA.id,
+            ...new MockSubmission("A2-")
+        });
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "fb.submission", rwd: "wd" }], identityA],
-            [[{ name: "fb.submission", rwd: "d" }], identityA],
-            [[{ name: "fb.submission", rwd: "w" }], identityA]
-        ];
+        const [a3] = await handlerA.createFormSubmission({
+            form: formA.id,
+            ...new MockSubmission("A3-")
+        });
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
-            const { listFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await listFormSubmission();
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("listFormSubmissions"));
-        }
+        const [b1] = await handlerB.createFormSubmission({
+            form: formB.id,
+            ...new MockSubmission("B1-")
+        });
 
-        const sufficientPermissionsAll = [
-            [[{ name: "content.i18n" }, { name: "fb.submission" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA]
-        ];
+        const [b2] = await handlerB.createFormSubmission({
+            form: formB.id,
+            ...new MockSubmission("B2-")
+        });
 
-        for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            let [permissions, identity] = sufficientPermissionsAll[i];
-            const { listFormSubmission } = useGqlHandler({ permissions, identity });
+        await handlerA.until(
+            () => handlerA.listFormSubmissions({ form: formA.id }).then(([data]) => data),
+            ({ data }) => data.formBuilder.listFormSubmissions.data.length > 0
+        );
 
-            let [response] = await listFormSubmission({
-                where: {
-                    form: {
-                        parent: formIdA
-                    }
-                }
-            });
-            expect(response).toMatchObject({
-                data: {
-                    formBuilder: {
-                        listFormSubmissions: {
-                            data: formSubmissionIds.slice(0, 2).map((id, index) =>
-                                mocks.getFormSubmissionData({
-                                    submissionData: submissionMockData[index],
-                                    id,
-                                    formData: formDataA
-                                })
-                            ),
-                            error: null
-                        }
-                    }
-                }
-            });
-        }
+        // Identity A should have access to submissions in Form A
+        const [AlistA1] = await handlerA.listFormSubmissions({ form: formA.id });
+        expect(AlistA1.data.formBuilder.listFormSubmissions.data.length).toBe(3);
 
-        let identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "fb.submission", own: true }],
+        // Identity A should also have access to submissions in Form B
+        const [AlistB1] = await handlerA.listFormSubmissions({ form: formB.id });
+        expect(AlistB1.data.formBuilder.listFormSubmissions.data.length).toBe(2);
+
+        // Identity B should NOT have access to submissions in Form A
+        const [BlistA1] = await handlerB.listFormSubmissions({ form: formA.id });
+        expect(BlistA1).toMatchObject(NOT_AUTHORIZED_RESPONSE("listFormSubmissions"));
+
+        // Identity B should have access to submissions in Form B
+        const [BlistB1] = await handlerB.listFormSubmissions({ form: formB.id });
+        expect(BlistB1.data.formBuilder.listFormSubmissions.data.length).toBe(2);
+
+        // Identity should NOT have access to submissions in its own form,
+        // if `submissions: "no"` is set on the permission.
+        const handlerC = useGqlHandler({
+            permissions: [{ name: "content.i18n" }, { name: "fb.*", submissions: "no" }],
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listFormSubmission({
-            where: {
-                form: {
-                    parent: formIdA
-                }
-            }
-        });
-        expect(response).toMatchObject({
-            data: {
-                formBuilder: {
-                    listFormSubmissions: {
-                        data: formSubmissionIds.slice(0, 2).map((id, index) =>
-                            mocks.getFormSubmissionData({
-                                submissionData: submissionMockData[index],
-                                id,
-                                formData: formDataA
-                            })
-                        ),
-                        error: null
-                    }
-                }
-            }
-        });
-
-        identityAHandler = useGqlHandler({
-            permissions: [{ name: "content.i18n" }, { name: "fb.submission", own: true }],
-            identity: identityB
-        });
-
-        [response] = await identityAHandler.listFormSubmission({
-            where: {
-                form: {
-                    parent: formIdB
-                }
-            }
-        });
-        expect(response).toMatchObject({
-            data: {
-                formBuilder: {
-                    listFormSubmissions: {
-                        data: [
-                            mocks.getFormSubmissionData({
-                                submissionData: submissionMockData[2],
-                                id: formSubmissionIds[2],
-                                formData: formDataB
-                            }),
-                            mocks.getFormSubmissionData({
-                                submissionData: submissionMockData[3],
-                                id: formSubmissionIds[3],
-                                formData: formDataB
-                            })
-                        ],
-                        error: null
-                    }
-                }
-            }
-        });
-    });
-
-    test(`allow "getFormSubmission" if identity has sufficient permissions`, async () => {
-        const {
-            sleep,
-            createForm,
-            updateRevision,
-            listForms,
-            publishRevision,
-            listPublishedForms,
-            createFormSubmission
-        } = defaultHandler;
-        const mock = new Mock("get-form-submission-");
-
-        const [createFormResponse] = await createForm({ data: mock });
-        const formId = createFormResponse.data.formBuilder.createForm.data.id;
-        const formData = createFormResponse.data.formBuilder.createForm.data;
-        // Let's add some fields.
-        await updateRevision({
-            id: formId,
-            data: {
-                fields: mocks.fields
-            }
-        });
-
-        // List should not be empty.
-        // Wait for the "Elasticsearch" to finish indexing.
-        while (true) {
-            await sleep();
-            const [response] = await listForms();
-            if (response.data.formBuilder.listForms.data.length) {
-                break;
-            }
-        }
-        // Let's also publish this form.
-        await publishRevision({ id: formId });
-
-        // List should not be empty.
-        // Wait for the "Elasticsearch" to finish indexing.
-        while (true) {
-            await sleep();
-            const [response] = await listPublishedForms();
-            if (response.data.formBuilder.listPublishedForms.data.length) {
-                break;
-            }
-        }
-
-        // Let's run the real test
-        const submissionMock = new MockSubmission("get-submission");
-        const [createFormSubmissionResponse] = await createFormSubmission({
-            id: formId,
-            ...submissionMock
-        });
-        const submissionId =
-            createFormSubmissionResponse.data.formBuilder.createFormSubmission.data.id;
-
-        let insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "fb.submission", rwd: "w" }], identityA],
-            [[{ name: "fb.submission", rwd: "wd" }], identityA],
-            [[{ name: "fb.submission", own: true }], identityB]
-        ];
-
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
-            const { getFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await getFormSubmission({
-                id: submissionId,
-                where: {
-                    formId: formId
-                }
-            });
-            expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getFormSubmission"));
-        }
-
-        let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "fb.submission" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.submission", rwd: "rwd" }], identityA]
-        ];
-
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
-            const { getFormSubmission } = useGqlHandler({ permissions, identity });
-            let [response] = await getFormSubmission({
-                id: submissionId,
-                where: {
-                    formId: formId
-                }
-            });
-            expect(response).toMatchObject({
-                data: {
-                    formBuilder: {
-                        getFormSubmission: {
-                            data: mocks.getFormSubmissionData({
-                                id: submissionId,
-                                formData,
-                                submissionData: submissionMock
-                            }),
-                            error: null
-                        }
-                    }
-                }
-            });
-        }
+        const [ClistA1] = await handlerC.listFormSubmissions({ form: formA.id });
+        expect(ClistA1).toMatchObject(NOT_AUTHORIZED_RESPONSE("listFormSubmissions"));
     });
 });

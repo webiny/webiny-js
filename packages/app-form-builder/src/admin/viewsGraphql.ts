@@ -21,19 +21,13 @@ const BASE_FORM_FIELDS = `
 `;
 
 export const LIST_FORMS = gql`
-    query FormsListForms($sort: ListFormsSortInput, $limit: Int, $search: String, $after: String, $before: String) {
+    query FormsListForms($sort: ListFormsSortInput) {
         formBuilder {
-            listForms(sort: $sort, limit: $limit, search: $search, after: $after, before: $before) {
+            listForms(sort: $sort) {
                 data {  
                     ${BASE_FORM_FIELDS}
                 }
                 meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
                     totalCount
                 }
             }
@@ -115,20 +109,18 @@ export const LIST_FORM_SUBMISSIONS = gql`
                         submittedOn
                     }
                     form {
-                        revision {
-                            id
-                            name
-                            version
-                            layout
-                            fields {
-                                _id
-                                fieldId
-                                type
+                        id
+                        name
+                        version
+                        layout
+                        fields {
+                            _id
+                            fieldId
+                            type
+                            label
+                            options {
                                 label
-                                options {
-                                    label
-                                    value
-                                }
+                                value
                             }
                         }
                     }
@@ -148,9 +140,9 @@ export const LIST_FORM_SUBMISSIONS = gql`
 `;
 
 export const EXPORT_FORM_SUBMISSIONS = gql`
-    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID!, $form: ID) {
+    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID!) {
         formBuilder {
-            exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
+            exportFormSubmissions(ids: $ids, parent: $parent) {
                 data {
                     src
                 }

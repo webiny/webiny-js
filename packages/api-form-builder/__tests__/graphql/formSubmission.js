@@ -7,9 +7,27 @@ export const DATA_FIELD = /* GraphQL */ `
             submittedOn
         }
         form {
-            revision {
-                id
+            id
+            parent
+            name
+            version
+            layout
+            fields {
+                _id
+                fieldId
+                type
                 name
+                label
+                placeholderText
+                helpText
+                options {
+                    label
+                    value
+                }
+                validation {
+                    name
+                }
+                settings
             }
         }
     }
@@ -24,9 +42,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_FROM_SUBMISSION = /* GraphQL */ `
-    mutation CreateFormSubmission($id: ID!, $data: JSON!, $reCaptchaResponseToken: String, $meta: JSON) {
+    mutation CreateFormSubmission($form: ID!, $data: JSON!, $reCaptchaResponseToken: String, $meta: JSON) {
         formBuilder {
-            createFormSubmission(id: $id, data: $data, reCaptchaResponseToken: $reCaptchaResponseToken, meta:  $meta) {
+            createFormSubmission(form: $form, data: $data, reCaptchaResponseToken: $reCaptchaResponseToken, meta:  $meta) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -34,32 +52,24 @@ export const CREATE_FROM_SUBMISSION = /* GraphQL */ `
     }
 `;
 
-export const EXPORT_FROM_SUBMISSION = /* GraphQL */ `
-    mutation ExportFormSubmissions($ids: [ID], $parent: ID, $form: ID) {
+export const EXPORT_FORM_SUBMISSIONS = /* GraphQL */ `
+    mutation ExportFormSubmissions($form: ID!, $ids: [ID!]) {
         formBuilder {
-            exportFormSubmissions(ids: $ids, parent: $parent, form: $form) {
-                data ${DATA_FIELD}
+            exportFormSubmissions(form: $form, ids: $ids) {
+                data {
+                    src
+                    key
+                }
                 error ${ERROR_FIELD}
             }
         }
     }
 `;
 
-export const GET_FROM_SUBMISSION = /* GraphQL */ `
-    query GetFormSubmission($id: ID, $where: JSON, $sort: String) {
+export const LIST_FROM_SUBMISSIONS = /* GraphQL */ `
+    query ListFormSubmissions($form: ID!, $sort: FbSubmissionSortInput, $page: Int, $perPage: Int) {
         formBuilder {
-            getFormSubmission(id: $id, where: $where, sort: $sort) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const LIST_FROM_SUBMISSION = /* GraphQL */ `
-    query ListFormSubmissions($search: String, $where: JSON, $sort: JSON, $limit: Int, $after: String, $before: String) {
-        formBuilder {
-            listFormSubmissions(search: $search, where: $where, sort: $sort, limit: $limit, after: $after, before: $before) {
+            listFormSubmissions(form: $form, sort: $sort, page: $page, perPage: $perPage) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

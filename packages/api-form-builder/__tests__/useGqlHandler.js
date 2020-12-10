@@ -1,7 +1,9 @@
+import path from "path";
+import fs from "fs";
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-graphql";
-import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
+import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/plugins/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -11,7 +13,9 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
+import formBuilderPlugins from "../src/plugins";
 // Graphql
+import { INSTALL as INSTALL_FILE_MANAGER } from "./graphql/fileManagerSettings";
 import {
     GET_SETTINGS,
     UPDATE_SETTINGS,
@@ -29,17 +33,54 @@ import {
     SAVE_FORM_VIEW,
     GET_FORM,
     LIST_FORMS,
-    LIST_PUBLISHED_FORMS,
     GET_PUBLISHED_FORM
 } from "./graphql/forms";
 import {
     CREATE_FROM_SUBMISSION,
-    GET_FROM_SUBMISSION,
-    LIST_FROM_SUBMISSION,
-    EXPORT_FROM_SUBMISSION
+    LIST_FROM_SUBMISSIONS,
+    EXPORT_FORM_SUBMISSIONS
 } from "./graphql/formSubmission";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
+
+const until = async (execute, until, options = {}) => {
+    const tries = options.tries ?? 5;
+    const wait = options.wait ?? 333;
+
+    let result;
+    let triesCount = 0;
+
+    while (true) {
+        result = await execute();
+
+        let done;
+        try {
+            done = await until(result);
+        } catch {}
+
+        if (done) {
+            return result;
+        }
+
+        triesCount++;
+        if (triesCount === tries) {
+            break;
+        }
+
+        // Wait.
+        await new Promise(resolve => {
+            setTimeout(() => resolve(), wait);
+        });
+    }
+
+    throw new Error(
+        `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+            result,
+            null,
+            2
+        )}`
+    );
+};
 
 export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
@@ -68,6 +109,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
+        fileManagerPlugins(),
         formBuilderPlugins(),
         {
             type: "security-authorization",
@@ -80,8 +122,28 @@ export default ({ permissions, identity, tenant } = {}) => {
                 identity ||
                 new SecurityIdentity({
                     id: "mocked",
-                    displayName: "m"
+                    displayName: "Mocked Identity",
+                    type: "admin"
                 })
+        },
+        {
+            type: "api-file-manager-storage",
+            name: "api-file-manager-storage",
+            async upload(args) {
+                const key = path.join(__dirname, args.name);
+
+                fs.writeFileSync(key, args.buffer);
+
+                return {
+                    file: {
+                        key: args.name,
+                        name: args.name,
+                        type: args.type,
+                        size: args.size
+                    }
+                };
+            },
+            async delete(args) {}
         }
     );
 
@@ -99,6 +161,7 @@ export default ({ permissions, identity, tenant } = {}) => {
     };
 
     return {
+        until,
         elasticSearch: new Client({
             hosts: [`http://localhost:9200`],
             node: "http://localhost:9200"
@@ -123,6 +186,10 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async isInstalled(variables) {
             return invoke({ body: { query: IS_INSTALLED, variables } });
+        },
+        // Install File Manager
+        async installFileManager(variables) {
+            return invoke({ body: { query: INSTALL_FILE_MANAGER, variables } });
         },
         // Forms
         async createForm(variables) {
@@ -155,24 +222,18 @@ export default ({ permissions, identity, tenant } = {}) => {
         async getPublishedForm(variables) {
             return invoke({ body: { query: GET_PUBLISHED_FORM, variables } });
         },
-        async listForms(variables) {
+        async listForms(variables = {}) {
             return invoke({ body: { query: LIST_FORMS, variables } });
-        },
-        async listPublishedForms(variables) {
-            return invoke({ body: { query: LIST_PUBLISHED_FORMS, variables } });
         },
         // Form Submission
         async createFormSubmission(variables) {
             return invoke({ body: { query: CREATE_FROM_SUBMISSION, variables } });
         },
-        async getFormSubmission(variables) {
-            return invoke({ body: { query: GET_FROM_SUBMISSION, variables } });
+        async listFormSubmissions(variables) {
+            return invoke({ body: { query: LIST_FROM_SUBMISSIONS, variables } });
         },
-        async listFormSubmission(variables) {
-            return invoke({ body: { query: LIST_FROM_SUBMISSION, variables } });
-        },
-        async exportFormSubmission(variables) {
-            return invoke({ body: { query: EXPORT_FROM_SUBMISSION, variables } });
+        async exportFormSubmissions(variables) {
+            return invoke({ body: { query: EXPORT_FORM_SUBMISSIONS, variables } });
         }
     };
 };

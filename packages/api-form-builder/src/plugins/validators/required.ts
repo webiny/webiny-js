@@ -2,7 +2,7 @@ import { validation } from "@webiny/validation";
 import { FbFormFieldValidatorPlugin } from "@webiny/api-form-builder/types";
 
 export default {
-    type: "form-field-validator",
+    type: "fb-form-field-validator",
     name: "form-field-validator-required",
     validator: {
         name: "required",

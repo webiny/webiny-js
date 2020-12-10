@@ -1,414 +1,582 @@
-import createForm from "./formResolvers/createForm";
-import deleteForm from "./formResolvers/deleteForm";
-import createRevisionFrom from "./formResolvers/createRevisionFrom";
-import updateRevision from "./formResolvers/updateForm";
-import deleteRevision from "./formResolvers/deleteRevision";
-import { publishRevision, unPublishRevision } from "./formResolvers/publishRevision";
-import listForms from "./formResolvers/listForms";
-import listPublishedForms from "./formResolvers/listPublishedForms";
-import getPublishedForm from "./formResolvers/getPublishedForm";
-import saveFormView from "./formResolvers/saveFormView";
-import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
-import { Context } from "@webiny/handler/types";
-import { I18NContext } from "@webiny/api-i18n/types";
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import { SecurityContext } from "@webiny/api-security/types";
-import { pipe } from "@webiny/handler-graphql";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { FormBuilderSettingsCRUD, FormPermission, FormsCRUD } from "../../types";
-import { hasRwd } from "./formResolvers/utils/formResolversUtils";
+import { parseAsync } from "json2csv";
+import {
+    ErrorResponse,
+    ListResponse,
+    NotFoundResponse,
+    Response
+} from "@webiny/handler-graphql/responses";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { FormBuilderContext } from "../../types";
 
-type ResolverContext = Context<I18NContext, SecurityContext>;
+const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
+    type: "graphql-schema",
+    schema: {
+        typeDefs: /* GraphQL */ `
+            enum FbFormStatusEnum {
+                published
+                draft
+                locked
+            }
 
-export default {
-    typeDefs: /* GraphQL*/ `
-        enum FormStatusEnum { 
-            published
-            draft
-            locked
-        }
-        
-        type FormsUser {
-            id: String
-            firstName: String
-            lastName: String
-        }
-        
-        type Form {
-            id: ID
-            createdBy: FormsUser
-            updatedBy: FormsUser
-            savedOn: DateTime
-            createdOn: DateTime
-            deletedOn: DateTime
-            publishedOn: DateTime
-            version: Int
-            name: String
-            fields: [FormFieldType]
-            layout: [[String]]
-            settings: FormSettingsType
-            triggers: JSON
-            published: Boolean
-            locked: Boolean
-            status: FormStatusEnum
-            parent: ID
-            revisions: [Form]
-            publishedRevisions: [Form]
-            stats: FormStatsType
-            overallStats: FormStatsType
-        }
-        
-        type FieldOptionsType {
-            label: String
-            value: String
-        }        
-        
-        input FieldOptionsInput {
-            label: String
-            value: String
-        }
-        
-        input FieldValidationInput {
-            name: String!
-            message: String
-            settings: JSON
-        }
-        
-        type FieldValidationType {
-            name: String!
-            message: String
-            settings: JSON
-        }
-        
-        type FormFieldType {
-            _id: ID!
-            fieldId: String!
-            type: String!
-            name: String!
-            label: String
-            placeholderText: String
-            helpText: String
-            options: [FieldOptionsType]
-            validation: [FieldValidationType]
-            settings: JSON
-        }    
-        
-        input FormFieldInput {
-            _id : ID!
-            fieldId: String!
-            type: String!
-            name: String!
-            label: String
-            placeholderText: String
-            helpText: String
-            options: [FieldOptionsInput]
-            validation: [FieldValidationInput]
-            settings: JSON
-        }
-        
-        type FormSettingsLayoutType {
-            renderer: String
-        }
-        
-        type TermsOfServiceMessage {
-            enabled: Boolean
-            message: JSON
-            errorMessage: String
-        }
-        
-        type FormReCaptchaSettings {
-            enabled: Boolean
-            siteKey: String
-            secretKey: String
-        }
-         
-        type ReCaptcha {
-            enabled: Boolean
-            errorMessage: JSON
-            settings: FormReCaptchaSettings
-        }
-        
-        type FormSettingsType {
-            layout: FormSettingsLayoutType
-            submitButtonLabel: String
-            successMessage: JSON
-            termsOfServiceMessage: TermsOfServiceMessage
-            reCaptcha: ReCaptcha
-        }      
-        
-        type FormStatsType {
-            views: Int
-            submissions: Int
-            conversionRate: Float
-        }
-        
-        input FormReCaptchaSettingsInput {
-            enabled: Boolean
-            siteKey: String
-            secretKey: String
-        }
-        
-        input ReCaptchaInput {
-            enabled: Boolean
-            errorMessage: JSON
-            settings: FormReCaptchaSettingsInput
-        }
-        
-        input TermsOfServiceMessageInput {
-            enabled: Boolean
-            message: JSON
-            errorMessage: String
-        }
-        
-        input FormSettingsLayoutInput {
-            renderer: String
-        }
-        
-        input FormSettingsInput {
-            layout: FormSettingsLayoutInput
-            submitButtonLabel: String
-            successMessage: JSON
-            termsOfServiceMessage: TermsOfServiceMessageInput
-            reCaptcha: ReCaptchaInput
-        }
-        
-        input UpdateFormInput {
-            name: String
-            fields: [FormFieldInput],
-            layout: [[String]]
-            settings: FormSettingsInput
-            triggers: JSON
-        }
-       
-        input FormSortInput {
-            name: Int
-            publishedOn: Int
-        }
-        
-        input CreateFormInput {
-            name: String!
-        }
+            type FbFormUser {
+                id: String
+                displayName: String
+                type: String
+            }
 
-        # Response types
-        type FormResponse {
-            data: Form
-            error: FormError
-        }
-        
-        type FormListResponse {
-            data: [Form]
-            meta: FormListMeta
-            error: FormError
-        }
-        
-        type SaveFormViewResponse {
-            error: FormError
-        }
-        
-        input ListFormsSortInput {
-            name: Int
-            createdOn: Int
-            savedOn: Int
-        }
-        
-        extend type FormsQuery {
-            getForm(
-                id: ID 
-                where: JSON
-                sort: String
-            ): FormResponse
-            
-            getPublishedForm(id: ID, parent: ID, slug: String, version: Int): FormResponse
-            
-            listForms(
-                sort: ListFormsSortInput
-                search: String
-                parent: String
-                limit: Int
-                after: String
-                before: String
-            ): FormListResponse
-            
-            listPublishedForms(
-                search: String
+            type FbForm {
+                id: ID
+                createdBy: FbFormUser
+                ownedBy: FbFormUser
+                createdOn: DateTime
+                savedOn: DateTime
+                publishedOn: DateTime
+                version: Int
+                name: String
+                slug: String
+                fields: [FbFormFieldType]
+                layout: [[String]]
+                settings: FbFormSettingsType
+                triggers: JSON
+                published: Boolean
+                locked: Boolean
+                status: FbFormStatusEnum
+                revisions: [FbForm]
+                stats: FbFormStatsType
+                overallStats: FbFormStatsType
+            }
+
+            # Contains only the data necessary for listing latest forms
+            type FbLatestForm {
+                id: ID
+                createdBy: FbFormUser
+                createdOn: DateTime
+                savedOn: DateTime
+                publishedOn: DateTime
+                version: Int
+                name: String
+                slug: String
+                published: Boolean
+                locked: Boolean
+                status: FbFormStatusEnum
+            }
+
+            type FbFieldOptionsType {
+                label: String
+                value: String
+            }
+
+            input FbFieldOptionsInput {
+                label: String
+                value: String
+            }
+
+            input FbFieldValidationInput {
+                name: String!
+                message: String
+                settings: JSON
+            }
+
+            type FbFieldValidationType {
+                name: String!
+                message: String
+                settings: JSON
+            }
+
+            type FbFormFieldType {
+                _id: ID!
+                fieldId: String!
+                type: String!
+                name: String!
+                label: String
+                placeholderText: String
+                helpText: String
+                options: [FbFieldOptionsType]
+                validation: [FbFieldValidationType]
+                settings: JSON
+            }
+
+            input FbFormFieldInput {
+                _id: ID!
+                fieldId: String!
+                type: String!
+                name: String!
+                label: String
+                placeholderText: String
+                helpText: String
+                options: [FbFieldOptionsInput]
+                validation: [FbFieldValidationInput]
+                settings: JSON
+            }
+
+            type FbFormSettingsLayoutType {
+                renderer: String
+            }
+
+            type FbTermsOfServiceMessage {
+                enabled: Boolean
+                message: JSON
+                errorMessage: String
+            }
+
+            type FbFormReCaptchaSettings {
+                enabled: Boolean
+                siteKey: String
+                secretKey: String
+            }
+
+            type FbReCaptcha {
+                enabled: Boolean
+                errorMessage: JSON
+                settings: FbFormReCaptchaSettings
+            }
+
+            type FbFormSettingsType {
+                layout: FbFormSettingsLayoutType
+                submitButtonLabel: String
+                successMessage: JSON
+                termsOfServiceMessage: FbTermsOfServiceMessage
+                reCaptcha: FbReCaptcha
+            }
+
+            type FbFormStatsType {
+                views: Int
+                submissions: Int
+                conversionRate: Float
+            }
+
+            input FbFormReCaptchaSettingsInput {
+                enabled: Boolean
+                siteKey: String
+                secretKey: String
+            }
+
+            input FbReCaptchaInput {
+                enabled: Boolean
+                errorMessage: JSON
+                settings: FbFormReCaptchaSettingsInput
+            }
+
+            input FbTermsOfServiceMessageInput {
+                enabled: Boolean
+                message: JSON
+                errorMessage: String
+            }
+
+            input FbFormSettingsLayoutInput {
+                renderer: String
+            }
+
+            input FbFormSettingsInput {
+                layout: FbFormSettingsLayoutInput
+                submitButtonLabel: String
+                successMessage: JSON
+                termsOfServiceMessage: FbTermsOfServiceMessageInput
+                reCaptcha: FbReCaptchaInput
+            }
+
+            input FbUpdateFormInput {
+                name: String
+                fields: [FbFormFieldInput]
+                layout: [[String]]
+                settings: FbFormSettingsInput
+                triggers: JSON
+            }
+
+            input FbFormSortInput {
+                name: Int
+                publishedOn: Int
+            }
+
+            input FbCreateFormInput {
+                name: String!
+            }
+
+            # Response types
+            type FbFormResponse {
+                data: FbForm
+                error: FbError
+            }
+
+            type FbFormListResponse {
+                data: [FbLatestForm]
+                error: FbError
+            }
+
+            type FbSaveFormViewResponse {
+                error: FbError
+            }
+
+            input FbListFormsSortInput {
+                name: Int
+                createdOn: Int
+            }
+
+            type FbSubmissionFormData {
                 id: ID
                 parent: ID
-                slug: String
+                name: String
                 version: Int
-                tags: [String]
-                sort: FormSortInput
-                limit: Int
-                after: String
-                before: String
-            ): FormListResponse
-        }
-        
-        extend type FormsMutation {
-            createForm(
-                data: CreateFormInput!
-            ): FormResponse
-            
-            # Create a new revision from an existing revision
-            createRevisionFrom(
-                revision: ID!
-            ): FormResponse
-            
-            # Update revision
-             updateRevision(
-                id: ID!
-                data: UpdateFormInput!
-            ): FormResponse
-            
-            # Publish revision
-            publishRevision(
-                id: ID!
-            ): FormResponse
-            
-            # Unpublish revision
-            unpublishRevision(
-                id: ID!
-            ): FormResponse
-            
-            # Delete form and all of its revisions
-            deleteForm(
-                id: ID!
-            ): FormDeleteResponse
-            
-            # Delete a single revision
-            deleteRevision(
-                id: ID!
-            ): FormDeleteResponse
-            
-            # Logs a view of a form
-            saveFormView(id: ID!): SaveFormViewResponse
-        }
-    `,
-    resolvers: {
-        Form: {
-            overallStats: async (form, args, context: ResolverContext) => {
-                // Prepare SK and do a batch read
-                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
-                const allForms = await forms.listFormsBeginsWithId({ id: form.id });
-                // Then calculate the stats
-
-                const stats = {
-                    submissions: 0,
-                    views: 0,
-                    conversionRate: 0
-                };
-
-                for (let i = 0; i < allForms.length; i++) {
-                    const form = allForms[i];
-                    stats.views += form.stats.views;
-                    stats.submissions += form.stats.submissions;
-                }
-
-                let conversionRate = 0;
-                if (stats.views > 0) {
-                    conversionRate = parseFloat(
-                        ((stats.submissions / stats.views) * 100).toFixed(2)
-                    );
-                }
-
-                return {
-                    ...stats,
-                    conversionRate
-                };
-            },
-            revisions: async (form, args, context: ResolverContext) => {
-                // Prepare SK and do a batch read
-                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
-                return await forms.listFormsBeginsWithId({ id: form.id, sort: { SK: -1 } });
-            },
-            publishedRevisions: async (form, args, context) => {
-                // Prepare SK and do a batch read
-                const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
-                return await forms.listFormsBeginsWithId({ id: form.id });
-            },
-            settings: async (form, args, context) => {
-                const formBuilderSettings: FormBuilderSettingsCRUD =
-                    context?.formBuilder?.crud?.formBuilderSettings;
-
-                const settings = await formBuilderSettings.getSettings();
-
-                return {
-                    ...form.settings,
-                    reCaptcha: {
-                        ...form.settings.reCaptcha,
-                        settings: settings?.reCaptcha
-                    }
-                };
+                layout: [[String]]
+                fields: [FbFormFieldType]
             }
-        },
-        FormsQuery: {
-            getForm: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(async (_, args, context: ResolverContext) => {
-                // If permission has "rwd" property set, but "r" is not part of it, bail.
-                const permission = await context.security.getPermission<FormPermission>("fb.form");
-                if (permission && !hasRwd({ formBuilderFormPermission: permission, rwd: "r" })) {
-                    return new NotAuthorizedResponse();
+
+            type FbFormSubmission {
+                id: ID
+                data: JSON
+                meta: FbSubmissionMeta
+                form: FbSubmissionFormData
+            }
+
+            type FbSubmissionMeta {
+                ip: String
+                submittedOn: DateTime
+            }
+
+            # Response types
+            type FbFormSubmissionsListResponse {
+                data: [FbFormSubmission]
+                error: FbError
+            }
+
+            type FbFormSubmissionResponse {
+                data: FbFormSubmission
+                error: FbError
+            }
+
+            type FbExportFormSubmissionsFile {
+                src: String
+                key: String
+            }
+
+            type FbExportFormSubmissionsResponse {
+                data: FbExportFormSubmissionsFile
+                error: FbError
+            }
+
+            input FbSubmissionSortInput {
+                createdOn: Int
+            }
+
+            extend type FbQuery {
+                # Get form (can be published or not, requires authorization )
+                getForm(id: ID!): FbFormResponse
+
+                # Get published form by exact revision ID, or parent form ID (public access)
+                getPublishedForm(revision: ID, parent: ID): FbFormResponse
+
+                # List forms (returns a list of latest revision)
+                listForms(sort: FbListFormsSortInput): FbFormListResponse
+
+                # List form submissions for specific Form
+                listFormSubmissions(
+                    form: ID!
+                    sort: FbSubmissionSortInput
+                    page: Int
+                    perPage: Int
+                ): FbFormSubmissionsListResponse
+            }
+
+            extend type FbMutation {
+                createForm(data: FbCreateFormInput!): FbFormResponse
+
+                # Create a new revision from an existing revision
+                createRevisionFrom(revision: ID!): FbFormResponse
+
+                # Update revision
+                updateRevision(id: ID!, data: FbUpdateFormInput!): FbFormResponse
+
+                # Publish revision
+                publishRevision(id: ID!): FbFormResponse
+
+                # Unpublish revision
+                unpublishRevision(id: ID!): FbFormResponse
+
+                # Delete form and all of its revisions
+                deleteForm(id: ID!): FbDeleteResponse
+
+                # Delete a single revision
+                deleteRevision(id: ID!): FbDeleteResponse
+
+                # Logs a view of a form
+                saveFormView(id: ID!): FbSaveFormViewResponse
+
+                # Submits a form
+                createFormSubmission(
+                    form: ID!
+                    data: JSON!
+                    reCaptchaResponseToken: String
+                    meta: JSON
+                ): FbFormSubmissionResponse
+
+                # Export submissions as a CSV file
+                exportFormSubmissions(form: ID!, ids: [ID!]): FbExportFormSubmissionsResponse
+            }
+        `,
+        resolvers: {
+            FbForm: {
+                overallStats: (form, args, { formBuilder }) => {
+                    return formBuilder.forms.getFormStats(form.id);
+                },
+                revisions: (form, args, { formBuilder }) => {
+                    return formBuilder.forms.getFormRevisions(form.id);
+                },
+                settings: async (form, args, { formBuilder }) => {
+                    const settings = await formBuilder.settings.getSettings();
+
+                    return {
+                        ...form.settings,
+                        reCaptcha: {
+                            ...form.settings.reCaptcha,
+                            settings: settings ? settings.reCaptcha : null
+                        }
+                    };
                 }
-                try {
-                    const forms: FormsCRUD = context?.formBuilder?.crud?.forms;
-                    const form = await forms.getForm(args.id);
+            },
+            FbQuery: {
+                getForm: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.getForm(args.id);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                listForms: async (_, args, { formBuilder }) => {
+                    try {
+                        const forms = await formBuilder.forms.listForms(args.sort);
+
+                        return new ListResponse(forms);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                getPublishedForm: async (
+                    root,
+                    args: { revision: string; parent: string },
+                    { formBuilder }
+                ) => {
+                    if (!args.revision && !args.parent) {
+                        return new NotFoundResponse("Revision ID or Form ID missing.");
+                    }
+
+                    let form;
+
+                    if (args.revision) {
+                        // This fetches the exact revision specified by revision ID
+                        form = await formBuilder.forms.getPublishedFormRevisionById(args.revision);
+                    } else if (args.parent) {
+                        // This fetches the latest published revision for given parent form
+                        form = await formBuilder.forms.getLatestPublishedFormRevision(args.parent);
+                    }
 
                     if (!form) {
-                        return new NotFoundResponse(`Form with id: "${args.id}" not found!`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (permission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (form.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
+                        return new NotFoundResponse("The requested form was not found.");
                     }
 
                     return new Response(form);
-                } catch (e) {
-                    return new ErrorResponse({
-                        message: e.message,
-                        code: e.code,
-                        data: e.data
-                    });
+                },
+                listFormSubmissions: async (
+                    _,
+                    args: {
+                        form: string;
+                        sort: Record<string, 1 | -1>;
+                        page: number;
+                        perPage: number;
+                    },
+                    { formBuilder }
+                ) => {
+                    try {
+                        const { form, sort, page = 1, perPage = 10 } = args;
+                        const submissions = await formBuilder.forms.listFormSubmissions(form, {
+                            sort,
+                            page,
+                            perPage
+                        });
+                        return new ListResponse(submissions);
+                    } catch (err) {
+                        return new ErrorResponse(err);
+                    }
                 }
-            }),
-            listForms: pipe(hasPermission("fb.form"), hasI18NContentPermission())(listForms),
-            listPublishedForms,
-            getPublishedForm
-        },
-        FormsMutation: {
-            // Creates a new form
-            createForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(createForm),
-            // Deletes the entire form
-            deleteForm: pipe(hasPermission("fb.form"), hasI18NContentPermission())(deleteForm),
-            // Creates a revision from the given revision
-            createRevisionFrom: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(createRevisionFrom),
-            // Updates revision
-            updateRevision: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(updateRevision),
-            // Publish revision (must be given an exact revision ID to publish)
-            publishRevision: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(publishRevision),
-            unpublishRevision: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(unPublishRevision),
-            // Delete a revision
-            deleteRevision: pipe(
-                hasPermission("fb.form"),
-                hasI18NContentPermission()
-            )(deleteRevision),
-            saveFormView
+            },
+            FbMutation: {
+                // Creates a new form
+                createForm: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.createForm(args.data);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                // Deletes the entire form with all of its revisions
+                deleteForm: async (_, args, { formBuilder }) => {
+                    try {
+                        await formBuilder.forms.deleteForm(args.id);
+
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                // Creates a revision from the given revision
+                createRevisionFrom: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.createFormRevision(args.revision);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                // Updates revision
+                updateRevision: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.updateForm(args.id, args.data);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                // Publish revision (must be given an exact revision ID to publish)
+                publishRevision: async (_, { id }, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.publishForm(id);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                unpublishRevision: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.unpublishForm(args.id);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                // Delete a revision
+                deleteRevision: async (_, args, { formBuilder }) => {
+                    try {
+                        await formBuilder.forms.deleteRevision(args.id);
+
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                saveFormView: async (_, args, { formBuilder }) => {
+                    try {
+                        const form = await formBuilder.forms.incrementFormViews(args.id);
+
+                        return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                createFormSubmission: async (root: any, args, { formBuilder }) => {
+                    const { form, data, reCaptchaResponseToken, meta } = args;
+
+                    try {
+                        const formSubmission = await formBuilder.forms.createSubmission(
+                            form,
+                            reCaptchaResponseToken,
+                            data,
+                            meta
+                        );
+
+                        return new Response(formSubmission);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                exportFormSubmissions: async (root: any, args, { formBuilder, fileManager }) => {
+                    const { form, ids: submissionIds } = args;
+                    let submissions = [];
+
+                    try {
+                        if (submissionIds) {
+                            // Get all the submissions with these "ids" and parent.
+                            submissions = await formBuilder.forms.getSubmissionsByIds(
+                                form,
+                                submissionIds
+                            );
+                        } else if (form) {
+                            submissions = await formBuilder.forms.listFormSubmissions(form);
+                        }
+
+                        if (submissions.length === 0) {
+                            return new NotFoundResponse("No form submissions found.");
+                        }
+
+                        // Get all revisions of the form.
+                        const revisions = await formBuilder.forms.getFormRevisions(form);
+                        const publishedRevisions = revisions.filter(r => r.published);
+
+                        const rows = [];
+                        const fields = {};
+
+                        // First extract all distinct fields across all form submissions.
+                        for (let i = 0; i < publishedRevisions.length; i++) {
+                            const revision = publishedRevisions[i];
+                            for (let j = 0; j < revision.fields.length; j++) {
+                                const field = revision.fields[j];
+                                if (!fields[field.fieldId]) {
+                                    fields[field.fieldId] = field.label;
+                                }
+                            }
+                        }
+
+                        // Build rows.
+                        for (let i = 0; i < submissions.length; i++) {
+                            const submissionData = submissions[i].data;
+                            const row = {};
+                            Object.keys(fields).map(fieldId => {
+                                if (fieldId in submissionData) {
+                                    row[fields[fieldId]] = submissionData[fieldId];
+                                } else {
+                                    row[fields[fieldId]] = "N/A";
+                                }
+                            });
+                            rows.push(row);
+                        }
+
+                        // Save CSV file and return its URL to the client.
+                        const csv = await parseAsync(rows, { fields: Object.values(fields) });
+                        const buffer = Buffer.from(csv);
+                        const { key } = await fileManager.storage.upload({
+                            buffer,
+                            size: buffer.length,
+                            name: "form_submissions_export.csv",
+                            type: "text/csv",
+                            keyPrefix: "form-submissions",
+                            hideInFileManager: true
+                        });
+
+                        const settings = await fileManager.settings.getSettings();
+
+                        const result = {
+                            key,
+                            src: settings.srcPrefix + key
+                        };
+
+                        return new Response(result);
+                    } catch (e) {
+                        return new ErrorResponse({
+                            message: e.message,
+                            code: e.code,
+                            data: e.data
+                        });
+                    }
+                }
+            }
         }
     }
 };
+
+export default plugin;

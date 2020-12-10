@@ -1,15 +1,11 @@
-export const DATA_FIELD = /* GraphQL */ `
+export const FORM_DATA_FIELD = /* GraphQL */ `
     {
         id
-        # createdBy
-        # updatedBy
         savedOn
         createdOn
-        # deletedOn
         publishedOn
         version
         name
-        # fields
         layout
         settings {
             reCaptcha {
@@ -20,18 +16,44 @@ export const DATA_FIELD = /* GraphQL */ `
                 }
             }
         }
+        revisions {
+            id
+            name
+            version
+        }
         triggers
         published
         locked
         status
-        parent
-        # revisions
-        # publishedRevisions
         stats {
             views
             submissions
         }
-        # overallStats
+        overallStats {
+            views
+            submissions
+            conversionRate
+        }
+    }
+`;
+
+export const FORMS_DATA_FIELD = /* GraphQL */ `
+    {
+        id
+        createdOn
+        savedOn
+        name
+        slug
+        published
+        publishedOn
+        version
+        locked
+        status
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 
@@ -44,10 +66,10 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_FROM = /* GraphQL */ `
-    mutation CreateForm($data: CreateFormInput!) {
+    mutation CreateForm($data: FbCreateFormInput!) {
         formBuilder {
             createForm(data: $data) {
-                data ${DATA_FIELD}
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -59,7 +81,7 @@ export const CREATE_REVISION_FROM = /* GraphQL */ `
     mutation CreateRevisionFrom($revision: ID!) {
         formBuilder {
             createRevisionFrom(revision: $revision) {
-                data ${DATA_FIELD}
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -67,10 +89,10 @@ export const CREATE_REVISION_FROM = /* GraphQL */ `
 `;
 
 export const UPDATE_REVISION = /* GraphQL */ `
-    mutation UpdateRevision($id: ID!, $data: UpdateFormInput!) {
+    mutation UpdateRevision($id: ID!, $data: FbUpdateFormInput!) {
         formBuilder {
             updateRevision(id: $id, data: $data) {
-                data ${DATA_FIELD}
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -81,7 +103,7 @@ export const PUBLISH_REVISION = /* GraphQL */ `
     mutation publishRevision($id: ID!) {
         formBuilder {
             publishRevision(id: $id) {
-                data ${DATA_FIELD}
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -92,7 +114,7 @@ export const UNPUBLISH_REVISION = /* GraphQL */ `
     mutation UnpublishRevision($id: ID!) {
         formBuilder {
             unpublishRevision(id: $id) {
-                data ${DATA_FIELD}
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -132,10 +154,10 @@ export const SAVE_FORM_VIEW = /* GraphQL */ `
 `;
 
 export const GET_FORM = /* GraphQL */ `
-    query getForm($id: ID, $where: JSON, $sort: String) {
+    query GetForm($id: ID!) {
         formBuilder {
-            getForm(id: $id, where: $where, sort: $sort) {
-                data ${DATA_FIELD}
+            getForm(id: $id) {
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -143,10 +165,10 @@ export const GET_FORM = /* GraphQL */ `
 `;
 
 export const GET_PUBLISHED_FORM = /* GraphQL */ `
-    query getPublishedForm($id: ID, $parent: ID, $slug: String, $version: Int) {
+    query GetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {
-            getPublishedForm(id: $id, parent: $parent, slug: $slug, version: $version) {
-                data ${DATA_FIELD}
+            getPublishedForm(revision: $revision, parent: $parent) {
+                data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
@@ -154,57 +176,10 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
 `;
 
 export const LIST_FORMS = /* GraphQL */ `
-    query ListForms(
-        $sort: ListFormsSortInput,
-        $search: String,
-        $parent: String,
-        $limit: Int,
-        $after: String,
-        $before: String
-    ) {
+    query ListForms($sort: FbListFormsSortInput) {
         formBuilder {
-            listForms(
-                sort: $sort,
-                search: $search,
-                parent: $parent,
-                limit: $limit,
-                after: $after,
-                before: $before
-                ) {
-                data ${DATA_FIELD}
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const LIST_PUBLISHED_FORMS = /* GraphQL */ `
-    query ListPublishedForms(
-        $search: String,
-        $id: ID,
-        $parent: ID,
-        $slug: String,
-        $version: Int,
-        $tags: [String],
-        $sort: FormSortInput,
-        $limit: Int,
-        $after: String,
-        $before: String
-    ) {
-        formBuilder {
-            listPublishedForms(
-                search: $search,
-                id: $id,
-                parent: $parent,
-                slug: $slug,
-                version: $version,
-                tags: $tags,
-                sort: $sort,
-                limit: $limit,
-                after: $after,
-                before: $before
-                ) {
-                data ${DATA_FIELD}
+            listForms(sort: $sort) {
+                data ${FORMS_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
