@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+// @ts-ignore
 import { GraphQLClient } from "@webiny/graphql-client";
 import { DocumentNode } from "graphql/language/ast";
 
