@@ -7,6 +7,8 @@ type WrapperPropsType = {
     containerClassName?: string;
     leftCellSpan?: number;
     rightCellSpan?: number;
+    leftCellClassName?: string;
+    rightCellClassName?: string;
     children: ReactElement;
 };
 
@@ -15,14 +17,18 @@ const Wrapper = ({
     containerClassName,
     leftCellSpan = 4,
     rightCellSpan = 8,
+    leftCellClassName,
+    rightCellClassName,
     children
 }: WrapperPropsType) => {
     return (
         <Grid className={containerClassName}>
-            <Cell span={leftCellSpan}>
+            <Cell span={leftCellSpan} className={leftCellClassName}>
                 <Typography use={"subtitle2"}>{label}</Typography>
             </Cell>
-            <Cell span={rightCellSpan}>{children}</Cell>
+            <Cell span={rightCellSpan} className={rightCellClassName}>
+                {children}
+            </Cell>
         </Grid>
     );
 };
