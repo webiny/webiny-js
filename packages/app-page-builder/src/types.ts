@@ -440,10 +440,6 @@ export type PbEditorContentPlugin = Plugin & {
     type: "pb-editor-content";
     render(): ReactElement;
 };
-export type PbEditorSidebarContentPlugin = Plugin & {
-    type: "pb-editor-sidebar-content";
-    render(): ReactElement;
-};
 
 export type PbEditorDefaultBarLeftPlugin = Plugin & {
     type: "pb-editor-default-bar-left";
