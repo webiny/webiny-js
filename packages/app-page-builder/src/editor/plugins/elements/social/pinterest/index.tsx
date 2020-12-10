@@ -1,10 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Select } from "@webiny/ui/Select";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
+import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
@@ -12,6 +8,15 @@ import {
 import PinterestEmbed from "./PinterestEmbed";
 import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./pinterest-brands.svg";
+import Accordion from "../../../elementSettings/components/Accordion";
+import Wrapper from "../../../elementSettings/components/Wrapper";
+import InputField from "../../../elementSettings/components/InputField";
+import SelectField from "../../../elementSettings/components/SelectField";
+import {
+    ButtonContainer,
+    SimpleButton,
+    classes
+} from "../../../elementSettings/components/StyledComponents";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -42,32 +47,55 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "pinterest",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<SocialIcon />} label="Pinterest">
-                    <Grid>
-                        <Cell span={12}>
+                <Accordion title={"Pinterest"} defaultValue={true}>
+                    <>
+                        <Wrapper
+                            label={"URL"}
+                            containerClassName={classes.simpleGrid}
+                            leftCellSpan={3}
+                            rightCellSpan={9}
+                        >
                             <Bind
                                 name={"source.url"}
                                 validators={validation.create("required,url")}
                             >
-                                <Input
-                                    label={"Pinterest URL"}
-                                    description={"Enter a Pinterest URL"}
-                                />
+                                {({ value, onChange }) => (
+                                    <InputField
+                                        value={value}
+                                        onChange={onChange}
+                                        placeholder={
+                                            "https://pinterest.com/pin/823666219335767857/"
+                                        }
+                                        description={"Enter a Pinterest URL"}
+                                    />
+                                )}
                             </Bind>
-                        </Cell>
-                        <Cell span={12}>
+                        </Wrapper>
+                        <Wrapper
+                            label={"Size"}
+                            containerClassName={classes.simpleGrid}
+                            leftCellSpan={3}
+                            rightCellSpan={9}
+                        >
                             <Bind defaultValue="small" name={"source.size"}>
-                                <Select label={"Size"}>
-                                    <option value="small">Small</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="large">Large</option>
-                                </Select>
+                                {({ value, onChange }) => (
+                                    <SelectField value={value} onChange={onChange}>
+                                        <option value="small">Small</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="large">Large</option>
+                                    </SelectField>
+                                )}
                             </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                        </Wrapper>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })

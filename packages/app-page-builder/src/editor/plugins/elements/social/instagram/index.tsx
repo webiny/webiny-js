@@ -1,17 +1,20 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import placeholder from "./placeholder.jpg";
+import { validation } from "@webiny/validation";
+import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
-
+import placeholder from "./placeholder.jpg";
 import { ReactComponent as LogoIcon } from "./instagram-brands.svg";
-import { validation } from "@webiny/validation";
+import Accordion from "../../../elementSettings/components/Accordion";
+import InputField from "../../../elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "../../../elementSettings/components/StyledComponents";
+
 const PreviewBox = styled("div")({
     textAlign: "center",
     height: 50,
@@ -49,23 +52,27 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "instagram",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<SocialIcon />} label="Instagram">
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input
-                                    label={"Instagram URL"}
-                                    description={"Enter an Instagram URL"}
+                <Accordion title={"Instagram"} defaultValue={true}>
+                    <>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            {({ value, onChange }) => (
+                                <InputField
+                                    value={value}
+                                    onChange={onChange}
+                                    placeholder={"https://www.instagram.com/marvel/"}
+                                    description={"Enter a Instagram URL"}
                                 />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                            )}
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })

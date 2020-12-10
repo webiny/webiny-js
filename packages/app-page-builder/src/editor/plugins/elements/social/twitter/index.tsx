@@ -1,16 +1,19 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as SocialIcon } from "./../../../elementGroups/social/round-people-24px.svg";
-import placeholder from "./placeholder.jpg";
+import { Typography } from "@webiny/ui/Typography";
+import { validation } from "@webiny/validation";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
-import { validation } from "@webiny/validation";
+import placeholder from "./placeholder.jpg";
 import { ReactComponent as LogoIcon } from "./twitter-brands.svg";
+import Accordion from "../../../elementSettings/components/Accordion";
+import InputField from "../../../elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "../../../elementSettings/components/StyledComponents";
 
 declare global {
     interface Window {
@@ -54,20 +57,27 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "twitter",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<SocialIcon />} label="Twitter">
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input label={"Tweet URL"} description={"Enter a Tweet URL"} />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                <Accordion title={"Twitter"} defaultValue={true}>
+                    <>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            {({ value, onChange }) => (
+                                <InputField
+                                    value={value}
+                                    onChange={onChange}
+                                    placeholder={"https://twitter.com/"}
+                                    description={"Enter a Tweet URL"}
+                                />
+                            )}
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })
