@@ -4,18 +4,17 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { UpdateElementActionArgsType } from "../../../recoil/actions/updateElement/types";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
 import Wrapper from "../components/Wrapper";
 import SelectField from "../components/SelectField";
+import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
 import BackgroundPositionSelector from "./BackgroundPositionSelector";
-import Accordion from "../components/Accordion";
-import { Typography } from "@webiny/ui/Typography";
 
 const imageSelect = css({
     width: "100%"
@@ -90,18 +89,13 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                 </Grid>
                 {options.image !== false && (
                     <React.Fragment>
-                        <Grid className={classes.simpleGrid}>
-                            <Cell span={12}>
-                                <Typography use={"subtitle2"}>Image</Typography>
-                            </Cell>
-                            <Cell span={12}>
-                                <SingleImageUpload
-                                    className={imageSelect}
-                                    onChange={setImage}
-                                    value={{ src: backgroundImageSrc }}
-                                />
-                            </Cell>
-                        </Grid>
+                        <Wrapper label={"Image"} containerClassName={classes.simpleGrid}>
+                            <SingleImageUpload
+                                className={imageSelect}
+                                onChange={setImage}
+                                value={{ src: backgroundImageSrc }}
+                            />
+                        </Wrapper>
                         <Wrapper label={"Scaling"} containerClassName={classes.simpleGrid}>
                             <SelectField
                                 disabled={!backgroundImageSrc}

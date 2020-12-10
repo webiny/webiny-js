@@ -37,7 +37,7 @@ export default (): PbEditorPageElementPlugin => {
             }
         },
         settings: [
-            "pb-editor-page-element-settings-background",
+            "pb-editor-page-element-style-settings-background",
             "",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",
