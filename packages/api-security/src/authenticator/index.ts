@@ -25,8 +25,9 @@ export default () => [
                     }
 
                     // Try matching using patterns
-                    if (perms.find(p => minimatch(permission, p.name))) {
-                        return { name: permission };
+                    const matchedPermission = perms.find(p => minimatch(permission, p.name));
+                    if (matchedPermission) {
+                        return matchedPermission;
                     }
 
                     return null;
