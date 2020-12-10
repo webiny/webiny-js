@@ -3,11 +3,14 @@ import { MultiAutoComplete as UiMultiAutoComplete } from "@webiny/ui/AutoComplet
 import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
 import gql from "graphql-tag";
 
-const SEARCH_TAGS = gql`
-    query searchTags($search: String!) {
+const LIST_PAGE_TAGS = gql`
+    query ListPageTags($search: String!) {
         pageBuilder {
-            tags: searchTags(query: $search) {
+            listPageTags(search: { query: $search }) {
                 data
+                error {
+                    message
+                }
             }
         }
     }
@@ -16,7 +19,7 @@ const SEARCH_TAGS = gql`
 export function TagsMultiAutocomplete(props) {
     const autoComplete = useAutocomplete({
         search: query => query,
-        query: SEARCH_TAGS
+        query: LIST_PAGE_TAGS
     });
     return (
         <UiMultiAutoComplete
