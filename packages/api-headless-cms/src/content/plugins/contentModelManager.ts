@@ -2,10 +2,13 @@ import {
     CmsContentModelManagerInterface,
     CmsContentModelManagerListArgsType,
     CmsContentModelType,
-    CmsContext
+    CmsContext,
+    ContentModelManagerPlugin
 } from "@webiny/api-headless-cms/types";
-
-export class ContentModelManager<T> implements CmsContentModelManagerInterface<T> {
+// TODO finish the default content model manager
+// need to have fn to create partition keys
+// need to insert and update model in the elasticsearch
+class DefaultContentModelManager<T> implements CmsContentModelManagerInterface<T> {
     private readonly _context: CmsContext;
     private readonly _model: CmsContentModelType;
 
@@ -39,3 +42,11 @@ export class ContentModelManager<T> implements CmsContentModelManagerInterface<T
         return ({} as unknown) as T;
     }
 }
+const plugin: ContentModelManagerPlugin = {
+    type: "content-model-manager",
+    name: "content-model-manager-default",
+    create: async (context, model) => {
+        return new DefaultContentModelManager(context, model);
+    }
+};
+export default plugin;

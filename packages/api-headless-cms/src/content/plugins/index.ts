@@ -8,6 +8,7 @@ import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 // import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
 import { ContextPlugin } from "@webiny/handler/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import contentModelManager from "./contentModelManager";
 
 type HeadlessPluginsOptions = {
     type: string;
@@ -34,7 +35,8 @@ export default (options: HeadlessPluginsOptions) => [
                 context.resolvedValues = new TypeValueEmitter();
             }
         }
-    } as ContextPlugin<CmsContext>
+    } as ContextPlugin<CmsContext>,
+    contentModelManager
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),
     // models(),

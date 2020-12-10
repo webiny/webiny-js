@@ -2,16 +2,34 @@ import { ContextPlugin } from "@webiny/handler/types";
 import {
     CmsContext,
     CmsContentModelType,
-    CmsContentModelContextType
+    CmsContentModelContextType,
+    CmsContentModelManagerInterface,
+    ContentModelManagerPlugin
 } from "@webiny/api-headless-cms/types";
 import defaults from "@webiny/api-headless-cms/common/defaults";
-import { ContentModelManager } from "@webiny/api-headless-cms/content/crud/ContentModelManager";
+import { plugins } from "@webiny/plugins";
 
 // eslint-disable-next-line
 const createContentModelPk = (context: any) => {
     return "contentModel#pk";
 };
 
+const defaultName = "content-model-manager-default";
+
+const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModelType) => {
+    const pluginsByType = plugins.byType<ContentModelManagerPlugin>("content-model-manager");
+    for (const plugin of pluginsByType) {
+        const target = Array.isArray(plugin.targetCode) ? plugin.targetCode : [plugin.targetCode];
+        if (target.includes(model.code) === true && plugin.name !== defaultName) {
+            return await plugin.create(context, model);
+        }
+    }
+    const plugin = pluginsByType.find(plugin => plugin.name === defaultName);
+    if (!plugin) {
+        throw new Error("There is no default plugin to create ContentModelManager");
+    }
+    return await plugin.create(context, model);
+};
 export default {
     type: "context",
     name: "context-content-model-crud",
@@ -19,14 +37,14 @@ export default {
         const { db } = context;
 
         // manager per request - something similar to dataloader
-        const managers = new Map<string, ContentModelManager<any>>();
-        const updateManager = <T>(
+        const managers = new Map<string, CmsContentModelManagerInterface<any>>();
+        const updateManager = async <T>(
             context: CmsContext,
             model: CmsContentModelType
-        ): ContentModelManager<T> => {
-            managers.delete(model.code);
-            managers.set(model.code, new ContentModelManager<T>(context, model));
-            return managers.get(model.code);
+        ): Promise<CmsContentModelManagerInterface<T>> => {
+            const manager = await contentModelManagerFactory(context, model);
+            managers.set(model.code, manager);
+            return (manager as unknown) as CmsContentModelManagerInterface<T>;
         };
 
         const models: CmsContentModelContextType = {
@@ -51,11 +69,11 @@ export default {
             async create() {
                 const model = {} as any;
 
-                updateManager(context, model);
+                await updateManager(context, model);
                 return model;
             },
             async update(model, data) {
-                updateManager(context, model);
+                await updateManager(context, model);
                 return {
                     ...model,
                     ...data
@@ -65,7 +83,7 @@ export default {
                 managers.delete(model.code);
                 return;
             },
-            async getManager<T extends any>(code) {
+            async getManager<T = any>(code) {
                 if (managers.has(code)) {
                     return managers.get(code);
                 }
@@ -74,7 +92,7 @@ export default {
                 if (!model) {
                     throw new Error(`There is no content model "${code}".`);
                 }
-                return updateManager<T>(context, model);
+                return await updateManager<T>(context, model);
             },
             getManagers: () => managers
         };

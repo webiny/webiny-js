@@ -1,10 +1,14 @@
 import mdbid from "mdbid";
-import { ContentModelManager } from "@webiny/api-headless-cms/content/crud/ContentModelManager";
 import { useContentGqlHandler } from "../useContentGqlHandler";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentModelGroupType,
+    CmsContentModelManagerInterface,
+    ContentModelManagerPlugin
+} from "@webiny/api-headless-cms/types";
 import { createInitialEnvironment } from "../helpers";
+import { plugins } from "@webiny/plugins";
 
 type DummyModelType = {
     id: string;
@@ -48,11 +52,12 @@ const createContentModelGroup = async (
     return model;
 };
 
-describe("ContentModelManager", () => {
+describe("DefaultContentModelManager tests - created via plugin", () => {
     const { documentClient } = useContentGqlHandler();
+    const plugin = plugins.byName<ContentModelManagerPlugin>("content-model-manager-default");
     // TODO need to get either real context or create a dummy one
     const context: any = {};
-    let manager: ContentModelManager<DummyModelType>;
+    let manager: CmsContentModelManagerInterface<DummyModelType>;
     let contentModel;
     beforeEach(async () => {
         const group = await createContentModelGroup(documentClient);
@@ -70,7 +75,7 @@ describe("ContentModelManager", () => {
             },
             fields: []
         };
-        manager = new ContentModelManager(context, contentModel);
+        manager = await plugin.create<DummyModelType>(context, contentModel);
     });
 
     it("should get content model target by id", async () => {

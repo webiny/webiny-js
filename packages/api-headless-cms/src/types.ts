@@ -410,3 +410,15 @@ export type CmsCrudContextType = {
         models: CmsContentModelContextType;
     };
 };
+
+export type ContentModelManagerPlugin = Plugin & {
+    type: "content-model-manager";
+    // if target (model) code is not set
+    // content model manager plugin is used for everything
+    // be aware that if you define multiple plugins without targetCode property only the first one will count
+    targetCode?: string[] | string;
+    create<T>(
+        context: CmsContext,
+        model: CmsContentModelType
+    ): Promise<CmsContentModelManagerInterface<T>>;
+};
