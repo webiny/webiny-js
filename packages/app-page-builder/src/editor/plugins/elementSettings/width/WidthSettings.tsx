@@ -1,15 +1,13 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Typography } from "@webiny/ui/Typography";
-import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form } from "@webiny/form";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
+import { activeElementWithChildrenSelector } from "../../../../editor/recoil/modules";
 // Components
-import { InputContainer, ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
+import Wrapper from "../components/Wrapper";
 import InputField from "../components/InputField";
 
 const classes = {
@@ -79,20 +77,11 @@ const Settings: React.FunctionComponent = () => {
         <Accordion title={"Width"}>
             <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
-                    <ContentWrapper>
-                        <Grid className={classes.grid}>
-                            <Cell span={5}>
-                                <Typography use={"subtitle2"}>Width</Typography>
-                            </Cell>
-                            <Cell span={7}>
-                                <InputContainer width={"auto"} margin={0}>
-                                    <Bind name={"value"} validators={validateWidth}>
-                                        <InputField />
-                                    </Bind>
-                                </InputContainer>
-                            </Cell>
-                        </Grid>
-                    </ContentWrapper>
+                    <Wrapper label={"Width"} containerClassName={classes.grid}>
+                        <Bind name={"value"} validators={validateWidth}>
+                            <InputField />
+                        </Bind>
+                    </Wrapper>
                 )}
             </Form>
         </Accordion>

@@ -58,7 +58,7 @@ export default {
         "",
         "pb-editor-page-element-settings-padding",
         "pb-editor-page-element-settings-margin",
-        "pb-editor-page-element-settings-width",
+        "pb-editor-page-element-style-settings-width",
         "pb-editor-page-element-settings-height",
         "pb-editor-page-element-settings-horizontal-align-flex",
         "pb-editor-page-element-settings-vertical-align",
