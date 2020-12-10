@@ -55,19 +55,25 @@ const PagesDataList = () => {
     const [sort, setSort] = useState({ createdOn: "desc" });
     const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(1);
+    const search = {
+        query: query.get("search") || undefined
+    };
+
+    const variables = {
+        where,
+        sort,
+        limit,
+        page,
+        search
+    };
 
     const listQuery = useQuery(LIST_PAGES, {
         fetchPolicy: "network-only",
-        variables: {
-            where,
-            sort,
-            limit,
-            page,
-            search: {
-                query: query.get("search") || undefined
-            }
-        }
+        variables
     });
+
+    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
+    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
     const meta = listQuery?.data?.pageBuilder?.listPages?.meta || {};
