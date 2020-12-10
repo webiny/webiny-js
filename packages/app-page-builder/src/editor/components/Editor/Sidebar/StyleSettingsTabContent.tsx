@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "@emotion/styled";
-import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
+import useElementStyleSettings from "../../../plugins/elementSettings/bar/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { ReactComponent as WarningIcon } from "./icons/warning-black.svg";
@@ -22,10 +22,7 @@ const RootElement = styled("div")({
 });
 
 const StyleSettingsTabContent = ({ element }) => {
-    const elementSettings = useElementSettings();
-    const styleSettings = useMemo(() => {
-        return elementSettings.filter(({ plugin }) => Boolean(typeof plugin.render === "function"));
-    }, [elementSettings]);
+    const elementStyleSettings = useElementStyleSettings();
 
     if (!element) {
         return (
@@ -38,8 +35,8 @@ const StyleSettingsTabContent = ({ element }) => {
 
     return (
         <RootElement>
-            {styleSettings.length ? (
-                styleSettings.map(({ plugin, options }, index) => {
+            {elementStyleSettings.length ? (
+                elementStyleSettings.map(({ plugin, options }, index) => {
                     return (
                         <React.Fragment key={index}>
                             {typeof plugin.render === "function" && plugin.render({ options })}
