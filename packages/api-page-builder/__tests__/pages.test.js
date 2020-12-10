@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(15000);
+
 describe("CRUD Test", () => {
     const {
         createCategory,
@@ -103,7 +105,11 @@ describe("CRUD Test", () => {
                 url: "url-UPDATED-" + i,
                 settings: {
                     general: {
-                        snippet: "snippet-UPDATED-" + i
+                        snippet: "snippet-UPDATED-" + i,
+                        image: {
+                            id: `ID#image-${i}`,
+                            src: `https://someimages.com/image-${i}.png`
+                        }
                     }
                 }
             };
@@ -157,7 +163,14 @@ describe("CRUD Test", () => {
                                 id: ids[2],
                                 status: "draft",
                                 title: "title-UPDATED-2",
-                                url: "url-UPDATED-2"
+                                url: "url-UPDATED-2",
+                                snippet: "snippet-UPDATED-2",
+                                images: {
+                                    general: {
+                                        id: `ID#image-2`,
+                                        src: `https://someimages.com/image-2.png`
+                                    }
+                                }
                             },
                             {
                                 editor: "page-builder",
@@ -173,7 +186,14 @@ describe("CRUD Test", () => {
                                 id: ids[1],
                                 status: "draft",
                                 title: "title-UPDATED-1",
-                                url: "url-UPDATED-1"
+                                url: "url-UPDATED-1",
+                                snippet: "snippet-UPDATED-1",
+                                images: {
+                                    general: {
+                                        id: `ID#image-1`,
+                                        src: `https://someimages.com/image-1.png`
+                                    }
+                                }
                             },
                             {
                                 editor: "page-builder",
@@ -189,7 +209,14 @@ describe("CRUD Test", () => {
                                 id: ids[0],
                                 status: "draft",
                                 title: "title-UPDATED-0",
-                                url: "url-UPDATED-0"
+                                url: "url-UPDATED-0",
+                                snippet: "snippet-UPDATED-0",
+                                images: {
+                                    general: {
+                                        id: `ID#image-0`,
+                                        src: `https://someimages.com/image-0.png`
+                                    }
+                                }
                             }
                         ],
                         error: null
