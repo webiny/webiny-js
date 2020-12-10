@@ -505,7 +505,7 @@ describe("listing published pages", () => {
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
                 { title: "page-l" },
-                { title: "page-k" },
+                { title: "page-k" }
             ])
         );
 
@@ -517,7 +517,7 @@ describe("listing published pages", () => {
                     where: { tags: { query: ["local", "world"] } }
                 }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
-        )
+        );
     });
 
     test("sort by publishedOn", async () => {
