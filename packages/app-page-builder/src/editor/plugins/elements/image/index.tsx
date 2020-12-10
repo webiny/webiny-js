@@ -44,7 +44,7 @@ export default (): Plugin[] => {
                 ["pb-editor-page-element-settings-background", { image: false }],
                 "pb-editor-page-element-style-settings-link",
                 "",
-                "pb-editor-page-element-settings-border",
+                "pb-editor-page-element-style-settings-border",
                 "pb-editor-page-element-style-settings-shadow",
                 "",
                 [

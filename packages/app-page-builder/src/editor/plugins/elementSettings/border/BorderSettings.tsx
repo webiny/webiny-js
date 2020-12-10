@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementSelector } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Accordion from "../components/Accordion";
