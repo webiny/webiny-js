@@ -101,6 +101,7 @@ export type PagesCrud = {
     get(id: string): Promise<Page>;
     listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
     listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
+    listTags(args: { search: { query: string } }): Promise<string[]>;
     getPublished(args: { id?: string; url?: string }): Promise<Page>;
     listPageRevisions(id: string): Promise<Page[]>;
     create(category: string): Promise<Page>;

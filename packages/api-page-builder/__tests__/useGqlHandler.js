@@ -26,6 +26,7 @@ import {
     DELETE_PAGE,
     LIST_PAGES,
     LIST_PUBLISHED_PAGES,
+    LIST_PAGE_TAGS,
     UPDATE_PAGE,
     GET_PAGE,
     PUBLISH_PAGE,
@@ -241,6 +242,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async listPublishedPages(variables) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
+        },
+        async listPageTags(variables) {
+            return invoke({ body: { query: LIST_PAGE_TAGS, variables } });
         },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });

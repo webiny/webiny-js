@@ -235,14 +235,32 @@ const plugin: ContextPlugin<PbContext> = {
                     return [data, meta];
                 },
 
-                async getPublished(args) {
-                    const [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: args.id },
-                        limit: 1
+                async listTags(args) {
+                    if (args.search.query.length < 2) {
+                        throw new Error("Please provide at least two characters.");
+                    }
+
+                    const response = await elasticSearch.search({
+                        ...ES_DEFAULTS(),
+                        body: {
+                            size: 0,
+                            aggs: {
+                                tags: {
+                                    terms: {
+                                        field: "tags.keyword",
+                                        include: `.*${args.search.query}.*`,
+                                        size: 10
+                                    }
+                                }
+                            }
+                        }
                     });
 
-                    return page;
+                    try {
+                        return response.body.aggregations.tags.buckets.map(item => item.key);
+                    } catch {
+                        return [];
+                    }
                 },
 
                 async listPageRevisions(pageId) {
@@ -257,6 +275,16 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     return pages;
+                },
+
+                async getPublished(args) {
+                    const [[page]] = await db.read<Page>({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE(), SK: args.id },
+                        limit: 1
+                    });
+
+                    return page;
                 },
 
                 async create(categorySlug) {

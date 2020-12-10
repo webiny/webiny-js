@@ -82,30 +82,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 _empty: String
             }
 
-            type PbElement {
-                id: ID
-                name: String
-                type: String
-                category: String
-                content: JSON
-                preview: String
-            }
-
-            input PbElementInput {
-                name: String!
-                type: String!
-                category: String
-                content: JSON!
-                preview: RefInput
-            }
-
-            input PbUpdateElementInput {
-                name: String
-                category: String
-                content: JSON
-                preview: RefInput
-            }
-
             input PbUpdatePageInput {
                 title: String
                 category: ID
@@ -144,21 +120,17 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
-            type PbElementResponse {
-                data: PbElement
-                error: PbError
-            }
-
-            type PbElementListResponse {
-                data: [PbElement]
-            }
-
             type PbSearchTagsResponse {
                 data: [String]
             }
 
             type PbOembedResponse {
                 data: JSON
+                error: PbError
+            }
+
+            type PbPageTagsListResponse {
+                data: [String]
                 error: PbError
             }
 
@@ -195,6 +167,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 category: String
                 tags: [String]
             }
+            
+            input PbListPageTagsSearchInput {
+                query: String!
+            }
 
             enum PbTagsRule {
                 ALL
@@ -228,8 +204,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     search: PbListPagesSearchInput
                 ): PbPageListResponse
 
-                listElements(limit: Int): PbElementListResponse
-
+                listPageTags(search: PbListPageTagsSearchInput): PbPageTagsListResponse
+                
                 # Returns existing tags based on given search term.
                 searchTags(query: String!): PbSearchTagsResponse
 
@@ -304,13 +280,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         return new ErrorResponse(e);
                     }
                 },
+                listPageTags: async (_, args: { search: { query: string } }, context) => {
+                    return resolve(() => context.pageBuilder.pages.listTags(args));
+                },
 
                 getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.getPublished(args));
                 },
-
-                // TODO
-                searchTags: async () => null,
 
                 oembedData: async (_, args: { url: string; width?: string; height?: string }) => {
                     try {
