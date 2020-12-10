@@ -3,8 +3,9 @@ import defaults from "./utils/defaults";
 import { withFields, string, fields, boolean } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext, Settings } from "@webiny/api-page-builder/types";
 import { NotAuthorizedError } from "@webiny/api-security";
+import DataLoader from "dataloader";
 
 const SettingsModel = withFields({
     installed: boolean({ value: false }),
@@ -48,6 +49,26 @@ const plugin: ContextPlugin<PbContext> = {
         const PK = () => `${getPKPrefix(context)}SETTINGS`;
         const SK = () => "default";
 
+        const settingsDataLoader = new DataLoader<string, Settings>(async types => {
+            const [[data]] = await db.read<Settings>({
+                ...defaults.db,
+                query: { PK: PK(), SK: { $gt: " " } },
+                limit: 1
+            });
+
+            if (data) {
+                return types.map(() => data);
+            }
+
+            const defaultSettings = await new SettingsModel().populate({}).toJSON();
+            await db.create({
+                ...defaults.db,
+                data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE }
+            });
+
+            return types.map(() => defaultSettings);
+        });
+
         context.pageBuilder = {
             ...context.pageBuilder,
             settings: {
@@ -56,30 +77,8 @@ const plugin: ContextPlugin<PbContext> = {
                     return PK();
                 },
                 async get({ auth } = { auth: true }) {
-                    if (this.__cachedSettings) {
-                        return this.__cachedSettings;
-                    }
-
                     auth !== false && (await checkBasePermissions(context));
-
-                    const [[data]] = await db.read({
-                        ...defaults.db,
-                        query: { PK: PK(), SK: { $gt: " " } },
-                        limit: 1
-                    });
-
-                    if (data) {
-                        return data;
-                    }
-
-                    const defaultSettings = await new SettingsModel().populate({}).toJSON();
-                    await db.create({
-                        ...defaults.db,
-                        data: { ...defaultSettings, PK: PK(), SK: SK(), TYPE }
-                    });
-
-                    this.__cachedSettings = defaultSettings;
-                    return this.__cachedSettings;
+                    return settingsDataLoader.load("default");
                 },
                 async update(next, { auth } = { auth: true }) {
                     auth !== false && (await checkBasePermissions(context));
