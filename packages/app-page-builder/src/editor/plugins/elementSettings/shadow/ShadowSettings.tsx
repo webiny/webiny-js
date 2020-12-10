@@ -1,8 +1,8 @@
 import React from "react";
 import get from "lodash/get";
 import { useRecoilValue } from "recoil";
-import useUpdateHandlers from "@webiny/app-page-builder/editor/plugins/elementSettings/useUpdateHandlers";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";

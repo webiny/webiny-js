@@ -45,7 +45,7 @@ export default (): Plugin[] => {
                 "pb-editor-page-element-settings-link",
                 "",
                 "pb-editor-page-element-settings-border",
-                "pb-editor-page-element-settings-shadow",
+                "pb-editor-page-element-style-settings-shadow",
                 "",
                 [
                     "pb-editor-page-element-settings-horizontal-align",
