@@ -45,7 +45,7 @@ export default () => {
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
                 [
-                    "pb-editor-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
                 "",

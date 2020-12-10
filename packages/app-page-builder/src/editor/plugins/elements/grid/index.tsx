@@ -60,8 +60,8 @@ export default {
         "pb-editor-page-element-style-settings-margin",
         "pb-editor-page-element-style-settings-width",
         "pb-editor-page-element-style-settings-height",
-        "pb-editor-page-element-settings-horizontal-align-flex",
-        "pb-editor-page-element-settings-vertical-align",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-vertical-align",
         "",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"

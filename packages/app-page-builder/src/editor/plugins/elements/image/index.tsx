@@ -48,7 +48,7 @@ export default (): Plugin[] => {
                 "pb-editor-page-element-style-settings-shadow",
                 "",
                 [
-                    "pb-editor-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
                 "pb-editor-page-element-style-settings-padding",

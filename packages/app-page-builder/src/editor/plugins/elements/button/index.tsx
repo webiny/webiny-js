@@ -33,7 +33,7 @@ export default () => {
                 "pb-editor-page-element-style-settings-button",
                 "pb-editor-page-element-style-settings-link",
                 "",
-                "pb-editor-page-element-settings-horizontal-align-flex",
+                "pb-editor-page-element-style-settings-horizontal-align-flex",
                 "",
                 "pb-editor-page-element-settings-clone",
                 "pb-editor-page-element-settings-delete",
