@@ -10,8 +10,8 @@
 // This is a factory function which returns a specific set of plugins depending on
 // the provided environment and schema type (read, manage, preview).
 import headlessPlugins from "./plugins";
-import { createGraphQLHandler } from "./createGraphQLHandler";
-import { extractHandlerHttpParameters } from "@webiny/api-headless-cms/content/helpers";
+import { extractHandlerHttpParameters } from "./helpers";
+import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
 
 export default (options: any) => [
     {
@@ -30,7 +30,7 @@ export default (options: any) => [
             return next();
         }
     },
-    createGraphQLHandler(options)
+    graphQLHandlerFactory(options)
     // createHandlerApolloServer(options),
     // createSchema,
     // apolloHandler

@@ -109,6 +109,7 @@ const filterEnvironment = (list: CmsEnvironmentType[], id: string): CmsEnvironme
     }
     return environment;
 };
+
 const fetchEnvironmentAndItsAlias = async (
     context: CmsContext
 ): Promise<EnvironmentAndAliasResponseType> => {
@@ -116,6 +117,11 @@ const fetchEnvironmentAndItsAlias = async (
     const environmentAliasList = await context.cms.environmentAliases.list();
 
     const value = context.cms.environment;
+    if (!value || typeof context.cms.environment !== "string") {
+        throw new Error(
+            `It seems that "context.cms.environment" is not a string with which we can identify the environment or alias.`
+        );
+    }
     // alias is always checked by slug
     const environmentAlias = environmentAliasList.find(model => {
         return model.slug === value;
@@ -142,7 +148,7 @@ const fetchEnvironmentAndItsAlias = async (
     };
 };
 
-export const createGraphQLHandler = (
+export const graphQLHandlerFactory = (
     options: CreateGraphQLHandlerOptionsType = {}
 ): HandlerPlugin => ({
     type: "handler",

@@ -76,7 +76,7 @@ export default {
                 }
                 return updateManager<T>(context, model);
             },
-            managers
+            getManagers: () => managers
         };
 
         context.cms = {

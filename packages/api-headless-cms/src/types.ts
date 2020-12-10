@@ -31,7 +31,7 @@ type CmsValuesContext = {
         // Returns an instance of current environment.
         getEnvironment: () => CmsEnvironmentType;
         // Returns an instance of current environment alias.
-        getEnvironmentAlias: () => CmsEnvironmentAliasType;
+        getEnvironmentAlias: () => CmsEnvironmentAliasType | undefined;
         // Requested locale
         locale: I18NLocale;
         // This is a READ API
@@ -397,7 +397,7 @@ export type CmsContentModelContextType = {
     ) => Promise<CmsContentModelType>;
     delete: (model: CmsContentModelType) => Promise<void>;
     getManager: <T>(code: string) => Promise<CmsContentModelManagerInterface<T>>;
-    managers: Map<string, CmsContentModelManagerInterface<any>>;
+    getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };
 
 export type CmsCrudContextType = {

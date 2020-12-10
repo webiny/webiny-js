@@ -1,7 +1,7 @@
 import { useGqlHandler } from "./useGqlHandler";
 import { PermissionsArgType } from "./helpers";
 import { SecurityIdentity } from "@webiny/api-security";
-import { createGraphQLHandler } from "@webiny/api-headless-cms/content/createGraphQLHandler";
+import { graphQLHandlerFactory } from "@webiny/api-headless-cms/content/graphQLHandlerFactory";
 
 type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
@@ -12,7 +12,7 @@ export const useContentGqlHandler = (args: GQLHandlerCallableArgsType = {}) => {
     return useGqlHandler({
         ...args,
         plugins: [
-            createGraphQLHandler({
+            graphQLHandlerFactory({
                 debug: true
             })
         ]
