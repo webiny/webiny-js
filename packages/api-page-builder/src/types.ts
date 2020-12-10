@@ -81,7 +81,11 @@ export type SortOrder = "asc" | "desc";
 export type ListPagesArgs = {
     limit?: number;
     page?: number;
-    where?: { category?: string; status?: string; tags?: string[] };
+    where?: {
+        category?: string;
+        status?: string;
+        tags?: { query: string[]; rule?: "any" | "all" };
+    };
     search?: { query?: string };
     sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
 };

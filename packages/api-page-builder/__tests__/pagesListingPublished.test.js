@@ -408,8 +408,13 @@ describe("listing published pages", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data[0].title === "page-l"
         ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(6));
 
+        // The following are testing "all tags must be matched" mode.
         await until(
-            () => listPublishedPages({ sort: { createdOn: "desc" }, where: { tags: ["news"] } }),
+            () =>
+                listPublishedPages({
+                    sort: { createdOn: "desc" },
+                    where: { tags: { query: ["news"] } }
+                }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
@@ -423,7 +428,11 @@ describe("listing published pages", () => {
             () =>
                 listPublishedPages({
                     sort: { createdOn: "desc" },
-                    where: { tags: ["world", "news"] }
+                    where: {
+                        tags: {
+                            query: ["world", "news"]
+                        }
+                    }
                 }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 1
         ).then(([res]) =>
@@ -436,7 +445,11 @@ describe("listing published pages", () => {
             () =>
                 listPublishedPages({
                     sort: { createdOn: "desc" },
-                    where: { tags: ["local", "news"] }
+                    where: {
+                        tags: {
+                            query: ["local", "news"]
+                        }
+                    }
                 }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 1
         ).then(([res]) =>
@@ -444,6 +457,67 @@ describe("listing published pages", () => {
                 { title: "page-l" }
             ])
         );
+
+        // The following are testing "at least one tag must be matched" mode.
+
+        // 1. Let's just check if the `allTags: true` returns 1 result (so, the same as when not specified at all).
+        await until(
+            () =>
+                listPublishedPages({
+                    sort: { createdOn: "desc" },
+                    where: {
+                        tags: {
+                            query: ["local", "news"]
+                        }
+                    }
+                }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 1
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-l" }
+            ])
+        );
+
+        // 2. This should return all pages.
+        await until(
+            () =>
+                listPublishedPages({
+                    sort: { createdOn: "desc" },
+                    where: { tags: { query: ["local", "news"], rule: "any" } }
+                }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-l" },
+                { title: "page-k" },
+                { title: "page-j" }
+            ])
+        );
+
+        // 3. This should return two pages.
+        await until(
+            () =>
+                listPublishedPages({
+                    sort: { createdOn: "desc" },
+                    where: { tags: { query: ["local", "world"], rule: "any" } }
+                }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 2
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { title: "page-l" },
+                { title: "page-k" },
+            ])
+        );
+
+        // 3.1. The same query, but with no rule specified (which means "all"), should return nothing.
+        await until(
+            () =>
+                listPublishedPages({
+                    sort: { createdOn: "desc" },
+                    where: { tags: { query: ["local", "world"] } }
+                }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
+        )
     });
 
     test("sort by publishedOn", async () => {

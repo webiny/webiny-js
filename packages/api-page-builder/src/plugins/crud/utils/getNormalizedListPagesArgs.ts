@@ -17,7 +17,7 @@ export default (args: ListPagesArgs) => {
     return normalized;
 };
 
-const getQuery = args => {
+const getQuery = (args: ListPagesArgs) => {
     const { where, search } = args;
     const query: Record<string, any> = {
         bool: {
@@ -34,14 +34,21 @@ const getQuery = args => {
             query.bool.filter.push({ term: { "status.keyword": where.status } });
         }
 
-        if (Array.isArray(where.tags) && where.tags.length > 0) {
-            query.bool.filter.push({
-                bool: {
-                    must: where.tags.map(tag => ({
-                        term: { "tags.keyword": tag }
-                    }))
-                }
-            });
+        const tags = where.tags;
+        if (tags && Array.isArray(tags.query) && tags.query.length > 0) {
+            if (tags.rule === "any") {
+                query.bool.filter.push({
+                    terms: { "tags.keyword": tags.query }
+                });
+            } else {
+                query.bool.filter.push({
+                    bool: {
+                        must: where.tags.query.map(tag => ({
+                            term: { "tags.keyword": tag }
+                        }))
+                    }
+                });
+            }
         }
     }
 

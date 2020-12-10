@@ -163,7 +163,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             input PbListPagesWhereInput {
                 category: String
                 status: PbPageStatuses
-                tags: [String]
+                tags: PbListPagesWhereTagsInput
             }
 
             input PbListPagesSearchInput {
@@ -171,18 +171,23 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 query: String
             }
 
+            enum PbTagsRule {
+                all
+                any
+            }
+
+            input PbListPagesWhereTagsInput {
+                query: [String]
+                rule: PbTagsRule
+            }
+
             input PbListPublishedPagesWhereInput {
                 category: String
-                tags: [String]
+                tags: PbListPagesWhereTagsInput
             }
 
             input PbListPageTagsSearchInput {
                 query: String!
-            }
-
-            enum PbTagsRule {
-                ALL
-                ANY
             }
 
             extend type PbQuery {
