@@ -8,7 +8,7 @@ import {
     sidebarActiveTabIndexSelector,
     uiAtom,
     updateSidebarActiveTabIndexMutation
-} from "../../recoil/modules"; // TODO: Do we need "tree-shaking" here?
+} from "../../recoil/modules";
 import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
 import ElementSettingsTabContent from "./Sidebar/ElementSettingsTabContent";
 
