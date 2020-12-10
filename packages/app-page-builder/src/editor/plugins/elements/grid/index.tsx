@@ -49,7 +49,7 @@ export default {
         }
     },
     settings: [
-        "pb-editor-page-element-settings-grid",
+        "pb-editor-page-element-style-settings-grid",
         "pb-editor-page-element-settings-background",
         "pb-editor-page-element-settings-animation",
         "",

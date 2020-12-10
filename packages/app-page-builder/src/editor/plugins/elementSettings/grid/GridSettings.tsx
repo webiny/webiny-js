@@ -3,15 +3,12 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
-import {
-    calculatePresetPluginCells,
-    getPresetPlugins
-} from "@webiny/app-page-builder/editor/plugins/gridPresets";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { PbEditorGridPresetPluginType, PbElement } from "@webiny/app-page-builder/types";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PbEditorGridPresetPluginType, PbElement } from "../../../../types";
+import { useEventActionHandler } from "../../../../editor";
+import { createElementHelper } from "../../../helpers";
+import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
 import CellSize from "./CellSize";
 import { ContentWrapper } from "../components/StyledComponents";
