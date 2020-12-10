@@ -445,4 +445,56 @@ describe("listing published pages", () => {
             ])
         );
     });
+
+    test("sort by publishedOn", async () => {
+        await publishPage({ id: initiallyCreatedPagesIds[1] });
+        await publishPage({ id: initiallyCreatedPagesIds[3] });
+
+        // We should still get all results when no filters are applied.
+        // 1. Check if all were returned and sorted `createdOn: desc`.
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5
+        );
+
+        await listPublishedPages({
+            sort: { publishedOn: "asc" }
+        }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPublishedPages: {
+                            data: [
+                                { title: "page-a", status: "published" },
+                                { title: "page-b", status: "published" },
+                                { title: "page-c", status: "published" },
+                                { title: "page-z", status: "published" },
+                                { title: "page-x", status: "published" }
+                            ]
+                        }
+                    }
+                }
+            })
+        );
+
+        await listPublishedPages({
+            sort: { publishedOn: "desc" }
+        }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPublishedPages: {
+                            data: [
+                                { title: "page-x", status: "published" },
+                                { title: "page-z", status: "published" },
+                                { title: "page-c", status: "published" },
+                                { title: "page-b", status: "published" },
+                                { title: "page-a", status: "published" }
+                            ]
+                        }
+                    }
+                }
+            })
+        );
+    });
 });

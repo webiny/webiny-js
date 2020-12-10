@@ -157,6 +157,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             input PbListPagesSortInput {
                 title: PbListPagesSortOrders
                 createdOn: PbListPagesSortOrders
+                publishedOn: PbListPagesSortOrders
             }
 
             input PbListPagesWhereInput {

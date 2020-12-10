@@ -83,7 +83,7 @@ export type ListPagesArgs = {
     page?: number;
     where?: { category?: string; status?: string; tags?: string[] };
     search?: { query?: string };
-    sort?: { createdOn?: SortOrder; title?: SortOrder };
+    sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
 };
 
 export type ListMeta = {

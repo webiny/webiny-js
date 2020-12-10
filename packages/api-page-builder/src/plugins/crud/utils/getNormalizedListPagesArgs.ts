@@ -69,6 +69,10 @@ const getSort = sort => {
         normalizedSort["createdOn"] = sort.createdOn;
     }
 
+    if (sort.publishedOn) {
+        normalizedSort["publishedOn"] = sort.publishedOn;
+    }
+
     if (sort.title) {
         normalizedSort["title.keyword"] = sort.title;
     }
