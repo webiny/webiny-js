@@ -1,14 +1,13 @@
 import React, { useMemo, useCallback } from "react";
 import { useRecoilValue } from "recoil";
-
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { css } from "emotion";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
-import { css } from "emotion";
 
 const classes = {
     grid: css({

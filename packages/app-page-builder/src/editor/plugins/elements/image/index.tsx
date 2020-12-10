@@ -5,10 +5,9 @@ import Image from "./Image";
 import { imageCreatedEditorAction } from "./imageCreatedEditorAction";
 import { CreateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
-import Action from "../../elementSettings/components/Action";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin,
+    PbEditorPageElementStyleSettingsPlugin,
     PbEditorEventActionPlugin
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
@@ -40,7 +39,7 @@ export default (): Plugin[] => {
                 }
             },
             settings: [
-                "pb-editor-page-element-settings-image",
+                "pb-editor-page-element-style-settings-image",
                 ["pb-editor-page-element-style-settings-background", { image: false }],
                 "pb-editor-page-element-style-settings-link",
                 "",
@@ -85,18 +84,12 @@ export default (): Plugin[] => {
             }
         } as PbEditorPageElementPlugin,
         {
-            name: "pb-editor-page-element-settings-image",
-            type: "pb-editor-page-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
-            },
-            renderMenu() {
-                return <span>Moved to sidebar.</span>;
-            },
+            name: "pb-editor-page-element-style-settings-image",
+            type: "pb-editor-page-element-style-settings",
             render() {
                 return <ImageSettings />;
             }
-        } as PbEditorPageElementSettingsPlugin,
+        } as PbEditorPageElementStyleSettingsPlugin,
         {
             name: "pb-editor-event-action-image-created",
             type: "pb-editor-event-action-plugin",
