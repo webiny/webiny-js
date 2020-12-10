@@ -1,7 +1,8 @@
 import React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
-
+import omit from "lodash/omit";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { COLORS } from "./StyledComponents";
 
 const selectStyle = css({
@@ -33,26 +34,43 @@ const selectStyle = css({
 });
 
 type SelectProps = {
-    value: string;
-    onChange: (value: any) => void;
+    value?: string;
+    onChange?: (value: any) => void;
     // One or more <option> or <optgroup> elements.
     children?: Array<React.ReactElement<"option"> | React.ReactElement<"optgroup">>;
     className?: string;
     [key: string]: any;
 };
 
-const SelectField = ({ value, onChange, children, className, ...props }: SelectProps) => {
+const SelectField = ({
+    value,
+    onChange,
+    children,
+    className,
+    validation = { isValid: true },
+    description,
+    ...props
+}: SelectProps) => {
     return (
-        <select
-            className={classNames(selectStyle, className)}
-            value={value}
-            onChange={({ target: { value } }) => {
-                onChange(value);
-            }}
-            {...props}
-        >
-            {children}
-        </select>
+        <React.Fragment>
+            <select
+                className={classNames(selectStyle, className)}
+                value={value}
+                onChange={({ target: { value } }) => {
+                    onChange(value);
+                }}
+                {...omit(props, "validate")}
+            >
+                {children}
+            </select>
+            {validation.isValid === false && (
+                <FormElementMessage error>{validation.message}</FormElementMessage>
+            )}
+
+            {validation.isValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </React.Fragment>
     );
 };
 

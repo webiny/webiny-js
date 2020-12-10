@@ -1,8 +1,10 @@
 import React from "react";
 import { css } from "emotion";
 import classNames from "classnames";
-import { COLORS } from "./StyledComponents";
+import omit from "lodash/omit";
 import { Typography } from "@webiny/ui/Typography";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { COLORS } from "./StyledComponents";
 
 const inputStyle = css({
     boxSizing: "border-box",
@@ -37,17 +39,9 @@ const labelStyle = css({
     }
 });
 
-const descriptionStyle = css({
-    marginTop: 8,
-    padding: "0px 8px",
-    "& span": {
-        color: "var(--mdc-theme-text-secondary-on-background)"
-    }
-});
-
 type InputBoxProps = {
     value?: string | number;
-    onChange: (value: any) => void;
+    onChange?: (value: any) => void;
     [key: string]: any;
 };
 const InputField = ({
@@ -56,10 +50,11 @@ const InputField = ({
     onChange,
     label,
     description,
+    validation = { isValid: true },
     ...props
 }: InputBoxProps) => {
     return (
-        <>
+        <React.Fragment>
             {label && (
                 <div className={labelStyle}>
                     <Typography use={"subtitle2"}>{label}</Typography>
@@ -71,14 +66,15 @@ const InputField = ({
                 onChange={({ target: { value } }) => {
                     onChange(value);
                 }}
-                {...props}
+                {...omit(props, "validate")}
             />
-            {description && (
-                <div className={descriptionStyle}>
-                    <Typography use={"caption"}>{description}</Typography>
-                </div>
+            {validation.isValid === false && (
+                <FormElementMessage error>{validation.message}</FormElementMessage>
             )}
-        </>
+            {validation.isValid !== false && description && (
+                <FormElementMessage>{description}</FormElementMessage>
+            )}
+        </React.Fragment>
     );
 };
 
