@@ -54,7 +54,8 @@ export default () => {
                             padding: {
                                 desktop: { all: 0 },
                                 mobile: { all: 0 }
-                            }
+                            },
+                            horizontalAlignFlex: "center"
                         }
                     },
                     ...options
