@@ -574,8 +574,6 @@ describe("listing latest pages", () => {
                 { title: "page-x" }
             ])
         );
-
-
     });
 
     test("searching by text", async () => {

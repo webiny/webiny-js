@@ -51,7 +51,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             type PbPageListItemImages {
                 general: PbFile
             }
-            
+
             type PbPageListItem {
                 id: ID
                 editor: String
