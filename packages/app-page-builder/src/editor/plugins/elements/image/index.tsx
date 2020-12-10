@@ -52,7 +52,7 @@ export default (): Plugin[] => {
                     { alignments: ["left", "center", "right"] }
                 ],
                 "pb-editor-page-element-style-settings-padding",
-                "pb-editor-page-element-settings-margin",
+                "pb-editor-page-element-style-settings-margin",
                 "",
                 "pb-editor-page-element-settings-clone",
                 "pb-editor-page-element-settings-delete",

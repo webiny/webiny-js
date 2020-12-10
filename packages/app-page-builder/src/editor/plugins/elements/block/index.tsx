@@ -25,7 +25,7 @@ export default (): PbEditorPageElementPlugin => {
             "pb-editor-page-element-style-settings-shadow",
             "",
             "pb-editor-page-element-style-settings-padding",
-            "pb-editor-page-element-settings-margin",
+            "pb-editor-page-element-style-settings-margin",
             "pb-editor-page-element-style-settings-width",
             "pb-editor-page-element-settings-height",
             "pb-editor-page-element-settings-horizontal-align-flex",
