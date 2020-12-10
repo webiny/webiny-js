@@ -113,8 +113,12 @@ export const SpacingGrid = styled("div")({
     }
 });
 export const SimpleButton = styled("button")({
-    border: "none",
-    padding: "4px 12px"
+    boxSizing: "border-box",
+    border: "1px solid var(--mdc-theme-on-background)",
+    borderRadius: 1,
+    backgroundColor: "transparent",
+    padding: "8px 16px",
+    cursor: "pointer"
 });
 export const ButtonContainer = styled("div")({
     marginTop: 16
