@@ -199,9 +199,9 @@ class DynamoDbDriver implements DbDriver {
         return [true, {}];
     }
 
-    async readLogs<T>(logTable) {
+    async readLogs<T>({ table }) {
         return this.read<T>({
-            table: logTable,
+            table,
             keys: LOG_KEYS,
             query: {
                 PK: "log",
