@@ -129,11 +129,11 @@ const getESPageData = (context: PbContext, page) => {
 };
 
 const getESLatestPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), __latest: true };
+    return { ...getESPageData(context, page), latest: true };
 };
 
 const getESPublishedPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), __published: true };
+    return { ...getESPageData(context, page), published: true };
 };
 
 const plugin: ContextPlugin<PbContext> = {
@@ -186,7 +186,7 @@ const plugin: ContextPlugin<PbContext> = {
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
-                        { term: { __latest: true } }
+                        { term: { latest: true } }
                     );
 
                     // If users can only manage own records, let's add the special filter.
@@ -220,7 +220,7 @@ const plugin: ContextPlugin<PbContext> = {
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
-                        { term: { __published: true } }
+                        { term: { published: true } }
                     );
 
                     const response = await elasticSearch.search({
