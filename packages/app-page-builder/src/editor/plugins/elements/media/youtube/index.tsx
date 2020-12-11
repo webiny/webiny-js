@@ -54,14 +54,10 @@ export default () => [
                 <Accordion title={"YouTube"} defaultValue={true}>
                     <>
                         <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            {({ value, onChange }) => (
-                                <InputField
-                                    value={value}
-                                    onChange={onChange}
-                                    placeholder={"https://youtube.com/watch?v=4qcDLzu8kVM"}
-                                    description={"Enter a video URL"}
-                                />
-                            )}
+                            <InputField
+                                placeholder={"https://youtube.com/watch?v=4qcDLzu8kVM"}
+                                description={"Enter a video URL"}
+                            />
                         </Bind>
                         <ButtonContainer>
                             <SimpleButton onClick={submit}>
