@@ -5,6 +5,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import {
     activeElementWithChildrenSelector,
+    highlightElementTabMutation,
     sidebarActiveTabIndexSelector,
     uiAtom,
     updateSidebarActiveTabIndexMutation
@@ -25,10 +26,14 @@ const rightSideBar = css({
 const EditorSideBar = () => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const activeTabIndex = useRecoilValue(sidebarActiveTabIndexSelector);
-    const [, setUiAtomValue] = useRecoilState(uiAtom);
+    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
 
     const setActiveTabIndex = useCallback(index => {
         setUiAtomValue(prev => updateSidebarActiveTabIndexMutation(prev, index));
+    }, []);
+
+    const unHighlightElementTab = useCallback(() => {
+        setUiAtomValue(prev => highlightElementTabMutation(prev, false));
     }, []);
 
     return (
@@ -38,7 +43,11 @@ const EditorSideBar = () => {
                     <StyleSettingsTabContent element={element} />
                 </Tab>
                 <Tab label={"element"} disabled={!element}>
-                    <ElementSettingsTabContent element={element} />
+                    <ElementSettingsTabContent
+                        element={element}
+                        highlightElementTab={uiAtomValue.highlightElementTab}
+                        unHighlightElementTab={unHighlightElementTab}
+                    />
                 </Tab>
             </Tabs>
         </Elevation>
