@@ -53,15 +53,15 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
 
     lastSavedRevisionData = data;
 
-    const updateRevision = gql`
-        mutation UpdateRevision($id: ID!, $data: PbUpdatePageInput!) {
+    const updatePage = gql`
+        mutation updatePage($id: ID!, $data: PbUpdatePageInput!) {
             pageBuilder {
-                updateRevision(id: $id, data: $data) {
+                updatePage(id: $id, data: $data) {
                     data {
                         id
                         content
                         title
-                        published
+                        status
                         savedOn
                     }
                     error {
@@ -84,7 +84,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
                 return setIsSavingMutation(prev);
             });
             await meta.client.mutate({
-                mutation: updateRevision,
+                mutation: updatePage,
                 variables: {
                     id: state.page.id,
                     data

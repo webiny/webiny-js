@@ -6,6 +6,7 @@ import { FileManagerProvider } from "./FileManager/FileManagerContext";
 
 type FileManagerProps = {
     onChange?: Function;
+    onChangePick?: string[];
     images?: boolean;
     multiple?: boolean;
     accept?: Array<string>;
@@ -44,6 +45,7 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
             onChange,
             onClose,
             accept,
+            onChangePick,
             multiple,
             images,
             maxSize,
@@ -55,7 +57,9 @@ class FileManagerPortal extends React.Component<FileManagerPortalProps> {
 
         const props = {
             onChange: files => {
-                const fields = ["id", "name", "key", "src", "size", "type"];
+                const fields = Array.isArray(onChangePick)
+                    ? onChangePick
+                    : ["id", "name", "key", "src", "size", "type"];
                 if (Array.isArray(files)) {
                     onChange(files.map(file => pick(file, fields)));
                 } else {

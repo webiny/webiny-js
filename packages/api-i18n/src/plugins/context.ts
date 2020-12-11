@@ -56,9 +56,15 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
 export default {
     type: "context",
     apply: async context => {
-        const locales = context.plugins.byName<ContextI18NGetLocales>("context-i18n-get-locales");
-        if (!locales) {
-            throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
+        let locales = [];
+        if (context.security.getTenant()) {
+            const plugin = context.plugins.byName<ContextI18NGetLocales>(
+                "context-i18n-get-locales"
+            );
+            if (!plugin) {
+                throw new Error('Cannot load locales - missing "context-i18n-get-locales" plugin.');
+            }
+            locales = await plugin.resolve({ context });
         }
 
         const { http, plugins } = context;
@@ -67,7 +73,7 @@ export default {
                 acceptLanguage: null,
                 defaultLocale: null,
                 locale: {}, // Contains one or more locales - for multiple locale contexts.
-                locales: await locales.resolve({ context })
+                locales
             },
             getDefaultLocale() {
                 const allLocales = self.getLocales();
@@ -132,7 +138,7 @@ export default {
                     }
 
                     // @ts-ignore
-                    const valuesValue = value.values.find(value => value.locale === locale.id);
+                    const valuesValue = value.values.find(value => value.locale === locale.code);
                     return valuesValue ? valuesValue.value : "";
                 }
 

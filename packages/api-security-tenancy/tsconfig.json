@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["./src", "./__tests__"],
+  "references": [
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-graphql"
+    }
+  ]
+}

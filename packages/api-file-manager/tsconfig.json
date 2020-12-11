@@ -1,9 +1,18 @@
 {
   "extends": "../../tsconfig",
-  "include": ["./src"],
+  "include": ["./src", "./__tests__"],
   "references": [
     {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
       "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
     },
     {
       "path": "../handler-graphql"
@@ -19,12 +28,6 @@
     },
     {
       "path": "../validation"
-    },
-    {
-      "path": "../api-i18n-content"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
     },
     {
       "path": "../handler-http"

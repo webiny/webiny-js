@@ -74,7 +74,7 @@ import {
     saveRevisionPlugin,
     togglePluginPlugin,
     updateElementPlugin,
-    updateRevisionPlugin
+    updatePagePlugin
 } from "@webiny/app-page-builder/editor/recoil/actions";
 
 export default [
@@ -152,7 +152,7 @@ export default [
     dropElementPlugin(),
     deactivatePluginPlugin(),
     deleteElementPlugin(),
-    updateRevisionPlugin(),
+    updatePagePlugin(),
     ...resizePlugin(),
     ...dragPlugin()
 ];

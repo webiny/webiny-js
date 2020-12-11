@@ -16,7 +16,7 @@ const SimpleFormPlaceholder = styled.div({
 const t = i18n.ns("app-file-manager/admin/installation");
 
 const IS_INSTALLED = gql`
-    {
+    query IsFileManagerInstalled {
         fileManager {
             isInstalled {
                 data
@@ -84,7 +84,7 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-fm",
     type: "admin-installation",
     title: t`File Manager app`,
-    dependencies: ["admin-installation-security"],
+    dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
     async isInstalled({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });

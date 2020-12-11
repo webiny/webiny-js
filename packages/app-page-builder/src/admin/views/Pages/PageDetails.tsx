@@ -62,10 +62,6 @@ const PageDetails = () => {
     const query = new URLSearchParams(location.search);
     const pageId = query.get("id");
 
-    if (!pageId) {
-        return <EmptyPageDetails />;
-    }
-
     const getPageQuery = useQuery(GET_PAGE, {
         variables: { id: pageId },
         skip: !pageId,
@@ -77,6 +73,10 @@ const PageDetails = () => {
             }
         }
     });
+
+    if (!pageId) {
+        return <EmptyPageDetails />;
+    }
 
     const page = getPageQuery.data?.pageBuilder?.getPage?.data || {};
 

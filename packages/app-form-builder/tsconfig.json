@@ -23,7 +23,7 @@
 			"path": "../app-security"
 		},
 		{
-			"path": "../app-security-user-management"
+			"path": "../app-security-tenancy"
 		},
 		{
 			"path": "../plugins"

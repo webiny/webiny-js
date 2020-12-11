@@ -15,7 +15,7 @@ export default ({ context, FormSettings }: CreateSettingsModel) => {
     // installed yet, meaning no default locale was selected.
     let defaultLocale = null;
     if (context.i18n.getDefaultLocale()) {
-        defaultLocale = context.i18n.getDefaultLocale().id;
+        defaultLocale = context.i18n.getDefaultLocale().code;
     }
 
     return withFields({

@@ -5,11 +5,12 @@ import { i18n } from "@webiny/app/i18n";
 import {
     PermissionInfo,
     gridNoPaddingClass
-} from "@webiny/app-security-user-management/components/permission";
+} from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./CustomSection";
+import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -21,7 +22,14 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 const ENTITIES = ["category", "menu", "page"];
 
-export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
+const rcpuOptions = [
+    { id: "p", name: t`Publish` },
+    { id: "u", name: t`Unpublish` },
+    { id: "r", name: t`Request review` },
+    { id: "c", name: t`Request changes` }
+];
+
+export const PageBuilderPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         formData => {
             let newValue = [];
@@ -49,17 +57,39 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                     formData[`${entity}AccessLevel`] &&
                     formData[`${entity}AccessLevel`] !== NO_ACCESS
                 ) {
-                    const permission = {
-                        name: `${PAGE_BUILDER}.${entity}`,
-                        own: false,
-                        rwd: undefined
+                    const permission: Record<string, any> = {
+                        name: `${PAGE_BUILDER}.${entity}`
                     };
 
                     if (formData[`${entity}AccessLevel`] === "own") {
                         permission.own = true;
-                    } else {
-                        permission.rwd = formData[`${entity}Rwd`];
                     }
+
+                    if (Array.isArray(formData[`${entity}Rwd`])) {
+                        const rwd = formData[`${entity}Rwd`].reduce(
+                            (current, item) => current + item,
+                            ""
+                        );
+
+                        if (rwd) {
+                            permission.rwd = rwd;
+                        }
+                    }
+
+                    // For pages, we can also manage publishing and reviewing of pages.
+                    if (entity === "page") {
+                        if (Array.isArray(formData[`${entity}Rcpu`])) {
+                            const rcpu = formData[`${entity}Rcpu`].reduce(
+                                (current, item) => current + item,
+                                ""
+                            );
+
+                            if (rcpu) {
+                                permission.rcpu = rcpu;
+                            }
+                        }
+                    }
+
                     newValue.push(permission);
                 }
             });
@@ -71,7 +101,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -92,11 +122,15 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "categories", "menus", and "pages".
-        const formData = { accessLevel: CUSTOM_ACCESS, settingsAccessLevel: NO_ACCESS };
+        const formData: Record<string, any> = {
+            accessLevel: CUSTOM_ACCESS,
+            settingsAccessLevel: NO_ACCESS
+        };
+
         ENTITIES.forEach(entity => {
-            const data = {
+            const data: Record<string, any> = {
                 [`${entity}AccessLevel`]: NO_ACCESS,
-                [`${entity}Rwd`]: "r"
+                [`${entity}Rwd`]: []
             };
 
             const entityPermission = permissions.find(
@@ -105,8 +139,11 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             if (entityPermission) {
                 data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
-                if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
-                    data[`${entity}Rwd`] = entityPermission.rwd;
+                data[`${entity}Rwd`] = entityPermission.rwd ? [...entityPermission.rwd] : [];
+
+                // For pages, we can also manage publishing and reviewing of pages.
+                if (entity === "page") {
+                    data[`${entity}Rcpu`] = entityPermission.rcpu ? [...entityPermission.rcpu] : [];
                 }
             }
 
@@ -122,7 +159,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         return formData;
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>
@@ -156,12 +193,36 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
                                 entity={"menu"}
                                 title={"Menus"}
                             />
-                            <CustomSection
-                                data={data}
-                                Bind={Bind}
-                                entity={"page"}
-                                title={"Pages"}
-                            />
+
+                            <CustomSection data={data} Bind={Bind} entity={"page"} title={"Pages"}>
+                                <Cell span={12}>
+                                    <Cell span={12}>
+                                        <Bind name={"pageRcpu"}>
+                                            <CheckboxGroup
+                                                label={t`Publishing workflow`}
+                                                description={t`Publishing-related actions that can be performed on the content.`}
+                                            >
+                                                {({ getValue, onChange }) =>
+                                                    rcpuOptions.map(({ id, name }) => (
+                                                        <Checkbox
+                                                            disabled={
+                                                                !["full", "own"].includes(
+                                                                    data.pageAccessLevel
+                                                                )
+                                                            }
+                                                            key={id}
+                                                            label={name}
+                                                            value={getValue(id)}
+                                                            onChange={onChange(id)}
+                                                        />
+                                                    ))
+                                                }
+                                            </CheckboxGroup>
+                                        </Bind>
+                                    </Cell>
+                                </Cell>
+                            </CustomSection>
+
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
                                     <Cell span={12}>

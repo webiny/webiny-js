@@ -52,7 +52,7 @@ const plugin: GraphQLSchemaPlugin = {
                 getPreSignedPostPayload: async (root, args, context) => {
                     try {
                         const { data } = args;
-                        const settings = await context.fileManager.fileManagerSettings.getSettings();
+                        const settings = await context.fileManager.settings.getSettings();
                         const response = await getPresignedPostPayload(data, settings);
 
                         return new Response(response);
@@ -88,7 +88,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const settings = await context.fileManager.fileManagerSettings.getSettings();
+                        const settings = await context.fileManager.settings.getSettings();
 
                         const promises = [];
                         for (let i = 0; i < files.length; i++) {

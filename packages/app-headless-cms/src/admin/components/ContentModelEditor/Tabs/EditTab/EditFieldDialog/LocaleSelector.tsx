@@ -15,7 +15,7 @@ const LocaleSelector = ({ locale, setLocale }) => {
             description={"Predefined values are set for every available locale separately."}
         >
             {i18n.getLocales().map(locale => (
-                <option key={locale.id} value={locale.id}>
+                <option key={locale.code} value={locale.code}>
                     {locale.code}
                 </option>
             ))}

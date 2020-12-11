@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useCallback } from "react";
 import { ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
 import Transition from "react-transition-group/Transition";
 import { Icon } from "@webiny/ui/Icon";
@@ -99,55 +99,60 @@ export type AccordionItemProps = {
      * Append a class name
      */
     className?: string;
+
+    /**
+     * Render item opened by default
+     */
+    open?: boolean;
 };
 
-class AccordionItem extends React.Component<AccordionItemProps, State> {
-    state = { closed: true };
+const AccordionItem = (props: AccordionItemProps) => {
+    const [open, setState] = useState(props.open ? props.open : false);
 
-    render() {
-        return (
-            <div className={classNames("webiny-ui-accordion-item", this.props.className)}>
-                <ListItem
-                    className={classNames(
-                        listItem,
-                        { [openedState]: !this.state.closed },
-                        "webiny-ui-accordion-item__list-item"
-                    )}
-                    onClick={() => {
-                        this.setState({ closed: !this.state.closed });
-                    }}
-                >
-                    {this.props.icon && (
-                        <ListItemGraphic>
-                            <Icon icon={this.props.icon} />
-                        </ListItemGraphic>
-                    )}
+    const toggleState = useCallback(() => {
+        setState(!open);
+    }, [open]);
 
-                    <TitleContent className="webiny-ui-accordion-item__title">
-                        <ListItemTitle>{this.props.title}</ListItemTitle>
-                        {this.props.description && (
-                            <ListItemDescription>
-                                <Typography use={"subtitle2"}>{this.props.description}</Typography>
-                            </ListItemDescription>
-                        )}
-                    </TitleContent>
-                    <ListItemMeta>
-                        <Icon icon={this.state.closed ? <DownArrow /> : <UpArrow />} />
-                    </ListItemMeta>
-                </ListItem>
-                <Transition in={!this.state.closed} timeout={duration}>
-                    {state => (
-                        <Content
-                            style={{ ...defaultStyle, ...transitionStyles[state] }}
-                            className="webiny-ui-accordion-item__content"
-                        >
-                            {this.props.children}
-                        </Content>
+    return (
+        <div className={classNames("webiny-ui-accordion-item", props.className)}>
+            <ListItem
+                className={classNames(
+                    listItem,
+                    { [openedState]: open },
+                    "webiny-ui-accordion-item__list-item"
+                )}
+                onClick={toggleState}
+            >
+                {props.icon && (
+                    <ListItemGraphic>
+                        <Icon icon={props.icon} />
+                    </ListItemGraphic>
+                )}
+
+                <TitleContent className="webiny-ui-accordion-item__title">
+                    <ListItemTitle>{props.title}</ListItemTitle>
+                    {props.description && (
+                        <ListItemDescription>
+                            <Typography use={"subtitle2"}>{props.description}</Typography>
+                        </ListItemDescription>
                     )}
-                </Transition>
-            </div>
-        );
-    }
-}
+                </TitleContent>
+                <ListItemMeta>
+                    <Icon icon={!open ? <DownArrow /> : <UpArrow />} />
+                </ListItemMeta>
+            </ListItem>
+            <Transition in={open} timeout={duration}>
+                {state => (
+                    <Content
+                        style={{ ...defaultStyle, ...transitionStyles[state] }}
+                        className="webiny-ui-accordion-item__content"
+                    >
+                        {props.children}
+                    </Content>
+                )}
+            </Transition>
+        </div>
+    );
+};
 
 export { AccordionItem };

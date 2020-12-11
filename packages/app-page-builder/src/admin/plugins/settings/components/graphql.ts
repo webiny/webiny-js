@@ -2,6 +2,7 @@ import gql from "graphql-tag";
 
 const fields = /* GraphQL */ `
     {
+        id
         data {
             pages {
                 home
@@ -21,21 +22,18 @@ const fields = /* GraphQL */ `
     }
 `;
 
-const graphql = {
-    query: gql`
-        query PbGetSettings{
-            pageBuilder {
-                getSettings ${fields}
-            }
+export const GET_SETTINGS = gql`
+    query PbGetSettings{
+        pageBuilder {
+            getSettings ${fields}
         }
-    `,
-    mutation: gql`
-        mutation PbUpdateSettings($data: PbSettingsInput) {
-            pageBuilder {
-                updateSettings(data: $data) ${fields}
-            }
-        }
-    `
-};
+    }
+`;
 
-export default graphql;
+export const UPDATE_SETTINGS = gql`
+    mutation PbUpdateSettings($data: PbSettingsInput!) {
+        pageBuilder {
+            updateSettings(data: $data) ${fields}
+        }
+    }
+`;

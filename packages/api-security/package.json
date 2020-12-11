@@ -1,54 +1,46 @@
 {
-  "name": "@webiny/api-security",
-  "version": "4.14.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git"
-  },
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>",
-    "Sven Al Hamad <sven@webiny.com>",
-    "Adrian Smijulj <adrian@webiny.com>"
-  ],
-  "description": "The API for the Webiny Security (webiny-app-security) app.",
-  "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.5.5",
-    "@webiny/plugins": "^4.14.0",
-    "jsonwebtoken": "^8.2.2",
-    "minimatch": "^3.0.4"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5",
-    "@babel/preset-env": "^7.5.5",
-    "@babel/preset-typescript": "^7.8.3",
-    "@webiny/handler": "^4.14.0",
-    "@webiny/handler-graphql": "^4.14.0",
-    "eslint-plugin-jest": "^22.17.0"
-  },
-  "optionalDependencies": {
-    "fsevents": "^2.1.3"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
-  },
-  "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-  },
-  "svgo": {
-    "plugins": {
-      "removeViewBox": false
-    }
-  },
-  "adio": {
-    "ignoreDirs": [
-      "src/install"
-    ]
-  },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+	"name": "@webiny/api-security",
+	"version": "4.14.0",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git"
+	},
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>",
+		"Sven Al Hamad <sven@webiny.com>",
+		"Adrian Smijulj <adrian@webiny.com>"
+	],
+	"description": "The API for the Webiny Security (webiny-app-security) app.",
+	"license": "MIT",
+	"dependencies": {
+		"@babel/runtime": "^7.5.5",
+		"@webiny/handler": "^4.14.0",
+		"@webiny/handler-graphql": "^4.14.0",
+		"@webiny/plugins": "^4.14.0",
+		"minimatch": "^3.0.4",
+		"@webiny/error": "^4.14.0"
+	},
+	"devDependencies": {
+		"@babel/cli": "^7.5.5",
+		"@babel/core": "^7.5.5",
+		"@babel/preset-env": "^7.5.5",
+		"@babel/preset-typescript": "^7.8.3",
+		"eslint-plugin-jest": "^22.17.0"
+	},
+	"publishConfig": {
+		"access": "public",
+		"directory": "dist"
+	},
+	"scripts": {
+		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+	},
+	"adio": {
+		"ignoreDirs": [
+			"src/install"
+		]
+	},
+	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
 }

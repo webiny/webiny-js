@@ -1,4 +1,4 @@
-name: Build (latest)
+name: Release (latest)
 
 on:
   repository_dispatch:

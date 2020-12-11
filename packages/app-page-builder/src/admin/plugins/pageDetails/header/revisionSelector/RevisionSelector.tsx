@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import { get } from "lodash";
 import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -8,6 +7,7 @@ import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/ass
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
+import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 
 const buttonStyle = css({
     "&.mdc-button": {
@@ -20,7 +20,8 @@ const menuList = css({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "baseline",
-        textAlign: "left"
+        textAlign: "left",
+        width: 150
     }
 });
 
@@ -28,6 +29,8 @@ const RevisionSelector = props => {
     const { page } = props;
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
+
+    const { revisions = [] } = page;
 
     return (
         <Menu
@@ -42,22 +45,12 @@ const RevisionSelector = props => {
                 </ButtonDefault>
             }
         >
-            {(get(page, "revisions") || []).map(rev => {
-                let status = "draft";
-                if (rev.published) {
-                    status = "published";
-                }
-                if (rev.locked && !rev.published) {
-                    status = "locked";
-                }
-
-                return (
-                    <MenuItem key={rev.id}>
-                        <Typography use={"body2"}>v{rev.version}</Typography>
-                        <Typography use={"caption"}>({status})</Typography>
-                    </MenuItem>
-                );
-            })}
+            {revisions.map(rev => (
+                <MenuItem key={rev.id}>
+                    <Typography use={"body2"}>v{rev.version}</Typography>
+                    <Typography use={"caption"}>({statusesLabels[rev.status]})</Typography>
+                </MenuItem>
+            ))}
         </Menu>
     );
 };

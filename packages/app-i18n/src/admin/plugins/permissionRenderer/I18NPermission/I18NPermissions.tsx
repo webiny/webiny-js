@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import {
     PermissionInfo,
     gridNoPaddingClass
-} from "@webiny/app-security-user-management/components/permission";
+} from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
 import { Switch } from "@webiny/ui/Switch";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -20,7 +20,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const I18NPermissions = ({ securityGroup, value, onChange }) => {
+export const I18NPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -42,7 +42,7 @@ export const I18NPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -64,7 +64,7 @@ export const I18NPermissions = ({ securityGroup, value, onChange }) => {
 
         // It's either "i18n.*" or "i18n.locales", that's why `locales: true`.
         return { level: CUSTOM_ACCESS, locales: true };
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>

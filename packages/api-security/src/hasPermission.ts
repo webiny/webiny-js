@@ -1,10 +1,11 @@
 import minimatch from "minimatch";
+import { Context } from "@webiny/handler/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ErrorResponse } from "@webiny/handler-graphql/responses";
 import NotAuthorizedResponse from "./NotAuthorizedResponse";
 
-const checkPermission = (permission: any) => {
-    return (resolver: GraphQLFieldResolver) => {
+const checkPermission = <TSource, TArgs, TContext = Context>(permission: any) => {
+    return (resolver: GraphQLFieldResolver<TSource, TArgs, TContext>) => {
         return async (parent, args, context, info) => {
             const perms = await context.security.getPermissions();
 

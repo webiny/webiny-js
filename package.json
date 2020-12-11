@@ -7,16 +7,8 @@
       "apps/site/code",
       "apps/theme",
       "api/code/graphqlPlayground",
-      "api/code/api",
+      "api/code/graphql",
       "api/code/fileManager/*"
-    ],
-    "nohoist": [
-      "**/inquirer/**",
-      "**/mime/**",
-      "**/@types/mocha",
-      "**/semver",
-      "**/slate",
-      "**/slate-react"
     ]
   },
   "contributors": [
@@ -34,14 +26,13 @@
     "@babel/core": "^7.0.0",
     "@commitlint/cli": "^8.3.5",
     "@commitlint/config-conventional": "^8.3.4",
-    "@testing-library/cypress": "^5.0.2",
+    "@testing-library/cypress": "^7.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.22",
-    "@types/react": "^16.9.17",
-    "@types/react-dom": "^16.9.4",
-    "@types/react-redux": "^7.1.5",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^2.12.0",
     "@typescript-eslint/parser": "^2.12.0",
     "adio": "^1.0.1",
@@ -54,7 +45,7 @@
     "commitizen": "^2.10.1",
     "contreebutors": "^1.1.3",
     "cross-env": "^5.2.0",
-    "cypress": "^5.0.0",
+    "cypress": "^6.0.1",
     "cz-customizable": "^5.2.0",
     "empty": "^0.10.1",
     "env-ci": "2.0.1",
@@ -114,7 +105,7 @@
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
-    "build": "lerna run build --stream",
+    "build": "lerna run build --stream --ignore=@webiny/api-headless-cms --ignore=@webiny/app-headless-cms",
     "build:apps": "lerna run build --scope=@webiny/app* --stream",
     "build:api": "lerna run build --scope=@webiny/api* --scope=@webiny/handler* --stream",
     "build:packages": "lerna run build --scope=@webiny/* --ignore=@webiny/serv* --stream",
@@ -139,7 +130,7 @@
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
     "setup-cypress": "node scripts/setupCypress",
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js --runInBand",
     "validate-packages": "node scripts/validatePackages.js",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
@@ -191,6 +182,8 @@
     }
   },
   "resolutions": {
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "apollo-server-core": "2.17.0"
   }

@@ -2,24 +2,22 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("CRUD Test", () => {
     const {
-        elasticSearch,
         createCategory,
         createPage,
         deletePage,
         listPages,
         getPage,
         updatePage,
-        sleep
+        sleep,
+        deleteElasticSearchIndex
     } = useGqlHandler();
 
     beforeAll(async () => {
-        try {
-            await elasticSearch.indices.delete({ index: "page-builder" });
-        } catch {}
+        await deleteElasticSearchIndex();
     });
 
     test("create, read, update and delete pages", async () => {
-        let [response] = await createPage({ data: { category: "unknown" } });
+        let [response] = await createPage({ category: "unknown" });
         expect(response).toEqual({
             data: {
                 pageBuilder: {
@@ -51,7 +49,7 @@ describe("CRUD Test", () => {
                 category: category.data.pageBuilder.createCategory.data.slug
             };
 
-            let [response] = await createPage({ data });
+            let [response] = await createPage(data);
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -61,11 +59,11 @@ describe("CRUD Test", () => {
                                     slug: "slug"
                                 },
                                 title: "Untitled",
-                                url: /^\/some-url\/untitled-*/,
-                                published: null,
-                                locked: null,
+                                url: /^\/some-url\/untitled-.*/,
+                                publishedOn: null,
+                                locked: false,
                                 version: 1,
-                                createdOn: /^20.*/,
+                                createdOn: expect.stringMatching(/^20.*/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
                             error: null
@@ -125,7 +123,6 @@ describe("CRUD Test", () => {
             });
         }
 
-        // List should show three pages.
         while (true) {
             await sleep();
             [response] = await listPages();
@@ -150,7 +147,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[2],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-2",
                                 url: "url-UPDATED-2"
@@ -166,7 +162,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[1],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-1",
                                 url: "url-UPDATED-1"
@@ -182,7 +177,6 @@ describe("CRUD Test", () => {
                                 createdOn: /^20/,
                                 savedOn: /^20/,
                                 id: ids[0],
-                                published: false,
                                 status: "draft",
                                 title: "title-UPDATED-0",
                                 url: "url-UPDATED-0"

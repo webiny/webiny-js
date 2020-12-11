@@ -1,6 +1,5 @@
 const { startApp, buildApp } = require("@webiny/project-utils");
 const { setEnvironmentFromState } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const path = require("path");
 
 const map = {
     REACT_APP_USER_POOL_REGION: "${region}",
@@ -13,9 +12,6 @@ const map = {
 module.exports = {
     commands: {
         async start({ env, ...options }, context) {
-            // Load .env.json from current directory.
-            await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
-
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
@@ -25,9 +21,6 @@ module.exports = {
             await startApp({ ...options, openBrowser: false }, context);
         },
         async build({ env, ...options }, context) {
-            // Load .env.json from current directory.
-            await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
-
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.

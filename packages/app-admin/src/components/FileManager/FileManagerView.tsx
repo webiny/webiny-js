@@ -7,7 +7,7 @@ import { useQuery, useMutation, useApolloClient } from "react-apollo";
 import { FilesRules } from "react-butterfiles";
 import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
-import { get, debounce, cloneDeep } from "lodash";
+import { get, debounce } from "lodash";
 import getFileUploader from "./getFileUploader";
 import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
@@ -110,7 +110,7 @@ function renderFile(props) {
     const { file } = props;
     const plugin = getFileTypePlugin(file);
     return (
-        <File {...props} key={file.src}>
+        <File {...props} key={file.id}>
             {plugin.render({ file })}
         </File>
     );
@@ -171,40 +171,6 @@ function FileManagerView(props: FileManagerViewProps) {
         setQueryParams({ ...queryParams, tags: finalTags });
     }, []);
 
-    const refreshOnScroll = useCallback(
-        // @ts-ignore
-        debounce(({ scrollFrame, fetchMore }) => {
-            if (scrollFrame.top > 0.9) {
-                // @ts-ignore // TODO: @adrian - what is `current` ?
-                if (!gqlQuery.current) {
-                    return;
-                }
-                // @ts-ignore // TODO: @adrian - what is `current` ?
-                const { data } = gqlQuery.current.getQueryResult();
-                const nextPage = get(data, "fileManager.listFiles.meta.nextPage");
-                nextPage &&
-                    fetchMore({
-                        variables: { page: nextPage },
-                        updateQuery: (prev, { fetchMoreResult }) => {
-                            if (!fetchMoreResult) {
-                                return prev;
-                            }
-
-                            const next = { ...fetchMoreResult };
-
-                            next.fileManager.listFiles.data = [
-                                ...prev.fileManager.listFiles.data,
-                                ...fetchMoreResult.fileManager.listFiles.data
-                            ];
-
-                            return next;
-                        }
-                    });
-            }
-        }, 500),
-        []
-    );
-
     const getFileUploadErrorMessage = useCallback(e => {
         if (typeof e === "string") {
             const match = e.match(/Message>(.*?)<\/Message/);
@@ -221,13 +187,20 @@ function FileManagerView(props: FileManagerViewProps) {
     const updateCacheAfterCreateFile = (cache, newFile) => {
         const newFileData = get(newFile, "data.fileManager.createFile.data");
 
-        const data = cloneDeep(cache.readQuery({ query: LIST_FILES, variables: queryParams }));
-        data.fileManager.listFiles.data.unshift(newFileData);
+        const data = cache.readQuery({ query: LIST_FILES, variables: queryParams });
 
         cache.writeQuery({
             query: LIST_FILES,
             variables: queryParams,
-            data
+            data: {
+                fileManager: {
+                    ...data.fileManager,
+                    listFiles: {
+                        ...data.fileManager.listFiles,
+                        data: [newFileData, ...(data.fileManager.listFiles.data || [])]
+                    }
+                }
+            }
         });
     };
 
@@ -255,6 +228,34 @@ function FileManagerView(props: FileManagerViewProps) {
             }
         }
     });
+
+    const refreshOnScroll = useCallback(
+        debounce(({ scrollFrame, fetchMore }) => {
+            if (scrollFrame.top > 0.9) {
+                const cursor = get(gqlQuery.data, "fileManager.listFiles.meta.cursor");
+                if (cursor) {
+                    fetchMore({
+                        variables: { after: cursor },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.fileManager.listFiles.data = [
+                                ...prev.fileManager.listFiles.data,
+                                ...fetchMoreResult.fileManager.listFiles.data
+                            ];
+
+                            return next;
+                        }
+                    });
+                }
+            }
+        }, 500),
+        [gqlQuery]
+    );
 
     const { data, fetchMore } = gqlQuery;
 

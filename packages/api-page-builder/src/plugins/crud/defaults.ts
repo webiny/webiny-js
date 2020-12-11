@@ -1,3 +1,5 @@
+import { PbContext } from "@webiny/api-page-builder/types";
+
 export default {
     db: {
         table: process.env.DB_TABLE_PAGE_BUILDER,
@@ -10,8 +12,14 @@ export default {
             }
         ]
     },
-    es: {
-        index: "page-builder",
-        type: "_doc"
+    es(context: PbContext) {
+        const tenant = context.security.getTenant();
+        if (tenant) {
+            return {
+                index: tenant.id + "-page-builder"
+            };
+        }
+
+        throw new Error("Tenant missing.");
     }
 };

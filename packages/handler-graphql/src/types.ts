@@ -9,13 +9,6 @@ export type GraphQLScalarPlugin = Plugin & {
 
 export interface HandlerGraphQLOptions {
     debug?: boolean | string;
-    server?: {
-        introspection?: boolean | string;
-        playground?: boolean | string;
-    };
-    handler?: {
-        cors?: { [key: string]: any };
-    };
 }
 
 export type GraphQLFieldResolver<
@@ -39,10 +32,7 @@ export type Resolvers<TContext> =
 
 export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
     type: "graphql-schema";
-
-    // TODO: is this necessary?
-    /*prepare?: (params: { context: T }) => Promise<void>;*/
-
+    prepare?: (params: { context: TContext }) => Promise<void>;
     schema: {
         typeDefs: Types;
         resolvers: Resolvers<TContext>;

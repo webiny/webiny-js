@@ -22,7 +22,7 @@ export enum Placement {
     bottom = "bottom"
 }
 
-export type AutoCompleteProps = AutoCompleteBaseProps & {
+export type Props = AutoCompleteBaseProps & {
     /* Placement position of dropdown menu, can be either `top` or `bottom`. */
     placement?: Placement;
 
@@ -45,7 +45,7 @@ function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 
-class AutoComplete extends React.Component<AutoCompleteProps, State> {
+class AutoComplete extends React.Component<Props, State> {
     static defaultProps = {
         valueProp: "id",
         textProp: "name",

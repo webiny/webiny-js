@@ -1,19 +1,21 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
+
 export type SecurityIdentity = {
     id: string;
-    login: string;
+    displayName: string;
     type: string;
     [key: string]: any;
 };
 
 export type SecurityAuthenticationPlugin = Plugin & {
     type: "security-authentication";
-    authenticate(context: any): Promise<null> | Promise<SecurityIdentity>;
+    authenticate(context: Context): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export type SecurityPermission = {
+export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
+    // TODO: remove this when all apps have proper permission types in place
     [key: string]: any;
 };
 
@@ -25,6 +27,6 @@ export type SecurityAuthorizationPlugin = Plugin & {
 export type SecurityContext = {
     security: {
         getIdentity: () => SecurityIdentity;
-        getPermission: (name: string) => Promise<SecurityPermission>;
+        getPermission<T>(name: string): Promise<SecurityPermission<T>>;
     };
 };
