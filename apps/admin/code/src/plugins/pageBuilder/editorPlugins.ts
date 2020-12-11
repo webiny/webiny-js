@@ -49,7 +49,6 @@ import shadow from "@webiny/app-page-builder/editor/plugins/elementSettings/shad
 import padding from "@webiny/app-page-builder/editor/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/margin";
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
-import columnWidth from "@webiny/app-page-builder/editor/plugins/elementSettings/columnWidth";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
 import divider from "@webiny/app-page-builder/editor/plugins/elementSettings/divider";
@@ -135,7 +134,6 @@ export default [
     clone,
     deleteElement,
     width,
-    columnWidth,
     height,
     save,
     link,
