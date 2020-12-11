@@ -137,6 +137,7 @@ const getESPageData = (context: PbContext, page) => {
         createdOn: page.createdOn,
         savedOn: page.savedOn,
         createdBy: page.createdBy,
+        ownedBy: page.ownedBy,
         category: page.category,
         version: page.version,
         title: page.title,
@@ -202,7 +203,7 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     return page;
                 },
@@ -347,6 +348,12 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
+                    const owner = {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    };
+
                     const data = {
                         PK: PK_PAGE(),
                         SK: id,
@@ -369,11 +376,8 @@ const plugin: ContextPlugin<PbContext> = {
                         settings: await updateSettingsModel.toJSON(),
                         savedOn: new Date().toISOString(),
                         createdOn: new Date().toISOString(),
-                        createdBy: {
-                            id: identity.id,
-                            displayName: identity.displayName,
-                            type: identity.type
-                        }
+                        ownedBy: owner,
+                        createdBy: owner
                     };
 
                     await db
@@ -427,7 +431,7 @@ const plugin: ContextPlugin<PbContext> = {
                     // Must not be able to create a new page (revision) from a page of another author.
                     if (permission?.own === true) {
                         const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
+                        if (page.ownedBy.id !== identity.id) {
                             throw new NotAuthorizedError();
                         }
                     }
@@ -436,6 +440,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const nextVersion = parseInt(latestPageVersion) + 1;
                     const nextId = `${fromUniqueId}#${getZeroPaddedVersionNumber(nextVersion)}`;
                     const identity = context.security.getIdentity();
+
                     const data = {
                         ...page,
                         SK: nextId,
@@ -515,7 +520,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -600,7 +605,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
                     await executeHookCallbacks("beforeDelete", page);
@@ -784,7 +789,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     await executeHookCallbacks("beforePublish", page);
 
@@ -933,7 +938,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     if (!publishedPageData || publishedPageData.id !== pageId) {
                         throw new Error(`Page "${pageId}" is not published.`);
@@ -1023,7 +1028,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     // Change loaded page's status to `reviewRequested`.
                     page.status = STATUS_REVIEW_REQUESTED;
@@ -1096,14 +1101,14 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    if (page.createdBy.id === identity.id) {
+                    if (page.ownedBy.id === identity.id) {
                         throw new Error(
                             "Cannot request changes on own page.",
                             "REQUEST_CHANGES_ON_OWN_PAGE"
                         );
                     }
 
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     // Change loaded page's status to published.
                     page.status = STATUS_CHANGES_REQUESTED;
@@ -1176,14 +1181,14 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    if (page.createdBy.id === identity.id) {
+                    if (page.ownedBy.id === identity.id) {
                         throw new Error(
                             "Cannot request changes on own page.",
                             "REQUEST_CHANGES_ON_OWN_PAGE"
                         );
                     }
 
-                    checkOwnPermissions(identity, permission, page);
+                    checkOwnPermissions(identity, permission, page, 'ownedBy');
 
                     // Change loaded page's status to published.
                     page.status = STATUS_CHANGES_REQUESTED;
