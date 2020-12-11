@@ -8,6 +8,13 @@ import {
     CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
+import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
+import GraphQLJSON from "graphql-type-json";
+import GraphQLLong from "graphql-type-long";
+import { GraphQLDateTime } from "graphql-iso-date";
+import { RefInput } from "@webiny/handler-graphql/builtInTypes/RefInputScalar";
+import { Number } from "@webiny/handler-graphql/builtInTypes/NumberScalar";
+import { Any } from "@webiny/handler-graphql/builtInTypes/AnyScalar";
 
 type CreateGraphQLHandlerOptionsType = {
     debug?: boolean;
@@ -63,12 +70,55 @@ const generateCacheKey = (args: ArgsType): string => {
         .filter(value => !!value)
         .join("#");
 };
+const getInitialGraphQLSchemaDefinitions = (context: CmsContext) => {
+    const scalars = context.plugins
+        .byType<GraphQLScalarPlugin>("graphql-scalar")
+        .map(item => item.scalar);
+    const typeDefs = [
+        `
+            type Query
+            type Mutation
+            ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
+            scalar JSON
+            scalar Long
+            scalar DateTime
+            scalar RefInput
+            scalar Number
+            scalar Any
+        `
+    ];
+
+    const resolvers = [
+        {
+            ...scalars.reduce((acc, s) => {
+                acc[s.name] = s;
+                return acc;
+            }, {}),
+            JSON: GraphQLJSON,
+            DateTime: GraphQLDateTime,
+            Long: GraphQLLong,
+            RefInput,
+            Number,
+            Any
+        }
+    ];
+    return {
+        typeDefs,
+        resolvers
+    };
+};
 // TODO need to generate schema for current model from the http parameters
 // eslint-disable-next-line
 const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
-    const typeDefs = [];
+    const { context } = args;
 
-    const resolvers = [];
+    const { typeDefs, resolvers } = getInitialGraphQLSchemaDefinitions(context);
+
+    // const gqlPlugins = context.plugins.byType("graphql-schema");
+    // for (const pl of gqlPlugins) {
+    //     typeDefs.push(pl.schema.typeDefs);
+    //     resolvers.push(pl.schema.resolvers);
+    // }
 
     return makeExecutableSchema({
         typeDefs,

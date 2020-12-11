@@ -1,13 +1,11 @@
 import { GQLHandlerCallableArgsType, useGqlHandler } from "./useGqlHandler";
-import contentPlugins from "@webiny/api-headless-cms/content";
+import contentPlugins from "../src/content";
 
 export const useContentGqlHandler = (args: GQLHandlerCallableArgsType = {}) => {
     return useGqlHandler({
         ...args,
-        plugins: [
-            contentPlugins({
-                debug: true
-            })
-        ]
+        plugins: contentPlugins({
+            debug: true
+        })
     });
 };
