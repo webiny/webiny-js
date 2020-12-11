@@ -45,112 +45,72 @@ describe("listing latest pages", () => {
 
             initiallyCreatedPagesIds.push(id);
         }
+
+        // List should show all five pages.
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 5);
     });
 
     test("sorting", async () => {
-        // List should show all five pages.
-        let response;
-        while (true) {
-            await sleep();
-            [response] = await listPages();
-            if (response?.data?.pageBuilder?.listPages?.data?.[0]?.title === "page-a") {
-                break;
-            }
-        }
-
         // 1. Check if all were returned and sorted `createdOn: asc`.
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-a" },
-                            { title: "page-z" },
-                            { title: "page-b" },
-                            { title: "page-x" },
-                            { title: "page-c" }
-                        ]
+        await until(
+            () => listPages({ createdOn: "asc" }),
+            ([res]) => res.data.pageBuilder.listPages.data[4].title === "page-c"
+        ).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-a" },
+                                { title: "page-z" },
+                                { title: "page-b" },
+                                { title: "page-x" },
+                                { title: "page-c" }
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
 
-        // 2. Check if all were returned and sorted `createdOn: asc`.
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { createdOn: "asc" } });
-            if (response?.data?.pageBuilder?.listPages?.data[0].title === "page-a") {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-a" },
-                            { title: "page-z" },
-                            { title: "page-b" },
-                            { title: "page-x" },
-                            { title: "page-c" }
-                        ]
+        // 2. Check if all were returned and sorted `title: asc`.
+        await listPages({ sort: { title: "asc" } }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-a" },
+                                { title: "page-b" },
+                                { title: "page-c" },
+                                { title: "page-x" },
+                                { title: "page-z" }
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
 
-        // 3. Check if all were returned and sorted `title: asc`.
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { title: "asc" } });
-
-            if (response?.data?.pageBuilder?.listPages?.data[0].title === "page-a") {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-a" },
-                            { title: "page-b" },
-                            { title: "page-c" },
-                            { title: "page-x" },
-                            { title: "page-z" }
-                        ]
+        // 3. Check if all were returned and sorted `title: desc`.
+        await listPages({ sort: { title: "desc" } }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-z" },
+                                { title: "page-x" },
+                                { title: "page-c" },
+                                { title: "page-b" },
+                                { title: "page-a" }
+                            ]
+                        }
                     }
                 }
-            }
-        });
+            })
+        );
 
-        // 4. Check if all were returned and sorted `title: desc`.
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { title: "desc" } });
-
-            if (response?.data?.pageBuilder?.listPages?.data[0].title === "page-z") {
-                break;
-            }
-        }
-
-        expect(response).toMatchObject({
-            data: {
-                pageBuilder: {
-                    listPages: {
-                        data: [
-                            { title: "page-z" },
-                            { title: "page-x" },
-                            { title: "page-c" },
-                            { title: "page-b" },
-                            { title: "page-a" }
-                        ]
-                    }
-                }
-            }
-        });
     });
 
     test("filtering by category", async () => {
@@ -544,7 +504,7 @@ describe("listing latest pages", () => {
         }
 
         await until(
-            () => listPages({ where: { tags: ["news"] } }),
+            () => listPages({ where: { tags: { query: ["news"] } } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
@@ -556,7 +516,7 @@ describe("listing latest pages", () => {
         );
 
         await until(
-            () => listPages({ where: { tags: ["world", "news"] } }),
+            () => listPages({ where: { tags: { query: ["world", "news"] } } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
@@ -566,7 +526,7 @@ describe("listing latest pages", () => {
         );
 
         await until(
-            () => listPages({ where: { tags: ["local", "news"] } }),
+            () => listPages({ where: { tags: { query: ["local", "news"] } } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 2
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([

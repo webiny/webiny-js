@@ -63,7 +63,7 @@ describe("listing tags used by pages", () => {
         }
 
         await until(
-            () => listPages({ where: { tags: ["red"] } }),
+            () => listPages({ where: { tags: { query: ["red"] } } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         );
 
