@@ -81,6 +81,7 @@ const LIST_DATA_FIELD = /* GraphQL */ `
             }
         }
         url
+        fullUrl
         status
         locked
         publishedOn
