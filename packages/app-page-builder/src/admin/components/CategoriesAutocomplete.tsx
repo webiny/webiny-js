@@ -6,11 +6,11 @@ import { Query } from "react-apollo";
 import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
 
 const GET_CATEGORY = gql`
-    query getCategory($id: ID!) {
+    query GetCategory($slug: String!) {
         pageBuilder {
-            getCategory(id: $id) {
+            getCategory(slug: $slug) {
                 data {
-                    id
+                    slug
                     name
                 }
             }
@@ -19,11 +19,11 @@ const GET_CATEGORY = gql`
 `;
 
 const LIST_CATEGORIES = gql`
-    query listCategories($search: PbSearchInput) {
+    query ListCategories {
         pageBuilder {
-            categories: listCategories(search: $search) {
+            categories: listCategories {
                 data {
-                    id
+                    slug
                     name
                 }
             }
@@ -33,16 +33,16 @@ const LIST_CATEGORIES = gql`
 
 export function CategoriesAutocomplete(props) {
     const autoComplete = useAutocomplete({
-        search: query => ({ query, fields: ["name"] }),
         query: LIST_CATEGORIES
     });
 
     return (
-        <Query skip={!props.value} variables={{ id: props.value }} query={GET_CATEGORY}>
+        <Query skip={!props.value} variables={{ slug: props.value }} query={GET_CATEGORY}>
             {({ data }) => (
                 <AutoComplete
                     {...props}
                     {...autoComplete}
+                    valueProp={"slug"}
                     value={get(data, "pageBuilder.getCategory.data")}
                 />
             )}
