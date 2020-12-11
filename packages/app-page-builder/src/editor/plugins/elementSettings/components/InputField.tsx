@@ -62,7 +62,7 @@ const InputField = ({
             )}
             <input
                 className={classNames(inputStyle, className)}
-                value={value}
+                value={value || ""}
                 onChange={({ target: { value } }) => {
                     onChange(value);
                 }}
