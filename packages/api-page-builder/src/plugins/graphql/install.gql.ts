@@ -43,10 +43,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbMutation: {
                 install: async (_, args, context) => {
                     // 1. Create ES index if it doesn't already exist.
-                    const esDefaults = defaults.es(context);
-                    const { body: exists } = await context.elasticSearch.indices.exists(esDefaults);
+                    const { index } = defaults.es(context);
+                    const { body: exists } = await context.elasticSearch.indices.exists({ index });
                     if (!exists) {
-                        await context.elasticSearch.indices.create(esDefaults);
+                        await context.elasticSearch.indices.create({
+                            index
+                        });
                     }
 
                     // 2. Create initial page category.
