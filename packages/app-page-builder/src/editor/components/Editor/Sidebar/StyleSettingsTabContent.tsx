@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import useElementStyleSettings from "../../../plugins/elementSettings/bar/useElementStyleSettings";
+import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 import { ReactComponent as WarningIcon } from "./icons/warning-black.svg";

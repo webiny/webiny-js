@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import useElementSettings from "../../../plugins/elementSettings/bar/useElementSettings";
+import useElementSettings from "../../../plugins/elementSettings/hooks/useElementSettings";
 import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
 
 const RootElement = styled("div")({
