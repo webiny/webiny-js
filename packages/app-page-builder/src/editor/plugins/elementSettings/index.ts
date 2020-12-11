@@ -10,7 +10,6 @@ import margin from "./margin";
 import width from "./width";
 import height from "./height";
 import align from "./align";
-import divider from "./divider";
 import save from "./save";
 import link from "./link";
 import grid from "./grid";
@@ -18,7 +17,6 @@ import grid from "./grid";
 export default [
     advanced,
     animation,
-    divider,
     background,
     border,
     shadow,

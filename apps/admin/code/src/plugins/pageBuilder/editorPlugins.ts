@@ -51,7 +51,6 @@ import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/marg
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
-import divider from "@webiny/app-page-builder/editor/plugins/elementSettings/divider";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
@@ -124,7 +123,6 @@ export default [
     // Element settings
     advanced,
     animation,
-    divider,
     background,
     border,
     shadow,
