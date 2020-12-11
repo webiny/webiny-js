@@ -35,6 +35,12 @@ const getElementActions = plugin => {
             .filter(pl => {
                 return pl && pl.plugin;
             })
+            // Eliminate plugins other than PbEditorPageElementStyleSettingsPlugin.
+            .filter(pl => {
+                return (
+                    pl && pl.plugin && pl.plugin.type === "pb-editor-page-element-style-settings"
+                );
+            })
             // Eliminate duplicate plugins
             .filter(
                 (pl, index, array) =>
