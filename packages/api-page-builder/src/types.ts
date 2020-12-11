@@ -33,8 +33,32 @@ export type Settings = {
 };
 
 // TODO
-export type PageElement = Record<string, any>;
-export type Menu = Record<string, any>;
+export type PageElement = {
+    name: string;
+    type: "element" | "block";
+    category: string;
+    content: Record<string, any>; // // TODO: define types
+    preview: Record<string, any>; // TODO: define types
+    createdOn: string;
+    createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+};
+
+export type Menu = {
+    title: string;
+    slug: string;
+    description: string;
+    items: Record<string, any>;
+    createdOn: string;
+    createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+};
 
 export type Category = {
     name: string;
@@ -133,11 +157,11 @@ export type PagesCrud = {
 };
 
 export type PageElementsCrud = {
-    get(id: string): Promise<Category>;
-    list(): Promise<Category[]>;
-    create(data: Record<string, any>): Promise<Category>;
-    update(id: string, data: Record<string, any>): Promise<Category>;
-    delete(id: string): Promise<Category>;
+    get(id: string): Promise<PageElement>;
+    list(): Promise<PageElement[]>;
+    create(data: Record<string, any>): Promise<PageElement>;
+    update(id: string, data: Record<string, any>): Promise<PageElement>;
+    delete(id: string): Promise<PageElement>;
 };
 
 export type CategoriesCrud = {
@@ -149,11 +173,11 @@ export type CategoriesCrud = {
 };
 
 export type MenusCrud = {
-    get(slug: string): Promise<Category>;
-    list(): Promise<Category[]>;
-    create(data: Record<string, any>): Promise<Category>;
-    update(slug: string, data: Record<string, any>): Promise<Category>;
-    delete(slug: string): Promise<Category>;
+    get(slug: string): Promise<Menu>;
+    list(): Promise<Menu[]>;
+    create(data: Record<string, any>): Promise<Menu>;
+    update(slug: string, data: Record<string, any>): Promise<Menu>;
+    delete(slug: string): Promise<Menu>;
 };
 
 export type SettingsCrud = {

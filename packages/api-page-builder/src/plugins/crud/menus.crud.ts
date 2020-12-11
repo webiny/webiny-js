@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { Menu, PbContext } from "@webiny/api-page-builder/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -9,19 +9,6 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-
-export type Menu = {
-    title: string;
-    slug: string;
-    description: string;
-    items: Record<string, any>;
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -74,7 +61,7 @@ const plugin: ContextPlugin<PbContext> = {
                         rwd: "r"
                     });
 
-                    const [menus] = await db.read({
+                    const [menus] = await db.read<Menu>({
                         ...defaults.db,
                         query: { PK: PK(), SK: { $gt: " " } }
                     });

@@ -5,24 +5,10 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PageElement, PbContext } from "@webiny/api-page-builder/types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";
-
-export type PageElement = {
-    name: string;
-    type: "element" | "block";
-    category: string;
-    content: Record<string, any>; // // TODO: define types
-    preview: Record<string, any>; // TODO: define types
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -79,7 +65,7 @@ const plugin: ContextPlugin<PbContext> = {
                         rwd: "r"
                     });
 
-                    const [pageElements] = await db.read({
+                    const [pageElements] = await db.read<PageElement>({
                         ...defaults.db,
                         query: { PK: PK(), SK: { $gt: " " } }
                     });
