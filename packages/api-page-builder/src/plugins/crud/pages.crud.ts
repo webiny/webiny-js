@@ -46,6 +46,9 @@ const UpdateSettingsModel = withFields({
             tags: string({
                 list: true,
                 validation: value => {
+                    if (value.length > 30) {
+                        throw new Error("Cannot store more than 30 tags.")
+                    }
                     if (Array.isArray(value)) {
                         for (let i = 0; i < value.length; i++) {
                             validation.validateSync(value[i], "maxLength:50");
@@ -54,21 +57,31 @@ const UpdateSettingsModel = withFields({
                 }
             }),
             snippet: string({ validation: validation.create("maxLength:500") }),
-            layout: string(),
+            layout: string({ validation: validation.create("maxLength:50") }),
             image: object()
         })()
     }),
     seo: fields({
         value: {},
         instanceOf: withFields({
-            title: string(),
-            description: string(),
+            title: string({ validation: validation.create("maxLength:500") }),
+            description: string({ validation: validation.create("maxLength:500") }),
             meta: fields({
                 list: true,
                 value: [],
+                validation: value => {
+                    if (Array.isArray(value)) {
+                        if (value.length > 30) {
+                            throw new Error("Cannot store more than 30 SEO tags.")
+                        }
+                        for (let i = 0; i < value.length; i++) {
+                            validation.validateSync(value[i], "maxLength:50");
+                        }
+                    }
+                },
                 instanceOf: withFields({
-                    name: string(),
-                    content: string()
+                    name: string({ validation: validation.create("maxLength:100") }),
+                    content: string({ validation: validation.create("maxLength:200") }),
                 })()
             })
         })()
@@ -79,13 +92,23 @@ const UpdateSettingsModel = withFields({
             meta: fields({
                 value: [],
                 list: true,
+                validation: value => {
+                    if (Array.isArray(value)) {
+                        if (value.length > 30) {
+                            throw new Error("Cannot store more than 30 social tags.")
+                        }
+                        for (let i = 0; i < value.length; i++) {
+                            validation.validateSync(value[i], "maxLength:50");
+                        }
+                    }
+                },
                 instanceOf: withFields({
-                    property: string(),
-                    content: string()
+                    property: string({ validation: validation.create("maxLength:100") }),
+                    content: string({ validation: validation.create("maxLength:200") }),
                 })()
             }),
-            title: string(),
-            description: string(),
+            title: string({ validation: validation.create("maxLength:500") }),
+            description: string({ validation: validation.create("maxLength:500") }),
             image: object()
         })()
     })
