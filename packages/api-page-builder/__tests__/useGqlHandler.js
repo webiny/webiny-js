@@ -147,7 +147,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         sleep,
         until: async (execute, until, options = {}) => {
             const tries = options.tries ?? 10;
-            const wait = options.wait ?? 250;
+            const wait = options.wait ?? 333;
 
             let result;
             let triesCount = 0;
