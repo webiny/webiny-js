@@ -37,7 +37,6 @@ export default () => [
         },
         settings: [
             "pb-editor-page-element-settings-delete",
-            "",
             "pb-editor-page-element-settings-height"
         ],
         target: ["column", "row", "list-item"],

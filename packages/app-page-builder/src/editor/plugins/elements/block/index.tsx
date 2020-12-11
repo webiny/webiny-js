@@ -20,20 +20,16 @@ export default (): PbEditorPageElementPlugin => {
         settings: [
             "pb-editor-page-element-style-settings-background",
             "pb-editor-page-element-style-settings-animation",
-            "",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",
-            "",
             "pb-editor-page-element-style-settings-padding",
             "pb-editor-page-element-style-settings-margin",
             "pb-editor-page-element-style-settings-width",
             "pb-editor-page-element-style-settings-height",
             "pb-editor-page-element-style-settings-horizontal-align-flex",
             "pb-editor-page-element-style-settings-vertical-align",
-            "",
             "pb-editor-page-element-settings-clone",
-            "pb-editor-page-element-settings-delete",
-            ""
+            "pb-editor-page-element-settings-delete"
         ],
         create(options = {}) {
             return {

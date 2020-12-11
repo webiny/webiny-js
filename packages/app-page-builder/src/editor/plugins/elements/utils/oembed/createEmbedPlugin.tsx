@@ -39,7 +39,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,
-        settings: config.settings || ["pb-editor-page-element-settings-delete", ""],
+        settings: config.settings || ["pb-editor-page-element-settings-delete"],
         target: config.target || ["cell", "block", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {

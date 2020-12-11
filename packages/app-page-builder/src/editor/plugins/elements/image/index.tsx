@@ -42,20 +42,16 @@ export default (): Plugin[] => {
                 "pb-editor-page-element-style-settings-image",
                 ["pb-editor-page-element-style-settings-background", { image: false }],
                 "pb-editor-page-element-style-settings-link",
-                "",
                 "pb-editor-page-element-style-settings-border",
                 "pb-editor-page-element-style-settings-shadow",
-                "",
                 [
                     "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
-                "",
                 "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete",
-                ""
+                "pb-editor-page-element-settings-delete"
             ],
             target: ["cell", "block"],
             create(options) {

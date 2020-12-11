@@ -40,17 +40,14 @@ export default () => {
             },
             settings: [
                 "pb-editor-page-element-style-settings-icon",
-                "",
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
                 [
                     "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "",
                 "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete",
-                ""
+                "pb-editor-page-element-settings-delete"
             ],
             target: ["cell", "block"],
             create(options) {

@@ -10,8 +10,6 @@ import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { userSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
 
-const divider = "pb-editor-page-element-settings-divider";
-
 const getElementActions = plugin => {
     if (!plugin || !plugin.settings) {
         return [];
@@ -21,11 +19,11 @@ const getElementActions = plugin => {
 
     const elementActions = pluginSettings.map(pl => {
         if (typeof pl === "string") {
-            return { plugin: plugins.byName(pl || divider), options: {} };
+            return { plugin: plugins.byName(pl), options: {} };
         }
 
         if (Array.isArray(pl)) {
-            return { plugin: plugins.byName(pl[0] || divider), options: pl[1] };
+            return { plugin: plugins.byName(pl[0]), options: pl[1] };
         }
 
         return null;
