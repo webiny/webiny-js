@@ -26,10 +26,7 @@ const classes = {
         height: 32
     }),
     input: css({
-        "& .mdc-text-field__input": {
-            padding: "0px !important",
-            textAlign: "center"
-        }
+        textAlign: "center"
     }),
     linkSettings: css({
         display: "flex",
@@ -78,8 +75,8 @@ const defaultCorners = [
         key: "bottom"
     },
     {
-        label: "Right",
-        key: "right"
+        label: "Left",
+        key: "left"
     }
 ];
 
