@@ -1,13 +1,22 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("CRUD Test", () => {
+describe("Categories CRUD Test", () => {
     const {
         createCategory,
+        createPage,
+        deletePage,
         deleteCategory,
         listCategories,
+        listPages,
         getCategory,
-        updateCategory
+        updateCategory,
+        until,
+        deleteElasticSearchIndex
     } = useGqlHandler();
+
+    beforeEach(async () => {
+        await deleteElasticSearchIndex();
+    });
 
     test("create, read, update and delete categories", async () => {
         // Test creating, getting and updating three categories.
@@ -153,5 +162,70 @@ describe("CRUD Test", () => {
                 }
             }
         });
+    });
+
+    test("cannot delete category if in use by at least one page", async () => {
+        await createCategory({
+            data: {
+                slug: `delete-cat`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const p1 = await createPage({ category: "delete-cat" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+        const p2 = await createPage({ category: "delete-cat" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+        const p3 = await createPage({ category: "delete-cat" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 3);
+
+        const error = {
+            code: "CANNOT_DELETE_CATEGORY_PAGE_EXISTING",
+            data: null,
+            message: "Cannot delete category because some pages are linked to it."
+        };
+
+        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
+            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
+        );
+
+        await deletePage({ id: p1.id });
+
+        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
+            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
+        );
+
+        await deletePage({ id: p2.id });
+
+        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
+            expect(res.data.pageBuilder.deleteCategory.error).toEqual(error)
+        );
+
+        await deletePage({ id: p3.id });
+
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 0);
+
+        await deleteCategory({ slug: "delete-cat" }).then(([res]) =>
+            expect(res.data.pageBuilder.deleteCategory).toMatchObject({
+                data: {
+                    createdBy: {
+                        displayName: "m",
+                        id: "mocked"
+                    },
+                    layout: "layout",
+                    name: "name",
+                    slug: "delete-cat",
+                    url: "/some-url/"
+                },
+                error: null
+            })
+        );
     });
 });

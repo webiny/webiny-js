@@ -10,16 +10,7 @@ import hasRwd from "./utils/hasRwd";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-
-/*withHooks({
-    //     async beforeDelete() {
-    //         const { PbPage } = context.models;
-    //         if (await PbPage.findOne({ query: { category: this.id } })) {
-    //             throw new Error("Cannot delete category because some pages are linked to it.");
-    //         }
-    //     }
-    // }),
-    */
+import Error from "@webiny/error";
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -42,6 +33,7 @@ const plugin: ContextPlugin<PbContext> = {
     apply(context) {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}C`;
+        const ES_DEFAULTS = () => defaults.es(context);
 
         const categoriesDataLoader = new DataLoader<string, Category>(async slugs => {
             const batch = db.batch();
@@ -92,6 +84,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     return category;
                 },
+
                 async list() {
                     await context.i18nContent.checkI18NContentPermission();
 
@@ -113,7 +106,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotAuthorizedError();
                     }
 
-                    const [categories] = await db.read({
+                    const [categories] = await db.read<Category>({
                         ...defaults.db,
                         query: { PK: PK(), SK: { $gt: " " } }
                     });
@@ -200,6 +193,44 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, category);
+
+                    // Before deleting, let's check if there is a page that's in this category.
+                    // If so, let's prevent this.
+
+                    // Note: this try-catch is here because in tests, we have a case where a page is not created yet.
+                    // In that case, this is searching over an index that doesn't exist, and throws an error.
+                    // So for that case, if the error is `index_not_found_exception`, then let's just ignore it.
+                    try {
+                        const response = await context.elasticSearch.search({
+                            ...ES_DEFAULTS(),
+                            body: {
+                                size: 1,
+                                query: {
+                                    bool: {
+                                        filter: [{ term: { "category.keyword": category.slug } }]
+                                    }
+                                }
+                            }
+                        });
+
+                        const results = response.body.hits;
+                        const total = results.total.value;
+
+                        if (total) {
+                            throw new Error(
+                                "Cannot delete category because some pages are linked to it.",
+                                "CANNOT_DELETE_CATEGORY_PAGE_EXISTING"
+                            );
+                        }
+                    } catch (e) {
+                        if (process.env.NODE_ENV !== "test") {
+                            throw e;
+                        }
+
+                        if (e.message !== "index_not_found_exception") {
+                            throw e;
+                        }
+                    }
 
                     await db.delete({
                         ...defaults.db,
