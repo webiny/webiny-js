@@ -46,13 +46,16 @@ const UpdateSettingsModel = withFields({
             tags: string({
                 list: true,
                 validation: value => {
+                    if (!Array.isArray(value)) {
+                        return;
+                    }
+
                     if (value.length > 30) {
                         throw new Error("Cannot store more than 30 tags.");
                     }
-                    if (Array.isArray(value)) {
-                        for (let i = 0; i < value.length; i++) {
-                            validation.validateSync(value[i], "maxLength:50");
-                        }
+
+                    for (let i = 0; i < value.length; i++) {
+                        validation.validateSync(value[i], "maxLength:50");
                     }
                 }
             }),
@@ -70,13 +73,15 @@ const UpdateSettingsModel = withFields({
                 list: true,
                 value: [],
                 validation: value => {
-                    if (Array.isArray(value)) {
-                        if (value.length > 30) {
-                            throw new Error("Cannot store more than 30 SEO tags.");
-                        }
-                        for (let i = 0; i < value.length; i++) {
-                            validation.validateSync(value[i], "maxLength:50");
-                        }
+                    if (!Array.isArray(value)) {
+                        return;
+                    }
+
+                    if (value.length > 30) {
+                        throw new Error("Cannot store more than 30 SEO tags.");
+                    }
+                    for (let i = 0; i < value.length; i++) {
+                        validation.validateSync(value[i], "maxLength:50");
                     }
                 },
                 instanceOf: withFields({
@@ -93,13 +98,15 @@ const UpdateSettingsModel = withFields({
                 value: [],
                 list: true,
                 validation: value => {
-                    if (Array.isArray(value)) {
-                        if (value.length > 30) {
-                            throw new Error("Cannot store more than 30 social tags.");
-                        }
-                        for (let i = 0; i < value.length; i++) {
-                            validation.validateSync(value[i], "maxLength:50");
-                        }
+                    if (!Array.isArray(value)) {
+                        return;
+                    }
+
+                    if (value.length > 30) {
+                        throw new Error("Cannot store more than 30 social tags.");
+                    }
+                    for (let i = 0; i < value.length; i++) {
+                        validation.validateSync(value[i], "maxLength:50");
                     }
                 },
                 instanceOf: withFields({
