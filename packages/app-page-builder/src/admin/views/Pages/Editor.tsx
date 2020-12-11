@@ -28,6 +28,7 @@ const GET_PAGE = gql`
                     locked
                     status
                     category {
+                        url
                         name
                         slug
                     }
