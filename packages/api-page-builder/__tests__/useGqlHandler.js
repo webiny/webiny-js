@@ -46,6 +46,7 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { Db } from "@webiny/db";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
@@ -53,6 +54,7 @@ export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
+            logTable: "PageBuilderLogs",
             driver: new DynamoDbDriver({
                 documentClient: new DocumentClient({
                     convertEmptyValues: true,
@@ -123,7 +125,18 @@ export default ({ permissions, identity, tenant } = {}) => {
         handler,
         invoke,
         // Helpers.
-        elasticSearch: elasticSearch,
+        elasticSearch,
+        logsDb: new Db({
+            logTable: "PageBuilderLogs",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                    sslEnabled: false,
+                    region: "local"
+                })
+            })
+        }),
         deleteElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;
@@ -133,8 +146,8 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         sleep,
         until: async (execute, until, options = {}) => {
-            const tries = options.tries ?? 5;
-            const wait = options.wait ?? 333;
+            const tries = options.tries ?? 10;
+            const wait = options.wait ?? 250;
 
             let result;
             let triesCount = 0;
