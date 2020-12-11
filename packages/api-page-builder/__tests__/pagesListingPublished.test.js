@@ -8,6 +8,7 @@ describe("listing published pages", () => {
         publishPage,
         listPublishedPages,
         updatePage,
+        logsDb,
         until
     } = useGqlHandler();
 
@@ -570,5 +571,20 @@ describe("listing published pages", () => {
                 }
             })
         );
+    });
+
+    test("ensure we don't overload categories when listing pages", async () => {
+        // Let's use the `id` of the last log as the cursor.
+        let [logs] = await logsDb.readLogs();
+        let { id: cursor } = logs.pop();
+
+        await listPublishedPages();
+
+        // When listing published pages, settings must have been loaded from the DB only once.
+        await logsDb
+            .readLogs()
+            .then(([logs]) => logs.filter(item => item.id > cursor))
+            .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#C"))
+            .then(logs => expect(logs.length).toBe(1));
     });
 });
