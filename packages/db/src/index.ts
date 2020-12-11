@@ -38,11 +38,15 @@ export type ConstructorArgs = {
     logTable?: string;
 };
 
-// Generates a short ID, e.g. "tfz58m".
-const shortId = () =>
-    Math.random()
+// Generates a short and sortable ID, e.g. "1607677774994.tfz58m".
+const shortId = () => {
+    const time = new Date().getTime();
+    const uniqueId = Math.random()
         .toString(36)
         .slice(-6);
+
+    return `${time}.${uniqueId}`;
+};
 
 // Picks necessary data from received args, ready to be stored in the log table.
 const getCreateLogData = (args: Args) => {
