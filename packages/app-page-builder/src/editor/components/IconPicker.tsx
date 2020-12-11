@@ -106,7 +106,8 @@ const iconPickerWrapper = css({
         alignItems: "center",
         backgroundColor: COLORS.lightGray,
         borderRadius: 1,
-        border: `1px solid ${COLORS.gray}`
+        border: `1px solid ${COLORS.gray}`,
+        cursor: "pointer"
     },
     "& .iconContainer": {
         boxSizing: "border-box",

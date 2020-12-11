@@ -17,6 +17,12 @@ const classes = {
             padding: 0,
             marginBottom: 24
         }
+    }),
+    widthInputStyle: css({
+        maxWidth: 60
+    }),
+    rightCellStyle: css({
+        justifySelf: "end"
     })
 };
 
@@ -60,8 +66,14 @@ const IconSettings = () => {
                     label={"Width"}
                     leftCellSpan={8}
                     rightCellSpan={4}
+                    rightCellClassName={classes.rightCellStyle}
                 >
-                    <InputField value={icon.width} onChange={updateWidth} placeholder="50" />
+                    <InputField
+                        className={classes.widthInputStyle}
+                        value={icon.width}
+                        onChange={updateWidth}
+                        placeholder="50"
+                    />
                 </Wrapper>
             </>
         </Accordion>
