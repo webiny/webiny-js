@@ -20,8 +20,13 @@ export interface DbDriver {
     delete: (args: Args) => Promise<Result<true>>;
 
     // Logging functions.
-    createLog: (operation: string, args: Args, logTable: string) => Promise<Result<true>>;
-    readLogs: <T = Record<string, any>>(logTable: string) => Promise<Result<T[]>>;
+    createLog: (args: {
+        operation: string;
+        data: Args;
+        table: string;
+        id: string;
+    }) => Promise<Result<true>>;
+    readLogs: <T = Record<string, any>>(args: { table: string }) => Promise<Result<T[]>>;
 }
 
 export type OperationType = "create" | "read" | "update" | "delete";
@@ -31,6 +36,27 @@ export type ConstructorArgs = {
     driver: DbDriver;
     table?: string;
     logTable?: string;
+};
+
+// Generates a short ID, e.g. "tfz58m".
+const shortId = () =>
+    Math.random()
+        .toString(36)
+        .slice(-6);
+
+// Picks necessary data from received args, ready to be stored in the log table.
+const getCreateLogData = (args: Args) => {
+    const { table, meta, limit, sort, data, query, keys } = args;
+
+    const logData = { table, meta, limit, sort, data, query, keys, batch: null };
+    if (args.__batch) {
+        logData.batch = {
+            id: args.__batch.instance.id,
+            type: args.__batch.instance.type
+        };
+    }
+
+    return logData;
 };
 
 class Db {
@@ -74,7 +100,7 @@ class Db {
         }
 
         const data = getCreateLogData(args);
-        return this.driver.createLog(operation, data, this.logTable);
+        return this.driver.createLog({ operation, data, table: this.logTable, id: shortId() });
     }
 
     async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
@@ -82,27 +108,15 @@ class Db {
             return;
         }
 
-        return this.driver.readLogs(this.logTable);
+        return this.driver.readLogs({
+            table: this.logTable
+        });
     }
 
     batch() {
         return new Batch(this);
     }
 }
-
-const getCreateLogData = (args: Args) => {
-    const { table, meta, limit, sort, data, query, keys } = args;
-
-    const logData = { table, meta, limit, sort, data, query, keys, batch: null };
-    if (args.__batch) {
-        logData.batch = {
-            id: args.__batch.instance.id,
-            type: args.__batch.instance.type
-        };
-    }
-
-    return logData;
-};
 
 class Batch {
     db: Db;
@@ -113,9 +127,7 @@ class Batch {
     constructor(db) {
         this.db = db;
         this.type = "batch";
-        this.id = Math.random()
-            .toString(36)
-            .slice(-6); // e.g. tfz58m
+        this.id = shortId();
 
         this.meta = {};
         this.operations = [];

@@ -183,17 +183,16 @@ class DynamoDbDriver implements DbDriver {
         return [[], { response: batchProcess.response }];
     }
 
-    async createLog(operation, args: Args, logTable: string): Promise<Result> {
-        const id = new Date().getTime();
+    async createLog({ id, operation, data, table }): Promise<Result> {
         await this.create({
-            table: logTable,
+            table: table,
             keys: LOG_KEYS,
             data: {
                 PK: "log",
                 SK: id,
                 id,
                 operation,
-                ...args
+                ...data
             }
         });
 
