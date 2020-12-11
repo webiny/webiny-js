@@ -73,19 +73,27 @@ const getSort = sort => {
 
     const normalizedSort: Record<string, any> = {};
     if (sort.createdOn) {
-        normalizedSort["createdOn"] = sort.createdOn;
+        normalizedSort["createdOn"] = {
+            order: sort.createdOn,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            unmapped_type: "date"
+        };
     }
 
     if (sort.publishedOn) {
-        normalizedSort["publishedOn"] = sort.publishedOn;
+        normalizedSort["publishedOn"] = {
+            order: sort.publishedOn,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            unmapped_type: "date"
+        };
     }
 
     if (sort.title) {
-        normalizedSort["title.keyword"] = sort.title;
-    }
-
-    if (Object.keys(normalizedSort).length === 0) {
-        return { createdOn: "desc" };
+        normalizedSort["title.keyword"] = {
+            order: sort.title,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            unmapped_type: "text"
+        };
     }
 
     return normalizedSort;
