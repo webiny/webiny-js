@@ -47,7 +47,7 @@ const UpdateSettingsModel = withFields({
                 list: true,
                 validation: value => {
                     if (value.length > 30) {
-                        throw new Error("Cannot store more than 30 tags.")
+                        throw new Error("Cannot store more than 30 tags.");
                     }
                     if (Array.isArray(value)) {
                         for (let i = 0; i < value.length; i++) {
@@ -72,7 +72,7 @@ const UpdateSettingsModel = withFields({
                 validation: value => {
                     if (Array.isArray(value)) {
                         if (value.length > 30) {
-                            throw new Error("Cannot store more than 30 SEO tags.")
+                            throw new Error("Cannot store more than 30 SEO tags.");
                         }
                         for (let i = 0; i < value.length; i++) {
                             validation.validateSync(value[i], "maxLength:50");
@@ -81,7 +81,7 @@ const UpdateSettingsModel = withFields({
                 },
                 instanceOf: withFields({
                     name: string({ validation: validation.create("maxLength:100") }),
-                    content: string({ validation: validation.create("maxLength:200") }),
+                    content: string({ validation: validation.create("maxLength:200") })
                 })()
             })
         })()
@@ -95,7 +95,7 @@ const UpdateSettingsModel = withFields({
                 validation: value => {
                     if (Array.isArray(value)) {
                         if (value.length > 30) {
-                            throw new Error("Cannot store more than 30 social tags.")
+                            throw new Error("Cannot store more than 30 social tags.");
                         }
                         for (let i = 0; i < value.length; i++) {
                             validation.validateSync(value[i], "maxLength:50");
@@ -104,7 +104,7 @@ const UpdateSettingsModel = withFields({
                 },
                 instanceOf: withFields({
                     property: string({ validation: validation.create("maxLength:100") }),
-                    content: string({ validation: validation.create("maxLength:200") }),
+                    content: string({ validation: validation.create("maxLength:200") })
                 })()
             }),
             title: string({ validation: validation.create("maxLength:500") }),
@@ -122,7 +122,7 @@ const PERMISSION_NAME = TYPE_PAGE;
 
 const getESPageData = (context: PbContext, page) => {
     return {
-        __type: 'page',
+        __type: "page",
         id: page.id,
         editor: page.editor,
         locale: page.locale,
@@ -334,6 +334,12 @@ const plugin: ContextPlugin<PbContext> = {
                     const [uniqueId, version] = [mdbid(), 1];
                     const id = `${uniqueId}#${getZeroPaddedVersionNumber(version)}`;
 
+                    const updateSettingsModel = new UpdateSettingsModel().populate({
+                        general: {
+                            layout: category.layout
+                        }
+                    });
+
                     const data = {
                         PK: PK_PAGE(),
                         SK: id,
@@ -353,6 +359,7 @@ const plugin: ContextPlugin<PbContext> = {
                         error: false,
                         notFound: false,
                         createdFrom: null,
+                        settings: await updateSettingsModel.toJSON(),
                         savedOn: new Date().toISOString(),
                         createdOn: new Date().toISOString(),
                         createdBy: {
