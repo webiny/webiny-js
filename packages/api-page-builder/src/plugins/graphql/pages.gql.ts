@@ -68,6 +68,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 snippet: String
                 tags: [String]
                 url: String
+                fullUrl: String
                 savedOn: DateTime
                 createdFrom: ID
                 createdOn: DateTime
@@ -259,11 +260,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 revisions: async (page: { id: string }, args, context) => {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
+                },
+                fullUrl: async (page: { url: string }, args, context) => {
+                    const settings = await context.pageBuilder.settings.get();
+                    return settings.domain + page.url;
                 }
             },
             PbPageListItem: {
                 category: async (page: { category: string }, args, context) => {
                     return context.pageBuilder.categories.get(page.category);
+                },
+                fullUrl: async (page: { url: string }, args, context) => {
+                    const settings = await context.pageBuilder.settings.get();
+                    return settings.domain + page.url;
                 }
             },
             PbQuery: {
