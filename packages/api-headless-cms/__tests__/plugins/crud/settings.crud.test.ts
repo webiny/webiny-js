@@ -1,4 +1,4 @@
-import { useGqlHandler } from "../../useGqlHandler";
+import { useAdminGqlHandler } from "../../useAdminGqlHandler";
 import { createSettingsTestPartitionKey } from "../../helpers";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { CmsSettingsType } from "@webiny/api-headless-cms/types";
@@ -27,7 +27,7 @@ describe("Settings crud test", () => {
         isInstalledQuery,
         installMutation,
         documentClient
-    } = useGqlHandler();
+    } = useAdminGqlHandler();
 
     test("cms is not installed", async () => {
         const [response] = await isInstalledQuery();

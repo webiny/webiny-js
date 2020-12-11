@@ -1,5 +1,4 @@
 import apolloServerPlugins from "@webiny/handler-graphql";
-import cmsPlugins from "@webiny/api-headless-cms/plugins";
 import dbPlugins from "@webiny/handler-db";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import i18nContext from "@webiny/api-i18n/plugins/context";
@@ -42,7 +41,7 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./content/graphql/contentModel";
 
-type GQLHandlerCallableArgsType = {
+export type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
     identity?: SecurityIdentity;
     plugins?: any[];
@@ -84,7 +83,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        cmsPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",

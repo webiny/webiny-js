@@ -1,4 +1,4 @@
-import { useGqlHandler } from "../../useGqlHandler";
+import { useAdminGqlHandler } from "../../useAdminGqlHandler";
 import {
     createInitialEnvironment,
     fetchInitialEnvironment,
@@ -45,7 +45,7 @@ describe("Environment alias crud test", () => {
         deleteEnvironmentAliasMutation,
         listEnvironmentAliasesQuery,
         documentClient
-    } = useGqlHandler();
+    } = useAdminGqlHandler();
 
     beforeEach(async () => {
         await createInitialEnvironment(documentClient);

@@ -75,6 +75,8 @@ describe("DefaultContentModelManager tests - created via plugin", () => {
             },
             fields: []
         };
+        console.log(plugin);
+        console.log(plugin.create);
         manager = await plugin.create<DummyModelType>(context, contentModel);
     });
 

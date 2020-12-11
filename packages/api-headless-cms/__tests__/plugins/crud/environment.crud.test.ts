@@ -1,4 +1,3 @@
-import { useGqlHandler } from "../../useGqlHandler";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import {
     createInitialEnvironment,
@@ -8,6 +7,7 @@ import {
     getInitialEnvironmentId
 } from "../../helpers";
 import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import { useAdminGqlHandler } from "../../useAdminGqlHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
@@ -53,7 +53,7 @@ describe("Environment crud test", () => {
         listEnvironmentsQuery,
         createEnvironmentAliasMutation,
         documentClient
-    } = useGqlHandler();
+    } = useAdminGqlHandler();
 
     beforeEach(async () => {
         await createInitialEnvironment(documentClient);

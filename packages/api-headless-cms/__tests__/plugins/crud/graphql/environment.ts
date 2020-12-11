@@ -12,6 +12,7 @@ const DATA_FIELD = /* GraphQL*/ `
             name
             slug
             description
+            createdBy
         }
     }
 `;
