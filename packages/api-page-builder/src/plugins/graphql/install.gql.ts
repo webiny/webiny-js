@@ -1,6 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Response } from "@webiny/handler-graphql/responses";
 import { PbContext } from "@webiny/api-page-builder/types";
+import defaults from "./../crud/utils/defaults";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -41,7 +42,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             },
             PbMutation: {
                 install: async (_, args, context) => {
-                    // 1. Create initial page category.
+                    // 1. Create ES index if it doesn't already exist.
+                    const esDefaults = defaults.es(context);
+                    const { body: exists } = await context.elasticSearch.indices.exists(esDefaults);
+                    if (!exists) {
+                        await context.elasticSearch.indices.create(esDefaults);
+                    }
+
+                    // 2. Create initial page category.
                     const staticCategory = await context.pageBuilder.categories.get("static");
                     if (!staticCategory) {
                         await context.pageBuilder.categories.create({
@@ -52,13 +60,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         });
                     }
 
-                    // 2. Create page blocks.
+                    // 3. Create page blocks.
 
-                    // 3. Create initial menu.
+                    // 4. Create initial menu.
 
-                    // 4. Create sample pages.
+                    // 5. Create sample pages.
 
-                    // 5. Mark the Page Builder app as installed.
+                    // 6. Mark the Page Builder app as installed.
                     const settings = await context.pageBuilder.settings.get();
                     if (!settings.installed) {
                         await context.pageBuilder.settings.update({

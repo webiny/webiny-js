@@ -1,7 +1,12 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("Install Test", () => {
-    const { isInstalled, install, listCategories } = useGqlHandler();
+    const { isInstalled, install, listCategories, deleteElasticSearchIndex } = useGqlHandler();
+
+    beforeEach(async () => {
+        // Let's ensure installation works without any indexes in the ElasticSearch.
+        await deleteElasticSearchIndex();
+    });
 
     test("should be able to run isInstalled anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
