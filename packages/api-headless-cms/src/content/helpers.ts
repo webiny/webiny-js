@@ -1,4 +1,4 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { Context } from "@webiny/handler/types";
 
 export type CmsHttpParametersType = {
     type: string;
@@ -11,7 +11,7 @@ const throwPlainError = (type: string): void => {
 const throwRegexError = (type: string, regex: string): void => {
     throw new Error(`Parameter part "${type}" does not match a "${regex}" regex.`);
 };
-export const extractHandlerHttpParameters = (context: CmsContext): CmsHttpParametersType => {
+export const extractHandlerHttpParameters = (context: Context): CmsHttpParametersType => {
     const { key = "" } = context.http.path.parameters || {};
     const [type, environment, locale] = key.split("/");
     if (!type) {

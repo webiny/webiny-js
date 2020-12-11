@@ -1,18 +1,20 @@
 import { useContentGqlHandler } from "../../useContentGqlHandler";
 
-describe("dynamic content model test", () => {
+describe("content model test", () => {
     const {
         getContentModelQuery,
         createContentModelMutation,
         updateContentModelMutation,
         listContentModelsQuery,
         deleteContentModelMutation
-    } = useContentGqlHandler();
+    } = useContentGqlHandler({ pathParameters: { key: "read/production/en-us" } });
 
     test("create, read, update, delete and list content model", async () => {
         // create
         const [response] = await createContentModelMutation({
-            data: {}
+            data: {
+                name: "name"
+            }
         });
         expect(response).toEqual({
             data: {
@@ -31,7 +33,6 @@ describe("dynamic content model test", () => {
         const [getResponse] = await getContentModelQuery({
             id: 1
         });
-        console.log(getResponse);
         expect(getResponse).toEqual({
             data: {
                 cms: {

@@ -36,11 +36,6 @@ type ParsedBody = {
     operationName: string;
 };
 
-type EnvironmentAndAliasResponseType = {
-    environment: CmsEnvironmentType;
-    environmentAlias?: CmsEnvironmentAliasType;
-};
-
 const DEFAULT_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
@@ -131,7 +126,7 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     const { type, environment, locale } = args;
     const id = `${type}#${environment.slug}#${locale.code}`;
 
-    const cacheKey = await generateCacheKey(args);
+    const cacheKey = generateCacheKey(args);
     if (!schemaList.has(id)) {
         const schema = await generateSchema(args);
         schemaList.set(id, {
@@ -150,52 +145,6 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
         schema
     });
     return schema;
-};
-
-const filterEnvironment = (list: CmsEnvironmentType[], id: string): CmsEnvironmentType => {
-    const environment = list.find(env => env.id === id);
-    if (!environment) {
-        throw new Error(`There is no environment "${id}".`);
-    }
-    return environment;
-};
-
-const fetchEnvironmentAndItsAlias = async (
-    context: CmsContext
-): Promise<EnvironmentAndAliasResponseType> => {
-    const environmentList = await context.cms.environments.list();
-    const environmentAliasList = await context.cms.environmentAliases.list();
-
-    const value = context.cms.environment;
-    if (!value || typeof context.cms.environment !== "string") {
-        throw new Error(
-            `It seems that "context.cms.environment" is not a string with which we can identify the environment or alias.`
-        );
-    }
-    // alias is always checked by slug
-    const environmentAlias = environmentAliasList.find(model => {
-        return model.slug === value;
-    });
-    if (environmentAlias) {
-        const environment = filterEnvironment(environmentList, environmentAlias.environment.id);
-        return {
-            environmentAlias,
-            environment
-        };
-    }
-    // environment is always checked by id
-    const environment = environmentList.find(model => {
-        return model.id === value;
-    });
-    if (!environment) {
-        throw new Error(`There is no environment or environment alias "${value}".`);
-    }
-    return {
-        environment,
-        environmentAlias: environmentAliasList.find(
-            alias => alias.environment.id === environment.id
-        )
-    };
 };
 
 export const graphQLHandlerFactory = (
@@ -222,18 +171,11 @@ export const graphQLHandlerFactory = (
         }
 
         try {
-            const { environment, environmentAlias } = await fetchEnvironmentAndItsAlias(context);
-            // need to attach environment and environment alias getters to the context for later use
-            // and attach real environment slug to the context
-            context.cms.environment = environment.slug;
-            context.cms.getEnvironment = () => environment;
-            context.cms.getEnvironmentAlias = () => environmentAlias;
-
             const schema = await getSchema({
                 context,
-                locale: context.i18n.getCurrentLocale(),
-                environment,
-                environmentAlias,
+                locale: context.cms.getLocale(),
+                environment: context.cms.getEnvironment(),
+                environmentAlias: context.cms.getEnvironmentAlias(),
                 type: context.cms.type
             });
             const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);

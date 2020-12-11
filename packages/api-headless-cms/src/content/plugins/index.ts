@@ -3,11 +3,8 @@
 // import filterOperators from "./filterOperators";
 // import graphqlFields from "./graphqlFields";
 import graphql from "./graphql";
-import { TypeValueEmitter } from "./utils/TypeValueEmitter";
 // import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 // import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
-import { ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
 import contentModelManager from "./contentModelManager";
 
 type HeadlessPluginsOptions = {
@@ -18,24 +15,24 @@ type HeadlessPluginsOptions = {
 };
 
 export default (options: HeadlessPluginsOptions) => [
-    {
-        name: "context-cms-context",
-        type: "context",
-        apply(context: CmsContext) {
-            context.cms = context.cms || ({} as any);
-            context.cms.type = options.type;
-            context.cms.environment = options.environment;
-            context.cms.dataManagerFunction = options.dataManagerFunction;
-
-            context.cms.READ = options.type === "read";
-            context.cms.PREVIEW = options.type === "preview";
-            context.cms.MANAGE = options.type === "manage";
-
-            if (!context.cms.MANAGE) {
-                context.resolvedValues = new TypeValueEmitter();
-            }
-        }
-    } as ContextPlugin<CmsContext>,
+    // {
+    //     name: "context-cms-context",
+    //     type: "context",
+    //     apply(context: CmsContext) {
+    //         context.cms = context.cms || ({} as any);
+    //         context.cms.type = options.type;
+    //         context.cms.environment = options.environment;
+    //         context.cms.dataManagerFunction = options.dataManagerFunction;
+    //
+    //         context.cms.READ = options.type === "read";
+    //         context.cms.PREVIEW = options.type === "preview";
+    //         context.cms.MANAGE = options.type === "manage";
+    //
+    //         if (!context.cms.MANAGE) {
+    //             context.resolvedValues = new TypeValueEmitter();
+    //         }
+    //     }
+    // } as ContextPlugin<CmsContext>,
     contentModelManager,
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),

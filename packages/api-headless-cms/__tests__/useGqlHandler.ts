@@ -1,4 +1,3 @@
-import apolloServerPlugins from "@webiny/handler-graphql";
 import dbPlugins from "@webiny/handler-db";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import i18nContext from "@webiny/api-i18n/plugins/context";
@@ -45,13 +44,16 @@ export type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
     identity?: SecurityIdentity;
     plugins?: any[];
+    pathParameters?: {
+        key: string;
+    };
 };
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9201";
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     const tenant = { id: "root", name: "Root", parent: null };
-    const { permissions, identity, plugins = [] } = args || {};
+    const { permissions, identity, plugins = [], pathParameters = { key: "" } } = args || {};
 
     const documentClient = new DocumentClient({
         convertEmptyValues: true,
@@ -67,7 +69,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
             })
         }),
         elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
-        apolloServerPlugins(),
         {
             type: "context",
             apply(context) {
@@ -77,6 +78,24 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
                 context.security.getTenant = () => {
                     return tenant;
                 };
+            }
+        },
+        {
+            type: "context",
+            name: "context-path-parameters",
+            apply(context) {
+                if (!context.http) {
+                    context.http = {
+                        path: {
+                            parameters: null
+                        }
+                    };
+                } else if (!context.http.path) {
+                    context.http.path = {
+                        parameters: null
+                    };
+                }
+                context.http.path.parameters = pathParameters;
             }
         },
         securityPlugins(),

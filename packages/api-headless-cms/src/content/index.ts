@@ -10,21 +10,26 @@
 // This is a factory function which returns a specific set of plugins depending on
 // the provided environment and schema type (read, manage, preview).
 import headlessPlugins from "./plugins";
-import { extractHandlerHttpParameters } from "./helpers";
 import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
+import contextSetup from "./contextSetup";
+import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export default (options: any) => [
+type CmsContentPluginsIndexArgsType = {
+    debug?: boolean;
+};
+export default (options: CmsContentPluginsIndexArgsType) => [
+    contextSetup(options),
     {
         type: "handler",
         name: "handler-setup-headless-plugins",
-        async handle(context, next) {
+        async handle(context: CmsContext, next) {
             // We register plugins according to the received path params (schema type and environment).
-            const { type, environment, locale } = extractHandlerHttpParameters(context);
+
             context.plugins.register(
                 await headlessPlugins({
-                    type,
-                    environment,
-                    locale
+                    type: context.cms.type,
+                    environment: context.cms.environment,
+                    locale: context.cms.locale
                 })
             );
             return next();

@@ -22,7 +22,7 @@ export type CmsLocalizedModelFieldValue<T> = {
     value: T;
 };
 
-type CmsValuesContext = {
+export type CmsValuesContext = {
     cms: {
         // API type
         type: string;
@@ -33,7 +33,9 @@ type CmsValuesContext = {
         // Returns an instance of current environment alias.
         getEnvironmentAlias: () => CmsEnvironmentAliasType | undefined;
         // Requested locale
-        locale: I18NLocale;
+        locale: string;
+        // returns an instance of current locale
+        getLocale: () => I18NLocale;
         // This is a READ API
         READ: boolean;
         // This is a MANAGE API
