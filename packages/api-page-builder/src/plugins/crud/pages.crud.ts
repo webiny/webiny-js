@@ -99,6 +99,7 @@ const PERMISSION_NAME = TYPE_PAGE;
 
 const getESPageData = (context: PbContext, page) => {
     return {
+        __type: 'page',
         id: page.id,
         editor: page.editor,
         locale: context.i18nContent.getLocale().code,
