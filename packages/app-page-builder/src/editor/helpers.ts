@@ -8,7 +8,8 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
     PbElement,
-    PbShallowElement
+    PbShallowElement,
+    PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
 
 const updateElementsPaths = (elements: PbElement[], parentPath: string): PbElement[] => {
@@ -200,9 +201,25 @@ export const createBlockElementsHelper = (name: string) => {
     };
 };
 
-export const userSettingsPluginsHelper = (elementType: string) => {
+export const userElementSettingsPluginsHelper = (elementType: string) => {
     return plugins
         .byType<PbEditorPageElementSettingsPlugin>("pb-editor-page-element-settings")
+        .filter(pl => {
+            if (typeof pl.elements === "boolean") {
+                return pl.elements === true;
+            }
+            if (Array.isArray(pl.elements)) {
+                return pl.elements.includes(elementType);
+            }
+
+            return false;
+        })
+        .map(pl => pl.name);
+};
+
+export const userElementStyleSettingsPluginsHelper = (elementType: string) => {
+    return plugins
+        .byType<PbEditorPageElementStyleSettingsPlugin>("pb-editor-page-element-style-settings")
         .filter(pl => {
             if (typeof pl.elements === "boolean") {
                 return pl.elements === true;

@@ -8,14 +8,17 @@ import {
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { userSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
+import { userElementSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
 
 const getElementActions = plugin => {
     if (!plugin || !plugin.settings) {
         return [];
     }
 
-    const pluginSettings = [...userSettingsPluginsHelper(plugin.elementType), ...plugin.settings];
+    const pluginSettings = [
+        ...userElementSettingsPluginsHelper(plugin.elementType),
+        ...plugin.settings
+    ];
 
     const actions = pluginSettings.map(pl => {
         if (typeof pl === "string") {
