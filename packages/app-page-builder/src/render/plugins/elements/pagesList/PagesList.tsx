@@ -1,88 +1,83 @@
 import * as React from "react";
-import warning from "warning";
 import { useQuery } from "react-apollo";
-import { loadPages } from "./graphql";
+import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
+import { get } from "lodash";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
-
-declare global {
-    // eslint-disable-next-line
-    namespace JSX {
-        interface IntrinsicElements {
-            "ssr-cache": {
-                class?: string;
-                id?: string;
-            };
-        }
-    }
-}
+import { useState } from "react";
 
 const PagesList = props => {
-    const {
-        data: { component, ...vars },
-        theme
-    } = props;
-
-    const plugins = getPlugins<PbPageElementPagesListComponentPlugin>(
+    const { component, ...vars } = props.data;
+    const components = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
-
-    const pageList = plugins.find(cmp => cmp.componentName === component);
+    const pageList = components.find(cmp => cmp.componentName === component);
+    const { theme } = usePageBuilder();
+    const [page, setPage] = useState(1);
 
     if (!pageList) {
-        warning(false, `Pages list component "${component}" is missing!`);
-        return null;
+        return <div>Selected page list component not found!</div>;
     }
 
     const { component: ListComponent } = pageList;
 
-    if (!ListComponent) {
-        warning(false, `React component is not defined for "${component}"!`);
-        return null;
-    }
-
     let sort = null;
-    if (vars.sortBy) {
-        sort = { [vars.sortBy]: parseInt(vars.sortDirection) || -1 };
+    if (vars.sortBy && vars.sortDirection) {
+        sort = { [vars.sortBy]: vars.sortDirection };
     }
 
     const variables = {
-        category: vars.category,
         sort,
-        tags: vars.tags,
-        tagsRule: vars.tagsRule,
+        where: {
+            category: vars.category,
+            tags: {
+                query: vars.tags,
+                rule: vars.tagsRule
+            }
+        },
         limit: parseInt(vars.resultsPerPage),
-        after: undefined,
-        before: undefined
+        page
     };
 
-    const { data, loading, refetch } = useQuery(loadPages, { variables });
+    const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {
+        variables,
+        skip: !ListComponent,
+        fetchPolicy: "network-only"
+    });
+
+    if (!ListComponent) {
+        return <div>You must select a component to render your list!</div>;
+    }
 
     if (loading) {
-        return null;
+        return <div>Loading...</div>;
     }
 
-    const pages = data.pageBuilder.listPublishedPages;
-
-    if (!pages || !pages.data.length) {
-        return null;
+    const totalCount = get(data, "pageBuilder.listPublishedPages.meta.totalCount");
+    if (!totalCount) {
+        return <div>No pages match the criteria.</div>;
     }
+
+    const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
 
     let prevPage = null;
-    if (pages.meta.hasPreviousPage) {
-        prevPage = () => refetch({ ...variables, before: pages.meta.cursors.previous });
+    if (listPublishedPages.meta.previousPage) {
+        prevPage = () => setPage(listPublishedPages.meta.previousPage);
     }
 
     let nextPage = null;
-    if (pages.meta.hasNextPage) {
-        nextPage = () => refetch({ ...variables, after: pages.meta.cursors.next });
+    if (listPublishedPages.meta.nextPage) {
+        nextPage = () => setPage(listPublishedPages.meta.nextPage);
     }
 
     return (
-        <>
-            <ssr-cache data-class="pb-pages-list" />
-            <ListComponent {...pages} nextPage={nextPage} prevPage={prevPage} theme={theme} />
-        </>
+        <ListComponent
+            {...listPublishedPages}
+            nextPage={nextPage}
+            prevPage={prevPage}
+            theme={theme}
+        />
     );
 };
 
