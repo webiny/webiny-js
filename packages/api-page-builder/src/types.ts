@@ -34,7 +34,19 @@ export type Settings = {
 // TODO
 export type PageElement = Record<string, any>;
 export type Menu = Record<string, any>;
-export type Category = Record<string, any>;
+
+export type Category = {
+    name: string;
+    slug: string;
+    url: string;
+    layout: string;
+    createdOn: string;
+    createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+};
 
 export type Page = {
     id: string;

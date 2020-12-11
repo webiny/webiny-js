@@ -3,7 +3,7 @@ import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { Category, PbContext } from "@webiny/api-page-builder/types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
@@ -20,19 +20,6 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
     //     }
     // }),
     */
-
-export type Category = {
-    name: string;
-    slug: string;
-    url: string;
-    layout: string;
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
 
 const CreateDataModel = withFields({
     slug: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
