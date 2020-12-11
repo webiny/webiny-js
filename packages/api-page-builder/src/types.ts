@@ -5,6 +5,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
 // Entities.
 export type File = {
@@ -166,6 +167,7 @@ export type PbContext = Context<
     I18NContentContext,
     I18NContext,
     DbContext,
+    ElasticSearchClientContext,
     SecurityContext,
     TenancyContext,
     {
