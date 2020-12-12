@@ -10,25 +10,25 @@ const BASE_FORM_FIELDS = `
     id
     name
     version
-    parent
     published
     status
     savedOn
     createdBy {
-        firstName
-        lastName
+        id
+        displayName
     }
 `;
 
 export const LIST_FORMS = gql`
-    query FormsListForms($sort: ListFormsSortInput) {
+    query FbListForms {
         formBuilder {
-            listForms(sort: $sort) {
+            listForms {
                 data {  
                     ${BASE_FORM_FIELDS}
                 }
-                meta {
-                    totalCount
+                error {
+                    code
+                    message
                 }
             }
         }
@@ -40,7 +40,7 @@ export const CREATE_FORM = gql`
         formBuilder {
             form: createForm(data: { name: $name }) {
                 data {
-                    id
+                    ${BASE_FORM_FIELDS}
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -64,9 +64,13 @@ export const GET_FORM = gql`
                     revisions {
                         id
                         savedOn
-                        parent
                         name
                         version
+                        published
+                        createdBy {
+                            id
+                            displayName
+                        }
                         status
                         stats {
                             views
@@ -84,23 +88,14 @@ export const GET_FORM = gql`
 `;
 
 export const LIST_FORM_SUBMISSIONS = gql`
-    query FormsListFormSubmissions(
-        $sort: JSON
-        $search: String
-        $where: JSON
+    query FbListFormSubmissions(
+        $form: ID!
+        $sort: FbSubmissionSortInput
         $limit: Int
         $after: String
-        $before: String
     ) {
         formBuilder {
-            listFormSubmissions(
-                sort: $sort
-                search: $search
-                where: $where
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            listFormSubmissions(form: $form, sort: $sort, limit: $limit, after: $after) {
                 data {
                     id
                     data
@@ -126,13 +121,13 @@ export const LIST_FORM_SUBMISSIONS = gql`
                     }
                 }
                 meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
+                    cursor
+                    hasMoreItems
                     totalCount
+                }
+                error {
+                    code
+                    message
                 }
             }
         }
@@ -140,9 +135,9 @@ export const LIST_FORM_SUBMISSIONS = gql`
 `;
 
 export const EXPORT_FORM_SUBMISSIONS = gql`
-    mutation FormsExportFormSubmissions($ids: [ID], $parent: ID!) {
+    mutation FormsExportFormSubmissions($form: ID!) {
         formBuilder {
-            exportFormSubmissions(ids: $ids, parent: $parent) {
+            exportFormSubmissions(form: $form) {
                 data {
                     src
                 }
@@ -159,7 +154,7 @@ export const CREATE_REVISION_FROM = gql`
         formBuilder {
             revision: createRevisionFrom(revision: $revision) {
                 data {
-                    id
+                    ${BASE_FORM_FIELDS}
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -174,9 +169,7 @@ export const PUBLISH_REVISION = gql`
         formBuilder {
             publishRevision(id: $id) {
                 data {
-                    id
-                    status
-                    published
+                    ${BASE_FORM_FIELDS}
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -191,9 +184,7 @@ export const UNPUBLISH_REVISION = gql`
         formBuilder {
             unpublishRevision(id: $id) {
                 data {
-                    id
-                    status
-                    published
+                    ${BASE_FORM_FIELDS}
                 }
                 error {
                     ${ERROR_FIELDS}
@@ -206,7 +197,7 @@ export const UNPUBLISH_REVISION = gql`
 export const DELETE_REVISION = gql`
     mutation FormsDeleteRevision($id: ID!) {
         formBuilder {
-            deleteRevision(id: $id) {
+            deleteForm: deleteRevision(id: $id) {
                 data
                 error {
                     ${ERROR_FIELDS}

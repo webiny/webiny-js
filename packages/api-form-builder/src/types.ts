@@ -91,18 +91,30 @@ type FormUpdateInput = {
     triggers: Record<string, any>;
 };
 
-type Sort = Record<string, 1 | -1>;
-
 type FbFormStats = {
     submissions: number;
     views: number;
     conversionRate: number;
 };
 
+type FbSubmissionsSort = Record<"createdOn", 1 | -1>;
+
+type FbListSubmissionsOptions = {
+    limit?: number;
+    after?: string;
+    sort?: FbSubmissionsSort;
+};
+
+export type FbListSubmissionsMeta = {
+    cursor: string;
+    hasMoreItems: boolean;
+    totalCount: number;
+};
+
 export type FormsCRUD = {
     getForm(id: string): Promise<FbForm>;
     getFormStats(id: string): Promise<FbFormStats>;
-    listForms(sort?: Sort): Promise<FbForm[]>;
+    listForms(): Promise<FbForm[]>;
     createForm(data: FormCreateInput): Promise<FbForm>;
     updateForm(id: string, data: Partial<FormUpdateInput>): Promise<FbForm>;
     deleteForm(id: string): Promise<boolean>;
@@ -118,13 +130,9 @@ export type FormsCRUD = {
     getSubmissionsByIds(formId: string, submissionIds: string[]): Promise<FbSubmission[]>;
     listFormSubmissions(
         formId: string,
-        options?: {
-            perPage?: number;
-            page?: number;
-            sort?: Sort;
-        }
-    ): Promise<FbSubmission[]>;
-    createSubmission(
+        options: FbListSubmissionsOptions
+    ): Promise<[FbSubmission[], FbListSubmissionsMeta]>;
+    createFormSubmission(
         formId: string,
         reCaptchaResponseToken: string,
         data: any,
@@ -140,7 +148,14 @@ export type FbSubmission = {
     ownedBy: OwnedBy;
     data: Record<string, any>;
     meta: Record<string, any>;
-    form: string;
+    form: {
+        id: string;
+        parent: string;
+        name: string;
+        version: number;
+        fields: Record<string, any>[];
+        layout: string[][];
+    };
     logs: Record<string, any>[];
 };
 
@@ -166,7 +181,7 @@ export type Settings = {
 };
 
 export type SettingsCRUD = {
-    getSettings(): Promise<Settings>;
+    getSettings(options?: { auth: boolean }): Promise<Settings>;
     createSettings(data: Partial<Settings>): Promise<Settings>;
     updateSettings(data: Partial<Settings>): Promise<Settings>;
 };

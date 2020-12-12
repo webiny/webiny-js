@@ -21,7 +21,6 @@ export const FIELDS_FIELDS = `
 
 export const DATA_FIELDS = `
     id
-    parent
     fields {
         ${FIELDS_FIELDS}
     }
@@ -51,9 +50,9 @@ export const DATA_FIELDS = `
 `;
 
 export const GET_PUBLISHED_FORM = gql`
-    query GetPublishedForm($id: ID, $parent: ID, $version: Int, $slug: String) {
+    query GetPublishedForm($id: ID, $parent: ID) {
         formBuilder {
-            getPublishedForm(id: $id, parent: $parent, version: $version, slug: $slug) {
+            getPublishedForm(revision: $id, parent: $parent) {
                 data {
                     ${DATA_FIELDS}
                 }

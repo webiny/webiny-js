@@ -53,9 +53,9 @@ export const CREATE_FROM_SUBMISSION = /* GraphQL */ `
 `;
 
 export const EXPORT_FORM_SUBMISSIONS = /* GraphQL */ `
-    mutation ExportFormSubmissions($form: ID!, $ids: [ID!]) {
+    mutation ExportFormSubmissions($form: ID!) {
         formBuilder {
-            exportFormSubmissions(form: $form, ids: $ids) {
+            exportFormSubmissions(form: $form) {
                 data {
                     src
                     key
@@ -67,10 +67,14 @@ export const EXPORT_FORM_SUBMISSIONS = /* GraphQL */ `
 `;
 
 export const LIST_FROM_SUBMISSIONS = /* GraphQL */ `
-    query ListFormSubmissions($form: ID!, $sort: FbSubmissionSortInput, $page: Int, $perPage: Int) {
+    query ListFormSubmissions($form: ID!, $sort: FbSubmissionSortInput, $limit: Int, $after: String) {
         formBuilder {
-            listFormSubmissions(form: $form, sort: $sort, page: $page, perPage: $perPage) {
+            listFormSubmissions(form: $form, sort: $sort, limit: $limit, after: $after) {
                 data ${DATA_FIELD}
+                meta {
+                    cursor
+                    totalCount
+                }
                 error ${ERROR_FIELD}
             }
         }

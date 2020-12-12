@@ -31,6 +31,7 @@
     "@webiny/ui": "^4.14.0",
     "@webiny/validation": "^4.14.0",
     "apollo-client": "^2.2.8",
+    "dot-prop-immutable": "^2.1.0",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.10",

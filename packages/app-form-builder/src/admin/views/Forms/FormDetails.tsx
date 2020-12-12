@@ -4,7 +4,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { GET_FORM } from "@webiny/app-form-builder/admin/viewsGraphql";
+import { GET_FORM } from "@webiny/app-form-builder/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -79,7 +79,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     }
 
     const form = loading ? null : data.formBuilder.form.data;
-
+    
     return (
         <DetailsContainer>
             {loading && <CircularProgress label={"Loading details..."} />}

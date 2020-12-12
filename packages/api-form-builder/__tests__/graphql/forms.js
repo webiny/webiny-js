@@ -176,9 +176,9 @@ export const GET_PUBLISHED_FORM = /* GraphQL */ `
 `;
 
 export const LIST_FORMS = /* GraphQL */ `
-    query ListForms($sort: FbListFormsSortInput) {
+    query ListForms {
         formBuilder {
-            listForms(sort: $sort) {
+            listForms {
                 data ${FORMS_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

@@ -1,6 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { FormBuilderContext, Settings } from "../types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { FormBuilderContext, Settings } from "../types";
+import defaults from "./crud/defaults";
 
 const emptyResolver = () => ({});
 
@@ -76,7 +77,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             },
             FbMutation: {
                 install: async (root, args, context) => {
-                    const { formBuilder } = context;
+                    const { formBuilder, elasticSearch } = context;
 
                     try {
                         const existingSettings = await formBuilder.settings.getSettings();
@@ -100,6 +101,13 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             await formBuilder.settings.createSettings(data);
                         } else {
                             await formBuilder.settings.updateSettings(data);
+                        }
+
+                        // Create ES index if it doesn't already exist.
+                        const esIndex = defaults.es(context);
+                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                        if (!exists) {
+                            await elasticSearch.indices.create(esIndex);
                         }
 
                         return new Response(true);

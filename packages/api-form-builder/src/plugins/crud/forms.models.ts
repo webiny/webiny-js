@@ -83,9 +83,9 @@ export const FormUpdateDataModel = withFields({
 export const FormSubmissionCreateDataModel = withFields({
     data: object({ validation: validation.create("required") }),
     meta: fields({
+        value: {},
         instanceOf: withFields({
             ip: string({ validation: validation.create("required,maxLength:100") }),
-            locale: object(),
             submittedOn: string({
                 value: new Date().toISOString(),
                 validation: validation.create("maxLength:100")

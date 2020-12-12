@@ -16,9 +16,11 @@ export default {
         context.formBuilder = {
             ...context.formBuilder,
             settings: {
-                async getSettings() {
-                    await utils.checkBaseSettingsPermissions(context);
-                    
+                async getSettings(options = { auth: true }) {
+                    if (options.auth) {
+                        await utils.checkBaseSettingsPermissions(context);
+                    }
+
                     const [[settings]] = await db.read<Settings>({
                         ...defaults.db,
                         query: { PK: PK_SETTINGS(), SK: FB_SETTINGS_KEY }

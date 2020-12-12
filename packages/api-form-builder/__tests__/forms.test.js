@@ -260,13 +260,13 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ id });
 
         // Create form submissions
-        await createFormSubmission({
+        const [s1] = await createFormSubmission({
             form: id,
             data: formSubmissionDataA.data,
             meta: formSubmissionDataA.meta
         });
 
-        await createFormSubmission({
+        const [s2] = await createFormSubmission({
             form: id,
             data: formSubmissionDataB.data,
             meta: formSubmissionDataB.meta
@@ -280,7 +280,9 @@ describe('Form Builder "Form" Test', () => {
 
         // Load submissions
         const [submissions] = await listFormSubmissions({ form: id });
-        expect(submissions.data.formBuilder.listFormSubmissions.data.length).toBe(2);
+        const list = submissions.data.formBuilder.listFormSubmissions;
+        expect(list.data.length).toBe(2);
+        expect(list.meta.totalCount).toBe(2);
 
         // Export submissions
         const [exportCSV] = await exportFormSubmissions({ form: id });
@@ -294,8 +296,8 @@ describe('Form Builder "Form" Test', () => {
         const csvFile = path.join(__dirname, data.key);
         const json = await csv({ output: "csv" }).fromFile(csvFile);
         expect(json.length).toBe(2);
-        expect(json[0].sort()).toEqual(Object.values(formSubmissionDataA.data).sort());
-        expect(json[1].sort()).toEqual(Object.values(formSubmissionDataB.data).sort());
+        expect(json[0].sort()).toEqual(Object.values(formSubmissionDataB.data).sort());
+        expect(json[1].sort()).toEqual(Object.values(formSubmissionDataA.data).sort());
         fs.unlinkSync(csvFile);
     });
 });

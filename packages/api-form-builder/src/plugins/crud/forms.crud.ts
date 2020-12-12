@@ -10,6 +10,7 @@ import { checkOwnership } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
 import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
+import { decodeCursor, encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";
@@ -93,7 +94,7 @@ export default {
                         conversionRate
                     };
                 },
-                async listForms(sort = { createdOn: -1 }) {
+                async listForms() {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
 
                     const must: any = [
@@ -109,18 +110,28 @@ export default {
                         });
                     }
 
+                    const body = {
+                        query: {
+                            bool: {
+                                must
+                            }
+                        },
+                        sort: [
+                            {
+                                savedOn: {
+                                    order: "desc",
+                                    // eslint-disable-next-line @typescript-eslint/camelcase
+                                    unmapped_type: "date"
+                                }
+                            }
+                        ],
+                        size: 1000
+                    };
+
                     // Get "latest" form revisions from Elasticsearch.
                     const response = await elasticSearch.search({
                         ...defaults.es(context),
-                        body: {
-                            query: {
-                                bool: {
-                                    must
-                                }
-                            },
-                            sort: [utils.normalizeSortInput(sort)],
-                            size: 1000
-                        }
+                        body
                     });
 
                     return response.body.hits.hits.map(item => item._source);
@@ -859,19 +870,29 @@ export default {
                     if (permission.submissions === "no") {
                         throw new NotAuthorizedError();
                     }
-                    
-                    // This will tell us if current identity is allowed to access this form.
+
+                    /**
+                     * Check if current identity is allowed to access this form.
+                     */
                     await this.getForm(formId);
 
-                    const { sort = { createdOn: -1 }, page = 1, perPage = 10 } = options;
+                    const { sort = { createdOn: -1 }, after = null } = options;
+                    let { limit = 10 } = options;
+
+                    // 10000 is a hard limit of ElasticSearch for `size` parameter.
+                    if (limit >= 10000) {
+                        limit = 9999;
+                    }
+
                     const [uniqueId] = formId.split("#");
 
                     const must: Record<string, any>[] = [
                         { term: { "__type.keyword": "fb.submission" } },
-                        { term: { "form.parent.keyword": uniqueId } },
-                        { term: { "locale.keyword": i18nContent.locale.code } }
+                        { term: { "locale.keyword": i18nContent.locale.code } },
+                        // Load all form submissions no matter the revision
+                        { term: { "form.parent.keyword": uniqueId } }
                     ];
-                    
+
                     const body: Record<string, any> = {
                         query: {
                             // eslint-disable-next-line @typescript-eslint/camelcase
@@ -879,14 +900,12 @@ export default {
                                 filter: { bool: { must } }
                             }
                         },
-                        sort: utils.normalizeSortInput(sort)
+                        size: limit + 1,
+                        sort: [{ createdOn: { order: sort.createdOn > 0 ? "asc" : "desc" } }]
                     };
 
-                    if (perPage === 0) {
-                        body.size = 10000;
-                    } else {
-                        body.from = (page - 1) * perPage;
-                        body.size = perPage;
+                    if (after) {
+                        body["search_after"] = utils.decodeCursor(after);
                     }
 
                     const response = await elasticSearch.search({
@@ -894,13 +913,30 @@ export default {
                         body
                     });
 
-                    const { hits } = response.body.hits;
-                    return hits.map(item => item._source);
+                    const { hits, total } = response.body.hits;
+                    const items = hits.map(item => item._source);
+
+                    const hasMoreItems = items.length > limit;
+                    if (hasMoreItems) {
+                        // Remove the last item from results, we don't want to include it.
+                        items.pop();
+                    }
+
+                    // Cursor is the `sort` value of the last item in the array.
+                    // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+
+                    const meta = {
+                        hasMoreItems,
+                        totalCount: total.value,
+                        cursor: items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null
+                    };
+
+                    return [items, meta];
                 },
-                async createSubmission(formId, reCaptchaResponseToken, rawData, meta) {
+                async createFormSubmission(formId, reCaptchaResponseToken, rawData, meta) {
                     const { formBuilder } = context;
 
-                    const [uniqueId, version] = formId.split("#");
+                    const [uniqueId] = formId.split("#");
 
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
@@ -914,7 +950,7 @@ export default {
                         throw new NotFoundError(`Form "${formId}" was not found!`);
                     }
 
-                    const settings = await formBuilder.settings.getSettings();
+                    const settings = await formBuilder.settings.getSettings({ auth: false });
 
                     if (settings.reCaptcha && settings.reCaptcha.enabled) {
                         if (!reCaptchaResponseToken) {
@@ -1027,19 +1063,20 @@ export default {
                     await db.create({
                         data: {
                             PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                            SK: `${version}#${submissionModel.id}`,
+                            SK: submission.id,
                             TYPE: "fb.formSubmission",
                             tenant: form.tenant,
                             ...submission
                         }
                     });
 
+                    // TODO: review and reduce amount of data stored to ES (field settings and validators)
                     await elasticSearch.index({
                         ...defaults.es(context),
                         id: submissionModel.id,
                         body: {
                             __type: "fb.submission",
-                            // TODO: review and reduce amount of data stored to ES (especially regarding form fields)
+                            createdOn: new Date().toISOString(),
                             ...submission
                         }
                     });
@@ -1099,14 +1136,14 @@ export default {
                 async updateSubmission(formId, data) {
                     await new models.FormSubmissionUpdateDataModel().populate(data).validate();
 
-                    const [uniqueId, version] = formId.split("#");
+                    const [uniqueId] = formId.split("#");
 
                     // Finally save it to DB
                     await db.update({
                         ...defaults.db,
                         query: {
                             PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                            SK: `${version}#${data.id}`
+                            SK: data.id
                         },
                         data: {
                             logs: data.logs

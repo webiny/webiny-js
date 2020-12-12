@@ -3,7 +3,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import FormSubmissionsOverview from "./FormSubmissionsOverview";
-import FormSubmissionsList from "./FormSubmissionsList";
+import FormSubmissionsList from "./FormSubmissionsList/index";
 import { CircularProgress } from "@webiny/ui/Progress";
 import {
     FbFormDetailsPluginType,

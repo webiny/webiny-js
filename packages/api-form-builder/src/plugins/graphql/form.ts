@@ -207,11 +207,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 error: FbError
             }
 
-            input FbListFormsSortInput {
-                name: Int
-                createdOn: Int
-            }
-
             type FbSubmissionFormData {
                 id: ID
                 parent: ID
@@ -233,9 +228,16 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 submittedOn: DateTime
             }
 
+            type FbListSubmissionsMeta {
+                cursor: String
+                hasMoreItems: Boolean
+                totalCount: Int
+            }
+
             # Response types
             type FbFormSubmissionsListResponse {
                 data: [FbFormSubmission]
+                meta: FbListSubmissionsMeta
                 error: FbError
             }
 
@@ -266,14 +268,14 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 getPublishedForm(revision: ID, parent: ID): FbFormResponse
 
                 # List forms (returns a list of latest revision)
-                listForms(sort: FbListFormsSortInput): FbFormListResponse
+                listForms: FbFormListResponse
 
                 # List form submissions for specific Form
                 listFormSubmissions(
                     form: ID!
                     sort: FbSubmissionSortInput
-                    page: Int
-                    perPage: Int
+                    limit: Int
+                    after: String
                 ): FbFormSubmissionsListResponse
             }
 
@@ -310,7 +312,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 ): FbFormSubmissionResponse
 
                 # Export submissions as a CSV file
-                exportFormSubmissions(form: ID!, ids: [ID!]): FbExportFormSubmissionsResponse
+                exportFormSubmissions(form: ID!): FbExportFormSubmissionsResponse
             }
         `,
         resolvers: {
@@ -345,7 +347,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 },
                 listForms: async (_, args, { formBuilder }) => {
                     try {
-                        const forms = await formBuilder.forms.listForms(args.sort);
+                        const forms = await formBuilder.forms.listForms();
 
                         return new ListResponse(forms);
                     } catch (e) {
@@ -381,20 +383,19 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     _,
                     args: {
                         form: string;
-                        sort: Record<string, 1 | -1>;
-                        page: number;
-                        perPage: number;
+                        sort?: Record<string, 1 | -1>;
+                        limit?: number;
+                        after?: string;
                     },
                     { formBuilder }
                 ) => {
                     try {
-                        const { form, sort, page = 1, perPage = 10 } = args;
-                        const submissions = await formBuilder.forms.listFormSubmissions(form, {
-                            sort,
-                            page,
-                            perPage
-                        });
-                        return new ListResponse(submissions);
+                        const { form, ...options } = args;
+                        const [submissions, meta] = await formBuilder.forms.listFormSubmissions(
+                            form,
+                            options
+                        );
+                        return new ListResponse(submissions, meta);
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
@@ -480,10 +481,10 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
                 },
                 createFormSubmission: async (root: any, args, { formBuilder }) => {
-                    const { form, data, reCaptchaResponseToken, meta } = args;
+                    const { form, data, reCaptchaResponseToken, meta = {} } = args;
 
                     try {
-                        const formSubmission = await formBuilder.forms.createSubmission(
+                        const formSubmission = await formBuilder.forms.createFormSubmission(
                             form,
                             reCaptchaResponseToken,
                             data,
@@ -496,19 +497,12 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
                 },
                 exportFormSubmissions: async (root: any, args, { formBuilder, fileManager }) => {
-                    const { form, ids: submissionIds } = args;
-                    let submissions = [];
+                    const { form } = args;
 
                     try {
-                        if (submissionIds) {
-                            // Get all the submissions with these "ids" and parent.
-                            submissions = await formBuilder.forms.getSubmissionsByIds(
-                                form,
-                                submissionIds
-                            );
-                        } else if (form) {
-                            submissions = await formBuilder.forms.listFormSubmissions(form);
-                        }
+                        const [submissions] = await formBuilder.forms.listFormSubmissions(form, {
+                            limit: 10000
+                        });
 
                         if (submissions.length === 0) {
                             return new NotFoundResponse("No form submissions found.");
@@ -567,11 +561,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                         return new Response(result);
                     } catch (e) {
-                        return new ErrorResponse({
-                            message: e.message,
-                            code: e.code,
-                            data: e.data
-                        });
+                        return new ErrorResponse(e);
                     }
                 }
             }

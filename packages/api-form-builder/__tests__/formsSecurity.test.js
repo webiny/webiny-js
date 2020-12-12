@@ -116,16 +116,16 @@ describe("Forms Security Test", () => {
             let [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
 
-            let [response] = await listForms({ sort: { createdOn: 1 } });
+            let [response] = await listForms();
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
                         listForms: {
                             data: [
-                                new MockResponse({ prefix: "list-forms-1-", id: formA1Id }),
-                                new MockResponse({ prefix: "list-forms-2-", id: formA2Id }),
+                                new MockResponse({ prefix: "list-forms-4-", id: formB2Id }),
                                 new MockResponse({ prefix: "list-forms-3-", id: formB1Id }),
-                                new MockResponse({ prefix: "list-forms-4-", id: formB2Id })
+                                new MockResponse({ prefix: "list-forms-2-", id: formA2Id }),
+                                new MockResponse({ prefix: "list-forms-1-", id: formA1Id })
                             ],
                             error: null
                         }

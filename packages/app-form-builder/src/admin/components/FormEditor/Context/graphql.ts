@@ -53,7 +53,7 @@ const SETTINGS_FIELDS = /* GraphQL */ `
 `;
 
 export const GET_FORM = gql`
-    query GetForm($id: ID!) {
+    query FbGetForm($id: ID!) {
         formBuilder {
             getForm(id: $id) {
                 data {
@@ -85,7 +85,7 @@ export const GET_FORM = gql`
 `;
 
 export const UPDATE_REVISION = gql`
-    mutation UpdateForm($id: ID!, $data: UpdateFormInput!) {
+    mutation UpdateForm($id: ID!, $data: FbUpdateFormInput!) {
         formBuilder {
             updateRevision(id: $id, data: $data) {
                 data {
