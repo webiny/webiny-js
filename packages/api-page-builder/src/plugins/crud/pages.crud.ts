@@ -39,6 +39,11 @@ const UpdateDataModel = withFields({
 
 const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
+// For now we just make the title lower case.
+const getSortableTitle = (title: string) => {
+    return title.toLowerCase();
+};
+
 const UpdateSettingsModel = withFields({
     general: fields({
         value: {},
@@ -141,6 +146,7 @@ const getESPageData = (context: PbContext, page) => {
         category: page.category,
         version: page.version,
         title: page.title,
+        titleLC: getSortableTitle(page.title),
         url: page.url,
         status: page.status,
         locked: page.locked,
@@ -203,7 +209,7 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     return page;
                 },
@@ -520,7 +526,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -555,6 +561,7 @@ const plugin: ContextPlugin<PbContext> = {
                                     tags: updateData?.settings?.general?.tags || [],
                                     snippet: updateData?.settings?.general?.snippet || null,
                                     title: updateData.title,
+                                    titleLC: getSortableTitle(updateData.title),
                                     url: updateData.url,
                                     savedOn: updateData.savedOn,
 
@@ -605,7 +612,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
                     await executeHookCallbacks("beforeDelete", page);
@@ -789,7 +796,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     await executeHookCallbacks("beforePublish", page);
 
@@ -938,7 +945,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     if (!publishedPageData || publishedPageData.id !== pageId) {
                         throw new Error(`Page "${pageId}" is not published.`);
@@ -1028,7 +1035,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     // Change loaded page's status to `reviewRequested`.
                     page.status = STATUS_REVIEW_REQUESTED;
@@ -1108,7 +1115,7 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
 
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     // Change loaded page's status to published.
                     page.status = STATUS_CHANGES_REQUESTED;
@@ -1188,7 +1195,7 @@ const plugin: ContextPlugin<PbContext> = {
                         );
                     }
 
-                    checkOwnPermissions(identity, permission, page, 'ownedBy');
+                    checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     // Change loaded page's status to published.
                     page.status = STATUS_CHANGES_REQUESTED;

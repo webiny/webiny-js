@@ -13,7 +13,6 @@ describe("listing latest pages", () => {
         requestReview,
         listPages,
         updatePage,
-        sleep,
         until
     } = useGqlHandler();
 
@@ -110,7 +109,53 @@ describe("listing latest pages", () => {
                 }
             })
         );
+    });
 
+    test("sorting by title must work case insensitive", async () => {
+        // 1. Let's create five pages, with all uppercase titles.
+        const letters = ["A", "Z", "B", "X", "C"];
+        for (let i = 0; i < 5; i++) {
+            createPage({ category: "category" }).then(([res]) =>
+                updatePage({
+                    id: res.data.pageBuilder.createPage.data.id,
+                    data: {
+                        title: `page-${letters[i]}`
+                    }
+                })
+            );
+        }
+
+        // List should show all five pages.
+        await until(
+            () => listPages({ sort: { title: "asc" } }),
+            ([res]) => {
+                const { data } = res.data.pageBuilder.listPages;
+                return data[0].title === "page-a" && data[9].title === "page-Z";
+            }
+        ).then(([res]) =>
+            // Might not be an ideal order but it's what we knew at the moment of implementation. In the future,
+            // if we find out how to do "page-A", "page-a", "page B", "page b", ..., we'll revisit this.
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        listPages: {
+                            data: [
+                                { title: "page-a" },
+                                { title: "page-A" },
+                                { title: "page-b" },
+                                { title: "page-B" },
+                                { title: "page-c" },
+                                { title: "page-C" },
+                                { title: "page-x" },
+                                { title: "page-X" },
+                                { title: "page-z" },
+                                { title: "page-Z" },
+                            ]
+                        }
+                    }
+                }
+            })
+        );
     });
 
     test("filtering by category", async () => {

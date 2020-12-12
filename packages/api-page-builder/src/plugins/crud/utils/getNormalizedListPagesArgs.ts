@@ -89,7 +89,7 @@ const getSort = sort => {
     }
 
     if (sort.title) {
-        normalizedSort["title.keyword"] = {
+        normalizedSort["titleLC.keyword"] = {
             order: sort.title,
             // eslint-disable-next-line @typescript-eslint/camelcase
             unmapped_type: "text"
