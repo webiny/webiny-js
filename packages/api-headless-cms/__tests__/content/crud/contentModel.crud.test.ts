@@ -1,4 +1,5 @@
 import { useContentGqlHandler } from "../../useContentGqlHandler";
+import { createInitialAliasEnvironment, createInitialEnvironment } from "../../helpers";
 
 describe("content model test", () => {
     const {
@@ -6,8 +7,14 @@ describe("content model test", () => {
         createContentModelMutation,
         updateContentModelMutation,
         listContentModelsQuery,
-        deleteContentModelMutation
+        deleteContentModelMutation,
+        documentClient
     } = useContentGqlHandler({ pathParameters: { key: "read/production/en-us" } });
+
+    beforeEach(async () => {
+        const env = await createInitialEnvironment(documentClient);
+        await createInitialAliasEnvironment(documentClient, env);
+    });
 
     test("create, read, update, delete and list content model", async () => {
         // create

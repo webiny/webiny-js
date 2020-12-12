@@ -41,6 +41,7 @@ const productionsSlugs = ["production"];
 
 export default {
     type: "context",
+    name: "context-environment-alias-crud",
     apply(context) {
         const { db } = context;
 

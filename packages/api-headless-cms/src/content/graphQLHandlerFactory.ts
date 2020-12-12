@@ -65,6 +65,7 @@ const generateCacheKey = (args: ArgsType): string => {
         .filter(value => !!value)
         .join("#");
 };
+const emptyResolver = () => ({});
 const getInitialGraphQLSchemaDefinitions = (context: CmsContext) => {
     const scalars = context.plugins
         .byType<GraphQLScalarPlugin>("graphql-scalar")
@@ -80,6 +81,28 @@ const getInitialGraphQLSchemaDefinitions = (context: CmsContext) => {
             scalar RefInput
             scalar Number
             scalar Any
+            
+            extend type Query {
+                _empty: String
+            }
+            extend type Mutation {
+                _empty: String
+            }
+            extend type Query {
+                cms: CmsQuery
+            }
+
+            extend type Mutation {
+                cms: CmsMutation
+            }
+
+            type CmsQuery {
+                _empty: String
+            }
+
+            type CmsMutation {
+                _empty: String
+            }
         `
     ];
 
@@ -94,7 +117,19 @@ const getInitialGraphQLSchemaDefinitions = (context: CmsContext) => {
             Long: GraphQLLong,
             RefInput,
             Number,
-            Any
+            Any,
+            Query: {
+                _empty: emptyResolver()
+            },
+            CmsQuery: {
+                _empty: emptyResolver()
+            },
+            Mutation: {
+                _empty: emptyResolver()
+            },
+            CmsMutation: {
+                _empty: emptyResolver()
+            }
         }
     ];
     return {

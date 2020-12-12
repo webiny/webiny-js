@@ -33,6 +33,7 @@ const createEnvironmentValidationModel = (initial?: boolean) => {
 
 export default {
     type: "context",
+    name: "context-environment-crud",
     apply(context) {
         const { db } = context;
 

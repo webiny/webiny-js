@@ -13,18 +13,19 @@ import headlessPlugins from "./plugins";
 import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
 import contextSetup from "./contextSetup";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import pluginsCrudSetup from "../plugins/crud";
 
 type CmsContentPluginsIndexArgsType = {
     debug?: boolean;
 };
 export default (options: CmsContentPluginsIndexArgsType) => [
+    pluginsCrudSetup(),
     contextSetup(options),
     {
         type: "handler",
         name: "handler-setup-headless-plugins",
         async handle(context: CmsContext, next) {
             // We register plugins according to the received path params (schema type and environment).
-
             context.plugins.register(
                 await headlessPlugins({
                     type: context.cms.type,

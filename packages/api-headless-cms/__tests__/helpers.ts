@@ -4,7 +4,11 @@ import {
     createSettingsPk
 } from "@webiny/api-headless-cms/common/partitionKeys";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CmsContext, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import {
+    CmsContext,
+    CmsEnvironmentAliasType,
+    CmsEnvironmentType
+} from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
 import { DbItemTypes } from "@webiny/api-headless-cms/common/dbItemTypes";
 
@@ -18,9 +22,9 @@ const INITIAL_ENVIRONMENT_ID = "5fc6590afb3cd80a5ae8a0ae";
 export const getInitialEnvironmentId = () => INITIAL_ENVIRONMENT_ID;
 export const getInitialEnvironment = () => ({
     id: INITIAL_ENVIRONMENT_ID,
-    name: "initial Environment",
-    slug: "initial-environment",
-    description: "initial environment description",
+    name: "Production",
+    slug: "production",
+    description: "Production environment description",
     createdBy: {
         id: "1234567890",
         name: "userName123"
@@ -87,6 +91,36 @@ export const createInitialEnvironment = async (
                 PK: createEnvironmentTestPartitionKey(),
                 SK: getInitialEnvironmentId(),
                 TYPE: DbItemTypes.CMS_ENVIRONMENT,
+                ...model
+            }
+        })
+        .promise();
+    return model;
+};
+
+export const createInitialAliasEnvironment = async (
+    documentClient: DocumentClient,
+    env: CmsEnvironmentType
+): Promise<CmsEnvironmentAliasType> => {
+    const id = "5fc6590afb3cd80a5ae8a0af";
+    const model: CmsEnvironmentAliasType = {
+        id,
+        name: "Production alias",
+        slug: "production",
+        createdBy: {
+            id: "1234567890",
+            name: "userName123"
+        },
+        createdOn: new Date(),
+        environment: env
+    };
+    await documentClient
+        .put({
+            TableName: "HeadlessCms",
+            Item: {
+                PK: createEnvironmentAliasTestPartitionKey(),
+                SK: id,
+                TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS,
                 ...model
             }
         })

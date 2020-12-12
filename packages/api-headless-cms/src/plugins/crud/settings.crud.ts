@@ -26,6 +26,7 @@ const SETTINGS_SECONDARY_KEY = "settings";
 
 export default {
     type: "context",
+    name: "context-settings-crud",
     apply(context) {
         const { db } = context;
 
