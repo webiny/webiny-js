@@ -149,7 +149,7 @@ describe("listing latest pages", () => {
                                 { title: "page-x" },
                                 { title: "page-X" },
                                 { title: "page-z" },
-                                { title: "page-Z" },
+                                { title: "page-Z" }
                             ]
                         }
                     }

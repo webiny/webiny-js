@@ -45,8 +45,7 @@ export const ConfigureDomainMessage = ({ domain }) => {
                 </span>
             ) : (
                 <span>
-                    {t`Either deploy the site by running`}{" "}
-                    <code>yarn webiny deploy apps/site</code>{" "}
+                    {t`Either deploy the site by running`} <code>yarn webiny deploy apps/site</code>{" "}
                 </span>
             )}
             <br />
