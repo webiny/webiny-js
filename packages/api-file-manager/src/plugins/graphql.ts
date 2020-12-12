@@ -1,6 +1,7 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import defaults from "./crud/utils/defaults";
 
 const emptyResolver = () => ({});
 
@@ -207,11 +208,12 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async deleteFile(_, args, context) {
                     return resolve(() => context.fileManager.files.deleteFile(args.id));
                 },
-                async install(_, args, { fileManager }) {
+                async install(_, args, context) {
+                    const { fileManager, elasticSearch } = context;
                     try {
                         const settings = await fileManager.settings.getSettings();
 
-                        if (settings.installed) {
+                        if (settings && settings.installed) {
                             return new ErrorResponse({
                                 code: "FILES_INSTALL_ABORTED",
                                 message: "File Manager is already installed."
@@ -230,6 +232,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                             await fileManager.settings.createSettings(data);
                         } else {
                             await fileManager.settings.updateSettings(data);
+                        }
+
+                        // Create ES index if it doesn't already exist.
+                        const esIndex = defaults.es(context);
+                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                        if (!exists) {
+                            await elasticSearch.indices.create(esIndex);
                         }
 
                         return new Response(true);
