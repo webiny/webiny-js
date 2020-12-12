@@ -79,7 +79,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     }
 
     const form = loading ? null : data.formBuilder.form.data;
-    
+
     return (
         <DetailsContainer>
             {loading && <CircularProgress label={"Loading details..."} />}

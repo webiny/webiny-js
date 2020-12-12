@@ -8,7 +8,7 @@ export const updateLatestRevisionInListCache = (cache, revision) => {
 
     const { formBuilder } = cache.readQuery(gqlParams);
     const index = formBuilder.listForms.data.findIndex(item => item.id.startsWith(uniqueId));
-    
+
     cache.writeQuery({
         ...gqlParams,
         data: {

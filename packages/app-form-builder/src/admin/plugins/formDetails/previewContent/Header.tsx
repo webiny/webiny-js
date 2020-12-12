@@ -2,7 +2,12 @@ import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { PublishRevision, DeleteRevision, EditRevision, RevisionSelector } from "./HeaderComponents";
+import {
+    PublishRevision,
+    DeleteRevision,
+    EditRevision,
+    RevisionSelector
+} from "./HeaderComponents";
 import { FbFormDetailsPluginRenderParams, FbFormModel } from "@webiny/app-form-builder/types";
 
 const headerTitle = css({

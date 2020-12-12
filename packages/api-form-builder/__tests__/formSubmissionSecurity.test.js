@@ -103,7 +103,7 @@ describe("Forms Security Test", () => {
 
         // Create submissions
         // NOTE: response variables are unused but left here for debugging purposes!
-        
+
         const [a1] = await handlerA.createFormSubmission({
             form: formA.id,
             ...new MockSubmission("A1-")
