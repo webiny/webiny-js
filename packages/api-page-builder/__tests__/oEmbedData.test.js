@@ -17,7 +17,7 @@ describe("oEmbed test", () => {
                             source: {
                                 url: "https://www.youtube.com/watch?v=sF4HRS9nE3s"
                             },
-                            title: "Webiny Serverless Apps",
+                            title: "Webiny Serverless Apps"
                         },
                         error: null
                     }
