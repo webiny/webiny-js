@@ -1,5 +1,5 @@
 {
-	"name": "graphql-playground",
+	"name": "api-graphql-playground",
 	"version": "0.1.0",
 	"scripts": {
 		"build": "webiny run build"

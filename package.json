@@ -7,16 +7,8 @@
       "apps/site/code",
       "apps/theme",
       "api/code/graphqlPlayground",
-      "api/code/api",
+      "api/code/graphql",
       "api/code/fileManager/*"
-    ],
-    "nohoist": [
-      "**/inquirer/**",
-      "**/mime/**",
-      "**/@types/mocha",
-      "**/semver",
-      "**/slate",
-      "**/slate-react"
     ]
   },
   "contributors": [
@@ -190,6 +182,8 @@
     }
   },
   "resolutions": {
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "apollo-server-core": "2.17.0"
   }

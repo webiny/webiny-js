@@ -29,7 +29,7 @@ const rcpuOptions = [
     { id: "c", name: t`Request changes` }
 ];
 
-export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
+export const PageBuilderPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
         formData => {
             let newValue = [];
@@ -101,7 +101,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
 
             onChange(newValue);
         },
-        [securityGroup.id, value]
+        [parent.id, value]
     );
 
     const formData = useMemo(() => {
@@ -159,7 +159,7 @@ export const PageBuilderPermissions = ({ securityGroup, value, onChange }) => {
         }
 
         return formData;
-    }, [securityGroup.id]);
+    }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>

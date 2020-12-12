@@ -1,5 +1,6 @@
 {
   "extends": "../../tsconfig",
+  "include": ["./src", "./__tests__"],
   "references": [
     {
       "path": "../api-security"

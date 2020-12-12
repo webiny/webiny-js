@@ -1,10 +1,10 @@
 import md5 from "md5";
 import { hasPermission } from "@webiny/api-security";
 import {
-    CreateUser,
+    CreateUserInput,
     TenancyContext,
     SecurityIdentityProviderPlugin,
-    UpdateUser,
+    UpdateUserInput,
     User
 } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
@@ -168,7 +168,7 @@ const plugin: GraphQLSchemaPlugin = {
                 }
             },
             SecurityQuery: {
-                getUser: hasPermission("security.user.manage")(
+                getUser: hasPermission("security.user")(
                     async (_, args: { login: string }, context: Context) => {
                         const { login } = args;
 
@@ -201,7 +201,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                     return new Response(user);
                 },
-                listUsers: hasPermission("security.user.manage")(
+                listUsers: hasPermission("security.user")(
                     async (_, args, context: Context) => {
                         try {
                             const tenant = context.security.getTenant();
@@ -261,7 +261,7 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                updateCurrentUser: async (_, args: { data: UpdateUser }, context: Context) => {
+                updateCurrentUser: async (_, args: { data: UpdateUserInput }, context: Context) => {
                     const identity = context.security.getIdentity();
                     if (!identity) {
                         throw new Error("Not authorized!");
@@ -306,8 +306,8 @@ const plugin: GraphQLSchemaPlugin = {
                         });
                     }
                 },
-                createUser: hasPermission("security.user.manage")(
-                    async (_, { data }: { data: CreateUser }, context: Context) => {
+                createUser: hasPermission("security.user")(
+                    async (_, { data }: { data: CreateUserInput }, context: Context) => {
                         try {
                             const authPlugin = context.plugins.byName<
                                 SecurityIdentityProviderPlugin
@@ -342,10 +342,10 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                updateUser: hasPermission("security.user.manage")(
+                updateUser: hasPermission("security.user")(
                     async (
                         root,
-                        { data, login }: { login: string; data: UpdateUser },
+                        { data, login }: { login: string; data: UpdateUserInput },
                         context: Context
                     ) => {
                         try {
@@ -401,7 +401,7 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                deleteUser: hasPermission("security.user.manage")(
+                deleteUser: hasPermission("security.user")(
                     async (root, { login }: { login: string }, context: Context) => {
                         try {
                             const user = await context.security.users.getUser(login);

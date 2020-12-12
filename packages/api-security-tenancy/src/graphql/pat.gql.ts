@@ -8,11 +8,17 @@ import { SecurityContext } from "@webiny/api-security/types";
 
 type Context = HandlerContext<TenancyContext, SecurityContext>;
 
-const generateToken = (tokenLength = 48) =>
-    crypto
+const generateToken = (tokenLength = 48) => {
+    const token = crypto
         .randomBytes(Math.ceil(tokenLength / 2))
         .toString("hex")
-        .slice(0, tokenLength);
+        .slice(0, tokenLength - 1);
+
+    // Personal access tokens are prefixed with a letter "p" to make token verification easier.
+    // When authentication plugins kick in, they will be able to tell if they should handle the token by
+    // checking the first letter and either process the token or skip authentication completely.
+    return `p${token}`;
+};
 
 const plugin: GraphQLSchemaPlugin = {
     type: "graphql-schema",
@@ -108,7 +114,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const existingToken = await context.security.users.getAccessToken(
+                        const existingToken = await context.security.users.getPersonalAccessToken(
                             identity.id,
                             id
                         );
@@ -139,7 +145,7 @@ const plugin: GraphQLSchemaPlugin = {
                     }
 
                     try {
-                        const existingToken = await context.security.users.getAccessToken(
+                        const existingToken = await context.security.users.getPersonalAccessToken(
                             identity.id,
                             id
                         );

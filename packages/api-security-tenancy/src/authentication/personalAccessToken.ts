@@ -12,12 +12,12 @@ export default ({ identityType }) => {
             const { headers } = context.http;
             const header = headers["Authorization"] || headers["authorization"];
             const token = header ? header.split(" ").pop() : null;
-            if (!token || token.length !== 48) {
+            if (!token || !token.startsWith("p")) {
                 return;
             }
 
             // Try loading a User using the value from header
-            const user = await context.security.users.getUserByPAT(token);
+            const user = await context.security.users.getUserByPersonalAccessToken(token);
 
             if (user) {
                 return new SecurityIdentity({
