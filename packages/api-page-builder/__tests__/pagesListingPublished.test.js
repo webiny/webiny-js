@@ -50,9 +50,6 @@ describe("listing published pages", () => {
     });
 
     test("sorting", async () => {
-        // List should show all five pages.
-        let response;
-
         // 1. Check if all were returned and sorted `createdOn: asc`.
         await until(
             () => listPublishedPages({ sort: { createdOn: "desc" } }),
