@@ -130,6 +130,7 @@ export default ({ permissions, identity, tenant } = {}) => {
             type: "api-file-manager-storage",
             name: "api-file-manager-storage",
             async upload(args) {
+                // TODO: use tmp OS directory
                 const key = path.join(__dirname, args.name);
 
                 fs.writeFileSync(key, args.buffer);
