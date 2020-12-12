@@ -11,7 +11,7 @@ const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
     name: string({ validation: validation.create("required,minLength:3") }),
     slug: string({ validation: validation.create("required,minLength:3") }),
-    description: string({ validation: validation.create("required,minLength:10") }),
+    description: string({ validation: validation.create("required,minLength:3") }),
     permissions: object({
         list: true,
         validation: validation.create("required")
