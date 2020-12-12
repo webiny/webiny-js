@@ -9,7 +9,8 @@ describe("listing published pages", () => {
         listPublishedPages,
         updatePage,
         logsDb,
-        until
+        until,
+        sleep
     } = useGqlHandler();
 
     let initiallyCreatedPagesIds;
@@ -571,6 +572,11 @@ describe("listing published pages", () => {
     });
 
     test("ensure we don't overload categories when listing pages", async () => {
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+        );
+
         // Let's use the `id` of the last log as the cursor.
         let [logs] = await logsDb.readLogs();
         let { id: cursor } = logs.pop();
