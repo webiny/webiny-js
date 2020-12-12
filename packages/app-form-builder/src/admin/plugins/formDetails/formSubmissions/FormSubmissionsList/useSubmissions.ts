@@ -46,7 +46,7 @@ export default form => {
 
     useEffect(() => {
         loadSubmissions();
-    }, [state.page, state.sort]);
+    }, [form.id, state.page, state.sort]);
 
     const [exportFormSubmission] = useMutation(GQL.EXPORT_FORM_SUBMISSIONS);
     const exportSubmissions = useCallback(async () => {

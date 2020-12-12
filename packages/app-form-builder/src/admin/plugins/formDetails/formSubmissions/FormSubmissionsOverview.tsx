@@ -24,7 +24,7 @@ const ContentWrapper = styled("div")({
     boxSizing: "border-box"
 });
 
-const FormSubmissionsOverview = ({ form }: Props) => {
+export const FormSubmissionsOverview = ({ form }: Props) => {
     return (
         <Block title="Overview">
             <ContentWrapper>
@@ -44,5 +44,3 @@ const FormSubmissionsOverview = ({ form }: Props) => {
         </Block>
     );
 };
-
-export default FormSubmissionsOverview;

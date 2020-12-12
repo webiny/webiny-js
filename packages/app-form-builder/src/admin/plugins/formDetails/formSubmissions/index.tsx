@@ -2,14 +2,15 @@ import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
-import FormSubmissionsOverview from "./FormSubmissionsOverview";
-import FormSubmissionsList from "./FormSubmissionsList/index";
 import { CircularProgress } from "@webiny/ui/Progress";
 import {
     FbFormDetailsPluginType,
     FbFormDetailsSubmissionsPlugin
 } from "@webiny/app-form-builder/types";
 import { i18n } from "@webiny/app/i18n";
+import { FormSubmissionsOverview } from "./FormSubmissionsOverview";
+import { FormSubmissionsList } from "./FormSubmissionsList";
+
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 
 const RenderBlock = styled("div")({
