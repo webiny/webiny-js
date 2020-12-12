@@ -80,22 +80,20 @@ const plugin: GraphQLSchemaPlugin = {
                         }
                     }
                 ),
-                listGroups: hasPermission("security.group")(
-                    async (_, args, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const groupList = await context.security.groups.listGroups(tenant);
+                listGroups: hasPermission("security.group")(async (_, args, context: Context) => {
+                    try {
+                        const tenant = context.security.getTenant();
+                        const groupList = await context.security.groups.listGroups(tenant);
 
-                            return new ListResponse(groupList);
-                        } catch (e) {
-                            return new ListErrorResponse({
-                                message: e.message,
-                                code: e.code,
-                                data: e.data || null
-                            });
-                        }
+                        return new ListResponse(groupList);
+                    } catch (e) {
+                        return new ListErrorResponse({
+                            message: e.message,
+                            code: e.code,
+                            data: e.data || null
+                        });
                     }
-                )
+                })
             },
             SecurityMutation: {
                 createGroup: hasPermission("security.group")(

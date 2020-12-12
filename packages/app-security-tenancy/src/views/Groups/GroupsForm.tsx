@@ -34,10 +34,10 @@ const GroupForm = () => {
         variables: { slug },
         skip: !slug,
         onCompleted: data => {
-            if(!data) {
+            if (!data) {
                 return;
             }
-            
+
             const { error } = data.security.group;
             if (error) {
                 history.push("/security/groups");
