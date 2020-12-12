@@ -39,11 +39,6 @@ const UpdateDataModel = withFields({
 
 const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
-// For now we just make the title lower case.
-const getSortableTitle = (title: string) => {
-    return title.toLowerCase();
-};
-
 const UpdateSettingsModel = withFields({
     general: fields({
         value: {},
@@ -146,7 +141,7 @@ const getESPageData = (context: PbContext, page) => {
         category: page.category,
         version: page.version,
         title: page.title,
-        titleLC: getSortableTitle(page.title),
+        titleLC: page.title.toLowerCase(),
         url: page.url,
         status: page.status,
         locked: page.locked,
@@ -172,6 +167,22 @@ const getESLatestPageData = (context: PbContext, page) => {
 
 const getESPublishedPageData = (context: PbContext, page) => {
     return { ...getESPageData(context, page), published: true };
+};
+
+const getESUpdateLatestPageData = updateData => {
+    return {
+        tags: updateData?.settings?.general?.tags || [],
+        snippet: updateData?.settings?.general?.snippet || null,
+        title: updateData.title,
+        titleLC: updateData?.title?.toLowerCase(),
+        url: updateData.url,
+        savedOn: updateData.savedOn,
+
+        // Save some images that could maybe be used on listing pages.
+        images: {
+            general: updateData?.settings?.general?.image
+        }
+    };
 };
 
 const plugin: ContextPlugin<PbContext> = {
@@ -557,19 +568,7 @@ const plugin: ContextPlugin<PbContext> = {
                             ...ES_DEFAULTS(),
                             id: `L#${uniqueId}`,
                             body: {
-                                doc: {
-                                    tags: updateData?.settings?.general?.tags || [],
-                                    snippet: updateData?.settings?.general?.snippet || null,
-                                    title: updateData.title,
-                                    titleLC: getSortableTitle(updateData.title),
-                                    url: updateData.url,
-                                    savedOn: updateData.savedOn,
-
-                                    // Save some images that could maybe be used on listing pages.
-                                    images: {
-                                        general: updateData?.settings?.general?.image
-                                    }
-                                }
+                                doc: getESUpdateLatestPageData(updateData)
                             }
                         });
                     }
