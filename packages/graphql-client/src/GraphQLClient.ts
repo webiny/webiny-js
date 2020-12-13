@@ -36,7 +36,6 @@ export type MutationArgs<TVariables = Record<string, any>> = {
 
 export default class GraphQLClient {
     configuration: GraphQLClientConfiguration;
-    cache: GraphQLClientCache;
     constructor(configuration: GraphQLClientConfiguration) {
         this.configuration = configuration;
     }
