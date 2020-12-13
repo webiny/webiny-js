@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import { set } from "dot-prop-immutable";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import startCase from "lodash/startCase";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { useEventActionHandler } from "../../../../editor";
@@ -14,7 +15,18 @@ import SelectField from "../components/SelectField";
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
-import BackgroundPositionSelector from "./BackgroundPositionSelector";
+
+const positions = [
+    "top left",
+    "top",
+    "top right",
+    "center left",
+    "center",
+    "center right",
+    "bottom left",
+    "bottom center",
+    "bottom right"
+];
 
 const imageSelect = css({
     width: "100%"
@@ -110,16 +122,19 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
                                 <option value="tileVertically">Tile Vertically</option>
                             </SelectField>
                         </Wrapper>
-
-                        <Grid className={classes.simpleGrid}>
-                            <Cell span={12}>
-                                <BackgroundPositionSelector
-                                    disabled={!backgroundImageSrc}
-                                    value={backgroundImagePosition}
-                                    onChange={setPosition}
-                                />
-                            </Cell>
-                        </Grid>
+                        <Wrapper label={"Position"} containerClassName={classes.simpleGrid}>
+                            <SelectField
+                                value={backgroundImagePosition}
+                                onChange={setPosition}
+                                disabled={!backgroundImageSrc}
+                            >
+                                {positions.map(position => (
+                                    <option key={position} value={position}>
+                                        {startCase(position)}
+                                    </option>
+                                ))}
+                            </SelectField>
+                        </Wrapper>
                     </React.Fragment>
                 )}
             </ContentWrapper>
