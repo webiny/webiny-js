@@ -62,13 +62,13 @@ export default (): Plugin[] => {
                         settings: {
                             horizontalAlign: "center",
                             margin: {
-                                desktop: { all: 0 },
-                                mobile: { top: 0, left: 0, right: 0, bottom: 15 },
+                                desktop: { all: "0px" },
+                                mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
                                 advanced: true
                             },
                             padding: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             }
                         }
                     },

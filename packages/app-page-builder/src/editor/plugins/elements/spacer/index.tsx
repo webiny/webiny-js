@@ -37,8 +37,8 @@ export default (): PbEditorPageElementPlugin => {
                 data: {
                     settings: {
                         height: INIT_HEIGHT,
-                        margin: { desktop: { all: 0 } },
-                        padding: { desktop: { all: 0 } }
+                        margin: { desktop: { all: "0px" } },
+                        padding: { desktop: { all: "0px" } }
                     }
                 },
 

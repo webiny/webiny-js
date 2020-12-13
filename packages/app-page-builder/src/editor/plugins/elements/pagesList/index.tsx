@@ -47,12 +47,12 @@ export default (): PluginCollection => {
                         component: "default",
                         settings: {
                             margin: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             },
                             padding: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             }
                         }
                     },

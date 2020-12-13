@@ -42,13 +42,13 @@ const cellPlugin: PbEditorPageElementPlugin = {
             data: {
                 settings: {
                     margin: {
-                        mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                        desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                        mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
+                        desktop: { top: "25px", left: "0px", right: "0px", bottom: "25px" },
                         advanced: true
                     },
                     padding: {
-                        mobile: { all: 10 },
-                        desktop: { all: 0 }
+                        mobile: { all: "10px" },
+                        desktop: { all: "0px" }
                     },
                     grid: {
                         size: options.data?.settings?.grid?.size || 1

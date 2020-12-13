@@ -56,13 +56,13 @@ export default (): PbEditorPageElementPlugin => {
                     text: createInitialEditorValue(previewText, content.typography || "paragraph"),
                     settings: {
                         margin: {
-                            mobile: { top: 0, left: 0, right: 0, bottom: 15 },
-                            desktop: { top: 0, left: 0, right: 0, bottom: 25 },
+                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
+                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "25px" },
                             advanced: true
                         },
                         padding: {
-                            desktop: { all: 0 },
-                            mobile: { all: 0 }
+                            desktop: { all: "0px" },
+                            mobile: { all: "0px" }
                         }
                     }
                 },

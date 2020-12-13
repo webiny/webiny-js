@@ -48,8 +48,8 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
                 elements: [],
                 data: {
                     settings: {
-                        margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                        padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                        margin: { desktop: { all: "0px" }, mobile: { all: "0px" } },
+                        padding: { desktop: { all: "0px" }, mobile: { all: "0px" } }
                     }
                 },
                 ...options
