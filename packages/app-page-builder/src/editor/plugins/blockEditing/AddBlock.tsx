@@ -5,11 +5,12 @@ import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
 
+const SIDEBAR_WIDTH = 300;
 const BottomRight = styled("div")({
     position: "fixed",
     zIndex: 25,
     bottom: 20,
-    right: 20
+    right: 20 + SIDEBAR_WIDTH
 });
 
 const AddBlock = () => {
