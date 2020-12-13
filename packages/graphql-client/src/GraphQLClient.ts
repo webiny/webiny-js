@@ -90,7 +90,7 @@ export default class GraphQLClient {
         return this.configuration.cache;
     }
 
-    private async executeRequest(
+    async executeRequest(
         configuration: GraphQLClientConfiguration,
         args: QueryArgs | MutationArgs
     ) {
