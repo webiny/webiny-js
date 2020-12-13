@@ -1,2 +1,3 @@
-export { default as GraphQLClient } from "./GraphQLClient";
-export { default as InMemoryCache } from "./InMemoryCache";
+import GraphQLClient from "./GraphQLClient";
+
+export default GraphQLClient;
