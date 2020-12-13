@@ -1,4 +1,4 @@
-import { InMemoryCache } from "@webiny/graphql-client";
+import InMemoryCache from "@webiny/graphql-client/InMemoryCache";
 import getI18NInformation from "./mocks/getI18NInformation.mock";
 
 test("must properly cache results from queries that included args", async () => {
