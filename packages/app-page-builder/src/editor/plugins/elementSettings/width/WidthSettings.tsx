@@ -8,42 +8,76 @@ import { activeElementWithChildrenSelector } from "../../../../editor/recoil/mod
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
-import InputField from "../components/InputField";
+import SpacingPicker from "../components/SpacingPicker";
+import { classes } from "../components/StyledComponents";
 
-const classes = {
-    grid: css({
-        "&.mdc-layout-grid": {
-            padding: 0,
-            marginBottom: 24
-        }
-    }),
-    icon: css({
-        "& .mdc-list-item__graphic > svg": {
-            transform: "rotate(90deg)"
-        }
-    }),
-    inputWrapper: css({
-        "& .mdc-text-field": {
-            width: "100% !important",
-            margin: "0px !important"
-        }
-    })
-};
+const rightCellStyle = css({
+    justifySelf: "end"
+});
 
-const validateWidth = value => {
+const spacingPickerStyle = css({
+    width: "120px",
+    "& .inner-wrapper": {
+        display: "flex"
+    }
+});
+
+const widthUnitOptions = [
+    {
+        label: "%",
+        value: "%"
+    },
+    {
+        label: "px",
+        value: "px"
+    },
+    {
+        label: "em",
+        value: "em"
+    },
+    {
+        label: "vw",
+        value: "vw"
+    },
+    {
+        label: "auto",
+        value: "auto"
+    }
+];
+
+enum WidthUnits {
+    percentage = "%",
+    px = "px",
+    em = "em",
+    vw = "vw",
+    auto = "auto"
+}
+
+const validateWidth = (value: string | undefined) => {
     if (!value) {
         return null;
     }
+    const parsedValue = parseInt(value);
 
-    if (isNaN(parseInt(value))) {
+    if (isNaN(parsedValue) && value !== WidthUnits.auto) {
         throw Error("Enter a valid number!");
     }
 
-    if (value.endsWith("%") || value.endsWith("px")) {
+    if (parsedValue < 0) {
+        throw Error("Value can't be negative!");
+    }
+
+    if (
+        value.endsWith(WidthUnits.percentage) ||
+        value.endsWith(WidthUnits.px) ||
+        value.endsWith(WidthUnits.em) ||
+        value.endsWith(WidthUnits.vw) ||
+        value.endsWith(WidthUnits.auto)
+    ) {
         return true;
     }
 
-    throw Error("Specify % or px!");
+    throw Error("Specify a valid value!");
 };
 
 const Settings: React.FunctionComponent = () => {
@@ -77,9 +111,22 @@ const Settings: React.FunctionComponent = () => {
         <Accordion title={"Width"}>
             <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
-                    <Wrapper label={"Width"} containerClassName={classes.grid}>
+                    <Wrapper
+                        label={"Width"}
+                        containerClassName={classes.simpleGrid}
+                        rightCellClassName={rightCellStyle}
+                    >
                         <Bind name={"value"} validators={validateWidth}>
-                            <InputField />
+                            {({ value, onChange, validation }) => (
+                                <SpacingPicker
+                                    value={value}
+                                    onChange={onChange}
+                                    validation={validation}
+                                    options={widthUnitOptions}
+                                    className={spacingPickerStyle}
+                                    useDefaultStyle={false}
+                                />
+                            )}
                         </Bind>
                     </Wrapper>
                 )}
