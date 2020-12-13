@@ -18,22 +18,12 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-export type PbElementDataSettingsPaddingUnitType = "px" | "%" | "em" | "vh" | "vw";
-export type PbElementDataSettingsMarginUnitType = PbElementDataSettingsPaddingUnitType | "auto";
-
-export type PbElementDataSettingsSpacingUnitType<T> = {
-    all?: T;
-    top?: T;
-    right?: T;
-    bottom?: T;
-    left?: T;
-};
 export type PbElementDataSettingsSpacingValueType = {
-    all?: number;
-    top?: number;
-    right?: number;
-    bottom?: number;
-    left?: number;
+    all?: string;
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
 };
 export type PbElementDataSettingsBackgroundType = {
     color?: string;
@@ -47,21 +37,13 @@ export type PbElementDataSettingsBackgroundType = {
 };
 export type PbElementDataSettingsMarginType = {
     advanced?: boolean;
-    mobile?: PbElementDataSettingsSpacingValueType & {
-        units: PbElementDataSettingsSpacingUnitType<PbElementDataSettingsMarginUnitType>;
-    };
-    desktop?: PbElementDataSettingsSpacingValueType & {
-        units: PbElementDataSettingsSpacingUnitType<PbElementDataSettingsMarginUnitType>;
-    };
+    mobile?: PbElementDataSettingsSpacingValueType;
+    desktop?: PbElementDataSettingsSpacingValueType;
 };
 export type PbElementDataSettingsPaddingType = {
     advanced?: boolean;
-    mobile?: PbElementDataSettingsSpacingValueType & {
-        units: PbElementDataSettingsSpacingUnitType<PbElementDataSettingsPaddingUnitType>;
-    };
-    desktop?: PbElementDataSettingsSpacingValueType & {
-        units: PbElementDataSettingsSpacingUnitType<PbElementDataSettingsPaddingUnitType>;
-    };
+    mobile?: PbElementDataSettingsSpacingValueType;
+    desktop?: PbElementDataSettingsSpacingValueType;
 };
 export type PbElementDataSettingsBorderType = {
     width?:
