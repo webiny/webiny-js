@@ -124,6 +124,7 @@ const UpdateSettingsModel = withFields({
 const TYPE_PAGE = "pb.page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
+const TYPE_PAGE_PUBLISHED_URL = TYPE_PAGE + ".p.url";
 
 const PERMISSION_NAME = TYPE_PAGE;
 
@@ -193,6 +194,7 @@ const plugin: ContextPlugin<PbContext> = {
         const PK_PAGE = () => `${getPKPrefix(context)}P`;
         const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
+        const PK_PAGE_PUBLISHED_URL = () => PK_PAGE_PUBLISHED() + "#URL";
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
@@ -818,6 +820,22 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     if (publishedPageData) {
+                        // First things first - let's just try to load the published page with the given page's URL.
+                        // If it exists, we only allow to proceed if published page's `id` is the same.
+                        const [[publishedPageByUrl]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_PUBLISHED_URL(), SK: page.url },
+                            limit: 1
+                        });
+
+                        if (publishedPageByUrl && publishedPageByUrl.id !== page.id) {
+                            throw new Error(
+                                "Cannot publish page because the URL is already taken by another published page.",
+                                "CANNOT_PUBLISH_URL_TAKEN",
+                                { publishedPage: publishedPageByUrl.id }
+                            );
+                        }
+
                         // If there is a `published` page already, we need to set it as `unpublished`. We need to
                         // execute two updates - update the previously published page's status and the published
                         // page entry (PK_PAGE_PUBLISHED()).
@@ -825,7 +843,7 @@ const plugin: ContextPlugin<PbContext> = {
                         // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
                         // page's data so that we can update its status within a batch operation. If, hopefully,
                         // they introduce a true update batch operation, remove this `read` call.
-                        // TODO: test this! publishing a new revision with a revision that has already been published.
+
                         const [[previouslyPublishedPage]] = await db.read<Page>({
                             ...defaults.db,
                             query: { PK: PK_PAGE(), SK: publishedPageData.id },
@@ -843,29 +861,53 @@ const plugin: ContextPlugin<PbContext> = {
                             data: omit(["PK", "SK"], previouslyPublishedPage)
                         });
 
-                        batch.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId
-                            },
-                            data: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId,
-                                TYPE: TYPE_PAGE_PUBLISHED,
-                                id: pageId
-                            }
-                        });
+                        batch
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId
+                                },
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED,
+                                    id: pageId
+                                }
+                            })
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: pageUniqueId
+                                },
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    url: page.url
+                                }
+                            });
                     } else {
-                        batch.create({
-                            ...defaults.db,
-                            data: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId,
-                                TYPE: TYPE_PAGE_PUBLISHED,
-                                id: pageId
-                            }
-                        });
+                        batch
+                            .create({
+                                ...defaults.db,
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED,
+                                    id: pageId
+                                }
+                            })
+                            .create({
+                                ...defaults.db,
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    url: page.url
+                                }
+                            });
                     }
 
                     await batch.execute();
