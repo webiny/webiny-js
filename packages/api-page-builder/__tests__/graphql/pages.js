@@ -1,6 +1,7 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
+        editor
         category {
             slug
         }
@@ -8,9 +9,7 @@ export const DATA_FIELD = /* GraphQL */ `
         title
         url
         fullUrl
-        # settings
         content
-        snippet
         savedOn
         status
         locked
@@ -18,6 +17,43 @@ export const DATA_FIELD = /* GraphQL */ `
         error
         notFound
         locked
+        revisions {
+            id
+            status
+            locked
+            version
+        }
+        settings {
+            general {
+                snippet
+                tags
+                layout
+                image {
+                    id
+                    src
+                }
+            }
+            social {
+                meta {
+                    property
+                    content
+                }
+                title
+                description
+                image {
+                    id
+                    src
+                }
+            }
+            seo {
+                title
+                description
+                meta {
+                    name
+                    content
+                }
+            }
+        }
         createdFrom
         createdOn
         createdBy {
@@ -30,12 +66,22 @@ export const DATA_FIELD = /* GraphQL */ `
 const LIST_DATA_FIELD = /* GraphQL */ `
     {
         id
+        editor
         category {
             slug
         }
         status
         title
+        snippet
+        tags
+        images {
+            general {
+                id
+                src
+            }
+        }
         url
+        fullUrl
         status
         locked
         publishedOn
@@ -123,11 +169,35 @@ export const REQUEST_CHANGES = /* GraphQL */ `
     }
 `;
 
-export const LIST_PAGES = /* GraphQL */ `
-    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+export const OEMBED_DATA = /* GraphQL */ `
+    query GetOEmbedData($url: String!, $width: String, $height: String) {
         pageBuilder {
-            listPages(where: $where, limit: $limit, page: $page, sort: $sort) {
+            oembedData(url: $url, width: $width, height: $height) {
+                data
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
+
+export const LIST_PAGES = /* GraphQL */ `
+    query ListPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput, $search: PbListPagesSearchInput) {
+        pageBuilder {
+            listPages(where: $where, limit: $limit, page: $page, sort: $sort, search: $search) {
                 data ${LIST_DATA_FIELD}
+                meta {
+                    page
+                    limit
+                    totalCount
+                    totalPages
+                    from
+                    to
+                    nextPage
+                    previousPage
+                }
                 error ${ERROR_FIELD}
             }
         }
@@ -135,10 +205,31 @@ export const LIST_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
-    query ListPublishedPages($where: PbListPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
         pageBuilder {
             listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort) {
                 data ${LIST_DATA_FIELD}
+                error ${ERROR_FIELD}
+                meta {
+                    page
+                    limit
+                    totalCount
+                    totalPages
+                    from
+                    to
+                    nextPage
+                    previousPage
+                }
+            }
+        }
+    }
+`;
+
+export const LIST_PAGE_TAGS = /* GraphQL */ `
+    query ListPageTags($search: PbListPageTagsSearchInput!) {
+        pageBuilder {
+            listPageTags(search: $search) {
+                data
                 error ${ERROR_FIELD}
             }
         }
@@ -160,7 +251,10 @@ export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
-                data ${DATA_FIELD}
+                data {
+                    page ${DATA_FIELD}
+                    latestPage ${DATA_FIELD}
+                }
                 error ${ERROR_FIELD}
             }
         }

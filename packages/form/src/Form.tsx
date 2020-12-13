@@ -10,13 +10,15 @@ export type FormChildrenFunctionParamsSubmit = (
     event?: React.SyntheticEvent<any, any>
 ) => Promise<void>;
 
+export type FormSetValue = (name: string, value: any) => void;
+
 export type FormChildrenFunctionParams = {
     data: { [key: string]: any };
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     form: Form;
     submit: FormChildrenFunctionParamsSubmit;
     Bind: BindComponent;
-    setValue: (name: string, value: any) => void;
+    setValue: FormSetValue;
 };
 
 export type FormChildrenFunction = (params: FormChildrenFunctionParams) => React.ReactElement;

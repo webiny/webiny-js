@@ -18,7 +18,7 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const UPDATE_SETTINGS = /* GraphQL */ `
-    mutation UpdateSettings($data: FormsSettingsInput) {
+    mutation UpdateSettings($data: FbSettingsInput) {
         formBuilder {
             updateSettings(data: $data) {
                 data ${DATA_FIELD}

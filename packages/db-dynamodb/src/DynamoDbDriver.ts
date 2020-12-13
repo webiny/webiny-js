@@ -7,6 +7,15 @@ type ConstructorArgs = {
     documentClient?: DocumentClient;
 };
 
+const LOG_KEYS = [
+    {
+        primary: true,
+        unique: true,
+        name: "primary",
+        fields: [{ name: "PK" }, { name: "SK" }]
+    }
+];
+
 class DynamoDbDriver implements DbDriver {
     batchProcesses: Record<string, BatchProcess>;
     documentClient: DocumentClient;
@@ -172,6 +181,33 @@ class DynamoDbDriver implements DbDriver {
         }
 
         return [[], { response: batchProcess.response }];
+    }
+
+    async createLog({ id, operation, data, table }): Promise<Result> {
+        await this.create({
+            table: table,
+            keys: LOG_KEYS,
+            data: {
+                PK: "log",
+                SK: id,
+                id,
+                operation,
+                ...data
+            }
+        });
+
+        return [true, {}];
+    }
+
+    async readLogs<T>({ table }) {
+        return this.read<T>({
+            table,
+            keys: LOG_KEYS,
+            query: {
+                PK: "log",
+                SK: { $gte: " " }
+            }
+        });
     }
 
     getBatchProcess(__batch): BatchProcess {

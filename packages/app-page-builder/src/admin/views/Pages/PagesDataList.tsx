@@ -47,24 +47,42 @@ const sorters = [
     }
 ];
 
-const PageBuilderPagesDataList = () => {
+const PagesDataList = () => {
     const { history, location } = useRouter();
+    const query = new URLSearchParams(location.search);
 
     const [where, setWhere] = useState({});
-    const [sort, setSort] = useState();
+    const [sort, setSort] = useState({ createdOn: "desc" });
     const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(1);
+    const search = {
+        query: query.get("search") || undefined
+    };
 
-    const listQuery = useQuery(LIST_PAGES, { variables: { where, sort, limit, page } });
+    const variables = {
+        where,
+        sort,
+        limit,
+        page,
+        search
+    };
+
+    const listQuery = useQuery(LIST_PAGES, {
+        fetchPolicy: "network-only",
+        variables
+    });
+
+    // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
+    localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
 
     const data = listQuery?.data?.pageBuilder?.listPages?.data || [];
+    const meta = listQuery?.data?.pageBuilder?.listPages?.meta || {};
     const selectedPageId = new URLSearchParams(location.search).get("id");
 
     const categoriesQuery = useQuery(LIST_CATEGORIES);
-    const categoriesData = categoriesQuery?.data?.pageBuilder?.listCategories?.data || [];
+    const categoriesData = categoriesQuery?.data?.pageBuilder.listCategories.data || [];
 
     const loading = [listQuery].find(item => item.loading);
-    const query = new URLSearchParams(location.search);
 
     return (
         <DataList
@@ -73,6 +91,8 @@ const PageBuilderPagesDataList = () => {
             pagination={{
                 perPageOptions: [10, 25, 50],
                 setPerPage: setLimit,
+                hasNextPage: meta.nextPage,
+                hasPreviousPage: meta.previousPage,
                 setNextPage: () => setPage(page + 1),
                 setPreviousPage: () => setPage(page - 1)
             }}
@@ -83,7 +103,7 @@ const PageBuilderPagesDataList = () => {
             filters={
                 <MenuItem>
                     <Form
-                        data={{ status: "all", category: categoriesData?.[0]?.slug }}
+                        data={{ status: "all" }}
                         onChange={({ status, category }) => {
                             const where = { category, status: undefined };
                             if (status !== "all") {
@@ -143,7 +163,9 @@ const PageBuilderPagesDataList = () => {
                                 }}
                             >
                                 {page.title}
-                                <ListTextOverline>{page.category.name}</ListTextOverline>
+                                <ListTextOverline>
+                                    {page.category?.name || t`Unknown category`}
+                                </ListTextOverline>
                                 {page.createdBy && (
                                     <ListItemTextSecondary>
                                         Created by: {page.createdBy.firstName || "N/A"}. Last
@@ -164,4 +186,4 @@ const PageBuilderPagesDataList = () => {
     );
 };
 
-export default PageBuilderPagesDataList;
+export default PagesDataList;

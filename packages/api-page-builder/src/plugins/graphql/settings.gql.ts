@@ -1,8 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { hasPermission } from "@webiny/api-security";
-import { compose } from "@webiny/handler-graphql";
 import { PbContext } from "@webiny/api-page-builder/types";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
@@ -88,35 +85,28 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbSettingsResponse: {
                 id: (_, args, context) => {
-                    const { i18nContent } = context;
-                    return `${i18nContent?.locale?.code}#pb-settings`;
+                    return context.pageBuilder.settings.getSettingsCacheKey();
                 }
             },
             PbQuery: {
-                getSettings: compose(
-                    hasPermission("pb.settings"),
-                    hasI18NContentPermission()
-                )(async (_, args, context: PbContext) => {
+                getSettings: async (_, args, context) => {
                     try {
-                        const { settings } = context;
-                        return new Response(await settings.get());
+                        const { pageBuilder } = context;
+                        return new Response(await pageBuilder.settings.get());
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
-                })
+                }
             },
             PbMutation: {
-                updateSettings: compose(
-                    hasPermission("pb.settings"),
-                    hasI18NContentPermission()
-                )(async (_, args, context: PbContext) => {
+                updateSettings: async (_, args, context) => {
                     try {
-                        const { settings } = context;
-                        return new Response(await settings.update(args.data));
+                        const { pageBuilder } = context;
+                        return new Response(await pageBuilder.settings.update(args.data));
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
-                })
+                }
             }
         }
     }

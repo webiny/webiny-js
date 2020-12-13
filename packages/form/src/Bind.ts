@@ -81,7 +81,7 @@ const createBind = (form: Form) => {
             return React.cloneElement(children, { ...children.props, ...newProps });
         }
 
-        return children(newProps);
+        return typeof children === "function" ? children(newProps) : null;
     };
 
     return Bind;

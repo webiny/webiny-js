@@ -38,10 +38,6 @@ export const handler = createHandler(
     formBuilderPlugins(),
     headlessCmsPlugins(),
     headlessCmsHandler({
-        debug: process.env.DEBUG,
-        server: {
-            introspection: process.env.GRAPHQL_INTROSPECTION,
-            playground: process.env.GRAPHQL_PLAYGROUND
-        }
+        debug: process.env.DEBUG
     })
 );

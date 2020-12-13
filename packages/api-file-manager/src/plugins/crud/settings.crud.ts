@@ -8,26 +8,15 @@ export const SETTINGS_KEY = "file-manager";
 const CreateDataModel = withFields({
     key: setOnce()(string({ value: SETTINGS_KEY })),
     installed: boolean({ value: false }),
-    uploadMinFileSize: number({
-        value: 0,
-        validation: validation.create("required,gte:0")
-    }),
-    uploadMaxFileSize: number({
-        value: 26214401,
-        validation: validation.create("required")
-    }),
+    uploadMinFileSize: number({ value: 0, validation: validation.create("gte:0") }),
+    uploadMaxFileSize: number({ value: 26214401 }),
     srcPrefix: onSet(value => {
         // Make sure srcPrefix always ends with forward slash.
         if (typeof value === "string") {
             return value.endsWith("/") ? value : value + "/";
         }
         return value;
-    })(
-        string({
-            validation: validation.create("required"),
-            value: "/files/"
-        })
-    )
+    })(string({ value: "/files/" }))
 })();
 
 const UpdateDataModel = withFields({

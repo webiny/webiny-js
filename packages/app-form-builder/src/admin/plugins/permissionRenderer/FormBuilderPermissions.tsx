@@ -16,7 +16,6 @@ const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 const FB = "fb";
 const FB_FULL_ACCESS = `${FB}.*`;
 const FB_ACCESS_FORM = `${FB}.form`;
-const FB_ACCESS_SUBMISSION = `${FB}.submission`;
 const FB_SETTINGS = `${FB}.settings`;
 
 const FULL_ACCESS = "full";
@@ -50,7 +49,8 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                 const permission = {
                     name: FB_ACCESS_FORM,
                     own: false,
-                    permissions: undefined
+                    permissions: undefined,
+                    submissions: "no"
                 };
 
                 if (data.formAccessLevel === "own") {
@@ -58,21 +58,9 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                 } else {
                     permission.permissions = data.formPermissions;
                 }
-                newValue.push(permission);
-            }
 
-            // Submission permission
-            if (data.submissionAccessLevel && data.submissionAccessLevel !== NO_ACCESS) {
-                const permission = {
-                    name: FB_ACCESS_SUBMISSION,
-                    own: false,
-                    permissions: undefined
-                };
-
-                if (data.submissionAccessLevel === "own") {
-                    permission.own = true;
-                } else {
-                    permission.permissions = data.submissionPermissions;
+                if (data.submissionPermissions !== NO_ACCESS) {
+                    permission.submissions = "all";
                 }
 
                 newValue.push(permission);
@@ -108,10 +96,9 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
         const data = {
             accessLevel: CUSTOM_ACCESS,
             formAccessLevel: NO_ACCESS,
-            submissionAccessLevel: NO_ACCESS,
-            settingsAccessLevel: NO_ACCESS,
             formPermissions: undefined,
-            submissionPermissions: undefined
+            submissionPermissions: NO_ACCESS,
+            settingsAccessLevel: NO_ACCESS
         };
 
         const formPermission = permissions.find(item => item.name === FB_ACCESS_FORM);
@@ -120,14 +107,8 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
             if (data.formAccessLevel === FULL_ACCESS) {
                 data.formPermissions = formPermission.permissions;
             }
-        }
-
-        const submissionPermission = permissions.find(item => item.name === FB_ACCESS_SUBMISSION);
-
-        if (submissionPermission) {
-            data.submissionAccessLevel = submissionPermission.own ? "own" : FULL_ACCESS;
-            if (data.formAccessLevel === FULL_ACCESS) {
-                data.submissionPermissions = submissionPermission.permissions;
+            if (formPermission.submissions === "all") {
+                data.submissionPermissions = FULL_ACCESS;
             }
         }
 
@@ -167,29 +148,35 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                                     </Cell>
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Access Level`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
+                                            <Cell span={12}>
                                                 <Bind name={`formAccessLevel`}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
-                                                        <option value={"full"}>{t`All`}</option>
+                                                    <Select
+                                                        label={t`Access Scope`}
+                                                        description={
+                                                            "The scope of forms a user can access."
+                                                        }
+                                                    >
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`All forms`}</option>
                                                         <option
                                                             value={"own"}
-                                                        >{t`Only the one they created`}</option>
+                                                        >{t`Only forms created by the user`}</option>
                                                     </Select>
                                                 </Bind>
                                             </Cell>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Permissions`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
+                                            <Cell span={12}>
                                                 <Bind name={`formPermissions`}>
                                                     <Select
-                                                        label={t`Permissions`}
+                                                        label={t`Primary Actions`}
+                                                        description={
+                                                            "Primary actions a user can perform on the forms."
+                                                        }
                                                         disabled={
-                                                            data[`formAccessLevel`] !== "full"
+                                                            data.formAccessLevel !== FULL_ACCESS
                                                         }
                                                     >
                                                         <option value={"r"}>{t`Read`}</option>
@@ -208,55 +195,22 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                                                     </Select>
                                                 </Bind>
                                             </Cell>
-                                        </Grid>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>Form Submissions</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Access Level`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={`submissionAccessLevel`}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option value={"no"}>{t`No access`}</option>
-                                                        <option value={"full"}>{t`All`}</option>
-                                                        <option
-                                                            value={"own"}
-                                                        >{t`Only for forms they created`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Permissions`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
+                                            <Cell span={12}>
                                                 <Bind name={`submissionPermissions`}>
                                                     <Select
-                                                        label={t`Permissions`}
+                                                        label={t`Form Submissions`}
+                                                        description={
+                                                            "The scope of form submissions a user can access."
+                                                        }
                                                         disabled={
-                                                            data[`submissionAccessLevel`] !== "full"
+                                                            !data.formAccessLevel ||
+                                                            data.formAccessLevel === NO_ACCESS
                                                         }
                                                     >
-                                                        <option value={"r"}>{t`Read`}</option>
+                                                        <option value={NO_ACCESS}>{t`None`}</option>
                                                         <option
-                                                            value={"rw"}
-                                                        >{t`Read, write`}</option>
-                                                        <option
-                                                            value={"rwe"}
-                                                        >{t`Read, write, export`}</option>
-                                                        <option
-                                                            value={"rwd"}
-                                                        >{t`Read, write, delete`}</option>
-                                                        <option
-                                                            value={"rwde"}
-                                                        >{t`Read, write, delete, export`}</option>
+                                                            value={FULL_ACCESS}
+                                                        >{t`All form submissions`}</option>
                                                     </Select>
                                                 </Bind>
                                             </Cell>
@@ -271,18 +225,18 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                                     </Cell>
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage settings`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
+                                            <Cell span={12}>
                                                 <Bind name={"settingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
+                                                    <Select
+                                                        label={t`Access Scope`}
+                                                        description={
+                                                            "The scope of app settings a user can access."
+                                                        }
+                                                    >
+                                                        <option value={NO_ACCESS}>{t`None`}</option>
                                                         <option
                                                             value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
+                                                        >{t`All settings`}</option>
                                                     </Select>
                                                 </Bind>
                                             </Cell>

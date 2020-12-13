@@ -1,13 +1,6 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
-function Mock(prefix) {
-    this.slug = `${prefix}slug`;
-    this.title = `${prefix}title`;
-    this.description = `${prefix}description`;
-    this.items = { [`${prefix}items`]: "items" };
-}
-
 const defaultHandler = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
@@ -16,10 +9,9 @@ const defaultHandler = useGqlHandler({
 describe("Pages Security Test", () => {
     const { deleteElasticSearchIndex, createCategory, until } = useGqlHandler();
 
-    let initialPageIds, initialCategory;
+    let initialCategory;
 
     beforeEach(async () => {
-        initialPageIds = [];
         await deleteElasticSearchIndex();
 
         await createCategory({
@@ -54,14 +46,14 @@ describe("Pages Security Test", () => {
         ];
 
         await until(
-            useGqlHandler().listPages,
+            () => useGqlHandler().listPages({ sort: { createdOn: "desc" } }),
             ([res]) => res.data.pageBuilder.listPages.data.length === 4
         );
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { listPages } = useGqlHandler({ permissions, identity });
-            const [response] = await listPages();
+            const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listPages"));
         }
 
@@ -77,7 +69,7 @@ describe("Pages Security Test", () => {
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listPages } = useGqlHandler({ permissions, identity });
-            const [response] = await listPages();
+            const [response] = await listPages({ sort: { createdOn: "desc" } });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -132,7 +124,7 @@ describe("Pages Security Test", () => {
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listPages();
+        let [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
@@ -168,7 +160,7 @@ describe("Pages Security Test", () => {
             identity: identityB
         });
 
-        [response] = await identityAHandler.listPages();
+        [response] = await identityAHandler.listPages({ sort: { createdOn: "desc" } });
         expect(response).toMatchObject({
             data: {
                 pageBuilder: {
@@ -209,6 +201,15 @@ describe("Pages Security Test", () => {
             [
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.page" }],
                 identityA
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.page", own: true },
+                    { name: "pb.category", own: true }
+                ],
+                identityA
             ]
         ];
 
@@ -216,13 +217,27 @@ describe("Pages Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { createPage } = useGqlHandler({ permissions, identity });
 
-            const [response] = await createPage({ data: new Mock() });
+            const [response] = await createPage({ category: initialCategory.slug });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createPage"));
         }
 
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+
+            // This is an interesting case - we needed to add `{ name: "pb.category", rwd: "r" }`, because otherwise,
+            // we'd get SECURITY_NOT_AUTHORIZED error. This is because when creating a page, a category is being
+            // loaded, and for that, we also need proper permissions. Without the added permission object, the
+            // category load would fail because it's not owned by provided `identityA`. If we added the `own: true`
+            // to it, we'd again get SECURITY_NOT_AUTHORIZED error. This is what is tested above.
+            // This has also been added in the delete test, below.
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.page", own: true },
+                    { name: "pb.category", rwd: "r" } // This needed to be added.
+                ],
+                identityA
+            ],
             [[{ name: "content.i18n" }, { name: "pb.page", rwd: "w" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rw" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
@@ -338,7 +353,15 @@ describe("Pages Security Test", () => {
 
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true }], identityA],
+            [
+                [
+                    { name: "content.i18n" },
+                    { name: "pb.page", own: true },
+                    // Added this because the category is not owned by current user.
+                    { name: "pb.category", rwd: "r" }
+                ],
+                identityA
+            ],
             [[{ name: "content.i18n" }, { name: "pb.page", rwd: "wd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.page", rwd: "rwd" }], identityA],
             [
@@ -367,7 +390,9 @@ describe("Pages Security Test", () => {
                     pageBuilder: {
                         deletePage: {
                             data: {
-                                id: page.id
+                                page: {
+                                    id: page.id
+                                }
                             },
                             error: null
                         }

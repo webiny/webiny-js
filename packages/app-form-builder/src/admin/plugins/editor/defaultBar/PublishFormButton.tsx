@@ -18,9 +18,7 @@ const PublishFormButton = () => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [publish] = useMutation(publishRevision, {
-        refetchQueries: ["FormsListForms"]
-    });
+    const [publish] = useMutation(publishRevision);
 
     return (
         <ConfirmationDialog
@@ -33,16 +31,16 @@ const PublishFormButton = () => {
                         showConfirmation(async () => {
                             const response = await publish({
                                 variables: {
-                                    id: data?.id
+                                    id: data.id
                                 }
                             });
 
-                            const { error } = response?.data?.formBuilder?.publishRevision || {};
+                            const { error } = response.data.formBuilder.publishRevision || {};
                             if (error) {
                                 return showSnackbar(error?.message);
                             }
 
-                            history.push(`/forms?id=${encodeURIComponent(data?.id)}`);
+                            history.push(`/forms?id=${encodeURIComponent(data.id)}`);
 
                             // Let's wait a bit, because we are also redirecting the user.
                             setTimeout(() => {

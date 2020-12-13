@@ -26,6 +26,7 @@ export const UPDATE_SETTINGS = /* GraphQL */ `
     mutation UpdateSettings($data: PbSettingsInput!) {
         pageBuilder {
             updateSettings(data: $data) {
+                id
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -37,6 +38,7 @@ export const GET_SETTINGS = /* GraphQL */ `
     query GetSettings {
         pageBuilder {
             getSettings {
+                id
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

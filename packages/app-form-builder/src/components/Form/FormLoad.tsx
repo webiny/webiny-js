@@ -39,12 +39,10 @@ const FormLoad = (props: FormLoadComponentPropsType) => {
     }
 
     if (loading) {
-        // TODO: handle loading
         return <span>Loading...</span>;
     }
 
-    const formData = data?.formBuilder?.getPublishedForm?.data;
-    const formError = data?.formBuilder?.getPublishedForm?.error;
+    const { data: formData, error: formError } = data.formBuilder.getPublishedForm;
 
     if (!formData) {
         // TODO: handle cannot load form

@@ -17,7 +17,7 @@ import { Number } from "@webiny/handler-graphql/builtInTypes/NumberScalar";
 import { Any } from "@webiny/handler-graphql/builtInTypes/AnyScalar";
 
 type CreateGraphQLHandlerOptionsType = {
-    debug?: boolean;
+    debug?: string;
 };
 type SchemaCacheType = {
     key: string;

@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(15000);
+
 describe("CRUD Test", () => {
     const {
         createCategory,
@@ -63,6 +65,7 @@ describe("CRUD Test", () => {
                                 publishedOn: null,
                                 locked: false,
                                 version: 1,
+                                editor: "page-builder",
                                 createdOn: expect.stringMatching(/^20.*/),
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -85,6 +88,7 @@ describe("CRUD Test", () => {
                                 category: {
                                     slug: "slug"
                                 },
+                                editor: "page-builder",
                                 createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -99,7 +103,15 @@ describe("CRUD Test", () => {
             data = {
                 title: "title-UPDATED-" + i,
                 url: "url-UPDATED-" + i,
-                snippet: "snippet-UPDATED-" + i
+                settings: {
+                    general: {
+                        snippet: "snippet-UPDATED-" + i,
+                        image: {
+                            id: `ID#image-${i}`,
+                            src: `https://someimages.com/image-${i}.png`
+                        }
+                    }
+                }
             };
 
             [response] = await updatePage({
@@ -113,6 +125,7 @@ describe("CRUD Test", () => {
                         updatePage: {
                             data: {
                                 ...data,
+                                editor: "page-builder",
                                 createdOn: /^20.*/,
                                 createdBy: { displayName: "m", id: "mocked" }
                             },
@@ -125,7 +138,7 @@ describe("CRUD Test", () => {
 
         while (true) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
             if (response?.data?.pageBuilder?.listPages?.data.length) {
                 break;
             }
@@ -137,6 +150,7 @@ describe("CRUD Test", () => {
                     listPages: {
                         data: [
                             {
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -149,9 +163,17 @@ describe("CRUD Test", () => {
                                 id: ids[2],
                                 status: "draft",
                                 title: "title-UPDATED-2",
-                                url: "url-UPDATED-2"
+                                url: "url-UPDATED-2",
+                                snippet: "snippet-UPDATED-2",
+                                images: {
+                                    general: {
+                                        id: `ID#image-2`,
+                                        src: `https://someimages.com/image-2.png`
+                                    }
+                                }
                             },
                             {
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -164,9 +186,17 @@ describe("CRUD Test", () => {
                                 id: ids[1],
                                 status: "draft",
                                 title: "title-UPDATED-1",
-                                url: "url-UPDATED-1"
+                                url: "url-UPDATED-1",
+                                snippet: "snippet-UPDATED-1",
+                                images: {
+                                    general: {
+                                        id: `ID#image-1`,
+                                        src: `https://someimages.com/image-1.png`
+                                    }
+                                }
                             },
                             {
+                                editor: "page-builder",
                                 category: {
                                     slug: "slug"
                                 },
@@ -179,7 +209,14 @@ describe("CRUD Test", () => {
                                 id: ids[0],
                                 status: "draft",
                                 title: "title-UPDATED-0",
-                                url: "url-UPDATED-0"
+                                url: "url-UPDATED-0",
+                                snippet: "snippet-UPDATED-0",
+                                images: {
+                                    general: {
+                                        id: `ID#image-0`,
+                                        src: `https://someimages.com/image-0.png`
+                                    }
+                                }
                             }
                         ],
                         error: null
@@ -197,9 +234,13 @@ describe("CRUD Test", () => {
                     pageBuilder: {
                         deletePage: {
                             data: {
-                                id,
-                                createdOn: /^20.*/,
-                                createdBy: { displayName: "m", id: "mocked" }
+                                latestPage: null,
+                                page: {
+                                    id,
+                                    editor: "page-builder",
+                                    createdOn: /^20.*/,
+                                    createdBy: { displayName: "m", id: "mocked" }
+                                }
                             },
                             error: null
                         }
@@ -211,7 +252,7 @@ describe("CRUD Test", () => {
         // List should show zero pages.
         while (response.data.pageBuilder.listPages.data.length !== 0) {
             await sleep();
-            [response] = await listPages();
+            [response] = await listPages({ sort: { createdOn: "desc" } });
         }
 
         expect(response).toEqual({
@@ -219,7 +260,17 @@ describe("CRUD Test", () => {
                 pageBuilder: {
                     listPages: {
                         data: [],
-                        error: null
+                        error: null,
+                        meta: {
+                            from: 0,
+                            limit: 10,
+                            nextPage: null,
+                            page: 1,
+                            previousPage: null,
+                            to: 0,
+                            totalCount: 0,
+                            totalPages: 0
+                        }
                     }
                 }
             }

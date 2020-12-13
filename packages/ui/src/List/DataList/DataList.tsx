@@ -16,8 +16,8 @@ import {
     RefreshIcon,
     SortIcon,
     FilterIcon,
-    PreviousPageIcon, // eslint-disable-line
-    NextPageIcon, // eslint-disable-line
+    PreviousPageIcon,
+    NextPageIcon,
     OptionsIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";
@@ -277,13 +277,13 @@ const Pagination = (props: Props) => {
                             disabled: !pagination.hasPreviousPage
                         })}
                     >
-                        {/*<PreviousPageIcon
+                        <PreviousPageIcon
                             onClick={() => {
                                 if (pagination.setPreviousPage && pagination.hasPreviousPage) {
-                                    pagination.setPreviousPage(pagination.cursors.previous);
+                                    pagination.setPreviousPage();
                                 }
                             }}
-                        />*/}
+                        />
                     </ListHeaderItem>
 
                     <ListHeaderItem
@@ -291,13 +291,13 @@ const Pagination = (props: Props) => {
                             disabled: !pagination.hasNextPage
                         })}
                     >
-                        {/* <NextPageIcon
+                        <NextPageIcon
                             onClick={() => {
-                                if (props.setNextPage && pagination.hasNextPage) {
-                                    props.setNextPage(pagination.cursors.next);
+                                if (pagination.setNextPage && pagination.hasNextPage) {
+                                    pagination.setNextPage();
                                 }
                             }}
-                        />*/}
+                        />
                     </ListHeaderItem>
                 </React.Fragment>
             )}

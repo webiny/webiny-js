@@ -22,10 +22,10 @@ const PagesListFilterSettings = ({ Bind }) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"sortDirection"} defaultValue={-1}>
+                    <Bind name={"sortDirection"} defaultValue={"desc"}>
                         <Select label={"Sort direction"}>
-                            <option value={-1}>Descending</option>
-                            <option value={1}>Ascending</option>
+                            <option value={"desc"}>Descending</option>
+                            <option value={"asc"}>Ascending</option>
                         </Select>
                     </Bind>
                 </Cell>
@@ -38,10 +38,10 @@ const PagesListFilterSettings = ({ Bind }) => {
                     </Bind>
                 </Cell>
                 <Cell span={6}>
-                    <Bind name={"tagsRule"} defaultValue={"ALL"}>
+                    <Bind name={"tagsRule"} defaultValue={"all"}>
                         <Select label={"Filter by tags rule"}>
-                            <option value={"ALL"}>Page must include all tags</option>
-                            <option value={"ANY"}>Page must include any of the tags</option>
+                            <option value={"all"}>Page must include all tags</option>
+                            <option value={"any"}>Page must include any of the tags</option>
                         </Select>
                     </Bind>
                 </Cell>

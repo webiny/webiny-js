@@ -3,12 +3,15 @@ import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/Dela
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import OpenGraphTags from "./OpenGraphTags";
-import PageImage from "./PageImage";
 import appendOgImageDimensions from "./appendOgImageDimensions";
+import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 
-const SocialSettings = ({ Bind, form }) => {
+const SocialSettings = ({ Bind, data, setValue }) => {
     return (
         <React.Fragment>
+            {/* We need this hidden field because of the `appendOgImageDimensions` callback and because
+                of the fact that it sts values into the `settings.social.meta` array. */}
+            <Bind name={"settings.social.meta"} />
             <Grid>
                 <Cell span={12}>
                     <Bind name={"settings.social.title"}>
@@ -38,9 +41,10 @@ const SocialSettings = ({ Bind, form }) => {
                 <Cell span={12}>
                     <Bind
                         name={"settings.social.image"}
-                        afterChange={value => appendOgImageDimensions({ value, form })}
+                        afterChange={value => appendOgImageDimensions({ value, data, setValue })}
                     >
-                        <PageImage
+                        <SingleImageUpload
+                            onChangePick={["src", "id"]}
                             label="Social Image"
                             description={`Linked via "og:image" tag. Recommended resolution 1596x545.`}
                             // @ts-ignore // TODO: @adrian what's this prop name ?

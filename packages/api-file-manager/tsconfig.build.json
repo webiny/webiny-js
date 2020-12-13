@@ -5,15 +5,14 @@
     "node_modules",
     "./dist",
     "../api-security",
+    "../error",
     "../api-security-tenancy",
     "../handler-graphql",
     "../handler",
     "../handler-client",
-    "../handler-db",
     "../validation",
     "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
-    "../handler-http"
+    "../api-plugin-elastic-search-client"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -23,6 +22,9 @@
   "references": [
     {
       "path": "../api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../error/tsconfig.build.json"
     },
     {
       "path": "../api-security-tenancy/tsconfig.build.json"
@@ -37,9 +39,6 @@
       "path": "../handler-client/tsconfig.build.json"
     },
     {
-      "path": "../handler-db/tsconfig.build.json"
-    },
-    {
       "path": "../validation/tsconfig.build.json"
     },
     {
@@ -47,9 +46,6 @@
     },
     {
       "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-http/tsconfig.build.json"
     }
   ]
 }

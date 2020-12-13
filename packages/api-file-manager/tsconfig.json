@@ -6,6 +6,9 @@
       "path": "../api-i18n-content"
     },
     {
+      "path": "../error"
+    },
+    {
       "path": "../api-plugin-elastic-search-client"
     },
     {
@@ -24,13 +27,7 @@
       "path": "../handler-client"
     },
     {
-      "path": "../handler-db"
-    },
-    {
       "path": "../validation"
-    },
-    {
-      "path": "../handler-http"
     }
   ]
 }

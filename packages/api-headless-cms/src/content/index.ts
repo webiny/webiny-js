@@ -16,7 +16,7 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 import pluginsCrudSetup from "../plugins/crud";
 
 type CmsContentPluginsIndexArgsType = {
-    debug?: boolean;
+    debug?: string;
 };
 export default (options: CmsContentPluginsIndexArgsType) => [
     pluginsCrudSetup(),

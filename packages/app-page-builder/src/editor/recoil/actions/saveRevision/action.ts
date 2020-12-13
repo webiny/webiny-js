@@ -44,7 +44,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
         url: state.page.url,
         settings: state.page.settings,
         content: state.content,
-        category: state.page.category.id
+        category: state.page.category.slug
     };
     if (isDataEqualToLastSavedData(data)) {
         triggerOnFinish(args);
