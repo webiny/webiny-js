@@ -42,7 +42,10 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
   color: $webiny-theme-light-text-primary-on-background;
 
   .codex-editor__redactor {
-    padding: 0 !important;
+    // ".codex-editor__redactor" element has a "padding-bottom" of 300px by default,
+    // which is too much for a page document. We're reducing it to just 100px.
+    // It is needed so that we can navigate or insert more content below the last most content.
+    padding-bottom: 100px !important;
     margin: 0;
   }
 }
