@@ -8,6 +8,7 @@ import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 export type PostModifyElementArgs = {
     name: string;
+    newValue: any;
     element: PbShallowElement | PbElement;
     newElement: PbShallowElement | PbElement;
 };
@@ -36,7 +37,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
             const newElement = lodashMerge({}, element, lodashSet({}, propName, newValue));
             // post modify the element.
             if (typeof postModifyElement === "function") {
-                postModifyElement({ name, newElement, element });
+                postModifyElement({ name, newElement, element, newValue });
             }
 
             if (!history) {
