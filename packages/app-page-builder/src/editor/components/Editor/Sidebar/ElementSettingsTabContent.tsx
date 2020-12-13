@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import useElementSettings from "../../../plugins/elementSettings/hooks/useElementSettings";
 import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
 import { PbElement } from "../../../../types";
+import { COLORS } from "../../../plugins/elementSettings/components/StyledComponents";
 
 const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -23,7 +24,10 @@ const RootElement = styled("div")({
 const SidebarActionsWrapper = styled("div")({
     display: "flex",
     flexWrap: "wrap",
-    borderBottom: "1px solid rgb(234,233,234)"
+    borderBottom: `1px solid ${COLORS.gray}`,
+    backgroundColor: COLORS.lightGray,
+    borderTop: `1px solid ${COLORS.gray}`,
+    justifyContent: "center"
 });
 
 const PanelHighLight = styled("div")({
