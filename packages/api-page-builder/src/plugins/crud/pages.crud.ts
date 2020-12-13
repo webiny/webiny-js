@@ -39,6 +39,19 @@ const UpdateDataModel = withFields({
 
 const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
+type PagePublished = {
+    PK: string;
+    SK: string;
+    id: string;
+};
+
+type PagePublishedUrl = {
+    PK: string;
+    SK: string;
+    url: string;
+    id: string;
+};
+
 const UpdateSettingsModel = withFields({
     general: fields({
         value: {},
@@ -335,13 +348,76 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async getPublished(args) {
-                    const [[page]] = await db.read<Page>({
+                    if (!args.id && !args.url) {
+                        throw new Error(
+                            'Cannot get published page - must specify either "id" or "url".'
+                        );
+                    }
+
+                    const notFoundError = new NotFoundError("Page not found.");
+
+                    // 1. If we received `args.id`, then...
+                    if (args.id) {
+                        // If we have a full ID, then try to load it directly.
+                        const [uniquePageId, version] = args.id.split("#");
+                        if (version) {
+                            const [[page]] = await db.read<Page>({
+                                ...defaults.db,
+                                query: { PK: PK_PAGE(), SK: args.id },
+                                limit: 1
+                            });
+
+                            if (page || page.status === "published") {
+                                return page;
+                            }
+                            throw notFoundError;
+                        }
+
+                        // If we only have unique page ID (previously know as `parent`),
+                        // then let's find out which version is published.
+                        const [[pagePublished]] = await db.read<PagePublished>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_PUBLISHED(), SK: uniquePageId },
+                            limit: 1
+                        });
+
+                        if (!pagePublished) {
+                            throw notFoundError;
+                        }
+
+                        const [[page]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: pagePublished.id },
+                            limit: 1
+                        });
+
+                        if (page) {
+                            return page;
+                        }
+                        throw notFoundError;
+                    }
+
+                    // 2. If we received `args.url`, then...
+                    const [[pagePublishedUrl]] = await db.read<PagePublishedUrl>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: args.id },
+                        query: { PK: PK_PAGE_PUBLISHED_URL(), SK: args.url },
                         limit: 1
                     });
 
-                    return page;
+                    if (!pagePublishedUrl) {
+                        throw notFoundError;
+                    }
+
+                    const [[page]] = await db.read<Page>({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE(), SK: pagePublishedUrl.id },
+                        limit: 1
+                    });
+
+                    if (page) {
+                        return page;
+                    }
+                    throw notFoundError;
                 },
 
                 async create(categorySlug) {
@@ -415,7 +491,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: getESLatestPageData(context, data)
                     });
 
-                    return data;
+                    return omit<Page>(["PK", "SK"], data);
                 },
 
                 async createFrom(from) {
@@ -885,6 +961,7 @@ const plugin: ContextPlugin<PbContext> = {
                                     PK: PK_PAGE_PUBLISHED_URL(),
                                     SK: pageUniqueId,
                                     TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    id: page.id,
                                     url: page.url
                                 }
                             });
@@ -903,8 +980,9 @@ const plugin: ContextPlugin<PbContext> = {
                                 ...defaults.db,
                                 data: {
                                     PK: PK_PAGE_PUBLISHED_URL(),
-                                    SK: pageUniqueId,
+                                    SK: page.url,
                                     TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    id: page.id,
                                     url: page.url
                                 }
                             });
