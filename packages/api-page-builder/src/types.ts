@@ -73,6 +73,8 @@ export type Category = {
     };
 };
 
+type PageStatus = "published" | "unpublished" | "reviewRequested" | "changesRequested" | "draft";
+
 export type Page = {
     id: string;
     title: string;
@@ -100,7 +102,7 @@ export type Page = {
         };
     };
     locked: boolean;
-    status: string;
+    status: PageStatus;
     home: boolean;
     error: boolean;
     notFound: boolean;
