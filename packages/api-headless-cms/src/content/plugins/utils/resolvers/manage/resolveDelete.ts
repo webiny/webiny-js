@@ -15,7 +15,7 @@ export const resolveDelete = ({ model }): GraphQLFieldResolver<any, any, CmsCont
         let instance;
         // For the MANAGE API, we also allow getting entries directly by ID.
         if (context.cms.MANAGE && args.where && args.where.id) {
-            const Model = context.models[model.modelId];
+            const Model = context.models[model.code];
             instance = await Model.findById(args.where.id);
         } else {
             instance = await findEntry({ model, args, context });

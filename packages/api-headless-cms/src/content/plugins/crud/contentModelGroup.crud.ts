@@ -1,12 +1,14 @@
-import defaults from "../defaults";
-import mdbid from "mdbid";
-import { CmsContentModelGroupContextType, CmsContentModelGroupType, CmsContext } from "../../types";
-import { ContextPlugin } from "@webiny/handler/types";
-import { createContentModelGroupPk } from "../partitionKeys";
-import toSlug from "../../utils/toSlug";
-import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { DbItemTypes } from "../dbItemTypes";
+import { ContextPlugin } from "@webiny/handler/types";
+import { validation } from "@webiny/validation";
+import mdbid from "mdbid";
+import {
+    CmsContentModelGroupContextType,
+    CmsContentModelGroupType,
+    CmsContext,
+    DbItemTypes
+} from "../../../types";
+import * as utils from "../../../utils";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -30,8 +32,8 @@ export default {
         const groups: CmsContentModelGroupContextType = {
             get: async id => {
                 const [response] = await db.read<CmsContentModelGroupType>({
-                    ...defaults.db,
-                    query: { PK: createContentModelGroupPk(context), SK: id },
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelGroupPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -41,13 +43,13 @@ export default {
             },
             list: async () => {
                 const [response] = await db.read<CmsContentModelGroupType>({
-                    ...defaults.db,
-                    query: { PK: createContentModelGroupPk(context), SK: { $gt: " " } }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } }
                 });
                 return response;
             },
             create: async (data, createdBy) => {
-                const slug = toSlug(data.slug || data.name);
+                const slug = utils.toSlug(data.slug || data.name);
                 const createdData = new CreateContentModelGroupModel().populate({
                     ...data,
                     slug
@@ -66,7 +68,7 @@ export default {
 
                 const id = mdbid();
                 const model = {
-                    PK: createContentModelGroupPk(context),
+                    PK: utils.createContentModelGroupPk(context),
                     SK: id,
                     TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
                     id,
@@ -75,7 +77,7 @@ export default {
                     createdBy
                 };
                 await db.create({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     data: model
                 });
                 return model;
@@ -84,7 +86,7 @@ export default {
                 const slugValue = data.slug || data.name;
                 const updateData = new UpdateContentModelGroupModel().populate({
                     ...data,
-                    slug: !!slugValue ? toSlug(slugValue) : undefined
+                    slug: !!slugValue ? utils.toSlug(slugValue) : undefined
                 });
                 await updateData.validate();
 
@@ -114,17 +116,17 @@ export default {
                 });
 
                 await db.update({
-                    ...defaults.es,
-                    query: { PK: createContentModelGroupPk(context), SK: id },
+                    ...utils.defaults.es,
+                    query: { PK: utils.createContentModelGroupPk(context), SK: id },
                     data: modelData
                 });
                 return modelData;
             },
             delete: async id => {
                 await db.delete({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     query: {
-                        PK: createContentModelGroupPk(context),
+                        PK: utils.createContentModelGroupPk(context),
                         SK: id
                     }
                 });

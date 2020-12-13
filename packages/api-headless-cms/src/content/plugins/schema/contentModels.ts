@@ -1,6 +1,7 @@
 import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import { compose, ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import {
     CmsContentModelCreateInputType,
     CmsContentModelUpdateInputType,
@@ -10,83 +11,29 @@ import {
     getCmsManageSettingsPermission,
     hasRwdPermission,
     userCanManageModel
-} from "@webiny/api-headless-cms/common/helpers";
+} from "@webiny/api-headless-cms/utils";
 
 type CreateContentModelArgsType = {
     data: CmsContentModelCreateInputType;
 };
+
 type ReadContentModelArgsType = {
     id: string;
 };
+
 type UpdateContentModelArgsType = ReadContentModelArgsType & {
     data: CmsContentModelUpdateInputType;
 };
+
 type DeleteContentModelArgsType = {
     id: string;
 };
 
 const PERMISSION_NAME = "cms.manage.contentModel";
 
-export default {
-    typeDefs: /* GraphQL */ `
-        type CmsContentModel {
-            id: ID!
-            name: String!
-            code: String!
-            description: String
-            createdOn: DateTime!
-            changedOn: DateTime
-            createdBy: JSON!
-        }
-
-        input CmsContentModelCreateInput {
-            name: String!
-            code: String!
-            group: ID!
-            description: String
-        }
-
-        input CmsContentModelUpdateInput {
-            name: String!
-            code: String!
-            group: ID!
-            description: String
-        }
-
-        type CmsContentModelResponse {
-            data: CmsContentModel
-            error: CmsError
-        }
-
-        type CmsContentModelListResponse {
-            data: [CmsContentModel]
-            meta: CmsListMeta
-            error: CmsError
-        }
-
-        extend type CmsQuery {
-            getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
-
-            listContentModel(
-                where: JSON
-                sort: JSON
-                search: CmsSearchInput
-                limit: Int
-                after: String
-                before: String
-            ): CmsContentModelListResponse
-        }
-
-        extend type CmsMutation {
-            createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
-
-            updateContentModel(id: ID!, data: CmsContentModelUpdateInput!): CmsContentModelResponse
-
-            deleteContentModel(id: ID!): CmsDeleteResponse
-        }
-    `,
-    resolvers: {
-        CmsQuery: {
+const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
+    const resolvers: Record<string, any> = {
+        Query: {
             getContentModel: compose(
                 hasPermission(PERMISSION_NAME),
                 hasRwdPermission(PERMISSION_NAME, "r"),
@@ -106,7 +53,7 @@ export default {
                 }
                 return new Response(model);
             }),
-            listContentModel: compose(
+            listContentModels: compose(
                 hasPermission(PERMISSION_NAME),
                 hasRwdPermission(PERMISSION_NAME, "r"),
                 hasI18NContentPermission()
@@ -121,8 +68,12 @@ export default {
                 }
                 return new Response(models);
             })
-        },
-        CmsMutation: {
+        }
+    };
+
+    let manageSchema = "";
+    if (context.cms.MANAGE) {
+        resolvers.Mutation = {
             createContentModel: compose(
                 hasPermission(PERMISSION_NAME),
                 hasRwdPermission(PERMISSION_NAME, "w"),
@@ -207,6 +158,72 @@ export default {
                     });
                 }
             })
-        }
+        };
+
+        manageSchema = /* GraphQL */ `
+            input CmsContentModelCreateInput {
+                name: String!
+                code: String!
+                group: ID!
+                description: String
+            }
+
+            input CmsContentModelUpdateInput {
+                name: String!
+                code: String!
+                group: ID!
+                description: String
+            }
+
+            extend type Mutation {
+                createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
+
+                updateContentModel(
+                    id: ID!
+                    data: CmsContentModelUpdateInput!
+                ): CmsContentModelResponse
+
+                deleteContentModel(id: ID!): CmsDeleteResponse
+            }
+        `;
     }
+
+    return {
+        type: "graphql-schema",
+        schema: {
+            typeDefs: /* GraphQL */ `
+                type CmsContentModel {
+                    id: ID!
+                    name: String!
+                    code: String!
+                    description: String
+                    createdOn: DateTime!
+                    changedOn: DateTime
+                    createdBy: JSON!
+                }
+
+                type CmsContentModelResponse {
+                    data: CmsContentModel
+                    error: CmsError
+                }
+
+                type CmsContentModelListResponse {
+                    data: [CmsContentModel]
+                    meta: CmsListMeta
+                    error: CmsError
+                }
+
+                extend type Query {
+                    getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
+
+                    listContentModels: CmsContentModelListResponse
+                }
+
+                ${manageSchema}
+            `,
+            resolvers
+        }
+    };
 };
+
+export default plugin;

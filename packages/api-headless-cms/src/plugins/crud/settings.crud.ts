@@ -1,8 +1,6 @@
-import { CmsContext, CmsSettingsContextType, CmsSettingsType } from "../../types";
-import defaults from "../../common/defaults";
 import { ContextPlugin } from "@webiny/handler/types";
-import { createSettingsPk } from "../../common/partitionKeys";
-import { DbItemTypes } from "../../common/dbItemTypes";
+import * as utils from "../../utils";
+import { CmsContext, CmsSettingsContextType, CmsSettingsType, DbItemTypes } from "../../types";
 
 const initialEnvironment = {
     name: "Production",
@@ -33,8 +31,8 @@ export default {
         const settings: CmsSettingsContextType = {
             get: async (): Promise<CmsSettingsType | null> => {
                 const [settings] = await db.read<CmsSettingsType>({
-                    ...defaults.db,
-                    query: { PK: createSettingsPk(context), SK: SETTINGS_SECONDARY_KEY },
+                    ...utils.defaults.db,
+                    query: { PK: utils.createSettingsPk(context), SK: SETTINGS_SECONDARY_KEY },
                     limit: 1
                 });
                 if (!settings || settings.length === 0) {
@@ -76,9 +74,9 @@ export default {
                 await context.cms.groups.create(initialContentModelGroup, createdBy);
                 // mark as installed in settings
                 await db.create({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     data: {
-                        PK: createSettingsPk(context),
+                        PK: utils.createSettingsPk(context),
                         SK: SETTINGS_SECONDARY_KEY,
                         TYPE: DbItemTypes.CMS_SETTINGS,
                         isInstalled: true,

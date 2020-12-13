@@ -11,7 +11,7 @@ export const resolveCreateFrom = ({ model }): GraphQLFieldResolver<any, any, Cms
 ) => {
     setContextLocale(context, args.locale);
 
-    const Model = context.models[model.modelId];
+    const Model = context.models[model.code];
     const baseRevision = await Model.findById(args.revision);
 
     if (!baseRevision) {

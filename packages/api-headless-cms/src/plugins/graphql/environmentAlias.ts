@@ -12,7 +12,7 @@ import {
     hasManageSettingsPermission,
     hasCmsManageSettingsPermissionRwd,
     userCanManageModel
-} from "../../common/helpers";
+} from "../../utils";
 
 type CreateEnvironmentAliasArgsType = {
     data: CmsEnvironmentAliasCreateInputType;
@@ -68,16 +68,9 @@ export default {
         }
 
         extend type CmsQuery {
-            getEnvironmentAlias(id: ID, where: JSON, sort: String): CmsEnvironmentAliasResponse
+            getEnvironmentAlias(id: ID): CmsEnvironmentAliasResponse
 
-            listEnvironmentAliases(
-                where: JSON
-                sort: JSON
-                search: CmsSearchInput
-                limit: Int
-                after: String
-                before: String
-            ): CmsEnvironmentAliasListResponse
+            listEnvironmentAliases: CmsEnvironmentAliasListResponse
         }
 
         extend type CmsMutation {

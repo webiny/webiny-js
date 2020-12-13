@@ -18,7 +18,7 @@ import {
 
 import {
     CmsContext,
-    CmsContentModel,
+    CmsContentModelType,
     CmsModelFieldToCommodoFieldPlugin
 } from "@webiny/api-headless-cms/types";
 
@@ -30,7 +30,7 @@ import upperFirst from "lodash/upperFirst";
 
 export const createDataModel = (
     createBase: Function,
-    contentModel: CmsContentModel,
+    contentModel: CmsContentModelType,
     context: CmsContext
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldToCommodoFieldPlugin>(

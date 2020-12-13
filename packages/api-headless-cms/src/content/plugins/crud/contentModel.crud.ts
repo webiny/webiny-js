@@ -6,7 +6,7 @@ import {
     CmsContentModelManagerInterface,
     ContentModelManagerPlugin
 } from "@webiny/api-headless-cms/types";
-import defaults from "@webiny/api-headless-cms/common/defaults";
+import { defaults } from "../../../utils";
 import { plugins } from "@webiny/plugins";
 
 // eslint-disable-next-line

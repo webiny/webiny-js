@@ -1,9 +1,9 @@
-import { CmsFindFilterOperator, CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsFindFilterOperatorPlugin, CmsContext, CmsContentModelType } from "@webiny/api-headless-cms/types";
 import { WhereCondition } from "./parseWhere";
 import { Sorter } from "./parseSort";
 
 interface CreateFindParameters {
-    model: CmsContentModel;
+    model: CmsContentModelType;
     where: WhereCondition[];
     sort?: Sorter[];
     context: CmsContext;
@@ -15,7 +15,7 @@ export const createFindParameters = ({
     sort = [],
     context
 }: CreateFindParameters): { [key: string]: any } => {
-    const filterOperators = context.plugins.byType<CmsFindFilterOperator>(
+    const filterOperators = context.plugins.byType<CmsFindFilterOperatorPlugin>(
         "cms-find-filter-operator"
     );
 
@@ -60,12 +60,12 @@ export const createFindParameters = ({
     });
 
     if (!allFields.length) {
-        return { query: { fields: "id", model: model.modelId }, sort: {} };
+        return { query: { fields: "id", model: model.code }, sort: {} };
     }
 
     return {
         query: {
-            model: model.modelId,
+            model: model.code,
             fields: allFields.join(","),
             $and: conditions
         },

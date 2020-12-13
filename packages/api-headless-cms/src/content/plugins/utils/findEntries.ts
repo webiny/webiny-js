@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { CmsContext, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsContentModelType } from "@webiny/api-headless-cms/types";
 import { parseSort } from "./parseSort";
 import { createFindParameters } from "./createFindParameters";
 import parseBoolean from "./parseBoolean";
@@ -7,7 +7,7 @@ import { parseWhere } from "./parseWhere";
 import { GraphQLResolveInfo } from "graphql";
 
 type FindEntries = {
-    model: CmsContentModel;
+    model: CmsContentModelType;
     args: {
         locale: string;
         where: { [key: string]: any };
@@ -26,7 +26,7 @@ export default async function findEntries<T = CmsContext>({
     context,
     info
 }: FindEntries) {
-    const Model = context.models[model.modelId];
+    const Model = context.models[model.code];
     const { CmsContentEntrySearch } = context.models;
 
     parseBoolean(args);

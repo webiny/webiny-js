@@ -8,16 +8,10 @@ import {
     CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
-import GraphQLJSON from "graphql-type-json";
-import GraphQLLong from "graphql-type-long";
-import { GraphQLDateTime } from "graphql-iso-date";
-import { RefInput } from "@webiny/handler-graphql/builtInTypes/RefInputScalar";
-import { Number } from "@webiny/handler-graphql/builtInTypes/NumberScalar";
-import { Any } from "@webiny/handler-graphql/builtInTypes/AnyScalar";
+import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 
 type CreateGraphQLHandlerOptionsType = {
-    debug?: string;
+    debug?: boolean;
 };
 type SchemaCacheType = {
     key: string;
@@ -65,90 +59,20 @@ const generateCacheKey = (args: ArgsType): string => {
         .filter(value => !!value)
         .join("#");
 };
-const emptyResolver = () => ({});
-const getInitialGraphQLSchemaDefinitions = (context: CmsContext) => {
-    const scalars = context.plugins
-        .byType<GraphQLScalarPlugin>("graphql-scalar")
-        .map(item => item.scalar);
-    const typeDefs = [
-        `
-            type Query
-            type Mutation
-            ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
-            scalar JSON
-            scalar Long
-            scalar DateTime
-            scalar RefInput
-            scalar Number
-            scalar Any
-            
-            extend type Query {
-                _empty: String
-            }
-            extend type Mutation {
-                _empty: String
-            }
-            extend type Query {
-                cms: CmsQuery
-            }
 
-            extend type Mutation {
-                cms: CmsMutation
-            }
-
-            type CmsQuery {
-                _empty: String
-            }
-
-            type CmsMutation {
-                _empty: String
-            }
-        `
-    ];
-
-    const resolvers = [
-        {
-            ...scalars.reduce((acc, s) => {
-                acc[s.name] = s;
-                return acc;
-            }, {}),
-            JSON: GraphQLJSON,
-            DateTime: GraphQLDateTime,
-            Long: GraphQLLong,
-            RefInput,
-            Number,
-            Any,
-            Query: {
-                _empty: emptyResolver()
-            },
-            CmsQuery: {
-                _empty: emptyResolver()
-            },
-            Mutation: {
-                _empty: emptyResolver()
-            },
-            CmsMutation: {
-                _empty: emptyResolver()
-            }
-        }
-    ];
-    return {
-        typeDefs,
-        resolvers
-    };
-};
-// TODO need to generate schema for current model from the http parameters
-// eslint-disable-next-line
 const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     const { context } = args;
 
-    const { typeDefs, resolvers } = getInitialGraphQLSchemaDefinitions(context);
+    const schemaPlugins = await buildSchemaPlugins(context);
 
-    // const gqlPlugins = context.plugins.byType("graphql-schema");
-    // for (const pl of gqlPlugins) {
-    //     typeDefs.push(pl.schema.typeDefs);
-    //     resolvers.push(pl.schema.resolvers);
-    // }
+    const typeDefs = [];
+    const resolvers = [];
+
+    // Get schema definitions from plugins
+    for (const pl of schemaPlugins) {
+        typeDefs.push(pl.schema.typeDefs);
+        resolvers.push(pl.schema.resolvers);
+    }
 
     return makeExecutableSchema({
         typeDefs,
@@ -213,6 +137,7 @@ export const graphQLHandlerFactory = (
                 environmentAlias: context.cms.getEnvironmentAlias(),
                 type: context.cms.type
             });
+            
             const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);
 
             if (Array.isArray(body)) {

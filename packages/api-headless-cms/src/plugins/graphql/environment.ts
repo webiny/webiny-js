@@ -12,7 +12,7 @@ import {
     hasManageSettingsPermission,
     hasCmsManageSettingsPermissionRwd,
     userCanManageModel
-} from "../../common/helpers";
+} from "../../utils";
 
 type CreateEnvironmentArgsType = {
     data: CmsEnvironmentCreateInputType;
@@ -69,16 +69,9 @@ export default {
         }
 
         extend type CmsQuery {
-            getEnvironment(id: ID, where: JSON, sort: String): CmsEnvironmentResponse
+            getEnvironment(id: ID): CmsEnvironmentResponse
 
-            listEnvironments(
-                where: JSON
-                sort: JSON
-                search: CmsSearchInput
-                limit: Int
-                after: String
-                before: String
-            ): CmsEnvironmentListResponse
+            listEnvironments: CmsEnvironmentListResponse
         }
 
         extend type CmsMutation {

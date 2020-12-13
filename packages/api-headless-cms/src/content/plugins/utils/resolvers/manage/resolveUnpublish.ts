@@ -11,7 +11,7 @@ export const resolveUnpublish = ({ model }): GraphQLFieldResolver<any, any, CmsC
 ) => {
     setContextLocale(context, args.locale);
 
-    const Model = context.models[model.modelId];
+    const Model = context.models[model.code];
     const instance = await Model.findById(args.revision);
     if (!instance) {
         return entryNotFound(JSON.stringify(args.where));

@@ -40,6 +40,8 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./content/graphql/contentModel";
 
+import { INTROSPECTION } from "./content/graphql/schema";
+
 export type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
     identity?: SecurityIdentity;
@@ -148,6 +150,9 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         },
         handler,
         invoke,
+        async introspect() {
+            return invoke({ body: { query: INTROSPECTION } });
+        },
         // environment
         async createEnvironmentMutation(variables: Record<string, any>) {
             return invoke({ body: { query: CREATE_ENVIRONMENT_MUTATION, variables } });

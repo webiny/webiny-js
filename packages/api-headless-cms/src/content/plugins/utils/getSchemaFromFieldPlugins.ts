@@ -1,8 +1,10 @@
-import { GraphQLSchemaModule } from "apollo-graphql";
-import { CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
+import { GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 
 interface RenderTypesFromFieldPlugins {
-    (params: { fieldTypePlugins: CmsFieldTypePlugins; type: string }): GraphQLSchemaModule[];
+    (params: { fieldTypePlugins: CmsFieldTypePlugins; type: string }): GraphQLSchemaDefinition<
+        CmsContext
+    >[];
 }
 
 const TYPE_MAP = {

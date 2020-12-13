@@ -1,15 +1,50 @@
-import { ContextPlugin } from "@webiny/handler/types";
+import { Context, ContextPlugin } from "@webiny/handler/types";
 import { TypeValueEmitter } from "@webiny/api-headless-cms/content/plugins/utils/TypeValueEmitter";
-import { extractHandlerHttpParameters } from "@webiny/api-headless-cms/content/helpers";
 import {
     CmsContext,
     CmsEnvironmentAliasType,
     CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 
+export type CmsHttpParametersType = {
+    type: string;
+    environment: string;
+    locale: string;
+};
+
 type EnvironmentAndAliasResponseType = {
     environment: CmsEnvironmentType;
     environmentAlias?: CmsEnvironmentAliasType;
+};
+
+const throwPlainError = (type: string): void => {
+    throw new Error(`Missing context.http.path.parameter "${type}".`);
+};
+
+const throwRegexError = (type: string, regex: string): void => {
+    throw new Error(`Parameter part "${type}" does not match a "${regex}" regex.`);
+};
+
+export const extractHandlerHttpParameters = (context: Context): CmsHttpParametersType => {
+    const { key = "" } = context.http.path.parameters || {};
+    const [type, environment, locale] = key.split("/");
+    if (!type) {
+        throwPlainError("type");
+    } else if (!environment) {
+        throwPlainError("environment");
+    } else if (environment.match(/^([a-zA-Z0-9\-]+)$/) === null) {
+        throwRegexError("environment", "^([a-zA-Z0-9\\-]+)$");
+    } else if (!locale) {
+        throwPlainError("locale");
+    } else if (locale.match(/^([a-zA-Z]{2})-([a-zA-Z]{2})$/) === null) {
+        throwRegexError("locale", "^([a-zA-Z]{2})-([a-zA-Z]{2})$");
+    }
+
+    return {
+        type,
+        environment,
+        locale
+    };
 };
 
 const filterEnvironment = (list: CmsEnvironmentType[], id: string): CmsEnvironmentType => {
@@ -67,21 +102,21 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     context.cms.getLocale = () => locale;
 };
 
-export default (options: any = {}): ContextPlugin => ({
-    name: "context-setup",
+export default (options: any = {}): ContextPlugin<CmsContext> => ({
     type: "context",
-    // type CmsContext is required so we know what we can set on the context.cms
-    apply: async (context: CmsContext) => {
+    apply: async context => {
         const { type, environment, locale } = extractHandlerHttpParameters(context);
-        context.cms = context.cms || ({} as any);
-        context.cms.type = type;
-        context.cms.environment = environment;
-        context.cms.locale = locale;
-        context.cms.dataManagerFunction = options.dataManagerFunction;
 
-        context.cms.READ = options.type === "read";
-        context.cms.PREVIEW = options.type === "preview";
-        context.cms.MANAGE = options.type === "manage";
+        context.cms = {
+            ...(context.cms || ({} as any)),
+            type,
+            environment,
+            locale,
+            dataManagerFunction: options.dataManagerFunction,
+            READ: type === "read",
+            PREVIEW: type === "preview",
+            MANAGE: type === "manage"
+        };
 
         if (!context.cms.MANAGE) {
             context.resolvedValues = new TypeValueEmitter();

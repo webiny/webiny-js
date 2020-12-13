@@ -1,6 +1,6 @@
-import { CmsFindFilterOperator } from "@webiny/api-headless-cms/types";
+import { CmsFindFilterOperatorPlugin } from "@webiny/api-headless-cms/types";
 
-const plugin: CmsFindFilterOperator = {
+const plugin: CmsFindFilterOperatorPlugin = {
     name: "cms-find-filter-operator-eq",
     type: "cms-find-filter-operator",
     operator: "eq",

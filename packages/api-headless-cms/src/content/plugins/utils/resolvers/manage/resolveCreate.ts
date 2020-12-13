@@ -6,7 +6,7 @@ export const resolveCreate = ({ model }): GraphQLFieldResolver => async (root, a
     setContextLocale(context, args.locale);
 
     try {
-        const Model = context.models[model.modelId];
+        const Model = context.models[model.code];
         const instance = new Model();
         instance.populate(args.data);
         await instance.save();

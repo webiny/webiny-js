@@ -3,7 +3,6 @@ import { merge } from "lodash";
 import cmsEnvironment from "./graphql/environment";
 import cmsEnvironmentAlias from "./graphql/environmentAlias";
 import cmsSettings from "./graphql/settings";
-import cmsContentModelGroup from "../common/graphql/contentModelGroup";
 
 const emptyResolver = () => ({});
 
@@ -13,12 +12,6 @@ export default () => [
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
-                input CmsSearchInput {
-                    query: String
-                    fields: [String]
-                    operator: String
-                }
-
                 type CmsError {
                     code: String
                     message: String
@@ -31,9 +24,8 @@ export default () => [
                 }
 
                 type CmsListMeta {
-                    cursors: CmsCursors
-                    hasNextPage: Boolean
-                    hasPreviousPage: Boolean
+                    cursor: String
+                    hasMoreItems: Boolean
                     totalCount: Int
                 }
 
@@ -66,7 +58,6 @@ export default () => [
                 ${cmsSettings.typeDefs}
                 ${cmsEnvironment.typeDefs}
                 ${cmsEnvironmentAlias.typeDefs}
-                ${cmsContentModelGroup.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -79,8 +70,7 @@ export default () => [
                 },
                 cmsSettings.resolvers,
                 cmsEnvironment.resolvers,
-                cmsEnvironmentAlias.resolvers,
-                cmsContentModelGroup.resolvers
+                cmsEnvironmentAlias.resolvers
             )
         }
     } as GraphQLSchemaPlugin

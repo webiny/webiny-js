@@ -1,18 +1,16 @@
-import defaults from "../../common/defaults";
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
+import * as utils from "../../utils";
 import {
     CmsEnvironmentAliasType,
     CmsEnvironmentAliasContextType,
     CmsCrudContextType,
     CmsEnvironmentType,
-    CmsContext
+    CmsContext,
+    DbItemTypes
 } from "../../types";
-import toSlug from "../../utils/toSlug";
-import { createEnvironmentAliasPk } from "../../common/partitionKeys";
-import { DbItemTypes } from "../../common/dbItemTypes";
 
 const CreateEnvironmentAliasModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -48,8 +46,8 @@ export default {
         const environmentAliases: CmsEnvironmentAliasContextType = {
             async get(id): Promise<CmsEnvironmentAliasType | null> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentAliasPk(context), SK: id },
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentAliasPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -59,14 +57,14 @@ export default {
             },
             async list(): Promise<CmsEnvironmentAliasType[]> {
                 const [response] = await db.read<CmsEnvironmentAliasType>({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentAliasPk(context), SK: { $gt: " " } }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentAliasPk(context), SK: { $gt: " " } }
                 });
 
                 return response;
             },
             async create(data, createdBy): Promise<CmsEnvironmentAliasType> {
-                const slug = toSlug(data.slug || data.name);
+                const slug = utils.toSlug(data.slug || data.name);
                 const createData = new CreateEnvironmentAliasModel().populate({
                     ...data,
                     slug
@@ -81,7 +79,7 @@ export default {
                 const id = mdbid();
 
                 const modelData = Object.assign(createDataJson, {
-                    PK: createEnvironmentAliasPk(context),
+                    PK: utils.createEnvironmentAliasPk(context),
                     SK: id,
                     TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS,
                     id,
@@ -100,7 +98,7 @@ export default {
                 }
                 // create
                 await db.create({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     data: modelData
                 });
 
@@ -129,8 +127,8 @@ export default {
                 }
 
                 await db.update({
-                    ...defaults.es,
-                    query: { PK: createEnvironmentAliasPk(context), SK: id },
+                    ...utils.defaults.es,
+                    query: { PK: utils.createEnvironmentAliasPk(context), SK: id },
                     data: modelData
                 });
 
@@ -145,8 +143,8 @@ export default {
                 }
                 // delete
                 await db.delete({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentAliasPk(context), SK: model.id }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentAliasPk(context), SK: model.id }
                 });
             }
         };

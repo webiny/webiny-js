@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelType, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { hasCmsPermission } from "@webiny/api-security";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
@@ -29,7 +29,7 @@ const checkContentEntryUpdatePermission = async ({ context, permission, model })
     }
 
     if (allowed && Array.isArray(permission.models) && permission.models.length) {
-        allowed = permission.models.includes(model.modelId);
+        allowed = permission.models.includes(model.code);
     }
 
     if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
@@ -49,8 +49,8 @@ const checkContentEntryUpdatePermission = async ({ context, permission, model })
 
 export interface CreateManageResolvers {
     (params: {
-        models: CmsContentModel[];
-        model: CmsContentModel;
+        models: CmsContentModelType[];
+        model: CmsContentModelType;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -61,7 +61,7 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    const typeName = createTypeName(model.modelId);
+    const typeName = createTypeName(model.code);
     const mTypeName = createManageTypeName(typeName);
 
     return {

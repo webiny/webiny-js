@@ -17,11 +17,6 @@ export interface CmsDataManagerType {
     copyEnvironment(args: CmsDataManagerCopyEnvironmentArgsType): Promise<void>;
 }
 
-export type CmsLocalizedModelFieldValue<T> = {
-    locale: string;
-    value: T;
-};
-
 export type CmsValuesContext = {
     cms: {
         // API type
@@ -56,22 +51,18 @@ export type CmsContext = BaseContext<
     CmsCrudContextType
 >;
 
-export type CmsModelFieldValue<T> = {
-    values: CmsLocalizedModelFieldValue<T>[];
-};
-
-export type CmsFieldValidation = {
+export type CmsFieldValidationType = {
     name: string;
-    message: CmsModelFieldValue<string>;
+    message: string;
     settings: { [key: string]: any };
 };
 
-export type CmsContentModelField = {
-    _id: string;
-    label: CmsModelFieldValue<string>;
-    type: string;
+export type CmsContentModelFieldType = {
+    id: string;
+    type: CmsContentModelFieldTypesType;
     fieldId: string;
-    validation: CmsFieldValidation[];
+    label: string;
+    validation: CmsContentModelFieldValidationType[];
     multipleValues: boolean;
     settings?: { [key: string]: any };
 };
@@ -82,7 +73,7 @@ export type CmsModelFieldValidatorPlugin = Plugin & {
         name: string;
         validate(params: {
             value: any;
-            validator: CmsFieldValidation;
+            validator: CmsFieldValidationType;
             context: CmsContext;
         }): Promise<boolean>;
     };
@@ -97,22 +88,27 @@ export type CmsModelFieldPatternValidatorPlugin = Plugin & {
     };
 };
 
-export type LockedField = {
+export type LockedFieldType = {
     fieldId: string;
     multipleValues: boolean;
     type: string;
     [key: string]: any;
 };
 
-export type CmsContentModel = {
+export type CmsContentModelType = {
+    id: string;
     environment: string;
+    name: string;
+    code: string;
+    group: string;
+    description?: string;
+    createdOn: Date;
+    changedOn?: Date;
+    createdBy?: CreatedByType;
+    fields: CmsContentModelFieldType[];
     title: string;
-    description: string;
-    modelId: string;
-    lockedFields: LockedField[];
+    lockedFields: LockedFieldType[];
     titleFieldId: string;
-    fields: CmsContentModelField[];
-    save(): Promise<boolean>;
 };
 
 export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & {
@@ -121,13 +117,13 @@ export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & 
     dataModel(params: {
         context: TContext;
         model: Function;
-        field: CmsContentModelField;
+        field: CmsContentModelFieldType;
         validation(value): Promise<boolean>;
     }): void;
     searchModel?(params: {
         context: TContext;
         model: Function;
-        field: CmsContentModelField;
+        field: CmsContentModelFieldType;
         validation?(value): Promise<boolean>;
     }): void;
 };
@@ -142,7 +138,7 @@ export type ContextAfterContentModelsPlugin<T = BaseContext> = Plugin & {
     apply?: (context: T) => void | Promise<void>;
 };
 
-export type CmsModelFieldDefinition = {
+export type CmsModelFieldDefinitionType = {
     fields: string;
     typeDefs?: string;
 };
@@ -151,34 +147,49 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
     read: {
-        createGetFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
-        createListFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
-        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createGetFilters?(params: {
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): string;
+        createListFilters?(params: {
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): string;
+        createTypeField(params: {
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): string;
         createResolver(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-            field: CmsContentModelField;
+            models: CmsContentModelType[];
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
         }): GraphQLFieldResolver;
         createSchema?(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
+            models: CmsContentModelType[];
+            model: CmsContentModelType;
         }): GraphQLSchemaModule;
     };
     manage: {
-        createListFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createListFilters?(params: {
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): string;
         createSchema?(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
+            models: CmsContentModelType[];
+            model: CmsContentModelType;
         }): GraphQLSchemaModule;
         createTypeField(params: {
-            model: CmsContentModel;
-            field: CmsContentModelField;
-        }): CmsModelFieldDefinition | string;
-        createInputField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): CmsModelFieldDefinitionType | string;
+        createInputField(params: {
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
+        }): string;
         createResolver(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-            field: CmsContentModelField;
+            models: CmsContentModelType[];
+            model: CmsContentModelType;
+            field: CmsContentModelFieldType;
         }): GraphQLFieldResolver;
     };
 };
@@ -186,20 +197,20 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
 export type CmsModelLockedFieldPlugin = Plugin & {
     type: "cms-model-locked-field";
     fieldType: string;
-    checkLockedField?(params: { lockedField: LockedField; field: CmsContentModelField }): void;
-    getLockedFieldData?(params: { field: CmsContentModelField }): { [key: string]: any };
+    checkLockedField?(params: { lockedField: LockedFieldType; field: CmsContentModelFieldType }): void;
+    getLockedFieldData?(params: { field: CmsContentModelFieldType }): { [key: string]: any };
 };
 
 export type CmsFieldTypePlugins = {
     [key: string]: CmsModelFieldToGraphQLPlugin;
 };
 
-export type CmsFindFilterOperator = Plugin & {
+export type CmsFindFilterOperatorPlugin = Plugin & {
     type: "cms-find-filter-operator";
     operator: string;
     createCondition(params: {
         fieldId: string;
-        field: CmsContentModelField;
+        field: CmsContentModelFieldType;
         value: any;
         context: CmsContext;
     }): { [key: string]: any };
@@ -341,27 +352,12 @@ type CmsContentModelFieldTypesType =
     | "longText"
     | "files"
     | "reference";
+
 type CmsContentModelFieldValidationType = {
+    name: string;
     type: string;
     message: string;
-};
-type CmsContentModelFieldType = {
-    id: string;
-    type: CmsContentModelFieldTypesType;
-    label: string;
-    validation: CmsContentModelFieldValidationType[];
-    multipleValues: boolean;
-};
-export type CmsContentModelType = {
-    id: string;
-    name: string;
-    code: string;
-    group: string;
-    description?: string;
-    createdOn: Date;
-    changedOn?: Date;
-    createdBy?: CreatedByType;
-    fields: CmsContentModelFieldType[];
+    settings: { [key: string]: any };
 };
 
 export type CmsContentModelCreateInputType = {
@@ -436,3 +432,11 @@ export type ContentModelManagerPlugin = Plugin & {
         model: CmsContentModelType
     ): Promise<CmsContentModelManagerInterface<T>>;
 };
+
+export enum DbItemTypes {
+    CMS_CONTENT_MODEL_GROUP = "cms.group",
+    CMS_CONTENT_MODEL = "cms.model",
+    CMS_ENVIRONMENT = "cms.env",
+    CMS_ENVIRONMENT_ALIAS = "cms.envAlias",
+    CMS_SETTINGS = "cms.settings"
+}

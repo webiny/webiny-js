@@ -10,7 +10,7 @@ import {
 } from "@webiny/commodo";
 
 import shortid from "shortid";
-import toSlug from "../../../utils/toSlug";
+import { toSlug } from "../../../utils";
 
 export default ({ createBase, context }) => {
     const CmsGroup: any = compose(

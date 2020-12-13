@@ -1,11 +1,10 @@
 import {
     CmsContext,
-    CmsContentModelField,
+    CmsContentModelFieldType,
     CmsModelFieldValidatorPlugin
-} from "@webiny/api-headless-cms/types";
-import { getI18NValue } from "./getI18NValue";
+} from "../../../types";
 
-export const createValidation = (field: CmsContentModelField, context: CmsContext) => {
+export const createValidation = (field: CmsContentModelFieldType, context: CmsContext) => {
     const plugins = context.plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );
@@ -29,7 +28,7 @@ export const createValidation = (field: CmsContentModelField, context: CmsContex
             }
 
             if (!valid) {
-                throw new Error(getI18NValue(validator.message) || "Invalid value.");
+                throw new Error(validator.message || "Invalid value.");
             }
         }
 

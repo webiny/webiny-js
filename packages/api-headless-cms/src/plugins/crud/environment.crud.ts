@@ -1,12 +1,9 @@
-import defaults from "../../common/defaults";
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContext } from "../../types";
-import toSlug from "../../utils/toSlug";
-import { createEnvironmentAliasPk, createEnvironmentPk } from "../../common/partitionKeys";
-import { DbItemTypes } from "../../common/dbItemTypes";
+import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContext, DbItemTypes } from "../../types";
+import * as utils from "../../utils";
 
 const CreateEnvironmentModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -40,8 +37,8 @@ export default {
         const environments: CmsEnvironmentContextType = {
             async get(id): Promise<CmsEnvironmentType | null> {
                 const [response] = await db.read<CmsEnvironmentType>({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentPk(context), SK: id },
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -51,13 +48,13 @@ export default {
             },
             async list(): Promise<CmsEnvironmentType[]> {
                 const [response] = await db.read<CmsEnvironmentType>({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentPk(context), SK: { $gt: " " } }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentPk(context), SK: { $gt: " " } }
                 });
                 return response;
             },
             async create(data, createdBy, initial): Promise<CmsEnvironmentType> {
-                const slug = toSlug(data.slug || data.name);
+                const slug = utils.toSlug(data.slug || data.name);
                 const environmentValidationModel = createEnvironmentValidationModel(initial);
                 const createData = environmentValidationModel.populate({
                     ...data,
@@ -103,9 +100,9 @@ export default {
 
                 // save
                 await db.create({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     data: {
-                        PK: createEnvironmentPk(context),
+                        PK: utils.createEnvironmentPk(context),
                         SK: id,
                         TYPE: DbItemTypes.CMS_ENVIRONMENT,
                         ...model
@@ -142,11 +139,11 @@ export default {
                 // run all updates in a batch
                 const dbBatch = db.batch();
                 const modelKeys = {
-                    PK: createEnvironmentPk(context),
+                    PK: utils.createEnvironmentPk(context),
                     SK: id
                 };
                 dbBatch.update({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     query: modelKeys,
                     data: {
                         ...modelKeys,
@@ -159,14 +156,14 @@ export default {
                     return alias.environment.id === id;
                 });
                 // update all aliases last updated time
-                const aliasPk = createEnvironmentAliasPk(context);
+                const aliasPk = utils.createEnvironmentAliasPk(context);
                 for (const alias of aliases) {
                     const aliasKeys = {
                         PK: aliasPk,
                         SK: alias.id
                     };
                     dbBatch.update({
-                        ...defaults.db,
+                        ...utils.defaults.db,
                         query: aliasKeys,
                         data: {
                             ...aliasKeys,
@@ -194,8 +191,8 @@ export default {
                 }
                 // delete
                 await db.delete({
-                    ...defaults.db,
-                    query: { PK: createEnvironmentPk(context), SK: id }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createEnvironmentPk(context), SK: id }
                 });
                 // after delete hook
                 await context.cms.dataManager.deleteEnvironment({ environment: id });

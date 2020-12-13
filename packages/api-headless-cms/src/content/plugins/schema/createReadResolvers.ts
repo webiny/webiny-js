@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelType, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { hasScope } from "@webiny/api-security";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
@@ -9,8 +9,8 @@ import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateReadResolvers {
     (params: {
-        models: CmsContentModel[];
-        model: CmsContentModel;
+        models: CmsContentModelType[];
+        model: CmsContentModelType;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -22,14 +22,14 @@ export const createReadResolvers: CreateReadResolvers = ({
     fieldTypePlugins,
     context
 }) => {
-    const typeName = createTypeName(model.modelId);
+    const typeName = createTypeName(model.code);
     const rTypeName = createReadTypeName(typeName);
 
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
     const apiType = context.cms.READ ? "read" : "preview";
     const environment = context.cms.getEnvironment().slug;
-    const scope = `cms:${apiType}:${environment}:${model.modelId}`;
+    const scope = `cms:${apiType}:${environment}:${model.code}`;
 
     return {
         Query: {
@@ -44,7 +44,7 @@ export const createReadResolvers: CreateReadResolvers = ({
                 // If field-level locale is not specified, use context locale.
                 const locale = args.locale || ctx.cms.locale.code;
                 const value = await resolver(entry, { ...args, locale }, ctx, info);
-                const cacheKey = `${model.modelId}:${entry.id}:${field.fieldId}`;
+                const cacheKey = `${model.code}:${entry.id}:${field.fieldId}`;
                 ctx.resolvedValues.set(cacheKey, value);
                 return value;
             };
