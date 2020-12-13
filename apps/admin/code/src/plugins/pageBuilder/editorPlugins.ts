@@ -8,7 +8,6 @@ import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
 import text from "@webiny/app-page-builder/editor/plugins/elements/text";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
-import spacer from "@webiny/app-page-builder/editor/plugins/elements/spacer";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
 import media from "@webiny/app-page-builder/editor/plugins/elements/media";
 import social from "@webiny/app-page-builder/editor/plugins/elements/social";
@@ -89,7 +88,6 @@ export default [
     image(),
     imagesList(),
     text(),
-    spacer(),
     button(),
     media,
     social,
