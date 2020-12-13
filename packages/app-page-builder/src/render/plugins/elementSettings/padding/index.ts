@@ -1,11 +1,8 @@
 import { get } from "lodash";
-import {
-    PbElementDataSettingsPaddingUnitType,
-    PbRenderElementStylePlugin
-} from "@webiny/app-page-builder/types";
+import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
 const validateSpacingValue = value => {
-    return value || 0;
+    return value || "0px";
 };
 
 export default {
@@ -25,15 +22,8 @@ export default {
             const desktopValue = adv ? desktop[side] : desktop.all;
             const mobileValue = adv ? mobile[side] : mobile.all;
 
-            const desktopUnit: PbElementDataSettingsPaddingUnitType = adv
-                ? get(desktop, "units." + side, "px")
-                : get(desktop, "units.all", "px");
-            const mobileUnit: PbElementDataSettingsPaddingUnitType = adv
-                ? get(mobile, "units." + side, "px")
-                : get(mobile, "units.all", "px");
-
-            style[`--desktop-padding-${side}`] = validateSpacingValue(desktopValue) + desktopUnit;
-            style[`--mobile-padding-${side}`] = validateSpacingValue(mobileValue) + mobileUnit;
+            style[`--desktop-padding-${side}`] = validateSpacingValue(desktopValue);
+            style[`--mobile-padding-${side}`] = validateSpacingValue(mobileValue);
         });
 
         return style;
