@@ -1,14 +1,12 @@
-import React, { useMemo } from "react";
-import { get, startCase } from "lodash";
-import { set, merge } from "dot-prop-immutable";
+import React, { useCallback, useMemo } from "react";
+import { get, set, startCase } from "lodash";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useEventActionHandler } from "../../../../editor";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
 // Components
@@ -27,10 +25,6 @@ import {
     BottomRight
 } from "./StyledComponents";
 import Accordion from "./Accordion";
-import {
-    PbElementDataSettingsPaddingUnitType,
-    PbElementDataSettingsMarginUnitType
-} from "@webiny/app-page-builder/types";
 
 const classes = {
     gridContainerClass: css({
@@ -78,11 +72,7 @@ type PMSettingsPropsType = {
     styleAttribute: "margin" | "padding";
 };
 
-type spacingUnitOptionType<T> = {
-    label: string;
-    value: T;
-};
-const paddingUnitOptions: spacingUnitOptionType<PbElementDataSettingsPaddingUnitType>[] = [
+const paddingUnitOptions = [
     {
         label: "%",
         value: "%"
@@ -104,7 +94,7 @@ const paddingUnitOptions: spacingUnitOptionType<PbElementDataSettingsPaddingUnit
         value: "vw"
     }
 ];
-const marginUnitOptions: spacingUnitOptionType<PbElementDataSettingsMarginUnitType>[] = [
+const marginUnitOptions = [
     {
         label: "%",
         value: "%"
@@ -136,103 +126,48 @@ const options = {
     margin: marginUnitOptions
 };
 
+const SIDES = ["top", "right", "bottom", "left"];
+const DEFAULT_VALUE = "0px";
+
 const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
     styleAttribute
 }) => {
-    const handler = useEventActionHandler();
-
     const valueKey = `data.settings.${styleAttribute}`;
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const advanced = get(element, `${valueKey}.advanced`, false);
 
-    const updateSettings = (name: string, newValue: any, history = false) => {
-        const propName = `${valueKey}.${name}`;
-
-        if (name !== "advanced") {
-            newValue = parseFloat(newValue) || 0;
-        }
-        // "padding" cannot be negative.
-        if (styleAttribute === "padding" && newValue < 0) {
-            newValue = 0;
-        }
-
-        let newElement = set(element, propName, newValue);
-
-        // Update all values in advanced settings
-        if (propName.endsWith(".all")) {
-            const prefix = propName.includes("desktop") ? "desktop" : "mobile";
-            newElement = merge(newElement, `${valueKey}.${prefix}`, {
-                top: newValue,
-                right: newValue,
-                bottom: newValue,
-                left: newValue
-            });
-        }
-
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: newElement,
-                history,
-                merge: true
-            })
-        );
-    };
-
-    const updateUnits = (name: string, newValue: any, history = false) => {
-        const propName = `${valueKey}.${name}`;
-
-        let newElement = set(element, propName, newValue);
-
-        // Update all values in advanced settings
-        if (propName.endsWith(".all")) {
-            const prefix = propName.includes("desktop") ? "desktop.units" : "mobile.units";
-            newElement = merge(newElement, `${valueKey}.${prefix}`, {
-                top: newValue,
-                right: newValue,
-                bottom: newValue,
-                left: newValue
-            });
-        }
-
-        handler.trigger(
-            new UpdateElementActionEvent({
-                element: newElement,
-                history,
-                merge: true
-            })
-        );
-    };
-
-    const getUpdateValue = useMemo(() => {
-        const handlers = {};
-        return (name: string) => {
-            if (!handlers[name]) {
-                handlers[name] = value => updateSettings(name, value, true);
+    const { getUpdateValue } = useUpdateHandlers({
+        element,
+        dataNamespace: valueKey,
+        postModifyElement: ({ name, newElement, newValue }: PostModifyElementArgs) => {
+            // Update all values in advanced settings
+            if (name.endsWith(".all")) {
+                const prefix = name.includes("desktop") ? "desktop" : "mobile";
+                // Modify the element directly.
+                set(newElement, `${valueKey}.${prefix}.top`, newValue);
+                set(newElement, `${valueKey}.${prefix}.right`, newValue);
+                set(newElement, `${valueKey}.${prefix}.bottom`, newValue);
+                set(newElement, `${valueKey}.${prefix}.left`, newValue);
             }
+        }
+    });
 
-            return handlers[name];
-        };
-    }, [updateSettings]);
-
-    const getUpdateUnit = useMemo(() => {
-        const handlers = {};
-        return (name: string) => {
-            if (!handlers[name]) {
-                handlers[name] = value => updateUnits(name, value, true);
-            }
-
-            return handlers[name];
-        };
-    }, [updateUnits]);
-
-    const toggleAdvanced = useMemo(
-        () => event => {
-            // Don't need to propagate further.
+    const toggleAdvanced = useCallback(
+        event => {
             event.stopPropagation();
             getUpdateValue("advanced")(!advanced);
         },
         [advanced]
     );
+
+    const [top, right, bottom, left] = useMemo(() => {
+        return SIDES.map(side => {
+            if (advanced) {
+                return get(element, valueKey + ".desktop." + side, DEFAULT_VALUE);
+            }
+            return get(element, valueKey + ".desktop." + "all", DEFAULT_VALUE);
+        });
+    }, [advanced, element]);
 
     return (
         <Accordion
@@ -254,56 +189,42 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
                 <TopLeft />
                 <Top className="align-center">
                     <SpacingPicker
+                        value={top}
+                        onChange={getUpdateValue(advanced ? "desktop.top" : "desktop.all")}
                         options={options[styleAttribute]}
-                        value={get(element, valueKey + ".desktop.top", 0)}
-                        onChange={
-                            advanced ? getUpdateValue("desktop.top") : getUpdateValue("desktop.all")
-                        }
-                        unitValue={get(element, valueKey + ".desktop.units.top", "px")}
-                        unitOnChange={
-                            advanced
-                                ? getUpdateUnit("desktop.units.top")
-                                : getUpdateUnit("desktop.units.all")
-                        }
                     />
                 </Top>
                 <TopRight />
                 <Left>
                     <SpacingPicker
+                        value={left}
+                        onChange={getUpdateValue("desktop.left")}
                         options={options[styleAttribute]}
                         disabled={!advanced}
-                        value={get(element, valueKey + ".desktop.left", 0)}
-                        onChange={getUpdateValue("desktop.left")}
-                        unitValue={get(element, valueKey + ".desktop.units.left", "px")}
-                        unitOnChange={getUpdateUnit("desktop.units.left")}
                     />
                 </Left>
                 <Center className="align-center">
                     <Typography className={"text mono"} use={"subtitle2"}>
-                        {get(element, "data.settings.width.value", "100%")}
+                        {get(element, "data.settings.width.value", "auto")}
                         &nbsp;x&nbsp;
-                        {get(element, "data.settings.height.value", "100%")}
+                        {get(element, "data.settings.height.value", "auto")}
                     </Typography>
                 </Center>
                 <Right>
                     <SpacingPicker
+                        value={right}
+                        onChange={getUpdateValue("desktop.right")}
                         options={options[styleAttribute]}
                         disabled={!advanced}
-                        value={get(element, valueKey + ".desktop.right", 0)}
-                        onChange={getUpdateValue("desktop.right")}
-                        unitValue={get(element, valueKey + ".desktop.units.right", "px")}
-                        unitOnChange={getUpdateUnit("desktop.units.right")}
                     />
                 </Right>
                 <BottomLeft />
                 <Bottom className={"align-center"}>
                     <SpacingPicker
+                        value={bottom}
+                        onChange={getUpdateValue("desktop.bottom")}
                         options={options[styleAttribute]}
                         disabled={!advanced}
-                        value={get(element, valueKey + ".desktop.bottom", 0)}
-                        onChange={getUpdateValue("desktop.bottom")}
-                        unitValue={get(element, valueKey + ".desktop.units.bottom", "px")}
-                        unitOnChange={getUpdateUnit("desktop.units.bottom")}
                     />
                 </Bottom>
                 <BottomRight />
