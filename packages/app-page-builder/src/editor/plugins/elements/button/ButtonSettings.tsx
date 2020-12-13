@@ -96,7 +96,7 @@ const ButtonSettings = () => {
                         updateValue={updateIcon}
                     />
                 </Wrapper>
-                <Wrapper label={"Color"} containerClassName={classes.gridClass}>
+                <Wrapper label={"Icon color"} containerClassName={classes.gridClass}>
                     <BaseColorPicker
                         handlerClassName={"color-picker-handler"}
                         value={icon?.color}
@@ -104,14 +104,24 @@ const ButtonSettings = () => {
                         updatePreview={updateIconColorPreview}
                     />
                 </Wrapper>
-                <Wrapper label={"Width"} containerClassName={classes.gridClass}>
+                <Wrapper
+                    label={"Icon width"}
+                    containerClassName={classes.gridClass}
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                >
                     <InputField
                         placeholder={"Width"}
                         value={icon?.width}
                         onChange={updateIconWidth}
                     />
                 </Wrapper>
-                <Wrapper label={"Position"} containerClassName={classes.gridClass}>
+                <Wrapper
+                    label={"Icon position"}
+                    containerClassName={classes.gridClass}
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                >
                     <SelectField value={icon?.position || "left"} onChange={updateIconPosition}>
                         <option value={"left"}>Left</option>
                         <option value={"right"}>Right</option>
