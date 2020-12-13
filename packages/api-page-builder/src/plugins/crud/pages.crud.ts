@@ -896,22 +896,6 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     if (publishedPageData) {
-                        // First things first - let's just try to load the published page with the given page's URL.
-                        // If it exists, we only allow to proceed if published page's `id` is the same.
-                        const [[publishedPageByUrl]] = await db.read<Page>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE_PUBLISHED_URL(), SK: page.url },
-                            limit: 1
-                        });
-
-                        if (publishedPageByUrl && publishedPageByUrl.id !== page.id) {
-                            throw new Error(
-                                "Cannot publish page because the URL is already taken by another published page.",
-                                "CANNOT_PUBLISH_URL_TAKEN",
-                                { publishedPage: publishedPageByUrl.id }
-                            );
-                        }
-
                         // If there is a `published` page already, we need to set it as `unpublished`. We need to
                         // execute two updates - update the previously published page's status and the published
                         // page entry (PK_PAGE_PUBLISHED()).
