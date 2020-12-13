@@ -10,9 +10,10 @@ const getTypeObject = (schema, type) => {
 };
 
 describe("content model test", () => {
-    const { documentClient } = useContentGqlHandler({
-        pathParameters: { key: "manage/production/en-us" }
-    });
+    const readHandlerOpts = { pathParameters: { key: "read/production/en-us" } };
+    const manageHandlerOpts = { pathParameters: { key: "manage/production/en-us" } };
+
+    const { documentClient } = useContentGqlHandler(manageHandlerOpts);
 
     beforeEach(async () => {
         const env = await createInitialEnvironment(documentClient);
@@ -21,10 +22,8 @@ describe("content model test", () => {
 
     test("base schema should only contain relevant queries and mutations", async () => {
         // create a "read" and "manage" endpoints
-        const readAPI = useContentGqlHandler({ pathParameters: { key: "read/production/en-us" } });
-        const manageAPI = useContentGqlHandler({
-            pathParameters: { key: "manage/production/en-us" }
-        });
+        const readAPI = useContentGqlHandler(readHandlerOpts);
+        const manageAPI = useContentGqlHandler(manageHandlerOpts);
 
         const [read] = await readAPI.introspect();
         const [manage] = await manageAPI.introspect();
