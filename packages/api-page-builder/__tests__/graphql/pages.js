@@ -247,6 +247,17 @@ export const GET_PAGE = /* GraphQL */ `
     }
 `;
 
+export const GET_PUBLISHED_PAGE = /* GraphQL */ `
+    query GetPublishedPage($id: ID, $url: String) {
+        pageBuilder {
+            getPublishedPage(id: $id, url: $url) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const DELETE_PAGE = /* GraphQL */ `
     mutation DeletePage($id: ID!) {
         pageBuilder {
