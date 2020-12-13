@@ -2,7 +2,6 @@
 **/dist/
 **/build/
 **/.out/
-**/__tests__
 **/*.d.ts
 idea.js
 scripts
