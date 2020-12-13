@@ -21,11 +21,11 @@ export default {
             },
             paragraph: {
                 class: Paragraph,
-                inlineToolbar: ["bold", "italic", "color", "link"]
+                inlineToolbar: ["bold", "italic", "underline", "color", "link"]
             },
             header: {
                 class: Header,
-                inlineToolbar: ["bold", "italic", "color", "link"],
+                inlineToolbar: ["bold", "italic", "underline", "color", "link"],
                 config: {
                     levels: [1, 2, 3, 4]
                 }
