@@ -3,8 +3,13 @@ import { css } from "emotion";
 import { sortable } from "react-sortable";
 import { FileManager } from "@webiny/app-admin/components";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { ButtonPrimary } from "@webiny/ui/Button";
 import File from "./File";
+import Accordion from "../../elementSettings/components/Accordion";
+import {
+    classes,
+    SimpleButton,
+    ButtonContainer
+} from "../../elementSettings/components/StyledComponents";
 
 const style = {
     addImagesButton: css({ clear: "both", padding: "20px 10px", textAlign: "center" }),
@@ -28,8 +33,8 @@ const SortableItem = sortable(Item);
 const ImagesListImagesSettings = props => {
     const { Bind, form } = props;
     return (
-        <React.Fragment>
-            <Grid>
+        <Accordion title={"Images"} defaultValue={true}>
+            <Grid className={classes.simpleGrid}>
                 <Cell span={12}>
                     <Bind name={"images"}>
                         {({ onChange, value }) => (
@@ -68,11 +73,11 @@ const ImagesListImagesSettings = props => {
                                                     </SortableItem>
                                                 ))}
                                         </ul>
-                                        <div className={style.addImagesButton}>
-                                            <ButtonPrimary onClick={showFileManager}>
+                                        <ButtonContainer>
+                                            <SimpleButton onClick={showFileManager}>
                                                 Add images...
-                                            </ButtonPrimary>
-                                        </div>
+                                            </SimpleButton>
+                                        </ButtonContainer>
                                     </>
                                 )}
                             </FileManager>
@@ -80,7 +85,7 @@ const ImagesListImagesSettings = props => {
                     </Bind>
                 </Cell>
             </Grid>
-        </React.Fragment>
+        </Accordion>
     );
 };
 
