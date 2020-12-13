@@ -1,12 +1,17 @@
 import React from "react";
-import SaveElementSetting from "./SaveElementSetting";
-import { PbEditorPageElementAdvancedSettingsPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementSettingsPlugin } from "../../../../types";
+import { ReactComponent as FavoriteIcon } from "../../../assets/icons/round-favorite-24px.svg";
+import Action from "../components/Action";
+import SaveAction from "./SaveAction";
 
 export default {
-    name: "pb-editor-page-element-advanced-settings-save",
-    type: "pb-editor-page-element-advanced-settings",
-    elementType: "all",
-    render() {
-        return <SaveElementSetting />;
+    name: "pb-editor-page-element-settings-save",
+    type: "pb-editor-page-element-settings",
+    renderAction() {
+        return (
+            <SaveAction>
+                <Action tooltip={"Save element"} icon={<FavoriteIcon />} />
+            </SaveAction>
+        );
     }
-} as PbEditorPageElementAdvancedSettingsPlugin;
+} as PbEditorPageElementSettingsPlugin;
