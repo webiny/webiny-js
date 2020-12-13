@@ -39,9 +39,17 @@ const labelStyle = css({
     }
 });
 
+const getValue = ({ value, defaultValue, type }) => {
+    if (type === "number") {
+        return isNaN(value) ? defaultValue : value;
+    }
+    return value || defaultValue;
+};
+
 type InputBoxProps = {
     value?: string | number;
     onChange?: (value: any) => void;
+    defaultValue?: string | number;
     [key: string]: any;
 };
 const InputField = ({
@@ -51,6 +59,7 @@ const InputField = ({
     label,
     description,
     validation = { isValid: true },
+    defaultValue = "",
     ...props
 }: InputBoxProps) => {
     return (
@@ -62,7 +71,7 @@ const InputField = ({
             )}
             <input
                 className={classNames(inputStyle, className)}
-                value={value || ""}
+                value={getValue({ value, type: props.type, defaultValue })}
                 onChange={({ target: { value } }) => {
                     onChange(value);
                 }}
