@@ -56,7 +56,7 @@ const iconDescriptions = {
 const VerticalAlignSettings: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const align = get(element, "data.settings.verticalAlign", AlignTypesEnum.START);
+    const align = get(element, "data.settings.verticalAlign", AlignTypesEnum.CENTER);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
