@@ -15,6 +15,16 @@ const inputStyle = css({
     textAlign: "left",
     minHeight: 32,
     backgroundColor: COLORS.lightGray,
+    "&:focus:not(:disabled)": {
+        backgroundColor: COLORS.gray
+    },
+    "&:hover:not(:disabled)": {
+        backgroundColor: COLORS.gray
+    },
+    "&:disabled": {
+        opacity: 0.5,
+        cursor: "not-allowed"
+    },
 
     "&.text-center": {
         textAlign: "center",

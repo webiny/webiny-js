@@ -129,7 +129,17 @@ const styles = {
         cursor: "pointer",
         height: 30,
         boxSizing: "border-box",
-
+        "&:hover:not(:disabled)": { borderColor: COLORS.darkGray, backgroundColor: COLORS.gray },
+        "&:focus:not(:disabled)": {
+            borderColor: COLORS.darkGray,
+            outline: "none",
+            backgroundColor: COLORS.gray
+        },
+        "&:disabled": {
+            opacity: 0.5,
+            cursor: "not-allowed",
+            borderColor: COLORS.lightGray
+        },
         "& svg": {
             width: 16,
             height: 16

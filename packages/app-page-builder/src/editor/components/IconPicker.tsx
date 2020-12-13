@@ -107,7 +107,18 @@ const iconPickerWrapper = css({
         backgroundColor: COLORS.lightGray,
         borderRadius: 1,
         border: `1px solid ${COLORS.gray}`,
-        cursor: "pointer"
+        cursor: "pointer",
+        "&:hover:not(:disabled)": { borderColor: COLORS.darkGray, backgroundColor: COLORS.gray },
+        "&:focus:not(:disabled)": {
+            borderColor: COLORS.darkGray,
+            outline: "none",
+            backgroundColor: COLORS.gray
+        },
+        "&:disabled": {
+            opacity: 0.5,
+            cursor: "not-allowed",
+            borderColor: COLORS.lightGray
+        }
     },
     "& .iconContainer": {
         boxSizing: "border-box",

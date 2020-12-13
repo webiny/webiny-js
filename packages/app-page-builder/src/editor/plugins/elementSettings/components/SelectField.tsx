@@ -25,10 +25,16 @@ const selectStyle = css({
     backgroundSize: "24px auto, 100%",
 
     "&::-ms-expand": { display: "none" },
-    "&:hover": { borderColor: COLORS.darkGray },
-    "&:focus": {
+    "&:hover:not(:disabled)": { borderColor: COLORS.darkGray, backgroundColor: COLORS.gray },
+    "&:focus:not(:disabled)": {
         borderColor: COLORS.darkGray,
-        outline: "none"
+        outline: "none",
+        backgroundColor: COLORS.gray
+    },
+    "&:disabled": {
+        opacity: 0.5,
+        cursor: "not-allowed",
+        borderColor: COLORS.lightGray
     },
     "& option": { fontWeight: "normal" }
 });
