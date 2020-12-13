@@ -10,26 +10,75 @@ import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 import { classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
-import InputField from "../components/InputField";
+import SpacingPicker from "../components/SpacingPicker";
 
 const rightCellStyle = css({
     justifySelf: "end"
 });
 
+const spacingPickerStyle = css({
+    width: "120px",
+    "& .inner-wrapper": {
+        display: "flex"
+    }
+});
+
+const heightUnitOptions = [
+    {
+        label: "%",
+        value: "%"
+    },
+    {
+        label: "px",
+        value: "px"
+    },
+    {
+        label: "em",
+        value: "em"
+    },
+    {
+        label: "vh",
+        value: "vh"
+    },
+    {
+        label: "auto",
+        value: "auto"
+    }
+];
+
+enum HeightUnits {
+    percentage = "%",
+    px = "px",
+    em = "em",
+    vh = "vh",
+    auto = "auto"
+}
+
 const validateHeight = (value: string | undefined) => {
     if (!value) {
         return null;
     }
+    const parsedValue = parseInt(value);
 
-    if (isNaN(parseInt(value))) {
+    if (isNaN(parsedValue) && value !== HeightUnits.auto) {
         throw Error("Enter a valid number!");
     }
 
-    if (value.endsWith("%") || value.endsWith("px")) {
+    if (parsedValue < 0) {
+        throw Error("Height can't be negative!");
+    }
+
+    if (
+        value.endsWith(HeightUnits.percentage) ||
+        value.endsWith(HeightUnits.px) ||
+        value.endsWith(HeightUnits.em) ||
+        value.endsWith(HeightUnits.vh) ||
+        value.endsWith(HeightUnits.auto)
+    ) {
         return true;
     }
 
-    throw Error("Specify % or px!");
+    throw Error("Specify a valid value!");
 };
 
 const Settings: React.FunctionComponent = () => {
@@ -73,9 +122,22 @@ const Settings: React.FunctionComponent = () => {
                             </Bind>
                         </Wrapper>
                         {!data.fullHeight && (
-                            <Wrapper label={"Height"} containerClassName={classes.simpleGrid}>
+                            <Wrapper
+                                label={"Height"}
+                                containerClassName={classes.simpleGrid}
+                                rightCellClassName={rightCellStyle}
+                            >
                                 <Bind name={"value"} validators={validateHeight}>
-                                    <InputField />
+                                    {({ value, onChange, validation }) => (
+                                        <SpacingPicker
+                                            value={value}
+                                            onChange={onChange}
+                                            validation={validation}
+                                            options={heightUnitOptions}
+                                            className={spacingPickerStyle}
+                                            useDefaultStyle={false}
+                                        />
+                                    )}
                                 </Bind>
                             </Wrapper>
                         )}
