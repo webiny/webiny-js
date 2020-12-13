@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 // Icons
 import { ReactComponent as AddIcon } from "../../../assets/icons/add.svg";
 import { ReactComponent as RemoveIcon } from "../../../assets/icons/remove.svg";
@@ -10,9 +11,10 @@ import { COLORS } from "../components/StyledComponents";
 
 const classes = {
     grid: css({
+        position: "relative",
         "&.mdc-layout-grid": {
             padding: 0,
-            margin: 0
+            marginBottom: 8
         }
     }),
     icon: css({
@@ -22,13 +24,20 @@ const classes = {
     }),
     button: css({
         "&.mdc-icon-button": {
-            // backgroundColor: "var(--mdc-theme-background)",
-            // borderRadius: "50%",
+            backgroundColor: "var(--mdc-theme-background)",
+            borderRadius: "50%",
             border: `1px solid ${COLORS.gray}`
         },
         "&.mdc-icon-button:disabled": {
-            cursor: "not-allowed"
+            cursor: "not-allowed",
+            pointerEvents: "all",
+            opacity: 0.5
         }
+    }),
+    errorMessageContainer: css({
+        position: "absolute",
+        bottom: -20,
+        right: 0
     })
 };
 
@@ -44,9 +53,18 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
     onChange,
     maxAllowed
 }) => {
+    const [errorMessage, setErrorMessage] = useState("");
+    // Hide error message after 2s.
+    useEffect(() => {
+        if (errorMessage.length) {
+            setTimeout(() => setErrorMessage(""), 2000);
+        }
+    }, [errorMessage]);
+
     const onReduceHandler = () => {
         const newValue = value - 1;
         if (newValue <= 0) {
+            setErrorMessage("Cell can't get smaller than this.");
             return false;
         }
         onChange(newValue);
@@ -54,6 +72,7 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
 
     const onAddHandler = () => {
         if (maxAllowed <= 0) {
+            setErrorMessage("Cell can't get bigger than this.");
             return false;
         }
         onChange(value + 1);
@@ -66,7 +85,6 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
             </Cell>
             <Cell align={"middle"} span={3}>
                 <IconButton
-                    disabled={value <= 1}
                     className={classes.button}
                     icon={<RemoveIcon />}
                     onClick={onReduceHandler}
@@ -76,13 +94,11 @@ const CellSize: React.FunctionComponent<CellSizePropsType> = ({
                 <Typography use={"subtitle2"}>{value}</Typography>
             </Cell>
             <Cell align={"middle"} span={3}>
-                <IconButton
-                    disabled={maxAllowed <= 0}
-                    className={classes.button}
-                    icon={<AddIcon />}
-                    onClick={onAddHandler}
-                />
+                <IconButton className={classes.button} icon={<AddIcon />} onClick={onAddHandler} />
             </Cell>
+            <FormElementMessage error={true} className={classes.errorMessageContainer}>
+                {errorMessage}
+            </FormElementMessage>
         </Grid>
     );
 };
