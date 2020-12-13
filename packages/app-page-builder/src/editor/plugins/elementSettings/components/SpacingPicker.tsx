@@ -1,86 +1,133 @@
-import React from "react";
-import styled from "@emotion/styled";
+import React, { useMemo, useCallback } from "react";
+import { css } from "emotion";
+import classNames from "classnames";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { BindComponentRenderPropValidation, Form } from "@webiny/form";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
 
-const SpacingPickerWrapper = styled("div")({
-    display: "flex",
+const defaultWrapperStyle = css({
     width: 60,
+    "& .inner-wrapper": {
+        display: "flex"
+    }
+});
 
-    "& .input-field": {
-        appearance: "none",
-        background: "transparent",
-        border: "none",
-        margin: 0,
-        fontSize: 11,
-        padding: 0,
-        width: 24,
-        textAlign: "right",
+const defaultInputStyle = css({
+    appearance: "none",
+    background: "transparent",
+    border: "none",
+    margin: 0,
+    fontSize: 11,
+    padding: 0,
+    width: 24,
+    textAlign: "right",
 
-        transition: "all 200ms ease-in",
+    transition: "all 200ms ease-in",
 
-        "&:focus": {
-            padding: "0px 4px",
-            width: 36,
-            textAlign: "center",
-            outlineColor: "lightblue"
-        }
-    },
-    "& .select-field": {
-        appearance: "none",
-        background: "transparent",
-        border: "none",
+    "&:focus": {
         padding: "0px 4px",
-        margin: 0,
-        fontSize: 12,
-        width: 24,
-        backgroundImage: "none",
-        "&:focus": {
-            outlineWidth: 2,
-            outlineStyle: "solid",
-            outlineColor: "lightblue"
-        }
+        width: 36,
+        textAlign: "center",
+        outlineColor: "lightblue"
+    }
+});
+
+const defaultSelectStyle = css({
+    appearance: "none",
+    background: "transparent",
+    border: "none",
+    padding: "0px 4px",
+    margin: 0,
+    fontSize: 12,
+    width: 24,
+    backgroundImage: "none",
+    "&:focus": {
+        outlineWidth: 2,
+        outlineStyle: "solid",
+        outlineColor: "lightblue"
     }
 });
 
 type SpacingPickerProps = {
     value: any;
     onChange: (value: string | number) => void;
-    unitValue: string;
-    unitOnChange: (value: string) => void;
-    disabled?: boolean;
     options: any[];
+    disabled?: boolean;
+    useDefaultStyle?: boolean;
+    validation?: BindComponentRenderPropValidation;
+    className?: string;
+    inputClassName?: string;
+    selectClassName?: string;
 };
 const SpacingPicker = ({
     value,
     onChange,
-    unitValue,
-    unitOnChange,
     disabled,
-    options = []
+    options = [],
+    validation,
+    className,
+    inputClassName,
+    selectClassName,
+    useDefaultStyle = true
 }: SpacingPickerProps) => {
+    const formData = useMemo(() => {
+        const parsedValue = parseInt(value);
+        if (Number.isNaN(parsedValue)) {
+            return {
+                value: "-",
+                unit: "auto"
+            };
+        }
+        return {
+            value: parsedValue,
+            unit: value.replace(parsedValue, "")
+        };
+    }, [value]);
+
+    const onFormChange = useCallback(formData => {
+        if (formData.unit === "auto") {
+            onChange(formData.unit);
+        } else {
+            onChange(formData.value + formData.unit);
+        }
+    }, []);
+
     return (
-        <SpacingPickerWrapper>
-            <InputField
-                className={"input-field"}
-                value={value}
-                onChange={onChange}
-                disabled={disabled}
-                type={"number"}
-            />
-            <SelectField
-                className={"select-field"}
-                value={unitValue || "px"}
-                onChange={unitOnChange}
-                disabled={disabled}
-            >
-                {options.map(item => (
-                    <option key={item.value} value={item.value}>
-                        {item.label}
-                    </option>
-                ))}
-            </SelectField>
-        </SpacingPickerWrapper>
+        <Form data={formData} onChange={onFormChange}>
+            {({ data, Bind }) => (
+                <div className={classNames(className, { [defaultWrapperStyle]: useDefaultStyle })}>
+                    <div className={"inner-wrapper"}>
+                        <Bind name={"value"}>
+                            <InputField
+                                className={classNames(inputClassName, {
+                                    [defaultInputStyle]: useDefaultStyle
+                                })}
+                                disabled={data.unit === "auto" || disabled}
+                                type={"number"}
+                            />
+                        </Bind>
+                        <Bind name={"unit"}>
+                            <SelectField
+                                className={classNames(selectClassName, {
+                                    [defaultSelectStyle]: useDefaultStyle
+                                })}
+                                disabled={disabled}
+                            >
+                                {options.map(item => (
+                                    <option key={item.value} value={item.value}>
+                                        {item.label}
+                                    </option>
+                                ))}
+                            </SelectField>
+                        </Bind>
+                    </div>
+                    {validation && validation.isValid === false && (
+                        <FormElementMessage error>{validation.message}</FormElementMessage>
+                    )}
+                </div>
+            )}
+        </Form>
     );
 };
 
