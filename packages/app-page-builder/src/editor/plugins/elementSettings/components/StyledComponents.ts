@@ -54,11 +54,11 @@ export const ContentWrapper = styled<"div", ContentWrapperProps>("div")(props =>
 }));
 
 export const COLORS = {
-    lightGray: "rgb(248,248,248)",
-    gray: "rgb(234,233,234)",
-    darkGray: "rgb(179,179,179)",
-    darkestGray: "rgb(51,51,51)",
-    black: "rgb(0,14,26)"
+    lightGray: "hsla(0, 0%, 97%, 1)",
+    gray: "hsla(300, 2%, 92%, 1)",
+    darkGray: "hsla(0, 0%, 70%, 1)",
+    darkestGray: "hsla(0, 0%, 20%, 1)",
+    black: "hsla(208, 100%, 5%, 1)"
 };
 
 export const TopLeft = styled("div")({
