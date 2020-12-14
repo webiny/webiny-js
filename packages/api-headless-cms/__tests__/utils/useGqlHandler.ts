@@ -61,6 +61,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         sslEnabled: false,
         region: "local"
     });
+    
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",

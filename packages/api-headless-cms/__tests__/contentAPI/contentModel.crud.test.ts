@@ -11,8 +11,8 @@ const getTypeObject = (schema, type) => {
 };
 
 describe("content model test", () => {
-    const readHandlerOpts = { path: "read/production/en-us" };
-    const manageHandlerOpts = { path: "manage/production/en-us" };
+    const readHandlerOpts = { path: "read/production/en-US" };
+    const manageHandlerOpts = { path: "manage/production/en-US" };
 
     const { documentClient } = useContentGqlHandler(manageHandlerOpts);
 
