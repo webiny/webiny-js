@@ -1,17 +1,11 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import { useRecoilValue } from "recoil";
+import React, { useMemo } from "react";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import {
-    DeactivatePluginActionEvent,
-    UpdateElementActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { Form } from "@webiny/form";
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
@@ -26,20 +20,7 @@ type AdvancedSettingsPropsType = {
 const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);
 
-    const isPluginActive = useRecoilValue(
-        isPluginActiveSelector("pb-editor-page-element-settings-advanced")
-    );
     const eventActionHandler = useEventActionHandler();
-
-    const { addKeyHandler, removeKeyHandler } = useKeyHandler();
-
-    const closeDialog = useCallback(() => {
-        eventActionHandler.trigger(
-            new DeactivatePluginActionEvent({
-                name: "pb-editor-page-element-settings-advanced"
-            })
-        );
-    }, []);
 
     // Get element settings plugins
     const advancedSettingsPlugin = useMemo(() => {
@@ -63,22 +44,7 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
                 element: merge(element, "data", formData)
             })
         );
-        closeDialog();
     };
-
-    useEffect(() => {
-        if (isPluginActive) {
-            addKeyHandler("escape", closeDialog);
-            return;
-        }
-
-        removeKeyHandler("escape");
-    }, [isPluginActive]);
-    useEffect(() => {
-        return () => {
-            removeKeyHandler("escape");
-        };
-    }, []);
 
     if (!advancedSettingsPlugin.length) {
         return null;
