@@ -1,18 +1,18 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { Query } from "react-apollo";
-import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
+import { useQuery } from "react-apollo";
+import { debounce } from "lodash";
 
 // We utilize the same "listPages" GraphQL field.
-const GET_PAGE = gql`
-    query getPublishedPage($parent: ID) {
+const GET_PUBLISHED_PAGE = gql`
+    query GetPublishedPage($id: ID) {
         pageBuilder {
-            page: getPublishedPage(parent: $parent) {
+            getPublishedPage(id: $id) {
                 data {
-                    parent
-                    published
+                    uniquePageId
+                    status
                     title
                 }
             }
@@ -21,12 +21,12 @@ const GET_PAGE = gql`
 `;
 
 const LIST_PUBLISHED_PAGES = gql`
-    query listPublishedPages($search: String) {
+    query ListPublishedPages($search: PbListPagesSearchInput) {
         pageBuilder {
-            pages: listPublishedPages(search: $search) {
+            listPublishedPages(search: $search) {
                 data {
-                    parent
-                    published
+                    uniquePageId
+                    status
                     title
                 }
             }
@@ -35,22 +35,36 @@ const LIST_PUBLISHED_PAGES = gql`
 `;
 
 export function PagesAutocomplete(props) {
-    const autoComplete = useAutocomplete(LIST_PUBLISHED_PAGES);
+    const [query, setQuery] = useState();
+    const listPublishedPagesQuery = useQuery(LIST_PUBLISHED_PAGES, {
+        skip: !query,
+        variables: {
+            search: {
+                query
+            }
+        }
+    });
+
+    const getPublishedPageQuery = useQuery(GET_PUBLISHED_PAGE, {
+        skip: !props.value,
+        variables: { id: props.value }
+    });
+
+    const publishedPages = get(
+        listPublishedPagesQuery,
+        "data.pageBuilder.listPublishedPages.data",
+        []
+    );
+    const publishedPage = get(getPublishedPageQuery, "data.pageBuilder.getPublishedPage.data");
 
     return (
-        <Query skip={!props.value} variables={{ parent: props.value }} query={GET_PAGE}>
-            {({ data }) => {
-                const value = get(data, "pageBuilder.page.data");
-                return (
-                    <AutoComplete
-                        {...props}
-                        {...autoComplete}
-                        valueProp={"parent"}
-                        textProp={"title"}
-                        value={value}
-                    />
-                );
-            }}
-        </Query>
+        <AutoComplete
+            {...props}
+            options={publishedPages}
+            onInput={debounce(query => query && setQuery(query), 250)}
+            valueProp={"uniquePageId"}
+            textProp={"title"}
+            value={publishedPage}
+        />
     );
 }
