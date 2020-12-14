@@ -88,6 +88,8 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     const cacheKey = generateCacheKey(args);
     if (!schemaList.has(id)) {
         const schema = await generateSchema(args);
+
+        console.log();
         schemaList.set(id, {
             key: cacheKey,
             schema
