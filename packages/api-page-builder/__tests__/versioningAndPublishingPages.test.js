@@ -8,9 +8,11 @@ describe("versioning and publishing pages", () => {
         createCategory,
         createPage,
         publishPage,
+        updatePage,
         unpublishPage,
         listPages,
         listPublishedPages,
+        getPublishedPage,
         until,
         sleep
     } = useGqlHandler();
@@ -19,7 +21,7 @@ describe("versioning and publishing pages", () => {
         await deleteElasticSearchIndex();
     });
 
-    test("create, read, update and delete pages", async () => {
+    test("try publishing and unpublishing pages / revisions", async () => {
         let [response] = await createCategory({
             data: {
                 slug: `slug`,
@@ -276,5 +278,45 @@ describe("versioning and publishing pages", () => {
                 break;
             }
         }
+    });
+
+    test("must be able to publish a page with the same URL as an already previously-published page", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const p1 = await createPage({ category: "slug" }).then(
+            async ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updatePage({ id: p1.id, data: { url: "/pages-test" } }).then(([res]) =>
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1.id)
+        );
+
+        const p2 = await createPage({ category: "slug" }).then(
+            async ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updatePage({ id: p2.id, data: { url: "/pages-test" } }).then(([res]) =>
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p2.id)
+        );
+
+        // Try publishing 2nd page, it should work.
+        await publishPage({ id: p2.id });
+        await getPublishedPage({ url: "/pages-test" }).then(([res]) => {
+            const a = 123;
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p2.id);
+        });
+
+        // Now, if we try to publish 1st page, we should still be able to do it.
+        await publishPage({ id: p1.id });
+        await getPublishedPage({ url: "/pages-test" }).then(([res]) =>
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1.id)
+        );
     });
 });

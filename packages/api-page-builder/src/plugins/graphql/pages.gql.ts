@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { Page, PbContext } from "@webiny/api-page-builder/types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
@@ -18,6 +18,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPage {
                 id: ID
+                uniquePageId: ID
                 editor: String
                 createdFrom: ID
                 createdBy: PbCreatedBy
@@ -54,6 +55,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPageListItem {
                 id: ID
+                uniquePageId: ID
                 editor: String
                 status: String
                 locked: Boolean
@@ -255,31 +257,38 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         `,
         resolvers: {
             PbPage: {
-                category: async (page: { category: string }, args, context) => {
+                uniquePageId: async (page: Page) => {
+                    const [uniquePageId] = page.id.split("#");
+                    return uniquePageId;
+                },
+                category: async (page: Page, args, context) => {
                     return context.pageBuilder.categories.get(page.category);
                 },
-                revisions: async (page: { id: string }, args, context) => {
+                revisions: async (page: Page, args, context) => {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
-                fullUrl: async (page: { url: string }, args, context) => {
+                fullUrl: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
                     return settings.domain + page.url;
                 }
             },
             PbPageListItem: {
-                category: async (page: { category: string }, args, context) => {
+                uniquePageId: async (page: Page) => {
+                    const [uniquePageId] = page.id.split("#");
+                    return uniquePageId;
+                },
+                category: async (page: Page, args, context) => {
                     return context.pageBuilder.categories.get(page.category);
                 },
-                fullUrl: async (page: { url: string }, args, context) => {
+                fullUrl: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
                     return settings.domain + page.url;
                 }
             },
             PbQuery: {
                 getPage: async (_, args: { id: string }, context) => {
-                    const id = decodeURIComponent(args.id);
                     try {
-                        return new Response(await context.pageBuilder.pages.get(id));
+                        return new Response(await context.pageBuilder.pages.get(args.id));
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -347,8 +356,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 deletePage: async (_, args: { id: string }, context: PbContext) => {
                     return resolve(async () => {
-                        const id = decodeURIComponent(args.id);
-                        const [page, latestPage] = await context.pageBuilder.pages.delete(id);
+                        const [page, latestPage] = await context.pageBuilder.pages.delete(args.id);
                         return { page, latestPage };
                     });
                 },
@@ -360,8 +368,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ) => {
                     return resolve(() => {
                         const { data } = args;
-                        const id = decodeURIComponent(args.id);
-                        return context.pageBuilder.pages.update(id, data);
+                        return context.pageBuilder.pages.update(args.id, data);
                     });
                 },
 

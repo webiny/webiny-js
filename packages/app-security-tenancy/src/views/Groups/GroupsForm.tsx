@@ -114,9 +114,9 @@ const GroupForm = () => {
                                 <Cell span={12}>
                                     <Bind
                                         name="description"
-                                        validators={validation.create("required,minLength:3")}
+                                        validators={validation.create("maxlength:500")}
                                     >
-                                        <Input label={t`Description`} rows={4} />
+                                        <Input label={t`Description`} rows={3} />
                                     </Bind>
                                 </Cell>
                             </Grid>

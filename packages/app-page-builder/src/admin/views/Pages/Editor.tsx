@@ -155,7 +155,7 @@ const Editor: React.FunctionComponent = () => {
     return (
         <Query
             query={GET_PAGE}
-            variables={{ id: params.id }}
+            variables={{ id: decodeURIComponent(params.id) }}
             onCompleted={data => {
                 const errorData = extractPageErrorData(data);
                 const error = errorData.message;

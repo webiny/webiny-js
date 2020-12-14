@@ -1,4 +1,4 @@
-import { GraphQLClientCache } from "./types";
+import { GraphQLClientCache, OnCacheChangeCallback } from "./types";
 import normalize from "./InMemoryCache/normalize";
 import denormalize from "./InMemoryCache/denormalize";
 import getQueryCacheKey from "./InMemoryCache/getQueryCacheKey";
@@ -15,13 +15,23 @@ export type QueriesVariablesEntry = {
 };
 
 export default class InMemoryCache implements GraphQLClientCache {
-    queries: Record<string, Record<string, QueriesVariablesEntry>>;
-    entities: Record<string, Record<string, any>>;
     configuration: InMemoryCacheConfiguration;
+    onChangeCallbacks: OnCacheChangeCallback[];
+    data: {
+        queries: Record<string, Record<string, QueriesVariablesEntry>>;
+        entities: Record<string, Record<string, any>>;
+    };
     constructor(configuration: InMemoryCacheConfiguration = {}) {
         this.configuration = configuration;
-        this.queries = {};
-        this.entities = {};
+        this.onChangeCallbacks = [];
+        this.data = {
+            queries: {},
+            entities: {}
+        };
+    }
+
+    getData() {
+        return this.data;
     }
 
     writeQuery({ query, variables = {}, result }) {
@@ -39,31 +49,34 @@ export default class InMemoryCache implements GraphQLClientCache {
 
     readQuery<TResult = Record<string, any>>({ query, variables = {} }) {
         const [queryKey, variablesKey] = getQueryCacheKey(query, variables);
-        if (!this.queries[queryKey]) {
+        if (!this.data.queries[queryKey]) {
             return null;
         }
 
-        if (!this.queries[queryKey][variablesKey]) {
+        if (!this.data.queries[queryKey][variablesKey]) {
             return null;
         }
 
-        return denormalize(this.queries[queryKey][variablesKey], this.entities) as TResult;
+        return denormalize(
+            this.data.queries[queryKey][variablesKey],
+            this.data.entities
+        ) as TResult;
     }
 
     deleteQuery({ query, variables = {} }) {
         const [queryKey, variablesKey] = getQueryCacheKey(query, variables);
-        if (!this.queries[queryKey]) {
+        if (!this.data.queries[queryKey]) {
             return;
         }
 
-        if (!this.queries[queryKey][variablesKey]) {
+        if (!this.data.queries[queryKey][variablesKey]) {
             return;
         }
 
-        const entry: QueriesVariablesEntry = this.queries[queryKey][variablesKey];
-        delete this.queries[queryKey][variablesKey];
-        if (Object.keys(this.queries[queryKey]).length === 0) {
-            delete this.queries[queryKey];
+        const entry: QueriesVariablesEntry = this.data.queries[queryKey][variablesKey];
+        delete this.data.queries[queryKey][variablesKey];
+        if (Object.keys(this.data.queries[queryKey]).length === 0) {
+            delete this.data.queries[queryKey];
         }
 
         // Check if we can delete one or more entities from the entities cache.
@@ -71,9 +84,9 @@ export default class InMemoryCache implements GraphQLClientCache {
         for (let i = 0; i < entry.entities.length; i++) {
             const entityId = entry.entities[i];
             let entityIsPresentInOtherQuery = false;
-            nextEntity: for (const queryKey in this.queries) {
-                for (const variablesKey in this.queries[queryKey]) {
-                    if (this.queries[queryKey][variablesKey].entities.includes(entityId)) {
+            nextEntity: for (const queryKey in this.data.queries) {
+                for (const variablesKey in this.data.queries[queryKey]) {
+                    if (this.data.queries[queryKey][variablesKey].entities.includes(entityId)) {
                         entityIsPresentInOtherQuery = true;
                         break nextEntity;
                     }
@@ -91,27 +104,64 @@ export default class InMemoryCache implements GraphQLClientCache {
         }
     }
 
+    onChange(callback) {
+        this.onChangeCallbacks.push(callback);
+        return () => {
+            this.onChangeCallbacks = this.onChangeCallbacks.filter(fn => fn !== callback);
+        };
+    }
+
+    runOnChangeCallbacks() {
+        for (let i = 0; i < this.onChangeCallbacks.length; i++) {
+            this.onChangeCallbacks[i]();
+        }
+    }
+
     import(queries, entities) {
-        mergeNormalizedQueries(this.queries, queries);
-        mergeNormalizedEntities(this.entities, entities);
+        mergeNormalizedQueries(this.data.queries, queries);
+        mergeNormalizedEntities(this.data.entities, entities);
+        this.runOnChangeCallbacks();
     }
 
     export() {
-        return { queries: this.queries, entities: this.entities };
+        return { queries: this.data.queries, entities: this.data.entities };
     }
 
     flush() {
-        this.queries = {};
-        this.entities = {};
+        this.data = {
+            queries: {},
+            entities: {}
+        };
+        this.runOnChangeCallbacks();
     }
 
-    writeEntity(typename, id, data) {
-        this.entities[typename][id] = data;
+    writeEntity({ id, typename }, data) {
+        if (!this.data.entities[typename]) {
+            this.data.entities[typename] = {};
+        }
+
+        this.data.entities[typename][id] = data;
+        this.runOnChangeCallbacks();
     }
-    readEntity(typename, id) {
-        return this.entities[typename][id];
+
+    readEntity({ id, typename }) {
+        if (!this.data.entities[typename]) {
+            return null;
+        }
+        return this.data.entities[typename][id] || null;
     }
-    deleteEntity(typename, id) {
-        delete this.entities[typename][id];
+
+    deleteEntity({ id, typename }) {
+        if (!this.data.entities[typename]) {
+            return;
+        }
+
+        delete this.data.entities[typename][id];
+
+        if (Object.keys(this.data.entities[typename]).length === 0) {
+            delete this.data.entities[typename];
+        }
+
+        this.runOnChangeCallbacks();
     }
 }

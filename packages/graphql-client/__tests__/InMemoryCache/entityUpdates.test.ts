@@ -1,71 +1,105 @@
-/* eslint-disable */
-// @ts-ignore
-import { InMemoryCache } from "@webiny/graphql-client";
+import InMemoryCache from "@webiny/graphql-client/InMemoryCache";
 import getPageMock from "./mocks/getPage.mock";
 
-test.skip("changes must be seen in cached query results", async () => {
+test("changes must be seen in cached query results", async () => {
     const cache = new InMemoryCache();
     const { result, query, variables } = getPageMock;
     await cache.writeQuery({ query, variables, result });
 
-    expect(await cache.readQuery({ query, variables })).toEqual({
-        pageBuilder: {
-            getPage: {
-                data: {
-                    id: "5fca313c4d426b000841b7d2#1",
-                    title: "Untitled",
-                    url: "/blogs/untitled-kia9qvtr",
-                    version: 1,
-                    locked: false,
-                    status: "draft",
-                    revisions: [
-                        {
-                            id: "5fca313c4d426b000841b7d2#1",
-                            savedOn: "2020-12-04T12:53:16.575Z",
-                            title: "Untitled",
-                            status: "draft",
-                            version: 1
-                        }
-                    ],
-                    createdBy: { id: "a@webiny.com" },
-                    content: null
-                },
-                error: null
-            }
+    const entity = cache.readEntity({
+        typename: "PbPage",
+        id: "5fd0ced4a4e43b0008f89541#7"
+    });
+
+    cache.writeEntity(
+        {
+            typename: "PbPage",
+            id: "5fd0ced4a4e43b0008f89541#7"
+        },
+        {
+            ...entity,
+            title: "Untitled-UPDATED",
+            status: "published",
+            content: "some-content"
         }
-    });
-
-    const entity = cache.readEntity("5fca313c4d426b000841b7d2#1");
-    cache.writeEntity("5fca313c4d426b000841b7d2#1", {
-        ...entity,
-        title: "Untitled-UPDATED",
-        status: "published",
-        content: "some-content"
-    });
+    );
 
     expect(await cache.readQuery({ query, variables })).toEqual({
         pageBuilder: {
+            __typename: "PbQuery",
             getPage: {
+                __typename: "PbPageResponse",
                 data: {
+                    __typename: "PbPage",
                     content: "some-content",
                     createdBy: {
-                        id: "a@webiny.com"
+                        __typename: "PbCreatedBy",
+                        id: "adm@webiny.com"
                     },
-                    id: "5fca313c4d426b000841b7d2#1",
-                    locked: false,
+                    id: "5fd0ced4a4e43b0008f89541#7",
+                    locked: true,
                     revisions: [
                         {
-                            id: "5fca313c4d426b000841b7d2#1",
-                            savedOn: "2020-12-04T12:53:16.575Z",
-                            status: "published",
-                            title: "Untitled-UPDATED",
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#1",
+                            savedOn: "2020-12-09T13:19:40.485Z",
+                            status: "unpublished",
+                            title: "NOVO 123123",
                             version: 1
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#2",
+                            savedOn: "2020-12-09T13:21:56.269Z",
+                            status: "draft",
+                            title: "NOVO 123123",
+                            version: 2
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#3",
+                            savedOn: "2020-12-09T13:25:56.856Z",
+                            status: "unpublished",
+                            title: "NOVO 123123",
+                            version: 3
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#4",
+                            savedOn: "2020-12-09T13:28:32.288Z",
+                            status: "unpublished",
+                            title: "NOVO 123123",
+                            version: 4
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#5",
+                            savedOn: "2020-12-09T13:28:53.639Z",
+                            status: "unpublished",
+                            title: "NOVO 123123",
+                            version: 5
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#6",
+                            savedOn: "2020-12-09T13:30:05.296Z",
+                            status: "unpublished",
+                            title: "NOVO 123123",
+                            version: 6
+                        },
+                        {
+                            __typename: "PbPageRevision",
+                            id: "5fd0ced4a4e43b0008f89541#7",
+                            savedOn: "2020-12-09T13:32:57.602Z",
+                            status: "published",
+                            title: "NOVO 123123",
+                            version: 7
                         }
                     ],
                     status: "published",
                     title: "Untitled-UPDATED",
-                    url: "/blogs/untitled-kia9qvtr",
-                    version: 1
+                    url: "undefineduntitled-123",
+                    version: 7
                 },
                 error: null
             }

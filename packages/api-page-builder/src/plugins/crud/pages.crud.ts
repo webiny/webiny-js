@@ -39,6 +39,19 @@ const UpdateDataModel = withFields({
 
 const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
+type PagePublished = {
+    PK: string;
+    SK: string;
+    id: string;
+};
+
+type PagePublishedUrl = {
+    PK: string;
+    SK: string;
+    url: string;
+    id: string;
+};
+
 const UpdateSettingsModel = withFields({
     general: fields({
         value: {},
@@ -124,6 +137,7 @@ const UpdateSettingsModel = withFields({
 const TYPE_PAGE = "pb.page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
+const TYPE_PAGE_PUBLISHED_URL = TYPE_PAGE + ".p.url";
 
 const PERMISSION_NAME = TYPE_PAGE;
 
@@ -193,6 +207,7 @@ const plugin: ContextPlugin<PbContext> = {
         const PK_PAGE = () => `${getPKPrefix(context)}P`;
         const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
+        const PK_PAGE_PUBLISHED_URL = () => PK_PAGE_PUBLISHED() + "#URL";
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
@@ -333,13 +348,76 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async getPublished(args) {
-                    const [[page]] = await db.read<Page>({
+                    if (!args.id && !args.url) {
+                        throw new Error(
+                            'Cannot get published page - must specify either "id" or "url".'
+                        );
+                    }
+
+                    const notFoundError = new NotFoundError("Page not found.");
+
+                    // 1. If we received `args.id`, then...
+                    if (args.id) {
+                        // If we have a full ID, then try to load it directly.
+                        const [uniquePageId, version] = args.id.split("#");
+                        if (version) {
+                            const [[page]] = await db.read<Page>({
+                                ...defaults.db,
+                                query: { PK: PK_PAGE(), SK: args.id },
+                                limit: 1
+                            });
+
+                            if (page || page.status === "published") {
+                                return page;
+                            }
+                            throw notFoundError;
+                        }
+
+                        // If we only have unique page ID (previously know as `parent`),
+                        // then let's find out which version is published.
+                        const [[pagePublished]] = await db.read<PagePublished>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_PUBLISHED(), SK: uniquePageId },
+                            limit: 1
+                        });
+
+                        if (!pagePublished) {
+                            throw notFoundError;
+                        }
+
+                        const [[page]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: pagePublished.id },
+                            limit: 1
+                        });
+
+                        if (page) {
+                            return page;
+                        }
+                        throw notFoundError;
+                    }
+
+                    // 2. If we received `args.url`, then...
+                    const [[pagePublishedUrl]] = await db.read<PagePublishedUrl>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: args.id },
+                        query: { PK: PK_PAGE_PUBLISHED_URL(), SK: args.url },
                         limit: 1
                     });
 
-                    return page;
+                    if (!pagePublishedUrl) {
+                        throw notFoundError;
+                    }
+
+                    const [[page]] = await db.read<Page>({
+                        ...defaults.db,
+                        query: { PK: PK_PAGE(), SK: pagePublishedUrl.id },
+                        limit: 1
+                    });
+
+                    if (page) {
+                        return page;
+                    }
+                    throw notFoundError;
                 },
 
                 async create(categorySlug) {
@@ -413,7 +491,7 @@ const plugin: ContextPlugin<PbContext> = {
                         body: getESLatestPageData(context, data)
                     });
 
-                    return data;
+                    return omit<Page>(["PK", "SK"], data);
                 },
 
                 async createFrom(from) {
@@ -761,8 +839,6 @@ const plugin: ContextPlugin<PbContext> = {
                         rcpu: "p"
                     });
 
-                    pageId = decodeURIComponent(pageId);
-
                     const [pageUniqueId] = pageId.split("#");
 
                     const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
@@ -825,7 +901,7 @@ const plugin: ContextPlugin<PbContext> = {
                         // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
                         // page's data so that we can update its status within a batch operation. If, hopefully,
                         // they introduce a true update batch operation, remove this `read` call.
-                        // TODO: test this! publishing a new revision with a revision that has already been published.
+
                         const [[previouslyPublishedPage]] = await db.read<Page>({
                             ...defaults.db,
                             query: { PK: PK_PAGE(), SK: publishedPageData.id },
@@ -843,29 +919,55 @@ const plugin: ContextPlugin<PbContext> = {
                             data: omit(["PK", "SK"], previouslyPublishedPage)
                         });
 
-                        batch.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId
-                            },
-                            data: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId,
-                                TYPE: TYPE_PAGE_PUBLISHED,
-                                id: pageId
-                            }
-                        });
+                        batch
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId
+                                },
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED,
+                                    id: pageId
+                                }
+                            })
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: pageUniqueId
+                                },
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    id: page.id,
+                                    url: page.url
+                                }
+                            });
                     } else {
-                        batch.create({
-                            ...defaults.db,
-                            data: {
-                                PK: PK_PAGE_PUBLISHED(),
-                                SK: pageUniqueId,
-                                TYPE: TYPE_PAGE_PUBLISHED,
-                                id: pageId
-                            }
-                        });
+                        batch
+                            .create({
+                                ...defaults.db,
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED(),
+                                    SK: pageUniqueId,
+                                    TYPE: TYPE_PAGE_PUBLISHED,
+                                    id: pageId
+                                }
+                            })
+                            .create({
+                                ...defaults.db,
+                                data: {
+                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    SK: page.url,
+                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    id: page.id,
+                                    url: page.url
+                                }
+                            });
                     }
 
                     await batch.execute();
@@ -909,8 +1011,6 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "u"
                     });
-
-                    pageId = decodeURIComponent(pageId);
 
                     const [pageUniqueId] = pageId.split("#");
 
@@ -1001,8 +1101,6 @@ const plugin: ContextPlugin<PbContext> = {
                         rcpu: "r"
                     });
 
-                    pageId = decodeURIComponent(pageId);
-
                     const [pageUniqueId] = pageId.split("#");
 
                     const [[[page]], [[latestPageData]]] = await db
@@ -1073,8 +1171,6 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });
-
-                    pageId = decodeURIComponent(pageId);
 
                     const [pageUniqueId] = pageId.split("#");
 
@@ -1153,8 +1249,6 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });
-
-                    pageId = decodeURIComponent(pageId);
 
                     const [pageUniqueId] = pageId.split("#");
 
