@@ -112,11 +112,11 @@ enum PartitionKeysEnum {
     CMS_CONTENT_MODEL_GROUP = "CMG"
 }
 
-const getLocaleKey = ({ i18nContent }: CmsContext): string => {
-    if (!i18nContent || !i18nContent.locale || !i18nContent.locale.code) {
+const getLocaleKey = ({ cms }: CmsContext): string => {
+    if (!cms || !cms.getLocale() || !cms.getLocale().code) {
         throw new Error("Locale missing.");
     }
-    return `L#${i18nContent.locale.code}`;
+    return `L#${cms.getLocale().code}`;
 };
 
 const getTenantKey = ({ security }: CmsContext): string | undefined => {

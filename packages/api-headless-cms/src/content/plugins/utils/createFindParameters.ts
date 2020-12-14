@@ -64,12 +64,12 @@ export const createFindParameters = ({
     });
 
     if (!allFields.length) {
-        return { query: { fields: "id", model: model.code }, sort: {} };
+        return { query: { fields: "id", model: model.modelId }, sort: {} };
     }
 
     return {
         query: {
-            model: model.code,
+            model: model.modelId,
             fields: allFields.join(","),
             $and: conditions
         },

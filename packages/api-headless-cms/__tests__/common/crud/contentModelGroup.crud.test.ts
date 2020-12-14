@@ -1,6 +1,6 @@
 import { createInitialEnvironment } from "../../helpers";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
 import { useAdminGqlHandler } from "../../useAdminGqlHandler";
+import { toSlug } from "@webiny/api-headless-cms/utils";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -60,25 +60,23 @@ describe("Content model group crud test", () => {
 
             expect(response).toMatchObject({
                 data: {
-                    cms: {
-                        createContentModelGroup: {
-                            data: {
-                                id: /([a-zA-Z0-9]+)/,
-                                ...modelData,
-                                createdOn: /^20/,
-                                changedOn: null,
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                }
-                            },
-                            error: null
-                        }
+                    createContentModelGroup: {
+                        data: {
+                            id: /([a-zA-Z0-9]+)/,
+                            ...modelData,
+                            createdOn: /^20/,
+                            changedOn: null,
+                            createdBy: {
+                                id: TestHelperEnum.USER_ID,
+                                name: TestHelperEnum.USER_NAME
+                            }
+                        },
+                        error: null
                     }
                 }
             });
 
-            const { id: groupId, createdOn } = response.data.cms.createContentModelGroup.data;
+            const { id: groupId, createdOn } = response.data.createContentModelGroup.data;
 
             const [getResponse] = await getContentModelGroupQuery({
                 id: groupId
@@ -86,20 +84,18 @@ describe("Content model group crud test", () => {
 
             expect(getResponse).toEqual({
                 data: {
-                    cms: {
-                        getContentModelGroup: {
-                            data: {
-                                id: groupId,
-                                ...modelData,
-                                createdOn,
-                                changedOn: null,
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                }
-                            },
-                            error: null
-                        }
+                    getContentModelGroup: {
+                        data: {
+                            id: groupId,
+                            ...modelData,
+                            createdOn,
+                            changedOn: null,
+                            createdBy: {
+                                id: TestHelperEnum.USER_ID,
+                                name: TestHelperEnum.USER_NAME
+                            }
+                        },
+                        error: null
                     }
                 }
             });
@@ -116,36 +112,32 @@ describe("Content model group crud test", () => {
 
             expect(updateResponse).toMatchObject({
                 data: {
-                    cms: {
-                        updateContentModelGroup: {
-                            data: {
-                                id: groupId,
-                                createdOn,
-                                ...updatedModelData,
-                                changedOn: /^20/,
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                }
-                            },
-                            error: null
-                        }
+                    updateContentModelGroup: {
+                        data: {
+                            id: groupId,
+                            createdOn,
+                            ...updatedModelData,
+                            changedOn: /^20/,
+                            createdBy: {
+                                id: TestHelperEnum.USER_ID,
+                                name: TestHelperEnum.USER_NAME
+                            }
+                        },
+                        error: null
                     }
                 }
             });
-            updatedContentModelGroups.push(updateResponse.data.cms.updateContentModelGroup.data);
+            updatedContentModelGroups.push(updateResponse.data.updateContentModelGroup.data);
         }
         const [listResponse] = await listContentModelGroupsQuery();
-        expect(listResponse.data.cms.listContentModelGroups.data).toHaveLength(
+        expect(listResponse.data.listContentModelGroups.data).toHaveLength(
             TestHelperEnum.MODELS_AMOUNT
         );
         expect(listResponse).toEqual({
             data: {
-                cms: {
-                    listContentModelGroups: {
-                        data: updatedContentModelGroups,
-                        error: null
-                    }
+                listContentModelGroups: {
+                    data: updatedContentModelGroups,
+                    error: null
                 }
             }
         });
@@ -156,25 +148,21 @@ describe("Content model group crud test", () => {
             });
             expect(deleteResponse).toEqual({
                 data: {
-                    cms: {
-                        deleteContentModelGroup: {
-                            data: true,
-                            error: null
-                        }
+                    deleteContentModelGroup: {
+                        data: true,
+                        error: null
                     }
                 }
             });
         }
 
         const [afterDeleteListResponse] = await listContentModelGroupsQuery();
-        expect(afterDeleteListResponse.data.cms.listContentModelGroups.data).toHaveLength(0);
+        expect(afterDeleteListResponse.data.listContentModelGroups.data).toHaveLength(0);
         expect(afterDeleteListResponse).toEqual({
             data: {
-                cms: {
-                    listContentModelGroups: {
-                        data: [],
-                        error: null
-                    }
+                listContentModelGroups: {
+                    data: [],
+                    error: null
                 }
             }
         });
@@ -186,14 +174,12 @@ describe("Content model group crud test", () => {
         });
         expect(response).toEqual({
             data: {
-                cms: {
-                    getContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `CMS Content model group "nonExistingId" not found.`,
-                            code: "NOT_FOUND",
-                            data: null
-                        }
+                getContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `CMS Content model group "nonExistingId" not found.`,
+                        code: "NOT_FOUND",
+                        data: null
                     }
                 }
             }
@@ -207,14 +193,12 @@ describe("Content model group crud test", () => {
         });
         expect(response).toEqual({
             data: {
-                cms: {
-                    updateContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `CMS Content model group "nonExistingIdUpdate" not found.`,
-                            code: "NOT_FOUND",
-                            data: null
-                        }
+                updateContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `CMS Content model group "nonExistingIdUpdate" not found.`,
+                        code: "NOT_FOUND",
+                        data: null
                     }
                 }
             }
@@ -227,14 +211,12 @@ describe("Content model group crud test", () => {
         });
         expect(response).toEqual({
             data: {
-                cms: {
-                    deleteContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `CMS Content model group "nonExistingIdDelete" not found.`,
-                            code: "NOT_FOUND",
-                            data: null
-                        }
+                deleteContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `CMS Content model group "nonExistingIdDelete" not found.`,
+                        code: "NOT_FOUND",
+                        data: null
                     }
                 }
             }
@@ -251,14 +233,12 @@ describe("Content model group crud test", () => {
         });
         expect(nameResponse).toEqual({
             data: {
-                cms: {
-                    createContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `Validation failed.`,
-                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                            data: null
-                        }
+                createContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `Validation failed.`,
+                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                        data: null
                     }
                 }
             }
@@ -274,14 +254,12 @@ describe("Content model group crud test", () => {
 
         expect(iconResponse).toEqual({
             data: {
-                cms: {
-                    createContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `Validation failed.`,
-                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                            data: null
-                        }
+                createContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `Validation failed.`,
+                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                        data: null
                     }
                 }
             }
@@ -296,14 +274,12 @@ describe("Content model group crud test", () => {
         });
         expect(response).toEqual({
             data: {
-                cms: {
-                    createContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `slugify: string argument expected`,
-                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                            data: null
-                        }
+                createContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `slugify: string argument expected`,
+                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                        data: null
                     }
                 }
             }
@@ -329,14 +305,12 @@ describe("Content model group crud test", () => {
 
         expect(response).toEqual({
             data: {
-                cms: {
-                    createContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `Content model group with the slug "content-model-group" already exists.`,
-                            code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                            data: null
-                        }
+                createContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `Content model group with the slug "content-model-group" already exists.`,
+                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                        data: null
                     }
                 }
             }
@@ -352,7 +326,7 @@ describe("Content model group crud test", () => {
             }
         });
 
-        const { id } = createResponse.data.cms.createContentModelGroup.data;
+        const { id } = createResponse.data.createContentModelGroup.data;
 
         await createContentModelGroupMutation({
             data: {
@@ -372,14 +346,12 @@ describe("Content model group crud test", () => {
 
         expect(response).toEqual({
             data: {
-                cms: {
-                    updateContentModelGroup: {
-                        data: null,
-                        error: {
-                            message: `Content model group with the slug "content-model-group-second-one" already exists.`,
-                            code: "UPDATE_CONTENT_MODEL_GROUP_FAILED",
-                            data: null
-                        }
+                updateContentModelGroup: {
+                    data: null,
+                    error: {
+                        message: `Content model group with the slug "content-model-group-second-one" already exists.`,
+                        code: "UPDATE_CONTENT_MODEL_GROUP_FAILED",
+                        data: null
                     }
                 }
             }

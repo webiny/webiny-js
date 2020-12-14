@@ -12,7 +12,7 @@ type FindEntry = {
 };
 
 export const findEntry = async ({ model, args, context }: FindEntry) => {
-    const Model = context.models[model.code];
+    const Model = context.models[model.modelId];
     const { CmsContentEntrySearch } = context.models;
 
     const { query } = createFindParameters({ model, where: parseWhere(args.where), context });
@@ -30,7 +30,7 @@ export const findEntry = async ({ model, args, context }: FindEntry) => {
     const index: any = await CmsContentEntrySearch.findOne({
         query: {
             ...query,
-            model: model.code
+            model: model.modelId
         },
         fields: ["revision"]
     });

@@ -33,7 +33,7 @@ const checkContentEntryUpdatePermission = async ({ context, permission, model })
     }
 
     if (allowed && Array.isArray(permission.models) && permission.models.length) {
-        allowed = permission.models.includes(model.code);
+        allowed = permission.models.includes(model.modelId);
     }
 
     if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
@@ -65,7 +65,7 @@ export const createManageResolvers: CreateManageResolvers = ({
     model,
     fieldTypePlugins
 }) => {
-    const typeName = createTypeName(model.code);
+    const typeName = createTypeName(model.modelId);
     const mTypeName = createManageTypeName(typeName);
 
     return {

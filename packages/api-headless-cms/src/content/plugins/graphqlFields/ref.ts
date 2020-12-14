@@ -38,7 +38,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             };
         },
         createTypeField({ field, model }) {
-            const modelIdType = createTypeName(model.code);
+            const modelIdType = createTypeName(model.modelId);
             const fieldIdType = createTypeName(field.fieldId);
             const refModelIdType = createTypeName(field.settings.modelId);
 

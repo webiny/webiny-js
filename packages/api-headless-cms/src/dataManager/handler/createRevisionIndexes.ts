@@ -10,7 +10,7 @@ export const createRevisionIndexes = async ({ model, entry, context, autoDelete 
             options: {
                 query: {
                     environment: environment.id,
-                    model: model.code,
+                    model: model.modelId,
                     revision: entry.id
                 }
             }
@@ -55,7 +55,7 @@ export const createRevisionIndexes = async ({ model, entry, context, autoDelete 
             const entryValues: any = {
                 id: model.generateId(),
                 environment: environment.id,
-                model: model.code,
+                model: model.modelId,
                 locale: locale.code,
                 revision: entry.id,
                 latestVersion: entry.latestVersion,

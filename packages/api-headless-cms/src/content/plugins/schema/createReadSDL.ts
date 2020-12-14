@@ -19,7 +19,7 @@ export interface CreateManageSDL {
 }
 
 export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
-    const typeName = createTypeName(model.code);
+    const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
     const listFilterFieldsRender = renderListFilterFields({

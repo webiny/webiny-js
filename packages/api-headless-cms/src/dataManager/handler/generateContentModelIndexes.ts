@@ -12,7 +12,7 @@ export const generateContentModelIndexes = async ({ context, contentModel }) => 
         options: {
             query: {
                 environment: environment.id,
-                model: model.code
+                model: model.modelId
             }
         }
     });

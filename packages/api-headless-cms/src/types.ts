@@ -99,7 +99,7 @@ export type CmsContentModelType = {
     id: string;
     environment: string;
     name: string;
-    code: string;
+    modelId: string;
     group: string;
     description?: string;
     createdOn: Date;
@@ -408,7 +408,7 @@ export type CmsContentModelContextType = {
         data: CmsContentModelUpdateInputType
     ) => Promise<CmsContentModelType>;
     delete: (model: CmsContentModelType) => Promise<void>;
-    getManager: <T>(code: string) => Promise<CmsContentModelManagerInterface<T>>;
+    getManager: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
     getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };
 
@@ -420,13 +420,13 @@ export type CmsCrudContextType = {
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
-        getModel: <T>(code: string) => Promise<CmsContentModelManagerInterface<T>>;
+        getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
     };
 };
 
 export type ContentModelManagerPlugin = Plugin & {
     type: "content-model-manager";
-    // if target (model) code is not set
+    // if target (model) modelId is not set
     // content model manager plugin is used for everything
     // be aware that if you define multiple plugins without targetCode property only the first one will count
     targetCode?: string[] | string;

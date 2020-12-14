@@ -26,14 +26,14 @@ export const createReadResolvers: CreateReadResolvers = ({
     fieldTypePlugins,
     context
 }) => {
-    const typeName = createTypeName(model.code);
+    const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
     const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
 
     const apiType = context.cms.READ ? "read" : "preview";
     const environment = context.cms.getEnvironment().slug;
-    const scope = `cms:${apiType}:${environment}:${model.code}`;
+    const scope = `cms:${apiType}:${environment}:${model.modelId}`;
 
     return {
         Query: {
@@ -48,7 +48,7 @@ export const createReadResolvers: CreateReadResolvers = ({
                 // If field-level locale is not specified, use context locale.
                 const locale = args.locale || ctx.cms.locale.code;
                 const value = await resolver(entry, { ...args, locale }, ctx, info);
-                const cacheKey = `${model.code}:${entry.id}:${field.fieldId}`;
+                const cacheKey = `${model.modelId}:${entry.id}:${field.fieldId}`;
                 ctx.resolvedValues.set(cacheKey, value);
                 return value;
             };

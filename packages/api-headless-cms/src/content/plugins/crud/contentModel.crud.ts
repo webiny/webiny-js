@@ -20,7 +20,7 @@ const contentModelManagerFactory = async (context: CmsContext, model: CmsContent
     const pluginsByType = plugins.byType<ContentModelManagerPlugin>("content-model-manager");
     for (const plugin of pluginsByType) {
         const target = Array.isArray(plugin.targetCode) ? plugin.targetCode : [plugin.targetCode];
-        if (target.includes(model.code) === true && plugin.name !== defaultName) {
+        if (target.includes(model.modelId) === true && plugin.name !== defaultName) {
             return await plugin.create(context, model);
         }
     }
@@ -43,7 +43,7 @@ export default {
             model: CmsContentModelType
         ): Promise<CmsContentModelManagerInterface<T>> => {
             const manager = await contentModelManagerFactory(context, model);
-            managers.set(model.code, manager);
+            managers.set(model.modelId, manager);
             return (manager as unknown) as CmsContentModelManagerInterface<T>;
         };
 
@@ -81,17 +81,17 @@ export default {
                 };
             },
             async delete(model) {
-                managers.delete(model.code);
+                managers.delete(model.modelId);
                 return;
             },
-            async getManager<T = any>(code) {
-                if (managers.has(code)) {
-                    return managers.get(code);
+            async getManager<T = any>(modelId) {
+                if (managers.has(modelId)) {
+                    return managers.get(modelId);
                 }
                 const models = await context.cms.models.list();
-                const model = models.find(m => m.code === code);
+                const model = models.find(m => m.modelId === modelId);
                 if (!model) {
-                    throw new Error(`There is no content model "${code}".`);
+                    throw new Error(`There is no content model "${modelId}".`);
                 }
                 return await updateManager<T>(context, model);
             },
@@ -101,8 +101,8 @@ export default {
         context.cms = {
             ...(context.cms || ({} as any)),
             models,
-            getModel: (code: string) => {
-                return models.getManager(code);
+            getModel: (modelId: string) => {
+                return models.getManager(modelId);
             }
         };
     }

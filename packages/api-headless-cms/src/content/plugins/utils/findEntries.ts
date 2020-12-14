@@ -26,7 +26,7 @@ export default async function findEntries<T = CmsContext>({
     context,
     info
 }: FindEntries) {
-    const Model = context.models[model.code];
+    const Model = context.models[model.modelId];
     const { CmsContentEntrySearch } = context.models;
 
     parseBoolean(args);
@@ -50,7 +50,7 @@ export default async function findEntries<T = CmsContext>({
 
     // For `read` API we always include `locale` in the queries
     if (!context.cms.MANAGE) {
-        query.locale = context.cms.locale.code;
+        query.locale = context.cms.getLocale().code;
     }
 
     /*

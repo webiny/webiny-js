@@ -68,7 +68,7 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 }
             }
         }
-    };
+    } as any;
 };
 
 export default baseSchema;

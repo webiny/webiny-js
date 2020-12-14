@@ -44,7 +44,7 @@ export const generateSchemaPlugins = async (
             switch (cms.type) {
                 case "manage":
                     newPlugins.push({
-                        name: "graphql-schema-" + model.code + "-manage",
+                        name: "graphql-schema-" + model.modelId + "-manage",
                         type: "graphql-schema",
                         schema: {
                             typeDefs: createManageSDL({ model, context, fieldTypePlugins }),
@@ -61,7 +61,7 @@ export const generateSchemaPlugins = async (
                 case "preview":
                 case "read":
                     newPlugins.push({
-                        name: "graphql-schema-" + model.code + "-read",
+                        name: "graphql-schema-" + model.modelId + "-read",
                         type: "graphql-schema",
                         schema: {
                             typeDefs: createReadSDL({ model, context, fieldTypePlugins }),
