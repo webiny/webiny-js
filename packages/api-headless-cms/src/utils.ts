@@ -138,7 +138,13 @@ const getTenantKey = ({ security }: CmsContext): string | undefined => {
     return `T#${tenant.id}`;
 };
 
-const getEnvironmentKey = ({ environment }: CmsContext): string => {
+const getEnvironmentKey = ({ cms }: CmsContext): string => {
+    if (!cms) {
+        throw new Error(`Missing "context.cms".`);
+    } else if (typeof cms.getEnvironment !== "function") {
+        throw new Error(`Missing "context.cms.getEnvironment()" function.`);
+    }
+    const environment = cms.getEnvironment();
     if (!environment || !environment.slug) {
         throw new Error("Missing environment in the context.");
     }

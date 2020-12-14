@@ -230,7 +230,6 @@ type BaseCmsEnvironmentType = {
 };
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     id: string;
-    slug: string;
     description?: string;
     createdFrom?: CmsEnvironmentType;
     createdBy: CreatedByType;

@@ -93,6 +93,9 @@ const fetchEnvironments = async (context: CmsContext): Promise<EnvironmentAndAli
 
 const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     const { environment, environmentAlias } = await fetchEnvironments(context);
+    // TODO verify that this is correct
+    // it is getting the default locale if one sent in as argument does not exist
+    // possibly it is incorrect result for our use case
     const locale = await context.i18n.getCurrentLocale(context.cms.locale);
     // need to attach environment and environment alias getters to the context for later use
     // and attach real environment slug to the context
