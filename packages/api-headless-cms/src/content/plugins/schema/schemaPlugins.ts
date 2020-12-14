@@ -10,7 +10,9 @@ import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
 
-export const generateSchemaPlugins = async (context: CmsContext): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
+export const generateSchemaPlugins = async (
+    context: CmsContext
+): Promise<GraphQLSchemaPlugin<CmsContext>[]> => {
     const { plugins, cms } = context;
 
     // Structure plugins for faster access

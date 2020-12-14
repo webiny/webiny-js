@@ -1,4 +1,8 @@
-import { CmsContentModelType, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentModelType,
+    CmsFieldTypePlugins,
+    CmsContext
+} from "@webiny/api-headless-cms/types";
 import { hasScope } from "@webiny/api-security";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";

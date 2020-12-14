@@ -137,7 +137,7 @@ export const graphQLHandlerFactory = (
                 environmentAlias: context.cms.getEnvironmentAlias(),
                 type: context.cms.type
             });
-            
+
             const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);
 
             if (Array.isArray(body)) {

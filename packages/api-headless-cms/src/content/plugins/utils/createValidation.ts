@@ -1,8 +1,4 @@
-import {
-    CmsContext,
-    CmsContentModelFieldType,
-    CmsModelFieldValidatorPlugin
-} from "../../../types";
+import { CmsContext, CmsContentModelFieldType, CmsModelFieldValidatorPlugin } from "../../../types";
 
 export const createValidation = (field: CmsContentModelFieldType, context: CmsContext) => {
     const plugins = context.plugins.byType<CmsModelFieldValidatorPlugin>(

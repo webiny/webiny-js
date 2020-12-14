@@ -1,4 +1,8 @@
-import { CmsContentModelType, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentModelType,
+    CmsFieldTypePlugins,
+    CmsContext
+} from "@webiny/api-headless-cms/types";
 import { hasCmsPermission } from "@webiny/api-security";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";

@@ -12,9 +12,9 @@ type HeadlessPluginsOptions = {
     locale: string;
     dataManagerFunction?: string;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (options: HeadlessPluginsOptions) => [
-    contentModelManager,
+    contentModelManager()
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),
     // models(),

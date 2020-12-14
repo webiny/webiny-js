@@ -1,4 +1,4 @@
-import { CmsContentModelType, CmsContext, CmsDataManagerType } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsDataManagerType } from "@webiny/api-headless-cms/types";
 import { Action } from "../types";
 import { ClientContext } from "@webiny/handler-client/types";
 
@@ -43,7 +43,7 @@ export class DataManagerClient implements CmsDataManagerType {
         });
     }
 
-    async generateContentModelIndexes({ contentModel }: { contentModel: CmsContentModelType }) {
+    async generateContentModelIndexes({ contentModel }: { contentModel: any }) {
         return await this.invokeDataManager({
             environment: this.context.cms.getEnvironment().id,
             action: "generateContentModelIndexes",

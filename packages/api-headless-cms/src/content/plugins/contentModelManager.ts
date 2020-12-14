@@ -49,4 +49,4 @@ const plugin: ContentModelManagerPlugin = {
         return new DefaultContentModelManager(context, model);
     }
 };
-export default plugin;
+export default () => plugin;

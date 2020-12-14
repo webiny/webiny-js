@@ -1,4 +1,8 @@
-import { CmsFindFilterOperatorPlugin, CmsContext, CmsContentModelType } from "@webiny/api-headless-cms/types";
+import {
+    CmsFindFilterOperatorPlugin,
+    CmsContext,
+    CmsContentModelType
+} from "@webiny/api-headless-cms/types";
 import { WhereCondition } from "./parseWhere";
 import { Sorter } from "./parseSort";
 

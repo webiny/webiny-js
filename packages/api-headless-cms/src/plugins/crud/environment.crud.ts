@@ -2,7 +2,12 @@ import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
-import { CmsEnvironmentType, CmsEnvironmentContextType, CmsContext, DbItemTypes } from "../../types";
+import {
+    CmsEnvironmentType,
+    CmsEnvironmentContextType,
+    CmsContext,
+    DbItemTypes
+} from "../../types";
 import * as utils from "../../utils";
 
 const CreateEnvironmentModel = withFields({

@@ -9,7 +9,7 @@ export default ({ dataManagerFunction }: Params): ContextPlugin => {
     return {
         type: "context",
         name: "context-cms-data-manager",
-        apply(context) {
+        async apply(context) {
             if (!context.cms) {
                 context.cms = {};
             }

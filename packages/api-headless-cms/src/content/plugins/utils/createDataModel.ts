@@ -39,7 +39,7 @@ export const createDataModel = (
 
     // Create content model
     const Model: any = pipe(
-        withName(`Cms${upperFirst(contentModel.modelId)}`),
+        withName(`Cms${upperFirst(contentModel.id)}`),
         // All entries need to end up in the same database collection / table.
         withStorageName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
@@ -186,7 +186,7 @@ export const createDataModel = (
                         }
 
                         contentModel.lockedFields = lockedFields;
-                        await contentModel.save();
+                        // await contentModel.save();
                     });
                     break;
                 }
@@ -283,7 +283,7 @@ export const createDataModel = (
                     if ((await Model.count()) === 0) {
                         // Also, let's check if we have zero entries. If so, unlock all of the fields in the content model.
                         contentModel.lockedFields = [];
-                        await contentModel.save();
+                        // await contentModel.save();
                     }
                 }
             }
@@ -315,7 +315,7 @@ export const createDataModel = (
                         }
                     }),
                     withFields({
-                        model: setOnce()(string({ value: contentModel.modelId })),
+                        model: setOnce()(string({ value: contentModel.id })),
                         environment: setOnce()(context.commodo.fields.id()),
                         parent: context.commodo.fields.id(),
                         version: number(),
@@ -371,7 +371,7 @@ export const createDataModel = (
                 return revision.meta.version + 1;
             }
         }),
-        withModelFiltering(contentModel.modelId)
+        withModelFiltering(contentModel.id)
     )(createBase()) as Function;
 
     for (let i = 0; i < contentModel.fields.length; i++) {

@@ -197,7 +197,10 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
 export type CmsModelLockedFieldPlugin = Plugin & {
     type: "cms-model-locked-field";
     fieldType: string;
-    checkLockedField?(params: { lockedField: LockedFieldType; field: CmsContentModelFieldType }): void;
+    checkLockedField?(params: {
+        lockedField: LockedFieldType;
+        field: CmsContentModelFieldType;
+    }): void;
     getLockedFieldData?(params: { field: CmsContentModelFieldType }): { [key: string]: any };
 };
 
