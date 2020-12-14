@@ -1,7 +1,7 @@
 import * as React from "react";
-import HelperMessage from "../components/HelperMessage";
 import { FbFormModelField } from "@webiny/app-form-builder/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import HelperMessage from "../components/HelperMessage";
 
 type Props = {
     type?: string;

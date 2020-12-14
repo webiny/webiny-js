@@ -1,11 +1,7 @@
 import StaticLayout from "./layouts/Static";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import CircularSpinner from "./components/CircularSpinner";
 import { DefaultErrorPage, DefaultNotFoundPage } from "./components/defaultPages";
 
 import {
-    PbPageLayoutComponentPlugin,
     PbPageLayoutPlugin,
     PbThemePlugin,
     PbDefaultPagePlugin
@@ -132,24 +128,6 @@ export default [
             component: StaticLayout
         }
     } as PbPageLayoutPlugin,
-    {
-        name: "pb-layout-component-header",
-        type: "pb-layout-component",
-        componentType: "header",
-        component: Header
-    } as PbPageLayoutComponentPlugin,
-    {
-        name: "pb-layout-component-footer",
-        type: "pb-layout-component",
-        componentType: "footer",
-        component: Footer
-    } as PbPageLayoutComponentPlugin,
-    {
-        name: "pb-layout-component-loader",
-        type: "pb-layout-component",
-        componentType: "loader",
-        component: CircularSpinner
-    } as PbPageLayoutComponentPlugin,
     {
         name: "pb-default-page-error",
         type: "pb-default-page",

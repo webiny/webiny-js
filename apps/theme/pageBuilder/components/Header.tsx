@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import get from "lodash.get";
 import { Query } from "react-apollo";
-import { getHeaderData } from "./graphql";
+import { GET_HEADER_DATA } from "./graphql";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
 
@@ -15,7 +15,7 @@ const Header = () => {
     }, [mobileMenu]);
 
     return (
-        <Query query={getHeaderData}>
+        <Query query={GET_HEADER_DATA}>
             {({ data: response }) => {
                 const { name, logo } = get(response, "pageBuilder.getSettings.data") || {};
 

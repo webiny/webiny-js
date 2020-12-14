@@ -24,3 +24,15 @@ declare module "*.svg" {
     const src: string;
     export default src;
 }
+
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ssr-cache": {
+                class?: string;
+                id?: string;
+            };
+        }
+    }
+}

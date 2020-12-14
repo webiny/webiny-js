@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 
-export const getHeaderData = gql`
+export const GET_HEADER_DATA = gql`
     query PbGetHeader {
         pageBuilder {
             getSettings {
@@ -15,7 +15,7 @@ export const getHeaderData = gql`
     }
 `;
 
-export const getFooterData = gql`
+export const GET_FOOTER_DATA = gql`
     query PbGetSiteFooter {
         pageBuilder {
             getSettings {

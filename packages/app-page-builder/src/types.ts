@@ -178,22 +178,22 @@ export type PbPageLayoutComponentPlugin = Plugin & {
 export type PbPageData = {
     title?: string;
     content: any;
-    seo?: {
-        title: string;
-        description: string;
-        meta: { name: string; content: string }[];
-    };
-    social?: {
-        title: string;
-        description: string;
-        meta: { property: string; content: string }[];
-        image: {
-            src: string;
-        };
-    };
     settings?: {
         general?: {
             layout?: string;
+        };
+        seo?: {
+            title: string;
+            description: string;
+            meta: { name: string; content: string }[];
+        };
+        social?: {
+            title: string;
+            description: string;
+            meta: { property: string; content: string }[];
+            image: {
+                src: string;
+            };
         };
     };
 };

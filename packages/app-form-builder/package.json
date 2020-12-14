@@ -20,7 +20,6 @@
     "@svgr/webpack": "^4.3.2",
     "@webiny/app": "^4.14.0",
     "@webiny/app-admin": "^4.14.0",
-    "@webiny/app-i18n": "^4.14.0",
     "@webiny/app-page-builder": "^4.14.0",
     "@webiny/app-plugin-admin-welcome-screen": "^4.14.0",
     "@webiny/app-security": "^4.14.0",
