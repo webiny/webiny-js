@@ -4,18 +4,11 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
-import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 
-const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
-
-const rwdOptions = [
-    { id: "r", name: t`Read` },
-    { id: "w", name: t`Write` },
-    { id: "d", name: t`Delete` }
-];
+const t = i18n.ns("app-page-builder/admin/plugins/permission-renderer");
 
 const CustomSection = ({ Bind, data, entity, title, children = null }) => {
-    const rwdCheckboxesEnabled = ["full", "own"].includes(data[`${entity}AccessLevel`]);
+    const rwdSelectEnabled = ["full", "own"].includes(data[`${entity}AccessScope`]);
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -25,8 +18,8 @@ const CustomSection = ({ Bind, data, entity, title, children = null }) => {
                 </Cell>
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                        <Cell span={6}>
-                            <Bind name={`${entity}AccessLevel`}>
+                        <Cell span={12}>
+                            <Bind name={`${entity}AccessScope`}>
                                 <Select
                                     label={t`Access Scope`}
                                     description={t`The scope of the content that can be accessed.`}
@@ -41,22 +34,15 @@ const CustomSection = ({ Bind, data, entity, title, children = null }) => {
                         </Cell>
                         <Cell span={12}>
                             <Bind name={`${entity}Rwd`}>
-                                <CheckboxGroup
+                                <Select
+                                    disabled={!rwdSelectEnabled}
                                     label={t`Primary actions`}
                                     description={t`Primary actions that can be performed on the content.`}
                                 >
-                                    {({ getValue, onChange }) =>
-                                        rwdOptions.map(({ id, name }) => (
-                                            <Checkbox
-                                                disabled={!rwdCheckboxesEnabled}
-                                                key={id}
-                                                label={name}
-                                                value={getValue(id)}
-                                                onChange={onChange(id)}
-                                            />
-                                        ))
-                                    }
-                                </CheckboxGroup>
+                                    <option value={"r"}>{t`Read`}</option>
+                                    <option value={"rw"}>{t`Read, write`}</option>
+                                    <option value={"rwd"}>{t`Read, write, delete`}</option>
+                                </Select>
                             </Bind>
                         </Cell>
                         {children}
