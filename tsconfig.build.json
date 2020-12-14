@@ -92,6 +92,8 @@
       "@webiny/db-dynamodb": ["./packages/db-dynamodb/src"],
       "@webiny/graphql/*": ["./packages/graphql/src/*"],
       "@webiny/graphql": ["./packages/graphql/src"],
+      "@webiny/graphql-client/*": ["./packages/graphql-client/src/*"],
+      "@webiny/graphql-client": ["./packages/graphql-client/src"],
       "@webiny/handler/*": ["./packages/handler/src/*"],
       "@webiny/handler": ["./packages/handler/src"],
       "@webiny/handler-apollo-gateway": ["./packages/handler-apollo-gateway/src"],
@@ -127,6 +129,8 @@
       "@webiny/storybook-utils/*": ["./packages/storybook-utils/src/*"],
       "@webiny/react-router": ["./packages/react-router/src"],
       "@webiny/react-router/*": ["./packages/react-router/src/*"],
+      "@webiny/react-graphql-client": ["./packages/react-graphql-client/src"],
+      "@webiny/react-graphql-client/*": ["./packages/react-graphql-client/src/*"],
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"]
