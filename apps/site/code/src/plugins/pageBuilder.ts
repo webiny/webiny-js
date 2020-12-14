@@ -10,9 +10,9 @@ import useSsrCacheTags from "@webiny/app-page-builder/site/plugins/useSsrCacheTa
  * Page element plugins to render page content.
  */
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
-import row from "@webiny/app-page-builder/render/plugins/elements/row";
+// import row from "@webiny/app-page-builder/render/plugins/elements/row";
 import block from "@webiny/app-page-builder/render/plugins/elements/block";
-import column from "@webiny/app-page-builder/render/plugins/elements/column";
+// import column from "@webiny/app-page-builder/render/plugins/elements/column";
 import icon from "@webiny/app-page-builder/render/plugins/elements/icon";
 import image from "@webiny/app-page-builder/render/plugins/elements/image";
 import text from "@webiny/app-page-builder/render/plugins/elements/text";
@@ -26,19 +26,19 @@ import youtube from "@webiny/app-page-builder/render/plugins/elements/embeds/you
 import vimeo from "@webiny/app-page-builder/render/plugins/elements/embeds/vimeo";
 import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twitter";
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
-import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
-import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+// import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
+// import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
 
 /**
  * Slate rich text editor plugins.
  */
-import bold from "@webiny/app-page-builder/render/plugins/slate/bold";
-import italic from "@webiny/app-page-builder/render/plugins/slate/italic";
-import underline from "@webiny/app-page-builder/render/plugins/slate/underline";
-import lists from "@webiny/app-page-builder/render/plugins/slate/lists";
-import code from "@webiny/app-page-builder/render/plugins/slate/code";
-import typography from "@webiny/app-page-builder/render/plugins/slate/typography";
-import link from "@webiny/app-page-builder/render/plugins/slate/link";
+// import bold from "@webiny/app-page-builder/render/plugins/slate/bold";
+// import italic from "@webiny/app-page-builder/render/plugins/slate/italic";
+// import underline from "@webiny/app-page-builder/render/plugins/slate/underline";
+// import lists from "@webiny/app-page-builder/render/plugins/slate/lists";
+// import code from "@webiny/app-page-builder/render/plugins/slate/code";
+// import typography from "@webiny/app-page-builder/render/plugins/slate/typography";
+// import link from "@webiny/app-page-builder/render/plugins/slate/link";
 
 /**
  * Page settings plugins (seo, social, etc.).
@@ -66,9 +66,9 @@ export default [
     useSsrCacheTags(),
     // Page elements
     document(),
-    row(),
+    // row(),
     block(),
-    column(),
+    // column(),
     image(),
     icon(),
     text(),
@@ -82,16 +82,16 @@ export default [
     vimeo(),
     twitter(),
     pinterest(),
-    pagesList(),
-    imagesList,
+    // pagesList(),
+    // imagesList,
     // Slate
-    bold(),
-    italic(),
-    underline(),
-    lists(),
-    code(),
-    typography(),
-    link(),
+    // bold(),
+    // italic(),
+    // underline(),
+    // lists(),
+    // code(),
+    // typography(),
+    // link(),
     // Page settings
     pageSettings(),
     // Page element settings
