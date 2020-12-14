@@ -34,7 +34,7 @@ const breadcrumbs = css({
             textDecoration: "none",
             textTransform: "capitalize",
             padding: "10px 0 10px 45px",
-            background: "hsla(0, 0%, calc(70% - var(--element-count) * 1%), 1)",
+            background: "hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1)",
             position: "relative",
             display: "block"
         },
@@ -45,7 +45,7 @@ const breadcrumbs = css({
             height: "0",
             borderTop: "50px solid transparent",
             borderBottom: "50px solid transparent",
-            borderLeft: "30px solid hsla(0, 0%, calc(70% - var(--element-count) * 1%), 1)   ",
+            borderLeft: "30px solid hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1)   ",
             position: "absolute",
             top: "50%",
             marginTop: "-50px",
