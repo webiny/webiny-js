@@ -839,8 +839,6 @@ const plugin: ContextPlugin<PbContext> = {
                         rcpu: "p"
                     });
 
-                    pageId = decodeURIComponent(pageId);
-
                     const [pageUniqueId] = pageId.split("#");
 
                     const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
@@ -1014,8 +1012,6 @@ const plugin: ContextPlugin<PbContext> = {
                         rcpu: "u"
                     });
 
-                    pageId = decodeURIComponent(pageId);
-
                     const [pageUniqueId] = pageId.split("#");
 
                     const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
@@ -1105,8 +1101,6 @@ const plugin: ContextPlugin<PbContext> = {
                         rcpu: "r"
                     });
 
-                    pageId = decodeURIComponent(pageId);
-
                     const [pageUniqueId] = pageId.split("#");
 
                     const [[[page]], [[latestPageData]]] = await db
@@ -1177,8 +1171,6 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });
-
-                    pageId = decodeURIComponent(pageId);
 
                     const [pageUniqueId] = pageId.split("#");
 
@@ -1257,8 +1249,6 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rcpu: "c"
                     });
-
-                    pageId = decodeURIComponent(pageId);
 
                     const [pageUniqueId] = pageId.split("#");
 

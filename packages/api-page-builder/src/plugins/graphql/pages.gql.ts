@@ -287,9 +287,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             },
             PbQuery: {
                 getPage: async (_, args: { id: string }, context) => {
-                    const id = decodeURIComponent(args.id);
                     try {
-                        return new Response(await context.pageBuilder.pages.get(id));
+                        return new Response(await context.pageBuilder.pages.get(args.id));
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -357,8 +356,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 deletePage: async (_, args: { id: string }, context: PbContext) => {
                     return resolve(async () => {
-                        const id = decodeURIComponent(args.id);
-                        const [page, latestPage] = await context.pageBuilder.pages.delete(id);
+                        const [page, latestPage] = await context.pageBuilder.pages.delete(args.id);
                         return { page, latestPage };
                     });
                 },
@@ -370,8 +368,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 ) => {
                     return resolve(() => {
                         const { data } = args;
-                        const id = decodeURIComponent(args.id);
-                        return context.pageBuilder.pages.update(id, data);
+                        return context.pageBuilder.pages.update(args.id, data);
                     });
                 },
 
