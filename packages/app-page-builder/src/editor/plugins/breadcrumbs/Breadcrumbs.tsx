@@ -1,6 +1,8 @@
 import React from "react";
-import { extrapolateContentElementHelper } from "@webiny/app-page-builder/editor/helpers";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { css } from "emotion";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { PbShallowElement } from "../../../types";
+import { extrapolateContentElementHelper } from "../../helpers";
 import {
     activateElementMutation,
     activeElementSelector,
@@ -8,10 +10,8 @@ import {
     ContentAtomType,
     highlightElementMutation,
     uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import { css } from "emotion";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { ReactComponent as ArrowIcon } from "./dual-tone-arrow.svg";
+} from "../../recoil/modules";
+import { COLORS } from "../elementSettings/components/StyledComponents";
 
 const breadcrumbs = css({
     display: "flex",
@@ -25,41 +25,59 @@ const breadcrumbs = css({
     backgroundColor: "var(--mdc-theme-surface)",
     borderTop: "1px solid var(--mdc-theme-background)",
     fontSize: "12px",
+    overflow: "hidden",
     "> li": {
         cursor: "pointer",
         display: "flex",
-
-        "&:hover": {
-            "& .element": {
-                color: "var(--mdc-them-primary)",
-                backgroundColor: "var(--mdc-theme-on-background)"
-            },
-            "& .divider svg path:first-child": {
-                fill: "var(--mdc-theme-text-secondary-on-background)"
-            },
-            "& .divider svg path:last-child": {
-                fill: "var(--mdc-theme-on-background)"
-            }
-        },
-
-        ".element": {
+        "& .element": {
+            color: COLORS.darkestGray,
+            textDecoration: "none",
             textTransform: "capitalize",
-            color: "var(--mdc-theme-secondary)",
-            padding: "7px 15px 7px 10px",
-            display: "inline-block"
+            padding: "10px 0 10px 45px",
+            background: "hsla(0, 0%, calc(70% - var(--element-count) * 1%), 1)",
+            position: "relative",
+            display: "block"
         },
-        ".divider": {
-            "& svg": {
-                width: 7,
-                height: 28
-            },
-            "& svg path:first-child": {
-                fill: "var(--mdc-theme-background)"
-            },
-            "& svg path:last-child": {
-                fill: "var(--mdc-theme-surface)"
-            }
+        "& .element::after": {
+            content: '" "',
+            display: "block",
+            width: "0",
+            height: "0",
+            borderTop: "50px solid transparent",
+            borderBottom: "50px solid transparent",
+            borderLeft: "30px solid hsla(0, 0%, calc(70% - var(--element-count) * 1%), 1)   ",
+            position: "absolute",
+            top: "50%",
+            marginTop: "-50px",
+            left: "100%",
+            zIndex: 2
+        },
+        "& .element::before": {
+            content: '" "',
+            display: "block",
+            width: "0",
+            height: "0",
+            borderTop: "50px solid transparent",
+            borderBottom: "50px solid transparent",
+            borderLeft: "30px solid hsla(0, 0%, 100%, 1)",
+            position: "absolute",
+            top: "50%",
+            marginTop: "-50px",
+            marginLeft: "1px",
+            left: "100%",
+            zIndex: 1
         }
+    },
+    "& li:first-child .element": { paddingLeft: "10px" },
+
+    // Handle active state
+    "& li .element:hover": {
+        color: "var(--mdc-theme-surface)",
+        background: "var(--mdc-theme-secondary)"
+    },
+    "& li .element:hover:after": {
+        color: "var(--mdc-theme-surface)",
+        borderLeftColor: "var(--mdc-theme-secondary) !important"
     }
 });
 
@@ -106,15 +124,17 @@ const Breadcrumbs: React.FunctionComponent = () => {
 
     return (
         <ul className={breadcrumbs}>
-            {breadcrumbsList.map(({ id, type }) => (
+            {breadcrumbsList.map(({ id, type }, index) => (
                 <li
                     key={id}
                     onMouseOver={() => highlightElement(id)}
                     onClick={() => activateElement(id)}
                 >
-                    <span className={"element"}>{type}</span>
-                    <span className={"divider"}>
-                        <ArrowIcon />
+                    <span
+                        className={"element"}
+                        style={{ "--element-count": index } as React.CSSProperties}
+                    >
+                        {type}
                     </span>
                 </li>
             ))}
