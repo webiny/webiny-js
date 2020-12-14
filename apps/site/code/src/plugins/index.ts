@@ -5,7 +5,7 @@ import typeformPlugins from "@webiny/app-typeform/render";
 import mailchimpPlugins from "@webiny/app-mailchimp/render";
 import gtmPlugins from "@webiny/app-google-tag-manager/render";
 import pageBuilder from "./pageBuilder";
-import formBuilder from "./formBuilder";
+// import formBuilder from "./formBuilder";
 
 import theme from "theme";
 
@@ -16,6 +16,6 @@ plugins.register([
     mailchimpPlugins(),
     gtmPlugins(),
     pageBuilder,
-    formBuilder,
+    // formBuilder,
     theme()
 ]);
