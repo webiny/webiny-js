@@ -146,9 +146,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...initialModel,
                     ...modelData
                 });
-                return {
-                    ...data
-                };
+                return modelData;
             },
             async delete(model) {
                 managers.delete(model.modelId);
