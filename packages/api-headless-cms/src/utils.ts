@@ -113,10 +113,16 @@ enum PartitionKeysEnum {
 }
 
 const getLocaleKey = ({ cms }: CmsContext): string => {
-    if (!cms || !cms.getLocale() || !cms.getLocale().code) {
-        throw new Error("Locale missing.");
+    if (!cms) {
+        throw new Error(`Missing "cms" in context.`);
+    } else if (typeof cms.getLocale !== "function") {
+        throw new Error(`Missing "context.cms.getLocale()" function.`);
     }
-    return `L#${cms.getLocale().code}`;
+    const code = cms.getLocale();
+    if (!code) {
+        throw new Error(`Missing "context.cms.getLocale().code" value.`);
+    }
+    return `L#${code}`;
 };
 
 const getTenantKey = ({ security }: CmsContext): string | undefined => {

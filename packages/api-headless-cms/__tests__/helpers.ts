@@ -46,13 +46,13 @@ const getDummyCmsContext = (): CmsContext => {
                 parent: null
             })
         },
-        i18nContent: {
-            locale: {
-                code: "en-US"
-            }
-        },
         environment: {
             slug: "production"
+        },
+        cms: {
+            getLocale: () => ({
+                code: "en-US"
+            })
         }
     } as any;
 };

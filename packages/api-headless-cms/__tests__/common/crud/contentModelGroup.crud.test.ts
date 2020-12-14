@@ -1,6 +1,6 @@
 import { createInitialEnvironment } from "../../helpers";
-import { useAdminGqlHandler } from "../../useAdminGqlHandler";
 import { toSlug } from "@webiny/api-headless-cms/utils";
+import { useContentGqlHandler } from "../../useContentGqlHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -39,7 +39,7 @@ describe("Content model group crud test", () => {
         updateContentModelGroupMutation,
         deleteContentModelGroupMutation,
         documentClient
-    } = useAdminGqlHandler();
+    } = useContentGqlHandler({ pathParameters: { key: "manage/production/en-us" } });
 
     beforeEach(async () => {
         await createInitialEnvironment(documentClient);
