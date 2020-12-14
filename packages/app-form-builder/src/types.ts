@@ -49,7 +49,7 @@ export type FbFormFieldValidator = {
 };
 
 export type FbFormFieldValidatorPlugin = Plugin & {
-    type: "form-field-validator";
+    type: "fb-form-field-validator";
     validator: {
         name: string;
         validate: (value: any, validator: FbFormFieldValidator) => Promise<any>;
@@ -100,15 +100,6 @@ export type FbFormDetailsSubmissionsPlugin = Plugin & {
     render: (props: { form: FbFormModel }) => React.ReactNode;
 };
 
-/**
- * Enables adding additional multi-select actions in the form submissions section.
- * @see https://docs.webiny.com/docs/webiny-apps/form-builder/development/plugins-reference/app#fb-form-details-submissions-list-multi-select-action
- */
-export type FbFormDetailsSubmissionsListMultiSelectActionPlugin = Plugin & {
-    type: "fb-form-details-submissions-list-multi-select-action";
-    render: (props: { dataList: DataListProps }) => React.ReactNode;
-};
-
 export type FbFormModel = {
     id: FieldIdType;
     version: number;
@@ -141,9 +132,17 @@ export type FbFormModelField = {
 };
 
 export type FbFormSubmissionData = {
-    data: any;
+    id: string;
+    locale: string;
+    data: Record<string, any>;
+    meta: Record<string, any>;
     form: {
-        revision: FbFormModel;
+        id: string;
+        parent: string;
+        name: string;
+        version: number;
+        fields: Record<string, any>[];
+        layout: string[][];
     };
 };
 

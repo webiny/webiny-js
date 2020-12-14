@@ -4,7 +4,7 @@ import { useRouter } from "@webiny/react-router";
 import { useMutation } from "react-apollo";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { CREATE_FORM } from "../../viewsGraphql";
+import { CREATE_FORM } from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -37,10 +37,7 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [create] = useMutation(CREATE_FORM, {
-        refetchQueries: ["FormsListForms"],
-        awaitRefetchQueries: true
-    });
+    const [create] = useMutation(CREATE_FORM);
 
     return (
         <Dialog
@@ -50,26 +47,24 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
             data-testid="fb-new-form-modal"
         >
             <Form
-                onSubmit={async data => {
+                onSubmit={async formData => {
                     setLoading(true);
 
-                    const response = await create({
-                        variables: data
-                    });
+                    const response = await create({ variables: formData });
 
-                    const id = response?.data?.formBuilder?.form?.data?.id;
-                    const error = response?.data?.formBuilder?.form?.error;
+                    const { data, error } = response.data.formBuilder.form;
 
                     if (error) {
                         setLoading(false);
-                        return showSnackbar(error?.message);
+                        return showSnackbar(error.message);
                     }
-                    history.push("/forms/" + encodeURIComponent(id));
+
+                    history.push("/forms/" + encodeURIComponent(data.id));
                 }}
             >
                 {({ Bind, submit }) => (
                     <>
-                        {loading && <CircularProgress />}
+                        {loading && <CircularProgress label={"Creating form..."} />}
                         <DialogTitle>{t`New form`}</DialogTitle>
                         <DialogContent>
                             <Bind name={"name"}>

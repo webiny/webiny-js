@@ -8,7 +8,7 @@ import { FbFormModel } from "@webiny/app-form-builder/types";
 import CircularProgress from "@webiny/ui/Progress/CircularProgress";
 
 const GET_FORM = gql`
-    query GetForm($id: ID!) {
+    query FbGetForm($id: ID!) {
         formBuilder {
             getForm(id: $id) {
                 data {

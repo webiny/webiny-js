@@ -5,16 +5,13 @@ import { useQuery } from "react-apollo";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";
-import { LIST_FORMS } from "../../viewsGraphql";
+import { LIST_FORMS } from "../../graphql";
 
 function Forms() {
     const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
 
-    const listQuery = useQuery(LIST_FORMS, {
-        variables: {
-            sort: { savedOn: -1 }
-        }
-    });
+    const listQuery = useQuery(LIST_FORMS);
+
     // Refetch "Form list" on mount
     useEffect(() => {
         listQuery.refetch();

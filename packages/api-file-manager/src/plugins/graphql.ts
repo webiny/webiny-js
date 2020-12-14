@@ -1,6 +1,7 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import defaults from "./crud/utils/defaults";
 
 const emptyResolver = () => ({});
 
@@ -208,28 +209,38 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     return resolve(() => context.fileManager.files.deleteFile(args.id));
                 },
                 async install(_, args, context) {
-                    // Start the download of initial Page Builder page / block images.
+                    const { fileManager, elasticSearch } = context;
                     try {
-                        let settings = await context.fileManager.settings.getSettings();
+                        const settings = await fileManager.settings.getSettings();
 
-                        if (!settings) {
-                            settings = await context.fileManager.settings.createSettings();
-                        }
-
-                        if (settings.installed) {
+                        if (settings && settings.installed) {
                             return new ErrorResponse({
                                 code: "FILES_INSTALL_ABORTED",
                                 message: "File Manager is already installed."
                             });
                         }
 
+                        const data: Partial<Settings> = {
+                            installed: true
+                        };
+
                         if (args.srcPrefix) {
-                            settings.srcPrefix = args.srcPrefix;
+                            data.srcPrefix = args.srcPrefix;
                         }
 
-                        settings.installed = true;
+                        if (!settings) {
+                            await fileManager.settings.createSettings(data);
+                        } else {
+                            await fileManager.settings.updateSettings(data);
+                        }
 
-                        await context.fileManager.settings.updateSettings(settings);
+                        // Create ES index if it doesn't already exist.
+                        const esIndex = defaults.es(context);
+                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                        if (!exists) {
+                            await elasticSearch.indices.create(esIndex);
+                        }
+
                         return new Response(true);
                     } catch (error) {
                         return new ErrorResponse(error);

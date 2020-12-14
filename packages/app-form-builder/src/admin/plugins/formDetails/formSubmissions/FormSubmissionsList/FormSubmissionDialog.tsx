@@ -51,9 +51,9 @@ const FormSubmissionDialog = ({ formSubmission, onClose }: Props) => {
 
                     <DialogContent className={dialogBody}>
                         <div>
-                            {formSubmission.form.revision.layout.map(row => {
+                            {formSubmission.form.layout.map(row => {
                                 return row.map(id => {
-                                    const field = formSubmission.form.revision.fields.find(
+                                    const field = formSubmission.form.fields.find(
                                         field => field._id === id
                                     );
 

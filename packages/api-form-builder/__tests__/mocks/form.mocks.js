@@ -92,11 +92,5 @@ export const getFormSubmissionData = ({ submissionData, id, formData }) => ({
         ...submissionData.meta,
         submittedOn: /^20/
     },
-    form: {
-        revision: {
-            id: formData.id,
-            name: formData.name
-        }
-    },
     id
 });

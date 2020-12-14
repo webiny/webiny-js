@@ -1,28 +1,15 @@
 import React, { useState } from "react";
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
+import { i18n } from "@webiny/app/i18n";
+import * as ListComponents from "@webiny/ui/List";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
-import { Checkbox } from "@webiny/ui/Checkbox";
-import Block from "../Block";
-import {
-    DataList,
-    List,
-    ListItem,
-    ListItemText,
-    ListTextOverline,
-    ListItemMeta,
-    ListSelectBox
-} from "@webiny/ui/List";
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
-import { IconButton } from "@webiny/ui/Button";
-import { EXPORT_FORM_SUBMISSIONS } from "@webiny/app-form-builder/admin/viewsGraphql";
-import { useMutation } from "react-apollo";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { i18n } from "@webiny/app/i18n";
-import { getPlugins } from "@webiny/plugins";
-import { FbFormDetailsSubmissionsListMultiSelectActionPlugin } from "@webiny/app-form-builder/types";
+import Block from "../Block";
+import useSubmissions from "@webiny/app-form-builder/admin/plugins/formDetails/formSubmissions/FormSubmissionsList/useSubmissions";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 
@@ -40,130 +27,106 @@ const FullName = ({ submission }) => {
 };
 
 const FormVersion = ({ submission }) => {
-    return <span>Form revision #{submission.form.revision.version}</span>;
+    return <span>Form revision #{submission.form.version}</span>;
 };
 
-const renderExportFormSubmissionsTooltip = dataList => {
-    const submissionsCount = dataList.getMultiSelected().length;
-    if (submissionsCount > 0) {
-        return t`Export {submissionsCount|count:1:form submission:default:form submissions}.`({
-            submissionsCount
-        });
+type Props = {
+    form: {
+        id: string;
+    };
+};
+
+const { DataList, List, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
+
+const sorters = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: -1 }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: 1 }
     }
+];
 
-    return t`Export all form submissions`;
-};
+export const FormSubmissionsList = ({ form }: Props) => {
+    const {
+        loading,
+        refresh,
+        submissions,
+        setSorter,
+        nextPage,
+        previousPage,
+        hasPreviousPage,
+        hasNextPage,
+        exportSubmissions,
+        exportInProgress
+    } = useSubmissions(form);
 
-const FormSubmissionsList = props => {
-    const { dataList, form } = props;
     const [selectedFormSubmission, selectFormSubmission] = useState(null);
-    const [exportInProgress, setExportInProgress] = useState(false);
-    const { showSnackbar } = useSnackbar();
-
-    const [exportFormSubmission] = useMutation(EXPORT_FORM_SUBMISSIONS);
-
-    if (!dataList) {
-        return;
-    }
 
     return (
         <>
             <Block title="Submissions">
                 <DataList
-                    {...dataList}
-                    multiSelectAll={dataList.multiSelectAll}
-                    multiSelect={dataList.multiSelect}
+                    loading={loading}
+                    refresh={refresh}
+                    data={submissions}
+                    setSorters={setSorter}
+                    pagination={{
+                        hasNextPage,
+                        hasPreviousPage,
+                        setNextPage: nextPage,
+                        setPreviousPage: previousPage
+                    }}
+                    multiSelectAll={null}
                     multiSelectActions={
-                        <>
-                            <Tooltip
-                                content={renderExportFormSubmissionsTooltip(dataList)}
-                                placement={"bottom"}
-                            >
-                                <IconButton
-                                    disabled={exportInProgress}
-                                    icon={<ImportExport />}
-                                    onClick={async () => {
-                                        setExportInProgress(true);
-                                        const args = {
-                                            variables: {
-                                                parent: form.parent,
-                                                ids: null
-                                            }
-                                        };
-                                        if (!dataList.isNoneMultiSelected()) {
-                                            args.variables.ids = dataList
-                                                .getMultiSelected()
-                                                .map(item => item.id);
-                                        }
-
-                                        const { data } = await exportFormSubmission(args);
-                                        setExportInProgress(false);
-                                        if (data.formBuilder.exportFormSubmissions.error) {
-                                            showSnackbar(
-                                                data.formBuilder.exportFormSubmissions.error.message
-                                            );
-                                            return;
-                                        }
-
-                                        window.open(
-                                            data.formBuilder.exportFormSubmissions.data.src,
-                                            "_blank"
-                                        );
-                                    }}
-                                />
-                            </Tooltip>
-
-                            {getPlugins<FbFormDetailsSubmissionsListMultiSelectActionPlugin>(
-                                "fb-form-details-submissions-list-multi-select-action"
-                            ).map(plugin => (
-                                <React.Fragment key={plugin.name}>
-                                    {plugin.render({ dataList })}
-                                </React.Fragment>
-                            ))}
-                        </>
+                        <Tooltip content={t`Export all form submissions`} placement={"bottom"}>
+                            <IconButton
+                                icon={<ImportExport />}
+                                onClick={exportSubmissions}
+                                disabled={exportInProgress}
+                            />
+                        </Tooltip>
                     }
-                    sorters={[
-                        {
-                            label: t`Newest to oldest`,
-                            sorters: { "meta.submittedOn": -1 }
-                        },
-                        {
-                            label: t`Oldest to newest`,
-                            sorters: { "meta.submittedOn": 1 }
-                        }
-                    ]}
+                    sorters={sorters}
+                    showOptions={{
+                        multiSelectAll: false,
+                        sorters: true,
+                        refresh: true,
+                        pagination: true
+                    }}
                 >
                     {({ data = [] }) => (
                         <List>
-                            {data.map(submission => (
-                                <ListItem key={submission.id}>
-                                    <ListSelectBox>
-                                        <Checkbox
-                                            onChange={() => dataList.multiSelect(submission)}
-                                            value={dataList.isMultiSelected(submission)}
-                                        />
-                                    </ListSelectBox>
-                                    <ListItemText onClick={() => selectFormSubmission(submission)}>
-                                        <FullName submission={submission} />
-                                        <ListTextOverline>
-                                            Visitor IP: {submission.meta.ip || "N/A"}
-                                        </ListTextOverline>
-                                    </ListItemText>
-                                    <ListItemMeta className={rightAlign}>
-                                        <Typography use={"subtitle2"}>
-                                            {t`Submitted: {time}.`({
-                                                time: (
-                                                    <TimeAgo
-                                                        datetime={submission.meta.submittedOn}
-                                                    />
-                                                )
-                                            })}
-                                            <br />
-                                            <FormVersion submission={submission} />
-                                        </Typography>
-                                    </ListItemMeta>
-                                </ListItem>
-                            ))}
+                            {data.map(submission => {
+                                const submittedOn = submission.meta
+                                    ? submission.meta.submittedOn
+                                    : new Date();
+
+                                return (
+                                    <ListItem key={submission.id}>
+                                        <ListItemText
+                                            onClick={() => selectFormSubmission(submission)}
+                                        >
+                                            <FullName submission={submission} />
+                                            <ListTextOverline>
+                                                Visitor IP:{" "}
+                                                {(submission.meta && submission.meta.ip) || "N/A"}
+                                            </ListTextOverline>
+                                        </ListItemText>
+                                        <ListItemMeta className={rightAlign}>
+                                            <Typography use={"subtitle2"}>
+                                                {t`Submitted: {time}.`({
+                                                    time: <TimeAgo datetime={submittedOn} />
+                                                })}
+                                                <br />
+                                                <FormVersion submission={submission} />
+                                            </Typography>
+                                        </ListItemMeta>
+                                    </ListItem>
+                                );
+                            })}
                         </List>
                     )}
                 </DataList>
@@ -177,5 +140,3 @@ const FormSubmissionsList = props => {
         </>
     );
 };
-
-export default FormSubmissionsList;
