@@ -63,10 +63,10 @@ export default (context: DbContext & SecurityContext & TenancyContext): GroupsCR
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {
-                          id: identity.id,
-                          displayName: identity.displayName,
-                          type: identity.type
-                      }
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    }
                     : null
             };
 

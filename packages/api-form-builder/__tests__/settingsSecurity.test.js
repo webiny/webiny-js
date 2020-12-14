@@ -16,63 +16,57 @@ const NOT_AUTHORIZED_RESPONSE = operation => ({
     }
 });
 
-const identityA = new SecurityIdentity({
-    id: "a",
-    login: "a",
-    type: "test",
-    displayName: "Aa"
-});
-
-const identityB = new SecurityIdentity({
-    id: "b",
-    login: "b",
-    type: "test",
-    displayName: "Bb"
-});
-
-const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
-    identity: identityA
-});
-
-beforeEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.create({ index: "form-builder" });
-    } catch (e) {}
-});
-
-afterEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.delete({ index: "form-builder" });
-    } catch (e) {}
-});
+const esFbIndex = "root-form-builder";
 
 describe("Form Builder Settings Security Test", () => {
-    test(`allow "updateSettings" if identity has sufficient permissions`, async () => {
-        const { install } = defaultHandler;
-        // Let's install the "Form Builder" app first.
-        await install({ domain: "localhost:5000" });
+    const identityA = new SecurityIdentity({
+        id: "a",
+        login: "a",
+        type: "test",
+        displayName: "Aa"
+    });
 
-        let insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "forms.forms" }], identityA]
-        ];
+    const defaultHandler = useGqlHandler({
+        permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
+        identity: identityA
+    });
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+    beforeEach(async () => {
+        try {
+            await defaultHandler.install({ domain: "localhost:5000" });
+            await defaultHandler.elasticSearch.indices.create({ index: esFbIndex });
+        } catch (e) {}
+    });
+
+    afterEach(async () => {
+        try {
+            await defaultHandler.elasticSearch.indices.delete({ index: esFbIndex });
+        } catch (e) {}
+    });
+
+    const insufficientUpdatePermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "forms.forms" }], identityA]
+    ];
+
+    test.each(insufficientUpdatePermissions)(
+        `should forbid "updateSettings" with %j and %j`,
+        async (permissions, identity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
             let [response] = await updateSettings();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateSettings"));
         }
+    );
 
-        let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
-        ];
+    const sufficientUpdatePermissions = [
+        [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+    test.each(sufficientUpdatePermissions)(
+        `should allow "updateSettings" with invalid permissions`,
+        async (permissions, identity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
             let [response] = await updateSettings({ data: { domain: "localhost:3000" } });
             expect(response).toMatchObject({
@@ -93,33 +87,39 @@ describe("Form Builder Settings Security Test", () => {
                 }
             });
         }
-    });
+    );
 
-    test(`allow "getSettings" if identity has sufficient permissions`, async () => {
-        const { install } = defaultHandler;
-        // Let's install the "Form Builder" app first.
-        await install({ domain: "localhost:5000" });
+    const insufficientGetPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "forms.forms" }], identityA]
+    ];
 
-        let insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "forms.forms" }], identityA]
-        ];
+    test.each(insufficientGetPermissions)(
+        `should forbid "getSettings" with %j and %j`,
+        async (permissions, identity) => {
+            const { install } = defaultHandler;
+            // Let's install the "Form Builder" app first.
+            await install({ domain: "localhost:5000" });
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
             const { getSettings } = useGqlHandler({ permissions, identity });
             let [response] = await getSettings();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getSettings"));
         }
+    );
 
-        let sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
-        ];
+    const sufficientGetPermissions = [
+        [[{ name: "content.i18n" }, { name: "fb.*" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.settings" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+    test.each(sufficientGetPermissions)(
+        `should allow "getSettings" with %j and %j`,
+        async (permissions, identity) => {
+            const { install } = defaultHandler;
+            // Let's install the "Form Builder" app first.
+            await install({ domain: "localhost:5000" });
+
             const { getSettings } = useGqlHandler({ permissions, identity });
             let [response] = await getSettings();
             expect(response).toMatchObject({
@@ -140,5 +140,5 @@ describe("Form Builder Settings Security Test", () => {
                 }
             });
         }
-    });
+    );
 });

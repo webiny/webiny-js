@@ -1,9 +1,9 @@
 import useGqlHandler from "./useGqlHandler";
 
-describe("Form Builder Settings Test", () => {
+describe("Settings Test", () => {
     const { getSettings, updateSettings, install, isInstalled } = useGqlHandler();
 
-    test(`Should not able to get & update settings before "install"`, async () => {
+    test(`Should not be able to get & update settings before "install"`, async () => {
         // Should not have any settings without install
         let [response] = await getSettings();
 
@@ -12,7 +12,11 @@ describe("Form Builder Settings Test", () => {
                 formBuilder: {
                     getSettings: {
                         data: null,
-                        error: null
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `"Form Builder" settings not found!`
+                        }
                     }
                 }
             }
@@ -35,7 +39,7 @@ describe("Form Builder Settings Test", () => {
         });
     });
 
-    test("Should able to install `Form Builder`", async () => {
+    test("Should be able to install `Form Builder`", async () => {
         // "isInstalled" should return false prior "install"
         let [response] = await isInstalled();
 
@@ -79,7 +83,7 @@ describe("Form Builder Settings Test", () => {
         });
     });
 
-    test(`Should able to get & update settings after "install"`, async () => {
+    test(`Should be able to get & update settings after "install"`, async () => {
         // Let's install the `Form builder`
         let [response] = await install({ domain: "http://localhost:3001" });
 

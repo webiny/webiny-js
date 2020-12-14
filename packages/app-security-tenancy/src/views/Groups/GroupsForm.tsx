@@ -94,12 +94,18 @@ const GroupForm = () => {
                         <SimpleFormContent>
                             <Grid>
                                 <Cell span={6}>
-                                    <Bind name="name" validators={validation.create("required")}>
+                                    <Bind
+                                        name="name"
+                                        validators={validation.create("required,minLength:3")}
+                                    >
                                         <Input label={t`Name`} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={6}>
-                                    <Bind name="slug" validators={validation.create("required")}>
+                                    <Bind
+                                        name="slug"
+                                        validators={validation.create("required,minLength:3")}
+                                    >
                                         <Input disabled={data.id} label={t`Slug`} />
                                     </Bind>
                                 </Cell>
@@ -108,7 +114,7 @@ const GroupForm = () => {
                                 <Cell span={12}>
                                     <Bind
                                         name="description"
-                                        validators={validation.create("required")}
+                                        validators={validation.create("required,minLength:3")}
                                     >
                                         <Input label={t`Description`} rows={4} />
                                     </Bind>
