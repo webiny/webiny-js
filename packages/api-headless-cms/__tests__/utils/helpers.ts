@@ -1,4 +1,9 @@
-import { createEnvironmentAliasPk, createEnvironmentPk, createSettingsPk } from "../../src/utils";
+import {
+    createContentModelGroupPk,
+    createEnvironmentAliasPk,
+    createEnvironmentPk,
+    createSettingsPk
+} from "../../src/utils";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
     CmsContext,
@@ -55,10 +60,12 @@ const getDummyCmsContext = (): CmsContext => {
         cms: {
             getLocale: () => ({
                 code: "en-US"
-            })
+            }),
+            environment: "production"
         }
     } as any;
 };
+export const createTestContentModelGroupPk = () => createContentModelGroupPk(getDummyCmsContext());
 
 export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDummyCmsContext());
 
@@ -155,6 +162,10 @@ export const createGetPermissions = (permissions: PermissionsArgType[]) => {
             return [
                 {
                     name: "cms.manage.settings",
+                    rwd: "rwd"
+                },
+                {
+                    name: "cms.manage.contentModel",
                     rwd: "rwd"
                 },
                 {

@@ -163,14 +163,14 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         manageSchema = /* GraphQL */ `
             input CmsContentModelCreateInput {
                 name: String!
-                code: String!
+                modelId: String!
                 group: ID!
                 description: String
             }
 
             input CmsContentModelUpdateInput {
                 name: String!
-                code: String!
+                modelId: String!
                 group: ID!
                 description: String
             }
@@ -195,8 +195,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 type CmsContentModel {
                     id: ID!
                     name: String!
-                    code: String!
+                    modelId: String!
                     description: String
+                    group: CmsContentModelGroup!
                     createdOn: DateTime!
                     changedOn: DateTime
                     createdBy: JSON!

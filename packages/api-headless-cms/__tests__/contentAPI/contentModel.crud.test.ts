@@ -1,6 +1,17 @@
 /* eslint-disable jest/no-commented-out-tests */
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { createInitialAliasEnvironment, createInitialEnvironment } from "../utils/helpers";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import {
+    createInitialAliasEnvironment,
+    createInitialEnvironment,
+    createTestContentModelGroupPk
+} from "../utils/helpers";
+import {
+    CmsContentModelGroupType,
+    CmsEnvironmentType,
+    DbItemTypes
+} from "@webiny/api-headless-cms/types";
+import mdbid from "mdbid";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
@@ -10,15 +21,46 @@ const getTypeObject = (schema, type) => {
     return schema.types.find(t => t.name === type);
 };
 
+const createContentModelGroup = async (client: DocumentClient, environment: CmsEnvironmentType) => {
+    const model: CmsContentModelGroupType = {
+        id: mdbid(),
+        name: "Group",
+        slug: "group",
+        icon: "ico/ico",
+        createdBy: {
+            id: "123",
+            name: "name"
+        },
+        description: "description",
+        environment,
+        createdOn: new Date(),
+        changedOn: null
+    };
+    await client
+        .put({
+            TableName: "HeadlessCms",
+            Item: {
+                PK: createTestContentModelGroupPk(),
+                SK: model.id,
+                TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                ...model
+            }
+        })
+        .promise();
+    return model;
+};
+
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/production/en-US" };
     const manageHandlerOpts = { path: "manage/production/en-US" };
 
     const { documentClient } = useContentGqlHandler(manageHandlerOpts);
 
+    let environment: CmsEnvironmentType;
+
     beforeEach(async () => {
-        const env = await createInitialEnvironment(documentClient);
-        await createInitialAliasEnvironment(documentClient, env);
+        environment = await createInitialEnvironment(documentClient);
+        await createInitialAliasEnvironment(documentClient, environment);
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -53,6 +95,37 @@ describe("content model test", () => {
             "updateContentModelGroup",
             "deleteContentModelGroup"
         ]);
+    });
+
+    test("create content model", async () => {
+        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+
+        const contentModelGroup = await createContentModelGroup(documentClient, environment);
+
+        const [response] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        id: /^([a-zA-Z0-9]+)$/,
+                        createdBy: {
+                            id: "1234567890",
+                            name: "userName123"
+                        },
+                        createdOn: /^20/,
+                        changedOn: null
+                    },
+                    error: null
+                }
+            }
+        });
     });
 
     // test("create, read, update, delete and list content model", async () => {

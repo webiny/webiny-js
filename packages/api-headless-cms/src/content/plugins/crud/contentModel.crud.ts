@@ -4,20 +4,32 @@ import {
     CmsContentModelType,
     CmsContentModelContextType,
     CmsContentModelManagerInterface,
-    ContentModelManagerPlugin
+    ContentModelManagerPlugin,
+    DbItemTypes
 } from "@webiny/api-headless-cms/types";
 import { defaults } from "../../../utils";
-import { plugins } from "@webiny/plugins";
+import { validation } from "@webiny/validation";
+import { withFields, string } from "@commodo/fields";
+import * as utils from "@webiny/api-headless-cms/utils";
+import mdbid from "mdbid";
 
 // eslint-disable-next-line
 const createContentModelPk = (context: any) => {
     return "contentModel#pk";
 };
-
 const defaultName = "content-model-manager-default";
 
+const CreateContentModelModel = withFields({
+    name: string({ validation: validation.create("required,maxLength:100") }),
+    modelId: string({ validation: validation.create("required,maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:255") }),
+    group: string({ validation: validation.create("required,maxLength:255") })
+})();
+
 const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModelType) => {
-    const pluginsByType = plugins.byType<ContentModelManagerPlugin>("content-model-manager");
+    const pluginsByType = context.plugins.byType<ContentModelManagerPlugin>(
+        "content-model-manager"
+    );
     for (const plugin of pluginsByType) {
         const target = Array.isArray(plugin.targetCode) ? plugin.targetCode : [plugin.targetCode];
         if (target.includes(model.modelId) === true && plugin.name !== defaultName) {
@@ -66,8 +78,37 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
                 return response;
             },
-            async create() {
-                const model = {} as any;
+            async create(data, createdBy) {
+                const createdData = new CreateContentModelModel().populate(data);
+                await createdData.validate();
+                const createdDataJson = await createdData.toJSON();
+
+                const group = await context.cms.groups.get(createdDataJson.group);
+                if (!group) {
+                    throw new Error(`There is no group "${createdDataJson.group}".`);
+                }
+
+                const id = mdbid();
+                const model: CmsContentModelType = {
+                    ...createdDataJson,
+                    id,
+                    group: {
+                        id: group.id,
+                        name: group.name
+                    },
+                    createdBy,
+                    createdOn: new Date().toISOString()
+                };
+
+                await db.create({
+                    ...utils.defaults.db,
+                    data: {
+                        PK: createContentModelPk(context),
+                        SK: id,
+                        TYPE: DbItemTypes.CMS_CONTENT_MODEL,
+                        ...model
+                    }
+                });
 
                 await updateManager(context, model);
                 return model;
