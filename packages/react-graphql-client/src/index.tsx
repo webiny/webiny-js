@@ -1,6 +1,5 @@
-// @ts-nocheck
 import React, { useContext, useEffect, useState } from "react";
-import GraphQLClient from "@webiny/graphql-client";
+import { GraphQLClient } from "@webiny/graphql-client";
 import { DocumentNode } from "graphql/language/ast";
 
 type GraphQLClientContextValue = { cacheChangedOn: number; client: GraphQLClient };

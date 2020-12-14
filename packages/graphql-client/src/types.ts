@@ -1,8 +1,5 @@
 import { DocumentNode } from "graphql/language/ast";
 
-export { default as GraphQLClient } from "./GraphQLClient";
-export { default as InMemoryCache } from "./InMemoryCache";
-
 export type DeleteQueryArgs = {
     query: DocumentNode;
     variables?: Record<string, any>;
