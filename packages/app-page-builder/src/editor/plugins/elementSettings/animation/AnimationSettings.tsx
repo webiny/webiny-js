@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import get from "lodash/get";
@@ -32,6 +32,12 @@ const classes = {
     })
 };
 
+/**
+ * Duration and delay accept values from 50 to 3000, with step 50ms.
+ * https://github.com/michalsnik/aos#setting-duration-delay
+ */
+const STEP = 50;
+const MAX_VALUE = 3000;
 const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
@@ -43,6 +49,21 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
         element,
         dataNamespace: DATA_NAMESPACE
     });
+    const animationName = get(element, DATA_NAMESPACE + ".name", "");
+    const animationDuration = get(element, DATA_NAMESPACE + ".duration", 0);
+    // Trigger animation manually on "animation" type change.
+    useEffect(() => {
+        if (animationName) {
+            const animationElement = document.querySelector(`[data-aos=${animationName}]`);
+            if (animationElement) {
+                animationElement.classList.remove("aos-animate");
+                setTimeout(
+                    () => animationElement.classList.add("aos-animate"),
+                    animationDuration || 250
+                );
+            }
+        }
+    }, [animationName, animationDuration]);
 
     return (
         <Accordion title={"Animation"}>
@@ -89,6 +110,8 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                             valueKey={DATA_NAMESPACE + ".duration"}
                             updateValue={getUpdateValue("duration")}
                             updatePreview={getUpdatePreview("duration")}
+                            max={MAX_VALUE}
+                            step={STEP}
                         />
                     </Cell>
                     <Cell span={12}>
@@ -97,6 +120,9 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
                                 placeholder={"ms"}
                                 value={get(element, DATA_NAMESPACE + ".delay", 0)}
                                 onChange={getUpdateValue("delay")}
+                                min={0}
+                                max={MAX_VALUE}
+                                step={STEP}
                             />
                         </Wrapper>
                     </Cell>

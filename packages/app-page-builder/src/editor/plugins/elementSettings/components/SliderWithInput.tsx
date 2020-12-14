@@ -16,6 +16,8 @@ type SliderWithInputPropsType = {
     className?: string;
     // TODO check - not used anywhere
     label?: string;
+    step?: number;
+    max?: number;
 };
 const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
     icon,
@@ -23,7 +25,9 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
     updateValue,
     updatePreview,
     className,
-    valueKey
+    valueKey,
+    max = 100,
+    step = 1
 }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const value = lodashGet(element, valueKey, 0);
@@ -38,8 +42,8 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
                     onChange={updateValue}
                     onInput={updatePreview}
                     min={0}
-                    max={100}
-                    step={1}
+                    max={max}
+                    step={step}
                 />
             </Cell>
             <Cell align={"middle"} span={4}>
