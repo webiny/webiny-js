@@ -25,15 +25,15 @@ describe("Pluralize Content Model Test", () => {
     it("should be able to create a content model with a single capitalized letter and not have the pluralized version be capitalized", async () => {
         const { content, createContentModel, invoke } = environment(initial.environment.id);
 
-        const contentModel = await createContentModel(
+        await createContentModel(
             mocks.contentModel({ contentModelGroupId: initial.contentModelGroup.id })
         );
 
         const ps = await content("p");
 
-        const createdP = await ps.create(mocks.createP);
+        await ps.create(mocks.createP);
 
-        let [{ data }] = await invoke({
+        const [{ data }] = await invoke({
             body: {
                 query: LIST_P
             }

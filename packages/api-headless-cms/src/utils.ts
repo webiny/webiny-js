@@ -115,12 +115,14 @@ enum PartitionKeysEnum {
 const getLocaleKey = ({ cms }: CmsContext): string => {
     if (!cms) {
         throw new Error(`Missing "cms" in context.`);
-    } else if (typeof cms.getLocale !== "function") {
-        throw new Error(`Missing "context.cms.getLocale()" function.`);
+    } else if (!cms.locale && typeof cms.getLocale !== "function") {
+        throw new Error(
+            `Missing both "context.cms.getLocale()" function and "context.cms.locale" variable.`
+        );
     }
-    const code = cms.getLocale();
+    const code = typeof cms.getLocale === "function" ? cms.getLocale() : cms.locale;
     if (!code) {
-        throw new Error(`Missing "context.cms.getLocale().code" value.`);
+        throw new Error(`Missing "context.cms" locale "code" value.`);
     }
     return `L#${code}`;
 };
@@ -141,14 +143,17 @@ const getTenantKey = ({ security }: CmsContext): string | undefined => {
 const getEnvironmentKey = ({ cms }: CmsContext): string => {
     if (!cms) {
         throw new Error(`Missing "context.cms".`);
-    } else if (typeof cms.getEnvironment !== "function") {
-        throw new Error(`Missing "context.cms.getEnvironment()" function.`);
+    } else if (!cms.environment && typeof cms.getEnvironment !== "function") {
+        throw new Error(
+            `Missing both "context.cms.getEnvironment()" function and "context.cms.environment" variable.`
+        );
     }
-    const environment = cms.getEnvironment();
-    if (!environment || !environment.slug) {
+    const env =
+        typeof cms.getEnvironment === "function" ? cms.getEnvironment().slug : cms.environment;
+    if (!env) {
         throw new Error("Missing environment in the context.");
     }
-    return environment.slug;
+    return env;
 };
 
 const keysGetters: KeyGettersType = {

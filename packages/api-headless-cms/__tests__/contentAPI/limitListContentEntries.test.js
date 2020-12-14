@@ -48,7 +48,9 @@ describe("List content entries with limit param test", () => {
         await createContentModel(mocks.book({ contentModelGroupId: initial.contentModelGroup.id }));
         const books = await content("book");
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const book1 = await books.create(mocks.book1);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const book2 = await books.create(mocks.book2);
         const book3 = await books.create(mocks.book3);
         const book4 = await books.create(mocks.book4);

@@ -16,7 +16,7 @@ describe("Title field deletion test", () => {
     it("should not allow deletion of title field", async () => {
         const { createContentModel, updateContentModel } = environment(initial.environment.id);
 
-        let contentModel = await createContentModel(
+        const contentModel = await createContentModel(
             mocks.book({ contentModelGroupId: initial.contentModelGroup.id })
         );
 

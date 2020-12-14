@@ -28,7 +28,7 @@ describe("Locked Field - Invariant test", () => {
                 contentModelGroupId: initial.contentModelGroup.id
             })
         });
-
+        // eslint-disable-next-line prefer-const
         let [authorModel, bookModel] = await database
             .collection("CmsContentModel")
             .find()

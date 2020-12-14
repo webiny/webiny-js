@@ -57,7 +57,7 @@ describe("Ref Field - CRUD Test", () => {
             mocks.author1({ book1Id: createdBook1.id, book2Id: createdBook2.id })
         );
 
-        let entries2entries = await getEntries2Entries();
+        const entries2entries = await getEntries2Entries();
 
         expect(entries2entries).toEqual(
             mocks.createdAuthor1Entries2Entries({

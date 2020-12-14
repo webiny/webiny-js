@@ -69,7 +69,7 @@ describe("Ref Field - loading of latest and published revisions", () => {
             })
         );
 
-        let entries2entries = await getEntries2Entries();
+        const entries2entries = await getEntries2Entries();
 
         expect(entries2entries).toEqual(
             mocks.createdAuthor1Entries2Entries({

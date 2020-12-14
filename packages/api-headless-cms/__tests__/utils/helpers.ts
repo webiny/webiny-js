@@ -64,8 +64,8 @@ export const createEnvironmentTestPartitionKey = () => createEnvironmentPk(getDu
 
 export const createEnvironmentAliasTestPartitionKey = () => {
     return createEnvironmentAliasPk(getDummyCmsContext());
-}
-    
+};
+
 export const createSettingsTestPartitionKey = () => createSettingsPk(getDummyCmsContext());
 
 export const deleteInitialEnvironment = async (documentClient: DocumentClient): Promise<void> => {

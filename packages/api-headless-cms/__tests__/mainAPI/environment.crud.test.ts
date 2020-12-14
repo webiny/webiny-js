@@ -5,9 +5,9 @@ import {
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
-} from "../../helpers";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
-import { useAdminGqlHandler } from "../../useAdminGqlHandler";
+} from "../utils/helpers";
+import { toSlug } from "@webiny/api-headless-cms/utils";
+import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created

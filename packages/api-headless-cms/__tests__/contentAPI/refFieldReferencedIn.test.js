@@ -25,7 +25,7 @@ describe("Ref Field - Referenced In Test", () => {
             data: refMocks.authorContentModel({ contentModelGroupId: initial.contentModelGroup.id })
         });
 
-        let [authorModel, bookModel] = await database
+        const [authorModel, bookModel] = await database
             .collection("CmsContentModel")
             .find()
             .sort({ modelId: 1 });
@@ -91,7 +91,7 @@ describe("Ref Field - Referenced In Test", () => {
 
         await deleteContentModel({ id: bookModel.id });
 
-        let [deletedBookModel] = await database
+        const [deletedBookModel] = await database
             .collection("CmsContentModel")
             .find({ deleted: true });
 

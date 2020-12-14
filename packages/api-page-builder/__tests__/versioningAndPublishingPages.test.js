@@ -309,7 +309,6 @@ describe("versioning and publishing pages", () => {
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p2.id });
         await getPublishedPage({ url: "/pages-test" }).then(([res]) => {
-            const a = 123;
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p2.id);
         });
 

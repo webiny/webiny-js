@@ -61,7 +61,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         sslEnabled: false,
         region: "local"
     });
-    
+
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",
@@ -115,11 +115,13 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         {
             type: "context",
             apply(context) {
-                if (context.environment) {
-                    return;
-                }
-                context.environment = {
-                    slug: "production"
+                context.cms = {
+                    ...(context.cms || {}),
+                    getLocale: () => ({
+                        code: "en-US"
+                    }),
+                    locale: "en-US",
+                    environment: "production"
                 };
             }
         },

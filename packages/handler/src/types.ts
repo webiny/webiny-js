@@ -16,7 +16,6 @@ export type Context<
 > = {
     plugins: PluginsContainer;
     args: HandlerArgs;
-    [key: string]: any;
 } & C0 &
     C1 &
     C2 &

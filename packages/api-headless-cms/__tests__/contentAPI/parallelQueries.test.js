@@ -57,16 +57,15 @@ describe("parallel queries test", () => {
         `;
 
         for (let i = 0; i < 10; i++) {
-            let [response] = await invokeRead({
+            const [response] = await invokeRead({
                 body: {
                     query: PARALLEL_LIST_PRODUCTS
                 }
             });
 
-            expect(response.data.cms1.data.length).toBe(3)
-            expect(response.data.cms2.data.length).toBe(3)
-            expect(response.data.cms3.data.length).toBe(3)
-
+            expect(response.data.cms1.data.length).toBe(3);
+            expect(response.data.cms2.data.length).toBe(3);
+            expect(response.data.cms3.data.length).toBe(3);
         }
     });
 });

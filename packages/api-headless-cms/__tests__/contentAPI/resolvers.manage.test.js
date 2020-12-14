@@ -301,6 +301,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { schema, context } = await useSchema();
         const { data: data1, errors: errors1 } = await graphql(schema, query, {}, context, {
+            // eslint-disable-next-line @typescript-eslint/camelcase
             where: { slug_contains: "category" }
         });
 
@@ -311,6 +312,7 @@ describe("MANAGE - Resolvers", () => {
         expect(data1.listCategories.data.length).toBe(2);
 
         const { data: data2, errors: errors2 } = await graphql(schema, query, {}, context, {
+            // eslint-disable-next-line @typescript-eslint/camelcase
             where: { slug_not_contains: "category" }
         });
 
@@ -321,6 +323,7 @@ describe("MANAGE - Resolvers", () => {
         expect(data2.listCategories.data.length).toBe(1);
 
         const { data: data3, errors: errors3 } = await graphql(schema, query, {}, context, {
+            // eslint-disable-next-line @typescript-eslint/camelcase
             where: { slug_in: ["b-category-en"] }
         });
 
@@ -332,6 +335,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { data: data4, errors: errors4 } = await graphql(schema, query, {}, context, {
             where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
                 slug_not_in: ["a-category-en", "a-category-de", "b-category-en", "b-category-de"]
             }
         });

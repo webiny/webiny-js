@@ -1,12 +1,12 @@
-import { useAdminGqlHandler } from "../../useAdminGqlHandler";
+import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import {
     createInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
     getInitialEnvironmentId
-} from "../../helpers";
+} from "../utils/helpers";
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
-import toSlug from "@webiny/api-headless-cms/utils/toSlug";
+import { toSlug } from "@webiny/api-headless-cms/utils";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,

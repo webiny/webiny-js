@@ -75,7 +75,7 @@ describe("Ref Field - READ API", () => {
             }
         `;
 
-        let [body] = await readEnvironment(initial.environment.id).invoke({
+        const [body] = await readEnvironment(initial.environment.id).invoke({
             body: {
                 query: LIST_AUTHORS
             }

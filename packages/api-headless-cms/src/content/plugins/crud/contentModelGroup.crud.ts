@@ -24,9 +24,9 @@ const UpdateContentModelGroupModel = withFields({
     icon: string({ validation: validation.create("maxLength:255") })
 })();
 
-export default {
+export default (): ContextPlugin<CmsContext> => ({
     type: "context",
-    apply(context) {
+    async apply(context) {
         const { db } = context;
 
         const groups: CmsContentModelGroupContextType = {
@@ -137,4 +137,4 @@ export default {
             groups
         };
     }
-} as ContextPlugin<CmsContext>;
+});

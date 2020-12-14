@@ -37,7 +37,7 @@ describe("Predefined Values Test", () => {
         // 2. Create a new product entry.
         const products = await content("product");
 
-        let product = await products.create(mocks.createProductValidValues);
+        const product = await products.create(mocks.createProductValidValues);
 
         expect(product).toEqual(mocks.createProductWithValidValues(product));
     });
