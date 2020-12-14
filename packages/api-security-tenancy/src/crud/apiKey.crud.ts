@@ -35,7 +35,7 @@ const generateToken = (tokenLength = 48) => {
     if (token.startsWith("a")) {
         return token;
     }
-    
+
     return `a${token.slice(0, tokenLength - 1)}`;
 };
 

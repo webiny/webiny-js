@@ -29,7 +29,7 @@ const EditRevision = props => {
             return showSnackbar(error.message);
         }
 
-        history.push(`/page-builder/editor/${data.id}`);
+        history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [page]);
 
     const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);

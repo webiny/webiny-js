@@ -22,7 +22,7 @@ export default (config: APIKeyAuthentication = {}): SecurityAuthenticationPlugin
 
             const identityType = config.identityType || "api-key";
             const apiKey = await context.security.apiKeys.getApiKeyByToken(token);
-            
+
             if (apiKey) {
                 return new SecurityIdentity({
                     id: apiKey.id,

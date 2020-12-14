@@ -1,0 +1,30 @@
+{
+  "name": "@webiny/graphql-client",
+  "version": "4.14.0",
+  "main": "index.js",
+  "types": "types.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "A simple GraphQL client with normalized in-memory cache.",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "devDependencies": {
+    "graphql-tag": "^2.10.1",
+    "cross-fetch": "^3.0.6",
+    "@webiny/error": "^4.14.0"
+  },
+  "peerDependencies": {
+    "graphql": "^14.0.0 || ^15.0.0"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

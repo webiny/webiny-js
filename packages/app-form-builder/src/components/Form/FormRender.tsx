@@ -69,7 +69,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const getFields = () => {
         const fields: any = cloneDeep(layout);
-        const validatorPlugins = getPlugins<FbFormFieldValidatorPlugin>("form-field-validator");
+        const validatorPlugins = getPlugins<FbFormFieldValidatorPlugin>("fb-form-field-validator");
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {

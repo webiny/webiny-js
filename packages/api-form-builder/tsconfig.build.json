@@ -7,6 +7,7 @@
 		"node_modules",
 		"../plugins",
 		"../api-i18n",
+		"../api-file-manager",
 		"../api-security",
 		"../handler",
 		"../commodo",
@@ -32,6 +33,9 @@
 		},
 		{
 			"path": "../api-i18n/tsconfig.build.json"
+		},
+		{
+			"path": "../api-file-manager/tsconfig.build.json"
 		},
 		{
 			"path": "../api-security/tsconfig.build.json"

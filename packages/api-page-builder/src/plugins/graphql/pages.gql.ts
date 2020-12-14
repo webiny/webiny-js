@@ -1,19 +1,10 @@
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
-import oembed from "./pageResolvers/oembed";
-import { compose } from "@webiny/handler-graphql";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { Response, NotFoundResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PagesListArgs } from "@webiny/api-page-builder/plugins/crud/pages.crud";
 import { PbContext } from "@webiny/api-page-builder/types";
-
-const hasRwd = ({ pbPagePermission, rwd }) => {
-    if (typeof pbPagePermission.rwd !== "string") {
-        return true;
-    }
-
-    return pbPagePermission.rwd.includes(rwd);
-};
+import Error from "@webiny/error";
+import resolve from "./utils/resolve";
+import pageSettings from "./pages/pageSettings";
+import { fetchEmbed, findProvider } from "./pages/oEmbed";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -27,6 +18,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPage {
                 id: ID
+                editor: String
                 createdFrom: ID
                 createdBy: PbCreatedBy
                 createdOn: DateTime
@@ -39,7 +31,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
-                snippet: String
                 url: String
                 fullUrl: String
                 settings: PbPageSettings
@@ -53,58 +44,54 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
+                locked: Boolean
                 savedOn: DateTime
+            }
+
+            type PbPageListItemImages {
+                general: PbFile
             }
 
             type PbPageListItem {
                 id: ID
+                editor: String
                 status: String
                 locked: Boolean
                 publishedOn: DateTime
                 home: Boolean
                 error: Boolean
                 notFound: Boolean
+                images: PbPageListItemImages
                 version: Int
                 category: PbPageCategory
                 title: String
+                snippet: String
+                tags: [String]
                 url: String
+                fullUrl: String
                 savedOn: DateTime
                 createdFrom: ID
                 createdOn: DateTime
                 createdBy: PbCreatedBy
             }
 
+            type PbPageListMeta {
+                page: Int
+                limit: Int
+                totalCount: Int
+                totalPages: Int
+                from: Int
+                to: Int
+                nextPage: Int
+                previousPage: Int
+            }
+
             type PbPageSettings {
                 _empty: String
             }
 
-            type PbElement {
-                id: ID
-                name: String
-                type: String
-                category: String
-                content: JSON
-                preview: String
-            }
-
-            input PbElementInput {
-                name: String!
-                type: String!
-                category: String
-                content: JSON!
-                preview: RefInput
-            }
-
-            input PbUpdateElementInput {
-                name: String
-                category: String
-                content: JSON
-                preview: RefInput
-            }
-
             input PbUpdatePageInput {
                 title: String
-                snippet: String
                 category: ID
                 url: String
                 settings: PbPageSettingsInput
@@ -125,18 +112,20 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
+            type PbDeletePageResponseData {
+                page: PbPage
+                latestPage: PbPage
+            }
+
+            type PbDeletePageResponse {
+                data: PbDeletePageResponseData
+                error: PbError
+            }
+
             type PbPageListResponse {
                 data: [PbPageListItem]
+                meta: PbPageListMeta
                 error: PbError
-            }
-
-            type PbElementResponse {
-                data: PbElement
-                error: PbError
-            }
-
-            type PbElementListResponse {
-                data: [PbElement]
             }
 
             type PbSearchTagsResponse {
@@ -148,10 +137,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 error: PbError
             }
 
-            input PbOEmbedInput {
-                url: String!
-                width: Int
-                height: Int
+            type PbPageTagsListResponse {
+                data: [String]
+                error: PbError
             }
 
             enum PbListPagesSortOrders {
@@ -170,16 +158,37 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             input PbListPagesSortInput {
                 title: PbListPagesSortOrders
                 createdOn: PbListPagesSortOrders
+                publishedOn: PbListPagesSortOrders
             }
 
             input PbListPagesWhereInput {
                 category: String
                 status: PbPageStatuses
+                tags: PbListPagesWhereTagsInput
+            }
+
+            input PbListPagesSearchInput {
+                # By specifying "query", the search will be performed against pages' "title" and "snippet" fields.
+                query: String
             }
 
             enum PbTagsRule {
-                ALL
-                ANY
+                all
+                any
+            }
+
+            input PbListPagesWhereTagsInput {
+                query: [String]
+                rule: PbTagsRule
+            }
+
+            input PbListPublishedPagesWhereInput {
+                category: String
+                tags: PbListPagesWhereTagsInput
+            }
+
+            input PbListPageTagsSearchInput {
+                query: String!
             }
 
             extend type PbQuery {
@@ -198,16 +207,18 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     limit: Int
                     page: Int
                     sort: PbListPagesSortInput
+                    search: PbListPagesSearchInput
                 ): PbPageListResponse
 
                 listPublishedPages(
-                    where: PbListPagesWhereInput
+                    where: PbListPublishedPagesWhereInput
                     limit: Int
                     page: Int
                     sort: PbListPagesSortInput
+                    search: PbListPagesSearchInput
                 ): PbPageListResponse
 
-                listElements(limit: Int): PbElementListResponse
+                listPageTags(search: PbListPageTagsSearchInput!): PbPageTagsListResponse
 
                 # Returns existing tags based on given search term.
                 searchTags(query: String!): PbSearchTagsResponse
@@ -234,7 +245,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 requestChanges(id: ID!): PbPageResponse
 
                 # Delete page and all of its revisions
-                deletePage(id: ID!): PbPageResponse
+                deletePage(id: ID!): PbDeletePageResponse
 
                 # Delete a single revision
                 deleteRevision(id: ID!): PbDeleteResponse
@@ -245,55 +256,39 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbPage: {
                 category: async (page: { category: string }, args, context) => {
-                    const { categories } = context;
-                    return categories.get(page.category);
+                    return context.pageBuilder.categories.get(page.category);
                 },
                 revisions: async (page: { id: string }, args, context) => {
-                    const { pages } = context;
-                    return pages.listRevisionsForPage(page.id);
+                    return context.pageBuilder.pages.listPageRevisions(page.id);
+                },
+                fullUrl: async (page: { url: string }, args, context) => {
+                    const settings = await context.pageBuilder.settings.get();
+                    return settings.domain + page.url;
                 }
             },
             PbPageListItem: {
                 category: async (page: { category: string }, args, context) => {
-                    const { categories } = context;
-                    return categories.get(page.category);
+                    return context.pageBuilder.categories.get(page.category);
+                },
+                fullUrl: async (page: { url: string }, args, context) => {
+                    const settings = await context.pageBuilder.settings.get();
+                    return settings.domain + page.url;
                 }
             },
             PbQuery: {
-                getPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "r" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (!hasRwd({ pbPagePermission, rwd: "r" })) {
-                        return new NotAuthorizedResponse();
-                    }
-
+                getPage: async (_, args: { id: string }, context) => {
                     const id = decodeURIComponent(args.id);
-
-                    const { pages } = context;
-                    const page = await pages.get(id);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    return new Response(page);
-                }),
-
-                listPages: async (_, args: PagesListArgs, context) => {
                     try {
-                        const { pages } = context;
-                        const list = await pages.listLatest(args);
-                        return new Response(list);
+                        return new Response(await context.pageBuilder.pages.get(id));
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+
+                listPages: async (_, args, context) => {
+                    try {
+                        const [data, meta] = await context.pageBuilder.pages.listLatest(args);
+                        return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -301,142 +296,89 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 listPublishedPages: async (_, args, context) => {
                     try {
-                        const { pages } = context;
-                        const list = await pages.listPublished(args);
-                        return new Response(list);
+                        const [data, meta] = await context.pageBuilder.pages.listPublished(args);
+                        return new ListResponse(data, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
                 },
-                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
-                    const { pages } = context;
-                    const page = await pages.getPublished(args);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${args.id}" not found.`);
-                    }
-                    return new Response(page);
+                listPageTags: async (_, args: { search: { query: string } }, context) => {
+                    return resolve(() => context.pageBuilder.pages.listTags(args));
                 },
-                searchTags: async (
-                    root: any,
-                    args: { [key: string]: any },
-                    context: { [key: string]: any },
-                    info: { [key: string]: any }
-                ) => {
-                    const resolver = context.plugins.byName("pb-resolver-search-tags");
 
-                    return { data: await resolver.resolve({ root, args, context, info }) };
+                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
+                    return resolve(() => context.pageBuilder.pages.getPublished(args));
                 },
-                oembedData: hasPermission("pb:oembed:read")(oembed)
+
+                oembedData: async (_, args: { url: string; width?: string; height?: string }) => {
+                    try {
+                        const provider = findProvider(args.url);
+                        if (!provider) {
+                            return new ErrorResponse({
+                                code: "OEMBED_PROVIDER_NOT_FOUND",
+                                message: "OEmbed provider for the requested URL was not found."
+                            });
+                        }
+
+                        return new Response(await fetchEmbed(args, provider));
+                    } catch (e) {
+                        return new ErrorResponse({
+                            code: "OEMBED_ERROR",
+                            message: e.message
+                        });
+                    }
+                }
             },
             PbMutation: {
-                createPage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { from?: string; category?: string }, context: PbContext) => {
-                    const { pages } = context;
-                    const { from, category } = args;
+                createPage: async (_, args: { from?: string; category?: string }, context) => {
+                    return resolve(() => {
+                        const { from, category } = args;
+                        if (!from && !category) {
+                            throw new Error(
+                                `Cannot create page - you must provide either "from" or "category" input.`
+                            );
+                        }
 
-                    try {
                         if (from) {
-                            return new Response(await pages.createFrom({ from }));
-                        } else {
-                            return new Response(await pages.create({ category }));
+                            return context.pageBuilder.pages.createFrom(from);
                         }
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
-                }),
-                deletePage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(async (_, args: { id: string }, context: PbContext) => {
-                    // If permission has "rwd" property set, but "d" is not part of it, bail.
-                    const pbPagePermission = await context.security.getPermission("pb.page");
-                    if (pbPagePermission && !hasRwd({ pbPagePermission, rwd: "d" })) {
-                        return new NotAuthorizedResponse();
-                    }
+                        return context.pageBuilder.pages.create(category);
+                    });
+                },
+                deletePage: async (_, args: { id: string }, context: PbContext) => {
+                    return resolve(async () => {
+                        const id = decodeURIComponent(args.id);
+                        const [page, latestPage] = await context.pageBuilder.pages.delete(id);
+                        return { page, latestPage };
+                    });
+                },
 
-                    const { pages } = context;
-                    const id = decodeURIComponent(args.id);
-
-                    const page = await pages.get(id);
-                    if (!page) {
-                        return new NotFoundResponse(`Page "${args.id}" not found.`);
-                    }
-
-                    // If user can only manage own records, let's check if he owns the loaded one.
-                    if (pbPagePermission?.own === true) {
-                        const identity = context.security.getIdentity();
-                        if (page.createdBy.id !== identity.id) {
-                            return new NotAuthorizedResponse();
-                        }
-                    }
-
-                    await pages.delete(id);
-
-                    return new Response(page);
-                }),
-
-                updatePage: compose(
-                    hasPermission("pb.page"),
-                    hasI18NContentPermission()
-                )(
-                    async (
-                        _,
-                        args: { id: string; data: Record<string, any> },
-                        context: PbContext
-                    ) => {
-                        const { pages } = context;
+                updatePage: async (
+                    _,
+                    args: { id: string; data: Record<string, any> },
+                    context: PbContext
+                ) => {
+                    return resolve(() => {
                         const { data } = args;
                         const id = decodeURIComponent(args.id);
-
-                        try {
-                            const page = await pages.update(id, data);
-                            return new Response(page);
-                        } catch (e) {
-                            return new ErrorResponse(e);
-                        }
-                    }
-                ),
+                        return context.pageBuilder.pages.update(id, data);
+                    });
+                },
 
                 publishPage: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.publish(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.publish(args.id));
                 },
 
                 unpublishPage: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.unpublish(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.unpublish(args.id));
                 },
 
                 requestReview: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.requestReview(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.requestReview(args.id));
                 },
 
                 requestChanges: async (_, args: { id: string }, context) => {
-                    const { pages } = context;
-                    try {
-                        const page = await pages.requestChanges(args.id);
-                        return new Response(page);
-                    } catch (e) {
-                        return new ErrorResponse(e);
-                    }
+                    return resolve(() => context.pageBuilder.pages.requestChanges(args.id));
                 }
             },
             PbPageSettings: {
@@ -446,4 +388,4 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     }
 };
 
-export default plugin;
+export default [plugin, pageSettings];

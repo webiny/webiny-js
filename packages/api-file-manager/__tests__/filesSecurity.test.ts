@@ -284,25 +284,28 @@ describe("Files Security Test", () => {
         [[{ name: "content.i18n" }, { name: "fm.file", rwd: "rwd" }], identityA]
     ];
 
-    test.each(sufficientPermissions)(`allow "updateFile" for permissions %j`, async (permissions, identity) => {
-        const mock = new Mock("update-file-");
+    test.each(sufficientPermissions)(
+        `allow "updateFile" for permissions %j`,
+        async (permissions, identity) => {
+            const mock = new Mock("update-file-");
 
-        const [createFileResponse] = await createFile({ data: mock });
-        const fileId = createFileResponse.data.fileManager.createFile.data.id;
+            const [createFileResponse] = await createFile({ data: mock });
+            const fileId = createFileResponse.data.fileManager.createFile.data.id;
 
-        const { updateFile } = useGqlHandler({ permissions, identity });
-        const [response] = await updateFile({ id: fileId, data: mock });
-        expect(response).toEqual({
-            data: {
-                fileManager: {
-                    updateFile: {
-                        data: mock,
-                        error: null
+            const { updateFile } = useGqlHandler({ permissions, identity });
+            const [response] = await updateFile({ id: fileId, data: mock });
+            expect(response).toEqual({
+                data: {
+                    fileManager: {
+                        updateFile: {
+                            data: mock,
+                            error: null
+                        }
                     }
                 }
-            }
-        });
-    });
+            });
+        }
+    );
 
     test(`allow "updateFile" if identity has sufficient permissions`, async () => {
         const mock = new Mock("update-file-");

@@ -12,6 +12,7 @@ import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 
+import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
@@ -25,12 +26,14 @@ import {
     DELETE_PAGE,
     LIST_PAGES,
     LIST_PUBLISHED_PAGES,
+    LIST_PAGE_TAGS,
     UPDATE_PAGE,
     GET_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
     REQUEST_REVIEW,
-    REQUEST_CHANGES
+    REQUEST_CHANGES,
+    OEMBED_DATA
 } from "./graphql/pages";
 
 import { SecurityIdentity } from "@webiny/api-security";
@@ -43,6 +46,7 @@ import {
 } from "./graphql/categories";
 
 import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { Db } from "@webiny/db";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
@@ -50,6 +54,7 @@ export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
+            logTable: "PageBuilderLogs",
             driver: new DynamoDbDriver({
                 documentClient: new DocumentClient({
                     convertEmptyValues: true,
@@ -120,7 +125,18 @@ export default ({ permissions, identity, tenant } = {}) => {
         handler,
         invoke,
         // Helpers.
-        elasticSearch: elasticSearch,
+        elasticSearch,
+        logsDb: new Db({
+            logTable: "PageBuilderLogs",
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                    sslEnabled: false,
+                    region: "local"
+                })
+            })
+        }),
         deleteElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;
@@ -130,7 +146,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         sleep,
         until: async (execute, until, options = {}) => {
-            const tries = options.tries ?? 5;
+            const tries = options.tries ?? 10;
             const wait = options.wait ?? 333;
 
             let result;
@@ -169,6 +185,15 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
 
         // GraphQL queries and mutations.
+        // Install.
+        async install(variables) {
+            return invoke({ body: { query: INSTALL, variables } });
+        },
+
+        async isInstalled(variables) {
+            return invoke({ body: { query: IS_INSTALLED, variables } });
+        },
+
         // Menus.
         async createMenu(variables) {
             return invoke({ body: { query: CREATE_MENU, variables } });
@@ -231,8 +256,14 @@ export default ({ permissions, identity, tenant } = {}) => {
         async listPublishedPages(variables) {
             return invoke({ body: { query: LIST_PUBLISHED_PAGES, variables } });
         },
+        async listPageTags(variables) {
+            return invoke({ body: { query: LIST_PAGE_TAGS, variables } });
+        },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
+        },
+        async oEmbedData(variables) {
+            return invoke({ body: { query: OEMBED_DATA, variables } });
         },
 
         // PageElements.

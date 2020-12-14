@@ -6,23 +6,15 @@ function Mock(prefix) {
 }
 
 function MockResponse({ prefix, id }) {
-    this.name = `${prefix}name`;
     this.id = id;
+    this.name = `${prefix}name`;
     this.createdOn = /^20/;
     this.savedOn = /^20/;
     this.publishedOn = null;
-    this.parent = `${id.split("#")[0]}#1`;
-    this.layout = null;
     this.locked = false;
     this.published = false;
-    this.stats = {
-        submissions: 0,
-        views: 0
-    };
     this.status = "draft";
-    this.triggers = null;
     this.version = 1;
-    this.layout = [];
 }
 
 const NOT_AUTHORIZED_RESPONSE = operation => ({
@@ -54,47 +46,48 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
-const defaultHandler = useGqlHandler({
-    permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
-    identity: identityA
-});
-
-beforeEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.create({ index: "form-builder" });
-    } catch (e) {}
-});
-
-afterEach(async () => {
-    try {
-        await defaultHandler.elasticSearch.indices.delete({ index: "form-builder" });
-    } catch (e) {}
-});
+const esFbIndex = "root-form-builder";
 
 describe("Forms Security Test", () => {
+    const defaultHandler = useGqlHandler({
+        permissions: [{ name: "content.i18n" }, { name: "fb.*" }],
+        identity: identityA
+    });
+
+    beforeEach(async () => {
+        try {
+            await defaultHandler.elasticSearch.indices.create({ index: esFbIndex });
+        } catch (e) {}
+    });
+
+    afterEach(async () => {
+        try {
+            await defaultHandler.elasticSearch.indices.delete({ index: esFbIndex });
+        } catch (e) {}
+    });
+
     test(`"listForms" only returns entries to which the identity has access to`, async () => {
-        const { createForm, sleep } = defaultHandler;
-        let [createFormResponse] = await createForm({
-            data: new Mock("list-forms-1-")
-        });
+        const { until, createForm, listForms } = defaultHandler;
 
-        const form1Id = createFormResponse.data.formBuilder.createForm.data.id;
+        const [createA1] = await createForm({ data: new Mock("list-forms-1-") });
 
-        [createFormResponse] = await createForm({
-            data: new Mock("list-forms-2-")
-        });
-        const form2Id = createFormResponse.data.formBuilder.createForm.data.id;
+        const { id: formA1Id } = createA1.data.formBuilder.createForm.data;
+
+        const [createA2] = await createForm({ data: new Mock("list-forms-2-") });
+        const { id: formA2Id } = createA2.data.formBuilder.createForm.data;
 
         const identityBHandler = useGqlHandler({ identity: identityB });
-        let [identityBHandlerCreateFormResponse] = await identityBHandler.createForm({
-            data: new Mock("list-forms-3-")
-        });
-        const form3Id = identityBHandlerCreateFormResponse.data.formBuilder.createForm.data.id;
 
-        [identityBHandlerCreateFormResponse] = await identityBHandler.createForm({
-            data: new Mock("list-forms-4-")
-        });
-        const form4Id = identityBHandlerCreateFormResponse.data.formBuilder.createForm.data.id;
+        const [createB1] = await identityBHandler.createForm({ data: new Mock("list-forms-3-") });
+        const { id: formB1Id } = createB1.data.formBuilder.createForm.data;
+
+        const [createB2] = await identityBHandler.createForm({ data: new Mock("list-forms-4-") });
+        const { id: formB2Id } = createB2.data.formBuilder.createForm.data;
+
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }) => data.formBuilder.listForms.data.length > 0
+        );
 
         const insufficientPermissions = [
             [[], null],
@@ -123,26 +116,16 @@ describe("Forms Security Test", () => {
             let [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
 
-            // List should not be empty.
-            // Wait for the "Elasticsearch" to finish indexing.
-            while (true) {
-                await sleep();
-                const [response] = await listForms();
-                if (response.data.formBuilder.listForms.data.length) {
-                    break;
-                }
-            }
-
-            let [response] = await listForms({ sort: { createdOn: 1 } });
+            let [response] = await listForms();
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
                         listForms: {
                             data: [
-                                new MockResponse({ prefix: "list-forms-1-", id: form1Id }),
-                                new MockResponse({ prefix: "list-forms-2-", id: form2Id }),
-                                new MockResponse({ prefix: "list-forms-3-", id: form3Id }),
-                                new MockResponse({ prefix: "list-forms-4-", id: form4Id })
+                                new MockResponse({ prefix: "list-forms-4-", id: formB2Id }),
+                                new MockResponse({ prefix: "list-forms-3-", id: formB1Id }),
+                                new MockResponse({ prefix: "list-forms-2-", id: formA2Id }),
+                                new MockResponse({ prefix: "list-forms-1-", id: formA1Id })
                             ],
                             error: null
                         }
@@ -151,19 +134,20 @@ describe("Forms Security Test", () => {
             });
         }
 
-        let identityAHandler = useGqlHandler({
+        const handlerA = useGqlHandler({
             permissions: [{ name: "content.i18n" }, { name: "fb.form", own: true }],
             identity: identityA
         });
 
-        let [response] = await identityAHandler.listForms();
-        expect(response).toMatchObject({
+        const [listA] = await handlerA.listForms();
+
+        expect(listA).toMatchObject({
             data: {
                 formBuilder: {
                     listForms: {
                         data: [
-                            new MockResponse({ prefix: "list-forms-2-", id: form2Id }),
-                            new MockResponse({ prefix: "list-forms-1-", id: form1Id })
+                            new MockResponse({ prefix: "list-forms-2-", id: formA2Id }),
+                            new MockResponse({ prefix: "list-forms-1-", id: formA1Id })
                         ],
                         error: null
                     }
@@ -171,19 +155,20 @@ describe("Forms Security Test", () => {
             }
         });
 
-        identityAHandler = useGqlHandler({
+        const handlerB = useGqlHandler({
             permissions: [{ name: "content.i18n" }, { name: "fb.form", own: true }],
             identity: identityB
         });
 
-        [response] = await identityAHandler.listForms();
-        expect(response).toMatchObject({
+        const [listB] = await handlerB.listForms();
+
+        expect(listB).toMatchObject({
             data: {
                 formBuilder: {
                     listForms: {
                         data: [
-                            new MockResponse({ prefix: "list-forms-4-", id: form4Id }),
-                            new MockResponse({ prefix: "list-forms-3-", id: form3Id })
+                            new MockResponse({ prefix: "list-forms-4-", id: formB2Id }),
+                            new MockResponse({ prefix: "list-forms-3-", id: formB1Id })
                         ],
                         error: null
                     }
@@ -192,35 +177,36 @@ describe("Forms Security Test", () => {
         });
     });
 
-    test(`allow "createForm" if identity has sufficient permissions`, async () => {
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "fb.form", own: false, rwd: "r" }], identityA],
-            [[{ name: "fb.form", own: false, rwd: "rd" }], identityA]
-        ];
+    const insufficientPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "fb.form", own: false, rwd: "r" }], identityA],
+        [[{ name: "fb.form", own: false, rwd: "rd" }], identityA]
+    ];
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+    test.each(insufficientPermissions)(
+        `forbid "createForm" with %j`,
+        async (permissions, identity) => {
             const { createForm } = useGqlHandler({ permissions, identity });
-
-            let [response] = await createForm({ data: new Mock() });
+            const [response] = await createForm({ data: new Mock() });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("createForm"));
         }
+    );
 
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "w" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rw" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwd" }], identityA]
-        ];
+    const sufficientPermissions = [
+        [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", rwd: "w" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rw" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwd" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+    test.each(sufficientPermissions)(
+        `allow "createForm" with %j`,
+        async (permissions, identity) => {
             const { createForm } = useGqlHandler({ permissions, identity });
 
-            const data = new Mock(`form-create-${i}-`);
+            const data = new Mock(`form-create-`);
             let [response] = await createForm({ data });
             expect(response).toMatchObject({
                 data: {
@@ -228,7 +214,7 @@ describe("Forms Security Test", () => {
                         createForm: {
                             data: {
                                 ...new MockResponse({
-                                    prefix: `form-create-${i}-`,
+                                    prefix: `form-create-`,
                                     id: response.data.formBuilder.createForm.data.id
                                 })
                             },
@@ -238,7 +224,7 @@ describe("Forms Security Test", () => {
                 }
             });
         }
-    });
+    );
 
     test(`allow "updateForm" if identity has sufficient permissions`, async () => {
         const { createForm } = defaultHandler;
@@ -448,14 +434,16 @@ describe("Forms Security Test", () => {
     });
 
     test(`allow "createRevisionFrom" if identity has sufficient permissions`, async () => {
-        const { sleep, createForm, publishRevision, listPublishedForms } = defaultHandler;
+        const { until, createForm, publishRevision, getPublishedForm } = defaultHandler;
         const mock = new Mock("create-revision-form-");
 
         const [createFormResponse] = await createForm({ data: mock });
-        let formId = createFormResponse.data.formBuilder.createForm.data.id;
+        const { id: formId } = createFormResponse.data.formBuilder.createForm.data;
+
         // Let's also publish the form.
-        const [publishRevisionResponse] = await publishRevision({ id: formId });
-        expect(publishRevisionResponse).toMatchObject({
+        const [publish] = await publishRevision({ id: formId });
+
+        expect(publish).toMatchObject({
             data: {
                 formBuilder: {
                     publishRevision: {
@@ -474,16 +462,6 @@ describe("Forms Security Test", () => {
                 }
             }
         });
-
-        // List should not be empty.
-        // Wait for the "Elasticsearch" to finish indexing.
-        while (true) {
-            await sleep();
-            const [response] = await listPublishedForms();
-            if (response.data.formBuilder.listPublishedForms.data.length) {
-                break;
-            }
-        }
 
         let insufficientPermissions = [
             [[], null],
@@ -512,7 +490,7 @@ describe("Forms Security Test", () => {
             const { createRevisionFrom } = useGqlHandler({ permissions, identity });
             let [response] = await createRevisionFrom({ revision: formId });
 
-            formId = response.data.formBuilder.createRevisionFrom.data.id;
+            const { id } = response.data.formBuilder.createRevisionFrom.data;
 
             expect(response).toMatchObject({
                 data: {
@@ -521,7 +499,7 @@ describe("Forms Security Test", () => {
                             data: {
                                 ...new MockResponse({
                                     prefix: "create-revision-form-",
-                                    id: formId
+                                    id
                                 }),
                                 status: "draft",
                                 version: i + 2
@@ -533,15 +511,15 @@ describe("Forms Security Test", () => {
             });
 
             // Let's also publish this form.
-            const [publishRevisionResponse] = await publishRevision({ id: formId });
-            expect(publishRevisionResponse).toMatchObject({
+            const [publish] = await publishRevision({ id });
+            expect(publish).toMatchObject({
                 data: {
                     formBuilder: {
                         publishRevision: {
                             data: {
                                 ...new MockResponse({
                                     prefix: "create-revision-form-",
-                                    id: formId
+                                    id
                                 }),
                                 publishedOn: /^20/,
                                 published: true,

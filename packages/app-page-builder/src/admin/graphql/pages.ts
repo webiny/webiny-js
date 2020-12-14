@@ -22,6 +22,7 @@ export const DATA_FIELDS = `
     revisions {
         id
         savedOn
+        locked
         title
         status
         version
@@ -43,9 +44,15 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query ListPages($where: PbListPagesWhereInput, $sort: PbListPagesSortInput, $limit: Int) {
+    query ListPages(
+        $where: PbListPagesWhereInput
+        $sort: PbListPagesSortInput
+        $search: PbListPagesSearchInput
+        $limit: Int
+        $page: Int
+    ) {
         pageBuilder {
-            listPages(where: $where, sort: $sort, limit: $limit) {
+            listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
                     id
                     status
@@ -57,8 +64,19 @@ export const LIST_PAGES = gql`
                         slug
                     }
                     createdBy {
+                        id
                         displayName
                     }
+                }
+                meta {
+                    page
+                    limit
+                    totalCount
+                    totalPages
+                    from
+                    to
+                    nextPage
+                    previousPage
                 }
                 error {
                     data
@@ -102,23 +120,12 @@ export const GET_PAGE = gql`
 `;
 
 export const PUBLISH_PAGE = gql`
-    mutation PublishRevision($id: ID!) {
+    mutation PublishPage($id: ID!) {
         pageBuilder {
-            publishRevision(id: $id) {
+            publishPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
                 }
-                ${error}
-            }
-        }
-    }
-`;
-
-export const DELETE_REVISION = gql`
-    mutation PbDeleteRevision($id: ID!) {
-        pageBuilder {
-            deleteRevision(id: $id) {
-                data
                 ${error}
             }
         }
@@ -129,7 +136,13 @@ export const DELETE_PAGE = gql`
     mutation PbDeletePage($id: ID!) {
         pageBuilder {
             deletePage(id: $id) {
-                data
+                data {
+                    latestPage {
+                        id
+                        status
+                        version
+                    }
+                }
                 ${error}
             }
         }

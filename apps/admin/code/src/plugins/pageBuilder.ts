@@ -5,19 +5,11 @@ import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 import welcomeScreenWidget from "@webiny/app-page-builder/admin/plugins/welcomeScreenWidget";
 
 /* Other plugins to extend Page Builder */
-import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
-import googleTagManagerPlugins from "@webiny/app-google-tag-manager/admin";
-import typeformPlugins from "@webiny/app-typeform/admin";
-import mailchimpPlugins from "@webiny/app-mailchimp/admin";
 import richTextEditor from "./pageBuilder/richTextEditor";
 
 export default [
     pageBuilderPlugins(),
     welcomeScreenWidget,
-    cookiePolicyPlugins(),
-    googleTagManagerPlugins(),
-    typeformPlugins(),
-    mailchimpPlugins(),
     richTextEditor,
     /**
      * This plugin is responsible for lazy-loading plugin presets for page builder editor and list views.

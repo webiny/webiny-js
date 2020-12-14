@@ -32,7 +32,7 @@ const I18NLocalesDataList = () => {
 
     const { showConfirmation } = useConfirmationDialog();
 
-    const data = listQuery?.data?.i18n?.listI18NLocales?.data || [];
+    const data = listQuery.loading ? [] : listQuery.data.i18n.listI18NLocales.data;
     const code = new URLSearchParams(location.search).get("code");
 
     const deleteItem = useCallback(
@@ -42,7 +42,7 @@ const I18NLocalesDataList = () => {
                     variables: item
                 });
 
-                const error = response?.data?.i18n?.deleteI18NLocale?.error;
+                const { error } = response.data.i18n.deleteI18NLocale;
                 if (error) {
                     return showSnackbar(error.message);
                 }

@@ -25,7 +25,7 @@ describe("Security Personal Access Token Test", () => {
                 token: expect.any(String),
                 createdOn: expect.any(String)
             },
-            token: expect.stringMatching(/p[a-f0-9]{47}/),
+            token: expect.stringMatching(/p[a-f0-9]{47}/)
         });
 
         expect(data.pat.token.length).toBe(4);

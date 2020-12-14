@@ -100,15 +100,24 @@ const plugin: GraphQLSchemaPlugin = {
 
                         context.security.setTenant(tenant);
 
-                        // Create default groups
-                        const { fullAccessGroup } = await createDefaultGroups(context);
-
                         const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
                             "security-identity-provider"
                         );
 
+                        try {
+                            await authPlugin.createUser({ data, permanent: true }, context);
+                        } catch (e) {
+                            await context.security.tenants.deleteTenant("root");
+                            return new ErrorResponse({
+                                code: "SECURITY_INSTALL_ABORTED",
+                                message: e.message
+                            });
+                        }
+
+                        // Create default groups
+                        const { fullAccessGroup } = await createDefaultGroups(context);
+
                         // Create new user
-                        await authPlugin.createUser({ data, permanent: true }, context);
                         const user = await context.security.users.createUser(data);
 
                         // Link user with group for this tenant
@@ -120,11 +129,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                         return new Response(true);
                     } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data
-                        });
+                        return new ErrorResponse(e);
                     }
                 }
             }

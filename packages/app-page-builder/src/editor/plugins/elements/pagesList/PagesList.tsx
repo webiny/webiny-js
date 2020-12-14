@@ -1,18 +1,20 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { useQuery } from "react-apollo";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { loadPages } from "./graphql";
+import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { getPlugins } from "@webiny/plugins";
 import { get } from "lodash";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { useState } from "react";
 
-const PagesList = ({ data }) => {
-    const { component, ...vars } = data;
+const PagesList = props => {
+    const { component, ...vars } = props.data;
     const components = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
+    const [page, setPage] = useState(1);
 
     if (!pageList) {
         return <div>Selected page list component not found!</div>;
@@ -20,58 +22,62 @@ const PagesList = ({ data }) => {
 
     const { component: ListComponent } = pageList;
 
+    let sort = null;
+    if (vars.sortBy && vars.sortDirection) {
+        sort = { [vars.sortBy]: vars.sortDirection };
+    }
+
+    const variables = {
+        sort,
+        where: {
+            category: vars.category,
+            tags: {
+                query: vars.tags,
+                rule: vars.tagsRule
+            }
+        },
+        limit: parseInt(vars.resultsPerPage),
+        page
+    };
+
+    const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {
+        variables,
+        skip: !ListComponent,
+        fetchPolicy: "network-only"
+    });
+
     if (!ListComponent) {
         return <div>You must select a component to render your list!</div>;
     }
 
-    let sort = null;
-    if (vars.sortBy) {
-        sort = { [vars.sortBy]: parseInt(vars.sortDirection) || -1 };
+    if (loading) {
+        return <div>Loading...</div>;
     }
 
-    const variables = {
-        category: vars.category,
-        sort,
-        tags: vars.tags,
-        tagsRule: vars.tagsRule,
-        limit: parseInt(vars.resultsPerPage),
-        after: undefined,
-        before: undefined
-    };
+    const totalCount = get(data, "pageBuilder.listPublishedPages.meta.totalCount");
+    if (!totalCount) {
+        return <div>No pages match the criteria.</div>;
+    }
+
+    const listPublishedPages = get(data, "pageBuilder.listPublishedPages");
+
+    let prevPage = null;
+    if (listPublishedPages.meta.previousPage) {
+        prevPage = () => setPage(listPublishedPages.meta.previousPage);
+    }
+
+    let nextPage = null;
+    if (listPublishedPages.meta.nextPage) {
+        nextPage = () => setPage(listPublishedPages.meta.nextPage);
+    }
 
     return (
-        <Query query={loadPages} variables={variables}>
-            {({ data, loading, refetch }) => {
-                if (loading) {
-                    return <div>Loading...</div>;
-                }
-
-                const pages = get(data, "pageBuilder.listPublishedPages");
-
-                if (!pages || !pages.data.length) {
-                    return <div>No pages match the criteria.</div>;
-                }
-
-                let prevPage = null;
-                if (pages.meta.hasPreviousPage) {
-                    prevPage = () => refetch({ ...variables, before: pages.meta.cursors.before });
-                }
-
-                let nextPage = null;
-                if (pages.meta.hasNextPage) {
-                    nextPage = () => refetch({ ...variables, after: pages.meta.cursors.after });
-                }
-
-                return (
-                    <ListComponent
-                        {...pages}
-                        nextPage={nextPage}
-                        prevPage={prevPage}
-                        theme={theme}
-                    />
-                );
-            }}
-        </Query>
+        <ListComponent
+            {...listPublishedPages}
+            nextPage={nextPage}
+            prevPage={prevPage}
+            theme={theme}
+        />
     );
 };
 

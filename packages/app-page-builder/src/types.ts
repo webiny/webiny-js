@@ -10,7 +10,7 @@ import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import { Form } from "@webiny/form/Form";
+import { Form, FormSetValue } from "@webiny/form/Form";
 import { Item } from "@webiny/app-admin/plugins/menu/Navigation/components";
 
 export type PbMenuSettingsItemPlugin = Plugin & {
@@ -384,7 +384,12 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     /* GraphQL query fields to include in the `settings` subselect */
     fields: string;
     /* Render function that handles the specified `fields` */
-    render: (params: { form: Form; Bind: BindComponent }) => ReactNode;
+    render: (params: {
+        data: Record<string, any>;
+        setValue: FormSetValue;
+        form: Form;
+        Bind: BindComponent;
+    }) => ReactNode;
 };
 
 export type PbIcon = {

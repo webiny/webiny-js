@@ -18,32 +18,103 @@ export interface DbDriver {
     read: <T = Record<string, any>>(args: Args) => Promise<Result<T[]>>;
     update: (args: Args) => Promise<Result<true>>;
     delete: (args: Args) => Promise<Result<true>>;
+
+    // Logging functions.
+    createLog: (args: {
+        operation: string;
+        data: Args;
+        table: string;
+        id: string;
+    }) => Promise<Result<true>>;
+    readLogs: <T = Record<string, any>>(args: { table: string }) => Promise<Result<T[]>>;
 }
 
 export type OperationType = "create" | "read" | "update" | "delete";
 export type Operation = [OperationType, Args];
 
+export type ConstructorArgs = {
+    driver: DbDriver;
+    table?: string;
+    logTable?: string;
+};
+
+// Generates a short and sortable ID, e.g. "1607677774994.tfz58m".
+const shortId = () => {
+    const time = new Date().getTime();
+    const uniqueId = Math.random()
+        .toString(36)
+        .slice(-6);
+
+    return `${time}.${uniqueId}`;
+};
+
+// Picks necessary data from received args, ready to be stored in the log table.
+const getCreateLogData = (args: Args) => {
+    const { table, meta, limit, sort, data, query, keys } = args;
+
+    const logData = { table, meta, limit, sort, data, query, keys, batch: null };
+    if (args.__batch) {
+        logData.batch = {
+            id: args.__batch.instance.id,
+            type: args.__batch.instance.type
+        };
+    }
+
+    return logData;
+};
+
 class Db {
     driver: DbDriver;
     table: string;
-    constructor({ driver, table }) {
+    logTable?: string;
+    constructor({ driver, table, logTable }: ConstructorArgs) {
         this.driver = driver;
         this.table = table;
+        this.logTable = logTable;
     }
 
     async create(args: Args): Promise<Result<true>> {
-        return this.driver.create({ ...args, table: args.table || this.table });
+        const createArgs = { ...args, table: args.table || this.table };
+        await this.createLog("create", createArgs);
+        return this.driver.create(createArgs);
     }
 
     async read<T = Record<string, any>>(args: Args): Promise<Result<T[]>> {
-        return this.driver.read({ ...args, table: args.table || this.table });
+        const readArgs = { ...args, table: args.table || this.table };
+        await this.createLog("read", readArgs);
+        return this.driver.read(readArgs);
     }
 
     async update(args: Args): Promise<Result<true>> {
-        return this.driver.update({ ...args, table: args.table || this.table });
+        const updateArgs = { ...args, table: args.table || this.table };
+        await this.createLog("update", updateArgs);
+        return this.driver.update(updateArgs);
     }
+
     async delete(args: Args): Promise<Result<true>> {
-        return this.driver.delete({ ...args, table: args.table || this.table });
+        const deleteArgs = { ...args, table: args.table || this.table };
+        await this.createLog("delete", deleteArgs);
+        return this.driver.delete(deleteArgs);
+    }
+
+    // Logging functions.
+    async createLog(operation, args: Args): Promise<Result<true>> {
+        if (!this.logTable) {
+            return;
+        }
+
+        const data = getCreateLogData(args);
+        return this.driver.createLog({ operation, data, table: this.logTable, id: shortId() });
+    }
+
+    async readLogs<T = Record<string, any>>(): Promise<Result<T[]>> {
+        if (!this.logTable) {
+            return;
+        }
+
+        return this.driver.readLogs({
+            table: this.logTable
+        });
     }
 
     batch() {
@@ -60,9 +131,7 @@ class Batch {
     constructor(db) {
         this.db = db;
         this.type = "batch";
-        this.id = Math.random()
-            .toString(36)
-            .slice(-6); // e.g. tfz58m
+        this.id = shortId();
 
         this.meta = {};
         this.operations = [];

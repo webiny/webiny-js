@@ -1,4 +1,6 @@
 import * as React from "react";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -26,11 +28,11 @@ const PagesListFilterSettings = ({ Bind }) => {
                     </Bind>
                 </Wrapper>
                 <Wrapper label={"Sort Direction"} containerClassName={classes.simpleGrid}>
-                    <Bind name={"sortDirection"} defaultValue={-1}>
+                    <Bind name={"sortDirection"} defaultValue={"desc"}>
                         {({ value, onChange }) => (
                             <SelectField value={value} onChange={onChange}>
-                                <option value={-1}>Descending</option>
-                                <option value={1}>Ascending</option>
+                                <option value={"desc"}>Descending</option>
+                                <option value={"asc"}>Ascending</option>
                             </SelectField>
                         )}
                     </Bind>
@@ -49,11 +51,11 @@ const PagesListFilterSettings = ({ Bind }) => {
                     leftCellSpan={12}
                     rightCellSpan={12}
                 >
-                    <Bind name={"tagsRule"} defaultValue={"ALL"}>
+                    <Bind name={"tagsRule"} defaultValue={"all"}>
                         {({ value, onChange }) => (
                             <SelectField value={value} onChange={onChange}>
-                                <option value={"ALL"}>Page must include all tags</option>
-                                <option value={"ANY"}>Page must include any of the tags</option>
+                                <option value={"all"}>Page must include all tags</option>
+                                <option value={"any"}>Page must include any of the tags</option>
                             </SelectField>
                         )}
                     </Bind>

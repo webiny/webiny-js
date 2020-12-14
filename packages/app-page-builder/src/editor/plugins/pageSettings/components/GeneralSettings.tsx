@@ -5,8 +5,8 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import PageImage from "./PageImage";
-import { set, get } from "lodash";
+import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import { get } from "lodash";
 import appendOgImageDimensions from "./appendOgImageDimensions";
 import { validation } from "@webiny/validation";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
@@ -15,7 +15,7 @@ const toSlug = (value, cb) => {
     cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
 };
 
-const GeneralSettings = ({ form, Bind }) => {
+const GeneralSettings = ({ form, data, Bind, setValue }) => {
     const layouts = React.useMemo(
         () => getPlugins<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
         []
@@ -32,11 +32,7 @@ const GeneralSettings = ({ form, Bind }) => {
         selectedImage => {
             // If not already set, set selectedImage as og:image too.
             if (selectedImage && !hasOgImage()) {
-                form.setState(state => {
-                    set(state, "data.settings.social.image", selectedImage);
-                    return state;
-                });
-                return appendOgImageDimensions({ form, value: selectedImage });
+                appendOgImageDimensions({ data, value: selectedImage, setValue });
             }
         },
         [hasOgImage, form]
@@ -46,6 +42,9 @@ const GeneralSettings = ({ form, Bind }) => {
         <React.Fragment>
             <Grid>
                 <Cell span={12}>
+                    {/* We need this hidden field because of the `appendOgImageDimensions` callback and because
+                    of the fact that it sts values into the `settings.social.meta` array. */}
+                    <Bind name={"settings.social.meta"} />
                     <Bind name={"title"} validators={validation.create("required")}>
                         <Input label="Title" description="Page title" />
                     </Bind>
@@ -60,7 +59,7 @@ const GeneralSettings = ({ form, Bind }) => {
                     </Bind>
                 </Cell>
                 <Cell span={12}>
-                    <Bind name={"snippet"}>
+                    <Bind name={"settings.general.snippet"}>
                         <Input rows={4} label="Snippet" description="Page snippet" />
                     </Bind>
                 </Cell>
@@ -86,7 +85,7 @@ const GeneralSettings = ({ form, Bind }) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind name={"settings.general.image"} afterChange={onAfterChangeImage}>
-                        <PageImage label="Page Image" />
+                        <SingleImageUpload onChangePick={["id", "src"]} label="Page Image" />
                     </Bind>
                 </Cell>
             </Grid>

@@ -272,7 +272,8 @@ describe("Menus Security Test", () => {
             [
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
                 identityA
-            ]
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -285,7 +286,6 @@ describe("Menus Security Test", () => {
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "w" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rw" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.menu" }], identityA]
@@ -323,7 +323,8 @@ describe("Menus Security Test", () => {
             [
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.menu" }],
                 identityA
-            ]
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -336,7 +337,6 @@ describe("Menus Security Test", () => {
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.menu" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "wd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.menu", rwd: "rwd" }], identityA],
             [
                 [

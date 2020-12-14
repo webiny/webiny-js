@@ -3,22 +3,12 @@ import mdbid from "mdbid";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
-import defaults from "./defaults";
+import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext } from "@webiny/api-page-builder/types";
-
-export type PageElement = {
-    name: string;
-    type: "element" | "block";
-    category: string;
-    content: Record<string, any>; // // TODO: define types
-    preview: Record<string, any>; // TODO: define types
-    createdOn: string;
-    createdBy: {
-        id: string;
-        displayName: string;
-    };
-};
+import { PageElement, PbContext } from "@webiny/api-page-builder/types";
+import checkBasePermissions from "./utils/checkBasePermissions";
+import checkOwnPermissions from "./utils/checkOwnPermissions";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -37,79 +27,131 @@ const UpdateDataModel = withFields({
 })();
 
 const TYPE = "pb.pageElement";
+const PERMISSION_NAME = TYPE;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     apply(context) {
         const { db } = context;
 
-        const PK_PAGE_ELEMENT = () => `${getPKPrefix(context)}PE`;
+        const PK = () => `${getPKPrefix(context)}PE`;
 
-        context.pageElements = {
-            async get(id: string) {
-                const [[menu]] = await db.read<PageElement>({
-                    ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT(), SK: id },
-                    limit: 1
-                });
+        context.pageBuilder = {
+            ...context.pageBuilder,
+            pageElements: {
+                async get(id) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "r"
+                    });
 
-                return menu;
-            },
+                    const [[pageElement]] = await db.read<PageElement>({
+                        ...defaults.db,
+                        query: { PK: PK(), SK: id },
+                        limit: 1
+                    });
 
-            async list() {
-                const [pageElements] = await db.read<PageElement>({
-                    ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT(), SK: { $gt: " " } }
-                });
-
-                return pageElements;
-            },
-
-            async create(data) {
-                const identity = context.security.getIdentity();
-                const createData = new CreateDataModel().populate(data);
-                await createData.validate();
-
-                const id = mdbid();
-
-                data = Object.assign(await createData.toJSON(), {
-                    PK: PK_PAGE_ELEMENT(),
-                    SK: id,
-                    TYPE,
-                    id,
-                    createdOn: new Date().toISOString(),
-                    createdBy: {
-                        id: identity.id,
-                        type: identity.type,
-                        displayName: identity.displayName
+                    if (!pageElement) {
+                        return null;
                     }
-                });
 
-                await db.create({ ...defaults.db, data });
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, pageElement);
 
-                return data;
-            },
+                    return pageElement;
+                },
 
-            async update(id, data) {
-                const updateData = new UpdateDataModel().populate(data);
-                await updateData.validate();
+                async list() {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "r"
+                    });
 
-                data = await updateData.toJSON({ onlyDirty: true });
+                    const [pageElements] = await db.read<PageElement>({
+                        ...defaults.db,
+                        query: { PK: PK(), SK: { $gt: " " } }
+                    });
 
-                await db.update({
-                    ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT(), SK: id },
-                    data
-                });
+                    // If user can only manage own records, let's check if he owns the loaded one.
+                    if (permission.own) {
+                        const identity = context.security.getIdentity();
+                        return pageElements.filter(item => item.createdBy.id === identity.id);
+                    }
 
-                return data;
-            },
+                    return pageElements;
+                },
 
-            async delete(id) {
-                await db.delete({
-                    ...defaults.db,
-                    query: { PK: PK_PAGE_ELEMENT(), SK: id }
-                });
+                async create(data) {
+                    await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
+
+                    const createDataModel = new CreateDataModel().populate(data);
+                    await createDataModel.validate();
+
+                    const id = mdbid();
+                    const identity = context.security.getIdentity();
+
+                    const createData = Object.assign(await createDataModel.toJSON(), {
+                        PK: PK(),
+                        SK: id,
+                        TYPE,
+                        id,
+                        createdOn: new Date().toISOString(),
+                        createdBy: {
+                            id: identity.id,
+                            type: identity.type,
+                            displayName: identity.displayName
+                        }
+                    });
+
+                    await db.create({ ...defaults.db, data: createData });
+
+                    return createData;
+                },
+
+                async update(id, data) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "w"
+                    });
+                    const pageElement = await this.get(id);
+                    if (!pageElement) {
+                        throw new NotFoundError(`Page element "${id}" not found.`);
+                    }
+
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, pageElement);
+
+                    const updateDataModel = new UpdateDataModel().populate(data);
+                    await updateDataModel.validate();
+
+                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
+
+                    await db.update({
+                        ...defaults.db,
+                        query: { PK: PK(), SK: id },
+                        data: updateData
+                    });
+
+                    return { ...pageElement, ...updateData };
+                },
+
+                async delete(slug) {
+                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                        rwd: "d"
+                    });
+
+                    const pageElement = await this.get(slug);
+                    if (!pageElement) {
+                        throw new NotFoundError(`PageElement "${slug}" not found.`);
+                    }
+
+                    const identity = context.security.getIdentity();
+                    checkOwnPermissions(identity, permission, pageElement);
+
+                    await db.delete({
+                        ...defaults.db,
+                        query: { PK: PK(), SK: slug }
+                    });
+
+                    return pageElement;
+                }
             }
         };
     }

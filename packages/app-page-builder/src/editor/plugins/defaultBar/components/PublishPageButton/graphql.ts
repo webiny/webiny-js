@@ -1,13 +1,13 @@
 import gql from "graphql-tag";
 
-export const PUBLISH_REVISION = gql`
-    mutation PbPublishRevision($id: ID!) {
+export const PUBLISH_PAGE = gql`
+    mutation PbPublishPage($id: ID!) {
         pageBuilder {
-            publishRevision(id: $id) {
+            publishPage(id: $id) {
                 data {
                     id
-                    published
                     url
+                    status
                     locked
                 }
                 error {

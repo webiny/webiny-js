@@ -288,7 +288,8 @@ describe("Categories Security Test", () => {
             [
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
                 identityA
-            ]
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -301,7 +302,7 @@ describe("Categories Security Test", () => {
         let sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
+
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rw" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.category" }], identityA]
@@ -339,7 +340,8 @@ describe("Categories Security Test", () => {
             [
                 [{ name: "content.i18n", locales: ["de-DE", "it-IT"] }, { name: "pb.category" }],
                 identityA
-            ]
+            ],
+            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA] // will fail - missing "r"
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -352,7 +354,6 @@ describe("Categories Security Test", () => {
         let sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.category", rwd: "wd" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
             [
                 [
