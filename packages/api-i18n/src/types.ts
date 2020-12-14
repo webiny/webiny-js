@@ -19,6 +19,7 @@ export type I18NContextObject = {
     getCurrentLocales: () => { context: string; locale: string }[];
     getDefaultLocale: () => I18NLocale;
     getLocales: () => I18NLocale[];
+    getLocale: (code: string) => I18NLocale | null;
 };
 
 export type I18NContext = {

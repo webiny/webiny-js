@@ -30,10 +30,10 @@ const contentModelManagerFactory = async (context: CmsContext, model: CmsContent
     }
     return await plugin.create(context, model);
 };
-export default {
+export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-crud",
-    apply(context) {
+    async apply(context) {
         const { db } = context;
 
         // manager per request - something similar to dataloader
@@ -106,4 +106,4 @@ export default {
             }
         };
     }
-} as ContextPlugin<CmsContext>;
+});

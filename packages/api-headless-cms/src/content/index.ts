@@ -1,3 +1,4 @@
+import contentModelGroupCrud from "./plugins/crud/contentModelGroup.crud";
 import contentModelCrud from "./plugins/crud/contentModel.crud";
 import pluginsCrudSetup from "../plugins/crud";
 import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
@@ -10,6 +11,7 @@ type CmsContentPluginsIndexArgsType = {
 export default (options: CmsContentPluginsIndexArgsType) => [
     pluginsCrudSetup(),
     contextSetup(options),
-    contentModelCrud,
+    contentModelGroupCrud(),
+    contentModelCrud(),
     graphQLHandlerFactory(options)
 ];

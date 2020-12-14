@@ -1,4 +1,4 @@
-import { createInitialEnvironment } from "../utils/helpers";
+import { createInitialAliasEnvironment, createInitialEnvironment } from "../utils/helpers";
 import { toSlug } from "@webiny/api-headless-cms/utils";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
@@ -42,7 +42,8 @@ describe("Content model group crud test", () => {
     } = useContentGqlHandler({ path: "manage/production/en-us" });
 
     beforeEach(async () => {
-        await createInitialEnvironment(documentClient);
+        const env = await createInitialEnvironment(documentClient);
+        await createInitialAliasEnvironment(documentClient, env);
     });
 
     test("content model group create, read, update, delete and list all at once", async () => {
