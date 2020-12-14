@@ -127,7 +127,7 @@ export default {
                 }
 
                 await db.update({
-                    ...utils.defaults.es,
+                    ...utils.defaults.db,
                     query: { PK: utils.createEnvironmentAliasPk(context), SK: id },
                     data: modelData
                 });

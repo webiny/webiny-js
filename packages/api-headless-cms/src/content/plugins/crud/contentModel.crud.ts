@@ -7,16 +7,11 @@ import {
     ContentModelManagerPlugin,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
-import { defaults } from "../../../utils";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import * as utils from "@webiny/api-headless-cms/utils";
 import mdbid from "mdbid";
 
-// eslint-disable-next-line
-const createContentModelPk = (context: any) => {
-    return "contentModel#pk";
-};
 const defaultName = "content-model-manager-default";
 
 const CreateContentModelModel = withFields({
@@ -24,6 +19,13 @@ const CreateContentModelModel = withFields({
     modelId: string({ validation: validation.create("required,maxLength:100") }),
     description: string({ validation: validation.create("maxLength:255") }),
     group: string({ validation: validation.create("required,maxLength:255") })
+})();
+
+const UpdateContentModelModel = withFields({
+    name: string({ validation: validation.create("maxLength:100") }),
+    modelId: string({ validation: validation.create("maxLength:100") }),
+    description: string({ validation: validation.create("maxLength:255") }),
+    group: string({ validation: validation.create("maxLength:255") })
 })();
 
 const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModelType) => {
@@ -62,8 +64,8 @@ export default (): ContextPlugin<CmsContext> => ({
         const models: CmsContentModelContextType = {
             async get(id) {
                 const [response] = await db.read<CmsContentModelType>({
-                    ...defaults.db,
-                    query: { PK: createContentModelPk(context), SK: id },
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
@@ -73,8 +75,8 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             async list() {
                 const [response] = await db.read<CmsContentModelType>({
-                    ...defaults.db,
-                    query: { PK: createContentModelPk(context), SK: { $gt: " " } }
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelPk(context), SK: { $gt: " " } }
                 });
                 return response;
             },
@@ -103,7 +105,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db.create({
                     ...utils.defaults.db,
                     data: {
-                        PK: createContentModelPk(context),
+                        PK: utils.createContentModelPk(context),
                         SK: id,
                         TYPE: DbItemTypes.CMS_CONTENT_MODEL,
                         ...model
@@ -113,11 +115,38 @@ export default (): ContextPlugin<CmsContext> => ({
                 await updateManager(context, model);
                 return model;
             },
-            async update(model, data) {
-                await updateManager(context, model);
+            async update(initialModel, data) {
+                const updatedData = new UpdateContentModelModel().populate(data);
+                await updatedData.validate();
 
+                const updatedDataJson = await updatedData.toJSON({ onlyDirty: true });
+                if (Object.keys(updatedDataJson).length === 0) {
+                    return {} as any;
+                }
+                if (updatedDataJson.group) {
+                    const group = await context.cms.groups.get(updatedDataJson.group);
+                    if (!group) {
+                        throw new Error(`There is no group "${updatedDataJson.group}".`);
+                    }
+                    updatedDataJson.group = {
+                        id: group.id,
+                        name: group.name
+                    };
+                }
+                const modelData: CmsContentModelType = {
+                    ...updatedDataJson,
+                    changedOn: new Date().toISOString()
+                };
+                await db.update({
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelPk(context), SK: initialModel.id },
+                    data: modelData
+                });
+                await updateManager(context, {
+                    ...initialModel,
+                    ...modelData
+                });
                 return {
-                    ...model,
                     ...data
                 };
             },

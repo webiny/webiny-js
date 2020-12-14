@@ -116,7 +116,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 await db.update({
-                    ...utils.defaults.es,
+                    ...utils.defaults.db,
                     query: { PK: utils.createContentModelGroupPk(context), SK: id },
                     data: modelData
                 });

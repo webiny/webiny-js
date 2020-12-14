@@ -169,9 +169,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             }
 
             input CmsContentModelUpdateInput {
-                name: String!
-                modelId: String!
-                group: ID!
+                name: String
+                modelId: String
+                group: ID
                 description: String
             }
 

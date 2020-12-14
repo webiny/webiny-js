@@ -4,6 +4,36 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
 
+type KeyGettersType = {
+    tenant: (context: CmsContext) => string;
+    locale: (context: CmsContext) => string;
+    environment: (context: CmsContext) => string;
+};
+type KeyGetterValue = keyof KeyGettersType;
+type CreatePkCallableType = (context: CmsContext) => string;
+type ModelCreatableByUserType = {
+    createdBy?: {
+        id?: string;
+    };
+};
+type CRUDType = "r" | "w" | "d";
+type HasRwdCallableArgsType = {
+    permission?: {
+        name: string;
+        rwd?: CRUDType;
+    };
+    rwd: CRUDType;
+};
+
+enum PartitionKeysEnum {
+    CMS_ENVIRONMENT = "CE",
+    CMS_ENVIRONMENT_ALIAS = "CEA",
+    CMS_SETTINGS = "CS",
+    CMS_CONTENT_MODEL_GROUP = "CMG",
+    CMS_CONTENT_MODEL = "CM",
+    CMS_CONTENT_MODEL_ENTRY = "CME"
+}
+
 export const defaults = {
     db: {
         table: process.env.DB_TABLE_HEADLESS_CMS,
@@ -30,22 +60,6 @@ export const defaults = {
             type: "_doc"
         };
     }
-};
-
-type ModelCreatableByUserType = {
-    createdBy?: {
-        id?: string;
-    };
-};
-
-type CRUDType = "r" | "w" | "d";
-
-type HasRwdCallableArgsType = {
-    permission?: {
-        name: string;
-        rwd?: CRUDType;
-    };
-    rwd: CRUDType;
 };
 
 const CMS_MANAGE_SETTINGS_PERMISSION = "cms.manage.settings";
@@ -94,23 +108,6 @@ export const userCanManageModel = (
     }
     return model.createdBy.id === identity.id;
 };
-
-type KeyGettersType = {
-    tenant: (context: CmsContext) => string;
-    locale: (context: CmsContext) => string;
-    environment: (context: CmsContext) => string;
-};
-
-type KeyGetterValue = keyof KeyGettersType;
-
-type CreatePkCallableType = (context: CmsContext) => string;
-
-enum PartitionKeysEnum {
-    CMS_ENVIRONMENT = "CE",
-    CMS_ENVIRONMENT_ALIAS = "CEA",
-    CMS_SETTINGS = "CS",
-    CMS_CONTENT_MODEL_GROUP = "CMG"
-}
 
 const getLocaleKey = ({ cms }: CmsContext): string => {
     if (!cms) {
@@ -193,6 +190,12 @@ export const createContentModelGroupPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP,
     ["tenant", "locale", "environment"]
 );
+
+export const createContentModelPk = createPkCallableFactory(PartitionKeysEnum.CMS_CONTENT_MODEL, [
+    "tenant",
+    "locale",
+    "environment"
+]);
 
 // with tenant only
 export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS, ["tenant"]);

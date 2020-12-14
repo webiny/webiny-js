@@ -1,6 +1,12 @@
 const DATA_FIELD = /* GraphQL*/ `
     {
         id
+        name
+        description
+        group {
+            id
+            name
+        }
         createdOn
         changedOn
         createdBy
@@ -42,8 +48,8 @@ export const CREATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
 `;
 
 export const UPDATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
-    mutation UpdateContentModelMutation($data: CmsContentModelUpdateInput!) {
-        updateContentModel(data: $data) {
+    mutation UpdateContentModelMutation($id: ID!, $data: CmsContentModelUpdateInput!) {
+        updateContentModel(id: $id, data: $data) {
             data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }

@@ -97,12 +97,16 @@ describe("content model test", () => {
         ]);
     });
 
-    test("create content model", async () => {
-        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+    test("create, read, update, delete and list content models", async () => {
+        const {
+            createContentModelMutation,
+            getContentModelQuery,
+            updateContentModelMutation
+        } = useContentGqlHandler(manageHandlerOpts);
 
         const contentModelGroup = await createContentModelGroup(documentClient, environment);
 
-        const [response] = await createContentModelMutation({
+        const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Content model",
                 modelId: "content-model",
@@ -110,7 +114,7 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toMatchObject({
+        expect(createResponse).toMatchObject({
             data: {
                 createContentModel: {
                     data: {
@@ -121,6 +125,57 @@ describe("content model test", () => {
                         },
                         createdOn: /^20/,
                         changedOn: null
+                    },
+                    error: null
+                }
+            }
+        });
+        const createdContentModel = createResponse.data.createContentModel.data;
+
+        const [getResponse] = await getContentModelQuery({
+            id: createdContentModel.id
+        });
+
+        expect(getResponse).toEqual({
+            data: {
+                getContentModel: {
+                    data: createResponse.data.createContentModel.data,
+                    error: null
+                }
+            }
+        });
+
+        // nothing is changed in this update
+        const [updateResponse] = await updateContentModelMutation({
+            id: createdContentModel.id,
+            data: {}
+        });
+
+        expect(updateResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: createResponse.data.createContentModel.data,
+                    error: null
+                }
+            }
+        });
+
+        // change some values in content model
+        const [changedUpdateResponse] = await updateContentModelMutation({
+            id: createdContentModel.id,
+            data: {
+                name: "changed name",
+                description: "changed description"
+            }
+        });
+
+        expect(changedUpdateResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: {
+                        ...createdContentModel,
+                        name: "changed name",
+                        description: "changed description"
                     },
                     error: null
                 }
