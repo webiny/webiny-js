@@ -1,17 +1,10 @@
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
-import { compose, ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql";
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import {
     CmsContentModelCreateInputType,
     CmsContentModelUpdateInputType,
     CmsContext
 } from "@webiny/api-headless-cms/types";
-import {
-    getCmsManageSettingsPermission,
-    hasRwdPermission,
-    userCanManageModel
-} from "@webiny/api-headless-cms/utils";
 
 type CreateContentModelArgsType = {
     data: CmsContentModelCreateInputType;
@@ -29,56 +22,48 @@ type DeleteContentModelArgsType = {
     id: string;
 };
 
-const PERMISSION_NAME = "cms.manage.contentModel";
-
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     const resolvers: Record<string, any> = {
         Query: {
-            getContentModel: compose(
-                hasPermission(PERMISSION_NAME),
-                hasRwdPermission(PERMISSION_NAME, "r"),
-                hasI18NContentPermission()
-            )(async (_, args: ReadContentModelArgsType, context: CmsContext) => {
-                const permission = await getCmsManageSettingsPermission(context);
-                const { id } = args;
-                const model = await context.cms.models.get(id);
-                if (!model) {
-                    return new NotFoundResponse(`CMS Content model "${id}" not found.`);
+            getContentModel: async (
+                _: unknown,
+                args: ReadContentModelArgsType,
+                context: CmsContext
+            ) => {
+                try {
+                    const model = await context.cms.models.get(args.id);
+                    return new Response(model);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        message: ex.message,
+                        data: ex.data,
+                        code: ex.code || "GET_CONTENT_MODEL_FAILED"
+                    });
                 }
-                if (
-                    permission.own === true &&
-                    !userCanManageModel(context.security.getIdentity(), model)
-                ) {
-                    return new NotAuthorizedResponse();
+            },
+            listContentModels: async (_: unknown, __: unknown, context: CmsContext) => {
+                try {
+                    const model = await context.cms.models.list();
+                    return new Response(model);
+                } catch (ex) {
+                    return new ErrorResponse({
+                        message: ex.message,
+                        data: ex.data,
+                        code: ex.code || "LIST_CONTENT_MODEL_FAILED"
+                    });
                 }
-                return new Response(model);
-            }),
-            listContentModels: compose(
-                hasPermission(PERMISSION_NAME),
-                hasRwdPermission(PERMISSION_NAME, "r"),
-                hasI18NContentPermission()
-            )(async (_, __, context: CmsContext) => {
-                const permission = await getCmsManageSettingsPermission(context);
-                const models = await context.cms.models.list();
-                if (permission.own === true) {
-                    const identity = context.security.getIdentity();
-                    return new Response(
-                        models.filter(model => userCanManageModel(identity, model))
-                    );
-                }
-                return new Response(models);
-            })
+            }
         }
     };
 
     let manageSchema = "";
     if (context.cms.MANAGE) {
         resolvers.Mutation = {
-            createContentModel: compose(
-                hasPermission(PERMISSION_NAME),
-                hasRwdPermission(PERMISSION_NAME, "w"),
-                hasI18NContentPermission()
-            )(async (_, args: CreateContentModelArgsType, context: CmsContext) => {
+            createContentModel: async (
+                _: unknown,
+                args: CreateContentModelArgsType,
+                context: CmsContext
+            ) => {
                 const identity = context.security.getIdentity();
 
                 const { data } = args;
@@ -92,72 +77,46 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "CREATE_CONTENT_MODEL_FAILED",
-                        message: ex.message
+                        message: ex.message,
+                        data: ex.data,
+                        code: ex.code || "CREATE_CONTENT_MODEL_FAILED"
                     });
                 }
-            }),
-            updateContentModel: compose(
-                hasPermission(PERMISSION_NAME),
-                hasRwdPermission(PERMISSION_NAME, "w"),
-                hasI18NContentPermission()
-            )(async (_, args: UpdateContentModelArgsType, context: CmsContext) => {
-                const permission = await getCmsManageSettingsPermission(context);
-
+            },
+            updateContentModel: async (
+                _: unknown,
+                args: UpdateContentModelArgsType,
+                context: CmsContext
+            ) => {
                 const { id, data } = args;
-
-                const model = await context.cms.models.get(id);
-                if (!model) {
-                    return new NotFoundResponse(`CMS Content model "${id}" not found.`);
-                }
-
-                if (
-                    permission.own === true &&
-                    !userCanManageModel(context.security.getIdentity(), model)
-                ) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    const changedModel = await context.cms.models.update(model, data);
-                    return new Response({ ...model, ...changedModel });
+                    const model = await context.cms.models.update(id, data);
+                    return new Response(model);
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "UPDATE_CONTENT_MODEL_FAILED",
-                        message: ex.message
+                        message: ex.message,
+                        data: ex.data,
+                        code: ex.code || "UPDATE_CONTENT_MODEL_FAILED"
                     });
                 }
-            }),
-            deleteContentModel: compose(
-                hasPermission(PERMISSION_NAME),
-                hasRwdPermission(PERMISSION_NAME, "d"),
-                hasI18NContentPermission()
-            )(async (_, args: DeleteContentModelArgsType, context: CmsContext) => {
+            },
+            deleteContentModel: async (
+                _: unknown,
+                args: DeleteContentModelArgsType,
+                context: CmsContext
+            ) => {
                 const { id } = args;
-                const permission = await getCmsManageSettingsPermission(context);
-
-                const model = await context.cms.models.get(id);
-                if (!model) {
-                    return new NotFoundResponse(`CMS Content model "${id}" not found.`);
-                }
-
-                if (
-                    permission.own === true &&
-                    !userCanManageModel(context.security.getIdentity(), model)
-                ) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    await context.cms.models.delete(model);
+                    await context.cms.models.delete(id);
                     return new Response(true);
                 } catch (ex) {
                     return new ErrorResponse({
-                        code: "DELETE_CONTENT_MODEL_FAILED",
-                        message: ex.message
+                        message: ex.message,
+                        data: ex.data,
+                        code: ex.code || "DELETE_CONTENT_MODEL_FAILED"
                     });
                 }
-            })
+            }
         };
 
         manageSchema = /* GraphQL */ `

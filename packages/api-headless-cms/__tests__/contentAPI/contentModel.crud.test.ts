@@ -235,7 +235,7 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "GET_CONTENT_MODEL_FAILED",
                         data: null
                     }
                 }
@@ -261,7 +261,7 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "UPDATE_CONTENT_MODEL_FAILED",
                         data: null
                     }
                 }
@@ -283,7 +283,7 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "DELETE_CONTENT_MODEL_FAILED",
                         data: null
                     }
                 }

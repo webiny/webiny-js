@@ -387,11 +387,8 @@ export type CmsContentModelContextType = {
         data: CmsContentModelCreateInputType,
         createdBy: CreatedByType
     ) => Promise<CmsContentModelType>;
-    update: (
-        model: CmsContentModelType,
-        data: CmsContentModelUpdateInputType
-    ) => Promise<CmsContentModelType>;
-    delete: (model: CmsContentModelType) => Promise<void>;
+    update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
+    delete: (id: string) => Promise<void>;
     getManager: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
     getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };

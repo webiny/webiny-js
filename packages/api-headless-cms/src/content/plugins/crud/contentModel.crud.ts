@@ -158,24 +158,35 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const models: CmsContentModelContextType = {
             async get(id) {
+                const permission = await utils.checkBaseContentModelPermissions(context, "r");
+
                 const [response] = await db.read<CmsContentModelType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelPk(context), SK: id },
                     limit: 1
                 });
                 if (!response || response.length === 0) {
-                    return null;
+                    throw new Error(`CMS Content model "${id}" not found.`);
                 }
-                return response.find(() => true);
+                const model = response.find(() => true);
+
+                utils.checkOwnership(context, permission, model);
+
+                return model;
             },
             async list() {
-                const [response] = await db.read<CmsContentModelType>({
+                const permission = await utils.checkBaseContentModelPermissions(context, "r");
+
+                const [models] = await db.read<CmsContentModelType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelPk(context), SK: { $gt: " " } }
                 });
-                return response;
+
+                return models.filter(model => utils.validateOwnership(context, permission, model));
             },
             async create(data, createdBy) {
+                await utils.checkBaseContentModelPermissions(context, "w");
+
                 const createdData = new CreateContentModelModel().populate(data);
                 await createdData.validate();
                 const createdDataJson = await createdData.toJSON();
@@ -212,7 +223,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 await updateManager(context, model);
                 return model;
             },
-            async update(initialModel, data) {
+            async update(id, data) {
+                const model = await context.cms.models.get(id);
+                const permission = await utils.checkBaseContentModelPermissions(context, "w");
+                utils.checkOwnership(context, permission, model);
+
                 const updatedData = new UpdateContentModelModel().populate(data);
                 await updatedData.validate();
 
@@ -230,7 +245,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         name: group.name
                     };
                 }
-                const updatedFields = await createUpdatedFields(initialModel, data);
+                const updatedFields = await createUpdatedFields(model, data);
                 validateLayout(updatedDataJson, updatedFields);
                 const modelData: CmsContentModelType = {
                     ...updatedDataJson,
@@ -239,18 +254,23 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelPk(context), SK: initialModel.id },
+                    query: { PK: utils.createContentModelPk(context), SK: id },
                     data: modelData
                 });
                 await updateManager(context, {
-                    ...initialModel,
+                    ...model,
                     ...modelData
                 });
-                return modelData;
+                return {
+                    ...model,
+                    ...modelData
+                };
             },
-            async delete(model) {
+            async delete(id) {
+                const model = await context.cms.models.get(id);
+                const permission = await utils.checkBaseContentModelPermissions(context, "d");
+                utils.checkOwnership(context, permission, model);
                 managers.delete(model.modelId);
-                return;
             },
             async getManager<T = any>(modelId) {
                 if (managers.has(modelId)) {
