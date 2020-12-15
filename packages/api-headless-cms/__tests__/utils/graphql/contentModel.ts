@@ -7,6 +7,29 @@ const DATA_FIELD = /* GraphQL*/ `
             id
             name
         }
+        layout
+        fields {
+            id
+            label
+            helpText
+            placeholderText
+            fieldId
+            type
+            multipleValues
+            predefinedValues {
+                enabled
+                values
+            }
+            renderer {
+                name
+            }
+            validation {
+                name
+                message
+                settings
+            }
+            settings
+        }
         createdOn
         changedOn
         createdBy

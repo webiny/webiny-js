@@ -47,7 +47,7 @@ export const generateSchemaPlugins = async (
                         name: "graphql-schema-" + model.modelId + "-manage",
                         type: "graphql-schema",
                         schema: {
-                            typeDefs: createManageSDL({ model, context, fieldTypePlugins }),
+                            typeDefs: createManageSDL({ model, fieldTypePlugins }),
                             resolvers: createManageResolvers({
                                 models,
                                 model,
@@ -64,7 +64,7 @@ export const generateSchemaPlugins = async (
                         name: "graphql-schema-" + model.modelId + "-read",
                         type: "graphql-schema",
                         schema: {
-                            typeDefs: createReadSDL({ model, context, fieldTypePlugins }),
+                            typeDefs: createReadSDL({ model, fieldTypePlugins }),
                             resolvers: createReadResolvers({
                                 models,
                                 model,

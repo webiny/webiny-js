@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-commented-out-tests */
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
@@ -7,6 +6,7 @@ import {
     createTestContentModelGroupPk
 } from "../utils/helpers";
 import {
+    CmsContentModelFieldInputType,
     CmsContentModelGroupType,
     CmsEnvironmentType,
     DbItemTypes
@@ -49,6 +49,7 @@ const createContentModelGroup = async (client: DocumentClient, environment: CmsE
         .promise();
     return model;
 };
+jest.setTimeout(15000);
 
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/production/en-US" };
@@ -57,10 +58,12 @@ describe("content model test", () => {
     const { documentClient } = useContentGqlHandler(manageHandlerOpts);
 
     let environment: CmsEnvironmentType;
+    let contentModelGroup: CmsContentModelGroupType;
 
     beforeEach(async () => {
         environment = await createInitialEnvironment(documentClient);
         await createInitialAliasEnvironment(documentClient, environment);
+        contentModelGroup = await createContentModelGroup(documentClient, environment);
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -106,8 +109,6 @@ describe("content model test", () => {
             deleteContentModelMutation
         } = useContentGqlHandler(manageHandlerOpts);
 
-        const contentModelGroup = await createContentModelGroup(documentClient, environment);
-
         const [createResponse] = await createContentModelMutation({
             data: {
                 name: "Content model",
@@ -147,16 +148,22 @@ describe("content model test", () => {
             }
         });
 
-        // nothing is changed in this update
+        // nothing is changed in this update - just the date
         const [updateResponse] = await updateContentModelMutation({
             id: createdContentModel.id,
-            data: {}
+            data: {
+                fields: [],
+                layout: []
+            }
         });
 
-        expect(updateResponse).toEqual({
+        expect(updateResponse).toMatchObject({
             data: {
                 updateContentModel: {
-                    data: createResponse.data.createContentModel.data,
+                    data: {
+                        ...createResponse.data.createContentModel.data,
+                        changedOn: /^20/
+                    },
                     error: null
                 }
             }
@@ -167,7 +174,9 @@ describe("content model test", () => {
             id: createdContentModel.id,
             data: {
                 name: "changed name",
-                description: "changed description"
+                description: "changed description",
+                fields: [],
+                layout: []
             }
         });
 
@@ -226,7 +235,7 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "GET_CONTENT_MODEL_FAILED",
                         data: null
                     }
                 }
@@ -240,7 +249,9 @@ describe("content model test", () => {
         const [response] = await updateContentModelMutation({
             id,
             data: {
-                name: "new name"
+                name: "new name",
+                fields: [],
+                layout: []
             }
         });
 
@@ -250,7 +261,7 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "UPDATE_CONTENT_MODEL_FAILED",
                         data: null
                     }
                 }
@@ -272,9 +283,90 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `CMS Content model "${id}" not found.`,
-                        code: "NOT_FOUND",
+                        code: "DELETE_CONTENT_MODEL_FAILED",
                         data: null
                     }
+                }
+            }
+        });
+    });
+
+    test("update content model with new field", async () => {
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts
+        );
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        const field: CmsContentModelFieldInputType = {
+            id: mdbid(),
+            fieldId: "field1",
+            label: "Field 1",
+            helpText: "help text",
+            multipleValues: false,
+            placeholderText: "placeholder text",
+            predefinedValues: {
+                enabled: false,
+                values: []
+            },
+            renderer: {
+                name: "rendererName"
+            },
+            settings: {},
+            type: "text",
+            validation: []
+        };
+        const [response] = await updateContentModelMutation({
+            id: contentModel.id,
+            data: {
+                name: "new name",
+                fields: [field],
+                layout: [[field.id]]
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        changedOn: /^20/,
+                        createdBy: {
+                            id: "1234567890",
+                            name: "userName123"
+                        },
+                        createdOn: /^20/,
+                        description: null,
+                        fields: [
+                            {
+                                fieldId: "field1",
+                                helpText: "help text",
+                                id: field.id,
+                                label: "Field 1",
+                                multipleValues: false,
+                                placeholderText: null,
+                                predefinedValues: null,
+                                renderer: null,
+                                settings: {},
+                                type: "text",
+                                validation: []
+                            }
+                        ],
+                        group: {
+                            id: contentModelGroup.id,
+                            name: "Group"
+                        },
+                        id: contentModel.id,
+                        layout: [[field.id]],
+                        name: "new name"
+                    },
+                    error: null
                 }
             }
         });

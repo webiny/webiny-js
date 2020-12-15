@@ -1,8 +1,8 @@
 import slugify from "slugify";
 import { CmsContext } from "./types";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { hasPermission, NotAuthorizedResponse } from "@webiny/api-security";
+import { hasPermission, NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 
 type KeyGettersType = {
     tenant: (context: CmsContext) => string;
@@ -31,6 +31,7 @@ enum PartitionKeysEnum {
     CMS_SETTINGS = "CS",
     CMS_CONTENT_MODEL_GROUP = "CMG",
     CMS_CONTENT_MODEL = "CM",
+    CMS_CONTENT_MODEL_FIELD = "CMF",
     CMS_CONTENT_MODEL_ENTRY = "CME"
 }
 
@@ -63,6 +64,7 @@ export const defaults = {
 };
 
 const CMS_MANAGE_SETTINGS_PERMISSION = "cms.manage.settings";
+const CMS_MANAGE_CONTENT_MODEL_PERMISSION = "cms.manage.contentModel";
 
 export const getCmsManageSettingsPermission = async (context: CmsContext) => {
     return await context.security.getPermission(CMS_MANAGE_SETTINGS_PERMISSION);
@@ -73,12 +75,64 @@ export const hasManageSettingsPermission = () => {
 };
 
 const hasRwdOnPermission = ({ permission, rwd }: HasRwdCallableArgsType) => {
-    if (!permission || !permission.rwd) {
+    if (!permission) {
         return false;
-    } else if (typeof permission.rwd !== "string") {
+    } else if (!permission.rwd || typeof permission.rwd !== "string") {
         return true;
     }
     return permission.rwd.includes(rwd);
+};
+
+export const checkBaseContentModelPermissions = async (
+    context: CmsContext,
+    rwd?: CRUDType
+): Promise<SecurityPermission> => {
+    await context.i18nContent.checkI18NContentPermission();
+    const permission = await context.security.getPermission(CMS_MANAGE_CONTENT_MODEL_PERMISSION);
+    if (!permission) {
+        throw new NotAuthorizedError();
+    }
+
+    if (rwd && !hasRwdOnPermission({ permission, rwd })) {
+        throw new NotAuthorizedError();
+    }
+
+    return permission;
+};
+
+export const checkOwnership = (
+    context: CmsContext,
+    permission: SecurityPermission,
+    model: ModelCreatableByUserType
+): void => {
+    if (!permission.own) {
+        return;
+    }
+    const identity = context.security.getIdentity();
+    if (!model.createdBy || !model.createdBy.id) {
+        throw new Error(
+            `Object you are checking for access rights does not have "createdBy" property assigned.`
+        );
+    } else if (model.createdBy.id !== identity.id) {
+        throw new NotAuthorizedError();
+    }
+};
+
+export const validateOwnership = (
+    context: CmsContext,
+    permission: SecurityPermission,
+    model: ModelCreatableByUserType
+): boolean => {
+    if (!permission.own) {
+        return true;
+    }
+    const identity = context.security.getIdentity();
+    if (!model.createdBy || !model.createdBy.id) {
+        return false;
+    } else if (model.createdBy.id !== identity.id) {
+        return false;
+    }
+    return true;
 };
 
 export const hasCmsManageSettingsPermissionRwd = (rwd: CRUDType) => {
@@ -196,6 +250,11 @@ export const createContentModelPk = createPkCallableFactory(PartitionKeysEnum.CM
     "locale",
     "environment"
 ]);
+
+export const createContentModelEntryPk = createPkCallableFactory(
+    PartitionKeysEnum.CMS_CONTENT_MODEL_ENTRY,
+    ["tenant", "locale", "environment"]
+);
 
 // with tenant only
 export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS, ["tenant"]);

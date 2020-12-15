@@ -31,8 +31,8 @@ export default async function findEntries<T = CmsContext>({
 
     parseBoolean(args);
 
-    // eslint-disable-next-line prefer-const
-    let { limit, after, before } = args;
+    let { limit } = args;
+    const { after, before } = args;
     limit = isNaN(limit) || limit < 1 ? 200 : limit;
 
     const { query, sort } = createFindParameters({
