@@ -143,14 +143,22 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
         element,
         dataNamespace: valueKey,
         postModifyElement: ({ name, newElement, newValue }: PostModifyElementArgs) => {
+            // Bail out early if "advanced" property has changed.
+            if (name.includes("advanced")) {
+                return;
+            }
+            const changeInTopValue = name.includes(".top");
+            const advanced = get(newElement, `${valueKey}.advanced`);
             // Update all values in advanced settings
-            if (name.endsWith(".all")) {
+            if (!advanced && changeInTopValue) {
                 const prefix = name.includes("desktop") ? "desktop" : "mobile";
                 // Modify the element directly.
                 set(newElement, `${valueKey}.${prefix}.top`, newValue);
                 set(newElement, `${valueKey}.${prefix}.right`, newValue);
                 set(newElement, `${valueKey}.${prefix}.bottom`, newValue);
                 set(newElement, `${valueKey}.${prefix}.left`, newValue);
+                // Also set "all"
+                set(newElement, `${valueKey}.${prefix}.all`, newValue);
             }
         }
     });
@@ -194,7 +202,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Top className="align-center">
                     <SpacingPicker
                         value={top}
-                        onChange={getUpdateValue(advanced ? "desktop.top" : "desktop.all")}
+                        onChange={getUpdateValue("desktop.top")}
                         options={options[styleAttribute]}
                     />
                 </Top>
