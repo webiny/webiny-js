@@ -123,3 +123,6 @@ export const SimpleButton = styled("button")({
 export const ButtonContainer = styled("div")({
     marginTop: 16
 });
+export const justifySelfEndStyle = css({
+    justifySelf: "end"
+});
