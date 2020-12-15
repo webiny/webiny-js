@@ -74,9 +74,9 @@ export const hasManageSettingsPermission = () => {
 };
 
 const hasRwdOnPermission = ({ permission, rwd }: HasRwdCallableArgsType) => {
-    if (!permission || !permission.rwd) {
+    if (!permission) {
         return false;
-    } else if (typeof permission.rwd !== "string") {
+    } else if (!permission.rwd || typeof permission.rwd !== "string") {
         return true;
     }
     return permission.rwd.includes(rwd);
