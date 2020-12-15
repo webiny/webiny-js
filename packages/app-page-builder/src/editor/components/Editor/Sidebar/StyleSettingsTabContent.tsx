@@ -37,11 +37,10 @@ const StyleSettingsTabContent = ({ element }) => {
         <RootElement>
             {elementStyleSettings.length ? (
                 elementStyleSettings.map(({ plugin, options }, index) => {
-                    return (
-                        <React.Fragment key={index}>
-                            {typeof plugin.render === "function" && plugin.render({ options })}
-                        </React.Fragment>
-                    );
+                    return React.cloneElement(plugin.render({ options }), {
+                        key: index,
+                        defaultAccordionValue: index === 0
+                    });
                 })
             ) : (
                 <NoActiveElement
