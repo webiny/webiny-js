@@ -16,7 +16,12 @@ const PagesListDesignSettings = ({ Bind }) => {
     return (
         <Accordion title={"Design"} defaultValue={true}>
             <React.Fragment>
-                <Wrapper label={"Component"} containerClassName={classes.simpleGrid}>
+                <Wrapper
+                    label={"Component"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
                     <Bind
                         name={"component"}
                         defaultValue={components[0] ? components[0].componentName : null}
@@ -36,7 +41,12 @@ const PagesListDesignSettings = ({ Bind }) => {
                         )}
                     </Bind>
                 </Wrapper>
-                <Wrapper label={"Results per page"} containerClassName={classes.simpleGrid}>
+                <Wrapper
+                    label={"Results per page"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
                     <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
                         <InputField />
                     </Bind>

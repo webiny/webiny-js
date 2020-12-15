@@ -1,12 +1,33 @@
 import * as React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
+import { css } from "emotion";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";
-import { classes } from "../../elementSettings/components/StyledComponents";
+import { classes, COLORS } from "../../elementSettings/components/StyledComponents";
+
+const autoCompleteStyle = css({
+    "& .mdc-text-field": {
+        height: "30px !important",
+        padding: "0px !important"
+    },
+    "& .mdc-text-field__input": {
+        padding: "4px 8px !important",
+        border: "none !important",
+        backgroundColor: `${COLORS.lightGray} !important`,
+        caretColor: "inherit !important"
+    },
+    "& .mdc-floating-label": {
+        display: "none"
+    },
+    "& .mdc-line-ripple": {
+        display: "none"
+    },
+    "& .mdc-elevation--z1": {
+        top: "30px !important"
+    }
+});
 
 const PagesListFilterSettings = ({ Bind }) => {
     return (
@@ -14,7 +35,7 @@ const PagesListFilterSettings = ({ Bind }) => {
             <React.Fragment>
                 <Wrapper label={"Category"} containerClassName={classes.simpleGrid}>
                     <Bind name={"category"}>
-                        <CategoriesAutocomplete label="Category" />
+                        <CategoriesAutocomplete label="Category" className={autoCompleteStyle} />
                     </Bind>
                 </Wrapper>
                 <Wrapper label={"Sort By"} containerClassName={classes.simpleGrid}>
@@ -40,6 +61,7 @@ const PagesListFilterSettings = ({ Bind }) => {
                 <Wrapper label={"Tags"} containerClassName={classes.simpleGrid}>
                     <Bind name="tags">
                         <TagsMultiAutocomplete
+                            className={autoCompleteStyle}
                             label="Filter by tags"
                             description="Enter tags to filter pages"
                         />
