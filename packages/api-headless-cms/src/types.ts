@@ -362,7 +362,7 @@ export type CmsContentModelCreateInputType = {
 export type CmsContentModelUpdateInputType = {
     name?: string;
     description?: string;
-    fields?: CmsContentModelFieldUpdateInputType[];
+    fields?: CmsContentModelFieldInputType[];
     layout: string[][];
 };
 
@@ -403,20 +403,8 @@ type CmsContentModelFieldCreateInputPredefinedValuesType = {
 type CmsContentModelFieldRendererType = {
     name: string;
 };
-export type CmsContentModelFieldCreateInputType = {
-    label: string;
-    helpText?: string;
-    placeholderText?: string;
-    fieldId: string;
-    type: string;
-    multipleValues?: boolean;
-    predefinedValues: CmsContentModelFieldCreateInputPredefinedValuesType;
-    renderer: CmsContentModelFieldRendererType;
-    validation: CmsContentModelFieldValidationType[];
-    settings: Record<string, any>;
-};
 
-export type CmsContentModelFieldUpdateInputType = {
+export type CmsContentModelFieldInputType = {
     id: string;
     type: string;
     fieldId: string;
@@ -430,21 +418,6 @@ export type CmsContentModelFieldUpdateInputType = {
     settings?: Record<string, any>;
 };
 
-export type CmsContentModelFieldsContextType = {
-    get: (model: CmsContentModelType, id: string) => Promise<CmsContentModelFieldType | null>;
-    list: (model: CmsContentModelType) => Promise<CmsContentModelFieldType[]>;
-    create: (
-        model: CmsContentModelType,
-        data: CmsContentModelFieldCreateInputType,
-        createdBy: CreatedByType
-    ) => Promise<CmsContentModelType>;
-    update: (
-        model: CmsContentModelType,
-        fieldId: string,
-        data: CmsContentModelFieldUpdateInputType
-    ) => Promise<CmsContentModelType>;
-    delete: (model: CmsContentModelType, fieldId: string) => Promise<CmsContentModelType>;
-};
 export type CmsCrudContextType = {
     cms: {
         environments: CmsEnvironmentContextType;
@@ -454,7 +427,6 @@ export type CmsCrudContextType = {
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
         getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
-        modelFields: CmsContentModelFieldsContextType;
     };
 };
 

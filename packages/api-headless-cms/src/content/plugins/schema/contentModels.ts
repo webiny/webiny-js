@@ -180,7 +180,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 label: String!
                 helpText: String
                 placeholderText: String
-                fieldId: String
+                fieldId: String!
                 type: String!
                 multipleValues: Boolean
                 predefinedValues: PredefinedValuesInput
@@ -261,6 +261,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     changedOn: DateTime
                     createdBy: JSON!
                     fields: [CmsContentModelField!]!
+                    layout: [[String!]!]!
                 }
 
                 type CmsContentModelResponse {

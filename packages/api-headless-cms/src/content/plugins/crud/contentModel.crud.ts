@@ -69,8 +69,8 @@ const UpdateContentModelModel = withFields({
     modelId: string({ validation: shortString }),
     description: string({ validation: shortString }),
     group: string({ validation: shortString }),
-    fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true }),
-    layout: object({ value: [] })
+    fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true, required: true }),
+    layout: object({ value: [], required: true })
 })();
 
 const createUpdatedFields = async (
@@ -79,7 +79,7 @@ const createUpdatedFields = async (
 ): Promise<CmsContentModelFieldType[]> => {
     const fields = [];
     for (const field of data.fields) {
-        const fieldData = new ContentModelFieldModel().populate(data);
+        const fieldData = new ContentModelFieldModel().populate(field);
         await fieldData.validate();
 
         const obj: CmsContentModelFieldType = {
@@ -101,19 +101,26 @@ const validateLayout = (
     { layout }: CmsContentModelType,
     fields: CmsContentModelFieldType[]
 ): void => {
-    const flatFieldIdList = layout.reduce((acc, id) => {
+    const flatLayoutIdList = layout.reduce((acc, id) => {
         return acc.concat(Array.isArray(id) ? id : [id]);
     }, []);
-    if (flatFieldIdList.length !== fields.length) {
+    if (flatLayoutIdList.length !== fields.length) {
         throw new Error(
-            `There are ${flatFieldIdList.length} IDs in the layout and ${fields.length} in fields, which cannot be - numbers must be the same.`
+            `There are ${flatLayoutIdList.length} IDs in the layout and ${fields.length} in fields, which cannot be - numbers must be the same.`
         );
     }
     for (const field of fields) {
-        if (flatFieldIdList.includes(field.id)) {
+        if (flatLayoutIdList.includes(field.id)) {
             continue;
         }
         throw new Error(`Field "${field.id}" is not defined in layout.`);
+    }
+    for (const id of flatLayoutIdList) {
+        const fieldFound = fields.some(f => f.id === id);
+        if (fieldFound) {
+            continue;
+        }
+        throw new Error(`Field id "${id}" is in layout but not in fields.`);
     }
 };
 const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModelType) => {
@@ -224,7 +231,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     };
                 }
                 const updatedFields = await createUpdatedFields(initialModel, data);
-                validateLayout(initialModel, updatedFields);
+                validateLayout(updatedDataJson, updatedFields);
                 const modelData: CmsContentModelType = {
                     ...updatedDataJson,
                     fields: updatedFields,
