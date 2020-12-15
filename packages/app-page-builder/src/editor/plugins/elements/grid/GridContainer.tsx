@@ -11,7 +11,8 @@ const GridContainerStyle = styled("div")({
     position: "relative",
     color: "#666",
     padding: 5,
-    boxSizing: "border-box"
+    boxSizing: "border-box",
+    display: "flex"
 });
 
 type GridContainerPropsType = {
@@ -24,10 +25,13 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ elemen
         return null;
     }
     return (
-        <GridContainerStyle id={id}>
-            <ElementAnimation>
-                <ElementRoot element={element}>
-                    {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
+        <ElementAnimation>
+            <ElementRoot element={element}>
+                {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (
+                    <GridContainerStyle
+                        id={id}
+                        style={{ justifyContent: elementStyle.justifyContent }}
+                    >
                         <Grid
                             element={element}
                             elementStyle={elementStyle}
@@ -38,10 +42,10 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ elemen
                             ]}
                             combineClassNames={combineClassNames}
                         />
-                    )}
-                </ElementRoot>
-            </ElementAnimation>
-        </GridContainerStyle>
+                    </GridContainerStyle>
+                )}
+            </ElementRoot>
+        </ElementAnimation>
     );
 };
 
