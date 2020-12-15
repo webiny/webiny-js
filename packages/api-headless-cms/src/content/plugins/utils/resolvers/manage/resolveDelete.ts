@@ -1,16 +1,9 @@
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
 import { entryNotFound } from "./../entryNotFound";
-import { setContextLocale } from "./../../setContextLocale";
 import { findEntry } from "../../findEntry";
 
-export const resolveDelete = ({
-    model
-}: {
-    model: CmsContentModelType;
-}): GraphQLFieldResolver<any, any, CmsContext> => async (root, args, context) => {
-    setContextLocale(context, args.locale);
+export const resolveDelete: ResolverFactory = ({ model }) => async (root, args, context) => {
     try {
         let instance;
         // For the MANAGE API, we also allow getting entries directly by ID.
@@ -28,10 +21,6 @@ export const resolveDelete = ({
         await instance.delete();
         return new Response(true);
     } catch (e) {
-        return new ErrorResponse({
-            code: e.code,
-            message: e.message,
-            data: e.data || null
-        });
+        return new ErrorResponse(e);
     }
 };
