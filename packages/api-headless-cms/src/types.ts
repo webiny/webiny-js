@@ -418,11 +418,11 @@ export type CmsContentModelEntryType = {
     values: Record<string, any>;
 };
 
-type CmsContentModelEntryCreateInputType = {
+export type CmsContentModelEntryCreateInputType = {
     modelId: string;
     values: Record<string, any>;
 };
-type CmsContentModelEntryUpdateInputType = {
+export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
 export type CmsContentModelEntryContextType = {
