@@ -62,19 +62,7 @@ import breadcrumbs from "@webiny/app-page-builder/editor/plugins/breadcrumbs";
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 // event actions
-import {
-    createElementPlugin,
-    deactivatePluginPlugin,
-    deleteElementPlugin,
-    dragPlugin,
-    dropElementPlugin,
-    afterDropElementPlugin,
-    resizePlugin,
-    saveRevisionPlugin,
-    togglePluginPlugin,
-    updateElementPlugin,
-    updatePagePlugin
-} from "@webiny/app-page-builder/editor/recoil/actions";
+import actionPlugins from "@webiny/app-page-builder/editor/recoil/actions/plugins";
 
 export default [
     contentBackground,
@@ -142,15 +130,5 @@ export default [
     // Breadcrumbs
     breadcrumbs,
     // action registration
-    createElementPlugin(),
-    updateElementPlugin(),
-    togglePluginPlugin(),
-    saveRevisionPlugin(),
-    dropElementPlugin(),
-    afterDropElementPlugin(),
-    deactivatePluginPlugin(),
-    deleteElementPlugin(),
-    updatePagePlugin(),
-    ...resizePlugin(),
-    ...dragPlugin()
+    actionPlugins()
 ];
