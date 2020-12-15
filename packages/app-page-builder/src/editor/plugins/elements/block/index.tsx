@@ -47,7 +47,9 @@ export default (): PbEditorPageElementPlugin => {
                         padding: {
                             mobile: { all: "10px" },
                             desktop: { all: "0px" }
-                        }
+                        },
+                        horizontalAlignFlex: "flex-start",
+                        verticalAlign: "start"
                     }
                 },
                 ...options

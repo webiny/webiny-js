@@ -89,7 +89,9 @@ export default {
                     },
                     grid: {
                         cellsType
-                    }
+                    },
+                    horizontalAlignFlex: "flex-start",
+                    verticalAlign: "start"
                 }
             },
             ...options
