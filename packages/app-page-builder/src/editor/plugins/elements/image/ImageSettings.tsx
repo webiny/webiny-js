@@ -1,13 +1,18 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { useEventActionHandler } from "../../../../editor";
-import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
+import SpacingPicker from "../../elementSettings/components/SpacingPicker";
+import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import { justifySelfEndStyle } from "../../elementSettings/components/StyledComponents";
+import {
+    WIDTH_UNIT_OPTIONS,
+    HEIGHT_UNIT_OPTIONS
+} from "../../elementSettings/elementSettingsUtils";
 
 const classes = {
     grid: css({
@@ -18,42 +23,24 @@ const classes = {
     })
 };
 
+const spacingPickerStyle = css({
+    width: "120px",
+    "& .inner-wrapper": {
+        display: "flex"
+    }
+});
+
 const ImageSettings = () => {
-    const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementSelector);
     const {
-        id,
         data: { image }
     } = element;
 
-    const setData = useMemo(() => {
-        const historyUpdated = {};
-        return (name, value) => {
-            if (historyUpdated[name] === value) {
-                return;
-            }
-            historyUpdated[name] = value;
-            handler.trigger(
-                new UpdateElementActionEvent({
-                    element: {
-                        ...element,
-                        elements: [],
-                        data: {
-                            ...element.data,
-                            image: {
-                                ...(element.data.image || {}),
-                                [name]: value
-                            }
-                        }
-                    }
-                })
-            );
-        };
-    }, [id, image]);
+    const { getUpdateValue } = useUpdateHandlers({ element, dataNamespace: "data.image" });
 
-    const updateTitle = useCallback(value => setData("title", value), [id, image]);
-    const updateWidth = useCallback(value => setData("width", value), [id, image]);
-    const updateHeight = useCallback(value => setData("height", value), [id, image]);
+    const updateTitle = useCallback(value => getUpdateValue("title")(value), []);
+    const updateWidth = useCallback(value => getUpdateValue("width")(value), []);
+    const updateHeight = useCallback(value => getUpdateValue("height")(value), []);
 
     return (
         <Accordion title={"Image"}>
@@ -61,18 +48,30 @@ const ImageSettings = () => {
                 <Wrapper containerClassName={classes.grid} label={"Title"}>
                     <InputField value={image?.title || ""} onChange={updateTitle} />
                 </Wrapper>
-                <Wrapper containerClassName={classes.grid} label={"Width"}>
-                    <InputField
-                        placeholder={"auto"}
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Width"}
+                    rightCellClassName={justifySelfEndStyle}
+                >
+                    <SpacingPicker
                         value={image?.width || ""}
                         onChange={updateWidth}
+                        options={WIDTH_UNIT_OPTIONS}
+                        useDefaultStyle={false}
+                        className={spacingPickerStyle}
                     />
                 </Wrapper>
-                <Wrapper containerClassName={classes.grid} label={"Height"}>
-                    <InputField
-                        placeholder={"auto"}
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Height"}
+                    rightCellClassName={justifySelfEndStyle}
+                >
+                    <SpacingPicker
                         value={image?.height || ""}
                         onChange={updateHeight}
+                        options={HEIGHT_UNIT_OPTIONS}
+                        useDefaultStyle={false}
+                        className={spacingPickerStyle}
                     />
                 </Wrapper>
             </>
