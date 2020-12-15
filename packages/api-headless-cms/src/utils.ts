@@ -31,6 +31,7 @@ enum PartitionKeysEnum {
     CMS_SETTINGS = "CS",
     CMS_CONTENT_MODEL_GROUP = "CMG",
     CMS_CONTENT_MODEL = "CM",
+    CMS_CONTENT_MODEL_FIELD = "CMF",
     CMS_CONTENT_MODEL_ENTRY = "CME"
 }
 
@@ -196,6 +197,11 @@ export const createContentModelPk = createPkCallableFactory(PartitionKeysEnum.CM
     "locale",
     "environment"
 ]);
+
+export const createContentModelEntryPk = createPkCallableFactory(
+    PartitionKeysEnum.CMS_CONTENT_MODEL_ENTRY,
+    ["tenant", "locale", "environment"]
+);
 
 // with tenant only
 export const createSettingsPk = createPkCallableFactory(PartitionKeysEnum.CMS_SETTINGS, ["tenant"]);

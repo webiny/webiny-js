@@ -5,29 +5,117 @@ import {
     CmsContentModelContextType,
     CmsContentModelManagerInterface,
     ContentModelManagerPlugin,
-    DbItemTypes
+    DbItemTypes,
+    CmsContentModelUpdateInputType,
+    CmsContentModelFieldType
 } from "@webiny/api-headless-cms/types";
 import { validation } from "@webiny/validation";
-import { withFields, string } from "@commodo/fields";
 import * as utils from "@webiny/api-headless-cms/utils";
 import mdbid from "mdbid";
+import { pipe, object } from "@webiny/commodo";
+import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
+import idValidation from "@webiny/api-headless-cms/content/plugins/models/ContentModel/idValidation";
+import { any } from "@webiny/api-headless-cms/content/plugins/models/anyField";
 
 const defaultName = "content-model-manager-default";
 
+const requiredShortString = validation.create("required,maxLength:255");
+const shortString = validation.create("maxLength:255");
+
 const CreateContentModelModel = withFields({
-    name: string({ validation: validation.create("required,maxLength:100") }),
-    modelId: string({ validation: validation.create("required,maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    group: string({ validation: validation.create("required,maxLength:255") })
+    name: string({ validation: requiredShortString }),
+    modelId: string({ validation: requiredShortString }),
+    description: string({ validation: shortString }),
+    group: string({ validation: requiredShortString })
+})();
+
+const RendererModel = withFields({
+    name: string({ validation: requiredShortString })
+})();
+
+const ContentModelFieldModel = withFields({
+    id: string({ validation: requiredShortString }),
+    fieldId: pipe(
+        onSet(value => value && value.trim()),
+        setOnce()
+    )(string({ validation: idValidation })),
+    label: string({ validation: requiredShortString }),
+    helpText: string({ validation: shortString }),
+    placeholderText: string({ validation: shortString }),
+    type: setOnce()(string({ validation: requiredShortString })),
+    multipleValues: boolean({ value: false }),
+    predefinedValues: fields({
+        value: {},
+        instanceOf: withFields({
+            enabled: boolean(),
+            values: any({ list: true })
+        })()
+    }),
+    renderer: fields({ instanceOf: RendererModel, validation: shortString }),
+    validation: fields({
+        list: true,
+        value: [],
+        instanceOf: withFields({
+            name: string({ validation: requiredShortString }),
+            message: string({ validation: shortString }),
+            settings: object({ value: {} })
+        })()
+    }),
+    settings: object({ value: {} })
 })();
 
 const UpdateContentModelModel = withFields({
-    name: string({ validation: validation.create("maxLength:100") }),
-    modelId: string({ validation: validation.create("maxLength:100") }),
-    description: string({ validation: validation.create("maxLength:255") }),
-    group: string({ validation: validation.create("maxLength:255") })
+    name: string({ validation: shortString }),
+    modelId: string({ validation: shortString }),
+    description: string({ validation: shortString }),
+    group: string({ validation: shortString }),
+    fields: fields({ instanceOf: ContentModelFieldModel, value: [], list: true }),
+    layout: object({ value: [] })
 })();
 
+const createUpdatedFields = async (
+    model: CmsContentModelType,
+    data: CmsContentModelUpdateInputType
+): Promise<CmsContentModelFieldType[]> => {
+    const fields = [];
+    for (const field of data.fields) {
+        const fieldData = new ContentModelFieldModel().populate(data);
+        await fieldData.validate();
+
+        const obj: CmsContentModelFieldType = {
+            id: field.id,
+            fieldId: field.fieldId,
+            label: field.label,
+            helpText: field.helpText,
+            multipleValues: field.multipleValues,
+            settings: field.settings,
+            type: field.type,
+            validation: field.validation
+        };
+        fields.push(obj);
+    }
+    return fields;
+};
+
+const validateLayout = (
+    { layout }: CmsContentModelType,
+    fields: CmsContentModelFieldType[]
+): void => {
+    const flatFieldIdList = layout.reduce((acc, id) => {
+        return acc.concat(Array.isArray(id) ? id : [id]);
+    }, []);
+    if (flatFieldIdList.length !== fields.length) {
+        throw new Error(
+            `There are ${flatFieldIdList.length} IDs in the layout and ${fields.length} in fields, which cannot be - numbers must be the same.`
+        );
+    }
+    for (const field of fields) {
+        if (flatFieldIdList.includes(field.id)) {
+            continue;
+        }
+        throw new Error(`Field "${field.id}" is not defined in layout.`);
+    }
+};
 const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModelType) => {
     const pluginsByType = context.plugins.byType<ContentModelManagerPlugin>(
         "content-model-manager"
@@ -99,7 +187,9 @@ export default (): ContextPlugin<CmsContext> => ({
                         name: group.name
                     },
                     createdBy,
-                    createdOn: new Date().toISOString()
+                    createdOn: new Date().toISOString(),
+                    fields: [],
+                    layout: []
                 };
 
                 await db.create({
@@ -133,8 +223,11 @@ export default (): ContextPlugin<CmsContext> => ({
                         name: group.name
                     };
                 }
+                const updatedFields = await createUpdatedFields(initialModel, data);
+                validateLayout(initialModel, updatedFields);
                 const modelData: CmsContentModelType = {
                     ...updatedDataJson,
+                    fields: updatedFields,
                     changedOn: new Date().toISOString()
                 };
                 await db.update({

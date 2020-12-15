@@ -161,6 +161,34 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         };
 
         manageSchema = /* GraphQL */ `
+            input PredefinedValuesInput {
+                enabled: Boolean
+                values: [String]!
+            }
+            input CmsFieldRendererInput {
+                name: String
+            }
+
+            input CmsFieldValidationInput {
+                name: String!
+                message: String
+                settings: JSON
+            }
+
+            input CmsContentModelFieldInput {
+                id: ID!
+                label: String!
+                helpText: String
+                placeholderText: String
+                fieldId: String
+                type: String!
+                multipleValues: Boolean
+                predefinedValues: PredefinedValuesInput
+                renderer: CmsFieldRendererInput
+                validation: [CmsFieldValidationInput]
+                settings: JSON
+            }
+
             input CmsContentModelCreateInput {
                 name: String!
                 modelId: String!
@@ -173,6 +201,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 modelId: String
                 group: ID
                 description: String
+                layout: [[ID!]!]!
+                fields: [CmsContentModelFieldInput!]!
             }
 
             extend type Mutation {
@@ -192,6 +222,35 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
+                type CmsFieldValidation {
+                    name: String!
+                    message: String
+                    settings: JSON
+                }
+
+                type CmsFieldRenderer {
+                    name: String
+                }
+
+                type PredefinedValues {
+                    enabled: Boolean
+                    values: [String]!
+                }
+
+                type CmsContentModelField {
+                    id: ID!
+                    label: String!
+                    helpText: String
+                    placeholderText: String
+                    fieldId: String!
+                    type: String!
+                    multipleValues: Boolean
+                    predefinedValues: PredefinedValues
+                    renderer: CmsFieldRenderer
+                    validation: [CmsFieldValidation!]
+                    settings: JSON
+                }
+
                 type CmsContentModel {
                     id: ID!
                     name: String!
@@ -201,6 +260,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     createdOn: DateTime!
                     changedOn: DateTime
                     createdBy: JSON!
+                    fields: [CmsContentModelField!]!
                 }
 
                 type CmsContentModelResponse {

@@ -147,16 +147,22 @@ describe("content model test", () => {
             }
         });
 
-        // nothing is changed in this update
+        // nothing is changed in this update - just the date
         const [updateResponse] = await updateContentModelMutation({
             id: createdContentModel.id,
-            data: {}
+            data: {
+                fields: [],
+                layout: []
+            }
         });
 
-        expect(updateResponse).toEqual({
+        expect(updateResponse).toMatchObject({
             data: {
                 updateContentModel: {
-                    data: createResponse.data.createContentModel.data,
+                    data: {
+                        ...createResponse.data.createContentModel.data,
+                        changedOn: /^20/
+                    },
                     error: null
                 }
             }
@@ -167,7 +173,9 @@ describe("content model test", () => {
             id: createdContentModel.id,
             data: {
                 name: "changed name",
-                description: "changed description"
+                description: "changed description",
+                fields: [],
+                layout: []
             }
         });
 
@@ -240,7 +248,9 @@ describe("content model test", () => {
         const [response] = await updateContentModelMutation({
             id,
             data: {
-                name: "new name"
+                name: "new name",
+                fields: [],
+                layout: []
             }
         });
 

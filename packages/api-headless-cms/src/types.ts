@@ -59,9 +59,10 @@ export type CmsFieldValidationType = {
 
 export type CmsContentModelFieldType = {
     id: string;
-    type: CmsContentModelFieldTypesType;
+    type: string;
     fieldId: string;
     label: string;
+    helpText: string;
     validation: CmsContentModelFieldValidationType[];
     multipleValues: boolean;
     settings?: { [key: string]: any };
@@ -106,6 +107,7 @@ export type CmsContentModelType = {
     changedOn?: Date;
     createdBy?: CreatedByType;
     fields: CmsContentModelFieldType[];
+    layout: string[][];
     title: string;
     lockedFields: LockedFieldType[];
     titleFieldId: string;
@@ -345,21 +347,11 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
-type CmsContentModelFieldTypesType =
-    | "text"
-    | "number"
-    | "boolean"
-    | "datetime"
-    | "richText"
-    | "longText"
-    | "files"
-    | "reference";
-
 type CmsContentModelFieldValidationType = {
     name: string;
     type: string;
     message: string;
-    settings: { [key: string]: any };
+    settings: Record<string, any>;
 };
 
 export type CmsContentModelCreateInputType = {
@@ -367,18 +359,11 @@ export type CmsContentModelCreateInputType = {
     description?: string;
 };
 
-// TODO fix types
-// type CmsContentModelFieldInputType = {
-//     name: string;
-//     type: string;
-//     label: string;
-//     validation: CmsContentModelFieldValidationType[];
-//     multipleValues: boolean;
-// };
 export type CmsContentModelUpdateInputType = {
     name?: string;
     description?: string;
-    fields?: any[];
+    fields?: CmsContentModelFieldUpdateInputType[];
+    layout: string[][];
 };
 
 export type CmsContentModelManagerListArgsType = {
@@ -411,6 +396,55 @@ export type CmsContentModelContextType = {
     getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };
 
+type CmsContentModelFieldCreateInputPredefinedValuesType = {
+    enabled: boolean;
+    values: any[];
+};
+type CmsContentModelFieldRendererType = {
+    name: string;
+};
+export type CmsContentModelFieldCreateInputType = {
+    label: string;
+    helpText?: string;
+    placeholderText?: string;
+    fieldId: string;
+    type: string;
+    multipleValues?: boolean;
+    predefinedValues: CmsContentModelFieldCreateInputPredefinedValuesType;
+    renderer: CmsContentModelFieldRendererType;
+    validation: CmsContentModelFieldValidationType[];
+    settings: Record<string, any>;
+};
+
+export type CmsContentModelFieldUpdateInputType = {
+    id: string;
+    type: string;
+    fieldId: string;
+    label: string;
+    helpText?: string;
+    placeholderText?: string;
+    multipleValues?: boolean;
+    predefinedValues?: CmsContentModelFieldCreateInputPredefinedValuesType;
+    renderer?: CmsContentModelFieldRendererType;
+    validation?: CmsContentModelFieldValidationType[];
+    settings?: Record<string, any>;
+};
+
+export type CmsContentModelFieldsContextType = {
+    get: (model: CmsContentModelType, id: string) => Promise<CmsContentModelFieldType | null>;
+    list: (model: CmsContentModelType) => Promise<CmsContentModelFieldType[]>;
+    create: (
+        model: CmsContentModelType,
+        data: CmsContentModelFieldCreateInputType,
+        createdBy: CreatedByType
+    ) => Promise<CmsContentModelType>;
+    update: (
+        model: CmsContentModelType,
+        fieldId: string,
+        data: CmsContentModelFieldUpdateInputType
+    ) => Promise<CmsContentModelType>;
+    delete: (model: CmsContentModelType, fieldId: string) => Promise<CmsContentModelType>;
+};
 export type CmsCrudContextType = {
     cms: {
         environments: CmsEnvironmentContextType;
@@ -420,6 +454,7 @@ export type CmsCrudContextType = {
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
         getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
+        modelFields: CmsContentModelFieldsContextType;
     };
 };
 
