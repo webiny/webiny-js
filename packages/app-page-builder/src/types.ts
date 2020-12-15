@@ -525,3 +525,5 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
     elementType: string;
     onSave: (element: PbElement) => PbElement;
 };
+
+export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue: boolean };
