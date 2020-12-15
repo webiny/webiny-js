@@ -1,39 +1,33 @@
 import shortId from "shortid";
-import { locales } from "./I18NLocales";
 import contentModelGroup from "./contentModelGroup";
+import { CmsContentModelType } from "@webiny/api-headless-cms/types";
 
-export default [
+const models: CmsContentModelType[] = [
     {
+        id: "1",
+        createdOn: new Date(),
+        environment: "production",
+        titleFieldId: "title",
+        lockedFields: [],
         name: "Category",
         description: "Product category",
         modelId: "category",
         group: contentModelGroup.id,
-        indexes: [{ fields: ["id"] }, { fields: ["title", "slug"] }, { fields: ["slug"] }],
-        getUniqueIndexFields() {
-            return ["id", "title", "slug"];
-        },
         fields: [
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Title" }]
-                },
+                multipleValues: false,
+                label: "Title",
                 type: "text",
                 fieldId: "title",
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "This field is required" }]
-                        }
+                        message: "This field is required"
                     },
                     {
                         name: "minLength",
-                        message: {
-                            values: [
-                                { locale: locales.en.id, value: "Enter at least 3 characters" }
-                            ]
-                        },
+                        message: "Enter at least 3 characters",
                         settings: {
                             min: 3.0
                         }
@@ -42,66 +36,53 @@ export default [
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Slug" }]
-                },
+                multipleValues: false,
+                label: "Slug",
                 type: "text",
                 fieldId: "slug",
-
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "This field is required" }]
-                        }
+                        message: "This field is required"
                     }
                 ]
             }
         ]
     },
     {
+        id: "2",
+        createdOn: new Date(),
+        environment: "production",
+        titleFieldId: "title",
+        lockedFields: [],
         name: "Product",
         modelId: "product",
         description: "Products being sold in our webshop",
         group: contentModelGroup.id,
-        indexes: [{ fields: ["id"] }],
-        getUniqueIndexFields() {
-            return ["id"];
-        },
         fields: [
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Title" }]
-                },
+                multipleValues: false,
+                label: "Title",
                 fieldId: "title",
-
                 type: "text",
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [
-                                { locale: locales.en.id, value: "Please enter a product name" }
-                            ]
-                        }
+                        message: "Please enter a product name"
                     }
                 ]
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Category" }]
-                },
+                multipleValues: false,
+                label: "Category",
                 fieldId: "category",
-
                 type: "ref",
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "Please select a category" }]
-                        }
+                        message: "Please select a category"
                     }
                 ],
                 settings: {
@@ -112,48 +93,38 @@ export default [
 
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Price" }]
-                },
+                multipleValues: false,
+                label: "Price",
                 fieldId: "price",
-
                 type: "number",
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "Please enter a price" }]
-                        }
+                        message: "Please enter a price"
                     }
                 ]
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Price" }]
-                },
+                multipleValues: false,
+                label: "Price",
                 fieldId: "inStock",
-
                 type: "boolean",
                 validation: []
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Price" }]
-                },
+                multipleValues: false,
+                label: "Price",
                 fieldId: "itemsInStock",
-
                 type: "number",
                 validation: []
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Available on" }]
-                },
+                multipleValues: false,
+                label: "Available on",
                 fieldId: "availableOn",
-
                 type: "datetime",
                 settings: {
                     type: "date"
@@ -161,45 +132,40 @@ export default [
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "Please enter a date" }]
-                        }
+                        message: "Please enter a date"
                     }
                 ]
             }
         ]
     },
     {
+        id: "3",
+        createdOn: new Date(),
+        environment: "production",
+        titleFieldId: "text",
+        lockedFields: [],
         name: "Review",
         description: "Product review",
         modelId: "review",
         group: contentModelGroup.id,
-        indexes: [{ fields: ["id"] }],
-        getUniqueIndexFields() {
-            return ["id"];
-        },
         fields: [
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Text" }]
-                },
+                multipleValues: false,
+                label: "Text",
                 type: "text",
                 fieldId: "text",
                 validation: [
                     {
                         name: "required",
-                        message: {
-                            values: [{ locale: locales.en.id, value: "This field is required" }]
-                        }
+                        message: "This field is required"
                     }
                 ]
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Product" }]
-                },
+                multipleValues: false,
+                label: "Product",
                 type: "ref",
                 fieldId: "product",
                 validation: [],
@@ -210,9 +176,8 @@ export default [
             },
             {
                 _id: shortId.generate(),
-                label: {
-                    values: [{ locale: locales.en.id, value: "Rating" }]
-                },
+                multipleValues: false,
+                label: "Rating",
                 type: "number",
                 fieldId: "rating",
                 validation: []
@@ -220,3 +185,5 @@ export default [
         ]
     }
 ];
+
+export default models;

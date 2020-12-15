@@ -51,14 +51,8 @@ export type CmsContext = BaseContext<
     CmsCrudContextType
 >;
 
-export type CmsFieldValidationType = {
-    name: string;
-    message: string;
-    settings: { [key: string]: any };
-};
-
 export type CmsContentModelFieldType = {
-    id: string;
+    _id: string;
     type: CmsContentModelFieldTypesType;
     fieldId: string;
     label: string;
@@ -73,7 +67,7 @@ export type CmsModelFieldValidatorPlugin = Plugin & {
         name: string;
         validate(params: {
             value: any;
-            validator: CmsFieldValidationType;
+            validator: CmsContentModelFieldValidationType;
             context: CmsContext;
         }): Promise<boolean>;
     };
@@ -102,11 +96,10 @@ export type CmsContentModelType = {
     modelId: string;
     group: string;
     description?: string;
-    createdOn: Date;
+    createdOn?: Date;
     changedOn?: Date;
     createdBy?: CreatedByType;
     fields: CmsContentModelFieldType[];
-    title: string;
     lockedFields: LockedFieldType[];
     titleFieldId: string;
 };
@@ -146,6 +139,8 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
+    isSearchable: boolean;
+    isSortable: boolean;
     read: {
         createGetFilters?(params: {
             model: CmsContentModelType;
@@ -353,13 +348,12 @@ type CmsContentModelFieldTypesType =
     | "richText"
     | "longText"
     | "files"
-    | "reference";
+    | "ref";
 
 type CmsContentModelFieldValidationType = {
     name: string;
-    type: string;
     message: string;
-    settings: { [key: string]: any };
+    settings?: Record<string, any>;
 };
 
 export type CmsContentModelCreateInputType = {

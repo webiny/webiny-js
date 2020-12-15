@@ -1,8 +1,4 @@
-import {
-    CmsFieldTypePlugins,
-    CmsContext,
-    CmsContentModelType
-} from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModelType } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -12,11 +8,7 @@ import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageSDL {
-    (params: {
-        model: CmsContentModelType;
-        context: CmsContext;
-        fieldTypePlugins: CmsFieldTypePlugins;
-    }): string;
+    (params: { model: CmsContentModelType; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
@@ -60,7 +52,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             publishedOn: DateTime
             status: String
             revisions: [${mTypeName}]
-            title: CmsText
+            title: String
         }
 
         ${inputFieldsRender &&
@@ -113,7 +105,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
                 sort: [${mTypeName}ListSorter]
                 limit: Int
                 after: String
-                before: String
             ): ${mTypeName}ListResponse
         }
 

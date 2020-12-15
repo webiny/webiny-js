@@ -3,7 +3,7 @@ import { CmsFieldTypePlugins, CmsContentModelType } from "@webiny/api-headless-c
 interface RenderListFilterFields {
     (params: {
         model: CmsContentModelType;
-        type: string;
+        type: "read" | "manage";
         fieldTypePlugins: CmsFieldTypePlugins;
     }): string;
 }
@@ -13,20 +13,17 @@ export const renderListFilterFields: RenderListFilterFields = ({
     type,
     fieldTypePlugins
 }) => {
-    const uniqueIndexFields = (model as any).getUniqueIndexFields();
+    const fields: string[] = [
+        ["id: ID", "id_not: ID", "id_in: [ID]", "id_not_in: [ID]"].join("\n")
+    ];
 
-    return uniqueIndexFields
-        .map(fieldId => {
-            if (fieldId === "id") {
-                return ["id: ID", "id_not: ID", "id_in: [ID]", "id_not_in: [ID]"].join("\n");
-            }
+    for (let i = 0; i < model.fields.length; i++) {
+        const field = model.fields[i];
+        const { createListFilters } = fieldTypePlugins[field.type][type];
+        if (typeof createListFilters === "function") {
+            fields.push(createListFilters({ model, field }));
+        }
+    }
 
-            const field = model.fields.find(item => item.fieldId === fieldId);
-            const { createListFilters } = fieldTypePlugins[field.type][type];
-            if (typeof createListFilters === "function") {
-                return createListFilters({ model, field });
-            }
-        })
-        .filter(Boolean)
-        .join("\n");
+    return fields.filter(Boolean).join("\n");
 };
