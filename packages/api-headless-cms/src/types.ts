@@ -1,9 +1,9 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
@@ -472,3 +472,19 @@ export enum DbItemTypes {
     CMS_SETTINGS = "cms.settings",
     CMS_CONTENT_MODEL_ENTRY = "cms.modelEntry"
 }
+
+type CmsContentModelEntryResolverFactoryParamsType = {
+    model: CmsContentModelType;
+};
+
+export type CmsContentModelEntryResolverFactoryType<
+    TSource = any,
+    TArgs = any,
+    TContext = CmsContext
+> = {
+    (params: CmsContentModelEntryResolverFactoryParamsType): GraphQLFieldResolver<
+        TSource,
+        TArgs,
+        TContext
+    >;
+};

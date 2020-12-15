@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { CmsContext, CmsContentModelType } from "@webiny/api-headless-cms/types";
 import { parseSort } from "./parseSort";
 import { createFindParameters } from "./createFindParameters";
@@ -20,12 +19,7 @@ type FindEntries = {
     info: GraphQLResolveInfo;
 };
 
-export default async function findEntries<T = CmsContext>({
-    model,
-    args,
-    context,
-    info
-}: FindEntries) {
+export default async function findEntries<T = CmsContext>({ model, args, context }: FindEntries) {
     const Model = context.models[model.modelId];
     const { CmsContentEntrySearch } = context.models;
 
@@ -92,7 +86,7 @@ export default async function findEntries<T = CmsContext>({
         limit,
         before,
         after,
-        totalCount: requiresTotalCount(info),
+        totalCount: 0, // TODO: total count will be provided by ES
         defaultSortField: "revision",
         fields: ["revision"]
     });

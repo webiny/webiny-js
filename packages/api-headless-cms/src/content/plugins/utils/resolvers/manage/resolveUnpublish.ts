@@ -1,16 +1,9 @@
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
 import { entryNotFound } from "./../entryNotFound";
-import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
-import { setContextLocale } from "./../../setContextLocale";
 
-export const resolveUnpublish = ({
-    model
-}: {
-    model: CmsContentModelType;
-}): GraphQLFieldResolver<any, any, CmsContext> => async (root, args, context) => {
-    setContextLocale(context, args.locale);
 
+export const resolveUnpublish: ResolverFactory = ({ model }) => async (root, args, context) => {
     const Model = context.models[model.modelId];
     const instance = await Model.findById(args.revision);
     if (!instance) {

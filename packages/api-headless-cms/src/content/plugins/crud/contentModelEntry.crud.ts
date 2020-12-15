@@ -5,7 +5,7 @@ import {
     CmsContext,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
-import * as utils from "@webiny/api-headless-cms/utils";
+import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 
