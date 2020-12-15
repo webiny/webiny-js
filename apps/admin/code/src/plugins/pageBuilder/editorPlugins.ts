@@ -27,7 +27,6 @@ import socialGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/s
 import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/code";
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
-import emptyBlock from "@webiny/app-page-builder/editor/plugins/blocks/emptyBlock";
 import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
 // Block categories
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
@@ -96,8 +95,6 @@ export default [
     socialGroup,
     codeGroup,
     savedGroup,
-    // Blocks
-    emptyBlock,
     // Block categories
     blocksCategories,
     // Toolbar
