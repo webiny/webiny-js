@@ -2,7 +2,14 @@ import { get } from "lodash";
 import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
 const validateSpacingValue = value => {
-    return value || "0px";
+    if (!value) {
+        return "0px";
+    }
+    if (value.includes("auto")) {
+        return "auto";
+    }
+
+    return value;
 };
 
 export default {

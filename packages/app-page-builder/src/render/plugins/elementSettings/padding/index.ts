@@ -2,7 +2,11 @@ import { get } from "lodash";
 import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
 const validateSpacingValue = value => {
-    return value || "0px";
+    const parsedValue = parseInt(value);
+    if (Number.isNaN(parsedValue)) {
+        return "0px";
+    }
+    return value;
 };
 
 export default {
