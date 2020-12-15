@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import classnames from "classnames";
 import styled from "@emotion/styled";
 import { css } from "emotion";
+import classNames from "classnames";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
@@ -45,7 +46,7 @@ const ColorPreview = styled("div")({
     ".color": {
         width: 20,
         height: 20,
-        cursor: "not-allowed"
+        cursor: "pointer"
     },
 
     "& .not-selected": {
@@ -267,7 +268,11 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
                 </Menu>
                 <ColorPreview>
                     {value ? (
-                        <div className={"color"} style={{ backgroundColor: value }} />
+                        <button
+                            className={classNames(styles.button, "color")}
+                            style={{ backgroundColor: value }}
+                            onClick={() => onChange("")}
+                        />
                     ) : (
                         <NoColorSelectedIcon className={"not-selected"} />
                     )}

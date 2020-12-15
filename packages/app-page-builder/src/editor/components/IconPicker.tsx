@@ -97,7 +97,7 @@ const iconPickerWrapper = css({
         position: "static"
     },
 
-    "& .menuHandler": {
+    "& .button": {
         boxSizing: "border-box",
         width: 30,
         height: "100%",
@@ -204,6 +204,10 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
         return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
     }, [filter, selectedIconPrefix, selectedIconName]);
 
+    const starIcon = useMemo(() => {
+        return allIcons.find(item => item.id[0] === "far" && item.id[1] === "star");
+    }, [allIcons]);
+
     const renderCell = useCallback(
         ({ closeMenu }) => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
@@ -276,14 +280,17 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
             <div className={iconPickerWrapper}>
                 <Menu
                     handle={
-                        <div className={classNames("menuHandler", handlerClassName)}>
+                        <div className={classNames("button", "menuHandler", handlerClassName)}>
                             <IconPickerIcon />
                         </div>
                     }
                 >
                     {renderGrid}
                 </Menu>
-                <div className={"iconContainer"}>
+                <div
+                    className={classNames("button", "iconContainer")}
+                    onClick={() => onChange(starIcon)}
+                >
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             </div>
