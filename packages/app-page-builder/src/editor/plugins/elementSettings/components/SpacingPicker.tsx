@@ -37,10 +37,10 @@ const defaultSelectStyle = css({
     appearance: "none",
     background: "transparent",
     border: "none",
-    padding: "0px 4px",
+    padding: "0px 0px 0px 4px",
     margin: 0,
     fontSize: 12,
-    width: 24,
+    width: 28,
     backgroundImage: "none",
     "&:focus": {
         outlineWidth: 2,
@@ -73,15 +73,16 @@ const SpacingPicker = ({
 }: SpacingPickerProps) => {
     const formData = useMemo(() => {
         const parsedValue = parseInt(value);
-        if (Number.isNaN(parsedValue)) {
+        const unit = value.replace(parsedValue, "");
+        if (Number.isNaN(parsedValue) && unit === "auto") {
             return {
-                value: "-",
-                unit: "auto"
+                value: "",
+                unit
             };
         }
         return {
             value: parsedValue,
-            unit: value.replace(parsedValue, "")
+            unit
         };
     }, [value]);
 
