@@ -54,26 +54,19 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
             // Categories, menus, and pages first.
             ENTITIES.forEach(entity => {
                 if (
-                    formData[`${entity}AccessLevel`] &&
-                    formData[`${entity}AccessLevel`] !== NO_ACCESS
+                    formData[`${entity}AccessScope`] &&
+                    formData[`${entity}AccessScope`] !== NO_ACCESS
                 ) {
                     const permission: Record<string, any> = {
                         name: `${PAGE_BUILDER}.${entity}`
                     };
 
-                    if (formData[`${entity}AccessLevel`] === "own") {
+                    if (formData[`${entity}AccessScope`] === "own") {
                         permission.own = true;
                     }
 
-                    if (Array.isArray(formData[`${entity}Rwd`])) {
-                        const rwd = formData[`${entity}Rwd`].reduce(
-                            (current, item) => current + item,
-                            ""
-                        );
-
-                        if (rwd) {
-                            permission.rwd = rwd;
-                        }
+                    if (formData[`${entity}Rwd`]) {
+                        permission.rwd = formData[`${entity}Rwd`];
                     }
 
                     // For pages, we can also manage publishing and reviewing of pages.
@@ -129,8 +122,8 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
 
         ENTITIES.forEach(entity => {
             const data: Record<string, any> = {
-                [`${entity}AccessLevel`]: NO_ACCESS,
-                [`${entity}Rwd`]: []
+                [`${entity}AccessScope`]: NO_ACCESS,
+                [`${entity}Rwd`]: "r"
             };
 
             const entityPermission = permissions.find(
@@ -138,8 +131,10 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
             );
 
             if (entityPermission) {
-                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
-                data[`${entity}Rwd`] = entityPermission.rwd ? [...entityPermission.rwd] : [];
+                data[`${entity}AccessScope`] = entityPermission.own ? "own" : FULL_ACCESS;
+                if (entityPermission.rwd) {
+                    data[`${entity}Rwd`] = entityPermission.rwd;
+                }
 
                 // For pages, we can also manage publishing and reviewing of pages.
                 if (entity === "page") {
@@ -207,7 +202,7 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
                                                         <Checkbox
                                                             disabled={
                                                                 !["full", "own"].includes(
-                                                                    data.pageAccessLevel
+                                                                    data.pageAccessScope
                                                                 )
                                                             }
                                                             key={id}

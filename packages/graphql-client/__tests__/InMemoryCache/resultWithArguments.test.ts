@@ -1,4 +1,4 @@
-import { InMemoryCache } from "@webiny/graphql-client";
+import InMemoryCache from "@webiny/graphql-client/InMemoryCache";
 import getPageMock from "./mocks/getPage.mock";
 
 test("must properly cache results from queries that included args", async () => {
@@ -211,11 +211,21 @@ test("must properly cache results from queries that included args", async () => 
 
     expect(cache.readQuery({ query, variables })).toEqual(getPageMock.result);
 
-    expect(cache.readEntity("PbCreatedBy", "adm@webiny.com")).toEqual({
+    expect(
+        cache.readEntity({
+            typename: "PbCreatedBy",
+            id: "adm@webiny.com"
+        })
+    ).toEqual({
         id: "adm@webiny.com"
     });
 
-    expect(cache.readEntity("PbPageRevision", "5fd0ced4a4e43b0008f89541#3")).toEqual({
+    expect(
+        cache.readEntity({
+            typename: "PbPageRevision",
+            id: "5fd0ced4a4e43b0008f89541#3"
+        })
+    ).toEqual({
         id: "5fd0ced4a4e43b0008f89541#3",
         savedOn: "2020-12-09T13:25:56.856Z",
         status: "unpublished",

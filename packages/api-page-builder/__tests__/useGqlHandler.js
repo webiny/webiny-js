@@ -29,6 +29,7 @@ import {
     LIST_PAGE_TAGS,
     UPDATE_PAGE,
     GET_PAGE,
+    GET_PUBLISHED_PAGE,
     PUBLISH_PAGE,
     UNPUBLISH_PAGE,
     REQUEST_REVIEW,
@@ -261,6 +262,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async getPage(variables) {
             return invoke({ body: { query: GET_PAGE, variables } });
+        },
+        async getPublishedPage(variables) {
+            return invoke({ body: { query: GET_PUBLISHED_PAGE, variables } });
         },
         async oEmbedData(variables) {
             return invoke({ body: { query: OEMBED_DATA, variables } });

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { get } from "lodash";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Typography } from "@webiny/ui/Typography";
@@ -20,7 +19,7 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
     return (
         <Elevation z={4} css={menuPageFormStyle}>
             <Form data={data} onSubmit={onSubmit}>
-                {({ Bind, submit }) => (
+                {({ Bind, submit, data: formData }) => (
                     <>
                         <Grid>
                             <Cell span={12}>
@@ -59,12 +58,12 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                             <Cell span={12}>
                                 <Bind
                                     name="sortDir"
-                                    defaultValue={"-1"}
+                                    defaultValue={"desc"}
                                     validators={validation.create("required")}
                                 >
                                     <Select label="Sort direction...">
-                                        <option value="1">Ascending</option>
-                                        <option value="-1">Descending</option>
+                                        <option value="asc">Ascending</option>
+                                        <option value="desc">Descending</option>
                                     </Select>
                                 </Bind>
                             </Cell>
@@ -78,15 +77,15 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                         </Grid>
                         <Grid>
                             <Cell span={12}>
-                                {get(data, "tags.length", 0) > 0 && (
+                                {formData.tags && formData.tags.length > 0 && (
                                     <Bind
                                         name="tagsRule"
-                                        defaultValue={"ALL"}
+                                        defaultValue={"all"}
                                         validators={validation.create("required")}
                                     >
                                         <Select label="Tags rule...">
-                                            <option value="ALL">Must include all tags</option>
-                                            <option value="ANY">
+                                            <option value="all">Must include all tags</option>
+                                            <option value="any">
                                                 Must include any of the tags
                                             </option>
                                         </Select>

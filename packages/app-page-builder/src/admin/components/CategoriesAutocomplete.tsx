@@ -1,9 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { Query } from "react-apollo";
-import { useAutocomplete } from "@webiny/app/hooks/useAutocomplete";
+import { useQuery } from "react-apollo";
 
 const GET_CATEGORY = gql`
     query GetCategory($slug: String!) {
@@ -21,7 +20,7 @@ const GET_CATEGORY = gql`
 const LIST_CATEGORIES = gql`
     query ListCategories {
         pageBuilder {
-            categories: listCategories {
+            listCategories {
                 data {
                     slug
                     name
@@ -32,20 +31,22 @@ const LIST_CATEGORIES = gql`
 `;
 
 export function CategoriesAutocomplete(props) {
-    const autoComplete = useAutocomplete({
-        query: LIST_CATEGORIES
+    const listCategoriesQuery = useQuery(LIST_CATEGORIES);
+    const getCategoryQuery = useQuery(GET_CATEGORY, {
+        skip: !props.value,
+        variables: { slug: props.value }
     });
 
+    const publishedPages = get(listCategoriesQuery, "data.pageBuilder.listCategories.data", []);
+    const publishedPage = get(getCategoryQuery, "data.pageBuilder.getCategory.data");
+
     return (
-        <Query skip={!props.value} variables={{ slug: props.value }} query={GET_CATEGORY}>
-            {({ data }) => (
-                <AutoComplete
-                    {...props}
-                    {...autoComplete}
-                    valueProp={"slug"}
-                    value={get(data, "pageBuilder.getCategory.data")}
-                />
-            )}
-        </Query>
+        <AutoComplete
+            {...props}
+            options={publishedPages}
+            valueProp={"slug"}
+            textProp={"name"}
+            value={publishedPage}
+        />
     );
 }
