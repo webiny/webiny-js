@@ -4,9 +4,14 @@ interface RenderSortEnum {
     (params: { model: CmsContentModelType; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
-export const renderSortEnum: RenderSortEnum = ({ model }) => {
-    const sorters = [];
-    (model as any).getUniqueIndexFields().forEach(fieldId => {
+export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
+    const sorters = [`id_ASC`, `id_DESC`];
+
+    const fieldIds = model.fields
+        .filter(f => fieldTypePlugins[f.type].isSortable)
+        .map(f => f.fieldId);
+
+    fieldIds.forEach(fieldId => {
         sorters.push(`${fieldId}_ASC`);
         sorters.push(`${fieldId}_DESC`);
     });

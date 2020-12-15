@@ -5,20 +5,19 @@ interface RenderGetFilterFields {
 }
 
 export const renderGetFilterFields: RenderGetFilterFields = ({ model, fieldTypePlugins }) => {
-    const uniqueIndexFields = (model as any).getUniqueIndexFields();
+    const fieldIds = model.fields
+        .filter(f => fieldTypePlugins[f.type].isSearchable)
+        .map(f => f.fieldId);
 
-    return uniqueIndexFields
-        .map(fieldId => {
-            if (fieldId === "id") {
-                return "id: ID";
-            }
+    const filters = ["id: ID"];
 
-            const field = model.fields.find(item => item.fieldId === fieldId);
-            const { createGetFilters } = fieldTypePlugins[field.type]["read"];
-            if (typeof createGetFilters === "function") {
-                return createGetFilters({ model, field });
-            }
-        })
-        .filter(Boolean)
-        .join("\n");
+    for (let i = 0; i < fieldIds.length; i++) {
+        const field = model.fields.find(item => item.fieldId === fieldIds[i]);
+        const { createGetFilters } = fieldTypePlugins[field.type]["read"];
+        if (typeof createGetFilters === "function") {
+            filters.push(createGetFilters({ model, field }));
+        }
+    }
+
+    return filters.filter(Boolean).join("\n");
 };

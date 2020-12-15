@@ -1,6 +1,4 @@
-import gql from "graphql-tag";
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
 import { createTypeName } from "../utils/createTypeName";
 import { createReadTypeName } from "../utils/createTypeName";
 
@@ -8,19 +6,18 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
+    isSortable: false,
+    isSearchable: false,
     read: {
         createTypeField({ field }) {
             const { modelId } = field.settings;
             const gqlType = createReadTypeName(modelId);
-            const fieldArgs = "(locale: String)";
 
-            return (
-                field.fieldId + fieldArgs + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`
-            );
+            return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
-            return (instance, args) => {
-                return instance[field.fieldId].value(args.locale);
+            return instance => {
+                return instance[field.fieldId];
             };
         }
     },
@@ -30,56 +27,22 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 return instance[field.fieldId];
             };
         },
-        createSchema() {
-            return {
-                typeDefs: gql`
-                    ${i18nFieldInput("CmsRef", "RefInput")}
-                `
-            };
-        },
-        createTypeField({ field, model }) {
-            const modelIdType = createTypeName(model.modelId);
-            const fieldIdType = createTypeName(field.fieldId);
-            const refModelIdType = createTypeName(field.settings.modelId);
-
-            const refPrefix = `CmsRef${modelIdType}${fieldIdType}`;
+        createTypeField({ field }) {
+            const { modelId } = field.settings;
+            const refModelIdType = createTypeName(modelId);
 
             if (field.multipleValues) {
-                return {
-                    fields: `${field.fieldId}: ${refPrefix}List`,
-                    typeDefs: `
-                        type ${refPrefix}ListLocalized {
-                            value: [${refModelIdType}]
-                            locale: ID!
-                        }
-    
-                        type ${refPrefix}List {
-                            value(locale: String): [${refModelIdType}]
-                            values: [${refPrefix}ListLocalized]!
-                        }`
-                };
+                return `${field.fieldId}: [${refModelIdType}]`;
             }
 
-            return {
-                fields: `${field.fieldId}: ${refPrefix}`,
-                typeDefs: `
-                        type ${refPrefix}Localized {
-                            value: ${refModelIdType}
-                            locale: ID!
-                        }
-    
-                        type ${refPrefix} {
-                            value(locale: String): ${refModelIdType}
-                            values: [${refPrefix}Localized]!
-                        }`
-            };
+            return `${field.fieldId}: ${refModelIdType}`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": CmsRefListInput";
+                return field.fieldId + ": [RefInput]";
             }
 
-            return field.fieldId + ": CmsRefInput";
+            return field.fieldId + ": RefInput";
         }
     }
 };

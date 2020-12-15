@@ -51,12 +51,6 @@ export type CmsContext = BaseContext<
     CmsCrudContextType
 >;
 
-export type CmsFieldValidationType = {
-    name: string;
-    message: string;
-    settings: { [key: string]: any };
-};
-
 export type CmsContentModelFieldType = {
     id: string;
     type: string;
@@ -74,7 +68,7 @@ export type CmsModelFieldValidatorPlugin = Plugin & {
         name: string;
         validate(params: {
             value: any;
-            validator: CmsFieldValidationType;
+            validator: CmsContentModelFieldValidationType;
             context: CmsContext;
         }): Promise<boolean>;
     };
@@ -103,7 +97,7 @@ export type CmsContentModelType = {
     modelId: string;
     group: string;
     description?: string;
-    createdOn: Date;
+    createdOn?: Date;
     changedOn?: Date;
     createdBy?: CreatedByType;
     fields: CmsContentModelFieldType[];
@@ -148,6 +142,8 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
+    isSearchable: boolean;
+    isSortable: boolean;
     read: {
         createGetFilters?(params: {
             model: CmsContentModelType;
@@ -349,7 +345,6 @@ export type CmsContentModelGroupContextType = {
 
 type CmsContentModelFieldValidationType = {
     name: string;
-    type: string;
     message: string;
     settings: Record<string, any>;
 };

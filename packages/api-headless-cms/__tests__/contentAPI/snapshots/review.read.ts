@@ -7,13 +7,15 @@ export default /* GraphQL */ `
         createdOn: DateTime
         updatedOn: DateTime
         savedOn: DateTime
-        text(locale: String): String
-        product(locale: String): Product
-        rating(locale: String): Number
+        text: String
+        product: Product
+        rating: Number
     }
 
     input ReviewGetWhereInput {
         id: ID
+        text: String
+        rating: Number
     }
 
     input ReviewListWhereInput {
@@ -21,11 +23,31 @@ export default /* GraphQL */ `
         id_not: ID
         id_in: [ID]
         id_not_in: [ID]
+
+        text: String
+        text_not: String
+        text_in: [String]
+        text_not_in: [String]
+        text_contains: String
+        text_not_contains: String
+
+        rating: Number
+        rating_not: Number
+        rating_in: [Number]
+        rating_not_in: [Number]
+        rating_lt: Number
+        rating_lte: Number
+        rating_gt: Number
+        rating_gte: Number
     }
 
     enum ReviewListSorter {
         id_ASC
         id_DESC
+        text_ASC
+        text_DESC
+        rating_ASC
+        rating_DESC
     }
 
     type ReviewResponse {
@@ -40,15 +62,13 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getReview(locale: String, where: ReviewGetWhereInput!): ReviewResponse
+        getReview(where: ReviewGetWhereInput!): ReviewResponse
 
         listReviews(
-            locale: String
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
             limit: Int
             after: String
-            before: String
         ): ReviewListResponse
     }
 `;
