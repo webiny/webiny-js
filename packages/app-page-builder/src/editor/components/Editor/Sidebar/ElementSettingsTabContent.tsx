@@ -4,6 +4,8 @@ import useElementSettings from "../../../plugins/elementSettings/hooks/useElemen
 import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
 import { PbElement } from "../../../../types";
 import { COLORS } from "../../../plugins/elementSettings/components/StyledComponents";
+import NoActiveElement from "./NoActiveElement";
+import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
 
 const RootElement = styled("div")({
     height: "calc(100vh - 65px - 48px)", // Subtract top-bar and tab-header height
@@ -37,7 +39,12 @@ const ElementSettingsTabContent = ({ element }: ElementSettingsTabContentProps) 
     const elementSettings = useElementSettings();
 
     if (!element) {
-        return null;
+        return (
+            <NoActiveElement
+                icon={<TouchIcon />}
+                message={"Select an element on the canvas to activate this panel."}
+            />
+        );
     }
 
     return (
