@@ -8,7 +8,8 @@
       "apps/theme",
       "api/code/graphqlPlayground",
       "api/code/graphql",
-      "api/code/fileManager/*"
+      "api/code/fileManager/*",
+      "api/code/pageBuilder/*"
     ]
   },
   "contributors": [
