@@ -415,6 +415,35 @@ export type CmsContentModelFieldInputType = {
     settings?: Record<string, any>;
 };
 
+export type CmsContentModelEntryType = {
+    id: string;
+    createdBy: CreatedByType;
+    createdOn: Date;
+    changedOn: Date;
+    values: Record<string, any>;
+};
+
+type CmsContentModelEntryCreateInputType = {
+    modelId: string;
+    values: Record<string, any>;
+};
+type CmsContentModelEntryUpdateInputType = {
+    values: Record<string, any>;
+};
+export type CmsContentModelEntryContextType = {
+    get: (id: string) => Promise<CmsContentModelEntryType | null>;
+    list: () => Promise<CmsContentModelEntryType[]>;
+    create: (
+        data: CmsContentModelEntryCreateInputType,
+        createdBy: CreatedByType
+    ) => Promise<CmsContentModelEntryType>;
+    update: (
+        id: string,
+        data: CmsContentModelEntryUpdateInputType
+    ) => Promise<CmsContentModelEntryType>;
+    delete: (id: string) => Promise<void>;
+};
+
 export type CmsCrudContextType = {
     cms: {
         environments: CmsEnvironmentContextType;
@@ -424,6 +453,7 @@ export type CmsCrudContextType = {
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
         getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
+        modelEntries: CmsContentModelEntryContextType;
     };
 };
 
@@ -444,5 +474,6 @@ export enum DbItemTypes {
     CMS_CONTENT_MODEL = "cms.model",
     CMS_ENVIRONMENT = "cms.env",
     CMS_ENVIRONMENT_ALIAS = "cms.envAlias",
-    CMS_SETTINGS = "cms.settings"
+    CMS_SETTINGS = "cms.settings",
+    CMS_CONTENT_MODEL_ENTRY = "cms.modelEntry"
 }

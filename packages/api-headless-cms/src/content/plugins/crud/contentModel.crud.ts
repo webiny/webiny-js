@@ -16,6 +16,7 @@ import { pipe, object } from "@webiny/commodo";
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
 import idValidation from "@webiny/api-headless-cms/content/plugins/models/ContentModel/idValidation";
 import { any } from "@webiny/api-headless-cms/content/plugins/models/anyField";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 const defaultName = "content-model-manager-default";
 
@@ -166,7 +167,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     limit: 1
                 });
                 if (!response || response.length === 0) {
-                    throw new Error(`CMS Content model "${id}" not found.`);
+                    throw new NotFoundError(`CMS Content model "${id}" not found.`);
                 }
                 const model = response.find(() => true);
 
@@ -238,7 +239,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (updatedDataJson.group) {
                     const group = await context.cms.groups.get(updatedDataJson.group);
                     if (!group) {
-                        throw new Error(`There is no group "${updatedDataJson.group}".`);
+                        throw new NotFoundError(`There is no group "${updatedDataJson.group}".`);
                     }
                     updatedDataJson.group = {
                         id: group.id,
@@ -270,6 +271,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 const model = await context.cms.models.get(id);
                 const permission = await utils.checkBaseContentModelPermissions(context, "d");
                 utils.checkOwnership(context, permission, model);
+
+                await db.delete({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: utils.createContentModelPk(context),
+                        SK: id
+                    }
+                });
+
                 managers.delete(model.modelId);
             },
             async getManager<T = any>(modelId) {
@@ -279,7 +289,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const models = await context.cms.models.list();
                 const model = models.find(m => m.modelId === modelId);
                 if (!model) {
-                    throw new Error(`There is no content model "${modelId}".`);
+                    throw new NotFoundError(`There is no content model "${modelId}".`);
                 }
                 return await updateManager<T>(context, model);
             },

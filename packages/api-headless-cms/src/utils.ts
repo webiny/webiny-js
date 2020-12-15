@@ -25,14 +25,24 @@ type HasRwdCallableArgsType = {
     rwd: CRUDType;
 };
 
+type CheckBasePermissionsCallable = (
+    context: CmsContext,
+    rwd?: CRUDType
+) => Promise<SecurityPermission>;
+
 enum PartitionKeysEnum {
     CMS_ENVIRONMENT = "CE",
     CMS_ENVIRONMENT_ALIAS = "CEA",
     CMS_SETTINGS = "CS",
     CMS_CONTENT_MODEL_GROUP = "CMG",
     CMS_CONTENT_MODEL = "CM",
-    CMS_CONTENT_MODEL_FIELD = "CMF",
     CMS_CONTENT_MODEL_ENTRY = "CME"
+}
+
+enum CmsPermission {
+    SETTINGS_PERMISSION = "cms.manage.settings",
+    CONTENT_MODEL_PERMISSION = "cms.manage.contentModel",
+    CONTENT_MODEL_ENTRY_PERMISSION = "cms.manage.contentModelEntry"
 }
 
 export const defaults = {
@@ -63,15 +73,12 @@ export const defaults = {
     }
 };
 
-const CMS_MANAGE_SETTINGS_PERMISSION = "cms.manage.settings";
-const CMS_MANAGE_CONTENT_MODEL_PERMISSION = "cms.manage.contentModel";
-
 export const getCmsManageSettingsPermission = async (context: CmsContext) => {
-    return await context.security.getPermission(CMS_MANAGE_SETTINGS_PERMISSION);
+    return await context.security.getPermission(CmsPermission.SETTINGS_PERMISSION);
 };
 
 export const hasManageSettingsPermission = () => {
-    return hasPermission(CMS_MANAGE_SETTINGS_PERMISSION);
+    return hasPermission(CmsPermission.SETTINGS_PERMISSION);
 };
 
 const hasRwdOnPermission = ({ permission, rwd }: HasRwdCallableArgsType) => {
@@ -82,23 +89,34 @@ const hasRwdOnPermission = ({ permission, rwd }: HasRwdCallableArgsType) => {
     }
     return permission.rwd.includes(rwd);
 };
-
-export const checkBaseContentModelPermissions = async (
-    context: CmsContext,
-    rwd?: CRUDType
-): Promise<SecurityPermission> => {
-    await context.i18nContent.checkI18NContentPermission();
-    const permission = await context.security.getPermission(CMS_MANAGE_CONTENT_MODEL_PERMISSION);
-    if (!permission) {
-        throw new NotAuthorizedError();
+// factory to create permission checking function - cached if already created
+const checkBasePermissionsCache = new Map<string, CheckBasePermissionsCallable>();
+const checkBasePermissionsFactory = (permissionName: string): CheckBasePermissionsCallable => {
+    if (checkBasePermissionsCache.has(permissionName)) {
+        return checkBasePermissionsCache.get(permissionName);
     }
+    const fn: CheckBasePermissionsCallable = async (context, rwd = undefined) => {
+        await context.i18nContent.checkI18NContentPermission();
+        const permission = await context.security.getPermission(permissionName);
+        if (!permission) {
+            throw new NotAuthorizedError();
+        }
 
-    if (rwd && !hasRwdOnPermission({ permission, rwd })) {
-        throw new NotAuthorizedError();
-    }
+        if (rwd && !hasRwdOnPermission({ permission, rwd })) {
+            throw new NotAuthorizedError();
+        }
 
-    return permission;
+        return permission;
+    };
+    checkBasePermissionsCache.set(permissionName, fn);
+    return fn;
 };
+export const checkBaseContentModelPermissions = checkBasePermissionsFactory(
+    CmsPermission.CONTENT_MODEL_PERMISSION
+);
+export const checkBaseContentModelEntryPermissions = checkBasePermissionsFactory(
+    CmsPermission.CONTENT_MODEL_ENTRY_PERMISSION
+);
 
 export const checkOwnership = (
     context: CmsContext,
@@ -136,7 +154,7 @@ export const validateOwnership = (
 };
 
 export const hasCmsManageSettingsPermissionRwd = (rwd: CRUDType) => {
-    return hasRwdPermission(CMS_MANAGE_SETTINGS_PERMISSION, rwd);
+    return hasRwdPermission(CmsPermission.SETTINGS_PERMISSION, rwd);
 };
 
 export const hasRwdPermission = (permissionName: string, rwd: CRUDType) => {
