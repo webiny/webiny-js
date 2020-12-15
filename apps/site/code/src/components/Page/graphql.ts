@@ -8,29 +8,27 @@ export const GET_PUBLISHED_PAGE = () => {
         .join("\n");
 
     return gql`
-        query PbGetPublishedPage($id: ID, $url: String, $parent: ID, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean, $preview: Boolean) {
+        query PbGetPublishedPage($id: ID, $url: String, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean, $preview: Boolean) {
             pageBuilder {
-                page: getPublishedPage(id: $id, url: $url, parent: $parent, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage, preview: $preview) {
+                page: getPublishedPage(id: $id, url: $url, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage, preview: $preview) {
                     data {
                         id
                         title
                         url
                         version
                         publishedOn
-                        snippet
                         content
                         createdBy {
-                            firstName
-                            lastName
+                            displayName
                         }
                         settings {
                             _empty
                             ${pageSettingsFields}
                         }
-                        category {
-                            id
-                            name
-                        }
+#                        category {
+#                            slug
+#                            name
+#                        }
                     }
                     error {
                         code

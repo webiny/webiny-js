@@ -10,6 +10,10 @@ export const GET_HEADER_DATA = gql`
                         src
                     }
                 }
+                error {
+                    code
+                    message
+                }
             }
         }
     }
@@ -29,6 +33,10 @@ export const GET_FOOTER_DATA = gql`
                     logo {
                         src
                     }
+                }
+                error {
+                    code
+                    message
                 }
             }
         }

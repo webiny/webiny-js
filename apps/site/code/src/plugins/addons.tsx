@@ -25,6 +25,10 @@ export default (): PbAddonRenderPlugin => ({
                                     }
                                 }
                             }
+                            error {
+                                code
+                                message
+                            }
                         }
                     }
                 }
