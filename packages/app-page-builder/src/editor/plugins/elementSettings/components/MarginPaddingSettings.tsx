@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
@@ -129,8 +130,10 @@ const options = {
 const SIDES = ["top", "right", "bottom", "left"];
 const DEFAULT_VALUE = "0px";
 
-const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
-    styleAttribute
+const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = ({
+    styleAttribute,
+    defaultAccordionValue
 }) => {
     const valueKey = `data.settings.${styleAttribute}`;
     const element = useRecoilValue(activeElementWithChildrenSelector);
@@ -172,6 +175,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType> = ({
     return (
         <Accordion
             title={startCase(styleAttribute)}
+            defaultValue={defaultAccordionValue}
             action={
                 <Tooltip content={"link all sides"}>
                     <button

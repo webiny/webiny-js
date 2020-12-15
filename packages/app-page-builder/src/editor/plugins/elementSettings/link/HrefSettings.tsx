@@ -8,7 +8,10 @@ import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbElement
+} from "@webiny/app-page-builder/types";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
@@ -29,7 +32,8 @@ const classes = {
 type LinkSettingsPropsType = {
     element: PbElement;
 };
-const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({ element }) => {
+const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = ({ element, defaultAccordionValue }) => {
     const handler = useEventActionHandler();
 
     const { href, newTab } = element.data?.link || {};
@@ -49,7 +53,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType> = ({
     };
 
     return (
-        <Accordion title={"Link"}>
+        <Accordion title={"Link"} defaultValue={defaultAccordionValue}>
             <Form data={{ href, newTab }} onChange={updateSettings}>
                 {({ Bind }) => (
                     <>

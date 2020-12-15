@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
@@ -30,7 +31,9 @@ const spacingPickerStyle = css({
     }
 });
 
-const ImageSettings = () => {
+const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue = false
+}) => {
     const element = useRecoilValue(activeElementSelector);
     const {
         data: { image }
@@ -43,7 +46,7 @@ const ImageSettings = () => {
     const updateHeight = useCallback(value => getUpdateValue("height")(value), []);
 
     return (
-        <Accordion title={"Image"}>
+        <Accordion title={"Image"} defaultValue={defaultAccordionValue}>
             <>
                 <Wrapper containerClassName={classes.grid} label={"Title"}>
                     <InputField value={image?.title || ""} onChange={updateTitle} />

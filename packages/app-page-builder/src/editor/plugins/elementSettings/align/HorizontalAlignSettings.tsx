@@ -3,7 +3,11 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbElement,
+    PbEditorPageElementSettingsRenderComponentProps
+} from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
@@ -62,8 +66,10 @@ type HorizontalAlignActionPropsType = {
         alignments: string[];
     };
 };
-const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionPropsType> = ({
-    options: { alignments }
+const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = ({
+    options: { alignments },
+    defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
@@ -99,7 +105,7 @@ const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionProp
     }
 
     return (
-        <Accordion title={"Text align"}>
+        <Accordion title={"Text align"} defaultValue={defaultAccordionValue}>
             <ContentWrapper>
                 {alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>

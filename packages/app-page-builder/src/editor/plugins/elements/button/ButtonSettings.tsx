@@ -3,6 +3,7 @@ import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
@@ -47,7 +48,9 @@ const classes = {
     })
 };
 
-const ButtonSettings = () => {
+const ButtonSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { theme } = usePageBuilder();
     const { types } = theme?.elements?.button || [];
@@ -78,7 +81,7 @@ const ButtonSettings = () => {
     );
 
     return (
-        <Accordion title={"Button"}>
+        <Accordion title={"Button"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Type"} containerClassName={classes.gridClass}>
                     <SelectField value={type} onChange={updateType}>

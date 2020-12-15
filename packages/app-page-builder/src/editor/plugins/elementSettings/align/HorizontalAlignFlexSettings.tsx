@@ -4,7 +4,11 @@ import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbElement,
+    PbEditorPageElementSettingsRenderComponentProps
+} from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
@@ -54,7 +58,9 @@ enum AlignmentsTypeEnum {
 
 const alignments = Object.keys(icons);
 
-const HorizontalAlignFlexSettings: React.FunctionComponent = () => {
+const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue = false
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const align = get(element, "data.settings.horizontalAlignFlex", AlignmentsTypeEnum.CENTER);
@@ -89,7 +95,7 @@ const HorizontalAlignFlexSettings: React.FunctionComponent = () => {
     }
 
     return (
-        <Accordion title={"Horizontal align"}>
+        <Accordion title={"Horizontal align"} defaultValue={defaultAccordionValue}>
             <ContentWrapper>
                 {alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>

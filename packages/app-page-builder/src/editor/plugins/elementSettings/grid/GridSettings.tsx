@@ -3,7 +3,11 @@ import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useRecoilValue } from "recoil";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { PbEditorGridPresetPluginType, PbElement } from "../../../../types";
+import {
+    PbEditorGridPresetPluginType,
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbElement
+} from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { createElementHelper } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
@@ -82,7 +86,9 @@ const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPlugi
     return resizeCells(created, cells);
 };
 
-export const GridSettings: React.FunctionComponent = () => {
+export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const currentCellsType = element.data.settings?.grid?.cellsType;
@@ -139,7 +145,7 @@ export const GridSettings: React.FunctionComponent = () => {
     }, 0);
 
     return (
-        <Accordion title={"Grid"}>
+        <Accordion title={"Grid"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     {presetPlugins.map(pl => {

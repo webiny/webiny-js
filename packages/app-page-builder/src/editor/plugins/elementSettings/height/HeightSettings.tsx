@@ -3,6 +3,7 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { activeElementWithChildrenSelector } from "../../../recoil/modules";
@@ -81,7 +82,9 @@ const validateHeight = (value: string | undefined) => {
     throw Error("Specify a valid value!");
 };
 
-const Settings: React.FunctionComponent = () => {
+const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const updateSettings = async (data, form) => {
@@ -108,7 +111,7 @@ const Settings: React.FunctionComponent = () => {
     const data = element.data.settings?.height || { fullHeight: false, value: "100%" };
 
     return (
-        <Accordion title={"Height"}>
+        <Accordion title={"Height"} defaultValue={defaultAccordionValue}>
             <Form data={data} onChange={updateSettings}>
                 {({ Bind, data }) => (
                     <>

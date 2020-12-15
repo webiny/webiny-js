@@ -5,6 +5,7 @@ import { useRecoilValue } from "recoil";
 import startCase from "lodash/startCase";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { UpdateElementActionArgsType } from "../../../recoil/actions/updateElement/types";
@@ -39,7 +40,8 @@ type SettingsPropsType = {
         [key: string]: any;
     };
 };
-const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ options }) => {
+const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = ({ options, defaultAccordionValue }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const handler = useEventActionHandler();
     const updateElement = (args: UpdateElementActionArgsType): void => {
@@ -87,7 +89,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType> = ({ option
     const { src: backgroundImageSrc } = backgroundImage?.file || {};
 
     return (
-        <Accordion title={"Background"}>
+        <Accordion title={"Background"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12}>

@@ -2,6 +2,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
 import { activeElementWithChildrenSelector } from "../../../../editor/recoil/modules";
@@ -80,7 +81,9 @@ const validateWidth = (value: string | undefined) => {
     throw Error("Specify a valid value!");
 };
 
-const Settings: React.FunctionComponent = () => {
+const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const updateSettings = async (data, form) => {
@@ -108,7 +111,7 @@ const Settings: React.FunctionComponent = () => {
     const settings = element.data.settings?.width || { value: "100%" };
 
     return (
-        <Accordion title={"Width"}>
+        <Accordion title={"Width"} defaultValue={defaultAccordionValue}>
             <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
                     <Wrapper

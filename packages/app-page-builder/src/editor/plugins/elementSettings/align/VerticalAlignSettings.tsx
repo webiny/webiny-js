@@ -4,7 +4,11 @@ import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import {
+    PbEditorPageElementPlugin,
+    PbElement,
+    PbEditorPageElementSettingsRenderComponentProps
+} from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
@@ -53,7 +57,9 @@ const iconDescriptions = {
     end: "Align bottom"
 };
 
-const VerticalAlignSettings: React.FunctionComponent = () => {
+const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const align = get(element, "data.settings.verticalAlign", AlignTypesEnum.CENTER);
@@ -88,7 +94,7 @@ const VerticalAlignSettings: React.FunctionComponent = () => {
     }
 
     return (
-        <Accordion title={"Vertical align"}>
+        <Accordion title={"Vertical align"} defaultValue={defaultAccordionValue}>
             <ContentWrapper>
                 {alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>

@@ -3,6 +3,7 @@ import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementSelector } from "../../../recoil/modules";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
@@ -42,7 +43,8 @@ const DATA_NAMESPACE = "data.settings.animation";
 type SettingsPropsType = {
     animation: any;
 };
-const Settings: React.FunctionComponent<SettingsPropsType> = () => {
+const Settings: React.FunctionComponent<SettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = ({ defaultAccordionValue }) => {
     const element = useRecoilValue(activeElementSelector);
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
@@ -66,7 +68,7 @@ const Settings: React.FunctionComponent<SettingsPropsType> = () => {
     }, [animationName, animationDuration]);
 
     return (
-        <Accordion title={"Animation"}>
+        <Accordion title={"Animation"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.grid}>
                     <Cell span={12}>
@@ -174,7 +176,8 @@ type AnimationSettingsPropsType = {
     title?: string;
     styleAttribute?: string;
 };
-const AnimationSettings: React.FunctionComponent<AnimationSettingsPropsType> = props => {
+const AnimationSettings: React.FunctionComponent<AnimationSettingsPropsType &
+    PbEditorPageElementSettingsRenderComponentProps> = props => {
     return (
         <ElementAnimation>
             {animation => {

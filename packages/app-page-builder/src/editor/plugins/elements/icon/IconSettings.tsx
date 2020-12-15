@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
@@ -26,7 +27,9 @@ const classes = {
     })
 };
 
-const IconSettings = () => {
+const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { data: { icon = {} } = {} } = element;
 
@@ -48,7 +51,7 @@ const IconSettings = () => {
     ]);
 
     return (
-        <Accordion title={"Icon"}>
+        <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>
             <>
                 <Wrapper containerClassName={classes.grid} label={"Icon"}>
                     <BaseIconPicker value={icon.id} updateValue={updateIcon} removable={false} />

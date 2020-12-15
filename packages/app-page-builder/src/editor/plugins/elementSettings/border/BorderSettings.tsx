@@ -1,5 +1,6 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementSelector } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
@@ -13,7 +14,9 @@ import Wrapper from "../components/Wrapper";
 const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
 
-const BorderSettings = () => {
+const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const element = useRecoilValue(activeElementSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
@@ -22,7 +25,7 @@ const BorderSettings = () => {
     const border = element.data.settings?.border || {};
 
     return (
-        <Accordion title={"Border"}>
+        <Accordion title={"Border"} defaultValue={defaultAccordionValue}>
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Style"} containerClassName={classes.simpleGrid}>
                     <SelectField value={border.style || "none"} onChange={getUpdateValue("style")}>
