@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import useElementSettings from "../../../plugins/elementSettings/hooks/useElementSettings";
 import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
@@ -30,43 +30,11 @@ const SidebarActionsWrapper = styled("div")({
     justifyContent: "center"
 });
 
-const PanelHighLight = styled("div")({
-    "&": {
-        opacity: 0,
-        animation: "wf-blink-in 1s",
-        border: "2px solid var(--mdc-theme-secondary)",
-        boxShadow: "0 0 15px var(--mdc-theme-secondary)",
-        backgroundColor: "rgba(42, 217, 134, 0.25)",
-        borderRadius: "2px",
-        position: "absolute",
-        top: "0",
-        left: "0",
-        right: "0",
-        bottom: "0",
-        zIndex: 1,
-        pointerEvents: "none"
-    },
-    "@keyframes wf-blink-in": { "40%": { opacity: 1 } }
-});
-
 type ElementSettingsTabContentProps = {
     element: PbElement;
-    highlightElementTab: boolean;
-    unHighlightElementTab: Function;
 };
-
-const ElementSettingsTabContent = ({
-    element,
-    highlightElementTab,
-    unHighlightElementTab
-}: ElementSettingsTabContentProps) => {
+const ElementSettingsTabContent = ({ element }: ElementSettingsTabContentProps) => {
     const elementSettings = useElementSettings();
-
-    useEffect(() => {
-        if (highlightElementTab) {
-            setTimeout(unHighlightElementTab, 1000);
-        }
-    }, [highlightElementTab]);
 
     if (!element) {
         return null;
@@ -85,7 +53,6 @@ const ElementSettingsTabContent = ({
                 })}
             </SidebarActionsWrapper>
             <AdvancedSettings />
-            {highlightElementTab && <PanelHighLight />}
         </RootElement>
     );
 };
