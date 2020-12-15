@@ -5,6 +5,7 @@ import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementR
 import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
 import { PbElement, PbElementDataSettingsFormType } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
+import useRenderEmptyEmbed from "@webiny/app-page-builder/editor/plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 const Overlay = styled("div")({
     background: "black",
@@ -16,9 +17,6 @@ const Overlay = styled("div")({
 });
 
 const renderContent = (form: PbElementDataSettingsFormType): JSX.Element => {
-    if (!form.revision) {
-        return <span>Form not selected.</span>;
-    }
     const props = {
         preview: true,
         parentId: form.revision === "latest" ? form.parent : undefined,
@@ -38,6 +36,8 @@ const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element })
 
     const { form = {} } = element.data?.settings || {};
 
+    const renderEmpty = useRenderEmptyEmbed(element);
+
     return (
         <>
             {isActive && <Overlay />}
@@ -46,7 +46,7 @@ const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element })
                 element={element}
                 className={"webiny-pb-element-form"}
             >
-                {renderContent(form)}
+                {form.revision ? renderContent(form) : renderEmpty()}
             </ElementRoot>
         </>
     );

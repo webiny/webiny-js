@@ -178,6 +178,7 @@ class AutoComplete extends React.Component<Props, State> {
 
     render() {
         const {
+            className,
             options,
             onChange,
             value, // eslint-disable-line
@@ -203,7 +204,7 @@ class AutoComplete extends React.Component<Props, State> {
         };
 
         return (
-            <div className={autoCompleteStyle}>
+            <div className={classNames(autoCompleteStyle, className)}>
                 <Downshift {...downshiftProps} ref={this.downshift}>
                     {({ getInputProps, openMenu, ...rest }) => (
                         <div>

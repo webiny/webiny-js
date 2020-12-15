@@ -28,6 +28,7 @@ import EditorToolbar from "./Toolbar";
 import EditorContent from "./Content";
 import DragPreview from "./DragPreview";
 import Dialogs from "./Dialogs";
+import EditorSideBar from "./EditorSideBar";
 
 type PluginRegistryType = Map<string, () => void>;
 
@@ -143,6 +144,7 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 <EditorBar />
                 <EditorToolbar />
                 <EditorContent />
+                <EditorSideBar />
                 <Dialogs />
                 <DragPreview />
             </div>

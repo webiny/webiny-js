@@ -1,5 +1,4 @@
 import { CreateElementEventActionCallableType } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
-import { activatePluginByNameMutation } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 
@@ -30,12 +29,12 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallableType 
                 state: {
                     ui: {
                         ...state.ui,
-                        activeElement: element.id
-                    },
-                    plugins: activatePluginByNameMutation(
-                        state.plugins,
-                        "pb-editor-page-element-settings-advanced"
-                    )
+                        activeElement: element.id,
+                        // Mark "Element" settings tab active in sidebar.
+                        sidebarActiveTabIndex: 1,
+                        // Highlight "Element" settings tab in sidebar.
+                        highlightElementTab: true
+                    }
                 }
             };
         }

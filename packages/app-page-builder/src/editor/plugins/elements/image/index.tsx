@@ -5,10 +5,9 @@ import Image from "./Image";
 import { imageCreatedEditorAction } from "./imageCreatedEditorAction";
 import { CreateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
-import Action from "../../elementSettings/components/Action";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin,
+    PbEditorPageElementStyleSettingsPlugin,
     PbEditorEventActionPlugin
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
@@ -40,23 +39,19 @@ export default (): Plugin[] => {
                 }
             },
             settings: [
-                "pb-editor-page-element-settings-image",
-                ["pb-editor-page-element-settings-background", { image: false }],
-                "pb-editor-page-element-settings-link",
-                "",
-                "pb-editor-page-element-settings-border",
-                "pb-editor-page-element-settings-shadow",
-                "",
+                "pb-editor-page-element-style-settings-image",
+                ["pb-editor-page-element-style-settings-background", { image: false }],
+                "pb-editor-page-element-style-settings-link",
+                "pb-editor-page-element-style-settings-border",
+                "pb-editor-page-element-style-settings-shadow",
                 [
-                    "pb-editor-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "pb-editor-page-element-settings-padding",
-                "pb-editor-page-element-settings-margin",
-                "",
+                "pb-editor-page-element-style-settings-padding",
+                "pb-editor-page-element-style-settings-margin",
                 "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete",
-                ""
+                "pb-editor-page-element-settings-delete"
             ],
             target: ["cell", "block"],
             create(options) {
@@ -67,13 +62,13 @@ export default (): Plugin[] => {
                         settings: {
                             horizontalAlign: "center",
                             margin: {
-                                desktop: { all: 0 },
-                                mobile: { top: 0, left: 0, right: 0, bottom: 15 },
+                                desktop: { all: "0px" },
+                                mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
                                 advanced: true
                             },
                             padding: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             }
                         }
                     },
@@ -85,15 +80,12 @@ export default (): Plugin[] => {
             }
         } as PbEditorPageElementPlugin,
         {
-            name: "pb-editor-page-element-settings-image",
-            type: "pb-editor-page-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Image"} icon={<ImageIcon />} />;
-            },
-            renderMenu() {
+            name: "pb-editor-page-element-style-settings-image",
+            type: "pb-editor-page-element-style-settings",
+            render() {
                 return <ImageSettings />;
             }
-        } as PbEditorPageElementSettingsPlugin,
+        } as PbEditorPageElementStyleSettingsPlugin,
         {
             name: "pb-editor-event-action-image-created",
             type: "pb-editor-event-action-plugin",

@@ -14,16 +14,10 @@
       "path": "../api-file-manager"
     },
     {
-      "path": "../commodo"
-    },
-    {
       "path": "../handler"
     },
     {
       "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler-ssr"
     },
     {
       "path": "../validation"
@@ -42,9 +36,6 @@
     },
     {
       "path": "../db-dynamodb"
-    },
-    {
-      "path": "../db"
     },
     {
       "path": "../api-security-tenancy"

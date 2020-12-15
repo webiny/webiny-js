@@ -5,7 +5,6 @@ import cell from "./cell";
 import icon from "./icon";
 import image from "./image";
 import text from "./text";
-import spacer from "./spacer";
 import button from "./button";
 import embeds from "./embeds";
 import pagesList from "./pagesList";
@@ -19,7 +18,6 @@ export default [
     image(),
     icon(),
     text(),
-    spacer(),
     button(),
     ...embeds,
     ...pagesList(),

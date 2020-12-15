@@ -1,6 +1,14 @@
 import { get } from "lodash";
 import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
+const validateSpacingValue = value => {
+    const parsedValue = parseInt(value);
+    if (Number.isNaN(parsedValue)) {
+        return "0px";
+    }
+    return value;
+};
+
 export default {
     name: "pb-render-page-element-style-padding",
     type: "pb-render-page-element-style",
@@ -15,8 +23,11 @@ export default {
         const { desktop = {}, mobile = {} } = padding;
 
         ["top", "right", "bottom", "left"].forEach(side => {
-            style[`--desktop-padding-${side}`] = ((adv ? desktop[side] : desktop.all) || 0) + "px";
-            style[`--mobile-padding-${side}`] = ((adv ? mobile[side] : mobile.all) || 0) + "px";
+            const desktopValue = adv ? desktop[side] : desktop.all;
+            const mobileValue = adv ? mobile[side] : mobile.all;
+
+            style[`--desktop-padding-${side}`] = validateSpacingValue(desktopValue);
+            style[`--mobile-padding-${side}`] = validateSpacingValue(mobileValue);
         });
 
         return style;

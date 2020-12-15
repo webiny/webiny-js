@@ -1,0 +1,21 @@
+.ce-text-color-tool {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 16px 16px;
+  padding: 16px;
+  border-top: 1px solid #eee;
+}
+.ce-text-color-tool__color-box {
+  width: 42px;
+  height: 30px;
+  padding: 8px 12px;
+  margin: 0;
+  border: none;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.ce-text-color-tool__color-box--active {
+  border: 1px solid #616161;
+}

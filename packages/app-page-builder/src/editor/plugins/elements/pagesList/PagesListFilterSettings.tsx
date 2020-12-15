@@ -1,52 +1,89 @@
 import * as React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
+import { css } from "emotion";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import SelectField from "../../elementSettings/components/SelectField";
+import { classes, COLORS } from "../../elementSettings/components/StyledComponents";
+
+const autoCompleteStyle = css({
+    "& .mdc-text-field": {
+        height: "30px !important",
+        padding: "0px !important"
+    },
+    "& .mdc-text-field__input": {
+        padding: "4px 8px !important",
+        border: "none !important",
+        backgroundColor: `${COLORS.lightGray} !important`,
+        caretColor: "inherit !important"
+    },
+    "& .mdc-floating-label": {
+        display: "none"
+    },
+    "& .mdc-line-ripple": {
+        display: "none"
+    },
+    "& .mdc-elevation--z1": {
+        top: "30px !important"
+    }
+});
 
 const PagesListFilterSettings = ({ Bind }) => {
     return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={12}>
+        <Accordion title={"Filter"} defaultValue={true}>
+            <React.Fragment>
+                <Wrapper label={"Category"} containerClassName={classes.simpleGrid}>
                     <Bind name={"category"}>
-                        <CategoriesAutocomplete label="Category" />
+                        <CategoriesAutocomplete label="Category" className={autoCompleteStyle} />
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Sort By"} containerClassName={classes.simpleGrid}>
                     <Bind name={"sortBy"} defaultValue={"publishedOn"}>
-                        <Select label={"Sort by"}>
-                            <option value={"publishedOn"}>Publishing date</option>
-                            <option value={"title"}>Title</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={"publishedOn"}>Publishing date</option>
+                                <option value={"title"}>Title</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Sort Direction"} containerClassName={classes.simpleGrid}>
                     <Bind name={"sortDirection"} defaultValue={"desc"}>
-                        <Select label={"Sort direction"}>
-                            <option value={"desc"}>Descending</option>
-                            <option value={"asc"}>Ascending</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={"desc"}>Descending</option>
+                                <option value={"asc"}>Ascending</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper label={"Tags"} containerClassName={classes.simpleGrid}>
                     <Bind name="tags">
                         <TagsMultiAutocomplete
+                            className={autoCompleteStyle}
                             label="Filter by tags"
                             description="Enter tags to filter pages"
                         />
                     </Bind>
-                </Cell>
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper
+                    label={"Filter by tags rule"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={12}
+                    rightCellSpan={12}
+                >
                     <Bind name={"tagsRule"} defaultValue={"all"}>
-                        <Select label={"Filter by tags rule"}>
-                            <option value={"all"}>Page must include all tags</option>
-                            <option value={"any"}>Page must include any of the tags</option>
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField value={value} onChange={onChange}>
+                                <option value={"all"}>Page must include all tags</option>
+                                <option value={"any"}>Page must include any of the tags</option>
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-            </Grid>
-        </React.Fragment>
+                </Wrapper>
+            </React.Fragment>
+        </Accordion>
     );
 };
 

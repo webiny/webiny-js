@@ -1,14 +1,15 @@
 import React from "react";
-import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
-import IconSettings from "./IconSettings";
 import styled from "@emotion/styled";
-import Icon from "./Icon";
-import { getSvg } from "./utils";
-import Action from "./../../elementSettings/components/Action";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
+// Icons
+import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";
+// Components
+import IconSettings from "./IconSettings";
+import Icon from "./Icon";
+import { getSvg } from "../utils/iconUtils";
 
 export default () => {
     const PreviewBox = styled("div")({
@@ -38,18 +39,15 @@ export default () => {
                 }
             },
             settings: [
-                "pb-editor-page-element-settings-icon",
-                "",
-                "pb-editor-page-element-settings-padding",
-                "pb-editor-page-element-settings-margin",
+                "pb-editor-page-element-style-settings-icon",
+                "pb-editor-page-element-style-settings-padding",
+                "pb-editor-page-element-style-settings-margin",
                 [
-                    "pb-editor-page-element-settings-horizontal-align",
+                    "pb-editor-page-element-style-settings-horizontal-align",
                     { alignments: ["left", "center", "right"] }
                 ],
-                "",
                 "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete",
-                ""
+                "pb-editor-page-element-settings-delete"
             ],
             target: ["cell", "block"],
             create(options) {
@@ -63,14 +61,15 @@ export default () => {
                             width: 50
                         },
                         settings: {
+                            alignment: "horizontalLeft",
                             horizontalAlign: "center",
                             margin: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             },
                             padding: {
-                                desktop: { all: 0 },
-                                mobile: { all: 0 }
+                                desktop: { all: "0px" },
+                                mobile: { all: "0px" }
                             }
                         }
                     },
@@ -82,14 +81,11 @@ export default () => {
             }
         } as PbEditorPageElementPlugin,
         {
-            name: "pb-editor-page-element-settings-icon",
-            type: "pb-editor-page-element-settings",
-            renderAction() {
-                return <Action plugin={this.name} tooltip={"Icon"} icon={<IconSvg />} />;
-            },
-            renderMenu() {
+            name: "pb-editor-page-element-style-settings-icon",
+            type: "pb-editor-page-element-style-settings",
+            render() {
                 return <IconSettings />;
             }
-        } as PbEditorPageElementSettingsPlugin
+        } as PbEditorPageElementStyleSettingsPlugin
     ];
 };

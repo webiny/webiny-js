@@ -6,10 +6,16 @@ import { useMemo } from "react";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";
 import { useHandler } from "@webiny/app/hooks/useHandler";
-
+export type PostModifyElementArgs = {
+    name: string;
+    newValue: any;
+    element: PbShallowElement | PbElement;
+    newElement: PbShallowElement | PbElement;
+};
 type UpdateHandlersPropsType = {
     element: PbShallowElement | PbElement;
     dataNamespace: string;
+    postModifyElement?: (args: PostModifyElementArgs) => void;
 };
 type HandlerUpdateCallableType = (name: string) => (value: any) => void;
 type UseUpdateHandlersType = (
@@ -23,12 +29,16 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
     const updateElement = (args: UpdateElementActionArgsType) => {
         handler.trigger(new UpdateElementActionEvent(args));
     };
-    const updateSettings = useHandler(props, ({ element, dataNamespace }) => {
+    const updateSettings = useHandler(props, ({ element, dataNamespace, postModifyElement }) => {
         const historyUpdated = {};
         return (name: string, newValue: any, history = false) => {
             const propName = `${dataNamespace}.${name}`;
 
             const newElement = lodashMerge({}, element, lodashSet({}, propName, newValue));
+            // post modify the element.
+            if (typeof postModifyElement === "function") {
+                postModifyElement({ name, newElement, element, newValue });
+            }
 
             if (!history) {
                 updateElement({

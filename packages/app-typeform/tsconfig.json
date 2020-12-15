@@ -8,9 +8,6 @@
       "path": "../validation"
     },
     {
-      "path": "../ui"
-    },
-    {
       "path": "../app"
     }
   ]

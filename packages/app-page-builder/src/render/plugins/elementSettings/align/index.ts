@@ -27,7 +27,7 @@ const plugins: PbRenderElementStylePlugin[] = [
             if (!horizontalAlignFlex) {
                 return style;
             }
-            return { ...style, alignItems: horizontalAlignFlex };
+            return { ...style, justifyContent: horizontalAlignFlex };
         }
     },
     {
@@ -38,7 +38,7 @@ const plugins: PbRenderElementStylePlugin[] = [
             if (!verticalAlign) {
                 return style;
             }
-            return { ...style, justifyContent: vertical[verticalAlign] };
+            return { ...style, alignItems: vertical[verticalAlign] };
         }
     }
 ];

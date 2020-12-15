@@ -8,7 +8,6 @@ import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
 import text from "@webiny/app-page-builder/editor/plugins/elements/text";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
-import spacer from "@webiny/app-page-builder/editor/plugins/elements/spacer";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
 import media from "@webiny/app-page-builder/editor/plugins/elements/media";
 import social from "@webiny/app-page-builder/editor/plugins/elements/social";
@@ -28,7 +27,6 @@ import socialGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/s
 import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/code";
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
-import emptyBlock from "@webiny/app-page-builder/editor/plugins/blocks/emptyBlock";
 import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
 // Block categories
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
@@ -41,7 +39,6 @@ import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undo
 // Element settings
 import advanced from "@webiny/app-page-builder/editor/plugins/elementSettings/advanced";
 import animation from "@webiny/app-page-builder/editor/plugins/elementSettings/animation";
-import bar from "@webiny/app-page-builder/editor/plugins/elementSettings/bar";
 import deleteElement from "@webiny/app-page-builder/editor/plugins/elementSettings/delete";
 import clone from "@webiny/app-page-builder/editor/plugins/elementSettings/clone";
 import background from "@webiny/app-page-builder/editor/plugins/elementSettings/background";
@@ -50,10 +47,8 @@ import shadow from "@webiny/app-page-builder/editor/plugins/elementSettings/shad
 import padding from "@webiny/app-page-builder/editor/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/editor/plugins/elementSettings/margin";
 import width from "@webiny/app-page-builder/editor/plugins/elementSettings/width";
-import columnWidth from "@webiny/app-page-builder/editor/plugins/elementSettings/columnWidth";
 import height from "@webiny/app-page-builder/editor/plugins/elementSettings/height";
 import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align";
-import divider from "@webiny/app-page-builder/editor/plugins/elementSettings/divider";
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
@@ -66,18 +61,7 @@ import breadcrumbs from "@webiny/app-page-builder/editor/plugins/breadcrumbs";
 // default presets for grid
 import { gridPresets } from "@webiny/app-page-builder/editor/plugins/gridPresets";
 // event actions
-import {
-    createElementPlugin,
-    deactivatePluginPlugin,
-    deleteElementPlugin,
-    dragPlugin,
-    dropElementPlugin,
-    resizePlugin,
-    saveRevisionPlugin,
-    togglePluginPlugin,
-    updateElementPlugin,
-    updatePagePlugin
-} from "@webiny/app-page-builder/editor/recoil/actions";
+import actionPlugins from "@webiny/app-page-builder/editor/recoil/actions/plugins";
 
 export default [
     contentBackground,
@@ -92,7 +76,6 @@ export default [
     image(),
     imagesList(),
     text(),
-    spacer(),
     button(),
     media,
     social,
@@ -112,8 +95,6 @@ export default [
     socialGroup,
     codeGroup,
     savedGroup,
-    // Blocks
-    emptyBlock,
     // Block categories
     blocksCategories,
     // Toolbar
@@ -126,8 +107,6 @@ export default [
     // Element settings
     advanced,
     animation,
-    bar,
-    divider,
     background,
     border,
     shadow,
@@ -137,7 +116,6 @@ export default [
     clone,
     deleteElement,
     width,
-    columnWidth,
     height,
     save,
     link,
@@ -149,14 +127,5 @@ export default [
     // Breadcrumbs
     breadcrumbs,
     // action registration
-    createElementPlugin(),
-    updateElementPlugin(),
-    togglePluginPlugin(),
-    saveRevisionPlugin(),
-    dropElementPlugin(),
-    deactivatePluginPlugin(),
-    deleteElementPlugin(),
-    updatePagePlugin(),
-    ...resizePlugin(),
-    ...dragPlugin()
+    actionPlugins()
 ];

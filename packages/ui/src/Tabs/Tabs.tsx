@@ -22,6 +22,16 @@ export type TabsProps = {
      * Callback to execute when a tab is changed.
      */
     onActivate?: (index: number) => void;
+
+    /**
+     * Active tab index value.
+     */
+    value?: number;
+
+    /**
+     * Function to change active tab.
+     */
+    updateValue?: (index: number) => void;
 };
 
 type State = {
@@ -42,10 +52,14 @@ export class Tabs extends React.Component<TabsProps, State> {
     };
 
     switchTab(activeTabIndex) {
-        this.setState({ activeTabIndex });
+        if (typeof this.props.updateValue === "function") {
+            this.props.updateValue(activeTabIndex);
+        } else {
+            this.setState({ activeTabIndex });
+        }
     }
 
-    renderChildren(children) {
+    renderChildren(children, activeIndex) {
         const tabs = React.Children.toArray(children)
             .filter(c => c !== null)
             .map((child: React.ReactElement<TabProps>) => {
@@ -61,9 +75,13 @@ export class Tabs extends React.Component<TabsProps, State> {
         const tabBar = (
             <TabBar
                 className="webiny-ui-tabs__tab-bar"
-                activeTabIndex={this.state.activeTabIndex}
+                activeTabIndex={activeIndex}
                 onActivate={evt => {
-                    this.setState({ activeTabIndex: evt.detail.index });
+                    if (typeof this.props.updateValue === "function") {
+                        this.props.updateValue(evt.detail.index);
+                    } else {
+                        this.setState({ activeTabIndex: evt.detail.index });
+                    }
                     this.props.onActivate && this.props.onActivate(evt.detail.index);
                 }}
             >
@@ -89,7 +107,7 @@ export class Tabs extends React.Component<TabsProps, State> {
         const content = [];
         for (let i = 0; i < tabs.length; i++) {
             const current = tabs[i];
-            if (this.state.activeTabIndex === i) {
+            if (activeIndex === i) {
                 content.push(<div key={i}>{current.children}</div>);
             } else {
                 content.push(
@@ -109,12 +127,16 @@ export class Tabs extends React.Component<TabsProps, State> {
     }
 
     render() {
+        const activeIndex = Number.isNaN(this.props.value)
+            ? this.state.activeTabIndex
+            : this.props.value;
+
         let children = this.props.children;
         if (typeof this.props.children === "function") {
             // @ts-ignore
             children = this.props.children({ switchTab: this.switchTab.bind(this) });
         }
 
-        return this.renderChildren(children);
+        return this.renderChildren(children, activeIndex);
     }
 }

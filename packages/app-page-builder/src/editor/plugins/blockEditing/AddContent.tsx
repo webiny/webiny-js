@@ -22,7 +22,7 @@ const pulse = keyframes`
 `;
 
 const AddBlockContainer = styled("div")({
-    position: "fixed",
+    position: "absolute",
     zIndex: 11,
     top: "50%",
     left: "50%",

@@ -3,10 +3,8 @@ import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import {
-    createPropsFromConfig,
-    RichTextEditor as UiRichTextEditor
-} from "@webiny/ui/RichTextEditor";
+import { createPropsFromConfig } from "@webiny/ui/RichTextEditor";
+import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 import { OutputBlockData } from "@editorjs/editorjs";
 import { useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
@@ -47,7 +45,7 @@ const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
     const text = Array.isArray(element.data.text) ? element.data.text : [];
     return (
         <ElementRoot element={element} className={className}>
-            <UiRichTextEditor onChange={onChange} value={text} {...rteProps} />
+            <RichTextEditor onChange={onChange} value={text} {...rteProps} />
         </ElementRoot>
     );
 };

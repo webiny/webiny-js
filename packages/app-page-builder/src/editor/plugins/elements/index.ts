@@ -5,7 +5,6 @@ import text from "./text";
 import grid from "./grid";
 import cell from "./cell";
 import icon from "./icon";
-import spacer from "./spacer";
 import button from "./button";
 import media from "./media";
 import social from "./social";
@@ -22,7 +21,6 @@ export default [
     ...image(),
     ...imagesList(),
     text(),
-    spacer(),
     ...button(),
     ...media,
     ...social,
