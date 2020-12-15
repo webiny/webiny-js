@@ -19,6 +19,7 @@ import {
     PbElement
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
+import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
 
 const cellPlugin: PbEditorPageElementPlugin = {
     type: "pb-editor-page-element",
@@ -71,6 +72,12 @@ const cellPlugin: PbEditorPageElementPlugin = {
             {
                 element: parent
             }
+        );
+
+        result.actions.push(
+            new AfterDropElementActionEvent({
+                element
+            })
         );
 
         // if source has path it means that source is a PbElement or similar

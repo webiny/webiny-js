@@ -11,6 +11,7 @@ import {
     createDroppedElementHelper
 } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -67,6 +68,12 @@ export default (): PbEditorPageElementPlugin => {
             const result = updateElementAction(state, meta, {
                 element: block
             }) as EventActionHandlerActionCallableResponseType;
+
+            result.actions.push(
+                new AfterDropElementActionEvent({
+                    element
+                })
+            );
 
             if (source.path) {
                 result.actions.push(
