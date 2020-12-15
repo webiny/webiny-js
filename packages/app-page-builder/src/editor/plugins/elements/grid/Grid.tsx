@@ -27,7 +27,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
     combineClassNames,
     element
 }) => {
-    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle || {};
+    const { width, alignItems, ...containerStyle } = elementStyle || {};
 
     return (
         <StyledGrid
@@ -38,7 +38,6 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             {...elementAttributes}
             style={{
                 width: width ? width : "100%",
-                alignSelf: justifyContent,
                 alignItems: alignItems
             }}
         >
