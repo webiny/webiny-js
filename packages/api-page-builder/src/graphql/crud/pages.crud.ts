@@ -117,7 +117,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
-        const hookPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hooks");
+        const hookPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hook");
 
         context.pageBuilder = {
             ...context.pageBuilder,
