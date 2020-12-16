@@ -61,7 +61,7 @@ export default (context: DbContext & TenancyContext): TenantsCRUD => {
                 data: {
                     PK: `T#${tenant.id}`,
                     SK: "A",
-                    TYPE: "security:tenant",
+                    TYPE: "security.tenant",
                     GSI1_PK: data.parent ? `T#${data.parent}` : undefined,
                     GSI1_SK: data.parent ? `T#${tenant.id}` : undefined,
                     ...tenant
