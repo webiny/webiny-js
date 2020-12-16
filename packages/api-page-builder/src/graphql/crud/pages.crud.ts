@@ -942,7 +942,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                                 },
                                 data: {
                                     PK: PK_PAGE_PUBLISHED_URL(),
-                                    SK: pageUniqueId,
+                                    SK: page.url,
                                     TYPE: TYPE_PAGE_PUBLISHED_URL,
                                     id: page.id,
                                     url: page.url
