@@ -113,6 +113,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
         const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
         const PK_PAGE_PUBLISHED_URL = () => PK_PAGE_PUBLISHED() + "#URL";
+        const PK_PAGE_RENDER_QUEUE = () => `PB#PRQ`;
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
@@ -1229,16 +1230,45 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                 },
 
                 async render(args) {
-                    const { async, ...rest } = args;
-                    return await context.handlerClient.invoke({
-                        name: renderingFunction,
-                        await: async,
-                        payload: {
-                            ...rest,
-                            tenant: context.security.getTenant().id,
-                            locale: i18nContent.getLocale().code
-                        }
-                    });
+                    const { pages, tags } = args;
+
+                    const tenant = context.security.getTenant().id;
+                    const locale = i18nContent.getLocale().code;
+
+                    if (pages) {
+                        return await context.handlerClient.invoke({
+                            name: renderingFunction,
+                            await: false,
+                            payload: {
+                                pages: pages.map(page => [
+                                    {
+                                        url: page.url,
+                                        tenant,
+                                        locale
+                                    }
+                                ])
+                            }
+                        });
+                    }
+
+                    if (tags.length > 20) {
+                        throw new Error("Cannot specify more than 20 tags.");
+                    }
+
+                    const batch = db.batch();
+                    for (let i = 0; i < tags.length; i++) {
+                        batch.create({
+                            data: {
+                                PK: PK_PAGE_RENDER_QUEUE(),
+                                SK: mdbid(),
+                                tenant,
+                                locale,
+                                tag: tags[i]
+                            }
+                        });
+                    }
+
+                    await batch.execute();
                 }
             }
         };
