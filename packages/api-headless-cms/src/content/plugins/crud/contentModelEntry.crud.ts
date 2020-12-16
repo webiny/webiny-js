@@ -8,7 +8,7 @@ import {
 import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { buildEntryModelValidation } from "@webiny/api-headless-cms/content/plugins/crud/contentModelEntry/buildEntryModelValidation";
+import { entryModelValidationFactory } from "@webiny/api-headless-cms/content/plugins/crud/contentModelEntry/entryModelValidationFactory";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
@@ -36,9 +36,14 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return response;
             },
-            create: async (data, createdBy) => {
+            create: async (contentModelId, data, createdBy) => {
                 await utils.checkBaseContentModelEntryPermissions(context, "w");
-                // TODO need to create validation for model entry create
+
+                const contentModel = await context.cms.models.get(contentModelId);
+
+                const validation = await entryModelValidationFactory(context, contentModel);
+
+                await validation.validate(data);
                 const modelDataJson: any = {
                     ...data
                 };
@@ -75,13 +80,16 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             update: async (id, data) => {
                 const permissions = await utils.checkBaseContentModelEntryPermissions(context, "w");
+
                 const existingEntryModel = await context.cms.modelEntries.get(id);
+
                 utils.checkOwnership(context, permissions, existingEntryModel);
+
                 const contentModel = await context.cms.models.get(id);
-                const validation = await buildEntryModelValidation(context, contentModel);
+
+                const validation = await entryModelValidationFactory(context, contentModel);
 
                 await validation.validate(data);
-
                 const updatedModel: CmsContentModelEntryType = {
                     ...existingEntryModel,
                     values: data.values,
