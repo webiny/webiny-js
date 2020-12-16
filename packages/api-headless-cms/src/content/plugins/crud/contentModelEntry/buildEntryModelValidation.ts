@@ -32,9 +32,10 @@ const createValidators = async (
         if (fieldPlugins.length === 0) {
             continue;
         }
+        // TODO fix validator
         validators.set(
             key,
-            (validators.get(key) || []).concat(fieldPlugins.map(pl => pl.validator.validate))
+            (validators.get(key) || []).concat(fieldPlugins.map(pl => pl.validator.validate as any))
         );
     }
     return validators;

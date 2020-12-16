@@ -3,7 +3,6 @@ import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@web
 import { findEntry } from "../findEntry";
 import { entryNotFound } from "./entryNotFound";
 
-
 export const resolveGet: ResolverFactory = ({ model }) => async (root, args, context) => {
     let instance;
     // For the MANAGE API, we also allow getting entries directly by ID.

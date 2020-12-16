@@ -231,8 +231,12 @@ const keysGetters: KeyGettersType = {
     environment: getEnvironmentKey
 };
 
+const PARTITION_KEY_ORDER: KeyGetterValue[] = ["tenant", "environment", "locale"];
+
 const createPartitionKey = (context: CmsContext, type: string, keys: KeyGetterValue[]) => {
-    return keys
+    return PARTITION_KEY_ORDER.filter(key => {
+        return keys.includes(key);
+    })
         .map(key => {
             return keysGetters[key](context);
         })
