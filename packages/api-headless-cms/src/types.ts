@@ -328,9 +328,13 @@ export type CmsContentModelGroupType = {
     createdOn: Date;
     changedOn?: Date;
 };
+type CmsContentModelGroupListArgsType = {
+    search?: Record<string, any>;
+    limit?: number;
+};
 export type CmsContentModelGroupContextType = {
     get: (id: string) => Promise<CmsContentModelGroupType | null>;
-    list: () => Promise<CmsContentModelGroupType[]>;
+    list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
     create: (
         data: CmsContentModelGroupCreateInputType,
         createdBy: CreatedByType
