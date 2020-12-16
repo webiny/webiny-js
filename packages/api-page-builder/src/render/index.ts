@@ -2,12 +2,26 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import renderPage from "./renderPage";
 import path from "path";
-import { Page } from "./types";
 import S3 from "aws-sdk/clients/s3";
+import { DbContext } from "@webiny/handler-db/types";
+import defaults from "@webiny/api-page-builder/utils/defaults";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-export default (): HandlerPlugin<
+export type Page = {
+    path: string;
+    tenant: string;
+    locale: string;
+};
+
+export type Configuration = {
+    storageName: string;
+};
+
+export default (
+    configuration: Configuration
+): HandlerPlugin<
+    DbContext,
     ArgsContext<{
         pages: Page[];
     }>
@@ -19,12 +33,32 @@ export default (): HandlerPlugin<
             return;
         }
 
+        const { storageName } = configuration;
+
+        const __settings = {};
+        const getSettings = async (tenant, locale) => {
+            const PK = `T#${tenant}#L#${locale}#PB#SETTINGS`;
+
+            if (PK in __settings) {
+                return __settings[PK];
+            }
+
+            __settings[PK] = await db.read({
+                ...defaults.db,
+                query: { PK, SK: "default" }
+            });
+
+            return __settings[PK];
+        };
+
         const promises = [];
         for (let i = 0; i < args.pages.length; i++) {
             const page = args.pages[i];
+            const settings = await getSettings(page.tenant, page.locale);
+
             promises.push(
                 new Promise(async resolve => {
-                    const files = await renderPage(page);
+                    const files = await renderPage(settings.domain + page.path);
                     for (let j = 0; j < files.length; j++) {
                         const file = files[j];
 
@@ -39,7 +73,8 @@ export default (): HandlerPlugin<
                         await storeFile({
                             key,
                             body: file.body,
-                            contentType: file.type
+                            contentType: file.type,
+                            storageName
                         });
                     }
                     resolve();
@@ -51,11 +86,10 @@ export default (): HandlerPlugin<
     }
 });
 
-const storeFile = ({ key, contentType, body }) => {
-    const Bucket = "some-bucket";
+const storeFile = ({ key, contentType, body, storageName }) => {
     return s3
         .putObject({
-            Bucket,
+            Bucket: storageName,
             Key: key,
             ContentType: contentType,
             Body: body

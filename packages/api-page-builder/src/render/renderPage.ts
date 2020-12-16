@@ -1,11 +1,8 @@
-const fs = require("fs-extra");
-const path = require("path");
 const puppeteer = require("puppeteer");
 const posthtml = require("posthtml");
 const { noopener } = require("posthtml-noopener");
 const injectApolloState = require("./injectApolloState");
 const injectApolloPrefetching = require("./injectApolloPrefetching");
-import { Page } from "./types";
 
 const fileSafeId = url => {
     return "page--" + url.replace(/\//g, "-");
@@ -22,10 +19,10 @@ const windowSet = (page, name, value) => {
 
 export type File = { type: string; body: any; name: string };
 
-export default async (page: Page): Promise<File[]> => {
+export default async (url: string): Promise<File[]> => {
     const browser = await puppeteer.launch({ headless: true });
 
-    console.log(`-> Rendering "${page.url}"`);
+    console.log(`-> Rendering "${url}"`);
     const browserPage = await browser.newPage();
 
     // Currently, this variable is not used but lets keep it here as an example of setting page window variables.
@@ -76,7 +73,7 @@ export default async (page: Page): Promise<File[]> => {
     });
 
     // Load URL and wait for all network requests to settle.
-    await browserPage.goto(page.url, { waitUntil: "networkidle0" });
+    await browserPage.goto(url, { waitUntil: "networkidle0" });
 
     // Process HTML
     console.log("-> Processing HTML");
