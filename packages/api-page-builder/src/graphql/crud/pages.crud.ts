@@ -33,7 +33,16 @@ const UpdateDataModel = withFields({
     title: string({
         validation: validation.create("maxLength:150")
     }),
-    url: string({ validation: validation.create("maxLength:100") }),
+    url: string({
+        validation: value => {
+            if (value) {
+                validation.validateSync(value, "maxLength:100");
+                if (!value.startsWith("/")) {
+                    throw new Error('Page path must start with forward slash ("/").');
+                }
+            }
+        }
+    }),
     category: string({ validation: validation.create("maxLength:100") }),
     content: object()
 })();
