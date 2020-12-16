@@ -1,6 +1,6 @@
 import { MenuHookPlugin, PageHookPlugin, SettingsHookPlugin } from "@webiny/api-page-builder/types";
 
-export default () => [
+export default [
     {
         // After a page was published, we need to render the page.
         type: "pb-page-hook",
@@ -17,6 +17,7 @@ export default () => [
                 promises.push(context.pageBuilder.pages.render({ url: "/", queue: false }));
             }
 
+            console.log("ide rerenderanje", page);
             await Promise.all(promises);
         }
     } as PageHookPlugin,
