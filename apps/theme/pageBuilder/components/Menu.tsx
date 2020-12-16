@@ -16,14 +16,17 @@ declare global {
     }
 }
 
-export const getMenuBySlug = gql`
-    query GetMenuBySlug($slug: String!) {
+export const GET_PUBLIC_MENU = gql`
+    query GetPublicMenu($slug: String!) {
         pageBuilder {
-            menus: getMenuBySlug(slug: $slug) {
+            getPublicMenu(slug: $slug) {
                 data {
                     slug
                     title
                     items
+                }
+                error {
+                    code
                 }
             }
         }
@@ -34,9 +37,9 @@ const Menu = ({ slug, component: Component }) => {
     invariant(Component, `You must provide a valid Menu component name (via "component" prop).`);
 
     return (
-        <Query query={getMenuBySlug} variables={{ slug }}>
+        <Query query={GET_PUBLIC_MENU} variables={{ slug }}>
             {props => {
-                const data = get(props, "data.pageBuilder.menus.data", {
+                const data = get(props, "data.pageBuilder.getPublicMenu.data", {
                     items: [],
                     title: null,
                     slug: null

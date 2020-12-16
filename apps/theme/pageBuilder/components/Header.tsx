@@ -1,13 +1,18 @@
 import React, { useState, useCallback } from "react";
-import get from "lodash.get";
-import { Query } from "react-apollo";
-import { GET_HEADER_DATA } from "./graphql";
 import DesktopHeader from "./DesktopHeader";
 import MobileHeader from "./MobileHeader";
+import { PbPageData } from "@webiny/app-page-builder/types";
 
 const menuName = "main-menu";
 
-const Header = () => {
+type HeaderProps = {
+    settings: Record<string, any>;
+    page: PbPageData;
+};
+
+const Header = ({ settings }: HeaderProps) => {
+    const { name, logo } = settings;
+
     const [mobileMenu, showMobileMenu] = useState(false);
 
     const toggleMobileMenu = useCallback(() => {
@@ -15,30 +20,19 @@ const Header = () => {
     }, [mobileMenu]);
 
     return (
-        <Query query={GET_HEADER_DATA}>
-            {({ data: response }) => {
-                const { name, logo } = get(response, "pageBuilder.getSettings.data") || {};
-
-                return (
-                    <React.Fragment>
-                        <div
-                            className={"webiny-pb-section-header"}
-                            data-testid={"pb-desktop-mobile-headers"}
-                        >
-                            <DesktopHeader menuName={menuName} name={name} logo={logo} />
-                            <MobileHeader
-                                menuName={menuName}
-                                name={name}
-                                logo={logo}
-                                active={mobileMenu}
-                                toggleMenu={toggleMobileMenu}
-                            />
-                        </div>
-                        <div className={"webiny-pb-section-header-spacer"} />
-                    </React.Fragment>
-                );
-            }}
-        </Query>
+        <React.Fragment>
+            <div className={"webiny-pb-section-header"} data-testid={"pb-desktop-mobile-headers"}>
+                <DesktopHeader menuName={menuName} name={name} logo={logo} />
+                <MobileHeader
+                    menuName={menuName}
+                    name={name}
+                    logo={logo}
+                    active={mobileMenu}
+                    toggleMenu={toggleMobileMenu}
+                />
+            </div>
+            <div className={"webiny-pb-section-header-spacer"} />
+        </React.Fragment>
     );
 };
 
