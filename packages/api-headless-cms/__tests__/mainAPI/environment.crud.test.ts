@@ -13,8 +13,8 @@ enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
     PREFIX = "environment",
     SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    USER_ID = "123",
+    USER_NAME = "User 123"
 }
 
 const createEnvironmentPrefix = position => {
@@ -82,9 +82,12 @@ describe("Environment crud test", () => {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: {
-                                    id: TestHelperEnum.USER_ID
+                                    id: TestHelperEnum.USER_ID,
+                                    displayName: TestHelperEnum.USER_NAME,
+                                    type: "admin"
                                 },
-                                createdOn: /^20/
+                                createdOn: /^20/,
+                                changedOn: null
                             },
                             error: null
                         }
@@ -113,7 +116,8 @@ describe("Environment crud test", () => {
                                 },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
+                                    displayName: TestHelperEnum.USER_NAME,
+                                    type: "admin"
                                 },
                                 createdOn,
                                 changedOn: null
@@ -146,7 +150,8 @@ describe("Environment crud test", () => {
                                 },
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
+                                    displayName: TestHelperEnum.USER_NAME,
+                                    type: "admin"
                                 },
                                 createdOn,
                                 changedOn: /^20/

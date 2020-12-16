@@ -12,8 +12,8 @@ enum TestHelperEnum {
     MODELS_AMOUNT = 3,
     PREFIX = "alias",
     SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    USER_ID = "123",
+    USER_NAME = "User 123"
 }
 const createEnvironmentAliasPrefix = position => {
     return `${TestHelperEnum.PREFIX}${position}`;
@@ -75,7 +75,7 @@ describe("Environment alias crud test", () => {
                                 changedOn: null,
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
+                                    displayName: TestHelperEnum.USER_NAME
                                 }
                             },
                             error: null
@@ -102,7 +102,8 @@ describe("Environment alias crud test", () => {
                                 environment: getInitialEnvironment(),
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
+                                    displayName: TestHelperEnum.USER_NAME,
+                                    type: "admin"
                                 },
                                 createdOn,
                                 changedOn: null
@@ -133,7 +134,7 @@ describe("Environment alias crud test", () => {
                                 environment: getInitialEnvironment(),
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
+                                    displayName: TestHelperEnum.USER_NAME
                                 },
                                 createdOn,
                                 changedOn: /^20/
