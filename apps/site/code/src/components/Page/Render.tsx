@@ -12,7 +12,15 @@ import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultE
  * @param error
  * @constructor
  */
-function Render({ data, error }: { error?: any; data?: PbPageData }) {
+function Render({
+    page,
+    error,
+    settings
+}: {
+    page: PbPageData;
+    error: Record<string, any>;
+    settings: Record<string, any>;
+}) {
     if (error) {
         if (error.code === "NOT_FOUND") {
             return <DefaultNotFoundPage />;
@@ -20,35 +28,55 @@ function Render({ data, error }: { error?: any; data?: PbPageData }) {
         return <DefaultErrorPage error={error} />;
     }
 
-    if (!data) {
+    if (!page) {
         return null;
     }
 
     const head: Record<string, any> = {
-        title: data.title,
+        favicon: settings?.favicon,
+        title: page.title || settings?.name,
         seo: {
             title: "",
             description: "",
             meta: [],
-            ...data?.settings?.seo
+            ...page?.settings?.seo
         },
         social: {
             title: "",
             description: "",
             image: null,
-            ...data?.settings?.social
+            ...page?.settings?.social
         }
     };
 
     return (
         <div className="webiny-pb-page">
             <Helmet>
+                {/* Read favicon from settings. */}
+                {head.favicon && (
+                    <link
+                        rel="icon"
+                        type="image/png"
+                        href={head.favicon.src + "?width=128"}
+                        sizes="16x16"
+                    />
+                )}
+
+                {/* Read title from page settings. */}
                 {head.title && <title>{head.title}</title>}
+
+
+                {/* Read SEO tags from page settings. */}
                 {head.seo.title && <meta name="title" content={head.seo.title} />}
                 {head.seo.description && <meta name="description" content={head.seo.description} />}
                 {head.seo.meta.map(({ name, content }, index) => (
                     <meta key={index} name={name} content={content} />
                 ))}
+
+                {/* Read social tags from page settings. */}
+                {settings?.social?.title && (
+                    <meta property="og:title" content={settings.social.title} />
+                )}
 
                 {head.social.image && (
                     <meta property="og:image" content={head.social.image.src + "?width=1596"} />
@@ -64,8 +92,8 @@ function Render({ data, error }: { error?: any; data?: PbPageData }) {
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
-            <Layout layout={data.settings.general.layout}>
-                <Element element={data.content} />
+            <Layout page={page} settings={settings}>
+                <Element element={page.content} />
             </Layout>
         </div>
     );

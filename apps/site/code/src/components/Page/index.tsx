@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "react-apollo";
 import Render from "./Render";
 
-import { GET_PUBLISHED_PAGE } from "./graphql";
+import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
 
 /**
  * This component will fetch the published page's data and pass it to the `Render` function. Note that if the
@@ -14,6 +14,7 @@ const Page = () => {
     const query = new URLSearchParams(location.search);
     const id = query.get("preview");
 
+    // Here we get the page data for current URL, including its content.
     const getPublishedPageQuery = useQuery(GET_PUBLISHED_PAGE(), {
         variables: {
             id,
@@ -24,8 +25,14 @@ const Page = () => {
         }
     });
 
-    // Will spread `{ error: any, data: PbPageData }` object as component's props.
-    return <Render {...getPublishedPageQuery.data?.pageBuilder?.getPublishedPage} />;
+    // Here we get all site data like website name, favicon image, social links etc.
+    const getSettingsQuery = useQuery(GET_SETTINGS);
+
+    const { data: page, error } = getPublishedPageQuery.data?.pageBuilder?.getPublishedPage || {};
+    const settings = getSettingsQuery.data?.pageBuilder?.getSettings?.data || {};
+
+    // Let's render the page.
+    return <Render page={page} error={error} settings={settings} />;
 };
 
 export default Page;

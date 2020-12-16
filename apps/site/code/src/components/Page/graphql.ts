@@ -39,3 +39,33 @@ export const GET_PUBLISHED_PAGE = () => {
         }
     `;
 };
+
+export const GET_SETTINGS = gql`
+    query PbGetSettings {
+        pageBuilder {
+            getSettings {
+                data {
+                    name
+                    social {
+                        facebook
+                        instagram
+                        twitter
+                        image {
+                            src
+                        }
+                    }
+                    logo {
+                        src
+                    }
+                    favicon {
+                        src
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
