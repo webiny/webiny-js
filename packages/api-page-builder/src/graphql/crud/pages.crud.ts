@@ -326,7 +326,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                     }
 
                     const title = "Untitled";
-                    const url = category.url + "untitled-" + uniqid.time();
+                    const url = path.join(category.url, "untitled-" + uniqid.time());
 
                     const identity = context.security.getIdentity();
                     new CreateDataModel().populate({ category: category.slug }).validate();
