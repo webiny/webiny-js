@@ -1,5 +1,3 @@
-import { locales } from "./I18NLocales";
-
 export default async context => {
     const { category: Category } = context.models;
     const category1 = new Category();

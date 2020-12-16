@@ -1,8 +1,4 @@
-import {
-    CmsFindFilterOperatorPlugin,
-    CmsContext,
-    CmsContentModelType
-} from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsContentModelType } from "@webiny/api-headless-cms/types";
 import { WhereCondition } from "./parseWhere";
 import { Sorter } from "./parseSort";
 
@@ -16,13 +12,8 @@ interface CreateFindParameters {
 export const createFindParameters = ({
     model,
     where,
-    sort = [],
-    context
+    sort = []
 }: CreateFindParameters): { [key: string]: any } => {
-    const filterOperators = context.plugins.byType<CmsFindFilterOperatorPlugin>(
-        "cms-find-filter-operator"
-    );
-
     // Sort conditions alphabetically
     where = where.sort((a, b) => a.fieldId.localeCompare(b.fieldId));
 
@@ -32,25 +23,12 @@ export const createFindParameters = ({
     ].sort();
 
     function createCondition({ fieldId, operator, value }: WhereCondition) {
-        const operatorPlugin = filterOperators.find(pl => pl.operator === operator);
-
-        if (!operatorPlugin) {
-            return;
-        }
-
-        const field = model.fields.find(f => f.fieldId === fieldId);
-        const searchField = `v${allFields.indexOf(fieldId)}`;
-        const condition = operatorPlugin.createCondition({
-            fieldId: searchField,
-            field,
-            value,
-            context
-        });
-
-        return { [searchField]: condition };
+        // TODO: generate condition based on operator and fieldId
     }
 
-    const conditions = where.map(filter => createCondition(filter)).filter(Boolean);
+    const conditions: Record<string, any> = where
+        .map(filter => createCondition(filter))
+        .filter(Boolean);
 
     const sorters = sort.reduce((acc, item) => {
         const sortField = `v${allFields.indexOf(item.fieldId)}`;
