@@ -57,7 +57,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return response.find(() => true);
             },
-            list: async () => {
+            // eslint-disable-next-line
+            list: async ({ search, limit }) => {
                 const [response] = await db.read<CmsContentModelEntryType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelEntryPk(context), SK: { $gt: " " } }

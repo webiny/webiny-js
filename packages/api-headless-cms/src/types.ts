@@ -448,9 +448,52 @@ export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
 
+type SearchableFieldType<T> = {
+    eq?: T;
+    gt?: T;
+    lt?: T;
+    not?: T;
+    notIn?: T[];
+};
+type SearchableNumberFieldType = {
+    eq?: number;
+    gt?: number;
+    lt?: number;
+    not?: number;
+    notIn?: number[];
+    between?: [number, number];
+    notBetween?: [number, number];
+};
+type SearchableStringFieldType = {
+    eq?: string;
+    contains?: string;
+    notContains?: string;
+    startsWith?: string;
+    notStartsWith?: string;
+    endsWith?: string;
+    notEndsWith?: string;
+};
+type CmsContentModelEntryListArgsType = {
+    search?: {
+        createdOn?: SearchableFieldType<Date>;
+        changedOn?: SearchableFieldType<Date>;
+        createdBy?: {
+            id?: SearchableNumberFieldType;
+            type?: SearchableStringFieldType;
+        };
+        modelId?: string;
+        [key: string]:
+            | SearchableFieldType<any>
+            | SearchableNumberFieldType
+            | SearchableStringFieldType
+            | any;
+    };
+    limit?: number;
+    after?: string;
+};
 export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
-    list: () => Promise<CmsContentModelEntryType[]>;
+    list: (args?: CmsContentModelEntryListArgsType) => Promise<CmsContentModelEntryType[]>;
     create: (
         contentModelId: string,
         data: CmsContentModelEntryCreateInputType,
