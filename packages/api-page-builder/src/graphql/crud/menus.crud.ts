@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { Menu, PbContext } from "@webiny/api-page-builder/types";
+import { Menu, MenuHookPlugin, PbContext } from "@webiny/api-page-builder/graphql/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -9,6 +9,7 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
+import executeHookCallbacks from "./utils/executeHookCallbacks";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -31,6 +32,8 @@ const plugin: ContextPlugin<PbContext> = {
     apply(context) {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}M`;
+
+        const hookPlugins = context.plugins.byType<MenuHookPlugin>("pb-menu-hooks");
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -101,6 +104,8 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Menu "${createData.slug}" already exists.`);
                     }
 
+                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, createData);
+
                     await db.create({
                         ...defaults.db,
                         data: {
@@ -110,6 +115,8 @@ const plugin: ContextPlugin<PbContext> = {
                             TYPE
                         }
                     });
+
+                    await executeHookCallbacks(hookPlugins, "afterCreate", context, createData);
 
                     return createData;
                 },
@@ -132,11 +139,15 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const updateData = await updateDataModel.toJSON({ onlyDirty: true });
 
+                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, menu);
+
                     await db.update({
                         ...defaults.db,
                         query: { PK: PK(), SK: slug },
                         data: updateData
                     });
+
+                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, menu);
 
                     return { ...menu, ...updateData };
                 },
@@ -153,10 +164,14 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, menu);
 
+                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, menu);
+
                     await db.delete({
                         ...defaults.db,
                         query: { PK: PK(), SK: slug }
                     });
+
+                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, menu);
 
                     return menu;
                 }
