@@ -1,23 +1,11 @@
-import { locales } from "./I18NLocales";
-
 export default async context => {
     const { category: Category } = context.models;
     const category1 = new Category();
 
     const data = [
         {
-            title: {
-                values: [
-                    { locale: locales.en.id, value: "Hardware EN" },
-                    { locale: locales.de.id, value: "Hardware DE" }
-                ]
-            },
-            slug: {
-                values: [
-                    { locale: locales.en.id, value: "hardware-en" },
-                    { locale: locales.de.id, value: "hardware-de" }
-                ]
-            }
+            title: "Hardware",
+            slug: "ha
         },
         {
             title: {

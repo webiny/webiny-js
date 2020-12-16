@@ -1,17 +1,11 @@
-import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import {
-    createInitialAliasEnvironment,
-    createInitialEnvironment,
-    createTestContentModelGroupPk
-} from "../utils/helpers";
 import {
     CmsContentModelFieldInputType,
     CmsContentModelGroupType,
-    CmsEnvironmentType,
-    DbItemTypes
+    CmsEnvironmentType
 } from "@webiny/api-headless-cms/types";
 import mdbid from "mdbid";
+import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import * as helpers from "../utils/helpers";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
@@ -21,34 +15,6 @@ const getTypeObject = (schema, type) => {
     return schema.types.find(t => t.name === type);
 };
 
-const createContentModelGroup = async (client: DocumentClient, environment: CmsEnvironmentType) => {
-    const model: CmsContentModelGroupType = {
-        id: mdbid(),
-        name: "Group",
-        slug: "group",
-        icon: "ico/ico",
-        createdBy: {
-            id: "123",
-            name: "name"
-        },
-        description: "description",
-        environment,
-        createdOn: new Date(),
-        changedOn: null
-    };
-    await client
-        .put({
-            TableName: "HeadlessCms",
-            Item: {
-                PK: createTestContentModelGroupPk(),
-                SK: model.id,
-                TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
-                ...model
-            }
-        })
-        .promise();
-    return model;
-};
 jest.setTimeout(15000);
 
 describe("content model test", () => {
@@ -61,9 +27,9 @@ describe("content model test", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
     beforeEach(async () => {
-        environment = await createInitialEnvironment(documentClient);
-        await createInitialAliasEnvironment(documentClient, environment);
-        contentModelGroup = await createContentModelGroup(documentClient, environment);
+        environment = await helpers.createInitialEnvironment(documentClient);
+        await helpers.createInitialAliasEnvironment(documentClient, environment);
+        contentModelGroup = await helpers.createContentModelGroup(documentClient, environment);
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {

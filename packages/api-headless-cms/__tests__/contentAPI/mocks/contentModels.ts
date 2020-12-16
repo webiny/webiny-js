@@ -2,6 +2,20 @@ import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
 import { CmsContentModelType } from "@webiny/api-headless-cms/types";
 
+const ids = {
+    field11: shortId.generate(),
+    field12: shortId.generate(),
+    field21: shortId.generate(),
+    field22: shortId.generate(),
+    field23: shortId.generate(),
+    field24: shortId.generate(),
+    field25: shortId.generate(),
+    field26: shortId.generate(),
+    field31: shortId.generate(),
+    field32: shortId.generate(),
+    field33: shortId.generate()
+};
+
 const models: CmsContentModelType[] = [
     {
         id: "1",
@@ -13,10 +27,12 @@ const models: CmsContentModelType[] = [
         description: "Product category",
         modelId: "category",
         group: contentModelGroup.id,
+        layout: [[ids.field11], [ids.field12]],
         fields: [
             {
-                _id: shortId.generate(),
+                id: ids.field11,
                 multipleValues: false,
+                helpText: "",
                 label: "Title",
                 type: "text",
                 fieldId: "title",
@@ -35,8 +51,9 @@ const models: CmsContentModelType[] = [
                 ]
             },
             {
-                _id: shortId.generate(),
+                id: ids.field12,
                 multipleValues: false,
+                helpText: "",
                 label: "Slug",
                 type: "text",
                 fieldId: "slug",
@@ -59,10 +76,19 @@ const models: CmsContentModelType[] = [
         modelId: "product",
         description: "Products being sold in our webshop",
         group: contentModelGroup.id,
+        layout: [
+            [ids.field21],
+            [ids.field22],
+            [ids.field23],
+            [ids.field24],
+            [ids.field25],
+            [ids.field26]
+        ],
         fields: [
             {
-                _id: shortId.generate(),
+                id: ids.field21,
                 multipleValues: false,
+                helpText: "",
                 label: "Title",
                 fieldId: "title",
                 type: "text",
@@ -74,8 +100,9 @@ const models: CmsContentModelType[] = [
                 ]
             },
             {
-                _id: shortId.generate(),
+                id: ids.field22,
                 multipleValues: false,
+                helpText: "",
                 label: "Category",
                 fieldId: "category",
                 type: "ref",
@@ -92,8 +119,9 @@ const models: CmsContentModelType[] = [
             },
 
             {
-                _id: shortId.generate(),
+                id: ids.field23,
                 multipleValues: false,
+                helpText: "",
                 label: "Price",
                 fieldId: "price",
                 type: "number",
@@ -105,24 +133,27 @@ const models: CmsContentModelType[] = [
                 ]
             },
             {
-                _id: shortId.generate(),
+                id: ids.field24,
                 multipleValues: false,
+                helpText: "",
                 label: "Price",
                 fieldId: "inStock",
                 type: "boolean",
                 validation: []
             },
             {
-                _id: shortId.generate(),
+                id: ids.field25,
                 multipleValues: false,
+                helpText: "",
                 label: "Price",
                 fieldId: "itemsInStock",
                 type: "number",
                 validation: []
             },
             {
-                _id: shortId.generate(),
+                id: ids.field26,
                 multipleValues: false,
+                helpText: "",
                 label: "Available on",
                 fieldId: "availableOn",
                 type: "datetime",
@@ -148,10 +179,12 @@ const models: CmsContentModelType[] = [
         description: "Product review",
         modelId: "review",
         group: contentModelGroup.id,
+        layout: [[ids.field31], [ids.field32], [ids.field33]],
         fields: [
             {
-                _id: shortId.generate(),
+                id: ids.field31,
                 multipleValues: false,
+                helpText: "",
                 label: "Text",
                 type: "text",
                 fieldId: "text",
@@ -163,8 +196,9 @@ const models: CmsContentModelType[] = [
                 ]
             },
             {
-                _id: shortId.generate(),
+                id: ids.field32,
                 multipleValues: false,
+                helpText: "",
                 label: "Product",
                 type: "ref",
                 fieldId: "product",
@@ -175,8 +209,9 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                _id: shortId.generate(),
+                id: ids.field33,
                 multipleValues: false,
+                helpText: "",
                 label: "Rating",
                 type: "number",
                 fieldId: "rating",

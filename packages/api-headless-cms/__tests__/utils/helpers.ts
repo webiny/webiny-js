@@ -1,17 +1,20 @@
-import {
-    createContentModelGroupPk,
-    createEnvironmentAliasPk,
-    createEnvironmentPk,
-    createSettingsPk
-} from "../../src/utils";
+import mdbid from "mdbid";
+import { pick } from "lodash";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import {
+    CmsContentModelGroupType,
     CmsContext,
     CmsEnvironmentAliasType,
     CmsEnvironmentType,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
+import {
+    createContentModelGroupPk,
+    createEnvironmentAliasPk,
+    createEnvironmentPk,
+    createSettingsPk
+} from "../../src/utils";
 
 export type PermissionsArgType = {
     name: string;
@@ -22,24 +25,22 @@ const INITIAL_ENVIRONMENT_ID = "5fc6590afb3cd80a5ae8a0ae";
 
 export const getInitialEnvironmentId = () => INITIAL_ENVIRONMENT_ID;
 
+const createdBy = {
+    id: "123",
+    displayName: "User 123",
+    type: "admin"
+};
+
 export const getInitialEnvironment = () => ({
     id: INITIAL_ENVIRONMENT_ID,
     name: "Production",
     slug: "production",
     description: "Production environment description",
-    createdBy: {
-        id: "1234567890",
-        name: "userName123"
-    }
+    createdBy
 });
 
 const getSecurityIdentity = () => {
-    return new SecurityIdentity({
-        id: "1234567890",
-        displayName: "userName123",
-        login: "login",
-        type: "type"
-    });
+    return new SecurityIdentity(createdBy);
 };
 
 const getDummyCmsContext = (): CmsContext => {
@@ -117,10 +118,7 @@ export const createInitialAliasEnvironment = async (
         id,
         name: "Production alias",
         slug: "production",
-        createdBy: {
-            id: "1234567890",
-            name: "userName123"
-        },
+        createdBy,
         createdOn: new Date(),
         environment: env
     };
@@ -184,4 +182,47 @@ export const createAuthenticate = (identity?: SecurityIdentity) => {
         }
         return identity;
     };
+};
+
+export const createContentModelGroup = async (
+    client: DocumentClient,
+    environment: CmsEnvironmentType
+) => {
+    const model: CmsContentModelGroupType = {
+        id: mdbid(),
+        name: "Group",
+        slug: "group",
+        icon: "ico/ico",
+        createdBy,
+        description: "description",
+        environment,
+        createdOn: new Date(),
+        changedOn: null
+    };
+    await client
+        .put({
+            TableName: "HeadlessCms",
+            Item: {
+                PK: createTestContentModelGroupPk(),
+                SK: model.id,
+                TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                ...model
+            }
+        })
+        .promise();
+    return model;
+};
+
+export const getModelCreateInputObject = model => {
+    return pick(model, [
+        "name",
+        "modelId",
+        "group",
+        "description",
+        "createdBy",
+        "fields",
+        "layout",
+        "lockedFields",
+        "titleFieldId"
+    ]);
 };
