@@ -1,6 +1,6 @@
 import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
 
-export const beforeSaveHook = (context: CmsContext, model: CmsContentModelType) => {
+export const beforeSaveHook = async (context: CmsContext, model: CmsContentModelType) => {
     let { titleFieldId } = model;
     const { fields, lockedFields = [] } = model;
 
