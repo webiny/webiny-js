@@ -4,12 +4,8 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { hasPermission, NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 
-type KeyGettersType = {
-    tenant: (context: CmsContext) => string;
-    locale: (context: CmsContext) => string;
-    environment: (context: CmsContext) => string;
-};
-type KeyGetterValue = keyof KeyGettersType;
+type KeyGetterValue = "tenant" | "environment" | "locale";
+
 type CreatePkCallableType = (context: CmsContext) => string;
 type ModelCreatableByUserType = {
     createdBy?: {
@@ -225,23 +221,19 @@ const getEnvironmentKey = ({ cms }: CmsContext): string => {
     return env;
 };
 
-const keysGetters: KeyGettersType = {
-    tenant: getTenantKey,
-    locale: getLocaleKey,
-    environment: getEnvironmentKey
-};
-
-const PARTITION_KEY_ORDER: KeyGetterValue[] = ["tenant", "environment", "locale"];
-
 const createPartitionKey = (context: CmsContext, type: string, keys: KeyGetterValue[]) => {
-    return PARTITION_KEY_ORDER.filter(key => {
-        return keys.includes(key);
-    })
-        .map(key => {
-            return keysGetters[key](context);
-        })
-        .concat([type])
-        .join("#");
+    const values = [];
+    if (keys.includes("tenant")) {
+        values.push(getTenantKey(context));
+    }
+    if (keys.includes("environment")) {
+        values.push(getEnvironmentKey(context));
+    }
+    if (keys.includes("locale")) {
+        values.push(getLocaleKey(context));
+    }
+    values.push(type);
+    return values.join("#");
 };
 
 const createPkCallableFactory = (type: string, keys: KeyGetterValue[]): CreatePkCallableType => {
