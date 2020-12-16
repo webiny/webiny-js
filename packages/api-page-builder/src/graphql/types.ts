@@ -145,7 +145,7 @@ export type ListMeta = {
 
 // Pages CRUD.
 export type Tag = { id?: string; class?: string };
-export type RenderPagesArgs = { tags?: Tag[]; path?: string; queue?: boolean; async?: boolean };
+export type RenderPagesArgs = { tags?: Tag[]; pages?: Page[] };
 
 export type PagesCrud = {
     get(id: string): Promise<Page>;
