@@ -1,8 +1,8 @@
 import React from "react";
-import { Link } from "@webiny/react-router";
 import HamburgerMenu from "react-hamburger-menu";
 import classNames from "classnames";
-import { Menu } from "@webiny/app-page-builder/render/components";
+import { Link } from "@webiny/react-router";
+import Menu from "./Menu";
 import Navigation from "./Navigation";
 
 const MobileHeader = ({ menuName, logo, name, active, toggleMenu }) => {

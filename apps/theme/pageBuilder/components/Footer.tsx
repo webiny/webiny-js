@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Link } from "@webiny/react-router";
 import { Query } from "react-apollo";
 import get from "lodash.get";
-import { getFooterData } from "./graphql";
+import { Link } from "@webiny/react-router";
+import { GET_FOOTER_DATA } from "./graphql";
 
 import { ReactComponent as FacebookIcon } from "./assets/facebook-square-brands.svg";
 import { ReactComponent as TwitterIcon } from "./assets/twitter-square-brands.svg";
@@ -10,7 +10,7 @@ import { ReactComponent as InstagramIcon } from "./assets/instagram-brands.svg";
 
 const Footer = () => {
     return (
-        <Query query={getFooterData}>
+        <Query query={GET_FOOTER_DATA}>
             {({ data: response }) => {
                 const { name, logo, social } = get(response, "pageBuilder.getSettings.data") || {};
 
