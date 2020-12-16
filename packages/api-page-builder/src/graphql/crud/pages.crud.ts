@@ -11,10 +11,11 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PageHookPlugin, PbContext, Page } from "@webiny/api-page-builder/types";
+import { PageHookPlugin, PbContext, Page, Configuration } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
+import executeHookCallbacks from "./utils/executeHookCallbacks";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -199,7 +200,7 @@ const getESUpdateLatestPageData = updateData => {
     };
 };
 
-const plugin: ContextPlugin<PbContext> = {
+const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbContext> => ({
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
@@ -211,15 +212,7 @@ const plugin: ContextPlugin<PbContext> = {
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
-        const pageHooksPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hooks");
-        const executeHookCallbacks = async (hook: string, ...callbackArgs) => {
-            for (let i = 0; i < pageHooksPlugins.length; i++) {
-                const plugin = pageHooksPlugins[i];
-                if (typeof plugin[hook] === "function") {
-                    await plugin[hook].beforeDelete(...callbackArgs);
-                }
-            }
-        };
+        const hookPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hooks");
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -475,6 +468,8 @@ const plugin: ContextPlugin<PbContext> = {
                         createdBy: owner
                     };
 
+                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+
                     await db
                         .batch()
                         .create({ ...defaults.db, data })
@@ -490,6 +485,8 @@ const plugin: ContextPlugin<PbContext> = {
                         id: "L#" + uniqueId,
                         body: getESLatestPageData(context, data)
                     });
+
+                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
                     return omit<Page>(["PK", "SK"], data);
                 },
@@ -557,6 +554,8 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     };
 
+                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+
                     await db
                         .batch()
                         .create({ ...defaults.db, data })
@@ -581,6 +580,8 @@ const plugin: ContextPlugin<PbContext> = {
                         id: "L#" + fromUniqueId,
                         body: getESLatestPageData(context, data)
                     });
+
+                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
                     return data;
                 },
@@ -631,7 +632,7 @@ const plugin: ContextPlugin<PbContext> = {
                     updateData.settings = await updateSettingsModel.toJSON();
                     updateData.savedOn = new Date().toISOString();
 
-                    await executeHookCallbacks("beforeUpdate", page);
+                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
 
                     await db.update({
                         ...defaults.db,
@@ -651,7 +652,7 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    await executeHookCallbacks("afterUpdate", page);
+                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
 
                     return { ...page, ...data };
                 },
@@ -692,7 +693,7 @@ const plugin: ContextPlugin<PbContext> = {
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                    await executeHookCallbacks("beforeDelete", page);
+                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, page);
 
                     // If we are deleting the initial version, we need to remove all versions and all of the extra data.
                     if (pageVersion === getZeroPaddedVersionNumber(1)) {
@@ -828,7 +829,7 @@ const plugin: ContextPlugin<PbContext> = {
                         await elasticSearch.bulk({ body: esOperations });
                     }
 
-                    await executeHookCallbacks("afterDelete", page);
+                    await executeHookCallbacks(hookPlugins, "afterDelete", context, page);
 
                     // 7. Done. We return both the deleted page, and the new latest one (if there is one).
                     return [page, latestPage];
@@ -873,7 +874,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                    await executeHookCallbacks("beforePublish", page);
+                    await executeHookCallbacks(hookPlugins, "beforePublish", context, page);
 
                     // Change loaded page's status to published.
                     page.status = STATUS_PUBLISHED;
@@ -1002,7 +1003,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await elasticSearch.bulk({ body: esOperations });
 
-                    await executeHookCallbacks("afterPublish", page);
+                    await executeHookCallbacks(hookPlugins, "afterPublish", context, page);
 
                     return page;
                 },
@@ -1050,7 +1051,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Page "${pageId}" is not published.`);
                     }
 
-                    await executeHookCallbacks("beforeUnpublish", page);
+                    await executeHookCallbacks(hookPlugins, "beforeUnpublish", context, page);
 
                     page.status = STATUS_UNPUBLISHED;
 
@@ -1091,7 +1092,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await elasticSearch.bulk({ body: esOperations });
 
-                    await executeHookCallbacks("afterUnpublish", page);
+                    await executeHookCallbacks(hookPlugins, "afterUnpublish", context, page);
 
                     return page;
                 },
@@ -1321,10 +1322,23 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     return page;
+                },
+
+                async render(args) {
+                    const { async, ...rest } = args;
+                    return await context.handlerClient.invoke({
+                        name: renderingFunction,
+                        await: async,
+                        payload: {
+                            ...rest,
+                            tenant: context.security.getTenant().id,
+                            locale: i18nContent.getLocale().code
+                        }
+                    });
                 }
             }
         };
     }
-};
+});
 
-export default plugin;
+export default createPlugin;

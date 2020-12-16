@@ -1,7 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Response } from "@webiny/handler-graphql/responses";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { InstallHookPlugin, PbContext } from "@webiny/api-page-builder/types";
 import defaults from "./../crud/utils/defaults";
+import executeHookCallbacks from "./../crud/utils/executeHookCallbacks";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -42,6 +43,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             },
             PbMutation: {
                 install: async (_, args, context) => {
+                    const hookPlugins = context.plugins.byType<InstallHookPlugin>("pb-page-hooks");
+                    await executeHookCallbacks(hookPlugins, "beforeInstall", context);
+
                     // 1. Create ES index if it doesn't already exist.
                     const { index } = defaults.es(context);
                     const { body: exists } = await context.elasticSearch.indices.exists({ index });
@@ -65,8 +69,34 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     // 3. Create page blocks.
 
                     // 4. Create initial menu.
+                    const mainMenu = await context.pageBuilder.menus.get("main-menu");
+                    if (!mainMenu) {
+                        await context.pageBuilder.menus.create({
+                            title: "Main Menu",
+                            slug: "main-menu",
+                            description:
+                                "The main menu of the website, containing links to most important pages."
+                        });
+                    }
 
                     // 5. Create sample pages.
+                    const { pages } = context.pageBuilder;
+
+                    // Home page.
+                    const initialPages = [
+                        { title: "Welcome to Webiny", url: "/welcome-to-webiny" },
+                        { title: "Not Found", url: "/not-found" },
+                        { title: "Error", url: "/error" }
+                    ];
+
+                    await Promise.all(
+                        initialPages.map(data =>
+                            pages
+                                .create(staticCategory.slug)
+                                .then(page => pages.update(page.id, data))
+                                .then(page => pages.publish(page.id))
+                        )
+                    );
 
                     // 6. Mark the Page Builder app as installed.
                     const settings = await context.pageBuilder.settings.get();
@@ -75,6 +105,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                             installed: true
                         });
                     }
+
+                    await executeHookCallbacks(hookPlugins, "afterInstall", context);
 
                     return new Response(true);
                 }
