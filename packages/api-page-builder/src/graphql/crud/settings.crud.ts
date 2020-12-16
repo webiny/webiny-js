@@ -78,19 +78,23 @@ const plugin: ContextPlugin<PbContext> = {
                 getSettingsCacheKey() {
                     return PK();
                 },
-                async get({ auth } = { auth: true }) {
-                    auth !== false && (await checkBasePermissions(context));
+                async get() {
+                    // With this line commented, we made this endpoint public.
+                    // We did this because of the public website pages which need to access the settings.
+                    // It's possible we'll create another GraphQL field, made for this exact purpose.
+                    // auth !== false && (await checkBasePermissions(context));
                     return settingsDataLoader.load("default");
                 },
                 async update(next, { auth } = { auth: true }) {
                     auth !== false && (await checkBasePermissions(context));
 
                     const current = await this.get({ auth });
+                    const prevDomain = current.domain;
                     const settings = new SettingsModel().populate(current).populate(next);
                     await settings.validate();
 
                     const data = await settings.toJSON();
-
+                    const nextDomain = data.domain;
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, data);
 
                     await db.update({
@@ -98,6 +102,24 @@ const plugin: ContextPlugin<PbContext> = {
                         query: { PK: PK(), SK: SK() },
                         data
                     });
+
+                    // Update domain info - we must know to which tenant given domain is linked.
+                    // Important for serving pages later.
+                    if (prevDomain !== nextDomain) {
+                        if (prevDomain) {
+                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevDomain } });
+                        }
+
+                        const { security } = context;
+                        await db.create({
+                            data: {
+                                PK: "PB#DOMAIN#TENANT",
+                                SK: nextDomain,
+                                domain: nextDomain,
+                                tenant: security.getTenant()
+                            }
+                        });
+                    }
 
                     await executeHookCallbacks(hookPlugins, "afterUpdate", context, data);
 
