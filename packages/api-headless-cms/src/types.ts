@@ -4,6 +4,7 @@ import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
@@ -50,7 +51,8 @@ export type CmsContext = BaseContext<
     I18NContext,
     TenancyContext,
     CmsValuesContext,
-    CmsCrudContextType
+    CmsCrudContextType,
+    ElasticSearchClientContext
 >;
 
 export type CmsContentModelFieldType = {
@@ -421,6 +423,7 @@ export type CmsContentModelEntryType = {
     createdBy: CreatedByType;
     createdOn: Date;
     changedOn: Date;
+    modelId: string;
     values: Record<string, any>;
 };
 
@@ -433,9 +436,52 @@ export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
 
+type SearchableFieldType<T> = {
+    eq?: T;
+    gt?: T;
+    lt?: T;
+    not?: T;
+    notIn?: T[];
+};
+type SearchableNumberFieldType = {
+    eq?: number;
+    gt?: number;
+    lt?: number;
+    not?: number;
+    notIn?: number[];
+    between?: [number, number];
+    notBetween?: [number, number];
+};
+type SearchableStringFieldType = {
+    eq?: string;
+    contains?: string;
+    notContains?: string;
+    startsWith?: string;
+    notStartsWith?: string;
+    endsWith?: string;
+    notEndsWith?: string;
+};
+type CmsContentModelEntryListArgsType = {
+    search?: {
+        createdOn?: SearchableFieldType<Date>;
+        changedOn?: SearchableFieldType<Date>;
+        createdBy?: {
+            id?: SearchableNumberFieldType;
+            type?: SearchableStringFieldType;
+        };
+        modelId?: string;
+        [key: string]:
+            | SearchableFieldType<any>
+            | SearchableNumberFieldType
+            | SearchableStringFieldType
+            | any;
+    };
+    limit?: number;
+    after?: string;
+};
 export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
-    list: () => Promise<CmsContentModelEntryType[]>;
+    list: (args?: CmsContentModelEntryListArgsType) => Promise<CmsContentModelEntryType[]>;
     create: (
         contentModelId: string,
         data: CmsContentModelEntryCreateInputType,
