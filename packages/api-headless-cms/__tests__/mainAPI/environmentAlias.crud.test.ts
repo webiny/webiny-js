@@ -1,5 +1,6 @@
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import {
+    identity,
     createInitialEnvironment,
     fetchInitialEnvironment,
     getInitialEnvironment,
@@ -11,9 +12,7 @@ import { toSlug } from "@webiny/api-headless-cms/utils";
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
     PREFIX = "alias",
-    SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    SUFFIX = "UPDATED"
 }
 const createEnvironmentAliasPrefix = position => {
     return `${TestHelperEnum.PREFIX}${position}`;
@@ -73,10 +72,7 @@ describe("Environment alias crud test", () => {
                                 environment: getInitialEnvironment(),
                                 createdOn: /^20/,
                                 changedOn: null,
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                }
+                                createdBy: identity
                             },
                             error: null
                         }
@@ -100,10 +96,7 @@ describe("Environment alias crud test", () => {
                                 id: createdEnvironmentAliasId,
                                 ...modelData,
                                 environment: getInitialEnvironment(),
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                },
+                                createdBy: identity,
                                 createdOn,
                                 changedOn: null
                             },
@@ -131,10 +124,7 @@ describe("Environment alias crud test", () => {
                                 id: createdEnvironmentAliasId,
                                 ...updatedModelData,
                                 environment: getInitialEnvironment(),
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                },
+                                createdBy: identity,
                                 createdOn,
                                 changedOn: /^20/
                             },

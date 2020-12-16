@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
     query HeadlessCmsEnvironmentSelectorEnvironmentsList {
         cms {
-            listEnvironments(sort: { name: 1 }, limit: 100) {
+            listEnvironments {
                 error {
                     data
                     code

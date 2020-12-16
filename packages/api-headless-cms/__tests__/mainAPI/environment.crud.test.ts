@@ -1,5 +1,6 @@
 import { CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import {
+    identity,
     createInitialEnvironment,
     deleteInitialEnvironment,
     fetchInitialEnvironment,
@@ -12,9 +13,7 @@ import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 enum TestHelperEnum {
     MODELS_AMOUNT = 3, // number of test models to be created
     PREFIX = "environment",
-    SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    SUFFIX = "UPDATED"
 }
 
 const createEnvironmentPrefix = position => {
@@ -82,7 +81,7 @@ describe("Environment crud test", () => {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: {
-                                    id: TestHelperEnum.USER_ID
+                                    id: identity.id
                                 },
                                 createdOn: /^20/
                             },
@@ -111,10 +110,7 @@ describe("Environment crud test", () => {
                                 createdFrom: {
                                     ...getInitialEnvironment()
                                 },
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                },
+                                createdBy: identity,
                                 createdOn,
                                 changedOn: null
                             },
@@ -144,10 +140,7 @@ describe("Environment crud test", () => {
                                 createdFrom: {
                                     ...getInitialEnvironment()
                                 },
-                                createdBy: {
-                                    id: TestHelperEnum.USER_ID,
-                                    name: TestHelperEnum.USER_NAME
-                                },
+                                createdBy: identity,
                                 createdOn,
                                 changedOn: /^20/
                             },

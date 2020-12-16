@@ -7,7 +7,7 @@ import { SecurityProvider } from "@webiny/app-security";
 import { TenancyProvider } from "@webiny/app-security-tenancy/contexts/Tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
-// TODO: import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
+import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
 import { Authentication } from "@webiny/app-plugin-security-cognito/Authentication";
@@ -79,14 +79,14 @@ export const App = () => (
                                                 <CmsProvider> handles CMS environments and provides an Apollo Client instance
                                                 that points to the /manage GraphQL API.   
                                             */}
-                                            {/*<CmsProvider>*/}
-                                            {/*
-                                                <Routes/> is a helper component that loads all "route" plugins, sorts them
-                                                in the correct "path" order and renders using the <Switch> component, 
-                                                so only the matching route is rendered.   
-                                            */}
-                                            <Routes />
-                                            {/*</CmsProvider>*/}
+                                            <CmsProvider>
+                                                {/*
+                                                    <Routes/> is a helper component that loads all "route" plugins, sorts them
+                                                    in the correct "path" order and renders using the <Switch> component, 
+                                                    so only the matching route is rendered.   
+                                                */}
+                                                <Routes />
+                                            </CmsProvider>
                                         </PageBuilderProvider>
                                     </I18NProvider>
                                 </TenancyProvider>

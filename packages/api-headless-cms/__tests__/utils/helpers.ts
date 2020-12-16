@@ -25,7 +25,7 @@ const INITIAL_ENVIRONMENT_ID = "5fc6590afb3cd80a5ae8a0ae";
 
 export const getInitialEnvironmentId = () => INITIAL_ENVIRONMENT_ID;
 
-const createdBy = {
+export const identity = {
     id: "123",
     displayName: "User 123",
     type: "admin"
@@ -36,11 +36,11 @@ export const getInitialEnvironment = () => ({
     name: "Production",
     slug: "production",
     description: "Production environment description",
-    createdBy
+    createdBy: identity
 });
 
 const getSecurityIdentity = () => {
-    return new SecurityIdentity(createdBy);
+    return new SecurityIdentity(identity);
 };
 
 const getDummyCmsContext = (): CmsContext => {
@@ -118,7 +118,7 @@ export const createInitialAliasEnvironment = async (
         id,
         name: "Production alias",
         slug: "production",
-        createdBy,
+        createdBy: identity,
         createdOn: new Date(),
         environment: env
     };
@@ -193,7 +193,7 @@ export const createContentModelGroup = async (
         name: "Group",
         slug: "group",
         icon: "ico/ico",
-        createdBy,
+        createdBy: identity,
         description: "description",
         environment,
         createdOn: new Date(),

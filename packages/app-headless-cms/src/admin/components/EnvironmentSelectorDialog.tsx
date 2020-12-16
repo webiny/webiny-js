@@ -56,6 +56,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     onSelectViewAll,
     onSelectEnvironment
 }) => {
+    console.log(useCms());
     const {
         environments: { currentEnvironment, environments, selectEnvironment }
     } = useCms();

@@ -10,7 +10,7 @@ type CmsContentPluginsIndexArgsType = {
     debug?: boolean;
 };
 
-export default (options: CmsContentPluginsIndexArgsType) => [
+export default (options: CmsContentPluginsIndexArgsType = {}) => [
     contentModelManager(),
     pluginsCrudSetup(),
     contextSetup(options),

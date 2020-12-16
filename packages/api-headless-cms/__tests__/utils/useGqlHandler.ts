@@ -120,8 +120,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
                     getLocale: () => ({
                         code: "en-US"
                     }),
-                    locale: "en-US",
-                    environment: "production"
+                    locale: "en-US"
                 };
             }
         },

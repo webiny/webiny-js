@@ -12,23 +12,9 @@ const fields = `
 `;
 
 export const LIST_ENVIRONMENT_ALIASES = gql`
-    query listEnvironmentAliases(
-        $where: JSON
-        $sort: JSON
-        $search: CmsSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query ListEnvironmentAliases {
         cms {
-            environmentAliases: listEnvironmentAliases(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            environmentAliases: listEnvironmentAliases {
                 data {
                     id
                     name
@@ -48,15 +34,6 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
                     data
                     code
                     message
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
                 }
             }
         }

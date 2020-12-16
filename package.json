@@ -6,9 +6,10 @@
       "apps/admin/code",
       "apps/site/code",
       "apps/theme",
+      "api/code/fileManager/*",
       "api/code/graphqlPlayground",
       "api/code/graphql",
-      "api/code/fileManager/*"
+      "api/code/headlessCMS"
     ]
   },
   "contributors": [

@@ -51,18 +51,20 @@ export default {
                     displayName: identity.displayName,
                     type: identity.type
                 };
-                
+
                 // create base environment
                 const environment = await context.cms.environments.create(
                     initialEnvironment,
                     createdBy,
                     true
                 );
+
                 // need to attach environment to the context
                 // so cms content group can be created
-                if (!context.environment) {
-                    context.environment = environment;
+                if (!context.cms.environment) {
+                    context.cms.environment = environment.slug;
                 }
+
                 // and its alias
                 const environmentAlias = await context.cms.environmentAliases.create(
                     {
