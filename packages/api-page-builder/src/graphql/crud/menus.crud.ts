@@ -59,6 +59,20 @@ const plugin: ContextPlugin<PbContext> = {
                     return menu;
                 },
 
+                /**
+                 * Used to fetch menu data from a public website. Items are prepared for consumption too.
+                 * @param slug
+                 */
+                async getPublic(slug) {
+                    const [[menu]] = await db.read<Menu>({
+                        ...defaults.db,
+                        query: { PK: PK(), SK: slug },
+                        limit: 1
+                    });
+
+                    return menu;
+                },
+
                 async list() {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"

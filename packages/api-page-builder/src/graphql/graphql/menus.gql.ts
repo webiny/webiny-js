@@ -37,6 +37,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             extend type PbQuery {
                 getMenu(slug: String!): PbMenuResponse
+                getPublicMenu(slug: String!): PbMenuResponse
                 listMenus: PbMenuListResponse
 
                 "Returns menu by given slug."
@@ -54,6 +55,11 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 getMenu: async (_, args: { slug: string }, context) => {
                     return resolve(() => {
                         return context.pageBuilder.menus.get(args.slug);
+                    });
+                },
+                getPublicMenu: async (_, args: { slug: string }, context) => {
+                    return resolve(() => {
+                        return context.pageBuilder.menus.getPublic(args.slug);
                     });
                 },
                 listMenus: async (_, args, context) => {
