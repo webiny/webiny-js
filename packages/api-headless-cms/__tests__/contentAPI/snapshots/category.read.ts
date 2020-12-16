@@ -22,14 +22,14 @@ export default /* GraphQL */ `
         id_not: ID
         id_in: [ID]
         id_not_in: [ID]
-        
+
         title: String
         title_not: String
         title_in: [String]
         title_not_in: [String]
         title_contains: String
         title_not_contains: String
-        
+
         slug: String
         slug_not: String
         slug_in: [String]

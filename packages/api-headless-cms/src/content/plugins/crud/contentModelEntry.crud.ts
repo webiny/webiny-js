@@ -8,6 +8,7 @@ import {
 import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { buildEntryModelValidation } from "@webiny/api-headless-cms/content/plugins/crud/contentModelEntry/buildEntryModelValidation";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
@@ -74,16 +75,16 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             update: async (id, data) => {
                 const permissions = await utils.checkBaseContentModelEntryPermissions(context, "w");
-                const model = await context.cms.modelEntries.get(id);
-                utils.checkOwnership(context, permissions, model);
+                const existingEntryModel = await context.cms.modelEntries.get(id);
+                utils.checkOwnership(context, permissions, existingEntryModel);
+                const contentModel = await context.cms.models.get(id);
+                const validation = await buildEntryModelValidation(context, contentModel);
 
-                // TODO create validation for model entry update
-                const modelDataJson: any = {
-                    ...data
-                };
+                await validation.validate(data);
 
                 const updatedModel: CmsContentModelEntryType = {
-                    ...modelDataJson,
+                    ...existingEntryModel,
+                    values: data.values,
                     changedOn: new Date()
                 };
 
@@ -94,7 +95,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 return {
-                    ...model,
+                    ...existingEntryModel,
                     ...updatedModel
                 };
             },

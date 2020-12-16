@@ -1,6 +1,7 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
 
+// eslint-disable-next-line
 export const resolveCreate: ResolverFactory = ({ model }) => async (root, args, context) => {
     try {
         // const Model = context.models[model.modelId];

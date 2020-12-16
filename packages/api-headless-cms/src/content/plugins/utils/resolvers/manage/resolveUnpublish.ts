@@ -2,7 +2,6 @@ import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
 import { entryNotFound } from "./../entryNotFound";
 
-
 export const resolveUnpublish: ResolverFactory = ({ model }) => async (root, args, context) => {
     const Model = context.models[model.modelId];
     const instance = await Model.findById(args.revision);

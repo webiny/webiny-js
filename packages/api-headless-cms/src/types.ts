@@ -361,16 +361,15 @@ export type CmsContentModelCreateInputType = {
 export type CmsContentModelUpdateInputType = {
     name?: string;
     description?: string;
-    fields?: CmsContentModelFieldInputType[];
+    fields: CmsContentModelFieldInputType[];
     layout: string[][];
+    titleFieldId?: string;
 };
 
 export type CmsContentModelManagerListArgsType = {
     search?: Record<string, any>;
-    pagination?: {
-        offset?: number;
-        limit?: number;
-    };
+    limit?: number;
+    after?: number;
 };
 
 export interface CmsContentModelManagerInterface<TModel> {
@@ -381,9 +380,15 @@ export interface CmsContentModelManagerInterface<TModel> {
     delete(id: string): Promise<boolean>;
 }
 
+type CmsContentModelListArgsType = {
+    search?: Record<string, any>;
+    limit?: number;
+    after?: string;
+};
+
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
-    list: () => Promise<CmsContentModelType[]>;
+    list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
     create: (
         data: CmsContentModelCreateInputType,
         createdBy: CreatedByType
@@ -425,12 +430,12 @@ export type CmsContentModelEntryType = {
     values: Record<string, any>;
 };
 
-type CmsContentModelEntryCreateInputType = {
+export type CmsContentModelEntryCreateInputType = {
     modelId: string;
     values: Record<string, any>;
 };
 
-type CmsContentModelEntryUpdateInputType = {
+export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
 

@@ -11,7 +11,7 @@ describe("MANAGE - ContentModel to SDL", () => {
         acc[pl.fieldType] = pl;
         return acc;
     }, {});
-    
+
     test("Category SDL", async () => {
         const model = contentModels.find(c => c.modelId === "category");
         const sdl = createManageSDL({ model, fieldTypePlugins });
