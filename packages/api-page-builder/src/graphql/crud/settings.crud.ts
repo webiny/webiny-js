@@ -3,9 +3,10 @@ import defaults from "./utils/defaults";
 import { withFields, string, fields, boolean } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, Settings } from "@webiny/api-page-builder/types";
+import { PbContext, Settings, SettingsHookPlugin } from "@webiny/api-page-builder/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
+import executeHookCallbacks from "./utils/executeHookCallbacks";
 
 const SettingsModel = withFields({
     installed: boolean({ value: false }),
@@ -69,10 +70,11 @@ const plugin: ContextPlugin<PbContext> = {
             return types.map(() => defaultSettings);
         });
 
+        const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-page-hooks");
+
         context.pageBuilder = {
             ...context.pageBuilder,
             settings: {
-                __cachedSettings: null,
                 getSettingsCacheKey() {
                     return PK();
                 },
@@ -89,11 +91,15 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const data = await settings.toJSON();
 
+                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, data);
+
                     await db.update({
                         ...defaults.db,
                         query: { PK: PK(), SK: SK() },
                         data
                     });
+
+                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, data);
 
                     return settings.toJSON();
                 }
