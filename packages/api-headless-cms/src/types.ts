@@ -4,6 +4,7 @@ import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
@@ -50,7 +51,8 @@ export type CmsContext = BaseContext<
     I18NContext,
     TenancyContext,
     CmsValuesContext,
-    CmsCrudContextType
+    CmsCrudContextType,
+    ElasticSearchClientContext
 >;
 
 export type CmsContentModelFieldType = {
@@ -433,6 +435,7 @@ export type CmsContentModelEntryType = {
     createdBy: CreatedByType;
     createdOn: Date;
     changedOn: Date;
+    modelId: string;
     values: Record<string, any>;
 };
 

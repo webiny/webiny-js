@@ -1,6 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import {
     CmsContentModelEntryContextType,
+    CmsContentModelEntryCreateInputType,
     CmsContentModelEntryType,
     CmsContext,
     DbItemTypes
@@ -8,13 +9,41 @@ import {
 import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { entryModelValidationFactory } from "@webiny/api-headless-cms/content/plugins/crud/contentModelEntry/entryModelValidationFactory";
+import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
+
+const createElasticSearchData = (model: CmsContentModelEntryType, context: CmsContext) => {
+    const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
+        obj[key] = model.values[key];
+        return obj;
+    }, {});
+    return {
+        ...values,
+        __type: "cms.entry",
+        id: model.id,
+        createdOn: model.createdOn,
+        changedOn: model.changedOn,
+        createdBy: model.createdBy,
+        modelId: model.modelId,
+        locale: context.cms.getLocale().code
+    };
+};
+
+const updateElasticSearchData = (model: CmsContentModelEntryType) => {
+    const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
+        obj[key] = model.values[key];
+        return obj;
+    }, {});
+    return {
+        ...values,
+        changedOn: model.changedOn
+    };
+};
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
     async apply(context) {
-        const { db } = context;
+        const { db, elasticSearch } = context;
 
         const contentModelEntry: CmsContentModelEntryContextType = {
             get: async id => {
@@ -44,7 +73,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const validation = await entryModelValidationFactory(context, contentModel);
 
                 await validation.validate(data);
-                const modelDataJson: any = {
+                const modelDataJson: CmsContentModelEntryCreateInputType = {
                     ...data
                 };
 
@@ -76,6 +105,13 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...model
                     }
                 });
+
+                await elasticSearch.create({
+                    ...utils.defaults.es(context),
+                    id: `CME#${model.id}`,
+                    body: createElasticSearchData(model, context)
+                });
+
                 return model;
             },
             update: async (id, data) => {
@@ -102,6 +138,15 @@ export default (): ContextPlugin<CmsContext> => ({
                     data: updatedModel
                 });
 
+                // TODO check if we update only changedOn and values fields
+                await elasticSearch.update({
+                    ...utils.defaults.es(context),
+                    id: `CME#${id}`,
+                    body: {
+                        doc: updateElasticSearchData(updatedModel)
+                    }
+                });
+
                 return {
                     ...existingEntryModel,
                     ...updatedModel
@@ -118,6 +163,11 @@ export default (): ContextPlugin<CmsContext> => ({
                         PK: utils.createContentModelEntryPk(context),
                         SK: id
                     }
+                });
+
+                await elasticSearch.delete({
+                    ...utils.defaults.es(context),
+                    id: `CME#${id}`
                 });
             }
         };
