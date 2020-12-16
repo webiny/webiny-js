@@ -41,9 +41,9 @@ export const LIST_ENVIRONMENT_ALIASES = gql`
 `;
 
 export const GET_ENVIRONMENT_ALIAS_BY_SLUG = gql`
-    query getEnvironmentAliasBySlug($slug: String) {
+    query GetEnvironmentAliasBySlug($slug: String) {
         cms {
-            getEnvironmentAlias(where: { slug: $slug }) {
+            getEnvironmentAlias(slug: $slug) {
                 data {
                     name
                     id
@@ -54,7 +54,7 @@ export const GET_ENVIRONMENT_ALIAS_BY_SLUG = gql`
 `;
 
 export const READ_ENVIRONMENT_ALIAS = gql`
-    query getEnvironmentAlias($id: ID!) {
+    query GetEnvironmentAlias($id: ID!) {
         cms {
             environmentAlias: getEnvironmentAlias(id: $id){
                 data {
@@ -70,7 +70,7 @@ export const READ_ENVIRONMENT_ALIAS = gql`
 `;
 
 export const CREATE_ENVIRONMENT_ALIAS = gql`
-    mutation createEnvironmentAlias($data: CmsEnvironmentAliasInput!){
+    mutation CreateEnvironmentAlias($data: CmsEnvironmentAliasInput!){
         cms {
             environmentAlias: createEnvironmentAlias(data: $data) {
                 data {
@@ -87,7 +87,7 @@ export const CREATE_ENVIRONMENT_ALIAS = gql`
 `;
 
 export const UPDATE_ENVIRONMENT_ALIAS = gql`
-    mutation updateEnvironmentAlias($id: ID!, $data: CmsEnvironmentAliasInput!){
+    mutation UpdateEnvironmentAlias($id: ID!, $data: CmsEnvironmentAliasInput!){
         cms {
             environmentAlias: updateEnvironmentAlias(id: $id, data: $data) {
                 data {
@@ -104,7 +104,7 @@ export const UPDATE_ENVIRONMENT_ALIAS = gql`
 `;
 
 export const DELETE_ENVIRONMENT_ALIAS = gql`
-    mutation deleteEnvironmentAlias($id: ID!) {
+    mutation DeleteEnvironmentAlias($id: ID!) {
         cms {
             deleteEnvironmentAlias(id: $id) {
                 data

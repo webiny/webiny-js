@@ -12,41 +12,18 @@ const fields = `
 `;
 
 export const LIST_ENVIRONMENTS = gql`
-    query listEnvironments(
-        $where: JSON
-        $sort: JSON
-        $search: CmsSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
+    query ListEnvironments {
         cms {
-            environments: listEnvironments(
-                where: $where
-                sort: $sort
-                search: $search
-                limit: $limit
-                after: $after
-                before: $before
-            ) {
+            environments: listEnvironments {
                 data {
                     id
                     name
                     isProduction
                     createdOn
-                    environmentAliases {
+                    aliases {
                         id
                         name
                     }
-                }
-                meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
-                    totalCount
                 }
             }
         }
@@ -54,7 +31,7 @@ export const LIST_ENVIRONMENTS = gql`
 `;
 
 export const READ_ENVIRONMENT = gql`
-    query getEnvironment($id: ID!) {
+    query GetEnvironment($id: ID!) {
         cms {
             environment: getEnvironment(id: $id){
                 data {
@@ -70,7 +47,7 @@ export const READ_ENVIRONMENT = gql`
 `;
 
 export const CREATE_ENVIRONMENT = gql`
-    mutation createEnvironment($data: CmsEnvironmentInput!){
+    mutation CreateEnvironment($data: CmsEnvironmentInput!){
         cms {
             environment: createEnvironment(data: $data) {
                 data {
@@ -87,7 +64,7 @@ export const CREATE_ENVIRONMENT = gql`
 `;
 
 export const UPDATE_ENVIRONMENT = gql`
-    mutation updateEnvironment($id: ID!, $data: CmsEnvironmentInput!){
+    mutation UpdateEnvironment($id: ID!, $data: CmsEnvironmentInput!){
         cms {
             environment: updateEnvironment(id: $id, data: $data) {
                 data {
@@ -104,7 +81,7 @@ export const UPDATE_ENVIRONMENT = gql`
 `;
 
 export const DELETE_ENVIRONMENT = gql`
-    mutation deleteEnvironment($id: ID!) {
+    mutation DeleteEnvironment($id: ID!) {
         cms {
             deleteEnvironment(id: $id) {
                 data

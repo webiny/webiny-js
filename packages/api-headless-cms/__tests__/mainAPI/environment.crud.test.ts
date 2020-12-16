@@ -83,7 +83,9 @@ describe("Environment crud test", () => {
                                 createdBy: {
                                     id: identity.id
                                 },
-                                createdOn: /^20/
+                                isProduction: false,
+                                createdOn: /^20/,
+                                changedOn: null
                             },
                             error: null
                         }
@@ -111,6 +113,7 @@ describe("Environment crud test", () => {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: identity,
+                                isProduction: false,
                                 createdOn,
                                 changedOn: null
                             },
@@ -141,6 +144,7 @@ describe("Environment crud test", () => {
                                     ...getInitialEnvironment()
                                 },
                                 createdBy: identity,
+                                isProduction: false,
                                 createdOn,
                                 changedOn: /^20/
                             },

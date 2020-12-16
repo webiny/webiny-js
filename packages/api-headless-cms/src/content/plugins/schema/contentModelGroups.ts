@@ -77,6 +77,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
 
     if (context.cms.MANAGE) {
         resolvers = {
+            CmsContentModelGroup: {
+                contentModels: async (group, args, context) => {
+                    const models = await context.cms.models.list();
+                    return models.filter(m => m.group === group.id);
+                },
+                totalContentModels: async (group, args, context) => {
+                    const models = await context.cms.models.list();
+                    return models.filter(m => m.group === group.id).length;
+                }
+            },
             Query: {
                 getContentModelGroup: compose(
                     hasManageSettingsPermission(),

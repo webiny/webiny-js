@@ -19,6 +19,7 @@ type CreateEnvironmentAliasArgsType = {
 };
 type ReadEnvironmentAliasArgsType = {
     id: string;
+    slug: string;
 };
 type UpdateEnvironmentAliasArgsType = ReadEnvironmentAliasArgsType & {
     data: CmsEnvironmentAliasUpdateInputType;
@@ -68,7 +69,7 @@ export default {
         }
 
         extend type CmsQuery {
-            getEnvironmentAlias(id: ID): CmsEnvironmentAliasResponse
+            getEnvironmentAlias(id: ID, slug: String): CmsEnvironmentAliasResponse
 
             listEnvironmentAliases: CmsEnvironmentAliasListResponse
         }
@@ -93,11 +94,20 @@ export default {
             )(async (_, args: ReadEnvironmentAliasArgsType, context: CmsContext) => {
                 const permission = await getCmsManageSettingsPermission(context);
 
-                const { id } = args;
+                const { id, slug } = args;
 
-                const model = await context.cms.environmentAliases.get(id);
-                if (!model) {
-                    return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
+                let model;
+                if (id) {
+                    model = await context.cms.environmentAliases.get(id);
+                    if (!model) {
+                        return new NotFoundResponse(`CMS EnvironmentAlias "${id}" not found.`);
+                    }
+                } else if (slug) {
+                    const aliases = await context.cms.environmentAliases.list();
+                    model = aliases.find(alias => alias.slug === slug);
+                    if (!model) {
+                        return new NotFoundResponse(`CMS EnvironmentAlias "${slug}" not found.`);
+                    }
                 }
 
                 if (

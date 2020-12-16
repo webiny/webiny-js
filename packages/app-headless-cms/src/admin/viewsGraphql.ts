@@ -14,8 +14,8 @@ const BASE_CONTENT_MODEL_FIELDS = `
 
 // Fetches data needed for constructing content models list in the main menu.
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
-    query HeadlessCmsListMenuContentGroupsModels {
-        listContentModelGroups(sort: { name: 1 }, limit: 100) {
+    query CmsListMenuContentGroupsModels {
+        listContentModelGroups {
             data {
                 id
                 name
@@ -31,8 +31,8 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
 `;
 
 export const LIST_CONTENT_MODELS = gql`
-    query HeadlessCmsListContentModels($sort: JSON, $after: String, $before: String, $limit: Int) {
-        listContentModels(sort: $sort, after: $after, before: $before, limit: $limit) {
+    query CmsListContentModels {
+        listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
                 modelId
@@ -51,7 +51,7 @@ export const LIST_CONTENT_MODELS = gql`
 `;
 
 export const CREATE_CONTENT_MODEL = gql`
-    mutation CreateContentModel($data: CmsContentModelInput!) {
+    mutation CmsCreateContentModel($data: CmsContentModelInput!) {
         createContentModel(data: $data) {
             data {
                 id

@@ -56,7 +56,6 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     onSelectViewAll,
     onSelectEnvironment
 }) => {
-    console.log(useCms());
     const {
         environments: { currentEnvironment, environments, selectEnvironment }
     } = useCms();
@@ -78,8 +77,8 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                             const selected =
                                 currentEnvironment && item.id === currentEnvironment.id;
                             let aliases;
-                            if (item.environmentAliases.length) {
-                                aliases = item.environmentAliases
+                            if (item.aliases.length) {
+                                aliases = item.aliases
                                     .map(environmentAlias => environmentAlias.name)
                                     .join(", ");
                             }

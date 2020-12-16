@@ -2,20 +2,15 @@ import gql from "graphql-tag";
 
 // Fetches data needed for constructing environments list in the main menu.
 export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
-    query HeadlessCmsEnvironmentSelectorEnvironmentsList {
+    query CmsEnvironmentSelectorEnvironmentsList {
         cms {
             listEnvironments {
-                error {
-                    data
-                    code
-                    message
-                }
                 data {
                     id
                     name
                     slug
                     isProduction
-                    environmentAliases {
+                    aliases {
                         id
                         name
                         isProduction
@@ -25,6 +20,11 @@ export const LIST_ENVIRONMENTS_SELECTOR_ENVIRONMENTS = gql`
                             preview
                         }
                     }
+                }
+                error {
+                    data
+                    code
+                    message
                 }
             }
         }

@@ -8,7 +8,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
 import mdbid from "mdbid";
-
+import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
 import { CreateContentModelModel, UpdateContentModelModel } from "./contentModel/models";
@@ -26,6 +26,17 @@ export default (): ContextPlugin<CmsContext> => ({
     name: "context-content-model-crud",
     async apply(context) {
         const { db } = context;
+
+        const loaders = {
+            listModels: new DataLoader(async () => {
+                const [models] = await db.read<CmsContentModelType>({
+                    ...utils.defaults.db,
+                    query: { PK: utils.createContentModelPk(context), SK: { $gt: " " } }
+                });
+
+                return [models];
+            })
+        };
 
         // manager per request - something similar to dataloader
         const managers = new Map<string, CmsContentModelManagerInterface<any>>();
@@ -58,12 +69,7 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             async list() {
                 const permission = await utils.checkBaseContentModelPermissions(context, "r");
-
-                const [models] = await db.read<CmsContentModelType>({
-                    ...utils.defaults.db,
-                    query: { PK: utils.createContentModelPk(context), SK: { $gt: " " } }
-                });
-
+                const models = await loaders.listModels.load("listModels");
                 return models.filter(model => utils.validateOwnership(context, permission, model));
             },
             async create(data, createdBy) {

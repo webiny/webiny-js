@@ -88,10 +88,7 @@ describe("content model test", () => {
                 createContentModel: {
                     data: {
                         id: /^([a-zA-Z0-9]+)$/,
-                        createdBy: {
-                            id: "1234567890",
-                            name: "userName123"
-                        },
+                        createdBy: helpers.identity,
                         createdOn: /^20/,
                         changedOn: null
                     },
@@ -303,10 +300,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         changedOn: /^20/,
-                        createdBy: {
-                            id: "1234567890",
-                            name: "userName123"
-                        },
+                        createdBy: helpers.identity,
                         createdOn: /^20/,
                         description: null,
                         fields: [

@@ -119,13 +119,12 @@ const EnvironmentsDataList = () => {
                                     )}
                                     <Wrapper>
                                         <ListItemTextSecondary>
-                                            {item.environmentAliases &&
-                                            item.environmentAliases.length
+                                            {item.aliases && item.aliases.length
                                                 ? t`Assigned to:`
                                                 : t`Not linked with an alias.`}
                                         </ListItemTextSecondary>
-                                        {item.environmentAliases &&
-                                            item.environmentAliases.map((envAlias, index) => (
+                                        {item.aliases &&
+                                            item.aliases.map((envAlias, index) => (
                                                 <Link
                                                     key={envAlias.id}
                                                     onClick={e => e.stopPropagation()}
@@ -137,10 +136,7 @@ const EnvironmentsDataList = () => {
                                                     )}
                                                 >
                                                     {envAlias.name}
-                                                    {getSeparator(
-                                                        index,
-                                                        item.environmentAliases.length
-                                                    )}
+                                                    {getSeparator(index, item.aliases.length)}
                                                 </Link>
                                             ))}
                                     </Wrapper>

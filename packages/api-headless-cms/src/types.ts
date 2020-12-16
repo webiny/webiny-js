@@ -217,6 +217,7 @@ type BaseCmsEnvironmentType = {
     name: string;
     slug: string;
     description?: string;
+    isProduction?: boolean;
 };
 
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
@@ -226,6 +227,7 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdBy: CreatedByType;
     createdOn: Date;
     changedOn?: Date;
+    aliases?: CmsEnvironmentAliasType[];
 };
 
 type BaseCmsEnvironmentInputType = {
@@ -260,6 +262,7 @@ type BaseCmsEnvironmentAliasType = {
     name: string;
     slug: string;
     description?: string;
+    isProduction?: boolean;
 };
 
 export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
@@ -332,10 +335,13 @@ export type CmsContentModelGroupType = {
     createdOn: Date;
     changedOn?: Date;
 };
-
+type CmsContentModelGroupListArgsType = {
+    search?: Record<string, any>;
+    limit?: number;
+};
 export type CmsContentModelGroupContextType = {
     get: (id: string) => Promise<CmsContentModelGroupType | null>;
-    list: () => Promise<CmsContentModelGroupType[]>;
+    list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
     create: (
         data: CmsContentModelGroupCreateInputType,
         createdBy: CreatedByType
@@ -347,7 +353,7 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
-type CmsContentModelFieldValidationType = {
+export type CmsContentModelFieldValidationType = {
     name: string;
     message: string;
     settings?: Record<string, any>;
@@ -366,29 +372,17 @@ export type CmsContentModelUpdateInputType = {
     titleFieldId?: string;
 };
 
-export type CmsContentModelManagerListArgsType = {
-    search?: Record<string, any>;
-    limit?: number;
-    after?: number;
-};
-
 export interface CmsContentModelManagerInterface<TModel> {
-    list(args?: CmsContentModelManagerListArgsType): Promise<TModel[]>;
+    list(): Promise<TModel[]>;
     get(id: string): Promise<TModel>;
     create<TData>(data: TData): Promise<TModel>;
     update<TData>(data: TData): Promise<TModel>;
     delete(id: string): Promise<boolean>;
 }
 
-type CmsContentModelListArgsType = {
-    search?: Record<string, any>;
-    limit?: number;
-    after?: string;
-};
-
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
-    list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
+    list: () => Promise<CmsContentModelType[]>;
     create: (
         data: CmsContentModelCreateInputType,
         createdBy: CreatedByType
@@ -443,6 +437,7 @@ export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
     list: () => Promise<CmsContentModelEntryType[]>;
     create: (
+        contentModelId: string,
         data: CmsContentModelEntryCreateInputType,
         createdBy: CreatedByType
     ) => Promise<CmsContentModelEntryType>;

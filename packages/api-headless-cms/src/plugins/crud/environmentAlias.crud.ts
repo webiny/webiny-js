@@ -85,6 +85,7 @@ export default {
                     id,
                     createdOn: new Date().toISOString(),
                     environment: targetEnvironment,
+                    isProduction: productionsSlugs.includes(slug),
                     createdBy
                 });
 
@@ -136,7 +137,7 @@ export default {
             },
             async delete(model): Promise<void> {
                 // before delete hook
-                if (productionsSlugs.includes(model.slug)) {
+                if (model.isProduction) {
                     throw new Error(
                         `Cannot delete "${model.name}" environment alias, it is marked as a production alias.`
                     );

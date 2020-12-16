@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { graphql } from "graphql";
 import { CmsContentModelGroupType, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";

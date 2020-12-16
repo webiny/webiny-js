@@ -57,10 +57,7 @@ export const updateCacheAfterCreate = (cache, updated) => {
         }
         return {
             ...item,
-            environmentAliases: [
-                ...item.environmentAliases,
-                pick(updatedData, ["id", "name", "__typename"])
-            ]
+            aliases: [...item.aliases, pick(updatedData, ["id", "name", "__typename"])]
         };
     });
 

@@ -5,6 +5,7 @@ import get from "lodash.get";
 import set from "lodash.set";
 import createApolloClient from "./createApolloClient";
 import { useSecurity } from "@webiny/app-security";
+import {useI18N} from "@webiny/app-i18n/hooks/useI18N";
 
 export const CmsContext = React.createContext({});
 
@@ -20,6 +21,9 @@ const getCurrentEnvironmentFromLocalStorage = () => {
 
 export function CmsProvider(props) {
     const { identity } = useSecurity();
+    const { getCurrentLocale } = useI18N();
+    
+    const currentLocale = getCurrentLocale("content");
 
     const hasPermission = identity.getPermission("cms.environment");
     if (!hasPermission) {
@@ -71,14 +75,15 @@ export function CmsProvider(props) {
 
         setCurrentEnvironmentId(environment.id);
 
-        if (!apolloClientsCache[environment.id]) {
-            apolloClientsCache[environment.id] = createApolloClient({
-                uri: `${process.env.REACT_APP_API_URL}/cms/manage/${environment.id}`
+        const clientKey = `${environment.id}-${currentLocale}`;
+        if (!apolloClientsCache[clientKey]) {
+            apolloClientsCache[clientKey] = createApolloClient({
+                uri: `${process.env.REACT_APP_API_URL}/cms/manage/${environment.id}/${currentLocale}`
             });
         }
 
-        setApolloClient(apolloClientsCache[environment.id]);
-    }, []);
+        setApolloClient(apolloClientsCache[clientKey]);
+    }, [currentLocale]);
 
     const isSelectedEnvironment = useCallback(
         environment => {

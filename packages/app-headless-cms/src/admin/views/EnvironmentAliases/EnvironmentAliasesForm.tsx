@@ -10,9 +10,7 @@ import { useApolloClient } from "react-apollo";
 import get from "lodash.get";
 import { GET_ENVIRONMENT_ALIAS_BY_SLUG } from "./graphql";
 import NameSlug from "../../components/NameSlug";
-import { AutoComplete } from "@webiny/ui/AutoComplete";
-
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import EnvironmentAutocomplete from "../../components/EnvironmentAutocomplete";
 
 import {
     SimpleFormHeader,
@@ -25,9 +23,6 @@ const t = i18n.ns("app-headless-cms/admin/environmentAliases/form");
 
 function EnvironmentAliasesForm() {
     const { form: crudForm } = useCrud();
-    const {
-        environments: { environments: environmentsOptions }
-    } = useCms();
 
     const apolloClient = useApolloClient();
 
@@ -88,11 +83,10 @@ function EnvironmentAliasesForm() {
                             <Cell span={12}>
                                 <Bind name="environment">
                                     {props => (
-                                        <AutoComplete
+                                        <EnvironmentAutocomplete
                                             {...props}
                                             placeholder={t`No environment selected.`}
                                             label={t`Environment`}
-                                            options={environmentsOptions}
                                             description={t`Choose an existing environment to which this alias will point to.`}
                                         />
                                     )}

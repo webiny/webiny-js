@@ -9,6 +9,9 @@ import {
     DbItemTypes
 } from "../../../types";
 import * as utils from "../../../utils";
+import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
+import { afterSaveHook } from "./contentModelGroup/afterSave.hook";
+import { beforeCreateHook } from "./contentModelGroup/beforeCreate.hook";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -19,7 +22,6 @@ const CreateContentModelGroupModel = withFields({
 
 const UpdateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("maxLength:100") }),
-    slug: string({ validation: validation.create("maxLength:100") }),
     description: string({ validation: validation.create("maxLength:255") }),
     icon: string({ validation: validation.create("maxLength:255") })
 })();
@@ -41,30 +43,31 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return response.find(() => true);
             },
-            list: async () => {
+            list: async ({ search, limit } = {}) => {
                 const [response] = await db.read<CmsContentModelGroupType>({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } }
+                    query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } },
+                    limit
                 });
+                const searchKeys = Object.keys(search || {});
+                if (searchKeys.length > 0) {
+                    return response.filter(group => {
+                        return searchKeys.every(key => {
+                            return group[key] === search[key];
+                        });
+                    });
+                }
                 return response;
             },
             create: async (data, createdBy) => {
-                const slug = utils.toSlug(data.slug || data.name);
                 const createdData = new CreateContentModelGroupModel().populate({
                     ...data,
-                    slug
+                    slug: data.slug ? utils.toSlug(data.slug) : ""
                 });
                 await createdData.validate();
                 const createdDataJson = await createdData.toJSON();
 
-                const contentModelGroups = await context.cms.groups.list();
-
-                const existingGroupSlug = contentModelGroups.some(group => {
-                    return group.slug === slug;
-                });
-                if (existingGroupSlug) {
-                    throw new Error(`Content model group with the slug "${slug}" already exists.`);
-                }
+                await beforeCreateHook(context, createdDataJson);
 
                 const id = mdbid();
                 const model = {
@@ -83,11 +86,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return model;
             },
             update: async (id, data) => {
-                const slugValue = data.slug || data.name;
-                const updateData = new UpdateContentModelGroupModel().populate({
-                    ...data,
-                    slug: !!slugValue ? utils.toSlug(slugValue) : undefined
-                });
+                const updateData = new UpdateContentModelGroupModel().populate(data);
                 await updateData.validate();
 
                 const updatedDataJson = await updateData.toJSON({ onlyDirty: true });
@@ -95,20 +94,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 // no need to continue if no values were changed
                 if (Object.keys(updatedDataJson).length === 0) {
                     return {} as any;
-                }
-
-                if (updatedDataJson.slug) {
-                    const contentModelGroups = (await context.cms.groups.list()).filter(group => {
-                        return group.id !== id;
-                    });
-                    const existingGroupSlug = contentModelGroups.some(group => {
-                        return group.slug === updatedDataJson.slug;
-                    });
-                    if (existingGroupSlug) {
-                        throw new Error(
-                            `Content model group with the slug "${updatedDataJson.slug}" already exists.`
-                        );
-                    }
                 }
 
                 const modelData = Object.assign(updatedDataJson, {
@@ -120,9 +105,13 @@ export default (): ContextPlugin<CmsContext> => ({
                     query: { PK: utils.createContentModelGroupPk(context), SK: id },
                     data: modelData
                 });
+
+                await afterSaveHook(context);
+
                 return modelData;
             },
             delete: async id => {
+                await beforeDeleteHook(context, id);
                 await db.delete({
                     ...utils.defaults.db,
                     query: {

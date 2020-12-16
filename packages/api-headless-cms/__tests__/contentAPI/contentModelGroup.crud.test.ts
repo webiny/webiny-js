@@ -25,7 +25,7 @@ const createContentModelGroupData = ({
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,
-        slug: toSlug(`${prefix}slug${append}`),
+        slug: toSlug(`${prefix}slug`),
         description: `${prefix}description${append}`,
         icon: `${prefix}icon${append}`
     };
@@ -131,9 +131,7 @@ describe("Content model group crud test", () => {
             updatedContentModelGroups.push(updateResponse.data.updateContentModelGroup.data);
         }
         const [listResponse] = await listContentModelGroupsQuery();
-        expect(listResponse.data.listContentModelGroups.data).toHaveLength(
-            TestHelperEnum.MODELS_AMOUNT
-        );
+
         expect(listResponse).toEqual({
             data: {
                 listContentModelGroups: {
@@ -142,6 +140,9 @@ describe("Content model group crud test", () => {
                 }
             }
         });
+        expect(listResponse.data.listContentModelGroups.data).toHaveLength(
+            TestHelperEnum.MODELS_AMOUNT
+        );
 
         for (const { id } of updatedContentModelGroups) {
             const [deleteResponse] = await deleteContentModelGroupMutation({
@@ -278,7 +279,7 @@ describe("Content model group crud test", () => {
                 createContentModelGroup: {
                     data: null,
                     error: {
-                        message: `slugify: string argument expected`,
+                        message: `Validation failed.`,
                         code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
                         data: null
                     }
@@ -299,6 +300,7 @@ describe("Content model group crud test", () => {
         const [response] = await createContentModelGroupMutation({
             data: {
                 name: "content model group",
+                slug: "content-model-group",
                 description: "description",
                 icon: "icon"
             }
@@ -311,47 +313,6 @@ describe("Content model group crud test", () => {
                     error: {
                         message: `Content model group with the slug "content-model-group" already exists.`,
                         code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                        data: null
-                    }
-                }
-            }
-        });
-    });
-
-    test("error when trying to update content model group to a slug that already exists in the database", async () => {
-        const [createResponse] = await createContentModelGroupMutation({
-            data: {
-                name: "content model group new",
-                description: "description",
-                icon: "icon"
-            }
-        });
-
-        const { id } = createResponse.data.createContentModelGroup.data;
-
-        await createContentModelGroupMutation({
-            data: {
-                name: "content model group second one",
-                slug: "content-model-group-second-one",
-                description: "description",
-                icon: "icon"
-            }
-        });
-
-        const [response] = await updateContentModelGroupMutation({
-            id,
-            data: {
-                slug: "content-model-group-second-one"
-            }
-        });
-
-        expect(response).toEqual({
-            data: {
-                updateContentModelGroup: {
-                    data: null,
-                    error: {
-                        message: `Content model group with the slug "content-model-group-second-one" already exists.`,
-                        code: "UPDATE_CONTENT_MODEL_GROUP_FAILED",
                         data: null
                     }
                 }
