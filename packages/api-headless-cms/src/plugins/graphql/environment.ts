@@ -4,6 +4,7 @@ import { hasI18NContentPermission } from "@webiny/api-i18n-content";
 import {
     CmsContext,
     CmsEnvironmentCreateInputType,
+    CmsEnvironmentType,
     CmsEnvironmentUpdateInputType
 } from "../../types";
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses";
@@ -210,6 +211,15 @@ export default {
                     });
                 }
             })
+        },
+        CmsEnvironment: {
+            isProduction: async (environment: CmsEnvironmentType) => {
+                if (!environment.aliases || environment.aliases.length === 0) {
+                    return false;
+                }
+
+                return environment.aliases.some(alias => !!alias.isProduction);
+            }
         }
     }
 };

@@ -93,7 +93,7 @@ export const createInitialEnvironment = async (
 ): Promise<CmsEnvironmentType> => {
     const model: CmsEnvironmentType = {
         ...getInitialEnvironment(),
-        createdOn: new Date()
+        createdOn: new Date().toISOString() as any
     };
     await documentClient
         .put({
@@ -119,7 +119,7 @@ export const createInitialAliasEnvironment = async (
         name: "Production alias",
         slug: "production",
         createdBy,
-        createdOn: new Date(),
+        createdOn: new Date().toISOString() as any,
         environment: env
     };
     await documentClient

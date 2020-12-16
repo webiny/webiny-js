@@ -185,7 +185,7 @@ const getLocaleKey = ({ cms }: CmsContext): string => {
             `Missing both "context.cms.getLocale()" function and "context.cms.locale" variable.`
         );
     }
-    const code = typeof cms.getLocale === "function" ? cms.getLocale() : cms.locale;
+    const code: string = typeof cms.getLocale === "function" ? cms.getLocale().code : cms.locale;
     if (!code) {
         throw new Error(`Missing "context.cms" locale "code" value.`);
     }

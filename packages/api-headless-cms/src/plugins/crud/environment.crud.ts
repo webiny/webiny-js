@@ -33,6 +33,30 @@ const createEnvironmentValidationModel = (initial?: boolean) => {
     return new CreateEnvironmentModel();
 };
 
+const assignAliasesToEnvironment = async (
+    context: CmsContext,
+    environment: CmsEnvironmentType
+): Promise<CmsEnvironmentType> => {
+    const aliases = await context.cms.environmentAliases.list();
+    return {
+        ...environment,
+        aliases: aliases.filter(alias => alias.environment.id === environment.id)
+    };
+};
+
+const assignAliasesToEnvironments = async (
+    context: CmsContext,
+    environments: CmsEnvironmentType[]
+): Promise<CmsEnvironmentType[]> => {
+    const aliases = await context.cms.environmentAliases.list();
+    return environments.map(env => {
+        return {
+            ...env,
+            aliases: aliases.filter(alias => alias.environment.id === env.id)
+        };
+    });
+};
+
 export default {
     type: "context",
     name: "context-environment-crud",
@@ -49,14 +73,16 @@ export default {
                 if (!response || response.length === 0) {
                     return null;
                 }
-                return response.find(() => true);
+                const env = response.find(() => true);
+
+                return assignAliasesToEnvironment(context, env);
             },
             async list(): Promise<CmsEnvironmentType[]> {
                 const [response] = await db.read<CmsEnvironmentType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createEnvironmentPk(context), SK: { $gt: " " } }
                 });
-                return response;
+                return assignAliasesToEnvironments(context, response);
             },
             async create(data, createdBy, initial): Promise<CmsEnvironmentType> {
                 const slug = utils.toSlug(data.slug || data.name);

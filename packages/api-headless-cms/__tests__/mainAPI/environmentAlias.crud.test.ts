@@ -15,6 +15,7 @@ enum TestHelperEnum {
     USER_ID = "123",
     USER_NAME = "User 123"
 }
+
 const createEnvironmentAliasPrefix = position => {
     return `${TestHelperEnum.PREFIX}${position}`;
 };
@@ -44,6 +45,7 @@ describe("Environment alias crud test", () => {
         updateEnvironmentAliasMutation,
         deleteEnvironmentAliasMutation,
         listEnvironmentAliasesQuery,
+        getEnvironmentQuery,
         documentClient
     } = useAdminGqlHandler();
 
@@ -105,6 +107,7 @@ describe("Environment alias crud test", () => {
                                     displayName: TestHelperEnum.USER_NAME,
                                     type: "admin"
                                 },
+                                isProduction: false,
                                 createdOn,
                                 changedOn: null
                             },
@@ -424,6 +427,83 @@ describe("Environment alias crud test", () => {
                             code: "DELETE_ENVIRONMENT_ALIAS_FAILED",
                             message: `Cannot delete "production" environment alias, it is marked as a production alias.`
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    test("production alias makes environment a production one", async () => {
+        const environment = await fetchInitialEnvironment(documentClient);
+
+        const [response] = await createEnvironmentAliasMutation({
+            data: {
+                name: "Is production alias",
+                slug: "production",
+                description: "Must be a production alias",
+                environment: environment.id
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                cms: {
+                    createEnvironmentAlias: {
+                        data: {
+                            changedOn: null,
+                            createdBy: {
+                                displayName: "User 123",
+                                id: "123",
+                                type: "admin"
+                            },
+                            createdOn: /^20/,
+                            description: "Must be a production alias",
+                            environment: {
+                                createdBy: {
+                                    displayName: "User 123",
+                                    id: "123",
+                                    type: "admin"
+                                },
+                                description: "Production environment description",
+                                id: "5fc6590afb3cd80a5ae8a0ae",
+                                name: "Production",
+                                slug: "production"
+                            },
+                            id: /^([a-zA-Z0-9]+)$/,
+                            isProduction: true,
+                            name: "Is production alias",
+                            slug: "production"
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [environmentResponse] = await getEnvironmentQuery({
+            id: environment.id
+        });
+
+        expect(environmentResponse).toMatchObject({
+            data: {
+                cms: {
+                    getEnvironment: {
+                        data: {
+                            changedOn: null,
+                            createdBy: {
+                                displayName: "User 123",
+                                id: "123",
+                                type: "admin"
+                            },
+                            createdFrom: null,
+                            createdOn: /^20/,
+                            description: "Production environment description",
+                            id: "5fc6590afb3cd80a5ae8a0ae",
+                            isProduction: true,
+                            name: "Production",
+                            slug: "production"
+                        },
+                        error: null
                     }
                 }
             }

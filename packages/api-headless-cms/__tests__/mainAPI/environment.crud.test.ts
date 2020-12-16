@@ -86,6 +86,7 @@ describe("Environment crud test", () => {
                                     displayName: TestHelperEnum.USER_NAME,
                                     type: "admin"
                                 },
+                                isProduction: false,
                                 createdOn: /^20/,
                                 changedOn: null
                             },
@@ -119,6 +120,7 @@ describe("Environment crud test", () => {
                                     displayName: TestHelperEnum.USER_NAME,
                                     type: "admin"
                                 },
+                                isProduction: false,
                                 createdOn,
                                 changedOn: null
                             },
@@ -153,6 +155,7 @@ describe("Environment crud test", () => {
                                     displayName: TestHelperEnum.USER_NAME,
                                     type: "admin"
                                 },
+                                isProduction: false,
                                 createdOn,
                                 changedOn: /^20/
                             },

@@ -7,6 +7,7 @@ const DATA_FIELD = /* GraphQL*/ `
         createdOn
         changedOn
         createdBy
+        isProduction
         environment {
 	        id
 	        name

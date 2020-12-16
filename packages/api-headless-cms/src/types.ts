@@ -217,6 +217,7 @@ type BaseCmsEnvironmentType = {
     name: string;
     slug: string;
     description?: string;
+    isProduction?: boolean;
 };
 
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
@@ -226,6 +227,7 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdBy: CreatedByType;
     createdOn: Date;
     changedOn?: Date;
+    aliases?: CmsEnvironmentAliasType[];
 };
 
 type BaseCmsEnvironmentInputType = {
@@ -260,6 +262,7 @@ type BaseCmsEnvironmentAliasType = {
     name: string;
     slug: string;
     description?: string;
+    isProduction?: boolean;
 };
 
 export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
@@ -350,7 +353,7 @@ export type CmsContentModelGroupContextType = {
     delete: (id: string) => Promise<void>;
 };
 
-type CmsContentModelFieldValidationType = {
+export type CmsContentModelFieldValidationType = {
     name: string;
     message: string;
     settings?: Record<string, any>;
@@ -446,6 +449,7 @@ export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
     list: () => Promise<CmsContentModelEntryType[]>;
     create: (
+        contentModelId: string,
         data: CmsContentModelEntryCreateInputType,
         createdBy: CreatedByType
     ) => Promise<CmsContentModelEntryType>;
