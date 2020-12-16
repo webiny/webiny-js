@@ -1,34 +1,27 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
-import { plugins } from "@webiny/plugins";
-import { PbDefaultPagePlugin, PbPageData } from "@webiny/app-page-builder/types";
+import { PbPageData } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
-import PageContent from "./PageContent";
+import Element from "@webiny/app-page-builder/render/components/Element";
+import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
+import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 
-type PageRenderProps = { error?: any; loading?: boolean; data?: PbPageData };
-
-function PageRender({ loading, data, error }: PageRenderProps) {
-    const { DefaultErrorPage, DefaultNotFoundPage } = useMemo(() => {
-        const defaultErrorPagePlugin = plugins.byName<PbDefaultPagePlugin>("pb-default-page-error");
-        const defaultNotFoundPagePlugin = plugins.byName<PbDefaultPagePlugin>(
-            "pb-default-page-not-found"
-        );
-
-        return {
-            DefaultNotFoundPage: defaultNotFoundPagePlugin.component,
-            DefaultErrorPage: defaultErrorPagePlugin.component
-        };
-    }, []);
-
-    if (loading) {
-        return null;
+/**
+ * This component will render the page, including the page content, its layout, and also meta tags.
+ * @param data
+ * @param error
+ * @constructor
+ */
+function Render({ data, error }: { error?: any; data?: PbPageData }) {
+    if (error) {
+        if (error.code === "NOT_FOUND") {
+            return <DefaultNotFoundPage />;
+        }
+        return <DefaultErrorPage error={error} />;
     }
 
     if (!data) {
-        if (error.code === "NOT_FOUND") {
-            return DefaultNotFoundPage ? <DefaultNotFoundPage error={error} /> : null;
-        }
-        return DefaultErrorPage ? <DefaultErrorPage error={error} /> : null;
+        return null;
     }
 
     const head: Record<string, any> = {
@@ -37,13 +30,13 @@ function PageRender({ loading, data, error }: PageRenderProps) {
             title: "",
             description: "",
             meta: [],
-            ...(data.settings ? data.settings.seo : {})
+            ...data?.settings?.seo
         },
         social: {
             title: "",
             description: "",
             image: null,
-            ...(data.settings ? data.settings.social : {})
+            ...data?.settings?.social
         }
     };
 
@@ -72,10 +65,10 @@ function PageRender({ loading, data, error }: PageRenderProps) {
                 })}
             </Helmet>
             <Layout layout={data.settings.general.layout}>
-                <PageContent data={data.content} />
+                <Element element={data.content} />
             </Layout>
         </div>
     );
 }
 
-export default PageRender;
+export default Render;
