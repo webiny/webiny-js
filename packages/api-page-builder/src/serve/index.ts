@@ -33,66 +33,6 @@ export type Response = {
 
 type HandlerContext = Context<DbContext, ArgsContext<Args>>;
 
-const response = (response: Response): string => JSON.stringify(response);
-
-const s3 = new S3({ region: process.env.AWS_REGION });
-
-const getFileKey = (tenant, locale, path) => {
-    return join("__PB__", tenant, locale, path);
-};
-
-const getObject = (key, storageName) => {
-    return s3
-        .getObject({
-            Bucket: storageName,
-            Key: key
-        })
-        .promise();
-};
-
-const getErrorPage = (tenant, locale, storageName) => {
-    const key = getFileKey(tenant, locale, "__error__/index.html");
-    return getObject(key, storageName);
-};
-
-const getNotFoundPage = (tenant, locale, storageName) => {
-    const key = getFileKey(tenant, locale, "__404__/index.html");
-    return getObject(key, storageName);
-};
-
-const getTenantLocalePath = async (
-    context: HandlerContext
-): Promise<{ tenant: string; locale: string; path: string }> => {
-    const { httpRequest, tenant, locale, path } = context.invocationArgs;
-    if (tenant && locale && path) {
-        return { tenant, locale, path };
-    }
-
-    if (httpRequest) {
-        /*const settings = await context.db.read({
-            query: {
-                PK: "PB#DOMAIN#TENANT",
-                SK: httpRequest.path.base
-            }
-        });*/
-
-        const tenant = "root";
-        const locale = "en-US";
-        const path = "/";
-        return { tenant, locale, path };
-    }
-
-    throw new Error(
-        `An error occurred while trying to serve "${path}".`,
-        "COULD_NOT_DETECT_TENANT_LOCALE_PATH",
-        {
-            data: {
-                args: context.invocationArgs
-            }
-        }
-    );
-};
-
 export default (configuration: Configuration): HandlerPlugin<HandlerContext> => ({
     type: "handler",
     async handle(context): Promise<string> {
@@ -159,3 +99,63 @@ export default (configuration: Configuration): HandlerPlugin<HandlerContext> => 
         }
     }
 });
+
+const response = (response: Response): string => JSON.stringify(response);
+
+const s3 = new S3({ region: process.env.AWS_REGION });
+
+const getFileKey = (tenant, locale, path) => {
+    return join("__PB__", tenant, locale, path);
+};
+
+const getObject = (key, storageName) => {
+    return s3
+        .getObject({
+            Bucket: storageName,
+            Key: key
+        })
+        .promise();
+};
+
+const getErrorPage = (tenant, locale, storageName) => {
+    const key = getFileKey(tenant, locale, "__error__/index.html");
+    return getObject(key, storageName);
+};
+
+const getNotFoundPage = (tenant, locale, storageName) => {
+    const key = getFileKey(tenant, locale, "__404__/index.html");
+    return getObject(key, storageName);
+};
+
+const getTenantLocalePath = async (
+    context: HandlerContext
+): Promise<{ tenant: string; locale: string; path: string }> => {
+    const { httpRequest, tenant, locale, path } = context.invocationArgs;
+    if (tenant && locale && path) {
+        return { tenant, locale, path };
+    }
+
+    if (httpRequest) {
+        /*const settings = await context.db.read({
+            query: {
+                PK: "PB#DOMAIN#TENANT",
+                SK: httpRequest.path.base
+            }
+        });*/
+
+        const tenant = "root";
+        const locale = "en-US";
+        const path = "/";
+        return { tenant, locale, path };
+    }
+
+    throw new Error(
+        `An error occurred while trying to serve "${path}".`,
+        "COULD_NOT_DETECT_TENANT_LOCALE_PATH",
+        {
+            data: {
+                args: context.invocationArgs
+            }
+        }
+    );
+};
