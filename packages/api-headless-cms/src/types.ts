@@ -8,10 +8,12 @@ import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 type CmsDataManagerDeleteEnvironmentArgsType = {
     environment: string;
 };
+
 type CmsDataManagerCopyEnvironmentArgsType = {
     copyFrom: string;
     copyTo: string;
 };
+
 export interface CmsDataManagerType {
     deleteEnvironment(args: CmsDataManagerDeleteEnvironmentArgsType): Promise<void>;
     copyEnvironment(args: CmsDataManagerCopyEnvironmentArgsType): Promise<void>;
@@ -205,26 +207,18 @@ export type CmsFieldTypePlugins = {
     [key: string]: CmsModelFieldToGraphQLPlugin;
 };
 
-export type CmsFindFilterOperatorPlugin = Plugin & {
-    type: "cms-find-filter-operator";
-    operator: string;
-    createCondition(params: {
-        fieldId: string;
-        field: CmsContentModelFieldType;
-        value: any;
-        context: CmsContext;
-    }): { [key: string]: any };
-};
-//
 type CreatedByType = {
     id: string;
-    name: string;
+    displayName: string;
+    type: string;
 };
+
 type BaseCmsEnvironmentType = {
     name: string;
     slug: string;
     description?: string;
 };
+
 export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     id: string;
     description?: string;
@@ -233,14 +227,17 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdOn: Date;
     changedOn?: Date;
 };
+
 type BaseCmsEnvironmentInputType = {
     name: string;
     description?: string;
 };
+
 export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentInputType & {
     slug?: string;
     createdFrom?: string;
 };
+
 export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentInputType;
 
 export type CmsEnvironmentContextType = {
@@ -264,6 +261,7 @@ type BaseCmsEnvironmentAliasType = {
     slug: string;
     description?: string;
 };
+
 export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
     id: string;
     environment?: CmsEnvironmentType;
@@ -271,14 +269,17 @@ export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
     createdOn: Date;
     changedOn?: Date;
 };
+
 type BaseCmsEnvironmentAliasUpdateType = {
     name: string;
     description?: string;
     environment?: string;
 };
+
 export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasUpdateType & {
     slug?: string;
 };
+
 export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasUpdateType;
 
 export type CmsEnvironmentAliasContextType = {
@@ -300,6 +301,7 @@ export type CmsSettingsType = {
     environment: string;
     environmentAlias: string;
 };
+
 export type CmsSettingsContextType = {
     get: () => Promise<CmsSettingsType>;
     install: () => Promise<void>;
@@ -311,12 +313,14 @@ export type CmsContentModelGroupCreateInputType = {
     description?: string;
     icon: string;
 };
+
 export type CmsContentModelGroupUpdateInputType = {
     name?: string;
     slug?: string;
     description?: string;
     icon?: string;
 };
+
 export type CmsContentModelGroupType = {
     id: string;
     name: string;
@@ -349,7 +353,7 @@ export type CmsContentModelGroupContextType = {
 type CmsContentModelFieldValidationType = {
     name: string;
     message: string;
-    settings: Record<string, any>;
+    settings?: Record<string, any>;
 };
 
 export type CmsContentModelCreateInputType = {
@@ -370,6 +374,7 @@ export type CmsContentModelManagerListArgsType = {
     limit?: number;
     after?: number;
 };
+
 export interface CmsContentModelManagerInterface<TModel> {
     list(args?: CmsContentModelManagerListArgsType): Promise<TModel[]>;
     get(id: string): Promise<TModel>;
@@ -377,11 +382,13 @@ export interface CmsContentModelManagerInterface<TModel> {
     update<TData>(data: TData): Promise<TModel>;
     delete(id: string): Promise<boolean>;
 }
+
 type CmsContentModelListArgsType = {
     search?: Record<string, any>;
     limit?: number;
     after?: string;
 };
+
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
     list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
@@ -399,6 +406,7 @@ type CmsContentModelFieldCreateInputPredefinedValuesType = {
     enabled: boolean;
     values: any[];
 };
+
 type CmsContentModelFieldRendererType = {
     name: string;
 };
@@ -429,9 +437,11 @@ export type CmsContentModelEntryCreateInputType = {
     modelId: string;
     values: Record<string, any>;
 };
+
 export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
+
 export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
     list: () => Promise<CmsContentModelEntryType[]>;

@@ -137,7 +137,8 @@ export default {
                 const { data } = args;
                 const createdBy = {
                     id: identity.id,
-                    name: identity.displayName
+                    displayName: identity.displayName,
+                    type: identity.type
                 };
                 try {
                     const model = await context.cms.environmentAliases.create(data, createdBy);

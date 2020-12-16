@@ -7,4 +7,4 @@ import datetime from "./datetime";
 import richText from "./richText";
 import file from "./file";
 
-export default [text, ref, number, datetime, boolean, longText, richText, file];
+export default () => [text, ref, number, datetime, boolean, longText, richText, file];

@@ -48,7 +48,8 @@ export default {
                 const identity = context.security.getIdentity();
                 const createdBy = {
                     id: identity.id,
-                    name: identity.displayName
+                    displayName: identity.displayName,
+                    type: identity.type
                 };
 
                 // create base environment

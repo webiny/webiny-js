@@ -124,7 +124,8 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     const { data } = args;
                     const createdBy = {
                         id: identity.id,
-                        name: identity.displayName
+                        displayName: identity.displayName,
+                        type: identity.type
                     };
 
                     try {
