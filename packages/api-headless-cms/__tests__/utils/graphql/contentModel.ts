@@ -19,7 +19,10 @@ const DATA_FIELD = /* GraphQL*/ `
             multipleValues
             predefinedValues {
                 enabled
-                values
+                values {
+                    label
+                    value
+                }
             }
             renderer {
                 name

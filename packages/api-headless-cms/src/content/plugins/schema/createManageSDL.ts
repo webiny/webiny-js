@@ -35,7 +35,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         type ${mTypeName} {
             id: ID
             createdOn: DateTime
-            changedOn: DateTime
             savedOn: DateTime
             meta: ${mTypeName}Meta
             ${fields.map(f => f.fields).join("\n")}

@@ -30,7 +30,6 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         type ${rTypeName} {
             id: ID
             createdOn: DateTime
-            changedOn: DateTime
             savedOn: DateTime
             ${fieldsRender.map(f => f.fields).join("\n")}
         }

@@ -311,9 +311,14 @@ describe("content model test", () => {
                                 id: field.id,
                                 label: "Field 1",
                                 multipleValues: false,
-                                placeholderText: null,
-                                predefinedValues: null,
-                                renderer: null,
+                                placeholderText: "placeholder text",
+                                predefinedValues: {
+                                    enabled: false,
+                                    values: []
+                                },
+                                renderer: {
+                                    name: "rendererName"
+                                },
                                 settings: {},
                                 type: "text",
                                 validation: []
