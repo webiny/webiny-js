@@ -29,7 +29,7 @@ const renderPlugin = ({
     }
     // TODO: Display the error message in UI.
     // Warn about missing plugin.
-    console.error(`Missing plugin: "rte-block-output-renderer-${blockType}".`);
+    console.error(`Missing plugin: "rte-data-block-renderer-${blockType}".`);
 };
 
 const rteOutputRendererPlugin = (): RTEDataRendererPlugin => ({
@@ -39,7 +39,7 @@ const rteOutputRendererPlugin = (): RTEDataRendererPlugin => ({
         const blockPlugins = useMemo(() => {
             // Get all plugins
             const allPlugins = plugins.byType<RTEDataBlockRendererPlugin>(
-                "rte-block-output-renderer"
+                "rte-data-block-renderer"
             );
             // Group plugins by blockType
             return allPlugins.reduce((acc, pl) => {
