@@ -20,6 +20,7 @@ const models: CmsContentModelType[] = [
     {
         id: "1",
         createdOn: new Date(),
+        savedOn: new Date(),
         environment: "production",
         titleFieldId: "title",
         lockedFields: [],
@@ -69,6 +70,7 @@ const models: CmsContentModelType[] = [
     {
         id: "2",
         createdOn: new Date(),
+        savedOn: new Date(),
         environment: "production",
         titleFieldId: "title",
         lockedFields: [],
@@ -172,6 +174,7 @@ const models: CmsContentModelType[] = [
     {
         id: "3",
         createdOn: new Date(),
+        savedOn: new Date(),
         environment: "production",
         titleFieldId: "text",
         lockedFields: [],

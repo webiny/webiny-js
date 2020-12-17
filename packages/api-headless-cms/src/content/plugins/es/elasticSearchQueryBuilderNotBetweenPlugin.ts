@@ -5,7 +5,7 @@ export const elasticSearchQueryBuilderNotBetweenPlugin = (): ElasticSearchQueryB
     name: "elastic-search-query-builder-not-between",
     targetOperation: "not_between",
     apply(query, { field, value }) {
-        const [lte, gte] = value;
+        const [gte, lte] = value;
         query.range.push({
             [`${field}.keyword`]: {
                 lte,

@@ -618,10 +618,10 @@ type ElasticSearchQueryMatchParamType = {
 type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
 
 export type ElasticSearchQueryType = {
-    must?: ElasticSearchQueryMustParamListType;
-    mustNot?: ElasticSearchQueryMustNotParamListType;
-    range?: ElasticSearchQueryRangeParamListType;
-    match?: ElasticSearchQueryMatchParamListType;
+    must: ElasticSearchQueryMustParamListType;
+    mustNot: ElasticSearchQueryMustNotParamListType;
+    range: ElasticSearchQueryRangeParamListType;
+    match: ElasticSearchQueryMatchParamListType;
 };
 
 export type ElasticSearchQueryBuilderArgsPluginType = {

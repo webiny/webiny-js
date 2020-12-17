@@ -201,7 +201,7 @@ export const createContentModelGroup = async (
         description: "description",
         environment,
         createdOn: new Date().toISOString() as any,
-        changedOn: new Date().toISOString() as any
+        savedOn: new Date().toISOString() as any
     };
     await client
         .put({
