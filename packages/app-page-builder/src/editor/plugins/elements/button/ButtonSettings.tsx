@@ -5,8 +5,8 @@ import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 // Components
+import IconPickerComponent from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
-import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import { ContentWrapper } from "../../elementSettings/components/StyledComponents";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -79,6 +79,7 @@ const ButtonSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
         (value: string) => getUpdateValue("icon.position")(value),
         [getUpdateValue]
     );
+    const removeIcon = useCallback(() => getUpdateValue("icon")({ id: null }), [getUpdateValue]);
 
     return (
         <Accordion title={"Button"} defaultValue={defaultAccordionValue}>
@@ -93,10 +94,12 @@ const ButtonSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
                     </SelectField>
                 </Wrapper>
                 <Wrapper label={"Icon"} containerClassName={classes.gridClass}>
-                    <BaseIconPicker
+                    <IconPickerComponent
                         handlerClassName={"icon-picker-handler"}
                         value={icon?.id}
-                        updateValue={updateIcon}
+                        onChange={updateIcon}
+                        removeIcon={removeIcon}
+                        useInSidebar={true}
                     />
                 </Wrapper>
                 <Wrapper label={"Icon color"} containerClassName={classes.gridClass}>
