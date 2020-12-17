@@ -6,7 +6,7 @@ const DATA_FIELD = /* GraphQL*/ `
         description
         icon
         createdOn
-        changedOn
+        savedOn
         createdBy
     }
 `;

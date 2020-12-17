@@ -5,11 +5,4 @@ import permissionRenderer from "./permissionRenderer";
 import apolloLink from "./apolloLink";
 import localeTypes from "./localeTypes";
 
-export default () => [
-    routes,
-    menus,
-    permissionRenderer,
-    install,
-    apolloLink,
-    localeTypes
-];
+export default () => [routes, menus, permissionRenderer, install, apolloLink, localeTypes];

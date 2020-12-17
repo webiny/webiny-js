@@ -101,8 +101,8 @@ export type CmsContentModelType = {
     modelId: string;
     group: string;
     description?: string;
-    createdOn?: Date;
-    changedOn?: Date;
+    createdOn: Date;
+    savedOn: Date;
     createdBy?: CreatedByType;
     fields: CmsContentModelFieldType[];
     layout: string[][];
@@ -228,6 +228,7 @@ export type CmsEnvironmentType = BaseCmsEnvironmentType & {
     createdFrom?: CmsEnvironmentType;
     createdBy: CreatedByType;
     createdOn: Date;
+    savedOn: Date;
     changedOn?: Date;
     aliases?: CmsEnvironmentAliasType[];
 };
@@ -257,21 +258,20 @@ export type CmsEnvironmentContextType = {
         data: CmsEnvironmentUpdateInputType,
         model: CmsEnvironmentType
     ) => Promise<CmsEnvironmentType>;
+    updateChangedOn: (env: string | CmsEnvironmentType) => Promise<void>;
     delete: (id: string) => Promise<void>;
 };
 
-type BaseCmsEnvironmentAliasType = {
+export type CmsEnvironmentAliasType = {
+    id: string;
     name: string;
     slug: string;
     description?: string;
     isProduction?: boolean;
-};
-
-export type CmsEnvironmentAliasType = BaseCmsEnvironmentAliasType & {
-    id: string;
     environment?: CmsEnvironmentType;
     createdBy: CreatedByType;
     createdOn: Date;
+    savedOn: Date;
     changedOn?: Date;
 };
 
@@ -335,7 +335,7 @@ export type CmsContentModelGroupType = {
     environment: CmsEnvironmentType;
     createdBy: CreatedByType;
     createdOn: Date;
-    changedOn?: Date;
+    savedOn: Date;
 };
 type CmsContentModelGroupListArgsType = {
     where?: Record<string, any>;
@@ -436,7 +436,7 @@ export type CmsContentModelEntryType = {
     id: string;
     createdBy: CreatedByType;
     createdOn: Date;
-    changedOn: Date;
+    savedOn: Date;
     modelId: string;
     values: Record<string, any>;
 };
@@ -450,13 +450,6 @@ export type CmsContentModelEntryUpdateInputType = {
     values: Record<string, any>;
 };
 
-type SearchableFieldType<T> = {
-    eq?: T;
-    gt?: T;
-    lt?: T;
-    not?: T;
-    not_in?: T[];
-};
 // this is base list args
 type CmsContentModelEntryListArgsType = {
     where?: {
@@ -476,17 +469,17 @@ type CmsContentModelEntryListArgsType = {
         createdOn_lte?: Date;
         createdOn_gt?: Date;
         createdOn_gte?: Date;
-        // changedOn
-        changedOn?: Date;
-        changedOn_in?: Date[];
-        changedOn_not?: Date;
-        changedOn_not_in?: Date[];
-        changedOn_between: [Date, Date];
-        changedOn_not_between: [Date, Date];
-        changedOn_lt?: Date;
-        changedOn_lte?: Date;
-        changedOn_gt?: Date;
-        changedOn_gte?: Date;
+        // savedOn
+        savedOn?: Date;
+        savedOn_in?: Date[];
+        savedOn_not?: Date;
+        savedOn_not_in?: Date[];
+        savedOn_between: [Date, Date];
+        savedOn_not_between: [Date, Date];
+        savedOn_lt?: Date;
+        savedOn_lte?: Date;
+        savedOn_gt?: Date;
+        savedOn_gte?: Date;
         // createdBy.id
         createdById?: string;
         createdById_in?: string[];

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { CmsContentModelGroupType, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";

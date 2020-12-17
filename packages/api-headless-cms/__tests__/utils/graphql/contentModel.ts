@@ -31,7 +31,7 @@ const DATA_FIELD = /* GraphQL*/ `
             settings
         }
         createdOn
-        changedOn
+        savedOn
         createdBy
     }
 `;

@@ -93,7 +93,9 @@ export const createInitialEnvironment = async (
 ): Promise<CmsEnvironmentType> => {
     const model: CmsEnvironmentType = {
         ...getInitialEnvironment(),
-        createdOn: new Date().toISOString() as any
+        createdOn: new Date().toISOString() as any,
+        savedOn: new Date().toISOString() as any,
+        changedOn: null
     };
     await documentClient
         .put({
@@ -120,6 +122,8 @@ export const createInitialAliasEnvironment = async (
         slug: "production",
         createdBy: identity,
         createdOn: new Date().toISOString() as any,
+        savedOn: new Date().toISOString() as any,
+        changedOn: null,
         environment: env
     };
     await documentClient
@@ -196,8 +200,8 @@ export const createContentModelGroup = async (
         createdBy: identity,
         description: "description",
         environment,
-        createdOn: new Date(),
-        changedOn: new Date()
+        createdOn: new Date().toISOString() as any,
+        changedOn: new Date().toISOString() as any
     };
     await client
         .put({

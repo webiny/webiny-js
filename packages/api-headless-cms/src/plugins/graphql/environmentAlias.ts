@@ -37,15 +37,16 @@ export default {
         }
 
         type CmsEnvironmentAlias {
-            id: ID
-            createdOn: DateTime
+            id: ID!
+            createdOn: DateTime!
+            savedOn: DateTime!
             changedOn: DateTime
-            name: String
-            slug: String
+            name: String!
+            slug: String!
             description: String
             url: CmsEnvironmentAliasUrl
-            environment: CmsEnvironment
-            isProduction: Boolean
+            environment: CmsEnvironment!
+            isProduction: Boolean!
             createdBy: JSON
         }
 

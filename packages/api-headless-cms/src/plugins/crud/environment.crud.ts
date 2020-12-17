@@ -122,10 +122,12 @@ export default {
                     throw new Error(`Environment with slug "${slug}" already exists.`);
                 }
 
+                const date = new Date().toISOString();
                 const model: CmsEnvironmentType = Object.assign(createDataJson, {
                     id,
-                    createdOn: new Date().toISOString(),
-                    changedOn: new Date().toISOString(),
+                    createdOn: date,
+                    savedOn: date,
+                    changedOn: null,
                     createdFrom: sourceEnvironment,
                     createdBy
                 });
@@ -163,16 +165,17 @@ export default {
                 if (Object.keys(updatedDataJson).length === 0) {
                     return {} as any;
                 }
-
+                const date = new Date().toISOString();
                 const updatedModel = Object.assign(updatedDataJson, {
-                    changedOn: new Date().toISOString()
+                    savedOn: date
                 });
 
                 // run all updates in a batch
                 const dbBatch = db.batch();
                 const modelKeys = {
                     PK: utils.createEnvironmentPk(context),
-                    SK: id
+                    SK: id,
+                    TYPE: DbItemTypes.CMS_ENVIRONMENT
                 };
                 dbBatch.update({
                     ...utils.defaults.db,
@@ -187,12 +190,13 @@ export default {
                 const aliases = (await context.cms.environmentAliases.list()).filter(alias => {
                     return alias.environment.id === id;
                 });
-                // update all aliases last updated time
+                // update all aliases changedOn so schema is regenerated if required
                 const aliasPk = utils.createEnvironmentAliasPk(context);
                 for (const alias of aliases) {
                     const aliasKeys = {
                         PK: aliasPk,
-                        SK: alias.id
+                        SK: alias.id,
+                        TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS
                     };
                     dbBatch.update({
                         ...utils.defaults.db,
@@ -200,12 +204,32 @@ export default {
                         data: {
                             ...aliasKeys,
                             ...alias,
-                            changedOn: new Date().toISOString()
+                            changedOn: date
                         }
                     });
                 }
                 await dbBatch.execute();
                 return updatedModel;
+            },
+            async updateChangedOn(env: string | CmsEnvironmentType): Promise<void> {
+                if (typeof env === "string") {
+                    const result = await context.cms.environments.get(env);
+                    if (!result) {
+                        throw new Error(`There is no environment "${env}".`);
+                    }
+                    env = result;
+                }
+
+                await db.update({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: utils.createEnvironmentPk(context),
+                        SK: env.id
+                    },
+                    data: {
+                        changedOn: new Date().toISOString()
+                    }
+                });
             },
             async delete(id): Promise<void> {
                 // before delete hook

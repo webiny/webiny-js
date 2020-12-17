@@ -6,17 +6,15 @@ export const beforeCreateHook = async (
     context: CmsContext,
     model: CmsContentModelGroupType
 ): Promise<void> => {
-    const { name, slug } = model;
+    const { name, slug = "" } = model;
     // If there is a slug assigned, check if it's unique ...
-    if (slug) {
-        const groups = (
-            await context.cms.groups.list({
-                where: {
-                    slug
-                },
-                limit: 1
-            })
-        ).filter(g => g.id !== model.id);
+    if (slug.trim()) {
+        const groups = await context.cms.groups.list({
+            where: {
+                slug
+            },
+            limit: 1
+        });
         if (groups.length === 0) {
             return;
         }

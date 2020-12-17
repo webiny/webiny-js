@@ -94,7 +94,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     },
                     createdBy,
                     createdOn: new Date().toISOString(),
-                    changedOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     fields: [],
                     layout: []
                 };
@@ -144,7 +144,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const modelData: CmsContentModelType = {
                     ...updatedDataJson,
                     fields: updatedFields,
-                    changedOn: new Date().toISOString()
+                    savedOn: new Date().toISOString()
                 };
 
                 await beforeSaveHook(context, modelData);

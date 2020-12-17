@@ -31,17 +31,18 @@ type DeleteEnvironmentArgsType = {
 export default {
     typeDefs: /* GraphQL */ `
         type CmsEnvironment {
-            id: ID
-            createdOn: DateTime
+            id: ID!
+            createdOn: DateTime!
+            savedOn: DateTime
             changedOn: DateTime
-            name: String
+            name: String!
             description: String
             createdFrom: CmsEnvironment
             createdBy: JSON
-            aliases: [CmsEnvironmentAlias]
+            aliases: [CmsEnvironmentAlias!]
             contentModels: [CmsContentModel]
-            isProduction: Boolean
-            slug: String
+            isProduction: Boolean!
+            slug: String!
         }
 
         type CmsContentModel {

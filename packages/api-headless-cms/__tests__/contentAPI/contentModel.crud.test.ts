@@ -90,7 +90,7 @@ describe("content model test", () => {
                         id: /^([a-zA-Z0-9]+)$/,
                         createdBy: helpers.identity,
                         createdOn: /^20/,
-                        changedOn: /^20/
+                        savedOn: /^20/
                     },
                     error: null
                 }
@@ -125,7 +125,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         ...createResponse.data.createContentModel.data,
-                        changedOn: /^20/
+                        savedOn: /^20/
                     },
                     error: null
                 }
@@ -147,7 +147,7 @@ describe("content model test", () => {
             ...createdContentModel,
             name: "changed name",
             description: "changed description",
-            changedOn: /^20/
+            savedOn: /^20/
         };
 
         expect(changedUpdateResponse).toMatchObject({
@@ -299,7 +299,7 @@ describe("content model test", () => {
             data: {
                 updateContentModel: {
                     data: {
-                        changedOn: /^20/,
+                        savedOn: /^20/,
                         createdBy: helpers.identity,
                         createdOn: /^20/,
                         description: null,

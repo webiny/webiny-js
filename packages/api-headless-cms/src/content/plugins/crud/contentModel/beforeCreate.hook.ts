@@ -8,7 +8,7 @@ export const beforeCreateHook = async (context: CmsContext, model: CmsContentMod
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {
         const models = await context.cms.models.list({
-            search: {
+            where: {
                 modelId: camelCase(modelId)
             },
             limit: 1
@@ -30,7 +30,7 @@ export const beforeCreateHook = async (context: CmsContext, model: CmsContentMod
         }
         const modelIdCheck = `${modelIdCamelCase}${counter || ""}`;
         const models = await context.cms.models.list({
-            search: {
+            where: {
                 modelId: modelIdCheck
             },
             limit: 1

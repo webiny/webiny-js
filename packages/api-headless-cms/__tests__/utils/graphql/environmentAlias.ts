@@ -5,6 +5,7 @@ const DATA_FIELD = /* GraphQL*/ `
         slug
         description
         createdOn
+        savedOn
         changedOn
         createdBy
         isProduction

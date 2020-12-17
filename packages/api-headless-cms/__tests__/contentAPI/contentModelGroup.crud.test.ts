@@ -1,4 +1,8 @@
-import { identity, createInitialAliasEnvironment, createInitialEnvironment } from "../utils/helpers";
+import {
+    identity,
+    createInitialAliasEnvironment,
+    createInitialEnvironment
+} from "../utils/helpers";
 import { toSlug } from "@webiny/api-headless-cms/utils";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
@@ -64,7 +68,7 @@ describe("Content model group crud test", () => {
                             id: /([a-zA-Z0-9]+)/,
                             ...modelData,
                             createdOn: /^20/,
-                            changedOn: null,
+                            savedOn: /^20/,
                             createdBy: identity
                         },
                         error: null
@@ -72,11 +76,7 @@ describe("Content model group crud test", () => {
                 }
             });
 
-            const {
-                id: groupId,
-                createdOn,
-                changedOn
-            } = response.data.createContentModelGroup.data;
+            const { id: groupId, createdOn, savedOn } = response.data.createContentModelGroup.data;
 
             const [getResponse] = await getContentModelGroupQuery({
                 id: groupId
@@ -89,7 +89,7 @@ describe("Content model group crud test", () => {
                             id: groupId,
                             ...modelData,
                             createdOn,
-                            changedOn: changedOn,
+                            savedOn: savedOn,
                             createdBy: identity
                         },
                         error: null
@@ -114,7 +114,7 @@ describe("Content model group crud test", () => {
                             id: groupId,
                             createdOn,
                             ...updatedModelData,
-                            changedOn: /^20/,
+                            savedOn: /^20/,
                             createdBy: identity
                         },
                         error: null

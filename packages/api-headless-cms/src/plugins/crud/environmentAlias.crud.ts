@@ -78,13 +78,15 @@ export default {
                 );
                 const id = mdbid();
 
+                const currentDate = new Date().toISOString();
                 const modelData = Object.assign(createDataJson, {
                     PK: utils.createEnvironmentAliasPk(context),
                     SK: id,
                     TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS,
                     id,
-                    createdOn: new Date().toISOString(),
-                    changedOn: new Date().toISOString(),
+                    createdOn: currentDate,
+                    savedOn: currentDate,
+                    changedOn: null,
                     environment: targetEnvironment,
                     isProduction: productionsSlugs.includes(slug),
                     createdBy
@@ -117,8 +119,9 @@ export default {
                     return {} as any;
                 }
 
+                const currentDate = new Date().toISOString();
                 const modelData = Object.assign(updatedDataJson, {
-                    changedOn: new Date().toISOString()
+                    savedOn: currentDate
                 });
 
                 if (modelData.environment) {

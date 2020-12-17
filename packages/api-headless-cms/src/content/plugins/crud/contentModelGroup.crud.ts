@@ -107,6 +107,9 @@ export default (): ContextPlugin<CmsContext> => ({
                     query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } },
                     limit
                 });
+                if (response.length === 0) {
+                    return response;
+                }
                 const whereKeys = Object.keys(where || {});
                 if (whereKeys.length === 0) {
                     return response;
@@ -124,19 +127,21 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeCreateHook(context, createdDataJson);
 
                 const id = mdbid();
-                const model = {
-                    PK: utils.createContentModelGroupPk(context),
-                    SK: id,
-                    TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
-                    id,
+                const model: CmsContentModelGroupType = {
                     ...createdDataJson,
+                    id,
                     createdOn: new Date().toISOString(),
-                    changedOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
                     createdBy
                 };
                 await db.create({
                     ...utils.defaults.db,
-                    data: model
+                    data: {
+                        PK: utils.createContentModelGroupPk(context),
+                        SK: id,
+                        TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                        ...model
+                    }
                 });
                 return model;
             },
@@ -152,7 +157,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const modelData = Object.assign(updatedDataJson, {
-                    changedOn: new Date().toISOString()
+                    savedOn: new Date().toISOString()
                 });
 
                 await db.update({

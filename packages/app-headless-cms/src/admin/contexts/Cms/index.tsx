@@ -5,7 +5,7 @@ import get from "lodash.get";
 import set from "lodash.set";
 import createApolloClient from "./createApolloClient";
 import { useSecurity } from "@webiny/app-security";
-import {useI18N} from "@webiny/app-i18n/hooks/useI18N";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 export const CmsContext = React.createContext({});
 
@@ -22,7 +22,7 @@ const getCurrentEnvironmentFromLocalStorage = () => {
 export function CmsProvider(props) {
     const { identity } = useSecurity();
     const { getCurrentLocale } = useI18N();
-    
+
     const currentLocale = getCurrentLocale("content");
 
     const hasPermission = identity.getPermission("cms.environment");
@@ -62,28 +62,31 @@ export function CmsProvider(props) {
     const environments = get(environmentsQuery, "data.cms.listEnvironments.data") || [];
     environments.hash = environments.map(item => item.id).join("-");
 
-    const selectEnvironment = useCallback(environment => {
-        set(
-            window,
-            "localStorage.cms_environment",
-            JSON.stringify({
-                id: environment.id,
-                name: environment.name,
-                isProduction: environment.isProduction
-            })
-        );
+    const selectEnvironment = useCallback(
+        environment => {
+            set(
+                window,
+                "localStorage.cms_environment",
+                JSON.stringify({
+                    id: environment.id,
+                    name: environment.name,
+                    isProduction: environment.isProduction
+                })
+            );
 
-        setCurrentEnvironmentId(environment.id);
+            setCurrentEnvironmentId(environment.id);
 
-        const clientKey = `${environment.id}-${currentLocale}`;
-        if (!apolloClientsCache[clientKey]) {
-            apolloClientsCache[clientKey] = createApolloClient({
-                uri: `${process.env.REACT_APP_API_URL}/cms/manage/${environment.id}/${currentLocale}`
-            });
-        }
+            const clientKey = `${environment.id}-${currentLocale}`;
+            if (!apolloClientsCache[clientKey]) {
+                apolloClientsCache[clientKey] = createApolloClient({
+                    uri: `${process.env.REACT_APP_API_URL}/cms/manage/${environment.id}/${currentLocale}`
+                });
+            }
 
-        setApolloClient(apolloClientsCache[clientKey]);
-    }, [currentLocale]);
+            setApolloClient(apolloClientsCache[clientKey]);
+        },
+        [currentLocale]
+    );
 
     const isSelectedEnvironment = useCallback(
         environment => {

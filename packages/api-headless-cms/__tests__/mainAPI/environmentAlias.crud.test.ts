@@ -73,7 +73,8 @@ describe("Environment alias crud test", () => {
                                 ...modelData,
                                 environment: getInitialEnvironment(),
                                 createdOn: /^20/,
-                                changedOn: /^20/,
+                                savedOn: /^20/,
+                                changedOn: null,
                                 createdBy: identity
                             },
                             error: null
@@ -101,7 +102,8 @@ describe("Environment alias crud test", () => {
                                 createdBy: identity,
                                 isProduction: false,
                                 createdOn,
-                                changedOn: createdOn
+                                savedOn: createdOn,
+                                changedOn: null
                             },
                             error: null
                         }
@@ -129,7 +131,8 @@ describe("Environment alias crud test", () => {
                                 environment: getInitialEnvironment(),
                                 createdBy: identity,
                                 createdOn,
-                                changedOn: /^20/
+                                savedOn: /^20/,
+                                changedOn: null
                             },
                             error: null
                         }
@@ -439,13 +442,14 @@ describe("Environment alias crud test", () => {
                 cms: {
                     createEnvironmentAlias: {
                         data: {
-                            changedOn: /^20/,
                             createdBy: {
                                 displayName: "User 123",
                                 id: "123",
                                 type: "admin"
                             },
                             createdOn: /^20/,
+                            savedOn: /^20/,
+                            changedOn: /^20/,
                             description: "Must be a production alias",
                             environment: {
                                 createdBy: {

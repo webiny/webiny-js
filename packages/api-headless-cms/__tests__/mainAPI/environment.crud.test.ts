@@ -85,7 +85,8 @@ describe("Environment crud test", () => {
                                 },
                                 isProduction: false,
                                 createdOn: /^20/,
-                                changedOn: /^20/
+                                savedOn: /^20/,
+                                changedOn: null
                             },
                             error: null
                         }

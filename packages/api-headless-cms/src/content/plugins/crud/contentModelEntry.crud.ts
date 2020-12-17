@@ -21,7 +21,7 @@ const createElasticSearchData = (model: CmsContentModelEntryType, context: CmsCo
         __type: "cms.entry",
         id: model.id,
         createdOn: model.createdOn,
-        changedOn: model.changedOn,
+        savedOn: model.savedOn,
         createdBy: model.createdBy,
         modelId: model.modelId,
         locale: context.cms.getLocale().code
@@ -35,7 +35,7 @@ const updateElasticSearchData = (model: CmsContentModelEntryType) => {
     }, {});
     return {
         ...values,
-        changedOn: model.changedOn
+        savedOn: model.savedOn
     };
 };
 
@@ -94,7 +94,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     id,
                     ...modelDataJson,
                     createdOn: new Date(),
-                    changedOn: new Date(),
+                    savedOn: new Date(),
                     createdBy
                 };
 
@@ -131,7 +131,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const updatedModel: CmsContentModelEntryType = {
                     ...existingEntryModel,
                     values: data.values,
-                    changedOn: new Date()
+                    savedOn: new Date()
                 };
 
                 await db.update({
@@ -140,7 +140,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     data: updatedModel
                 });
 
-                // TODO check if we update only changedOn and values fields
+                // TODO check if we update only savedOn and values fields
                 await elasticSearch.update({
                     ...utils.defaults.es(context),
                     id: `CME#${id}`,

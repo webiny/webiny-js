@@ -220,7 +220,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 type CmsContentModelGroup {
                     id: ID
                     createdOn: DateTime
-                    changedOn: DateTime
+                    savedOn: DateTime
                     name: String
                     contentModels: [CmsContentModel]
                     totalContentModels: Int
