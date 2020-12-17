@@ -4,7 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import * as helpers from "../utils/helpers";
 
-describe("MANAGE - Resolvers", () => {
+describe.skip("MANAGE - Resolvers", () => {
     let environment: CmsEnvironmentType;
     let contentModelGroup: CmsContentModelGroupType;
 

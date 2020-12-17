@@ -1,13 +1,11 @@
-import { createInitialAliasEnvironment, createInitialEnvironment } from "../utils/helpers";
+import { identity, createInitialAliasEnvironment, createInitialEnvironment } from "../utils/helpers";
 import { toSlug } from "@webiny/api-headless-cms/utils";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
     PREFIX = "contentModelGroup",
-    SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    SUFFIX = "UPDATED"
 }
 
 const createContentModelGroupPrefix = (position: number) => {
@@ -67,10 +65,7 @@ describe("Content model group crud test", () => {
                             ...modelData,
                             createdOn: /^20/,
                             changedOn: null,
-                            createdBy: {
-                                id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
-                            }
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -91,10 +86,7 @@ describe("Content model group crud test", () => {
                             ...modelData,
                             createdOn,
                             changedOn: null,
-                            createdBy: {
-                                id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
-                            }
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -119,10 +111,7 @@ describe("Content model group crud test", () => {
                             createdOn,
                             ...updatedModelData,
                             changedOn: /^20/,
-                            createdBy: {
-                                id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
-                            }
+                            createdBy: identity
                         },
                         error: null
                     }

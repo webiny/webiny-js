@@ -1,11 +1,9 @@
-/* eslint-disable */
-import { graphql } from "graphql";
 import { CmsContentModelGroupType, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 
-describe("READ - Resolvers", () => {
+describe.skip("READ - Resolvers", () => {
     let environment: CmsEnvironmentType;
     let contentModelGroup: CmsContentModelGroupType;
 

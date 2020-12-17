@@ -7,7 +7,7 @@ import productManage from "./snapshots/product.manage";
 import reviewManage from "./snapshots/review.manage";
 
 describe("MANAGE - ContentModel to SDL", () => {
-    const fieldTypePlugins = graphQLFieldPlugins.reduce((acc, pl) => {
+    const fieldTypePlugins = graphQLFieldPlugins().reduce((acc, pl) => {
         acc[pl.fieldType] = pl;
         return acc;
     }, {});
