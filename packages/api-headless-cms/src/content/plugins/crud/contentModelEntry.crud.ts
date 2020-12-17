@@ -60,19 +60,44 @@ export default (): ContextPlugin<CmsContext> => ({
                 return response.find(() => true);
             },
             list: async (model: CmsContentModelType, args = {}) => {
-                // eslint-disable-next-line
-                const searchValues = createElasticSearchParams({
+                const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
+
+                const body = createElasticSearchParams({
                     model,
-                    args,
+                    args: {
+                        ...args,
+                        limit
+                    },
                     context,
                     onlyOwned: false
                 });
-                const [response] = await db.read<CmsContentModelEntryType>({
-                    ...utils.defaults.db,
-                    query: { PK: utils.createContentModelEntryPk(context), SK: { $gt: " " } }
+
+                const response = await elasticSearch.search({
+                    ...utils.defaults.es(context),
+                    body
                 });
 
-                return response;
+                const { hits, total } = response.body.hits;
+                const items = hits.map(item => item._source);
+
+                const hasMoreItems = items.length > limit;
+                if (hasMoreItems) {
+                    // Remove the last item from results, we don't want to include it.
+                    items.pop();
+                }
+
+                // Cursor is the `sort` value of the last item in the array.
+                // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+                const meta = {
+                    hasMoreItems,
+                    totalCount: total.value,
+                    cursor:
+                        items.length > 0
+                            ? utils.encodeElasticSearchCursor(hits[items.length - 1].sort)
+                            : null
+                };
+
+                return [items, meta];
             },
             create: async (contentModelId, data, createdBy) => {
                 await utils.checkBaseContentModelEntryPermissions(context, "w");

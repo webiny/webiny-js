@@ -5,6 +5,7 @@
 // import addRefFieldHooks from "./modelFields/refField/addRefFieldHooks";
 // import checkRefFieldsBeforeSave from "./modelFields/refField/checkRefFieldsBeforeSave";
 import contentModelManager from "./contentModelManager";
+import elasticSearch from "./es";
 
 type HeadlessPluginsOptions = {
     type: string;
@@ -14,7 +15,8 @@ type HeadlessPluginsOptions = {
 };
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (options: HeadlessPluginsOptions) => [
-    contentModelManager()
+    contentModelManager(),
+    elasticSearch()
     // checkRefFieldsBeforeSave(),
     // addRefFieldHooks(),
     // models(),

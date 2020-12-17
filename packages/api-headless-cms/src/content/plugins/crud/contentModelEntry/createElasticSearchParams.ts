@@ -1,11 +1,13 @@
 import {
-    CmsContentModelEntryListArgsType,
     CmsContentModelEntryListSortType,
     CmsContentModelEntryListWhereType,
     CmsContentModelType,
     CmsContext,
-    CmsModelFieldToGraphQLPlugin
+    CmsModelFieldToGraphQLPlugin,
+    ElasticSearchQueryBuilderPlugin,
+    ElasticSearchQueryType
 } from "@webiny/api-headless-cms/types";
+import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
 
 type FieldType = {
     unmappedType?: string;
@@ -13,17 +15,24 @@ type FieldType = {
     isSortable: boolean;
 };
 type FieldsType = Record<string, FieldType>;
-type CreateElasticSearchParamsArgsType = {
+
+type CreateElasticSearchParamsArgType = {
+    where?: CmsContentModelEntryListWhereType;
+    sort?: CmsContentModelEntryListSortType;
+    limit: number;
+    after?: string;
+};
+type CreateElasticSearchParamsType = {
     context: CmsContext;
     model: CmsContentModelType;
-    args: CmsContentModelEntryListArgsType;
+    args: CreateElasticSearchParamsArgType;
     onlyOwned?: boolean;
 };
 type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
     fields: FieldsType;
 };
-type CreateElasticSearchQueryMustParamsType = {
+type CreateElasticSearchQueryArgsType = {
     context: CmsContext;
     where: CmsContentModelEntryListWhereType;
     fields: FieldsType;
@@ -33,21 +42,6 @@ type ElasticSearchSortParamType = {
     order: string;
 };
 type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
-
-type ElasticSearchQueryMustParamType = {
-    must: {
-        [key: string]: any;
-    };
-};
-type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
-
-const decodeCursor = (cursor?: string) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
-};
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)_?([a-zA-Z0-9_]+)$/);
 const parseWhereKey = (key: string) => {
@@ -61,49 +55,6 @@ const parseWhereKey = (key: string) => {
         op
     };
 };
-const createElasticSearchQueryMustParams = ({
-    context,
-    where,
-    fields,
-    onlyOwned
-}: CreateElasticSearchQueryMustParamsType): ElasticSearchQueryMustParamListType => {
-    const must = [];
-    must.push({
-        term: {
-            "__type.keyword": "cms.entry"
-        }
-    });
-    must.push({
-        term: {
-            "locale.keyword": context.cms.getLocale().code
-        }
-    });
-    if (onlyOwned) {
-        must.push({
-            term: {
-                "ownedBy.id.keyword": context.security.getIdentity().id
-            }
-        });
-    }
-    for (const key in where) {
-        if (where.hasOwnProperty(key) === false) {
-            continue;
-        }
-        const { field, op } = parseWhereKey(key);
-        if (op !== "eq") {
-            continue;
-        }
-        if (!fields[field]) {
-            throw new Error(`There is no field "${field}" to use in where condition.`);
-        }
-        must.push({
-            term: {
-                [`${field}.keyword`]: where[key]
-            }
-        });
-    }
-    return must;
-};
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
@@ -111,32 +62,68 @@ const creteElasticSearchSortParams = ({
     sort,
     fields
 }: CreateElasticSearchSortParamsType): ElasticSearchSortFieldsType[] => {
-    return sort.map(value => {
-        const match = value.match(sortRegExp);
-        if (!match) {
-            throw new Error(`Cannot sort by "${value}".`);
-        }
-        const [field, order] = match;
-        if (!fields[field]) {
-            throw new Error(`It is not possible to sort by field "${field}".`);
-        }
-        return {
-            [field]: {
-                order: order.toLowerCase() === "asc" ? "asc" : "desc",
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                unmapped_type: fields[field].unmappedType || undefined
+    return sort
+        .map(value => {
+            const match = value.match(sortRegExp);
+            if (!match) {
+                throw new Error(`Cannot sort by "${value}".`);
             }
-        };
-    });
+            const [field, order] = match;
+            if (!fields[field]) {
+                throw new Error(`It is not possible to sort by field "${field}".`);
+            }
+            if (!fields[field].isSortable) {
+                throw new Error(`Field "${field}" is not sortable.`);
+            }
+            return {
+                [field]: {
+                    order: order.toLowerCase() === "asc" ? "asc" : "desc",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    unmapped_type: fields[field].unmappedType || undefined
+                }
+            };
+        })
+        .filter(value => !!value);
 };
 
-export const createElasticSearchParams = ({
-    context,
-    model,
-    args,
-    onlyOwned
-}: CreateElasticSearchParamsArgsType) => {
-    const { where, after, limit = 100, sort } = args;
+const execElasticSearchBuildQueryPlugins = (
+    plugins: ElasticSearchQueryBuilderPlugin[],
+    args: CreateElasticSearchQueryArgsType
+): ElasticSearchQueryType => {
+    const { where, fields } = args;
+    const query: ElasticSearchQueryType = {
+        match: [],
+        must: [],
+        mustNot: [],
+        range: []
+    };
+    for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
+        const { field, op } = parseWhereKey(key);
+        if (!fields[field]) {
+            throw new Error(`There is no field "${field}".`);
+        }
+        if (!fields[field].isSearchable) {
+            throw new Error(`Field "${field}" is not searchable.`);
+        }
+        for (const plugin of plugins) {
+            if (plugin.targetOperation !== op) {
+                continue;
+            }
+            plugin.apply(query, {
+                field,
+                value: where[key]
+            });
+        }
+    }
+    return query;
+};
+
+export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
+    const { context, model, args, onlyOwned } = params;
+    const { where, after, limit, sort } = args;
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
@@ -156,13 +143,26 @@ export const createElasticSearchParams = ({
         };
         return acc;
     }, {});
+    const elasticSearchBuildQueryPlugins = context.plugins.byType<ElasticSearchQueryBuilderPlugin>(
+        "elastic-search-query-builder"
+    );
+    const query = execElasticSearchBuildQueryPlugins(elasticSearchBuildQueryPlugins, {
+        context,
+        where,
+        fields,
+        onlyOwned
+    });
     return {
         query: {
-            must: createElasticSearchQueryMustParams({ context, where, fields, onlyOwned })
+            must: query.must.length > 0 ? query.must : undefined,
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+            range: query.range.length > 0 ? query.range : undefined,
+            match: query.match.length > 0 ? query.match : undefined
         },
         sort: creteElasticSearchSortParams({ sort, fields }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeCursor(after)
+        search_after: decodeElasticSearchCursor(after)
     };
 };
