@@ -13,7 +13,7 @@ type FieldType = {
     isSortable: boolean;
 };
 type FieldsType = Record<string, FieldType>;
-type CreateElasticSearchParamsArgsType = {
+type CreateElasticSearchParamsType = {
     context: CmsContext;
     model: CmsContentModelType;
     args: CmsContentModelEntryListArgsType;
@@ -23,7 +23,7 @@ type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
     fields: FieldsType;
 };
-type CreateElasticSearchQueryMustParamsType = {
+type CreateElasticSearchQueryArgsType = {
     context: CmsContext;
     where: CmsContentModelEntryListWhereType;
     fields: FieldsType;
@@ -35,11 +35,35 @@ type ElasticSearchSortParamType = {
 type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
 
 type ElasticSearchQueryMustParamType = {
-    must: {
+    term: {
         [key: string]: any;
     };
 };
 type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
+
+type ElasticSearchQueryMustNotParamType = {
+    term: {
+        [key: string]: any;
+    };
+};
+type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
+
+type ElasticSearchQueryRangeParamType = {
+    [key: string]: {
+        lte?: string | number;
+        gte?: string | number;
+    };
+};
+type ElasticSearchQueryRangeParamListType = ElasticSearchQueryRangeParamType[];
+
+type ElasticSearchQueryMatchParamType = {
+    [key: string]: {
+        query: string;
+        // OR is default one in ES
+        operator?: "AND" | "OR";
+    };
+};
+type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
 
 const decodeCursor = (cursor?: string) => {
     if (!cursor) {
@@ -61,13 +85,9 @@ const parseWhereKey = (key: string) => {
         op
     };
 };
-const createElasticSearchQueryMustParams = ({
-    context,
-    where,
-    fields,
-    onlyOwned
-}: CreateElasticSearchQueryMustParamsType): ElasticSearchQueryMustParamListType => {
-    const must = [];
+const createElasticSearchQueryMustParams = (args: CreateElasticSearchQueryArgsType) => {
+    const { context, where, fields, onlyOwned } = args;
+    const must: ElasticSearchQueryMustParamListType = [];
     must.push({
         term: {
             "__type.keyword": "cms.entry"
@@ -90,7 +110,7 @@ const createElasticSearchQueryMustParams = ({
             continue;
         }
         const { field, op } = parseWhereKey(key);
-        if (op !== "eq") {
+        if (op !== "eq" && op !== "in") {
             continue;
         }
         if (!fields[field]) {
@@ -103,6 +123,84 @@ const createElasticSearchQueryMustParams = ({
         });
     }
     return must;
+};
+
+const createElasticSearchQueryMustNotParams = (args: CreateElasticSearchQueryArgsType) => {
+    const { where, fields } = args;
+    const mustNot: ElasticSearchQueryMustNotParamListType = [];
+    for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
+        const { field, op } = parseWhereKey(key);
+        if (op !== "not" && op !== "not_in" && op !== "not_contains") {
+            continue;
+        }
+        if (!fields[field]) {
+            throw new Error(`There is no field "${field}" to use in where condition.`);
+        }
+        mustNot.push({
+            term: {
+                [`${field}.keyword`]: where[key]
+            }
+        });
+    }
+    return mustNot;
+};
+
+const createElasticSearchQueryRangeParams = (args: CreateElasticSearchQueryArgsType) => {
+    const { where, fields } = args;
+    const range: ElasticSearchQueryRangeParamListType = [];
+    for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
+        const { field, op } = parseWhereKey(key);
+        if (op !== "between" && op !== "not_between") {
+            continue;
+        }
+        if (Array.isArray(where[key]) === false || where[key].length !== 2) {
+            throw new Error(
+                `You must send an array of two elements for "between" filter to work on field "${field}".`
+            );
+        }
+        if (!fields[field]) {
+            throw new Error(`There is no field "${field}" to use in where condition.`);
+        }
+        const values = where[key] as string[];
+        const [lte, gte] = op === "between" ? values : values.reverse();
+        range.push({
+            [`${field}.keyword`]: {
+                lte,
+                gte
+            }
+        });
+    }
+    return range;
+};
+
+const createElasticSearchQueryMatchParams = (args: CreateElasticSearchQueryArgsType) => {
+    const { where, fields } = args;
+    const match: ElasticSearchQueryMatchParamListType = [];
+    for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
+        const { field, op } = parseWhereKey(key);
+        if (op !== "contains") {
+            continue;
+        }
+        if (!fields[field]) {
+            throw new Error(`There is no field "${field}" to use in where condition.`);
+        }
+        match.push({
+            [field]: {
+                query: where[key],
+                operator: "AND"
+            }
+        });
+    }
+    return match;
 };
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
@@ -130,12 +228,8 @@ const creteElasticSearchSortParams = ({
     });
 };
 
-export const createElasticSearchParams = ({
-    context,
-    model,
-    args,
-    onlyOwned
-}: CreateElasticSearchParamsArgsType) => {
+export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
+    const { context, model, args, onlyOwned } = params;
     const { where, after, limit = 100, sort } = args;
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
@@ -158,7 +252,11 @@ export const createElasticSearchParams = ({
     }, {});
     return {
         query: {
-            must: createElasticSearchQueryMustParams({ context, where, fields, onlyOwned })
+            must: createElasticSearchQueryMustParams({ context, where, fields, onlyOwned }),
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            must_not: createElasticSearchQueryMustNotParams({ context, where, fields, onlyOwned }),
+            range: createElasticSearchQueryRangeParams({ context, where, fields, onlyOwned }),
+            match: createElasticSearchQueryMatchParams({ context, where, fields, onlyOwned })
         },
         sort: creteElasticSearchSortParams({ sort, fields }),
         size: limit + 1,

@@ -497,6 +497,8 @@ export type CmsContentModelEntryListWhereType = {
     modelId_in?: string[];
     modelId_not?: string;
     modelId_not_in?: string[];
+    modelId_contains?: string;
+    modelId_not_contains?: string;
     [key: string]: any;
 };
 export type CmsContentModelEntryListSortType = string[];
