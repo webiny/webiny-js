@@ -155,16 +155,13 @@ const elementFields = /*GraphQL*/ `
     type
     category
     content
-    preview {
-        src
-        meta
-    }
+    preview
 `;
 
 export const LIST_ELEMENTS = gql`
     query PbListElements {
         pageBuilder {
-            elements: listElements(limit: 1000) {
+            elements: listPageElements {
                 data {
                     ${elementFields}
                 }
