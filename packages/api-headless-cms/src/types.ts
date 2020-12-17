@@ -575,3 +575,63 @@ export type CmsContentModelEntryResolverFactoryType<
         TContext
     >;
 };
+
+export type ElasticSearchQueryOperations =
+    | "eq"
+    | "not"
+    | "in"
+    | "not_in"
+    | "contains"
+    | "not_contains"
+    | "between"
+    | "not_between";
+
+type ElasticSearchQueryMustParamType = {
+    term: {
+        [key: string]: any;
+    };
+};
+type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
+
+type ElasticSearchQueryMustNotParamType = {
+    term: {
+        [key: string]: any;
+    };
+};
+type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
+
+type ElasticSearchQueryRangeParamType = {
+    [key: string]: {
+        lte?: string | number;
+        gte?: string | number;
+    };
+};
+type ElasticSearchQueryRangeParamListType = ElasticSearchQueryRangeParamType[];
+
+type ElasticSearchQueryMatchParamType = {
+    [key: string]: {
+        query: string;
+        // OR is default one in ES
+        operator?: "AND" | "OR";
+    };
+};
+type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
+
+export type ElasticSearchQueryType = {
+    must?: ElasticSearchQueryMustParamListType;
+    mustNot?: ElasticSearchQueryMustNotParamListType;
+    range?: ElasticSearchQueryRangeParamListType;
+    match?: ElasticSearchQueryMatchParamListType;
+};
+
+export type ElasticSearchQueryBuilderArgsPluginType = {
+    field: string;
+    value: any;
+};
+
+export type ElasticSearchQueryBuilderPlugin = Plugin & {
+    type: "elastic-search-query-builder";
+    name: string;
+    targetOperation: ElasticSearchQueryOperations;
+    apply: (query: ElasticSearchQueryType, args: ElasticSearchQueryBuilderArgsPluginType) => void;
+};
