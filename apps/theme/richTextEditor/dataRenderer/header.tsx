@@ -10,22 +10,22 @@ export default () =>
         render(block) {
             switch (block.data.level) {
                 case 1:
-                    return <h1>{block.data.text}</h1>;
+                    return <h1 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
 
                 case 2:
-                    return <h2>{block.data.text}</h2>;
+                    return <h2 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
 
                 case 3:
-                    return <h3>{block.data.text}</h3>;
+                    return <h3 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
 
                 case 4:
-                    return <h4>{block.data.text}</h4>;
+                    return <h4 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
 
                 case 5:
-                    return <h5>{block.data.text}</h5>;
+                    return <h5 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
 
                 case 6:
-                    return <h6>{block.data.text}</h6>;
+                    return <h6 dangerouslySetInnerHTML={{ __html: block.data.text }} />;
             }
         }
     } as RTEDataBlockRendererPlugin);
