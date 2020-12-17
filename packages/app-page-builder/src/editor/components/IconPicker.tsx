@@ -278,6 +278,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     );
 
     if (useInSidebar) {
+        const disableRemoveIcon = !value || !removable;
         return (
             <div className={iconPickerWrapper}>
                 <Menu
@@ -290,7 +291,9 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     {renderGrid}
                 </Menu>
                 <div
-                    className={classNames("button", "iconContainer", { disabled: !value })}
+                    className={classNames("button", "iconContainer", {
+                        disabled: disableRemoveIcon
+                    })}
                     onClick={removeIcon}
                 >
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
