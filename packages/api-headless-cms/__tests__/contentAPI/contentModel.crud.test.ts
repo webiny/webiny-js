@@ -90,7 +90,7 @@ describe("content model test", () => {
                         id: /^([a-zA-Z0-9]+)$/,
                         createdBy: helpers.identity,
                         createdOn: /^20/,
-                        changedOn: null
+                        changedOn: /^20/
                     },
                     error: null
                 }

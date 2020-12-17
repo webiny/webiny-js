@@ -26,6 +26,64 @@ const UpdateContentModelGroupModel = withFields({
     icon: string({ validation: validation.create("maxLength:255") })
 })();
 
+const whereKeySuffix = [
+    "_not",
+    "_not_in",
+    "_in",
+    "_gt",
+    "_gte",
+    "_lt",
+    "_lte",
+    "_not_between",
+    "_between"
+].join("|");
+const removeWhereKeySuffix = (key: string): string => {
+    return key.replace(new RegExp(`${whereKeySuffix}$`), "");
+};
+const compare = (key: string, compareValue: any, value: any): boolean => {
+    if (key.endsWith("_not")) {
+        return String(value) !== compareValue;
+    } else if (key.endsWith("_not_in")) {
+        return !compareValue.includes(value);
+    } else if (key.endsWith("_in")) {
+        return compareValue.includes(value);
+    } else if (key.endsWith("_gt")) {
+        return value > compareValue;
+    } else if (key.endsWith("_gte")) {
+        return value >= compareValue;
+    } else if (key.endsWith("_lt")) {
+        return value < compareValue;
+    } else if (key.endsWith("_lte")) {
+        return value <= compareValue;
+    } else if (key.endsWith("_not_between")) {
+        if (!Array.isArray(compareValue) || compareValue.length === 0) {
+            throw new Error(`Wrong compareValue for "${key}".`);
+        }
+        return value < compareValue[0] && value > compareValue[1];
+    } else if (key.endsWith("_between")) {
+        if (!Array.isArray(compareValue) || compareValue.length === 0) {
+            throw new Error(`Wrong compareValue for "${key}".`);
+        }
+        return value >= compareValue[0] && value <= compareValue[1];
+    }
+    return compareValue === value;
+};
+
+const whereFilterFactory = (where: Record<string, any>) => {
+    const whereKeys = Object.keys(where);
+    return model => {
+        for (const whereKey of whereKeys) {
+            if (where.hasOwnProperty(whereKey) === false) {
+                continue;
+            }
+            const whereValue = where[whereKey];
+            const value = model[removeWhereKeySuffix(whereKey)];
+            return compare(whereKey, whereValue, value);
+        }
+        return true;
+    };
+};
+
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     async apply(context) {
@@ -43,21 +101,17 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return response.find(() => true);
             },
-            list: async ({ search, limit } = {}) => {
+            list: async ({ where, limit } = {}) => {
                 const [response] = await db.read<CmsContentModelGroupType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } },
                     limit
                 });
-                const searchKeys = Object.keys(search || {});
-                if (searchKeys.length > 0) {
-                    return response.filter(group => {
-                        return searchKeys.every(key => {
-                            return group[key] === search[key];
-                        });
-                    });
+                const whereKeys = Object.keys(where || {});
+                if (whereKeys.length === 0) {
+                    return response;
                 }
-                return response;
+                return response.filter(whereFilterFactory(where));
             },
             create: async (data, createdBy) => {
                 const createdData = new CreateContentModelGroupModel().populate({
@@ -77,6 +131,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     id,
                     ...createdDataJson,
                     createdOn: new Date().toISOString(),
+                    changedOn: new Date().toISOString(),
                     createdBy
                 };
                 await db.create({

@@ -94,6 +94,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     },
                     createdBy,
                     createdOn: new Date().toISOString(),
+                    changedOn: new Date().toISOString(),
                     fields: [],
                     layout: []
                 };

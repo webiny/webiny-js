@@ -5,7 +5,7 @@ export default /* GraphQL */ `
     type Product {
         id: ID
         createdOn: DateTime
-        updatedOn: DateTime
+        changedOn: DateTime
         savedOn: DateTime
         meta: ProductMeta
         title: String

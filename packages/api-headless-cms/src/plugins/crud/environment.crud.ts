@@ -125,6 +125,7 @@ export default {
                 const model: CmsEnvironmentType = Object.assign(createDataJson, {
                     id,
                     createdOn: new Date().toISOString(),
+                    changedOn: new Date().toISOString(),
                     createdFrom: sourceEnvironment,
                     createdBy
                 });

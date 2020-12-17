@@ -72,7 +72,11 @@ describe("Content model group crud test", () => {
                 }
             });
 
-            const { id: groupId, createdOn } = response.data.createContentModelGroup.data;
+            const {
+                id: groupId,
+                createdOn,
+                changedOn
+            } = response.data.createContentModelGroup.data;
 
             const [getResponse] = await getContentModelGroupQuery({
                 id: groupId
@@ -85,7 +89,7 @@ describe("Content model group crud test", () => {
                             id: groupId,
                             ...modelData,
                             createdOn,
-                            changedOn: null,
+                            changedOn: changedOn,
                             createdBy: identity
                         },
                         error: null

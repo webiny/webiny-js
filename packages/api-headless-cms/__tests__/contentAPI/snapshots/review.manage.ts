@@ -5,7 +5,7 @@ export default /* GraphQL */ `
     type Review {
         id: ID
         createdOn: DateTime
-        updatedOn: DateTime
+        changedOn: DateTime
         savedOn: DateTime
         meta: ReviewMeta
         text: String
