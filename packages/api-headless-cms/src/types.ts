@@ -61,6 +61,9 @@ export type CmsContentModelFieldType = {
     fieldId: string;
     label: string;
     helpText: string;
+    placeholderText: string;
+    predefinedValues: CmsContentModelFieldPredefinedValuesType;
+    renderer: CmsContentModelFieldRendererType;
     validation: CmsContentModelFieldValidationType[];
     multipleValues: boolean;
     settings?: { [key: string]: any };
@@ -412,7 +415,7 @@ export type CmsContentModelContextType = {
     getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };
 
-type CmsContentModelFieldCreateInputPredefinedValuesType = {
+type CmsContentModelFieldPredefinedValuesType = {
     enabled: boolean;
     values: any[];
 };
@@ -429,7 +432,7 @@ export type CmsContentModelFieldInputType = {
     helpText?: string;
     placeholderText?: string;
     multipleValues?: boolean;
-    predefinedValues?: CmsContentModelFieldCreateInputPredefinedValuesType;
+    predefinedValues?: CmsContentModelFieldPredefinedValuesType;
     renderer?: CmsContentModelFieldRendererType;
     validation?: CmsContentModelFieldValidationType[];
     settings?: Record<string, any>;
