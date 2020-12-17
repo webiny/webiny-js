@@ -16,7 +16,7 @@ type Props = {
     trailingIcon?: TrailingIconType;
 };
 
-const Input = ({ bind, ...props}: Props) => {
+const Input = ({ bind, ...props }: Props) => {
     return (
         <UiInput
             {...props}

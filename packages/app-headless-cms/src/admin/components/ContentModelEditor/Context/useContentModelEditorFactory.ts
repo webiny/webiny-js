@@ -4,7 +4,6 @@ import { get, cloneDeep, pick } from "lodash";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { getPlugins } from "@webiny/plugins";
-import omit from "lodash/omit";
 
 import {
     CmsEditorFieldsLayout,

@@ -125,7 +125,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 label: String!
                 value: String!
             }
-            
+
             input CmsPredefinedValuesInput {
                 enabled: Boolean
                 values: [CmsPredefinedValueInput]
@@ -197,7 +197,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 type CmsFieldRenderer {
                     name: String
                 }
-                
+
                 type CmsPredefinedValue {
                     label: String
                     value: String

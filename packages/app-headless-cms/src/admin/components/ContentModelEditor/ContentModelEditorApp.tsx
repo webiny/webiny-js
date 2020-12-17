@@ -24,11 +24,7 @@ const ContentModelEditorApp = () => {
     }
 
     return (
-        <ContentModelEditorProvider
-            key={id}
-            apollo={apolloClient}
-            id={id}
-        >
+        <ContentModelEditorProvider key={id} apollo={apolloClient} id={id}>
             <ContentModelEditor />
         </ContentModelEditorProvider>
     );

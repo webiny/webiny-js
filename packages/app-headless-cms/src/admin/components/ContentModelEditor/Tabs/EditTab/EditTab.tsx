@@ -31,7 +31,7 @@ export const EditTab: CmsEditorContentTab = () => {
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     }, undefined);
-    
+
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, type, ui } = source;
 

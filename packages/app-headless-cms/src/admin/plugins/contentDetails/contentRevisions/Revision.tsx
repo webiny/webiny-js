@@ -81,9 +81,7 @@ const Revision = props => {
                         </Tooltip>
                     </ListItemGraphic>
                     <ListItemText>
-                        <ListItemTextPrimary>
-                            {revision.meta.title || t`N/A`}
-                        </ListItemTextPrimary>
+                        <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                         <ListItemTextSecondary>
                             {t`Last modified: {time} (#{version})`({
                                 time: <TimeAgo datetime={revision.savedOn} />,

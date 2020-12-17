@@ -55,7 +55,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
     const contentModelGroups = get(response, "data.listContentModelGroups.data", []);
-    
+
     const cmgHash = contentModelGroups.reduce((returnValue, currentValue) => {
         return (
             returnValue +

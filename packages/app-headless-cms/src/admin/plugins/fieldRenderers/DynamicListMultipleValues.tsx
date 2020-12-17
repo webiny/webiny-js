@@ -21,7 +21,7 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children }) => {
         <Bind>
             {bindField => {
                 const { value, appendValue } = bindField;
-                
+
                 return (
                     <Grid>
                         <Cell span={12}>

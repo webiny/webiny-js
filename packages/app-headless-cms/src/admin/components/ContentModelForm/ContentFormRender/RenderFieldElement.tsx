@@ -19,7 +19,7 @@ const RenderFieldElement = (props: {
     renderPlugins: CmsEditorFieldRendererPlugin[];
 }) => {
     const { renderPlugins, field, Bind: BaseFormBind, contentModel } = props;
-    
+
     const renderPlugin = renderPlugins.find(
         plugin => plugin.renderer.rendererName === get(field, "renderer.name")
     );

@@ -11,7 +11,7 @@ function CmsEditorFieldRenderer({ field, getBind, Label }) {
 
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
-    
+
     return (
         <Bind>
             {({ appendValues, value, appendValue }) => (
@@ -82,13 +82,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
             return field.type === "file" && field.multipleValues;
         },
         render({ field, getBind, Label }) {
-            return (
-                <CmsEditorFieldRenderer
-                    field={field}
-                    getBind={getBind}
-                    Label={Label}
-                />
-            );
+            return <CmsEditorFieldRenderer field={field} getBind={getBind} Label={Label} />;
         }
     }
 };

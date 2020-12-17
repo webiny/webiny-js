@@ -27,7 +27,9 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             returnFields = [...fields.map(item => [item.id])];
         }
 
-        const validatorPlugins: CmsFormFieldValidatorPlugin[] = plugins.byType("form-field-validator");
+        const validatorPlugins: CmsFormFieldValidatorPlugin[] = plugins.byType(
+            "form-field-validator"
+        );
 
         returnFields.forEach(row => {
             row.forEach((id, idIndex) => {
