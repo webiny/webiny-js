@@ -14,7 +14,7 @@ import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
 const COLUMN_COUNT = 6;
-
+const noop = () => null;
 const gridItem = css({
     position: "relative",
     display: "flex",
@@ -134,6 +134,10 @@ const iconPickerWrapper = css({
         "& svg": {
             width: 16,
             height: 16
+        },
+        "&.disabled": {
+            pointerEvents: "none",
+            opacity: 0.5
         }
     }
 });
@@ -144,13 +148,15 @@ type IconPickerPropsType = {
     removable?: boolean;
     handlerClassName?: string;
     useInSidebar?: boolean;
+    removeIcon?: () => void;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
     removable = true,
     handlerClassName,
-    useInSidebar
+    useInSidebar,
+    removeIcon = noop
 }) => {
     const [filter, setFilter] = useState<string>("");
 
@@ -203,10 +209,6 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     const icons = useMemo(() => {
         return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
     }, [filter, selectedIconPrefix, selectedIconName]);
-
-    const starIcon = useMemo(() => {
-        return allIcons.find(item => item.id[0] === "far" && item.id[1] === "star");
-    }, [allIcons]);
 
     const renderCell = useCallback(
         ({ closeMenu }) => {
@@ -288,8 +290,8 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     {renderGrid}
                 </Menu>
                 <div
-                    className={classNames("button", "iconContainer")}
-                    onClick={() => onChange(starIcon)}
+                    className={classNames("button", "iconContainer", { disabled: !value })}
+                    onClick={removeIcon}
                 >
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
