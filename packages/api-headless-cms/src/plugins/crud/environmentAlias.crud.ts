@@ -84,6 +84,7 @@ export default {
                     TYPE: DbItemTypes.CMS_ENVIRONMENT_ALIAS,
                     id,
                     createdOn: new Date().toISOString(),
+                    changedOn: new Date().toISOString(),
                     environment: targetEnvironment,
                     isProduction: productionsSlugs.includes(slug),
                     createdBy

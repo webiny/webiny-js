@@ -58,7 +58,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return response.find(() => true);
             },
             // eslint-disable-next-line
-            list: async ({ search, limit }) => {
+            list: async args => {
+                // const searchValues = createSearchValues(args);
                 const [response] = await db.read<CmsContentModelEntryType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelEntryPk(context), SK: { $gt: " " } }
@@ -93,7 +94,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     id,
                     ...modelDataJson,
                     createdOn: new Date(),
-                    changedOn: null,
+                    changedOn: new Date(),
                     createdBy
                 };
 

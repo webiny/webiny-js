@@ -74,7 +74,7 @@ describe("Environment alias crud test", () => {
                                 ...modelData,
                                 environment: getInitialEnvironment(),
                                 createdOn: /^20/,
-                                changedOn: null,
+                                changedOn: /^20/,
                                 createdBy: {
                                     id: TestHelperEnum.USER_ID,
                                     displayName: TestHelperEnum.USER_NAME
@@ -109,7 +109,7 @@ describe("Environment alias crud test", () => {
                                 },
                                 isProduction: false,
                                 createdOn,
-                                changedOn: null
+                                changedOn: createdOn
                             },
                             error: null
                         }
@@ -450,7 +450,7 @@ describe("Environment alias crud test", () => {
                 cms: {
                     createEnvironmentAlias: {
                         data: {
-                            changedOn: null,
+                            changedOn: /^20/,
                             createdBy: {
                                 displayName: "User 123",
                                 id: "123",
@@ -489,7 +489,7 @@ describe("Environment alias crud test", () => {
                 cms: {
                     getEnvironment: {
                         data: {
-                            changedOn: null,
+                            changedOn: /^20/,
                             createdBy: {
                                 displayName: "User 123",
                                 id: "123",

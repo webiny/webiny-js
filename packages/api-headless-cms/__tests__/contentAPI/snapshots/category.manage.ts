@@ -5,7 +5,7 @@ export default /* GraphQL */ `
     type Category {
         id: ID
         createdOn: DateTime
-        updatedOn: DateTime
+        changedOn: DateTime
         savedOn: DateTime
         meta: CategoryMeta
         title: String

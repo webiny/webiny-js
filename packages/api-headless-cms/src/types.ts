@@ -338,7 +338,7 @@ export type CmsContentModelGroupType = {
     changedOn?: Date;
 };
 type CmsContentModelGroupListArgsType = {
-    search?: Record<string, any>;
+    where?: Record<string, any>;
     limit?: number;
 };
 export type CmsContentModelGroupContextType = {
@@ -375,7 +375,8 @@ export type CmsContentModelUpdateInputType = {
 };
 
 export type CmsContentModelManagerListArgsType = {
-    search?: Record<string, any>;
+    where?: Record<string, any>;
+    sort?: Record<string, any>;
     limit?: number;
     after?: number;
 };
@@ -389,7 +390,8 @@ export interface CmsContentModelManagerInterface<TModel> {
 }
 
 type CmsContentModelListArgsType = {
-    search?: Record<string, any>;
+    where?: Record<string, any>;
+    sort?: Record<string, any>;
     limit?: number;
     after?: string;
 };
@@ -453,41 +455,56 @@ type SearchableFieldType<T> = {
     gt?: T;
     lt?: T;
     not?: T;
-    notIn?: T[];
+    not_in?: T[];
 };
-type SearchableNumberFieldType = {
-    eq?: number;
-    gt?: number;
-    lt?: number;
-    not?: number;
-    notIn?: number[];
-    between?: [number, number];
-    notBetween?: [number, number];
-};
-type SearchableStringFieldType = {
-    eq?: string;
-    contains?: string;
-    notContains?: string;
-    startsWith?: string;
-    notStartsWith?: string;
-    endsWith?: string;
-    notEndsWith?: string;
-};
+// this is base list args
 type CmsContentModelEntryListArgsType = {
-    search?: {
-        createdOn?: SearchableFieldType<Date>;
-        changedOn?: SearchableFieldType<Date>;
-        createdBy?: {
-            id?: SearchableNumberFieldType;
-            type?: SearchableStringFieldType;
-        };
+    where?: {
+        // id
+        id?: string;
+        id_in?: string[];
+        id_not?: string;
+        id_not_in?: string[];
+        // createdOn
+        createdOn?: Date;
+        createdOn_in?: Date[];
+        createdOn_not?: Date;
+        createdOn_not_in?: Date[];
+        createdOn_between: [Date, Date];
+        createdOn_not_between: [Date, Date];
+        createdOn_lt?: Date;
+        createdOn_lte?: Date;
+        createdOn_gt?: Date;
+        createdOn_gte?: Date;
+        // changedOn
+        changedOn?: Date;
+        changedOn_in?: Date[];
+        changedOn_not?: Date;
+        changedOn_not_in?: Date[];
+        changedOn_between: [Date, Date];
+        changedOn_not_between: [Date, Date];
+        changedOn_lt?: Date;
+        changedOn_lte?: Date;
+        changedOn_gt?: Date;
+        changedOn_gte?: Date;
+        // createdBy.id
+        createdById?: string;
+        createdById_in?: string[];
+        createdById_not?: string;
+        createdById_not_in?: string[];
+        // createdBy.type
+        createdByType?: string;
+        createdByType_in?: string[];
+        createdByType_not?: string;
+        createdByType_not_in?: string[];
+        // modelId
         modelId?: string;
-        [key: string]:
-            | SearchableFieldType<any>
-            | SearchableNumberFieldType
-            | SearchableStringFieldType
-            | any;
+        modelId_in?: string[];
+        modelId_not?: string;
+        modelId_not_in?: string[];
+        [key: string]: any;
     };
+    sort?: Record<string, any>;
     limit?: number;
     after?: string;
 };

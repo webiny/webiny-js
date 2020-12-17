@@ -6,8 +6,8 @@ enum TestHelperEnum {
     MODELS_AMOUNT = 3,
     PREFIX = "contentModelGroup",
     SUFFIX = "UPDATED",
-    USER_ID = "1234567890",
-    USER_NAME = "userName123"
+    USER_ID = "123",
+    USER_NAME = "User 123"
 }
 
 const createContentModelGroupPrefix = (position: number) => {
@@ -66,10 +66,10 @@ describe("Content model group crud test", () => {
                             id: /([a-zA-Z0-9]+)/,
                             ...modelData,
                             createdOn: /^20/,
-                            changedOn: null,
+                            changedOn: /^20/,
                             createdBy: {
                                 id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
+                                displayName: TestHelperEnum.USER_NAME
                             }
                         },
                         error: null
@@ -77,7 +77,11 @@ describe("Content model group crud test", () => {
                 }
             });
 
-            const { id: groupId, createdOn } = response.data.createContentModelGroup.data;
+            const {
+                id: groupId,
+                createdOn,
+                changedOn
+            } = response.data.createContentModelGroup.data;
 
             const [getResponse] = await getContentModelGroupQuery({
                 id: groupId
@@ -90,10 +94,11 @@ describe("Content model group crud test", () => {
                             id: groupId,
                             ...modelData,
                             createdOn,
-                            changedOn: null,
+                            changedOn: changedOn,
                             createdBy: {
                                 id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
+                                displayName: TestHelperEnum.USER_NAME,
+                                type: "admin"
                             }
                         },
                         error: null
@@ -121,7 +126,8 @@ describe("Content model group crud test", () => {
                             changedOn: /^20/,
                             createdBy: {
                                 id: TestHelperEnum.USER_ID,
-                                name: TestHelperEnum.USER_NAME
+                                displayName: TestHelperEnum.USER_NAME,
+                                type: "admin"
                             }
                         },
                         error: null

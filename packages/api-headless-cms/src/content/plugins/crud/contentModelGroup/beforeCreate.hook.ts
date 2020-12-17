@@ -11,7 +11,7 @@ export const beforeCreateHook = async (
     if (slug) {
         const groups = (
             await context.cms.groups.list({
-                search: {
+                where: {
                     slug
                 },
                 limit: 1
@@ -26,7 +26,7 @@ export const beforeCreateHook = async (
     // ... otherwise, assign a unique slug automatically.
     const newSlug = toSlug(name);
     const groups = await context.cms.groups.list({
-        search: {
+        where: {
             slug: newSlug
         },
         limit: 1

@@ -89,11 +89,11 @@ describe("content model test", () => {
                     data: {
                         id: /^([a-zA-Z0-9]+)$/,
                         createdBy: {
-                            id: "1234567890",
-                            name: "userName123"
+                            id: "123",
+                            displayName: "User 123"
                         },
                         createdOn: /^20/,
-                        changedOn: null
+                        changedOn: /^20/
                     },
                     error: null
                 }
@@ -304,8 +304,8 @@ describe("content model test", () => {
                     data: {
                         changedOn: /^20/,
                         createdBy: {
-                            id: "1234567890",
-                            name: "userName123"
+                            id: "123",
+                            displayName: "User 123"
                         },
                         createdOn: /^20/,
                         description: null,

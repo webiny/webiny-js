@@ -88,7 +88,7 @@ describe("Environment crud test", () => {
                                 },
                                 isProduction: false,
                                 createdOn: /^20/,
-                                changedOn: null
+                                changedOn: /^20/
                             },
                             error: null
                         }
@@ -105,7 +105,7 @@ describe("Environment crud test", () => {
                 id: createdEnvironmentId
             });
 
-            expect(getResponse).toEqual({
+            expect(getResponse).toMatchObject({
                 data: {
                     cms: {
                         getEnvironment: {
@@ -122,7 +122,7 @@ describe("Environment crud test", () => {
                                 },
                                 isProduction: false,
                                 createdOn,
-                                changedOn: null
+                                changedOn: /^20/
                             },
                             error: null
                         }
