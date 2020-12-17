@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactElement, useEffect, useRef } from "react";
+import React, { CSSProperties, ReactElement, useMemo } from "react";
 import { plugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
@@ -41,33 +41,32 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         elements: []
     };
 
-    const stylePlugins = useRef<PbRenderElementStylePlugin[]>([]);
-    const attributePlugins = useRef<PbRenderElementAttributesPlugin[]>([]);
-
-    useEffect(() => {
-        stylePlugins.current = plugins.byType<PbRenderElementStylePlugin>(
+    const finalStyle = useMemo(() => {
+        const stylePlugins = plugins.byType<PbRenderElementStylePlugin>(
             "pb-render-page-element-style"
         );
-        attributePlugins.current = plugins.byType<PbRenderElementAttributesPlugin>(
+        // Reduce style
+        return stylePlugins.reduce((accumulatedStyles, plugin) => {
+            return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });
+        }, style);
+    }, [style, shallowElement]);
+
+    const attributes = useMemo(() => {
+        const attributePlugins = plugins.byType<PbRenderElementAttributesPlugin>(
             "pb-render-page-element-attributes"
         );
-    }, []);
+        return attributePlugins.reduce((accumulatedAttributes, plugin) => {
+            return plugin.renderAttributes({
+                element: shallowElement,
+                attributes: accumulatedAttributes
+            });
+        }, {});
+    }, [shallowElement]);
 
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {
         return null;
     }
-
-    const finalStyle = stylePlugins.current.reduce((accumulatedStyles, plugin) => {
-        return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });
-    }, style);
-
-    const attributes = attributePlugins.current.reduce((accumulatedAttributes, plugin) => {
-        return plugin.renderAttributes({
-            element: shallowElement,
-            attributes: accumulatedAttributes
-        });
-    }, {});
 
     const classNames = element.data.settings?.className || "";
 
