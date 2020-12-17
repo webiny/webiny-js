@@ -83,7 +83,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     const onColorChangeComplete = useCallback(value => setColor(value), []);
 
     const background = element.data.settings?.background;
-    const { color: backgroundColor = "#fff", image: backgroundImage } = background || {};
+    const { color: backgroundColor, image: backgroundImage } = background || {};
     const { scaling: backgroundImageScaling, position: backgroundImagePosition } =
         backgroundImage || {};
     const { src: backgroundImageSrc } = backgroundImage?.file || {};
