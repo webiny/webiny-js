@@ -14,12 +14,15 @@ import { PbElement, PbPageLayout, PbPageLayoutPlugin } from "@webiny/app-page-bu
 import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
 
+const BREADCRUMB_HEIGHT = 33;
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
     position: "relative",
     ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
-        overflowX: "visible"
+        overflowX: "visible",
+        // We need this extra spacing so that editor content won't get cutoff
+        marginBottom: BREADCRUMB_HEIGHT
     }
 }));
 const contentContainerWrapper = css({
