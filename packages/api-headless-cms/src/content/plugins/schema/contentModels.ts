@@ -164,6 +164,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 titleFieldId: ID
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
+                titleFieldId: String
             }
 
             extend type Mutation {
@@ -225,6 +226,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     fields: [CmsContentModelField!]!
                     lockedFields: [JSON]
                     layout: [[String!]!]!
+                    titleFieldId: String
                 }
 
                 type CmsContentModelResponse {

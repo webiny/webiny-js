@@ -4,10 +4,13 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
     let { titleFieldId } = model;
     const { fields, lockedFields = [] } = model;
 
-    if (titleFieldId && !fields.find(item => item.fieldId === titleFieldId)) {
-        throw new Error(
-            `Cannot remove field "${titleFieldId}" because it's currently set as the title field. Please chose another title field first and try again.`
-        );
+    if (titleFieldId) {
+        const target = fields.find(f => f.fieldId === titleFieldId);
+        if (!target) {
+            throw new Error(
+                `There is no field "${titleFieldId}" in the current fields, please check.`
+            );
+        }
     }
 
     // If no title field set, just use the first "text" field.
@@ -35,6 +38,7 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
             );
         }
     }
+    model.titleFieldId = titleFieldId || null;
 
     // We must not allow removal or changes in fields that are already in use in content entries.
     for (const lockedField of lockedFields) {

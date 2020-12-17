@@ -303,6 +303,7 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: /^20/,
                         description: null,
+                        titleFieldId: "field1",
                         fields: [
                             {
                                 fieldId: "field1",
@@ -327,6 +328,62 @@ describe("content model test", () => {
                         name: "new name"
                     },
                     error: null
+                }
+            }
+        });
+    });
+
+    test("error when assigning titleFieldId on non existing field", async () => {
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts
+        );
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        const field: CmsContentModelFieldInputType = {
+            id: mdbid(),
+            fieldId: "field1",
+            label: "Field 1",
+            helpText: "help text",
+            multipleValues: false,
+            placeholderText: "placeholder text",
+            predefinedValues: {
+                enabled: false,
+                values: []
+            },
+            renderer: {
+                name: "rendererName"
+            },
+            settings: {},
+            type: "text",
+            validation: []
+        };
+        const [response] = await updateContentModelMutation({
+            id: contentModel.id,
+            data: {
+                name: "new name",
+                titleFieldId: "nonExistingTitleFieldId",
+                fields: [field],
+                layout: [[field.id]]
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                updateContentModel: {
+                    data: null,
+                    error: {
+                        code: "UPDATE_CONTENT_MODEL_FAILED",
+                        message: `There is no field "nonExistingTitleFieldId" in the current fields, please check.`,
+                        data: null
+                    }
                 }
             }
         });
