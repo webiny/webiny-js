@@ -1,7 +1,7 @@
 import React from "react";
+import { css } from "emotion";
 import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
-import { css } from "emotion";
 
 const style = {
     label: css({

@@ -6,9 +6,9 @@ import get from "lodash/get";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
 import { ReactComponent as ViewListIcon } from "@webiny/app-headless-cms/admin/icons/view_list.svg";
-import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
 import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
 import {

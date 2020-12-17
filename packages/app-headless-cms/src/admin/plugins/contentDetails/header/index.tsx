@@ -2,7 +2,6 @@ import * as React from "react";
 import { CmsContentDetailsPlugin } from "@webiny/app-headless-cms/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
-import LocaleSelector from "./localeSelector/LocaleSelector";
 import SaveContentButton from "./saveContent/SaveContent";
 import SaveAndPublishButton from "./saveAndPublishContent/SaveAndPublishContent";
 import ContentFormOptionsMenu from "./contentFormOptionsMenu/ContentFormOptionsMenu";
@@ -14,13 +13,6 @@ const plugins: CmsContentDetailsPlugin[] = [
         type: "cms-content-details-revision-content-preview",
         render(props) {
             return <Header {...props} />;
-        }
-    },
-    {
-        name: "cms-content-details-locale-selector",
-        type: "cms-content-details-header-left",
-        render(props) {
-            return <LocaleSelector {...props} />;
         }
     },
     {

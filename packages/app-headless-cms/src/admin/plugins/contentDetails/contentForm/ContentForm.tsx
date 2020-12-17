@@ -1,4 +1,6 @@
-import * as React from "react";
+import React, { useCallback, useMemo } from "react";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
 import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
 import { useRouter } from "@webiny/react-router";
 import {
@@ -8,12 +10,9 @@ import {
     createUpdateMutation
 } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
-import { useCallback, useMemo } from "react";
-import get from "lodash/get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import cloneDeep from "lodash/cloneDeep";
 
-const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading, setState }) => {
+const ContentForm = ({ contentModel, content, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -120,7 +119,6 @@ const ContentForm = ({ contentModel, content, getLocale, setLoading, getLoading,
 
     return (
         <ContentModelForm
-            locale={getLocale()}
             loading={getLoading()}
             contentModel={contentModel}
             content={content}

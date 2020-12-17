@@ -24,7 +24,6 @@ import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/ic
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { useRouter } from "@webiny/react-router";
 import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
@@ -83,7 +82,7 @@ const Revision = props => {
                     </ListItemGraphic>
                     <ListItemText>
                         <ListItemTextPrimary>
-                            <I18NValue value={revision.meta.title} default={t`N/A`} />
+                            {revision.meta.title || t`N/A`}
                         </ListItemTextPrimary>
                         <ListItemTextSecondary>
                             {t`Last modified: {time} (#{version})`({

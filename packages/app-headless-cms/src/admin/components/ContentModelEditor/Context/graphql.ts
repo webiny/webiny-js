@@ -9,7 +9,10 @@ export const FIELDS_FIELDS = `
         helpText  
         predefinedValues {
             enabled
-            values
+            values {
+                label
+                value
+            }
         }
         multipleValues 
         renderer {

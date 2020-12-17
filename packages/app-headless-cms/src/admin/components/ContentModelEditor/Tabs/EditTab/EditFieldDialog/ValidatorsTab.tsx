@@ -1,8 +1,6 @@
-// TODO remove
-// @ts-nocheck
-
 import React, { useMemo } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { cloneDeep, debounce } from "lodash";
+import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";
 import {
     SimpleForm,
@@ -11,14 +9,12 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Form } from "@webiny/form";
-import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
 import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { Input } from "@webiny/ui/Input";
 
-const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, validator }) => {
+const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {
         const index = validationValue.findIndex(item => item.name === validator.name);
         onChangeValidation([
@@ -31,14 +27,7 @@ const onEnabledChange = ({ i18n, data, validationValue, onChangeValidation, vali
             {
                 name: validator.name,
                 settings: validator.defaultSettings,
-                message: {
-                    values: [
-                        {
-                            locale: i18n.getDefaultLocale().code,
-                            value: validator.defaultMessage
-                        }
-                    ]
-                }
+                message: validator.defaultMessage
             }
         ]);
     }
@@ -54,7 +43,6 @@ const onFormChange = debounce(({ data, validationValue, onChangeValidation, vali
 }, 200);
 
 const ValidatorsTab = props => {
-    const i18n = useI18N();
     const { getFieldPlugin } = useContentModelEditor();
     const {
         field,
@@ -64,7 +52,8 @@ const ValidatorsTab = props => {
     const fieldPlugin = getFieldPlugin({ type: field.type });
 
     const validators = useMemo(() => {
-        return getPlugins<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
+        return plugins
+            .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
             .map(plugin => plugin.validator)
             .map(validator => {
                 if (fieldPlugin.field.validators.includes(validator.name)) {
@@ -99,7 +88,6 @@ const ValidatorsTab = props => {
 
                     return (
                         <SimpleForm key={validator.name}>
-                            {/*TODO: @ts-adrian nema descriptiona?*/}
                             <SimpleFormHeader title={validator.label}>
                                 {optional && (
                                     <Switch
@@ -107,7 +95,6 @@ const ValidatorsTab = props => {
                                         value={validatorIndex >= 0}
                                         onChange={() =>
                                             onEnabledChange({
-                                                i18n,
                                                 data,
                                                 validationValue,
                                                 onChangeValidation,
@@ -133,12 +120,11 @@ const ValidatorsTab = props => {
                                         <SimpleFormContent>
                                             <Grid>
                                                 <Cell span={12}>
-                                                    {/*TODO: @ts-adrian kako ovo?*/}
                                                     <Bind
                                                         name={"message"}
                                                         validators={validation.create("required")}
                                                     >
-                                                        <I18NInput
+                                                        <Input
                                                             label={"Message"}
                                                             description={
                                                                 "This message will be displayed to the user"
@@ -152,15 +138,7 @@ const ValidatorsTab = props => {
                                                 validator.renderSettings({
                                                     setValue,
                                                     setMessage: message => {
-                                                        setValue("message", {
-                                                            values: [
-                                                                {
-                                                                    locale: i18n.getDefaultLocale()
-                                                                        .id,
-                                                                    value: message
-                                                                }
-                                                            ]
-                                                        });
+                                                        setValue("message", message);
                                                     },
                                                     data,
                                                     Bind

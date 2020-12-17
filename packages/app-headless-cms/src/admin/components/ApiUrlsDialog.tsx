@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Dialog, DialogTitle, DialogContent } from "@webiny/ui/Dialog";
-import HeadlessCmsApiUrls from "@webiny/app-headless-cms/admin/plugins/apiInformationDialog/HeadlessCmsApiUrls";
+import HeadlessCmsApiUrls from "../plugins/apiInformationDialog/HeadlessCmsApiUrls";
 
 export type ApiUrlsDialogProps = {
     open: boolean;

@@ -10,7 +10,7 @@ import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headle
 import { getPlugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
-import PredefinedValuesTab from "./EditFieldDialog/PredefinedValuesTab";
+import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -92,7 +92,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         disabled={!predefinedValuesTabEnabled}
                                     >
                                         {predefinedValuesTabEnabled && (
-                                            <PredefinedValuesTab
+                                            <PredefinedValues
                                                 form={form}
                                                 field={form.data as CmsEditorField}
                                                 fieldPlugin={fieldPlugin}

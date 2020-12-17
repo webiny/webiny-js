@@ -1,9 +1,10 @@
 import React from "react";
+import slugify from "slugify";
 import { Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { validation } from "@webiny/validation";
-import slugify from "slugify";
+
 const t = i18n.ns("app-headless-cms/admin/components/name-slug");
 
 const toSlug = text =>

@@ -5,6 +5,7 @@ import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.namespace("ContentModelEditor.Name");
 
 declare global {

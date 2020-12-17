@@ -1,11 +1,11 @@
 import * as React from "react";
+import { css } from "emotion";
 import { renderPlugins } from "@webiny/app/plugins";
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import ContentForm from "./ContentForm";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { css } from "emotion";
+import ContentForm from "./ContentForm";
 
 const RenderBlock = styled("div")({
     position: "relative",

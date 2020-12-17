@@ -4,6 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {

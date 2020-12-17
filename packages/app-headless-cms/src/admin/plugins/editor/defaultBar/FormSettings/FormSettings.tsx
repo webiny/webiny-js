@@ -9,10 +9,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-
 import { i18n } from "@webiny/app/i18n";
-const t = i18n.namespace("FormsApp.Editor.FormSettings");
-
 import {
     SimpleForm,
     SimpleFormFooter,
@@ -21,6 +18,8 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
 import { CmsEditorFormSettingsPlugin } from "@webiny/app-headless-cms/types";
+
+const t = i18n.namespace("FormsApp.Editor.FormSettings");
 
 type FormSettingsProps = {
     onExited: () => void;

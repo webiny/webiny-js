@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { i18n } from "@webiny/app/i18n";
-const t = i18n.ns("app-headless-cms/admin/menus");
-import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-black-24px.svg";
-import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
-import { Typography } from "@webiny/ui/Typography";
+import get from "lodash/get";
 import { css } from "emotion";
+import { i18n } from "@webiny/app/i18n";
+import { Typography } from "@webiny/ui/Typography";
 import { useNavigation } from "@webiny/app-admin/plugins/menu/Navigation/components";
-import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { plugins } from "@webiny/plugins";
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
+import { plugins } from "@webiny/plugins";
+import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
-import get from "lodash/get";
+import { ReactComponent as HeadlessCmsIcon } from "../../icons/devices_other-black-24px.svg";
+import { ReactComponent as EnvironmentIcon } from "../../icons/call_split-24px.svg";
+
+const t = i18n.ns("app-headless-cms/admin/menus");
 
 const style = {
     itemsList: css({

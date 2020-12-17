@@ -1,16 +1,16 @@
 import React, { useCallback, useState } from "react";
-import { Icon } from "@webiny/ui/Icon";
 import { get, cloneDeep } from "lodash";
+import { Icon } from "@webiny/ui/Icon";
+import { ReactComponent as HandleIcon } from "@webiny/app-headless-cms/admin/icons/round-drag_indicator-24px.svg";
+import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
+import { CmsEditorContentTab, FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
+import { i18n } from "@webiny/app/i18n";
 import { Center, Vertical, Horizontal } from "../../DropZone";
 import Draggable from "../../Draggable";
 import EditFieldDialog from "./EditFieldDialog";
 import Field from "./Field";
-import { ReactComponent as HandleIcon } from "@webiny/app-headless-cms/admin/icons/round-drag_indicator-24px.svg";
 import { rowHandle, EditContainer, fieldHandle, fieldContainer, Row, RowContainer } from "./Styled";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
-import { CmsEditorContentTab, FieldLayoutPositionType } from "@webiny/app-headless-cms/types";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
 export const EditTab: CmsEditorContentTab = () => {
@@ -31,9 +31,7 @@ export const EditTab: CmsEditorContentTab = () => {
     const editField = useCallback(field => {
         setEditingField(cloneDeep(field));
     }, undefined);
-
-    const i18n = useI18N();
-
+    
     const handleDropField = useCallback((source, dropTarget) => {
         const { pos, type, ui } = source;
 
@@ -50,7 +48,7 @@ export const EditTab: CmsEditorContentTab = () => {
         }
 
         const plugin = getFieldPlugin({ type });
-        editField(plugin.field.createField({ i18n }));
+        editField(plugin.field.createField());
         setDropTarget(dropTarget);
     }, null);
 

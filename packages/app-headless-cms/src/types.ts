@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { I18NStringValue, I18NListValue } from "@webiny/app-i18n/types";
 import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
@@ -19,7 +18,7 @@ export type CmsEditorFieldTypePlugin = Plugin & {
         allowMultipleValues: boolean;
         allowPredefinedValues: boolean;
         multipleValuesLabel: React.ReactNode;
-        createField: ({ i18n: any }) => CmsEditorField;
+        createField: () => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
@@ -56,15 +55,15 @@ export type CmsEditorField = {
     id?: string;
     type: string;
     fieldId?: CmsEditorFieldId;
-    label?: I18NStringValue;
-    helpText?: I18NStringValue;
-    placeholderText?: I18NStringValue;
+    label?: string;
+    helpText?: string;
+    placeholderText?: string;
     validation?: CmsEditorFieldValidator[];
     multipleValuesValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: {
         enabled: boolean;
-        values: I18NListValue;
+        values: [{ label: string; value: string }];
     };
     settings?: { [key: string]: any };
     renderer: {
@@ -93,7 +92,7 @@ export type CmsEditorContentModel = {
 
 export type CmsEditorFieldValidator = {
     name: string;
-    message: I18NStringValue;
+    message: string;
     settings: any;
 };
 

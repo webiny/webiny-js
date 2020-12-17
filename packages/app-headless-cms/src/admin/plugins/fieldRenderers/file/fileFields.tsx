@@ -3,25 +3,21 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import MultipleFile from "./MultipleFile";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-function CmsEditorFieldRenderer({ field, getBind, Label, locale }) {
+function CmsEditorFieldRenderer({ field, getBind, Label }) {
     const [previewURLs, setPreviewURLs] = useState({});
 
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
-
-    const { getValue } = useI18N();
-    const label = getValue(field.label, locale);
-
+    
     return (
         <Bind>
             {({ appendValues, value, appendValue }) => (
                 <Grid>
                     <Cell span={12}>
-                        <Label>{label}</Label>
+                        <Label>{field.label}</Label>
                     </Cell>
                     <Cell span={3}>
                         <FirstFieldBind>
@@ -85,13 +81,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "file" && field.multipleValues;
         },
-        render({ field, getBind, Label, locale }) {
+        render({ field, getBind, Label }) {
             return (
                 <CmsEditorFieldRenderer
                     field={field}
                     getBind={getBind}
                     Label={Label}
-                    locale={locale}
                 />
             );
         }

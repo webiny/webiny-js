@@ -1,10 +1,9 @@
 import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
-import TimeAgo from "timeago-react";
 import { upperFirst } from "lodash";
-import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
+import TimeAgo from "timeago-react";
+import { i18n } from "@webiny/app/i18n";
+import { Typography } from "@webiny/ui/Typography";
 import {
     DataList,
     List,
@@ -13,7 +12,7 @@ import {
     ListItemTextSecondary,
     ListItemMeta
 } from "@webiny/ui/List";
-import { I18NValue } from "@webiny/app-i18n/components";
+import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -25,13 +24,6 @@ const rightAlign = css({
 const listItemMinHeight = css({
     minHeight: "66px !important"
 });
-
-const getValue = item => {
-    if (!item.value) {
-        return { ...item, value: "Untitled" };
-    }
-    return item;
-};
 
 const ContentDataList = ({ contentModel, dataList }) => {
     return (
@@ -49,7 +41,7 @@ const ContentDataList = ({ contentModel, dataList }) => {
                             selected={isSelected(item)}
                         >
                             <ListItemText onClick={() => select(item)}>
-                                <I18NValue value={getValue(item.meta.title)} />
+                                {item.meta.title || "Untitled"}
                                 <ListItemTextSecondary>
                                     {t`Last modified: {time}.`({
                                         time: <TimeAgo datetime={item.savedOn} />

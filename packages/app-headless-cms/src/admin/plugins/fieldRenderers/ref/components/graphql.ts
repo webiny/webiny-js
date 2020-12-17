@@ -8,20 +8,15 @@ export const createListQuery = model => {
     return gql`
         query List${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
             content: list${ucFirstPluralizedModelId}(where: $where) {
-            data {
-                id
-                meta {
-                    published
-                    model
-                    title {
-                        values {
-                            locale
-                            value
-                        }
+                data {
+                    id
+                    meta {
+                        published
+                        model
+                        title
                     }
                 }
             }
-        }
         }
     `;
 };
@@ -31,17 +26,15 @@ export const createGetQuery = model => {
     return gql`
         query Get${ucFirstModelId}($where: ${ucFirstModelId}GetWhereInput!) {
             content: get${ucFirstModelId}(where: $where) {
-            data {
-                id
-                meta {
-                    published
-                    model
-                    title {
-                        value
+                data {
+                    id
+                    meta {
+                        published
+                        model
+                        title
                     }
                 }
             }
-        }
         }
     `;
 };

@@ -1,10 +1,10 @@
 import React from "react";
-import { ReactComponent as FloatIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
 import { Input } from "@webiny/ui/Input";
+import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
+import { ReactComponent as FloatIcon } from "./icons/round-looks_3-24px.svg";
 
 const t = i18n.ns("app-headless-cms/admin/fields");
 

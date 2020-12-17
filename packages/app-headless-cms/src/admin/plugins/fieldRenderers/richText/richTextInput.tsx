@@ -1,9 +1,8 @@
 import React from "react";
+import get from "lodash/get";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
-import get from "lodash/get";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -21,23 +20,18 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind, locale }) {
+        render({ field, getBind }) {
             const Bind = getBind();
-            const { getValue } = useI18N();
-
-            const label = getValue(field.label, locale);
-            const placeholderText = getValue(field.placeholderText, locale);
-            const helpText = getValue(field.helpText, locale);
 
             return (
                 <Bind>
                     {bind => (
-                        <I18NRichTextEditor
+                        <RichTextEditor
                             {...bind}
                             onChange={bind.onChange}
-                            label={label}
-                            placeholder={placeholderText}
-                            description={helpText}
+                            label={field.label}
+                            placeholder={field.placeholderText}
+                            description={field.helpText}
                         />
                     )}
                 </Bind>

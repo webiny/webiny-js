@@ -9,8 +9,6 @@ export default function EnvironmentAutocomplete(props) {
 
     const options = environments === 0 ? [] : environments;
 
-    console.log("dropdown", environments);
-
     return (
         <AutoComplete
             {...props}

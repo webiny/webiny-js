@@ -1,9 +1,8 @@
 import React from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
-import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
-import ContentModelGroupsForm from "./ContentModelGroupsForm";
 import { CrudProvider } from "@webiny/app-admin/contexts/Crud";
+import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import {
     GET_CONTENT_MODEL_GROUP,
     LIST_CONTENT_MODEL_GROUPS,
@@ -11,7 +10,8 @@ import {
     UPDATE_CONTENT_MODEL_GROUP,
     DELETE_CONTENT_MODEL_GROUP
 } from "./graphql";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
+import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
 function ContentModelGroups() {
     const {

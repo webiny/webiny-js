@@ -2,6 +2,7 @@ import React from "react";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import ContentEntriesAutocomplete from "./components/ContentEntriesAutocomplete";
+
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
 const plugin: CmsEditorFieldRendererPlugin = {

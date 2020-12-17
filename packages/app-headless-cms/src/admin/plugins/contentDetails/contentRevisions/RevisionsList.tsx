@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
+import get from "lodash/get";
 import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
-import Revision from "./Revision";
-import get from "lodash/get";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import {
@@ -14,6 +13,8 @@ import {
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
+import Revision from "./Revision";
+
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
 const style = {

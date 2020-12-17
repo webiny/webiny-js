@@ -1,12 +1,10 @@
 import React from "react";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
-import { i18n } from "@webiny/app/i18n";
-import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import get from "lodash/get";
+import { i18n } from "@webiny/app/i18n";
+import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
 
@@ -25,20 +23,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
             );
         },
         render(props) {
-            const { field, locale } = props;
-            const { getValue } = useI18N();
-
-            const placeholderText = getValue(field.placeholderText, locale);
-            const helpText = getValue(field.helpText, locale);
+            const { field } = props;
 
             return (
                 <DynamicListMultipleValues {...props}>
                     {({ bind, index }) => (
-                        <I18NRichTextEditor
+                        <RichTextEditor
                             {...bind.index}
-                            label={I18NValue({ value: `Value ${index + 1}` })}
-                            placeholder={placeholderText}
-                            description={helpText}
+                            label={`Value ${index + 1}`}
+                            placeholder={field.placeholderText}
+                            description={field.helpText}
                             trailingIcon={
                                 index > 0 && {
                                     icon: <DeleteIcon />,

@@ -3,15 +3,6 @@ import gql from "graphql-tag";
 import { getPlugins } from "@webiny/plugins";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
-const I18N_FIELD = /* GraphQL */ `
-    {
-        values {
-            value
-            locale
-        }
-    }
-`;
-
 const ERROR_FIELD = /* GraphQL */ `
     {
         message
@@ -21,9 +12,7 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
-    title {
-        value
-    }
+    title
     published
     version
     locked
@@ -33,7 +22,7 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
-        const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>(`cms-editor-field-type`).find(
+        const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
             item => {
                 return item.field.type === field.type;
             }
@@ -43,7 +32,7 @@ const createFieldsList = contentModel => {
             return `${field.fieldId} ${fieldPlugin.field.graphql.queryField}`;
         }
 
-        return `${field.fieldId} ${I18N_FIELD}`;
+        return field.fieldId;
     });
 
     return fields.join("\n");
@@ -98,21 +87,18 @@ export const createListQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String, $before: String) {
+        query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
             content: list${ucFirstPluralizedModelId}(
                 where: $where
                 sort: $sort
                 limit: $limit
                 after: $after
-                before: $before
             ) {
                 data {
                     id
                     savedOn
                     meta {
-                        title {
-                            value
-                        }
+                        title
                         published
                         version
                         parent

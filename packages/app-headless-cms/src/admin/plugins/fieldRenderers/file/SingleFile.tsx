@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { createRenderImagePreview, imageExtensions } from "./utils";
-import FileUpload from "./FileUpload";
-import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
+import { i18n } from "@webiny/app/i18n";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
 import { BindComponentRenderProp } from "@webiny/form";
+import FileUpload from "./FileUpload";
+import { createRenderImagePreview, imageExtensions } from "./utils";
+import fileIcon from "../../fields/icons/round_insert_drive_file-24px.svg";
 
-import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 const imagePreviewProps = {

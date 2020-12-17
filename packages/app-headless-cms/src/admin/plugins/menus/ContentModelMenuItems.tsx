@@ -1,12 +1,13 @@
 import React from "react";
-import { i18n } from "@webiny/app/i18n";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import get from "lodash.get";
-const t = i18n.ns("app-headless-cms/admin/menus");
+import { i18n } from "@webiny/app/i18n";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 
-const ContentModelMenuItems = function({ Section, Item }) {
+const t = i18n.ns("app-headless-cms/admin/menus");
+
+const ContentModelMenuItems = ({ Section, Item }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
     const { data } = get(response, "data.listContentModelGroups") || {};

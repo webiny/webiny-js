@@ -99,16 +99,9 @@ const plugin: CmsEditorFieldTypePlugin = {
         graphql: {
             queryField: /* GraphQL */ `
                 {
-                    values {
-                        value {
-                            id
-                            meta {
-                                title {
-                                    value
-                                }
-                            }
-                        }
-                        locale
+                    id
+                    meta {
+                        title
                     }
                 }
             `

@@ -1,9 +1,8 @@
 import React from "react";
-import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as BackIcon } from "./icons/round-arrow_back-24px.svg";
 import { css } from "emotion";
-import { useRouter } from "@webiny/react-router";
-import { match } from "react-router";
+import { IconButton } from "@webiny/ui/Button";
+import { useRouter, match } from "@webiny/react-router";
+import { ReactComponent as BackIcon } from "./icons/round-arrow_back-24px.svg";
 
 const backStyles = css({
     marginLeft: -10

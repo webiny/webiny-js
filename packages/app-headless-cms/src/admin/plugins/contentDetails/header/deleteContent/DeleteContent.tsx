@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
@@ -9,8 +10,8 @@ import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/ico
 import { createDeleteMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import I18NValue from "@webiny/app-i18n/components/I18NValue";
-import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-headless-cms/admin/plugins/content/header/delete");
 
 const DeleteContent = ({ contentModel, content, dataList, getLoading, setLoading }) => {

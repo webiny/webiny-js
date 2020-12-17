@@ -1,12 +1,12 @@
 import React from "react";
+import styled from "@emotion/styled";
+import { css } from "emotion";
 import { Grid, Cell, GridInner } from "@webiny/ui/Grid";
 import { i18n } from "@webiny/app/i18n";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
-import styled from "@emotion/styled";
-import { css } from "emotion";
 
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
@@ -105,7 +105,7 @@ function PredefinedValuesDynamicFieldset({ getBind, renderValueInput = null }) {
                                         <GridInner className={emptyStyles}>
                                             <Cell span={12}>
                                                 <Typography use={"subtitle1"}>
-                                                    {t`For current locale, there are no predefined values added yet.`}
+                                                    {t`There are no predefined values added yet.`}
                                                 </Typography>
                                             </Cell>
                                             <Cell span={12}>

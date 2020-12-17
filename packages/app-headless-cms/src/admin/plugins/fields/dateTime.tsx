@@ -1,11 +1,12 @@
 import React from "react";
-import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
+import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Input } from "@webiny/ui/Input";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import { get } from "lodash";
+import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
+
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {

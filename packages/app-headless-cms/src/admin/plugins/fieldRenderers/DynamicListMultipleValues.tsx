@@ -1,8 +1,8 @@
 import React from "react";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { css } from "emotion";
+import { ButtonDefault } from "@webiny/ui/Button";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 

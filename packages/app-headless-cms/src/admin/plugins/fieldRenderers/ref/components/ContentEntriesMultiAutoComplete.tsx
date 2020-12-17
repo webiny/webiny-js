@@ -1,24 +1,22 @@
 import React, { useState, useMemo } from "react";
-import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
-import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
+import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
+import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { Link } from "@webiny/react-router";
-import { useI18NHelpers } from "./refInputUtils";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { i18n } from "@webiny/app/i18n";
+import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
+import { getOptions } from "./getOptions";
+
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
-function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
+function ContentEntriesMultiAutocomplete({ bind, field }) {
     // Value can be an array of object (received from API) or an array of ID (set by the Autocomplete component).
     const value = bind.value.map(item => {
         return get(item, "id", item);
     });
-    const { getValue } = useI18N();
-    const [search, setSearch] = useState("");
 
-    const { getAutoCompleteOptionsFromList } = useI18NHelpers();
+    const [search, setSearch] = useState("");
 
     // Fetch ref content model data, so that we can its title field.
     const refContentModelQuery = useQuery(GET_CONTENT_MODEL, {
@@ -53,36 +51,16 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
     });
 
     // Format options for the Autocomplete component.
-    const options = useMemo(
-        () =>
-            getAutoCompleteOptionsFromList({
-                list: listContentQuery,
-                useDefaultLocale: false,
-                locale
-            }),
-        [listContentQuery]
-    );
+    const options = useMemo(() => getOptions(listContentQuery), [listContentQuery]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = useMemo(
-        () =>
-            getAutoCompleteOptionsFromList({
-                list: listLatestContentQuery,
-                useDefaultLocale: true,
-                locale
-            }),
-        [listLatestContentQuery]
-    );
+    const defaultOptions = useMemo(() => getOptions(listLatestContentQuery), [
+        listLatestContentQuery
+    ]);
 
     // Format value prop for the Autocomplete component.
     const valueForAutoComplete = useMemo(
-        () =>
-            getAutoCompleteOptionsFromList({
-                list: listContentQueryFilterById,
-                useDefaultLocale: true,
-                locale,
-                keyValueExtractor: item => ({ published: item.meta.published })
-            }),
+        () => getOptions(listContentQueryFilterById, item => ({ published: item.meta.published })),
         [listContentQueryFilterById]
     );
 
@@ -116,20 +94,17 @@ function ContentEntriesMultiAutocomplete({ bind, field, locale }) {
         });
     }
 
-    const label = getValue(field.label, locale);
-    const helpText = getValue(field.helpText, locale);
-
     return (
         <MultiAutoComplete
             {...bind}
             loading={loading}
             value={valueForAutoComplete}
             options={search ? options : defaultOptions}
-            label={label}
+            label={field.label}
             onInput={debounce(search => setSearch(search), 250)}
             description={
                 <>
-                    {helpText}
+                    {field.helpText}
                     {unpublishedEntriesInfo}
                 </>
             }

@@ -1,21 +1,21 @@
 import React from "react";
+import { css } from "emotion";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { ReactComponent as TitleIcon } from "@webiny/app-headless-cms/admin/icons/title-24px.svg";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { getPlugins } from "@webiny/plugins";
 import { CmsEditorFieldOptionPlugin } from "@webiny/app-headless-cms/types";
-import { css } from "emotion";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
 
 const FieldContainer = styled("div")({
@@ -55,7 +55,6 @@ const menuStyles = css({
 
 const Field = props => {
     const { field, onEdit, onDelete } = props;
-    const { getValue } = useI18N();
     const { showSnackbar } = useSnackbar();
     const { getFieldPlugin, setData, data } = useContentModelEditor();
 
@@ -66,7 +65,7 @@ const Field = props => {
     return (
         <FieldContainer>
             <Info>
-                <Typography use={"subtitle1"}>{getValue(field.label)} </Typography>
+                <Typography use={"subtitle1"}>{field.label}</Typography>
                 <Typography use={"caption"}>
                     {fieldPlugin && fieldPlugin.field.label}{" "}
                     {field.multipleValues && <>({t`multiple values`})</>}
