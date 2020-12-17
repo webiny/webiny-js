@@ -3,6 +3,7 @@ import {
     CmsContentModelEntryContextType,
     CmsContentModelEntryCreateInputType,
     CmsContentModelEntryType,
+    CmsContentModelType,
     CmsContext,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
@@ -10,6 +11,7 @@ import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
+import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
 
 const createElasticSearchData = (model: CmsContentModelEntryType, context: CmsContext) => {
     const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
@@ -57,9 +59,14 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return response.find(() => true);
             },
-            // eslint-disable-next-line
-            list: async args => {
-                // const searchValues = createSearchValues(args);
+            list: async (model: CmsContentModelType, args = {}) => {
+                // eslint-disable-next-line
+                const searchValues = createElasticSearchParams({
+                    model,
+                    args,
+                    context,
+                    onlyOwned: false
+                });
                 const [response] = await db.read<CmsContentModelEntryType>({
                     ...utils.defaults.db,
                     query: { PK: utils.createContentModelEntryPk(context), SK: { $gt: " " } }

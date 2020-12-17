@@ -145,6 +145,9 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
+    es?: {
+        unmappedType?: string;
+    };
     isSearchable: boolean;
     isSortable: boolean;
     read: {
@@ -451,59 +454,64 @@ export type CmsContentModelEntryUpdateInputType = {
 };
 
 // this is base list args
+export type CmsContentModelEntryListWhereType = {
+    // id
+    id?: string;
+    id_in?: string[];
+    id_not?: string;
+    id_not_in?: string[];
+    // createdOn
+    createdOn?: Date;
+    createdOn_in?: Date[];
+    createdOn_not?: Date;
+    createdOn_not_in?: Date[];
+    createdOn_between: [Date, Date];
+    createdOn_not_between: [Date, Date];
+    createdOn_lt?: Date;
+    createdOn_lte?: Date;
+    createdOn_gt?: Date;
+    createdOn_gte?: Date;
+    // savedOn
+    savedOn?: Date;
+    savedOn_in?: Date[];
+    savedOn_not?: Date;
+    savedOn_not_in?: Date[];
+    savedOn_between: [Date, Date];
+    savedOn_not_between: [Date, Date];
+    savedOn_lt?: Date;
+    savedOn_lte?: Date;
+    savedOn_gt?: Date;
+    savedOn_gte?: Date;
+    // createdBy.id
+    createdById?: string;
+    createdById_in?: string[];
+    createdById_not?: string;
+    createdById_not_in?: string[];
+    // createdBy.type
+    createdByType?: string;
+    createdByType_in?: string[];
+    createdByType_not?: string;
+    createdByType_not_in?: string[];
+    // modelId
+    modelId?: string;
+    modelId_in?: string[];
+    modelId_not?: string;
+    modelId_not_in?: string[];
+    [key: string]: any;
+};
+export type CmsContentModelEntryListSortType = string[];
 export type CmsContentModelEntryListArgsType = {
-    where?: {
-        // id
-        id?: string;
-        id_in?: string[];
-        id_not?: string;
-        id_not_in?: string[];
-        // createdOn
-        createdOn?: Date;
-        createdOn_in?: Date[];
-        createdOn_not?: Date;
-        createdOn_not_in?: Date[];
-        createdOn_between: [Date, Date];
-        createdOn_not_between: [Date, Date];
-        createdOn_lt?: Date;
-        createdOn_lte?: Date;
-        createdOn_gt?: Date;
-        createdOn_gte?: Date;
-        // savedOn
-        savedOn?: Date;
-        savedOn_in?: Date[];
-        savedOn_not?: Date;
-        savedOn_not_in?: Date[];
-        savedOn_between: [Date, Date];
-        savedOn_not_between: [Date, Date];
-        savedOn_lt?: Date;
-        savedOn_lte?: Date;
-        savedOn_gt?: Date;
-        savedOn_gte?: Date;
-        // createdBy.id
-        createdById?: string;
-        createdById_in?: string[];
-        createdById_not?: string;
-        createdById_not_in?: string[];
-        // createdBy.type
-        createdByType?: string;
-        createdByType_in?: string[];
-        createdByType_not?: string;
-        createdByType_not_in?: string[];
-        // modelId
-        modelId?: string;
-        modelId_in?: string[];
-        modelId_not?: string;
-        modelId_not_in?: string[];
-        [key: string]: any;
-    };
-    sort?: Record<string, any>;
+    where?: CmsContentModelEntryListWhereType;
+    sort?: CmsContentModelEntryListSortType;
     limit?: number;
     after?: string;
 };
 export type CmsContentModelEntryContextType = {
     get: (id: string) => Promise<CmsContentModelEntryType | null>;
-    list: (args?: CmsContentModelEntryListArgsType) => Promise<CmsContentModelEntryType[]>;
+    list: (
+        model: CmsContentModelType,
+        args?: CmsContentModelEntryListArgsType
+    ) => Promise<CmsContentModelEntryType[]>;
     create: (
         contentModelId: string,
         data: CmsContentModelEntryCreateInputType,
