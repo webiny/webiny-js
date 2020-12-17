@@ -47,7 +47,9 @@ const updateButtonElementIcon = ({ name, newElement, element }: PostModifyElemen
         // Modify the element directly.
         newElement.data.icon = {
             ...updatedIcon,
-            svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : undefined
+            // By setting "svg" as "null" we can truly reset it;
+            // otherwise "undefined" will be overridden during merge.
+            svg: id && !isSelectedIcon ? getSvg(id, { width, color }) : null
         };
     }
 };
