@@ -451,7 +451,7 @@ export type CmsContentModelEntryUpdateInputType = {
 };
 
 // this is base list args
-type CmsContentModelEntryListArgsType = {
+export type CmsContentModelEntryListArgsType = {
     where?: {
         // id
         id?: string;

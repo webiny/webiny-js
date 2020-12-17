@@ -7,17 +7,19 @@ export const beforeCreateHook = async (context: CmsContext, model: CmsContentMod
     const { name, modelId } = model;
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {
+        const modelIdCamelCase = camelCase(modelId);
         const models = await context.cms.models.list({
             where: {
-                modelId: camelCase(modelId)
+                modelId: modelIdCamelCase
             },
             limit: 1
         });
 
         if (models.length === 0) {
+            model.modelId = modelIdCamelCase;
             return;
         }
-        throw Error(`Content model with modelId "${modelId}" already exists.`);
+        throw Error(`Content model with modelId "${modelIdCamelCase}" already exists.`);
     }
 
     // ... otherwise, assign a unique modelId automatically.

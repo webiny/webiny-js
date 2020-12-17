@@ -9,7 +9,7 @@ const shortString = validation.create("maxLength:255");
 
 export const CreateContentModelModel = withFields({
     name: string({ validation: requiredShortString }),
-    modelId: string({ validation: requiredShortString }),
+    modelId: string({ validation: shortString }),
     description: string({ validation: shortString }),
     group: string({ validation: requiredShortString })
 })();
