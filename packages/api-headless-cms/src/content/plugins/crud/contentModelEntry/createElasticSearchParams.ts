@@ -1,5 +1,4 @@
 import {
-    CmsContentModelEntryListArgsType,
     CmsContentModelEntryListSortType,
     CmsContentModelEntryListWhereType,
     CmsContentModelType,
@@ -8,6 +7,7 @@ import {
     ElasticSearchQueryBuilderPlugin,
     ElasticSearchQueryType
 } from "@webiny/api-headless-cms/types";
+import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
 
 type FieldType = {
     unmappedType?: string;
@@ -15,10 +15,17 @@ type FieldType = {
     isSortable: boolean;
 };
 type FieldsType = Record<string, FieldType>;
+
+type CreateElasticSearchParamsArgType = {
+    where?: CmsContentModelEntryListWhereType;
+    sort?: CmsContentModelEntryListSortType;
+    limit: number;
+    after?: string;
+};
 type CreateElasticSearchParamsType = {
     context: CmsContext;
     model: CmsContentModelType;
-    args: CmsContentModelEntryListArgsType;
+    args: CreateElasticSearchParamsArgType;
     onlyOwned?: boolean;
 };
 type CreateElasticSearchSortParamsType = {
@@ -35,14 +42,6 @@ type ElasticSearchSortParamType = {
     order: string;
 };
 type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
-
-const decodeCursor = (cursor?: string) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
-};
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)_?([a-zA-Z0-9_]+)$/);
 const parseWhereKey = (key: string) => {
@@ -124,7 +123,7 @@ const execElasticSearchBuildQueryPlugins = (
 
 export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
     const { context, model, args, onlyOwned } = params;
-    const { where, after, limit = 100, sort } = args;
+    const { where, after, limit, sort } = args;
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
@@ -164,6 +163,6 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         sort: creteElasticSearchSortParams({ sort, fields }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeCursor(after)
+        search_after: decodeElasticSearchCursor(after)
     };
 };
