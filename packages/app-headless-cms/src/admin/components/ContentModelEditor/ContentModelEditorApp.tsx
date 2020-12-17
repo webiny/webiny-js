@@ -28,7 +28,6 @@ const ContentModelEditorApp = () => {
             key={id}
             apollo={apolloClient}
             id={id}
-            defaultLayoutRenderer={"forms-form-layout-default"}
         >
             <ContentModelEditor />
         </ContentModelEditorProvider>

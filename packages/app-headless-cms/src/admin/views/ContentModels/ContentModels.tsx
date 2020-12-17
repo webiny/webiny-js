@@ -1,11 +1,11 @@
 import React from "react";
 import { SplitView, LeftPanel } from "@webiny/app-admin/components/SplitView";
 import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import { useDataList } from "@webiny/app/hooks/useDataList";
+import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import ContentModelsDataList from "./ContentModelsDataList";
 import NewContentModelDialog from "./NewContentModelDialog";
 import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
-import { useDataList } from "@webiny/app/hooks/useDataList";
-import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 
 function ContentModels() {
     const [newContentModelDialogOpened, openNewContentModelDialog] = React.useState(false);
@@ -14,10 +14,7 @@ function ContentModels() {
 
     const dataList = useDataList({
         client: apolloClient,
-        query: LIST_CONTENT_MODELS,
-        variables: {
-            sort: { savedOn: -1 }
-        }
+        query: LIST_CONTENT_MODELS
     });
 
     return (

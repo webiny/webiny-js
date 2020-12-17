@@ -20,7 +20,6 @@ export const ContentFormRender = ({
     contentModel,
     onSubmit,
     onChange,
-    locale,
     onForm = null
 }) => {
     // All form fields - an array of rows where each row is an array that contain fields.
@@ -51,11 +50,10 @@ export const ContentFormRender = ({
                         {fields.map((row, rowIndex) => (
                             <React.Fragment key={rowIndex}>
                                 {row.map(field => (
-                                    <Cell span={Math.floor(12 / row.length)} key={field._id}>
+                                    <Cell span={Math.floor(12 / row.length)} key={field.id}>
                                         <RenderFieldElement
                                             field={field}
                                             Bind={Bind}
-                                            locale={locale}
                                             renderPlugins={renderPlugins}
                                             contentModel={contentModel}
                                         />

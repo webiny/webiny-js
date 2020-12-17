@@ -18,10 +18,6 @@ export type CmsEditorFieldTypePlugin = Plugin & {
         icon: React.ReactNode;
         allowMultipleValues: boolean;
         allowPredefinedValues: boolean;
-        allowIndexes: {
-            singleValue: boolean;
-            multipleValues: false; // At the moment, we don't support indexing fields with multiple values.
-        };
         multipleValuesLabel: React.ReactNode;
         createField: ({ i18n: any }) => CmsEditorField;
         renderSettings?: (params: {
@@ -51,14 +47,13 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
             field: CmsEditorField;
             Label: typeof Label;
             getBind: (index?: number) => any;
-            locale: string;
             contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };
 };
 
 export type CmsEditorField = {
-    _id?: string;
+    id?: string;
     type: string;
     fieldId?: CmsEditorFieldId;
     label?: I18NStringValue;
@@ -125,7 +120,6 @@ export type CmsEditorContentTab = React.FC<{
 // ------------------------------------------------------------------------------------------------------------
 
 export type CmsContentModelFormProps = {
-    locale?: string;
     loading?: boolean;
     onForm?: (form: any) => void;
     contentModel: CmsEditorContentModel;
@@ -216,7 +210,6 @@ export type FormRenderCmsEditorField = CmsEditorField & {
 export type UseContentModelEditorReducerStateType = {
     apolloClient: ApolloClient<any>;
     id: string;
-    defaultLayoutRenderer: string;
 };
 
 export type FormSettingsPluginType = Plugin & {

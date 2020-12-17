@@ -44,11 +44,7 @@ export default ContentModelEditorContext => {
                 self.setData(() => cloneDeep(data), false);
                 return response;
             },
-            saveContentModel: async (rawData = state.data) => {
-                const data = cloneDeep(rawData);
-                // Remove "createdOn" from entries in the "indexes" field.
-                data.indexes = data.indexes.map(item => omit(item, ["createdOn"]));
-
+            saveContentModel: async (data = state.data) => {
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
@@ -59,8 +55,7 @@ export default ContentModelEditorContext => {
                             "name",
                             "settings",
                             "description",
-                            "titleFieldId",
-                            "indexes"
+                            "titleFieldId"
                         ])
                     }
                 });
@@ -93,7 +88,7 @@ export default ContentModelEditorContext => {
                 const fields = cloneDeep(state.data.layout);
                 fields.forEach((row, rowIndex) => {
                     row.forEach((fieldId, fieldIndex) => {
-                        fields[rowIndex][fieldIndex] = self.getField({ _id: fieldId });
+                        fields[rowIndex][fieldIndex] = self.getField({ id: fieldId });
                     });
                 });
                 return fields;
@@ -150,8 +145,8 @@ export default ContentModelEditorContext => {
              */
             insertField(data: CmsEditorField, position: FieldLayoutPositionType) {
                 const field = cloneDeep(data);
-                if (!field._id) {
-                    field._id = shortid.generate();
+                if (!field.id) {
+                    field.id = shortid.generate();
                 }
 
                 if (!data.type) {
@@ -215,7 +210,7 @@ export default ContentModelEditorContext => {
                 const field = cloneDeep(fieldData);
                 self.setData(data => {
                     for (let i = 0; i < data.fields.length; i++) {
-                        if (data.fields[i]._id === field._id) {
+                        if (data.fields[i].id === field.id) {
                             data.fields[i] = field;
                             break;
                         }

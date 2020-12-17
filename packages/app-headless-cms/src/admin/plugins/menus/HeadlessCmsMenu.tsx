@@ -9,7 +9,7 @@ import { useNavigation } from "@webiny/app-admin/plugins/menu/Navigation/compone
 import EnvironmentSelectorDialog from "./../../components/EnvironmentSelectorDialog";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 import get from "lodash/get";
@@ -54,9 +54,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
     const contentModelGroups = get(response, "data.listContentModelGroups.data", []);
-
-    console.log("contentModelGroups", contentModelGroups);
-
+    
     const cmgHash = contentModelGroups.reduce((returnValue, currentValue) => {
         return (
             returnValue +
@@ -69,16 +67,17 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
     // Generate "admin-global-search" plugins - enables the user to search content via the global search bar.
     useEffect(() => {
         // 1. Unregister all previously registered plugins.
-        getPlugins<AdminGlobalSearchPlugin>("admin-global-search")
+        plugins
+            .byType<AdminGlobalSearchPlugin>("admin-global-search")
             .filter(item => item.name.startsWith("admin-global-search-headless-cms"))
-            .forEach(item => unregisterPlugin(item.name));
+            .forEach(item => plugins.unregister(item.name));
 
         // 2. Register a new set of plugins via the latest list of content models.
         contentModelGroups.forEach(group => {
             group.contentModels.forEach(contentModel => {
                 const pluginName = "admin-global-search-headless-cms-" + contentModel.modelId;
-                if (!getPlugin(pluginName)) {
-                    registerPlugins({
+                if (!plugins.byName(pluginName)) {
+                    plugins.register({
                         type: "admin-global-search",
                         name: "admin-global-search-headless-cms-" + contentModel.modelId,
                         route: "/cms/content-models/manage/" + contentModel.modelId,

@@ -1,7 +1,6 @@
 import React from "react";
 import { ReactComponent as FloatIcon } from "./icons/round-looks_3-24px.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";
@@ -20,10 +19,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         validators: ["required", "gte", "lte"],
         allowMultipleValues: true,
         allowPredefinedValues: true,
-        allowIndexes: {
-            singleValue: true,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of numbers`,
         createField() {
             return {
@@ -39,7 +34,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"placeholderText"}>
-                            <I18NInput
+                            <Input
                                 label={t`Placeholder text`}
                                 description={t`Placeholder text (optional)`}
                             />

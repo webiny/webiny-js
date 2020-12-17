@@ -3,7 +3,6 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { css } from "emotion";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -14,22 +13,19 @@ const style = {
     })
 };
 
-const DynamicListMultipleValues = ({ field, getBind, Label, children, locale }) => {
+const DynamicListMultipleValues = ({ field, getBind, Label, children }) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
-    const { getValue } = useI18N();
 
     return (
         <Bind>
             {bindField => {
                 const { value, appendValue } = bindField;
-
-                const label = getValue(field.label, locale);
-
+                
                 return (
                     <Grid>
                         <Cell span={12}>
-                            {field.label && <Label>{label}</Label>}
+                            {field.label && <Label>{field.label}</Label>}
 
                             <FirstFieldBind>
                                 {bindIndex =>

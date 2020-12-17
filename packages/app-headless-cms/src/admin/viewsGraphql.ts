@@ -37,21 +37,12 @@ export const LIST_CONTENT_MODELS = gql`
                 ${BASE_CONTENT_MODEL_FIELDS}
                 modelId
             }
-            meta {
-                cursors {
-                    next
-                    previous
-                }
-                hasNextPage
-                hasPreviousPage
-                totalCount
-            }
         }
     }
 `;
 
 export const CREATE_CONTENT_MODEL = gql`
-    mutation CmsCreateContentModel($data: CmsContentModelInput!) {
+    mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
             data {
                 id

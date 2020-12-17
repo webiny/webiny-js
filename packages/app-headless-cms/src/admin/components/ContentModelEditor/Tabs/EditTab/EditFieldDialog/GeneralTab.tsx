@@ -1,14 +1,13 @@
 import React, { useEffect, useCallback, useRef, useMemo } from "react";
+import { camelCase } from "lodash";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { camelCase } from "lodash";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { validation } from "@webiny/validation";
 import { CmsEditorField, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { FormChildrenFunctionParams } from "@webiny/form/Form";
+
+import { useContentModelEditor } from "../../../Context";
 
 type GeneralTabProps = {
     field: CmsEditorField;
@@ -20,11 +19,10 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     const { Bind, setValue } = form;
     const inputRef = useRef(null);
     const { getField, data } = useContentModelEditor();
-    const { getValue } = useI18N();
 
     // Had problems with auto-focusing the "label" field. A couple of comments on this.
     // 1. It's probably caused by the Tabs component which wraps this component.
-    // 2. It seems that the "autoFocus" prop on the Input does'nt work. I can't see it attached in the actual DOM.
+    // 2. It seems that the "autoFocus" prop on the Input doesn't work. I can't see it attached in the actual DOM.
     // 3. This works, but it's not 100%. Visually, the cursor is frozen, and that's probably caused by a bug / design
     //    in the RMWC / Material library. If you were to click somewhere on screen, and then apply focus, then
     //    it seems it's behaving correctly. ¯\_(ツ)_/¯
@@ -35,7 +33,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
     }, []);
 
     const afterChangeLabel = useCallback(value => {
-        setValue("fieldId", camelCase(getValue(value)));
+        setValue("fieldId", camelCase(value));
     }, []);
 
     const beforeChangeFieldId = useCallback((value, baseOnChange) => {
@@ -58,7 +56,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
             return;
         }
 
-        if (existingField._id === field._id) {
+        if (existingField.id === field.id) {
             return true;
         }
         throw new Error("Please enter a unique Field ID.");
@@ -88,9 +86,9 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                     <Bind
                         name={"label"}
                         validators={validation.create("required")}
-                        afterChange={!field._id && afterChangeLabel}
+                        afterChange={!field.id && afterChangeLabel}
                     >
-                        <I18NInput label={"Label"} inputRef={inputRef} />
+                        <Input label={"Label"} inputRef={inputRef} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
@@ -103,7 +101,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
                         ]}
                         beforeChange={beforeChangeFieldId}
                     >
-                        <Input label={"Field ID"} disabled={!!field._id} />
+                        <Input label={"Field ID"} disabled={!!field.id} />
                     </Bind>
                 </Cell>
 
@@ -126,7 +124,7 @@ const GeneralTab = ({ field, form, fieldPlugin }: GeneralTabProps) => {
 
                 <Cell span={12}>
                     <Bind name={"helpText"}>
-                        <I18NInput label={"Help text"} description={"Help text (optional)"} />
+                        <Input label={"Help text"} description={"Help text (optional)"} />
                     </Bind>
                 </Cell>
             </Grid>

@@ -15,7 +15,7 @@ const cleanupEmptyRows = data => {
 
 const moveField = ({ field, position, data }) => {
     const { row, index } = position;
-    const fieldId = typeof field === "string" ? field : field._id;
+    const fieldId = typeof field === "string" ? field : field.id;
 
     const existingPosition = getFieldPosition({ field: fieldId, data });
     if (existingPosition) {

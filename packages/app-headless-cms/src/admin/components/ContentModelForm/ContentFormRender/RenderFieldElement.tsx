@@ -15,11 +15,10 @@ const t = i18n.ns("app-headless-cms/admin/components/content-form");
 const RenderFieldElement = (props: {
     field: CmsEditorField;
     Bind: any;
-    locale: any;
     contentModel: CmsEditorContentModel;
     renderPlugins: CmsEditorFieldRendererPlugin[];
 }) => {
-    const { renderPlugins, field, Bind: BaseFormBind, locale, contentModel } = props;
+    const { renderPlugins, field, Bind: BaseFormBind, contentModel } = props;
     const renderPlugin = renderPlugins.find(
         plugin => plugin.renderer.rendererName === get(field, "renderer.name")
     );
@@ -28,7 +27,7 @@ const RenderFieldElement = (props: {
 
     const getBind = useCallback(
         (index = -1) => {
-            const memoKey = field.fieldId + field.multipleValues + index + locale;
+            const memoKey = field.fieldId + field.multipleValues + index;
             if (memoizedBindComponents.current[memoKey]) {
                 return memoizedBindComponents.current[memoKey];
             }
@@ -51,9 +50,8 @@ const RenderFieldElement = (props: {
                 return (
                     <BaseFormBind name={name} validators={validators} defaultValue={defaultValue}>
                         {bind => {
-                            const value = getValue({ bind, locale, field, index });
-                            const onChange = value =>
-                                setValue({ value, bind, locale, field, index });
+                            const value = getValue({ bind, field, index });
+                            const onChange = value => setValue({ value, bind, field, index });
 
                             const props = {
                                 ...bind,
@@ -68,7 +66,6 @@ const RenderFieldElement = (props: {
                                         if (index >= 0) {
                                             let value = getValue({
                                                 bind,
-                                                locale,
                                                 field,
                                                 index: -1
                                             });
@@ -77,7 +74,7 @@ const RenderFieldElement = (props: {
                                                 ...value.slice(index + 1)
                                             ];
 
-                                            setValue({ value, bind, locale, field, index: -1 });
+                                            setValue({ value, bind, field, index: -1 });
                                         }
                                     };
                                 } else {
@@ -100,7 +97,7 @@ const RenderFieldElement = (props: {
 
             return memoizedBindComponents.current[memoKey];
         },
-        [field.fieldId, locale]
+        [field.fieldId]
     );
 
     if (!renderPlugin) {
@@ -109,7 +106,7 @@ const RenderFieldElement = (props: {
         });
     }
 
-    return renderPlugin.renderer.render({ field, getBind, Label, contentModel, locale });
+    return renderPlugin.renderer.render({ field, getBind, Label, contentModel });
 };
 
 export default RenderFieldElement;

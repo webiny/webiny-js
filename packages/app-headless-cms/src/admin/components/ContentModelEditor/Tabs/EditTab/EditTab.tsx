@@ -162,7 +162,7 @@ export const EditTab: CmsEditorContentTab = () => {
                 field={editingField}
                 onClose={editField}
                 onSubmit={data => {
-                    if (data._id) {
+                    if (data.id) {
                         updateField(data);
                     } else {
                         insertField(data, dropTarget);

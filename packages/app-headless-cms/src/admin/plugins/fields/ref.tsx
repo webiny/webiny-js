@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
+import get from "lodash/get";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
 import { validation } from "@webiny/validation";
@@ -8,7 +8,7 @@ import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
-import get from "lodash/get";
+import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";
 
@@ -25,10 +25,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <RefIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: false,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of references`,
         createField() {
             return {

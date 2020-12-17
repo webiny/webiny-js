@@ -161,6 +161,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 modelId: String
                 group: ID
                 description: String
+                titleFieldId: ID
                 layout: [[ID!]!]!
                 fields: [CmsContentModelFieldInput!]!
             }
@@ -215,12 +216,14 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     id: ID!
                     name: String!
                     modelId: String!
+                    titleFieldId: String
                     description: String
                     group: CmsContentModelGroup!
                     createdOn: DateTime!
                     savedOn: DateTime
                     createdBy: JSON!
                     fields: [CmsContentModelField!]!
+                    lockedFields: [JSON]
                     layout: [[String!]!]!
                 }
 

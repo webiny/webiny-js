@@ -1,7 +1,6 @@
 import React from "react";
-import { I18NValue } from "@webiny/app-i18n/components";
-import { getPlugins } from "@webiny/plugins";
 import { cloneDeep, pick } from "lodash";
+import { plugins } from "@webiny/plugins";
 import { ContentFormRender } from "./ContentFormRender";
 
 import {
@@ -16,7 +15,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { layout, fields } = contentModel;
 
     const getFieldById = id => {
-        return fields.find(field => field._id === id);
+        return fields.find(field => field.id === id);
     };
 
     const getFields = () => {
@@ -25,10 +24,10 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             returnFields = cloneDeep(layout);
         } else {
             // If no layout provided, just render all fields one below other.
-            returnFields = [...fields.map(item => [item._id])];
+            returnFields = [...fields.map(item => [item.id])];
         }
 
-        const validatorPlugins: CmsFormFieldValidatorPlugin[] = getPlugins("form-field-validator");
+        const validatorPlugins: CmsFormFieldValidatorPlugin[] = plugins.byType("form-field-validator");
 
         returnFields.forEach(row => {
             row.forEach((id, idIndex) => {
@@ -61,9 +60,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
                                 }
 
                                 if (isInvalid) {
-                                    throw new Error(
-                                        I18NValue({ value: item.message }) || "Invalid value."
-                                    );
+                                    throw new Error(item.message);
                                 }
                             };
                         })
@@ -92,12 +89,11 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const { content, onSubmit, onChange, locale, onForm } = props;
+    const { content, onSubmit, onChange, onForm } = props;
 
     return (
         <ContentFormRender
             onForm={onForm}
-            locale={locale}
             getFields={getFields}
             getDefaultValues={getDefaultValues}
             content={content}

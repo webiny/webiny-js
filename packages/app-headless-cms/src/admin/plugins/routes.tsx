@@ -17,14 +17,12 @@ const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModel
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
 const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
 const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
-const AccessTokensView = lazy(() => import("../views/AccessTokens"));
 const ContentView = lazy(() => import("../views/Content/Content"));
 
-const ROLE_CMS_CONTENT_GROUPS = ["cms:content-model-group:crud"];
-const ROLE_CMS_ENVIRONMENT = ["cms:environment:crud"];
-const ROLE_CMS_ENVIRONMENT_ALIAS = ["cms:environment-alias:crud"];
-const ROLE_CMS_ACCESS_TOKENS = ["cms:access-tokens:crud"];
-const ROLE_CMS_CONTENT_MODELS = ["cms:content-model:crud"];
+const ROLE_CMS_CONTENT_GROUPS = "cms.contentModelGroup.crud";
+const ROLE_CMS_ENVIRONMENT = "cms.environment.crud";
+const ROLE_CMS_ENVIRONMENT_ALIAS = "cms.environmentAlias.crud";
+const ROLE_CMS_CONTENT_MODELS = "cms.contentModel.crud";
 
 const plugins: RoutePlugin[] = [
     {
@@ -35,7 +33,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-model-groups"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_CONTENT_GROUPS}>
+                    <SecureRoute permission={ROLE_CMS_CONTENT_GROUPS}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
@@ -57,7 +55,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/manage/:modelId"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content`}</title>
@@ -79,7 +77,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -99,7 +97,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
@@ -120,7 +118,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/settings/cms/environments"
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_ENVIRONMENT}>
+                    <SecureRoute permission={ROLE_CMS_ENVIRONMENT}>
                         <AdminLayout>
                             <Helmet title={t`Headless CMS - Environments Settings`} />
                             <Loader>
@@ -140,31 +138,11 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/settings/cms/environments/aliases"
                 render={() => (
-                    <SecureRoute scopes={ROLE_CMS_ENVIRONMENT_ALIAS}>
+                    <SecureRoute permission={ROLE_CMS_ENVIRONMENT_ALIAS}>
                         <AdminLayout>
                             <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
                             <Loader>
                                 <EnvironmentAliasesView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        type: "route",
-        name: "route-settings-cms-access-tokens",
-        route: (
-            <Route
-                exact
-                path="/settings/cms/accessTokens"
-                render={() => (
-                    <SecureRoute scopes={ROLE_CMS_ACCESS_TOKENS}>
-                        <AdminLayout>
-                            <Helmet title={t`Headless CMS - Access Tokens Settings`} />
-                            <Loader>
-                                <AccessTokensView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

@@ -1,29 +1,19 @@
-import get from "lodash/get";
-
-const getValue = ({ bind, locale, field, index }) => {
-    let values = get(bind, "value.values");
-    if (!Array.isArray(values)) {
-        values = [];
-    }
-
-    let valueForLocale = values.find(item => item.locale === locale);
-    if (valueForLocale) {
-        valueForLocale = valueForLocale.value;
-    }
+const getValue = ({ bind, field, index }) => {
+    let value = bind.value || null;
 
     if (field.multipleValues) {
-        if (!Array.isArray(valueForLocale)) {
-            valueForLocale = [];
+        if (!Array.isArray(value)) {
+            value = [];
         }
 
         if (index >= 0) {
-            return valueForLocale[index] || null;
+            return value[index] || null;
         }
 
-        return valueForLocale;
+        return value;
     }
 
-    return valueForLocale || null;
+    return value;
 };
 
 export default getValue;

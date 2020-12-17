@@ -1,30 +1,15 @@
 import gql from "graphql-tag";
 
-const I18N_FIELDS = `
-    values {
-        value
-        locale
-    }
-`;
-
 export const FIELDS_FIELDS = `
-        _id
+        id
         fieldId
         type
-        label {
-            ${I18N_FIELDS}
-        }
-        placeholderText {
-            ${I18N_FIELDS}
-        }
-        helpText {
-            ${I18N_FIELDS}
-        }  
+        label
+        placeholderText
+        helpText  
         predefinedValues {
             enabled
-            values {
-                ${I18N_FIELDS}
-            }
+            values
         }
         multipleValues 
         renderer {
@@ -33,15 +18,13 @@ export const FIELDS_FIELDS = `
         validation {
             name
             settings
-            message {
-                ${I18N_FIELDS}
-            }
+            message
         }
         settings
 `;
 
 export const GET_CONTENT_MODEL = gql`
-    query GetContentModel($id: ID!) {
+    query CmsGetContentModel($id: ID!) {
         getContentModel(id: $id) {
             data {
                 id
@@ -52,10 +35,6 @@ export const GET_CONTENT_MODEL = gql`
                 lockedFields
                 fields {
                     ${FIELDS_FIELDS}
-                }
-                indexes {
-                    fields
-                    createdOn
                 }
                 layout
             }
@@ -69,7 +48,7 @@ export const GET_CONTENT_MODEL = gql`
 `;
 
 export const UPDATE_CONTENT_MODEL = gql`
-    mutation UpdateContentModel($id: ID!, $data: CmsContentModelInput!) {
+    mutation CmsUpdateContentModel($id: ID!, $data: CmsContentModelUpdateInput!) {
         updateContentModel(id: $id, data: $data) {
             data {
                 id

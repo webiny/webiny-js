@@ -14,10 +14,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <BooleanIcon />,
         allowMultipleValues: false,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: true,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of booleans`,
         createField() {
             return {

@@ -15,10 +15,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         validators: ["required"],
         allowMultipleValues: true,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: true,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of files or an image gallery`,
         createField() {
             return {
