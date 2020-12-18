@@ -7,25 +7,31 @@ import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
 require("./index.css").toString();
 
 /**
- * Base Paragraph Block for the Editor.js.
- * Represents simple paragraph
- *
- * @author CodeX (team@codex.so)
- * @copyright CodeX 2018
- * @license The MIT License (MIT)
- */
-
-/**
  * @typedef {object} ParagraphConfig
  * @property {string} placeholder - placeholder for the empty paragraph
  * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data
  */
-
+type ParagraphConfig = {
+    placeholder: string;
+    preserveBlank: boolean;
+};
 /**
  * @typedef {Object} ParagraphData
  * @description Tool's input and output data format
  * @property {String} text — Paragraph's content. Can include HTML tags: <a><b><i>
  */
+type ParagraphData = {
+    text: string;
+    textAlign: TextAlign;
+};
+
+type Typography = {
+    [key: string]: {
+        label: string;
+        component: string;
+        className: string;
+    };
+};
 class Paragraph {
     /**
      * Default placeholder for Paragraph Tool
@@ -47,6 +53,7 @@ class Paragraph {
     _preserveBlank: boolean;
     alignments: Alignment[];
     settingsButtons: HTMLElement[];
+    typography: Typography;
 
     /**
      * Render plugin`s main Element and fill it with saved data
@@ -61,7 +68,7 @@ class Paragraph {
         console.log("readonly", readOnly);
         this.api = api;
         this.readOnly = readOnly;
-
+        this.typography = config.typography || null;
         this._CSS = {
             block: this.api.styles.block,
             settingsButton: this.api.styles.settingsButton,
@@ -207,11 +214,7 @@ class Paragraph {
      * @public
      */
     validate(savedData) {
-        if (savedData.text.trim() === "" && !this._preserveBlank) {
-            return false;
-        }
-
-        return true;
+        return !(savedData.text.trim() === "" && !this._preserveBlank);
     }
 
     /**
@@ -222,8 +225,26 @@ class Paragraph {
      */
     save(toolsContent) {
         return {
-            text: toolsContent.innerHTML
+            text: toolsContent.innerHTML,
+            textAlign: this.getTextAlign(toolsContent.className)
         };
+    }
+
+    /**
+     * Extract textAlign from className
+     *
+     * @param {string} className - heading element className
+     * @returns {TextAlign} textAlign
+     */
+    getTextAlign(className) {
+        let textAlign = TextAlign.LEFT;
+        // Match className with alignment
+        this.alignments.forEach(alignment => {
+            if (className.includes(`ce-header-text--${alignment.name}`)) {
+                textAlign = alignment.name;
+            }
+        });
+        return textAlign;
     }
 
     /**
@@ -301,11 +322,11 @@ class Paragraph {
         /**
          * Add Alignment class
          */
-        this.alignments.forEach(aligment => {
-            if (aligment.name === this._data.textAlign) {
-                this._element.classList.add(`ce-header-text--${aligment.name}`);
+        this.alignments.forEach(alignment => {
+            if (alignment.name === this._data.textAlign) {
+                this._element.classList.add(`ce-header-text--${alignment.name}`);
             } else {
-                this._element.classList.remove(`ce-header-text--${aligment.name}`);
+                this._element.classList.remove(`ce-header-text--${alignment.name}`);
             }
         });
     }
@@ -343,7 +364,7 @@ class Paragraph {
      * @returns {alignment}
      */
     get currentAlignment() {
-        let alignment = this.alignments.find(levelItem => levelItem.name === this._data.alignment);
+        let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
 
         if (!alignment) {
             alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
