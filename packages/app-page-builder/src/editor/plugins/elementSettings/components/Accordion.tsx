@@ -42,7 +42,7 @@ const classes = {
 
         "&.open": {
             color: COLORS.black,
-            paddingBottom: 0,
+            backgroundColor: "hsla(0,0%,97%,1)",
 
             "&::before": {
                 transform: "rotate(90deg)"
