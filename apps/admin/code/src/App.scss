@@ -42,10 +42,30 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
   color: $webiny-theme-light-text-primary-on-background;
 
   .codex-editor__redactor {
+
     // ".codex-editor__redactor" element has a "padding-bottom" of 300px by default,
-    // which is too much for a page document. We're reducing it to just 100px.
-    // It is needed so that we can navigate or insert more content below the last most content.
-    padding-bottom: 100px !important;
+    // which is too much for a page document. So, we're remove it altogether here.
+    // We'll conditionally add it later when the editor is in use.
+    padding-bottom: 0 !important;
     margin: 0;
+    transition: padding-bottom 100ms linear;
+    will-change: padding-bottom;
+  }
+
+  .ce-block__content:focus {
+    outline: none;
+  }
+
+  // Reset drop target styles for block
+  .ce-block--drop-target .ce-block__content:before {
+    content: none !important;
+  }
+  .ce-block--drop-target .ce-block__content:after {
+    content: none !important;
+  }
+
+  // Reset Toolbar style
+  .ce-toolbar__content {
+    max-width: 92%;
   }
 }
