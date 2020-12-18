@@ -11,10 +11,6 @@ const throwPlainError = (type: string): void => {
     throw new Error(`Missing context.http.path.parameter "${type}".`);
 };
 
-const throwRegexError = (type: string, regex: string): void => {
-    throw new Error(`Parameter part "${type}" does not match a "${regex}" regex.`);
-};
-
 export const extractHandlerHttpParameters = (context: Context): CmsHttpParametersType => {
     const { key = "" } = context.http.path.parameters || {};
     const [type, locale] = key.split("/");
@@ -22,8 +18,6 @@ export const extractHandlerHttpParameters = (context: Context): CmsHttpParameter
         throwPlainError("type");
     } else if (!locale) {
         throwPlainError("locale");
-    } else if (locale.match(/^([a-zA-Z]{2})-([a-zA-Z]{2})$/) === null) {
-        throwRegexError("locale", "^([a-zA-Z]{2})-([a-zA-Z]{2})$");
     }
 
     return {
