@@ -62,28 +62,33 @@ const creteElasticSearchSortParams = ({
     sort,
     fields
 }: CreateElasticSearchSortParamsType): ElasticSearchSortFieldsType[] => {
-    return sort
-        .map(value => {
-            const match = value.match(sortRegExp);
-            if (!match) {
-                throw new Error(`Cannot sort by "${value}".`);
-            }
-            const [field, order] = match;
-            if (!fields[field]) {
-                throw new Error(`It is not possible to sort by field "${field}".`);
-            }
-            if (!fields[field].isSortable) {
-                throw new Error(`Field "${field}" is not sortable.`);
-            }
-            return {
-                [field]: {
-                    order: order.toLowerCase() === "asc" ? "asc" : "desc",
-                    // eslint-disable-next-line @typescript-eslint/camelcase
-                    unmapped_type: fields[field].unmappedType || undefined
+    return (
+        sort
+            .map(value => {
+                const match = value.match(sortRegExp);
+                if (!match) {
+                    throw new Error(`Cannot sort by "${value}".`);
                 }
-            };
-        })
-        .filter(value => !!value);
+                const [field, order] = match;
+                if (!fields[field]) {
+                    // TODO verify that we want to throw an error
+                    throw new Error(`It is not possible to sort by field "${field}".`);
+                }
+                if (!fields[field].isSortable) {
+                    // TODO verify that we want to throw an error
+                    throw new Error(`Field "${field}" is not sortable.`);
+                }
+                return {
+                    [field]: {
+                        order: order.toLowerCase() === "asc" ? "asc" : "desc",
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        unmapped_type: fields[field].unmappedType || undefined
+                    }
+                };
+            })
+            // TODO if throwing error, remove filtering
+            .filter(value => !!value)
+    );
 };
 
 const execElasticSearchBuildQueryPlugins = (
