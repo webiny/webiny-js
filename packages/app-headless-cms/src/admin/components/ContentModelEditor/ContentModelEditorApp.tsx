@@ -12,9 +12,7 @@ type QueryMatch = {
 const ContentModelEditorApp = () => {
     const router = useRouter();
 
-    const {
-        environments: { apolloClient }
-    } = useCms();
+    const { apolloClient } = useCms();
 
     const matched: match<QueryMatch> = router.match;
     const { id } = matched.params;

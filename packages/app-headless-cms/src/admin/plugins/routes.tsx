@@ -6,6 +6,7 @@ import { Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-headless-cms/admin/routes");
 
 const Loader = ({ children, ...props }) => (
@@ -15,14 +16,7 @@ const Loader = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/Editor"));
 const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
-const EnvironmentsView = lazy(() => import("../views/Environments/Environments"));
-const EnvironmentAliasesView = lazy(() => import("../views/EnvironmentAliases/EnvironmentAliases"));
 const ContentView = lazy(() => import("../views/Content/Content"));
-
-const ROLE_CMS_CONTENT_GROUPS = "cms.contentModelGroup.crud";
-const ROLE_CMS_ENVIRONMENT = "cms.environment.crud";
-const ROLE_CMS_ENVIRONMENT_ALIAS = "cms.environmentAlias.crud";
-const ROLE_CMS_CONTENT_MODELS = "cms.contentModel.crud";
 
 const plugins: RoutePlugin[] = [
     {
@@ -33,7 +27,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-model-groups"}
                 render={() => (
-                    <SecureRoute permission={ROLE_CMS_CONTENT_GROUPS}>
+                    <SecureRoute permission={"cms.contentModelGroup.crud"}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
@@ -55,7 +49,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/manage/:modelId"}
                 render={() => (
-                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={"cms.contentModel.crud"}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content`}</title>
@@ -77,7 +71,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={"cms.contentModel.crud"}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -97,7 +91,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute permission={ROLE_CMS_CONTENT_MODELS}>
+                    <SecureRoute permission={"cms.contentModel.crud"}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>
@@ -109,47 +103,6 @@ const plugins: RoutePlugin[] = [
             />
         )
     },
-
-    {
-        type: "route",
-        name: "route-settings-cms-environments",
-        route: (
-            <Route
-                exact
-                path="/settings/cms/environments"
-                render={() => (
-                    <SecureRoute permission={ROLE_CMS_ENVIRONMENT}>
-                        <AdminLayout>
-                            <Helmet title={t`Headless CMS - Environments Settings`} />
-                            <Loader>
-                                <EnvironmentsView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    },
-    {
-        type: "route",
-        name: "route-settings-cms-environment-aliases",
-        route: (
-            <Route
-                exact
-                path="/settings/cms/environments/aliases"
-                render={() => (
-                    <SecureRoute permission={ROLE_CMS_ENVIRONMENT_ALIAS}>
-                        <AdminLayout>
-                            <Helmet title={t`Headless CMS - Environment Aliases Settings`} />
-                            <Loader>
-                                <EnvironmentAliasesView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                )}
-            />
-        )
-    }
 ];
 
 export default plugins;

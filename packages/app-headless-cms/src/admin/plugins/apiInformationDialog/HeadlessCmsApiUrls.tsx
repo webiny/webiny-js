@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { useQuery } from "react-apollo";
+import React from "react";
 import { css } from "emotion";
 import { CopyButton } from "@webiny/ui/Button";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { LIST_ENVIRONMENT_ALIASES } from "@webiny/app-headless-cms/admin/views/EnvironmentAliases/graphql";
 import { Typography } from "@webiny/ui/Typography";
-import { toLower } from "lodash";
-import get from "lodash/get";
 import { useSecurity } from "@webiny/app-security";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const style = {
     apiUrl: css({
@@ -23,100 +19,79 @@ const style = {
     })
 };
 
-const HeadlessCmsApiUrls = function({ name = null, type = null }) {
+const HeadlessCmsApiUrls = function() {
     const { identity } = useSecurity();
+    const { getLocales } = useI18N();
+    const { showSnackbar } = useSnackbar();
 
-    const hasPermission = identity.getPermission("cms.environment-alias");
+    const hasPermission = identity.getPermission("cms");
     if (!hasPermission) {
         return null;
     }
 
-    const { showSnackbar } = useSnackbar();
     const graphqlApiUrl = process.env.REACT_APP_API_URL;
-    const [totalAliases, setTotalAliases] = useState([]);
-    const {
-        environments: { currentEnvironment }
-    } = useCms();
-
-    useQuery(LIST_ENVIRONMENT_ALIASES, {
-        onCompleted: data => {
-            setTotalAliases(data.cms.environmentAliases.data);
-        }
-    });
 
     return (
         <div>
             <Typography use={"headline6"} style={{ fontSize: "1.4rem" }}>
-                Headless CMS - {name || get(currentEnvironment, "name")}
+                Headless CMS
             </Typography>
-            {totalAliases
-                .filter(elem => {
-                    if (type === "aliases") {
-                        return elem.name === name;
-                    } else if (type === "environment") {
-                        return get(elem, "environment.name") === name;
-                    } else {
-                        // Rarely (but still annoying), "currentEnvironment" would be undefined,
-                        // that's why we are fetching the currentEnvironment via `lodash.get` here.
-                        return get(elem, "environment.name") === get(currentEnvironment, "name");
-                    }
-                })
-                .map(elem => {
-                    return (
-                        <div key={elem.id} className={style.aliasContainer}>
-                            <Typography use={"headline6"}>Alias: {elem.name}</Typography>
-                            <div className={style.apiUrl}>
-                                <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                    Content Delivery API:
-                                </Typography>
-                                <a
-                                    href={`${graphqlApiUrl}/cms/read/${toLower(elem.name)}`}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    {`${graphqlApiUrl}/cms/read/${toLower(elem.name)}`}
-                                </a>
-                                <CopyButton
-                                    value={`${graphqlApiUrl}/cms/read/${toLower(elem.name)}`}
-                                    onCopy={() => showSnackbar("Successfully copied!")}
-                                />
-                            </div>
-                            <div className={style.apiUrl}>
-                                <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                    Content Preview API:
-                                </Typography>
-                                <a
-                                    href={`${graphqlApiUrl}/cms/preview/${toLower(elem.name)}`}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    {`${graphqlApiUrl}/cms/preview/${toLower(elem.name)}`}
-                                </a>
-                                <CopyButton
-                                    value={`${graphqlApiUrl}/cms/preview/${toLower(elem.name)}`}
-                                    onCopy={() => showSnackbar("Successfully copied!")}
-                                />
-                            </div>
-                            <div className={style.apiUrl}>
-                                <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                    Content Management API:
-                                </Typography>
-                                <a
-                                    href={`${graphqlApiUrl}/cms/manage/${toLower(elem.name)}`}
-                                    rel="noopener noreferrer"
-                                    target="_blank"
-                                >
-                                    {`${graphqlApiUrl}/cms/manage/${toLower(elem.name)}`}
-                                </a>
-                                <CopyButton
-                                    value={`${graphqlApiUrl}/cms/manage/${toLower(elem.name)}`}
-                                    onCopy={() => showSnackbar("Successfully copied!")}
-                                />
-                            </div>
-                            <br></br>
+            {getLocales().map(locale => {
+                return (
+                    <div key={locale.code} className={style.aliasContainer}>
+                        <Typography use={"headline6"}>Locale: {locale.code}</Typography>
+                        <div className={style.apiUrl}>
+                            <Typography use={"subtitle1"} className={style.aliasTitle}>
+                                Content Delivery API:
+                            </Typography>
+                            <a
+                                href={`${graphqlApiUrl}/cms/read/${locale.code}`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                {`${graphqlApiUrl}/cms/read/${locale.code}`}
+                            </a>
+                            <CopyButton
+                                value={`${graphqlApiUrl}/cms/read/${locale.code}`}
+                                onCopy={() => showSnackbar("Successfully copied!")}
+                            />
                         </div>
-                    );
-                })}
+                        <div className={style.apiUrl}>
+                            <Typography use={"subtitle1"} className={style.aliasTitle}>
+                                Content Preview API:
+                            </Typography>
+                            <a
+                                href={`${graphqlApiUrl}/cms/preview/${locale.code}`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                {`${graphqlApiUrl}/cms/preview/${locale.code}`}
+                            </a>
+                            <CopyButton
+                                value={`${graphqlApiUrl}/cms/preview/${locale.code}`}
+                                onCopy={() => showSnackbar("Successfully copied!")}
+                            />
+                        </div>
+                        <div className={style.apiUrl}>
+                            <Typography use={"subtitle1"} className={style.aliasTitle}>
+                                Content Management API:
+                            </Typography>
+                            <a
+                                href={`${graphqlApiUrl}/cms/manage/${locale.code}`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                {`${graphqlApiUrl}/cms/manage/${locale.code}`}
+                            </a>
+                            <CopyButton
+                                value={`${graphqlApiUrl}/cms/manage/${locale.code}`}
+                                onCopy={() => showSnackbar("Successfully copied!")}
+                            />
+                        </div>
+                        <br />
+                    </div>
+                );
+            })}
         </div>
     );
 };
