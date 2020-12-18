@@ -311,7 +311,8 @@ class Header {
         return {
             text: toolsContent.innerHTML,
             level: this.currentLevel.number,
-            textAlign: this.getTextAlign(toolsContent.className)
+            textAlign: this.getTextAlign(toolsContent.className),
+            className: toolsContent.className
         };
     }
 
