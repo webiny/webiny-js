@@ -55,7 +55,6 @@ class Paragraph {
      * @param {boolean} readOnly - read only mode flag
      */
     constructor({ data, config, api, readOnly }) {
-        console.log("readonly", readOnly);
         this.api = api;
         this.readOnly = readOnly;
         this.typography = config.typography || null;
@@ -216,7 +215,7 @@ class Paragraph {
 
     /**
      * Check if text content is empty and set empty string to inner html.
-     * We need this because some browsers (e.g. Safari) insert <br> into empty contenteditanle elements
+     * We need this because some browsers (e.g. Safari) insert <br> into empty contentEditable elements
      *
      * @param {KeyboardEvent} e - key up event
      */

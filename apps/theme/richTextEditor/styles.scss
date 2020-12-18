@@ -28,6 +28,9 @@
   .ce-block__content:focus {
     outline: none;
   }
+  *:focus {
+    outline: none;
+  }
   .ce-block__content {
     max-width: 100% !important;
   }
