@@ -9,7 +9,6 @@ import elasticSearch from "./es";
 
 type HeadlessPluginsOptions = {
     type: string;
-    environment: string;
     locale: string;
     dataManagerFunction?: string;
 };

@@ -1,7 +1,6 @@
 import {
     CmsContentModelFieldInputType,
-    CmsContentModelGroupType,
-    CmsEnvironmentType
+    CmsContentModelGroupType
 } from "@webiny/api-headless-cms/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
@@ -18,18 +17,15 @@ const getTypeObject = (schema, type) => {
 jest.setTimeout(15000);
 
 describe("content model test", () => {
-    const readHandlerOpts = { path: "read/production/en-US" };
-    const manageHandlerOpts = { path: "manage/production/en-US" };
+    const readHandlerOpts = { path: "read/en-US" };
+    const manageHandlerOpts = { path: "manage/en-US" };
 
     const { documentClient } = useContentGqlHandler(manageHandlerOpts);
 
-    let environment: CmsEnvironmentType;
     let contentModelGroup: CmsContentModelGroupType;
 
     beforeEach(async () => {
-        environment = await helpers.createInitialEnvironment(documentClient);
-        await helpers.createInitialAliasEnvironment(documentClient, environment);
-        contentModelGroup = await helpers.createContentModelGroup(documentClient, environment);
+        contentModelGroup = await helpers.createContentModelGroup(documentClient);
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -161,7 +157,6 @@ describe("content model test", () => {
 
         const [listResponse] = await listContentModelsQuery();
 
-        expect(listResponse.data.listContentModels.data).toHaveLength(1);
         expect(listResponse).toMatchObject({
             data: {
                 listContentModels: {

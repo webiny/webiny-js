@@ -2,11 +2,7 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { graphql, GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import {
-    CmsContext,
-    CmsEnvironmentAliasType,
-    CmsEnvironmentType
-} from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsSettingsType } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 
@@ -20,8 +16,7 @@ type SchemaCacheType = {
 type ArgsType = {
     context: CmsContext;
     type: string;
-    environment: CmsEnvironmentType;
-    environmentAlias: CmsEnvironmentAliasType;
+    settings: CmsSettingsType;
     locale: I18NLocale;
 };
 type ParsedBody = {
@@ -43,21 +38,9 @@ const respond = (http, result: unknown) => {
     });
 };
 const schemaList = new Map<string, SchemaCacheType>();
-/**
- * generate cache key from last changed values on environment and its aliases, content model group (type)
- * and locale code
- * TODO check if it needs to be hashed with sha1 or some other fast hashing algorithm
- */
 const generateCacheKey = (args: ArgsType): string => {
-    const { environment, environmentAlias, locale, type } = args;
-    return [
-        String(environment.changedOn || environment.createdOn),
-        environmentAlias ? String(environmentAlias.changedOn || environmentAlias.createdOn) : null,
-        locale.code,
-        String(type)
-    ]
-        .filter(value => !!value)
-        .join("#");
+    const { settings, locale, type } = args;
+    return [settings.contentModelLastChange.toISOString(), locale.code, type].join("#");
 };
 
 const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
@@ -80,10 +63,10 @@ const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     });
 };
 // gets an existing schema or rewrites existing one or creates a completely new one
-// depending on the schemaId created from type, environment and locale parameters
+// depending on the schemaId created from type and locale parameters
 const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
-    const { type, environment, locale } = args;
-    const id = `${type}#${environment.slug}#${locale.code}`;
+    const { type, locale } = args;
+    const id = `${type}#${locale.code}`;
 
     const cacheKey = generateCacheKey(args);
     if (!schemaList.has(id)) {
@@ -134,8 +117,7 @@ export const graphQLHandlerFactory = (
             const schema = await getSchema({
                 context,
                 locale: context.cms.getLocale(),
-                environment: context.cms.getEnvironment(),
-                environmentAlias: context.cms.getEnvironmentAlias(),
+                settings: context.cms.getSettings(),
                 type: context.cms.type
             });
 

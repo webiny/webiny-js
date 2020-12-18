@@ -21,7 +21,6 @@ const models: CmsContentModelType[] = [
         id: "1",
         createdOn: new Date(),
         savedOn: new Date(),
-        environment: "production",
         titleFieldId: "title",
         lockedFields: [],
         name: "Category",
@@ -49,7 +48,15 @@ const models: CmsContentModelType[] = [
                             min: 3.0
                         }
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field12,
@@ -63,7 +70,15 @@ const models: CmsContentModelType[] = [
                         name: "required",
                         message: "This field is required"
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             }
         ]
     },
@@ -71,7 +86,6 @@ const models: CmsContentModelType[] = [
         id: "2",
         createdOn: new Date(),
         savedOn: new Date(),
-        environment: "production",
         titleFieldId: "title",
         lockedFields: [],
         name: "Product",
@@ -99,7 +113,15 @@ const models: CmsContentModelType[] = [
                         name: "required",
                         message: "Please enter a product name"
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field22,
@@ -117,6 +139,14 @@ const models: CmsContentModelType[] = [
                 settings: {
                     type: "one",
                     modelId: "category"
+                },
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
                 }
             },
 
@@ -132,7 +162,15 @@ const models: CmsContentModelType[] = [
                         name: "required",
                         message: "Please enter a price"
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field24,
@@ -141,7 +179,15 @@ const models: CmsContentModelType[] = [
                 label: "Price",
                 fieldId: "inStock",
                 type: "boolean",
-                validation: []
+                validation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field25,
@@ -150,7 +196,15 @@ const models: CmsContentModelType[] = [
                 label: "Price",
                 fieldId: "itemsInStock",
                 type: "number",
-                validation: []
+                validation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field26,
@@ -167,7 +221,15 @@ const models: CmsContentModelType[] = [
                         name: "required",
                         message: "Please enter a date"
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             }
         ]
     },
@@ -175,7 +237,6 @@ const models: CmsContentModelType[] = [
         id: "3",
         createdOn: new Date(),
         savedOn: new Date(),
-        environment: "production",
         titleFieldId: "text",
         lockedFields: [],
         name: "Review",
@@ -196,7 +257,15 @@ const models: CmsContentModelType[] = [
                         name: "required",
                         message: "This field is required"
                     }
-                ]
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             },
             {
                 id: ids.field32,
@@ -209,6 +278,14 @@ const models: CmsContentModelType[] = [
                 settings: {
                     type: "one",
                     modelId: "product"
+                },
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
                 }
             },
             {
@@ -218,7 +295,15 @@ const models: CmsContentModelType[] = [
                 label: "Rating",
                 type: "number",
                 fieldId: "rating",
-                validation: []
+                validation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
             }
         ]
     }

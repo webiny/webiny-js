@@ -42,7 +42,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
         type ${mTypeName}Meta {
             model: String
-            environment: ID
             parent: ID
             version: Int
             latestVersion: Boolean

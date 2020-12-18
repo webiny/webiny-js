@@ -14,7 +14,6 @@ export default /* GraphQL */ `
 
     type ReviewMeta {
         model: String
-        environment: ID
         parent: ID
         version: Int
         latestVersion: Boolean

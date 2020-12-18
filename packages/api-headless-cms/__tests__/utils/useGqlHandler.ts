@@ -9,20 +9,6 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { SecurityIdentity } from "@webiny/api-security";
 import { Client } from "@elastic/elasticsearch";
-import {
-    CREATE_ENVIRONMENT_MUTATION,
-    DELETE_ENVIRONMENT_MUTATION,
-    GET_ENVIRONMENT_QUERY,
-    LIST_ENVIRONMENT_QUERY,
-    UPDATE_ENVIRONMENT_MUTATION
-} from "./graphql/environment";
-import {
-    CREATE_ENVIRONMENT_ALIAS_MUTATION,
-    DELETE_ENVIRONMENT_ALIAS_MUTATION,
-    GET_ENVIRONMENT_ALIAS_QUERY,
-    LIST_ENVIRONMENT_ALIAS_QUERY,
-    UPDATE_ENVIRONMENT_ALIAS_MUTATION
-} from "./graphql/environmentAlias";
 import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
@@ -152,38 +138,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         invoke,
         async introspect() {
             return invoke({ body: { query: INTROSPECTION } });
-        },
-        // environment
-        async createEnvironmentMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_ENVIRONMENT_MUTATION, variables } });
-        },
-        async getEnvironmentQuery(variables: Record<string, any>) {
-            return invoke({ body: { query: GET_ENVIRONMENT_QUERY, variables } });
-        },
-        async updateEnvironmentMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_ENVIRONMENT_MUTATION, variables } });
-        },
-        async deleteEnvironmentMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_ENVIRONMENT_MUTATION, variables } });
-        },
-        async listEnvironmentsQuery() {
-            return invoke({ body: { query: LIST_ENVIRONMENT_QUERY } });
-        },
-        // environment alias
-        async createEnvironmentAliasMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: CREATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
-        },
-        async getEnvironmentAliasQuery(variables: Record<string, any>) {
-            return invoke({ body: { query: GET_ENVIRONMENT_ALIAS_QUERY, variables } });
-        },
-        async updateEnvironmentAliasMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: UPDATE_ENVIRONMENT_ALIAS_MUTATION, variables } });
-        },
-        async deleteEnvironmentAliasMutation(variables: Record<string, any>) {
-            return invoke({ body: { query: DELETE_ENVIRONMENT_ALIAS_MUTATION, variables } });
-        },
-        async listEnvironmentAliasesQuery() {
-            return invoke({ body: { query: LIST_ENVIRONMENT_ALIAS_QUERY } });
         },
         // settings
         async isInstalledQuery() {
