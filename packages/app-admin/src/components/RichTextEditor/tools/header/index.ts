@@ -5,7 +5,22 @@ import { ALIGNMENTS, ALIGNMENT_ICONS, TextAlign, Alignment } from "../utils";
  * Build styles
  */
 require("./index.css").toString();
-
+type Typography = {
+    [key: string]: {
+        label: string;
+        component: string;
+        className: string;
+    };
+};
+type HeaderData = {
+    text: string;
+    level: any;
+    textAlign: TextAlign;
+};
+type HeaderConfig = {
+    levels: number[];
+    typography: Typography;
+};
 class Header {
     api: API;
     readOnly: boolean;
@@ -15,6 +30,7 @@ class Header {
     _data: any;
     _element: any;
     alignments: Alignment[];
+    typography: Typography;
     /**
      * Render plugin`s main Element and fill it with saved data
      *
@@ -29,6 +45,10 @@ class Header {
         this.readOnly = readOnly;
 
         this.alignments = ALIGNMENTS;
+        /**
+         * Import typography from theme
+         */
+        this.typography = config.typography || null;
 
         /**
          * Styles
@@ -160,7 +180,9 @@ class Header {
             this.settingsButtons.push(selectTypeButton);
         });
 
-        /** Add alignment selectors */
+        /**
+         * Add alignment selectors
+         * */
         this.alignments.forEach(alignment => {
             const selectTypeButton = document.createElement("SPAN");
 
@@ -288,8 +310,26 @@ class Header {
     save(toolsContent) {
         return {
             text: toolsContent.innerHTML,
-            level: this.currentLevel.number
+            level: this.currentLevel.number,
+            textAlign: this.getTextAlign(toolsContent.className)
         };
+    }
+
+    /**
+     * Extract textAlign from className
+     *
+     * @param {string} className - heading element className
+     * @returns {TextAlign} textAlign
+     */
+    getTextAlign(className) {
+        let textAlign = TextAlign.LEFT;
+        // Match className with alignment
+        this.alignments.forEach(alignment => {
+            if (className.includes(`ce-header-text--${alignment.name}`)) {
+                textAlign = alignment.name;
+            }
+        });
+        return textAlign;
     }
 
     /**
@@ -403,9 +443,18 @@ class Header {
         tag.innerHTML = this._data.text || "";
 
         /**
-         * Add styles class
+         * Add styles class from typography
          */
-        tag.classList.add(this._CSS.wrapper);
+        if (this.typography) {
+            const component = this.currentLevel.tag.toLowerCase();
+            const typographyConfig = this.typography[component];
+            tag.classList.add(typographyConfig.className);
+        } else {
+            /**
+             * Add styles class
+             */
+            tag.classList.add(this._CSS.wrapper);
+        }
 
         /**
          * Add Alignment class
@@ -453,7 +502,7 @@ class Header {
      * @returns {alignment}
      */
     get currentAlignment() {
-        let alignment = this.alignments.find(levelItem => levelItem.name === this._data.alignment);
+        let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
 
         if (!alignment) {
             alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
