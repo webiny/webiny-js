@@ -6,34 +6,16 @@ import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
-type CmsDataManagerDeleteEnvironmentArgsType = {
-    environment: string;
-};
-
-type CmsDataManagerCopyEnvironmentArgsType = {
-    copyFrom: string;
-    copyTo: string;
-};
-
-export interface CmsDataManagerType {
-    deleteEnvironment(args: CmsDataManagerDeleteEnvironmentArgsType): Promise<void>;
-    copyEnvironment(args: CmsDataManagerCopyEnvironmentArgsType): Promise<void>;
-}
-
 export type CmsValuesContext = {
     cms: {
         // API type
         type: string;
-        // Requested environment
-        environment: string;
-        // Returns an instance of current environment.
-        getEnvironment: () => CmsEnvironmentType;
-        // Returns an instance of current environment alias.
-        getEnvironmentAlias: () => CmsEnvironmentAliasType | undefined;
         // Requested locale
         locale: string;
         // returns an instance of current locale
         getLocale: () => I18NLocale;
+        // returns instance of app settings
+        getSettings: () => CmsSettingsType;
         // This is a READ API
         READ: boolean;
         // This is a MANAGE API
@@ -99,7 +81,6 @@ export type LockedFieldType = {
 
 export type CmsContentModelType = {
     id: string;
-    environment: string;
     name: string;
     modelId: string;
     group: string;
@@ -221,101 +202,17 @@ type CreatedByType = {
     type: string;
 };
 
-type BaseCmsEnvironmentType = {
-    name: string;
-    slug: string;
-    description?: string;
-    isProduction?: boolean;
-};
-
-export type CmsEnvironmentType = BaseCmsEnvironmentType & {
-    id: string;
-    description?: string;
-    createdFrom?: CmsEnvironmentType;
-    createdBy: CreatedByType;
-    createdOn: Date;
-    savedOn: Date;
-    changedOn?: Date;
-    aliases?: CmsEnvironmentAliasType[];
-};
-
-type BaseCmsEnvironmentInputType = {
-    name: string;
-    description?: string;
-};
-
-export type CmsEnvironmentCreateInputType = BaseCmsEnvironmentInputType & {
-    slug?: string;
-    createdFrom?: string;
-};
-
-export type CmsEnvironmentUpdateInputType = BaseCmsEnvironmentInputType;
-
-export type CmsEnvironmentContextType = {
-    get: (id: string) => Promise<CmsEnvironmentType | null>;
-    list: () => Promise<CmsEnvironmentType[]>;
-    create: (
-        data: CmsEnvironmentCreateInputType,
-        createdBy: CreatedByType,
-        initial?: boolean
-    ) => Promise<CmsEnvironmentType>;
-    update: (
-        id: string,
-        data: CmsEnvironmentUpdateInputType,
-        model: CmsEnvironmentType
-    ) => Promise<CmsEnvironmentType>;
-    updateChangedOn: (env: string | CmsEnvironmentType) => Promise<void>;
-    delete: (id: string) => Promise<void>;
-};
-
-export type CmsEnvironmentAliasType = {
-    id: string;
-    name: string;
-    slug: string;
-    description?: string;
-    isProduction?: boolean;
-    environment?: CmsEnvironmentType;
-    createdBy: CreatedByType;
-    createdOn: Date;
-    savedOn: Date;
-    changedOn?: Date;
-};
-
-type BaseCmsEnvironmentAliasUpdateType = {
-    name: string;
-    description?: string;
-    environment?: string;
-};
-
-export type CmsEnvironmentAliasCreateInputType = BaseCmsEnvironmentAliasUpdateType & {
-    slug?: string;
-};
-
-export type CmsEnvironmentAliasUpdateInputType = BaseCmsEnvironmentAliasUpdateType;
-
-export type CmsEnvironmentAliasContextType = {
-    get: (id: string) => Promise<CmsEnvironmentAliasType | null>;
-    list: () => Promise<CmsEnvironmentAliasType[]>;
-    create: (
-        data: CmsEnvironmentAliasCreateInputType,
-        createdBy: CreatedByType
-    ) => Promise<CmsEnvironmentAliasType>;
-    update: (
-        id: string,
-        data: CmsEnvironmentAliasUpdateInputType
-    ) => Promise<CmsEnvironmentAliasType>;
-    delete: (model: CmsEnvironmentAliasType) => Promise<void>;
-};
-
 export type CmsSettingsType = {
     isInstalled: boolean;
-    environment: string;
-    environmentAlias: string;
+    contentModelLastChange: Date;
 };
 
 export type CmsSettingsContextType = {
+    contentModelLastChange: Date;
     get: () => Promise<CmsSettingsType>;
-    install: () => Promise<void>;
+    install: () => Promise<CmsSettingsType>;
+    updateContentModelLastChange: () => Promise<CmsSettingsType>;
+    getContentModelLastChange: () => Date;
 };
 
 export type CmsContentModelGroupCreateInputType = {
@@ -338,7 +235,6 @@ export type CmsContentModelGroupType = {
     slug: string;
     description: string;
     icon: string;
-    environment: CmsEnvironmentType;
     createdBy: CreatedByType;
     createdOn: Date;
     savedOn: Date;
@@ -531,9 +427,6 @@ export type CmsContentModelEntryContextType = {
 
 export type CmsCrudContextType = {
     cms: {
-        environments: CmsEnvironmentContextType;
-        environmentAliases: CmsEnvironmentAliasContextType;
-        dataManager: CmsDataManagerType;
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
@@ -557,8 +450,6 @@ export type ContentModelManagerPlugin = Plugin & {
 export enum DbItemTypes {
     CMS_CONTENT_MODEL_GROUP = "cms.group",
     CMS_CONTENT_MODEL = "cms.model",
-    CMS_ENVIRONMENT = "cms.env",
-    CMS_ENVIRONMENT_ALIAS = "cms.envAlias",
     CMS_SETTINGS = "cms.settings",
     CMS_CONTENT_MODEL_ENTRY = "cms.modelEntry"
 }

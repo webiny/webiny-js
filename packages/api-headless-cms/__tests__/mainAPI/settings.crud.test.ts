@@ -20,13 +20,7 @@ const insertCmsSettings = async (documentClient: DocumentClient, settings: CmsSe
 };
 
 describe("Settings crud test", () => {
-    const {
-        listEnvironmentsQuery,
-        listEnvironmentAliasesQuery,
-        isInstalledQuery,
-        installMutation,
-        documentClient
-    } = useAdminGqlHandler();
+    const { isInstalledQuery, installMutation, documentClient } = useAdminGqlHandler();
 
     test("cms is not installed", async () => {
         const [response] = await isInstalledQuery();
@@ -42,8 +36,7 @@ describe("Settings crud test", () => {
         });
         await insertCmsSettings(documentClient, {
             isInstalled: false,
-            environment: "environment",
-            environmentAlias: "environmentAlias"
+            contentModelLastChange: new Date()
         });
         const [afterInsertResponse] = await isInstalledQuery();
         expect(afterInsertResponse).toEqual({
@@ -61,8 +54,7 @@ describe("Settings crud test", () => {
     test("cms is installed", async () => {
         await insertCmsSettings(documentClient, {
             isInstalled: true,
-            environment: "environment",
-            environmentAlias: "environmentAlias"
+            contentModelLastChange: new Date()
         });
 
         const [response] = await isInstalledQuery();
@@ -81,8 +73,7 @@ describe("Settings crud test", () => {
     test("cms is already installed", async () => {
         await insertCmsSettings(documentClient, {
             isInstalled: true,
-            environment: "environment",
-            environmentAlias: "environmentAlias"
+            contentModelLastChange: new Date()
         });
 
         const [response] = await installMutation();
@@ -125,19 +116,5 @@ describe("Settings crud test", () => {
                 }
             }
         });
-
-        const [environmentsResponse] = await listEnvironmentsQuery();
-        expect(environmentsResponse.data.cms.listEnvironments.data).toHaveLength(1);
-
-        const productionEnvironment = environmentsResponse.data.cms.listEnvironments.data.find(
-            () => true
-        );
-
-        const [aliasesResponse] = await listEnvironmentAliasesQuery();
-        expect(aliasesResponse.data.cms.listEnvironmentAliases.data).toHaveLength(1);
-
-        const alias = aliasesResponse.data.cms.listEnvironmentAliases.data.find(() => true);
-
-        expect(alias.environment.id).toEqual(productionEnvironment.id);
     });
 });

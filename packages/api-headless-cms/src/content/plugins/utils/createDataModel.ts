@@ -192,7 +192,7 @@ export const createDataModel = (
                 }
             },
             async beforeCreate() {
-                this.meta.environment = context.cms.getEnvironment().id;
+                // this.meta.environment = context.cms.getEnvironment().id;
 
                 if (!this.id) {
                     this.id = mdbid();

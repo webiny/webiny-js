@@ -17,7 +17,6 @@ export default /* GraphQL */ `
 
     type ProductMeta {
         model: String
-        environment: ID
         parent: ID
         version: Int
         latestVersion: Boolean

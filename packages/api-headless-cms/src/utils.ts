@@ -4,7 +4,7 @@ import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { hasPermission, NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 
-type KeyGetterValue = "tenant" | "environment" | "locale";
+type KeyGetterValue = "tenant" | "locale";
 
 type CreatePkCallableType = (context: CmsContext) => string;
 type ModelCreatableByUserType = {
@@ -27,12 +27,10 @@ type CheckBasePermissionsCallable = (
 ) => Promise<SecurityPermission>;
 
 enum PartitionKeysEnum {
-    CMS_ENVIRONMENT = "CE",
-    CMS_ENVIRONMENT_ALIAS = "CEA",
-    CMS_SETTINGS = "CS",
-    CMS_CONTENT_MODEL_GROUP = "CMG",
-    CMS_CONTENT_MODEL = "CM",
-    CMS_CONTENT_MODEL_ENTRY = "CME"
+    CMS_SETTINGS = "CMS#S",
+    CMS_CONTENT_MODEL_GROUP = "CMS#CMG",
+    CMS_CONTENT_MODEL = "CMS#CM",
+    CMS_CONTENT_MODEL_ENTRY = "CMS#CME"
 }
 
 enum CmsPermission {
@@ -58,12 +56,8 @@ export const defaults = {
         if (!tenant) {
             throw new Error(`There is no tenant on "context.security".`);
         }
-        const environment = context.cms.getEnvironment();
-        if (!environment) {
-            throw new Error(`There is no environment in "context.cms".`);
-        }
         return {
-            index: `${tenant.id}-cms-${context.cms.environment}`,
+            index: `${tenant.id}-cms-`,
             type: "_doc"
         };
     }
@@ -205,29 +199,10 @@ const getTenantKey = ({ security }: CmsContext): string | undefined => {
     return `T#${tenant.id}`;
 };
 
-const getEnvironmentKey = ({ cms }: CmsContext): string => {
-    if (!cms) {
-        throw new Error(`Missing "context.cms".`);
-    } else if (!cms.environment && typeof cms.getEnvironment !== "function") {
-        throw new Error(
-            `Missing both "context.cms.getEnvironment()" function and "context.cms.environment" variable.`
-        );
-    }
-    const env =
-        typeof cms.getEnvironment === "function" ? cms.getEnvironment().slug : cms.environment;
-    if (!env) {
-        throw new Error("Missing environment in the context.");
-    }
-    return env;
-};
-
 const createPartitionKey = (context: CmsContext, type: string, keys: KeyGetterValue[]) => {
     const values = [];
     if (keys.includes("tenant")) {
         values.push(getTenantKey(context));
-    }
-    if (keys.includes("environment")) {
-        values.push(getEnvironmentKey(context));
     }
     if (keys.includes("locale")) {
         values.push(getLocaleKey(context));
@@ -243,31 +218,19 @@ const createPkCallableFactory = (type: string, keys: KeyGetterValue[]): CreatePk
 };
 
 // tenant and locale in pk
-export const createEnvironmentPk = createPkCallableFactory(PartitionKeysEnum.CMS_ENVIRONMENT, [
-    "tenant",
-    "locale"
-]);
-
-export const createEnvironmentAliasPk = createPkCallableFactory(
-    PartitionKeysEnum.CMS_ENVIRONMENT_ALIAS,
-    ["tenant", "locale"]
-);
-
-// tenant, locale and environment in pk
 export const createContentModelGroupPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_CONTENT_MODEL_GROUP,
-    ["tenant", "locale", "environment"]
+    ["tenant", "locale"]
 );
 
 export const createContentModelPk = createPkCallableFactory(PartitionKeysEnum.CMS_CONTENT_MODEL, [
     "tenant",
-    "locale",
-    "environment"
+    "locale"
 ]);
 
 export const createContentModelEntryPk = createPkCallableFactory(
     PartitionKeysEnum.CMS_CONTENT_MODEL_ENTRY,
-    ["tenant", "locale", "environment"]
+    ["tenant", "locale"]
 );
 
 // with tenant only

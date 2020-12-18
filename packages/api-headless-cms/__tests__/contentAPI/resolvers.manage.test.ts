@@ -1,15 +1,14 @@
 /* eslint-disable */
-import { CmsContentModelGroupType, CmsEnvironmentType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import * as helpers from "../utils/helpers";
 
 describe.skip("MANAGE - Resolvers", () => {
-    let environment: CmsEnvironmentType;
     let contentModelGroup: CmsContentModelGroupType;
 
     const manageHandlerOpts = {
-        path: "manage/production/en-US"
+        path: "manage/en-US"
     };
 
     const {
@@ -19,9 +18,7 @@ describe.skip("MANAGE - Resolvers", () => {
     } = useContentGqlHandler(manageHandlerOpts);
 
     beforeEach(async () => {
-        environment = await helpers.createInitialEnvironment(documentClient);
-        await helpers.createInitialAliasEnvironment(documentClient, environment);
-        contentModelGroup = await helpers.createContentModelGroup(documentClient, environment);
+        contentModelGroup = await helpers.createContentModelGroup(documentClient);
 
         const category = models.find(m => m.modelId === "category");
 

@@ -154,11 +154,16 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
     });
     return {
         query: {
-            must: query.must.length > 0 ? query.must : undefined,
             // eslint-disable-next-line @typescript-eslint/camelcase
-            must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
-            range: query.range.length > 0 ? query.range : undefined,
-            match: query.match.length > 0 ? query.match : undefined
+            constant_score: {
+                bool: {
+                    must: query.must.length > 0 ? query.must : undefined,
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                    range: query.range.length > 0 ? query.range : undefined,
+                    match: query.match.length > 0 ? query.match : undefined
+                }
+            }
         },
         sort: creteElasticSearchSortParams({ sort, fields }),
         size: limit + 1,

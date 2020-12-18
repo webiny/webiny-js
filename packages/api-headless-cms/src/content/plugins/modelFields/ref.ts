@@ -151,7 +151,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                             }),
                             withStaticProps(({ find, count, findOne }) => ({
                                 find(args) {
-                                    const environment = context.cms.getEnvironment();
+                                    const environment = (context.cms as any).getEnvironment();
                                     return find.call(
                                         this,
                                         modifyQueryArgs(
@@ -163,7 +163,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                     );
                                 },
                                 count(args) {
-                                    const environment = context.cms.getEnvironment();
+                                    const environment = (context.cms as any).getEnvironment();
                                     return count.call(
                                         this,
                                         modifyQueryArgs(
@@ -175,7 +175,7 @@ const plugin: CmsModelFieldToCommodoFieldPlugin = {
                                     );
                                 },
                                 findOne(args) {
-                                    const environment = context.cms.getEnvironment();
+                                    const environment = (context.cms as any).getEnvironment();
                                     return findOne.call(
                                         this,
                                         modifyQueryArgs(

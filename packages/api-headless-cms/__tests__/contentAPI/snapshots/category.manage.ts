@@ -13,7 +13,6 @@ export default /* GraphQL */ `
 
     type CategoryMeta {
         model: String
-        environment: ID
         parent: ID
         version: Int
         latestVersion: Boolean
