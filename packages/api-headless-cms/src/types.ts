@@ -525,6 +525,8 @@ export type ElasticSearchQueryType = {
 export type ElasticSearchQueryBuilderArgsPluginType = {
     field: string;
     value: any;
+    parentObject?: string;
+    originalField?: string;
 };
 
 export type ElasticSearchQueryBuilderPlugin = Plugin & {
