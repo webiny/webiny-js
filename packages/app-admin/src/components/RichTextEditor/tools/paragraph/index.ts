@@ -9,7 +9,7 @@ require("./index.css").toString();
 /**
  * @typedef {object} ParagraphConfig
  * @property {string} placeholder - placeholder for the empty paragraph
- * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data
+ * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data`
  */
 type ParagraphConfig = {
     placeholder: string;
@@ -33,16 +33,6 @@ type Typography = {
     };
 };
 class Paragraph {
-    /**
-     * Default placeholder for Paragraph Tool
-     *
-     * @return {string}
-     * @constructor
-     */
-    static get DEFAULT_PLACEHOLDER() {
-        return "";
-    }
-
     api: API;
     readOnly: boolean;
     _CSS: any;
@@ -95,169 +85,13 @@ class Paragraph {
     }
 
     /**
-     * Check if text content is empty and set empty string to inner html.
-     * We need this because some browsers (e.g. Safari) insert <br> into empty contenteditanle elements
+     * Default placeholder for Paragraph Tool
      *
-     * @param {KeyboardEvent} e - key up event
+     * @return {string}
+     * @constructor
      */
-    onKeyUp(e) {
-        if (e.code !== "Backspace" && e.code !== "Delete") {
-            return;
-        }
-
-        const { textContent } = this._element;
-
-        if (textContent === "") {
-            this._element.innerHTML = "";
-        }
-    }
-
-    /**
-     * Create Tool's view
-     * @return {HTMLElement}
-     * @private
-     */
-    drawView() {
-        const div = document.createElement("DIV");
-
-        div.classList.add(this._CSS.wrapper, this._CSS.block);
-        div.contentEditable = "false";
-        div.dataset.placeholder = this.api.i18n.t(this._placeholder);
-
-        if (!this.readOnly) {
-            div.contentEditable = "true";
-            div.addEventListener("keyup", this.onKeyUp);
-        }
-
-        return div;
-    }
-
-    /**
-     * Return Tool's view
-     *
-     * @returns {HTMLDivElement}
-     */
-    render() {
-        return this._element;
-    }
-
-    /**
-     * Create Block's settings block
-     *
-     * @returns {HTMLElement}
-     */
-    renderSettings() {
-        const holder = document.createElement("DIV");
-
-        // Add alignment selectors
-        this.alignments.forEach(alignment => {
-            const selectTypeButton = document.createElement("SPAN");
-
-            selectTypeButton.classList.add(this._CSS.settingsButton);
-
-            /**
-             * Highlight current level button
-             */
-            if (this.currentAlignment.name === alignment.name) {
-                selectTypeButton.classList.add(this._CSS.settingsButtonActive);
-            }
-
-            /**
-             * Add SVG icon
-             */
-            selectTypeButton.innerHTML = alignment.svg;
-
-            /**
-             * Save alignment to its button
-             */
-            selectTypeButton.dataset.textAlign = alignment.name;
-
-            /**
-             * Set up click handler
-             */
-            selectTypeButton.addEventListener("click", () => {
-                this.setAlignment(alignment);
-            });
-
-            /**
-             * Append settings button to holder
-             */
-            holder.appendChild(selectTypeButton);
-
-            /**
-             * Save settings buttons
-             */
-            this.settingsButtons.push(selectTypeButton);
-        });
-
-        return holder;
-    }
-
-    /**
-     * Method that specified how to merge two Text blocks.
-     * Called by Editor.js by backspace at the beginning of the Block
-     * @param {ParagraphData} data
-     * @public
-     */
-    merge(data) {
-        this.data = {
-            text: this.data.text + data.text
-        };
-    }
-
-    /**
-     * Validate Paragraph block data:
-     * - check for emptiness
-     *
-     * @param {ParagraphData} savedData — data received after saving
-     * @returns {boolean} false if saved data is not correct, otherwise true
-     * @public
-     */
-    validate(savedData) {
-        return !(savedData.text.trim() === "" && !this._preserveBlank);
-    }
-
-    /**
-     * Extract Tool's data from the view
-     * @param {HTMLDivElement} toolsContent - Paragraph tools rendered view
-     * @returns {ParagraphData} - saved data
-     * @public
-     */
-    save(toolsContent) {
-        return {
-            text: toolsContent.innerHTML,
-            textAlign: this.getTextAlign(toolsContent.className)
-        };
-    }
-
-    /**
-     * Extract textAlign from className
-     *
-     * @param {string} className - heading element className
-     * @returns {TextAlign} textAlign
-     */
-    getTextAlign(className) {
-        let textAlign = TextAlign.LEFT;
-        // Match className with alignment
-        this.alignments.forEach(alignment => {
-            if (className.includes(`ce-header-text--${alignment.name}`)) {
-                textAlign = alignment.name;
-            }
-        });
-        return textAlign;
-    }
-
-    /**
-     * On paste callback fired from Editor.
-     *
-     * @param {PasteEvent} event - event with pasted data
-     */
-    onPaste(event) {
-        const data = {
-            text: event.detail.data.innerHTML
-        };
-
-        this.data = data;
+    static get DEFAULT_PLACEHOLDER() {
+        return "";
     }
 
     /**
@@ -329,6 +163,13 @@ class Paragraph {
                 this._element.classList.remove(`ce-header-text--${alignment.name}`);
             }
         });
+
+        /**
+         * Add Typography class
+         */
+        if (this._data.className) {
+            this._element.classList.add(...this._data.className.split(" "));
+        }
     }
 
     /**
@@ -374,6 +215,208 @@ class Paragraph {
     }
 
     /**
+     * Check if text content is empty and set empty string to inner html.
+     * We need this because some browsers (e.g. Safari) insert <br> into empty contenteditanle elements
+     *
+     * @param {KeyboardEvent} e - key up event
+     */
+    onKeyUp(e) {
+        if (e.code !== "Backspace" && e.code !== "Delete") {
+            return;
+        }
+
+        const { textContent } = this._element;
+
+        if (textContent === "") {
+            this._element.innerHTML = "";
+        }
+    }
+
+    /**
+     * Create Tool's view
+     * @return {HTMLElement}
+     * @private
+     */
+    drawView() {
+        const div = document.createElement("DIV");
+        div.classList.add(this._CSS.wrapper, this._CSS.block);
+        // Add custom className to view.
+        if (this._data.className) {
+            div.classList.add(this._data.className);
+        }
+        div.contentEditable = "false";
+        div.dataset.placeholder = this.api.i18n.t(this._placeholder);
+
+        if (!this.readOnly) {
+            div.contentEditable = "true";
+            div.addEventListener("keyup", this.onKeyUp);
+        }
+
+        return div;
+    }
+
+    /**
+     * Return Tool's view
+     *
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return this._element;
+    }
+
+    /**
+     * Create Block's settings block
+     *
+     * @returns {HTMLElement}
+     */
+    renderSettings() {
+        const holder = document.createElement("DIV");
+
+        // Add alignment selectors
+        this.alignments.forEach(alignment => {
+            const selectTypeButton = document.createElement("SPAN");
+
+            selectTypeButton.classList.add(this._CSS.settingsButton);
+
+            /**
+             * Highlight current level button
+             */
+            if (this.currentAlignment.name === alignment.name) {
+                selectTypeButton.classList.add(this._CSS.settingsButtonActive);
+            }
+
+            /**
+             * Add SVG icon
+             */
+            selectTypeButton.innerHTML = alignment.svg;
+
+            /**
+             * Save alignment to its button
+             */
+            selectTypeButton.dataset.textAlign = alignment.name;
+
+            /**
+             * Set up click handler
+             */
+            selectTypeButton.addEventListener("click", () => {
+                this.setAlignment(alignment);
+            });
+
+            /**
+             * Append settings button to holder
+             */
+            holder.appendChild(selectTypeButton);
+
+            /**
+             * Save settings buttons
+             */
+            this.settingsButtons.push(selectTypeButton);
+        });
+
+        // Add `Typography` selector
+        if (this.typography) {
+            const typographyForParagraph = Object.values(this.typography).filter(
+                item => item.component === "p"
+            );
+
+            const selectTypeButton = document.createElement("SELECT") as HTMLSelectElement;
+            // Add editor's default input style
+            selectTypeButton.classList.add(this.api.styles.input);
+            // Add typography options
+            typographyForParagraph.forEach(item => {
+                const option = new Option(item.label, item.className);
+
+                selectTypeButton.appendChild(option);
+            });
+            // Add "onclick" handler
+            selectTypeButton.onclick = event => {
+                const { value } = event.target as HTMLSelectElement;
+                this.setTypographyClass(value);
+            };
+
+            /**
+             * Append settings button to holder
+             */
+            holder.appendChild(selectTypeButton);
+
+            /**
+             * Save settings buttons
+             */
+            this.settingsButtons.push(selectTypeButton);
+        }
+
+        return holder;
+    }
+
+    /**
+     * Method that specified how to merge two Text blocks.
+     * Called by Editor.js by backspace at the beginning of the Block
+     * @param {ParagraphData} data
+     * @public
+     */
+    merge(data) {
+        this.data = {
+            text: this.data.text + data.text
+        };
+    }
+
+    /**
+     * Validate Paragraph block data:
+     * - check for emptiness
+     *
+     * @param {ParagraphData} savedData — data received after saving
+     * @returns {boolean} false if saved data is not correct, otherwise true
+     * @public
+     */
+    validate(savedData) {
+        return !(savedData.text.trim() === "" && !this._preserveBlank);
+    }
+
+    /**
+     * Extract Tool's data from the view
+     * @param {HTMLDivElement} toolsContent - Paragraph tools rendered view
+     * @returns {ParagraphData} - saved data
+     * @public
+     */
+    save(toolsContent) {
+        return {
+            text: toolsContent.innerHTML,
+            textAlign: this.getTextAlign(toolsContent.className),
+            className: this.data.className
+        };
+    }
+
+    /**
+     * Extract textAlign from className
+     *
+     * @param {string} className - heading element className
+     * @returns {TextAlign} textAlign
+     */
+    getTextAlign(className) {
+        let textAlign = TextAlign.LEFT;
+        // Match className with alignment
+        this.alignments.forEach(alignment => {
+            if (className.includes(`ce-header-text--${alignment.name}`)) {
+                textAlign = alignment.name;
+            }
+        });
+        return textAlign;
+    }
+
+    /**
+     * On paste callback fired from Editor.
+     *
+     * @param {PasteEvent} event - event with pasted data
+     */
+    onPaste(event) {
+        const data = {
+            text: event.detail.data.innerHTML
+        };
+
+        this.data = data;
+    }
+
+    /**
      * Callback for Block's settings buttons
      *
      * @param {number} alignment - level to set
@@ -396,6 +439,19 @@ class Paragraph {
     }
 
     /**
+     * Callback for Block's settings buttons
+     *
+     * @param {string} className - name of typography class
+     */
+    setTypographyClass(className: string) {
+        this.data = {
+            textAlign: this.data.textAlign,
+            text: this.data.text,
+            className: className
+        };
+    }
+
+    /**
      * Normalize input data
      *
      * @param {HeaderData} data - saved data to process
@@ -412,6 +468,7 @@ class Paragraph {
 
         newData.text = data.text || "";
         newData.textAlign = data.textAlign || TextAlign.LEFT;
+        newData.className = data.className || "";
 
         return newData;
     }
