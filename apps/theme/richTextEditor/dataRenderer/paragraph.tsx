@@ -8,6 +8,14 @@ export default () =>
         name: "rte-data-block-renderer-paragraph",
         blockType: BlockType.paragraph,
         render(block) {
-            return <p dangerouslySetInnerHTML={{ __html: block.data.text }} />;
+            const props = { style: {}, className: null };
+
+            if (block.data.textAlign) {
+                props.style["textAlign"] = block.data.textAlign;
+            }
+            if (block.data.className) {
+                props.className = block.data.className;
+            }
+            return <p {...props} dangerouslySetInnerHTML={{ __html: block.data.text }} />;
         }
     } as RTEDataBlockRendererPlugin);
