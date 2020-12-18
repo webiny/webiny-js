@@ -1,15 +1,26 @@
 import React, { useMemo } from "react";
-import { elementWithChildrenByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useRecoilValue } from "recoil";
+import { css } from "emotion";
+import classNames from "classnames";
+import { OutputBlockData } from "@editorjs/editorjs";
+import { plugins } from "@webiny/plugins";
+import {
+    activeElementIdSelector,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { createPropsFromConfig } from "@webiny/ui/RichTextEditor";
 import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
-import { OutputBlockData } from "@editorjs/editorjs";
-import { useRecoilValue } from "recoil";
-import { plugins } from "@webiny/plugins";
 
 export const className = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
+
+const editorClass = css({
+    "& .codex-editor .codex-editor__redactor": {
+        paddingBottom: "40px !important"
+    }
+});
 
 type TextType = {
     elementId: string;
@@ -17,6 +28,8 @@ type TextType = {
 const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const activeElementId = useRecoilValue(activeElementIdSelector);
+
     const { id } = element || {};
     const onChange = React.useCallback(
         (value: OutputBlockData[]) => {
@@ -44,7 +57,12 @@ const Text: React.FunctionComponent<TextType> = ({ elementId }) => {
 
     const text = Array.isArray(element.data.text) ? element.data.text : [];
     return (
-        <ElementRoot element={element} className={className}>
+        <ElementRoot
+            element={element}
+            className={classNames(className, {
+                [editorClass]: activeElementId === elementId
+            })}
+        >
             <RichTextEditor onChange={onChange} value={text} {...rteProps} />
         </ElementRoot>
     );
