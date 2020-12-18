@@ -15,8 +15,8 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
             range: [
                 {
                     [`id.keyword`]: {
-                        lte: 100,
-                        gte: 110
+                        lte: 110,
+                        gte: 100
                     }
                 }
             ],
@@ -45,14 +45,14 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
             range: [
                 {
                     [`id.keyword`]: {
-                        lte: 100,
-                        gte: 110
+                        lte: 110,
+                        gte: 100
                     }
                 },
                 {
                     [`date.keyword`]: {
-                        lte: from.toISOString(),
-                        gte: to.toISOString()
+                        lte: to.toISOString(),
+                        gte: from.toISOString()
                     }
                 }
             ],

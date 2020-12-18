@@ -597,16 +597,20 @@ type ElasticSearchQueryMustParamType = {
 type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
 
 type ElasticSearchQueryMustNotParamType = {
-    term: {
+    term?: {
         [key: string]: any;
+    };
+    [key: string]: {
+        lte?: string | number | Date;
+        gte?: string | number | Date;
     };
 };
 type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
 
 type ElasticSearchQueryRangeParamType = {
     [key: string]: {
-        lte?: string | number;
-        gte?: string | number;
+        lte?: string | number | Date;
+        gte?: string | number | Date;
     };
 };
 type ElasticSearchQueryRangeParamListType = ElasticSearchQueryRangeParamType[];
