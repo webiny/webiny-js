@@ -137,6 +137,18 @@ const execElasticSearchBuildQueryPlugins = (
     return query;
 };
 
+const ES_LIMIT_MAX = 10000;
+const ES_LIMIT_DEFAULT = 50;
+export const createElasticSearchLimit = (limit?: number): number => {
+    if (!limit) {
+        return ES_LIMIT_DEFAULT;
+    }
+    if (limit < ES_LIMIT_MAX) {
+        return limit;
+    }
+    return ES_LIMIT_MAX - 1;
+};
+
 export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
     const { context, model, args, onlyOwned, parentObject = null } = params;
     const { where, after, limit, sort } = args;

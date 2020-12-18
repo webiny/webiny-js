@@ -11,7 +11,10 @@ import * as utils from "../../../utils";
 import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
-import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
+import {
+    createElasticSearchLimit,
+    createElasticSearchParams
+} from "./contentModelEntry/elasticSearchHelpers";
 
 const createElasticSearchData = (model: CmsContentModelEntryType, context: CmsContext) => {
     const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
@@ -60,7 +63,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return response.find(() => true);
             },
             list: async (model: CmsContentModelType, args = {}) => {
-                const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
+                const limit = createElasticSearchLimit(args.limit);
 
                 const body = createElasticSearchParams({
                     model,
