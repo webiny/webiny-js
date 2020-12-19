@@ -1,8 +1,8 @@
 import DataLoader from "dataloader";
-import { CmsContentModelEntryType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelEntryType, CmsContext } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../../utils";
 
-export const createRevisionsDataLoader = context => {
+export const createRevisionsDataLoader = (context: CmsContext, { PK_ENTRY }) => {
     return new DataLoader<string, CmsContentModelEntryType[]>(async keys => {
         const results = [];
 
@@ -10,7 +10,7 @@ export const createRevisionsDataLoader = context => {
             const [entries] = await context.db.read({
                 ...utils.defaults.db,
                 query: {
-                    PK: utils.createContentModelEntryPK(context),
+                    PK: PK_ENTRY(),
                     SK: { $beginsWith: keys[i] }
                 }
             });

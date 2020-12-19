@@ -4,7 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryHandler } from "../utils/useCategoryHandler";
 import models from "./mocks/contentModels";
 
-describe.skip("MANAGE - Resolvers", () => {
+describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
     const esCmsIndex = "root-headless-cms";

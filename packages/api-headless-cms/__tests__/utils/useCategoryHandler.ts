@@ -113,7 +113,7 @@ export const useCategoryHandler = options => {
                 body: { query: getCategoryQuery, variables }
             });
         },
-        async listCategories(variables) {
+        async listCategories(variables = {}) {
             return await contentHandler.invoke({
                 body: { query: listCategoriesQuery, variables }
             });

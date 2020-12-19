@@ -1,33 +1,30 @@
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
+import { NotFoundError } from "@webiny/handler-graphql";
+import Error from "@webiny/error";
 import {
     CmsContentModelEntryContextType,
     CmsContentModelEntryPermissionType,
     CmsContentModelEntryType,
-    CmsContentModelPermissionType,
     CmsContentModelType,
     CmsContext,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
-import { NotFoundError } from "@webiny/handler-graphql";
-import Error from "@webiny/error";
 import * as utils from "../../../utils";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
 import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
 import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
-import checkOwnPermissions from "@webiny/api-page-builder/plugins/crud/utils/checkOwnPermissions";
-import defaults from "@webiny/api-page-builder/plugins/crud/utils/defaults";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
 const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 
-const STATUS_CHANGES_REQUESTED = "changesRequested";
-const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
+const STATUS_CHANGES_REQUESTED = "changesRequested";
+const STATUS_REVIEW_REQUESTED = "reviewRequested";
 
 const createElasticSearchData = ({ values, ...entry }: CmsContentModelEntryType) => {
     return {
@@ -54,13 +51,13 @@ export default (): ContextPlugin<CmsContext> => ({
     async apply(context) {
         const { db, elasticSearch, security } = context;
 
-        const loaders = {
-            revisions: createRevisionsDataLoader(context)
-        };
-
         const PK_ENTRY = () => `${createCmsPK(context)}#CME`;
         const PK_ENTRY_LATEST = () => PK_ENTRY() + "#L";
         const PK_ENTRY_PUBLISHED = () => PK_ENTRY + "#P";
+
+        const loaders = {
+            revisions: createRevisionsDataLoader(context, { PK_ENTRY })
+        };
 
         const checkPermissions = (check: {
             rwd?: string;
@@ -174,7 +171,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     .create({
                         ...utils.defaults.db,
                         data: {
-                            PK: utils.createContentModelEntryLatestPK(context),
+                            PK: PK_ENTRY_LATEST(),
                             SK: uniqueId,
                             TYPE: TYPE_ENTRY_LATEST,
                             id
@@ -204,7 +201,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: utils.createContentModelEntryLatestPK(context), SK: uniqueId }
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
                     })
                     .execute();
 
@@ -253,7 +250,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     .update({
                         ...utils.defaults.db,
                         data: {
-                            PK: utils.createContentModelEntryLatestPK(context),
+                            PK: PK_ENTRY_LATEST(),
                             SK: uniqueId,
                             TYPE: TYPE_ENTRY_LATEST,
                             id
@@ -283,7 +280,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: utils.createContentModelEntryLatestPK(context), SK: uniqueId }
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
                     })
                     .execute();
 
@@ -334,7 +331,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const [uniqueId] = id.split("#");
 
-                const [[[entry]], [[latestEntry]], [[publishedEntry]]] = await db
+                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
@@ -346,14 +343,14 @@ export default (): ContextPlugin<CmsContext> => ({
                     .read({
                         ...utils.defaults.db,
                         query: {
-                            PK: utils.createContentModelEntryLatestPK(context),
+                            PK: PK_ENTRY_LATEST(),
                             SK: uniqueId
                         }
                     })
                     .read({
                         ...utils.defaults.db,
                         query: {
-                            PK: utils.createContentModelEntryPublishedPK(context),
+                            PK: PK_ENTRY_PUBLISHED(),
                             SK: uniqueId
                         }
                     })
@@ -365,6 +362,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
+                // Delete entry from DB
                 const batch = db.batch().delete({
                     ...utils.defaults.db,
                     query: {
@@ -373,20 +371,66 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
-                if (publishedEntry && publishedEntry.id === id) {
+                const es = utils.defaults.es(context);
+                const esOperations = [];
+
+                const isLatest = latestEntryData ? latestEntryData.id === id : false;
+                const isPublished = publishedEntryData ? publishedEntryData.id === id : false;
+
+                // If the entry is published, remove published data, both from DB and ES.
+                if (isPublished) {
                     batch.delete({
                         ...utils.defaults.db,
                         query: {
-                            PK: PK_ENTRY(),
-                            SK: id
+                            PK: PK_ENTRY_PUBLISHED(),
+                            SK: uniqueId
                         }
+                    });
+
+                    esOperations.push({
+                        delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
                     });
                 }
 
-                await elasticSearch.delete({
-                    ...utils.defaults.es(context),
-                    id: `CME#${id}`
-                });
+                // If the entry is "latest", assign the previously latest entry as the new latest.
+                // Updates must be made on both DB and ES side.
+                if (isLatest) {
+                    const [[prevLatestEntry]] = await db.read<CmsContentModelEntryType>({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: { $lt: id } },
+                        sort: { SK: -1 },
+                        limit: 1
+                    });
+
+                    // Update latest entry data.
+                    batch.update({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY_LATEST(),
+                            SK: uniqueId
+                        },
+                        data: {
+                            ...latestEntryData,
+                            id: prevLatestEntry.id
+                        }
+                    });
+
+                    // Update the latest revision entry in ES.
+                    esOperations.push(
+                        { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
+                        getESLatestEntryData(prevLatestEntry)
+                    );
+                }
+
+                // Execute DB operations
+                await batch.execute();
+
+                // If the entry was neither published nor latest, we shouldn't have any operations to execute.
+                if (esOperations.length) {
+                    await elasticSearch.bulk({ body: esOperations });
+                }
+
+                return true;
             },
             async listRevisions(id) {
                 const [uniqueId] = id.split("#");
@@ -398,7 +442,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const [uniqueId] = id.split("#");
 
-                const [[[entry]], [[latestEntry]], [[publishedEntry]]] = await db
+                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
@@ -421,7 +465,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
-                
+
                 // Change entry to "published"
                 entry.status = STATUS_PUBLISHED;
                 entry.locked = true;
@@ -430,26 +474,94 @@ export default (): ContextPlugin<CmsContext> => ({
                 const batch = db.batch();
 
                 batch.update({
-                    ...defaults.db,
+                    ...utils.defaults.db,
                     query: {
                         PK: PK_ENTRY(),
                         SK: id
                     },
                     data: entry
                 });
-                
-                if(publishedEntry) {
-                    // If there is a `published` entry already, we need to set it to `unpublished`. We need to
-                    // execute two updates - update the previously published entry's status and the published
-                    // page entry (PK_PAGE_PUBLISHED()).
 
-                    // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
-                    // page's data so that we can update its status within a batch operation. If, hopefully,
+                if (publishedEntryData) {
+                    // If there is a `published` entry already, we need to set it to `unpublished`. We need to
+                    // execute two updates: update the previously published entry's status and the published
+                    // entry record (PK_PAGE_PUBLISHED()).
+
+                    // DynamoDB does not support `batchUpdate` - so here we load the previously published
+                    // entry's data to update its status within a batch operation. If, hopefully,
                     // they introduce a true update batch operation, remove this `read` call.
+
+                    const [[previouslyPublishedEntry]] = await db.read<CmsContentModelEntryType>({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: publishedEntryData.id }
+                    });
+
+                    previouslyPublishedEntry.status = STATUS_UNPUBLISHED;
+
+                    batch
+                        .update({
+                            // Update currently published entry (unpublish it)
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY(),
+                                SK: publishedEntryData.id
+                            },
+                            data: previouslyPublishedEntry
+                        })
+                        .update({
+                            // Update the helper item in DB with the new published entry ID
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_PUBLISHED(),
+                                SK: uniqueId
+                            },
+                            data: {
+                                ...publishedEntryData,
+                                id: entry.id
+                            }
+                        });
+                } else {
+                    batch.create({
+                        ...utils.defaults.db,
+                        data: {
+                            PK: PK_ENTRY_PUBLISHED(),
+                            SK: uniqueId,
+                            TYPE: TYPE_ENTRY_PUBLISHED,
+                            id: entry.id
+                        }
+                    });
                 }
-                
-                
-                
+
+                // Finally, execute batch
+                await batch.execute();
+
+                // Update data in ES.
+                const esOperations = [];
+                const es = utils.defaults.es(context);
+
+                // If we are publishing the latest revision, let's also update the latest revision's status in ES.
+                if (latestEntryData && latestEntryData.id === id) {
+                    esOperations.push(
+                        { update: { _id: `CME#L#${uniqueId}`, _index: es.index } },
+                        {
+                            doc: {
+                                status: STATUS_PUBLISHED,
+                                locked: true,
+                                publishedOn: entry.publishedOn
+                            }
+                        }
+                    );
+                }
+
+                // Update the published revision entry in ES.
+                esOperations.push(
+                    { index: { _id: `CME#P#${uniqueId}`, _index: es.index } },
+                    getESPublishedEntryData(entry)
+                );
+
+                await elasticSearch.bulk({ body: esOperations });
+
+                return entry;
             },
             requestChanges(
                 model: CmsContentModelType,
