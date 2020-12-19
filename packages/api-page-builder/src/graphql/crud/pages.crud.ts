@@ -779,6 +779,10 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
+                    if (page.status === "published") {
+                        throw new NotFoundError(`Page "${pageId}" is already published.`);
+                    }
+
                     await executeHookCallbacks(hookPlugins, "beforePublish", context, page);
 
                     // Change loaded page's status to published.
@@ -1230,23 +1234,41 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                 },
 
                 async render(args) {
-                    const { pages, tags } = args;
+                    const { paths, tags } = args;
 
                     const tenant = context.security.getTenant().id;
                     const locale = i18nContent.getLocale().code;
 
-                    if (pages) {
+                    if (paths) {
+                        console.log(
+                            "ide INVOKE",
+                            JSON.stringify(
+                                {
+                                    name: renderingFunction,
+                                    await: false,
+                                    payload: {
+                                        paths: paths.map(path => [
+                                            {
+                                                path,
+                                                tenant,
+                                                locale
+                                            }
+                                        ])
+                                    }
+                                },
+                                null,
+                                2
+                            )
+                        );
                         return await context.handlerClient.invoke({
                             name: renderingFunction,
                             await: false,
                             payload: {
-                                pages: pages.map(page => [
-                                    {
-                                        url: page.url,
-                                        tenant,
-                                        locale
-                                    }
-                                ])
+                                paths: paths.map(path => ({
+                                    path,
+                                    tenant,
+                                    locale
+                                }))
                             }
                         });
                     }

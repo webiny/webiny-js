@@ -4,27 +4,22 @@ export default [
     {
         // After a page was published, we need to render the page.
         type: "pb-page-hook",
-        async afterPublish({ context, page }) {
+        async afterPublish(context, page) {
             const promises = [];
-            promises.push(
-                context.pageBuilder.pages.render({
-                    url: page.url
-                })
-            );
+            promises.push(context.pageBuilder.pages.render({ paths: [page.path] }));
 
             // If the page is set as site's homepage, we need to invalidate the "/" path too.
             if (page.home) {
-                promises.push(context.pageBuilder.pages.render({ url: "/", queue: false }));
+                promises.push(context.pageBuilder.pages.render({ paths: ["/"] }));
             }
 
-            console.log("ide rerenderanje", page);
             await Promise.all(promises);
         }
     } as PageHookPlugin,
     {
         // After a page was published, we need to rerender pages that contain pages list element.
         type: "pb-page-hook",
-        async afterPublish({ context }) {
+        async afterPublish(context) {
             await context.pageBuilder.pages.render({ tags: [{ class: "pb-pages-list" }] });
         }
     } as PageHookPlugin,

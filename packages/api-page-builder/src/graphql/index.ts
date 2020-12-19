@@ -1,6 +1,6 @@
 import crud from "./crud";
 import graphql from "./graphql";
-import rendering from "./rendering";
+import prerendering from "./prerendering";
 import { Configuration } from "./types";
 
-export default (configuration: Configuration) => [crud(configuration), graphql, rendering];
+export default (configuration: Configuration) => [crud(configuration), graphql, prerendering];
