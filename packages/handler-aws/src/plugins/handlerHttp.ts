@@ -12,7 +12,7 @@ export default {
 
         const { isBase64Encoded } = invocationArgs;
 
-        context.http = {
+        const request = {
             method: invocationArgs.httpMethod,
             body: invocationArgs.body,
             headers: invocationArgs.headers,
@@ -22,6 +22,11 @@ export default {
                 parameters: invocationArgs.pathParameters,
                 query: invocationArgs.queryStringParameters
             },
+        }
+
+        context.http = {
+            ...request,
+            request,
             response({ statusCode = 200, body = "", headers = {} }) {
                 return {
                     statusCode,
