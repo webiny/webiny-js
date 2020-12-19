@@ -4,7 +4,9 @@ import {
     CmsContentModelType,
     CmsContentModelContextType,
     CmsContentModelManagerInterface,
-    DbItemTypes
+    DbItemTypes,
+    CmsContentModelGroupPermissionType,
+    CmsContentModelPermissionType
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
 import mdbid from "mdbid";
@@ -21,17 +23,21 @@ import { afterDeleteHook } from "./contentModel/afterDelete.hook";
 import { beforeCreateHook } from "./contentModel/beforeCreate.hook";
 import { afterCreateHook } from "./contentModel/afterCreate.hook";
 
+const MANAGE_CM = "cms.manage.contentModel";
+
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-crud",
     async apply(context) {
-        const { db } = context;
+        const { db, security } = context;
+
+        const PK_CONTENT_MODEL = () => `${utils.createCmsPK(context)}#CM`;
 
         const loaders = {
             listModels: new DataLoader(async () => {
                 const [models] = await db.read<CmsContentModelType>({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelPk(context), SK: { $gt: " " } }
+                    query: { PK: PK_CONTENT_MODEL(), SK: { $gt: " " } }
                 });
 
                 return [models];
@@ -49,31 +55,34 @@ export default (): ContextPlugin<CmsContext> => ({
             return (manager as unknown) as CmsContentModelManagerInterface<T>;
         };
 
+        const checkPermissions = (check: string): Promise<CmsContentModelPermissionType> => {
+            return utils.checkPermissions(context, "cms.manage.contentModel", { rwd: check });
+        };
+
         const models: CmsContentModelContextType = {
             async get(id) {
-                const permission = await utils.checkBaseContentModelPermissions(context, "r");
+                const permission = await checkPermissions("r");
 
-                const [response] = await db.read<CmsContentModelType>({
+                const [[model]] = await db.read<CmsContentModelType>({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelPk(context), SK: id },
-                    limit: 1
+                    query: { PK: PK_CONTENT_MODEL(), SK: id }
                 });
-                if (!response || response.length === 0) {
-                    throw new NotFoundError(`CMS Content model "${id}" not found.`);
-                }
-                const model = response.find(() => true);
 
                 utils.checkOwnership(context, permission, model);
+
+                if (!model) {
+                    throw new NotFoundError(`Content model "${id}" was not found!`);
+                }
 
                 return model;
             },
             async list() {
-                const permission = await utils.checkBaseContentModelPermissions(context, "r");
+                const permission = await checkPermissions("r");
                 const models = await loaders.listModels.load("listModels");
                 return models.filter(model => utils.validateOwnership(context, permission, model));
             },
-            async create(data, createdBy) {
-                await utils.checkBaseContentModelPermissions(context, "w");
+            async create(data) {
+                await checkPermissions("w");
 
                 const createdData = new CreateContentModelModel().populate(data);
                 await createdData.validate();
@@ -81,9 +90,10 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const group = await context.cms.groups.get(createdDataJson.group);
                 if (!group) {
-                    throw new Error(`There is no group "${createdDataJson.group}".`);
+                    throw new NotFoundError(`There is no group "${createdDataJson.group}".`);
                 }
 
+                const identity = context.security.getIdentity();
                 const id = mdbid();
                 const model: CmsContentModelType = {
                     ...createdDataJson,
@@ -92,7 +102,11 @@ export default (): ContextPlugin<CmsContext> => ({
                         id: group.id,
                         name: group.name
                     },
-                    createdBy,
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    },
                     createdOn: new Date().toISOString(),
                     savedOn: new Date().toISOString(),
                     fields: [],
@@ -104,7 +118,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db.create({
                     ...utils.defaults.db,
                     data: {
-                        PK: utils.createContentModelPk(context),
+                        PK: PK_CONTENT_MODEL(),
                         SK: id,
                         TYPE: DbItemTypes.CMS_CONTENT_MODEL,
                         ...model
@@ -118,9 +132,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 return model;
             },
             async update(id, data) {
+                await checkPermissions("w");
+
+                // Get a model record; this will also perform ownership validation.
                 const model = await context.cms.models.get(id);
-                const permission = await utils.checkBaseContentModelPermissions(context, "w");
-                utils.checkOwnership(context, permission, model);
 
                 const updatedData = new UpdateContentModelModel().populate(data);
                 await updatedData.validate();
@@ -151,7 +166,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelPk(context), SK: id },
+                    query: { PK: PK_CONTENT_MODEL(), SK: id },
                     data: modelData
                 });
                 await updateManager(context, {
@@ -167,16 +182,16 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
             },
             async delete(id) {
+                await checkPermissions("d");
+
                 const model = await context.cms.models.get(id);
-                const permission = await utils.checkBaseContentModelPermissions(context, "d");
-                utils.checkOwnership(context, permission, model);
 
                 await beforeDeleteHook(context, { modelId: model.modelId });
 
                 await db.delete({
                     ...utils.defaults.db,
                     query: {
-                        PK: utils.createContentModelPk(context),
+                        PK: PK_CONTENT_MODEL(),
                         SK: id
                     }
                 });

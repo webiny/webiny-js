@@ -1,63 +1,88 @@
+import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
 import {
     CmsContentModelEntryContextType,
-    CmsContentModelEntryCreateInputType,
+    CmsContentModelEntryPermissionType,
     CmsContentModelEntryType,
+    CmsContentModelPermissionType,
     CmsContentModelType,
     CmsContext,
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
-import * as utils from "../../../utils";
-import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
+import Error from "@webiny/error";
+import * as utils from "../../../utils";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
 import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
+import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
+import { createCmsPK } from "../../../utils";
+import checkOwnPermissions from "@webiny/api-page-builder/plugins/crud/utils/checkOwnPermissions";
+import defaults from "@webiny/api-page-builder/plugins/crud/utils/defaults";
 
-const createElasticSearchData = (model: CmsContentModelEntryType, context: CmsContext) => {
-    const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
-        obj[key] = model.values[key];
-        return obj;
-    }, {});
+const TYPE_ENTRY = "cms.entry";
+const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
+const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
+
+const STATUS_CHANGES_REQUESTED = "changesRequested";
+const STATUS_REVIEW_REQUESTED = "reviewRequested";
+const STATUS_DRAFT = "draft";
+const STATUS_PUBLISHED = "published";
+const STATUS_UNPUBLISHED = "unpublished";
+
+const createElasticSearchData = ({ values, ...entry }: CmsContentModelEntryType) => {
     return {
-        ...values,
-        __type: "cms.entry",
-        id: model.id,
-        createdOn: model.createdOn,
-        savedOn: model.savedOn,
-        createdBy: model.createdBy,
-        modelId: model.modelId,
-        locale: context.cms.getLocale().code
+        ...entry,
+        values: {
+            // Keep "values" as a nested object to avoid collisions between
+            // system and user-defined properties
+            ...values
+        }
     };
 };
 
-const updateElasticSearchData = (model: CmsContentModelEntryType) => {
-    const values = Object.keys(model.values).reduce((obj: Record<string, any>, key: string) => {
-        obj[key] = model.values[key];
-        return obj;
-    }, {});
-    return {
-        ...values,
-        savedOn: model.savedOn
-    };
+const getESLatestEntryData = (entry: CmsContentModelEntryType) => {
+    return { ...createElasticSearchData(entry), latest: true, __type: TYPE_ENTRY_LATEST };
+};
+
+const getESPublishedEntryData = (entry: CmsContentModelEntryType) => {
+    return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
     async apply(context) {
-        const { db, elasticSearch } = context;
+        const { db, elasticSearch, security } = context;
 
-        const contentModelEntry: CmsContentModelEntryContextType = {
-            get: async id => {
-                const [response] = await db.read<CmsContentModelEntryType>({
-                    ...utils.defaults.db,
-                    query: { PK: utils.createContentModelEntryPk(context), SK: id },
-                    limit: 1
-                });
-                if (!response || response.length === 0) {
-                    throw new Error(`CMS Content model "${id}" not found.`);
-                }
-                return response.find(() => true);
+        const loaders = {
+            revisions: createRevisionsDataLoader(context)
+        };
+
+        const PK_ENTRY = () => `${createCmsPK(context)}#CME`;
+        const PK_ENTRY_LATEST = () => PK_ENTRY() + "#L";
+        const PK_ENTRY_PUBLISHED = () => PK_ENTRY + "#P";
+
+        const checkPermissions = (check: {
+            rwd?: string;
+            rcpu?: string;
+        }): Promise<CmsContentModelEntryPermissionType> => {
+            return utils.checkPermissions(context, "cms.manage.contentModelEntry", check);
+        };
+
+        const entries: CmsContentModelEntryContextType = {
+            get: async (model, args) => {
+                // TODO: implement the same way as the "list" using where/sort parameters, but limit to 1
+
+                // const [response] = await db.read<CmsContentModelEntryType>({
+                //     ...utils.defaults.db,
+                //     query: { PK: utils.createContentModelEntryPk(context), SK: id },
+                //     limit: 1
+                // });
+                // if (!response || response.length === 0) {
+                //     throw new Error(`CMS Content model "${id}" not found.`);
+                // }
+                // return response.find(() => true);
+                return null;
             },
             list: async (model: CmsContentModelType, args = {}) => {
                 const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
@@ -99,116 +124,352 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return [items, meta];
             },
-            create: async (contentModelId, data, createdBy) => {
-                await utils.checkBaseContentModelEntryPermissions(context, "w");
+            async create(model, data) {
+                await checkPermissions({ rwd: "w" });
 
-                const contentModel = await context.cms.models.get(contentModelId);
-
-                const validation = await entryModelValidationFactory(context, contentModel);
-
+                const validation = await entryModelValidationFactory(context, model);
                 await validation.validate(data);
-                const modelDataJson: CmsContentModelEntryCreateInputType = {
-                    ...data
+
+                const identity = security.getIdentity();
+                const locale = context.cms.getLocale();
+
+                const uniqueId = mdbid();
+                const version = 1;
+                const id = `${uniqueId}#${utils.zeroPad(version)}`;
+
+                const owner = {
+                    id: identity.id,
+                    displayName: identity.displayName,
+                    type: identity.type
                 };
 
-                const { modelId } = modelDataJson;
-
-                // we need to check if content model exists
-                // but we do not need the data from it
-                try {
-                    await context.cms.models.get(modelDataJson.modelId);
-                } catch (ex) {
-                    throw new NotFoundError(`There is no content model "${modelId}".`);
-                }
-
-                const id = mdbid();
-                const model: CmsContentModelEntryType = {
+                const entry: CmsContentModelEntryType = {
                     id,
-                    ...modelDataJson,
-                    createdOn: new Date(),
-                    savedOn: new Date(),
-                    createdBy
+                    modelId: model.modelId,
+                    locale: locale.code,
+                    createdOn: new Date().toISOString(),
+                    savedOn: new Date().toISOString(),
+                    createdBy: owner,
+                    ownedBy: owner,
+                    version,
+                    locked: false,
+                    status: STATUS_DRAFT,
+                    values: data
                 };
 
-                await db.create({
-                    ...utils.defaults.db,
-                    data: {
-                        PK: utils.createContentModelEntryPk(context),
-                        SK: id,
-                        TYPE: DbItemTypes.CMS_CONTENT_MODEL_ENTRY,
-                        ...model
-                    }
-                });
+                await db
+                    .batch()
+                    // Create main entry item
+                    .create({
+                        ...utils.defaults.db,
+                        data: {
+                            PK: PK_ENTRY(),
+                            SK: id,
+                            TYPE: DbItemTypes.CMS_CONTENT_MODEL_ENTRY,
+                            ...entry
+                        }
+                    })
+                    // Create "latest" entry item
+                    .create({
+                        ...utils.defaults.db,
+                        data: {
+                            PK: utils.createContentModelEntryLatestPK(context),
+                            SK: uniqueId,
+                            TYPE: TYPE_ENTRY_LATEST,
+                            id
+                        }
+                    })
+                    .execute();
 
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
-                    id: `CME#${model.id}`,
-                    body: createElasticSearchData(model, context)
+                    id: `CME#L#${uniqueId}`,
+                    body: getESLatestEntryData(entry)
                 });
 
-                return model;
+                return entry;
             },
-            update: async (id, data) => {
-                const permissions = await utils.checkBaseContentModelEntryPermissions(context, "w");
+            async createRevisionFrom(model, sourceId) {
+                await checkPermissions({ rwd: "w" });
 
-                const existingEntryModel = await context.cms.modelEntries.get(id);
+                // Entries are identified by a common parent ID + Revision number
+                const [uniqueId] = sourceId.split("#");
 
-                utils.checkOwnership(context, permissions, existingEntryModel);
+                const [[[entry]], [[latestEntry]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: sourceId }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: utils.createContentModelEntryLatestPK(context), SK: uniqueId }
+                    })
+                    .execute();
 
-                const contentModel = await context.cms.models.get(id);
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${sourceId}" of model "${model.modelId}" was not found.`
+                    );
+                }
 
-                const validation = await entryModelValidationFactory(context, contentModel);
+                const identity = security.getIdentity();
+                const version = parseInt(latestEntry.id.split("#")[1]) + 1;
+                const id = `${uniqueId}#${utils.zeroPad(version)}`;
 
+                const newEntry: CmsContentModelEntryType = {
+                    id,
+                    version,
+                    modelId: entry.modelId,
+                    locale: entry.locale,
+                    savedOn: new Date().toISOString(),
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    },
+                    ownedBy: entry.ownedBy,
+                    locked: false,
+                    publishedOn: null,
+                    status: STATUS_DRAFT,
+                    values: { ...entry.values }
+                };
+
+                await db
+                    .batch()
+                    // Create main entry item
+                    .create({
+                        ...utils.defaults.db,
+                        data: {
+                            PK: PK_ENTRY(),
+                            SK: id,
+                            TYPE: DbItemTypes.CMS_CONTENT_MODEL_ENTRY,
+                            ...newEntry
+                        }
+                    })
+                    // Update "latest" entry item
+                    .update({
+                        ...utils.defaults.db,
+                        data: {
+                            PK: utils.createContentModelEntryLatestPK(context),
+                            SK: uniqueId,
+                            TYPE: TYPE_ENTRY_LATEST,
+                            id
+                        }
+                    })
+                    .execute();
+
+                await elasticSearch.index({
+                    ...utils.defaults.es(context),
+                    id: `CME#L#${uniqueId}`,
+                    body: getESLatestEntryData(newEntry)
+                });
+
+                return newEntry;
+            },
+            async update(model, id, data) {
+                // TODO: @pavel check the UI to see if this `data` is an object with user-defined fields
+                const permission = await checkPermissions({ rwd: "w" });
+
+                const [uniqueId] = id.split("#");
+
+                const [[[entry]], [[latestEntry]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: id }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: utils.createContentModelEntryLatestPK(context), SK: uniqueId }
+                    })
+                    .execute();
+
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                    );
+                }
+
+                if (entry.locked) {
+                    throw new Error(`Cannot update entry because it's locked.`);
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                const validation = await entryModelValidationFactory(context, model);
                 await validation.validate(data);
-                const updatedModel: CmsContentModelEntryType = {
-                    ...existingEntryModel,
-                    values: data.values,
-                    savedOn: new Date()
+
+                const updatedEntry: Partial<CmsContentModelEntryType> = {
+                    values: data,
+                    savedOn: new Date().toISOString()
                 };
 
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelEntryPk(context), SK: id },
-                    data: updatedModel
+                    query: { PK: PK_ENTRY(), SK: id },
+                    data: updatedEntry
                 });
 
-                // TODO check if we update only savedOn and values fields
-                await elasticSearch.update({
-                    ...utils.defaults.es(context),
-                    id: `CME#${id}`,
-                    body: {
-                        doc: updateElasticSearchData(updatedModel)
-                    }
-                });
+                if (latestEntry.id === id) {
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...utils.defaults.es(context),
+                        id: `CME#L#${uniqueId}`,
+                        body: {
+                            doc: updatedEntry
+                        }
+                    });
+                }
 
                 return {
-                    ...existingEntryModel,
-                    ...updatedModel
+                    ...entry,
+                    ...updatedEntry
                 };
             },
-            delete: async id => {
-                const permissions = await utils.checkBaseContentModelEntryPermissions(context, "w");
-                const model = await context.cms.modelEntries.get(id);
-                utils.checkOwnership(context, permissions, model);
+            async delete(model, id) {
+                const permission = await checkPermissions({ rwd: "d" });
 
-                await db.delete({
+                const [uniqueId] = id.split("#");
+
+                const [[[entry]], [[latestEntry]], [[publishedEntry]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(),
+                            SK: id
+                        }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: utils.createContentModelEntryLatestPK(context),
+                            SK: uniqueId
+                        }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: utils.createContentModelEntryPublishedPK(context),
+                            SK: uniqueId
+                        }
+                    })
+                    .execute();
+
+                if (!entry) {
+                    throw new NotFoundError(`Entry "${id}" was not found!`);
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                const batch = db.batch().delete({
                     ...utils.defaults.db,
                     query: {
-                        PK: utils.createContentModelEntryPk(context),
+                        PK: PK_ENTRY(),
                         SK: id
                     }
                 });
+
+                if (publishedEntry && publishedEntry.id === id) {
+                    batch.delete({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(),
+                            SK: id
+                        }
+                    });
+                }
 
                 await elasticSearch.delete({
                     ...utils.defaults.es(context),
                     id: `CME#${id}`
                 });
+            },
+            async listRevisions(id) {
+                const [uniqueId] = id.split("#");
+
+                return loaders.revisions.load(uniqueId);
+            },
+            async publish(model, id) {
+                const permission = await checkPermissions({ rcpu: "p" });
+
+                const [uniqueId] = id.split("#");
+
+                const [[[entry]], [[latestEntry]], [[publishedEntry]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: id }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_PUBLISHED(), SK: uniqueId }
+                    })
+                    .execute();
+
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                    );
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+                
+                // Change entry to "published"
+                entry.status = STATUS_PUBLISHED;
+                entry.locked = true;
+                entry.publishedOn = new Date().toISOString();
+
+                const batch = db.batch();
+
+                batch.update({
+                    ...defaults.db,
+                    query: {
+                        PK: PK_ENTRY(),
+                        SK: id
+                    },
+                    data: entry
+                });
+                
+                if(publishedEntry) {
+                    // If there is a `published` entry already, we need to set it to `unpublished`. We need to
+                    // execute two updates - update the previously published entry's status and the published
+                    // page entry (PK_PAGE_PUBLISHED()).
+
+                    // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
+                    // page's data so that we can update its status within a batch operation. If, hopefully,
+                    // they introduce a true update batch operation, remove this `read` call.
+                }
+                
+                
+                
+            },
+            requestChanges(
+                model: CmsContentModelType,
+                id: string
+            ): Promise<CmsContentModelEntryType> {
+                return Promise.resolve(undefined);
+            },
+            requestReview(
+                model: CmsContentModelType,
+                id: string
+            ): Promise<CmsContentModelEntryType> {
+                return Promise.resolve(undefined);
+            },
+            unpublish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType> {
+                return Promise.resolve(undefined);
             }
         };
 
         context.cms = {
             ...(context.cms || ({} as any)),
-            contentModelEntry
+            entries
         };
     }
 });

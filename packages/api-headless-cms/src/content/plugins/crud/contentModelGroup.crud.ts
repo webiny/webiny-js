@@ -4,14 +4,15 @@ import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
     CmsContentModelGroupContextType,
+    CmsContentModelGroupPermissionType,
     CmsContentModelGroupType,
     CmsContext,
     DbItemTypes
 } from "../../../types";
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
-import { afterSaveHook } from "./contentModelGroup/afterSave.hook";
 import { beforeCreateHook } from "./contentModelGroup/beforeCreate.hook";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -37,9 +38,11 @@ const whereKeySuffix = [
     "_not_between",
     "_between"
 ].join("|");
+
 const removeWhereKeySuffix = (key: string): string => {
     return key.replace(new RegExp(`${whereKeySuffix}$`), "");
 };
+
 const compare = (key: string, compareValue: any, value: any): boolean => {
     if (key.endsWith("_not")) {
         return String(value) !== compareValue;
@@ -89,34 +92,52 @@ export default (): ContextPlugin<CmsContext> => ({
     async apply(context) {
         const { db } = context;
 
+        const PK_GROUP = () => `${utils.createCmsPK(context)}#CMG`;
+
+        const checkPermissions = (check: string): Promise<CmsContentModelGroupPermissionType> => {
+            return utils.checkPermissions(context, "cms.manage.contentModelGroup", { rwd: check });
+        };
+
         const groups: CmsContentModelGroupContextType = {
             get: async id => {
-                const [response] = await db.read<CmsContentModelGroupType>({
+                const permission = await checkPermissions("r");
+
+                const [[group]] = await db.read<CmsContentModelGroupType>({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelGroupPk(context), SK: id },
-                    limit: 1
+                    query: { PK: PK_GROUP(), SK: id }
                 });
-                if (!response || response.length === 0) {
-                    return null;
+
+                if (!group) {
+                    throw new NotFoundError(`Content model group "${id}" was not found!`);
                 }
-                return response.find(() => true);
+
+                utils.checkOwnership(context, permission, group);
+
+                return group;
             },
             list: async ({ where, limit } = {}) => {
+                const permission = await checkPermissions("r");
+
                 const [response] = await db.read<CmsContentModelGroupType>({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelGroupPk(context), SK: { $gt: " " } },
+                    query: { PK: PK_GROUP(), SK: { $gt: " " } },
                     limit
                 });
-                if (response.length === 0) {
-                    return response;
-                }
+
+                const groups = response.filter(group =>
+                    utils.validateOwnership(context, permission, group)
+                );
+
                 const whereKeys = Object.keys(where || {});
                 if (whereKeys.length === 0) {
                     return response;
                 }
-                return response.filter(whereFilterFactory(where));
+
+                return groups.filter(whereFilterFactory(where));
             },
-            create: async (data, createdBy) => {
+            create: async data => {
+                await checkPermissions("w");
+
                 const createdData = new CreateContentModelGroupModel().populate({
                     ...data,
                     slug: data.slug ? utils.toSlug(data.slug) : ""
@@ -126,26 +147,41 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeCreateHook(context, createdDataJson);
 
+                const identity = context.security.getIdentity();
+
                 const id = mdbid();
                 const model: CmsContentModelGroupType = {
                     ...createdDataJson,
                     id,
                     createdOn: new Date().toISOString(),
                     savedOn: new Date().toISOString(),
-                    createdBy
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    }
                 };
+
+                const dbData = {
+                    PK: PK_GROUP(),
+                    SK: id,
+                    TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                    ...model
+                };
+
                 await db.create({
                     ...utils.defaults.db,
-                    data: {
-                        PK: utils.createContentModelGroupPk(context),
-                        SK: id,
-                        TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
-                        ...model
-                    }
+                    data: dbData
                 });
                 return model;
             },
             update: async (id, data) => {
+                const permission = await checkPermissions("w");
+
+                const group = await context.cms.groups.get(id);
+
+                utils.checkOwnership(context, permission, group);
+
                 const updateData = new UpdateContentModelGroupModel().populate(data);
                 await updateData.validate();
 
@@ -162,23 +198,30 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: utils.createContentModelGroupPk(context), SK: id },
+                    query: { PK: PK_GROUP(), SK: id },
                     data: modelData
                 });
 
-                await afterSaveHook(context);
-
-                return modelData;
+                return { ...group, ...modelData };
             },
             delete: async id => {
+                const permission = await checkPermissions("d");
+
+                const group = await context.cms.groups.get(id);
+
+                utils.checkOwnership(context, permission, group);
+
                 await beforeDeleteHook(context, id);
+
                 await db.delete({
                     ...utils.defaults.db,
                     query: {
-                        PK: utils.createContentModelGroupPk(context),
+                        PK: PK_GROUP(),
                         SK: id
                     }
                 });
+
+                return true;
             }
         };
         context.cms = {

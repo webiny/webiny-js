@@ -1,3 +1,5 @@
+import { revisionsComment } from "./snippets";
+
 export default /* GraphQL */ `
     """
     Product review
@@ -13,14 +15,12 @@ export default /* GraphQL */ `
     }
 
     type ReviewMeta {
-        model: String
-        parent: ID
+        modelId: String
         version: Int
-        latestVersion: Boolean
         locked: Boolean
-        published: Boolean
         publishedOn: DateTime
         status: String
+        ${revisionsComment}
         revisions: [Review]
         title: String
     }
@@ -60,18 +60,6 @@ export default /* GraphQL */ `
         rating_gte: Number
     }
 
-    input ReviewUpdateWhereInput {
-        id: ID
-        text: String
-        rating: Number
-    }
-
-    input ReviewDeleteWhereInput {
-        id: ID
-        text: String
-        rating: Number
-    }
-
     type ReviewResponse {
         data: Review
         error: CmsError
@@ -108,9 +96,9 @@ export default /* GraphQL */ `
 
         createReviewFrom(revision: ID!, data: ReviewInput): ReviewResponse
 
-        updateReview(where: ReviewUpdateWhereInput!, data: ReviewInput!): ReviewResponse
+        updateReview(revision: ID!, data: ReviewInput!): ReviewResponse
 
-        deleteReview(where: ReviewDeleteWhereInput!): CmsDeleteResponse
+        deleteReview(revision: ID!): CmsDeleteResponse
 
         publishReview(revision: ID!): ReviewResponse
 

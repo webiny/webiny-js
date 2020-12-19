@@ -1,3 +1,5 @@
+import { revisionsComment } from "./snippets";
+
 export default /* GraphQL */ `
     """
     Product category
@@ -12,14 +14,12 @@ export default /* GraphQL */ `
     }
 
     type CategoryMeta {
-        model: String
-        parent: ID
+        modelId: String
         version: Int
-        latestVersion: Boolean
         locked: Boolean
-        published: Boolean
         publishedOn: DateTime
         status: String
+        ${revisionsComment}
         revisions: [Category]
         title: String
     }
@@ -54,18 +54,6 @@ export default /* GraphQL */ `
         slug_not_in: [String]
         slug_contains: String
         slug_not_contains: String
-    }
-
-    input CategoryUpdateWhereInput {
-        id: ID
-        title: String
-        slug: String
-    }
-
-    input CategoryDeleteWhereInput {
-        id: ID
-        title: String
-        slug: String
     }
 
     type CategoryResponse {
@@ -104,9 +92,9 @@ export default /* GraphQL */ `
 
         createCategoryFrom(revision: ID!, data: CategoryInput): CategoryResponse
 
-        updateCategory(where: CategoryUpdateWhereInput!, data: CategoryInput!): CategoryResponse
+        updateCategory(revision: ID!, data: CategoryInput!): CategoryResponse
 
-        deleteCategory(where: CategoryDeleteWhereInput!): CmsDeleteResponse
+        deleteCategory(revision: ID!): CmsDeleteResponse
 
         publishCategory(revision: ID!): CategoryResponse
 

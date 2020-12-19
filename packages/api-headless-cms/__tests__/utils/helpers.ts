@@ -1,9 +1,5 @@
-import mdbid from "mdbid";
 import { pick } from "lodash";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CmsContentModelGroupType, CmsContext, DbItemTypes } from "@webiny/api-headless-cms/types";
 import { SecurityIdentity } from "@webiny/api-security";
-import { createContentModelGroupPk, createSettingsPk } from "../../src/utils";
 
 export type PermissionsArgType = {
     name: string;
@@ -19,29 +15,6 @@ export const identity = {
 const getSecurityIdentity = () => {
     return new SecurityIdentity(identity);
 };
-
-const getDummyCmsContext = (): CmsContext => {
-    return {
-        security: {
-            getIdentity: () => {
-                return getSecurityIdentity();
-            },
-            getTenant: () => ({
-                id: "root",
-                name: "Root",
-                parent: null
-            })
-        },
-        cms: {
-            getLocale: () => ({
-                code: "en-US"
-            })
-        }
-    } as any;
-};
-export const createTestContentModelGroupPk = () => createContentModelGroupPk(getDummyCmsContext());
-
-export const createSettingsTestPartitionKey = () => createSettingsPk(getDummyCmsContext());
 
 export const createGetPermissions = (permissions: PermissionsArgType[]) => {
     return (): PermissionsArgType[] => {
@@ -73,31 +46,6 @@ export const createAuthenticate = (identity?: SecurityIdentity) => {
     };
 };
 
-export const createContentModelGroup = async (client: DocumentClient) => {
-    const model: CmsContentModelGroupType = {
-        id: mdbid(),
-        name: "Group",
-        slug: "group",
-        icon: "ico/ico",
-        createdBy: identity,
-        description: "description",
-        createdOn: new Date().toISOString() as any,
-        savedOn: new Date().toISOString() as any
-    };
-    await client
-        .put({
-            TableName: "HeadlessCms",
-            Item: {
-                PK: createTestContentModelGroupPk(),
-                SK: model.id,
-                TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
-                ...model
-            }
-        })
-        .promise();
-    return model;
-};
-
 export const getModelCreateInputObject = model => {
     return pick(model, [
         "name",
@@ -110,4 +58,43 @@ export const getModelCreateInputObject = model => {
         "lockedFields",
         "titleFieldId"
     ]);
+};
+
+export const until = async (execute, until, options = { tries: 5, wait: 300 }) => {
+    const tries = options.tries ?? 5;
+    const wait = options.wait ?? 300;
+
+    let result;
+    let triesCount = 0;
+
+    while (true) {
+        result = await execute();
+
+        let done;
+        try {
+            done = await until(result);
+        } catch {}
+
+        if (done) {
+            return result;
+        }
+
+        triesCount++;
+        if (triesCount === tries) {
+            break;
+        }
+
+        // Wait.
+        await new Promise(resolve => {
+            setTimeout(() => resolve(), wait);
+        });
+    }
+
+    throw new Error(
+        `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+            result,
+            null,
+            2
+        )}`
+    );
 };
