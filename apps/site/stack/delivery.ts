@@ -1,14 +1,10 @@
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import * as fs from "fs";
-import * as mime from "mime";
-import * as path from "path";
 
-class App {
-    cloudfront: aws.cloudfront.Distribution;
+class Delivery {
     bucket: aws.s3.Bucket;
-    constructor() {
-        this.bucket = new aws.s3.Bucket("app", {
+    cloudfront: aws.cloudfront.Distribution;
+    constructor({ appS3Bucket }: { appS3Bucket: aws.s3.Bucket }) {
+        this.bucket = new aws.s3.Bucket("delivery", {
             acl: "public-read",
             website: {
                 indexDocument: "index.html",
@@ -16,31 +12,13 @@ class App {
             }
         });
 
-        // Sync the contents of the source directory with the S3 bucket, which will in-turn show up on the CDN.
-        const webContentsRootPath = path.join(__dirname, "..", "code", "build");
-        App.crawlDirectory(webContentsRootPath, (filePath: string) => {
-            const relativeFilePath = filePath.replace(webContentsRootPath + "/", "");
-            new aws.s3.BucketObject(
-                relativeFilePath,
-                {
-                    key: relativeFilePath,
-                    acl: "public-read",
-                    bucket: this.bucket,
-                    contentType: mime.getType(filePath) || undefined,
-                    source: new pulumi.asset.FileAsset(filePath)
-                },
-                {
-                    parent: this.bucket
-                }
-            );
-        });
-
-        this.cloudfront = new aws.cloudfront.Distribution("app", {
+        this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
             waitForDeployment: false,
             origins: [
                 {
                     originId: this.bucket.arn,
+                    originPath: "/root",
                     domainName: this.bucket.websiteEndpoint,
                     customOriginConfig: {
                         originProtocolPolicy: "http-only",
@@ -48,6 +26,32 @@ class App {
                         httpsPort: 443,
                         originSslProtocols: ["TLSv1.2"]
                     }
+                },
+                {
+                    originId: appS3Bucket.arn,
+                    domainName: appS3Bucket.websiteEndpoint,
+                    customOriginConfig: {
+                        originProtocolPolicy: "http-only",
+                        httpPort: 80,
+                        httpsPort: 443,
+                        originSslProtocols: ["TLSv1.2"]
+                    }
+                }
+            ],
+            orderedCacheBehaviors: [
+                {
+                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    cachedMethods: ["GET", "HEAD", "OPTIONS"],
+                    forwardedValues: {
+                        cookies: {
+                            forward: "none"
+                        },
+                        headers: [],
+                        queryString: false
+                    },
+                    pathPattern: "/static/*",
+                    viewerProtocolPolicy: "allow-all",
+                    targetOriginId: appS3Bucket.arn
                 }
             ],
             defaultRootObject: "index.html",
@@ -78,20 +82,6 @@ class App {
             }
         });
     }
-
-    static crawlDirectory(dir: string, f: (_: string) => void) {
-        const files = fs.readdirSync(dir);
-        for (const file of files) {
-            const filePath = `${dir}/${file}`;
-            const stat = fs.statSync(filePath);
-            if (stat.isDirectory()) {
-                App.crawlDirectory(filePath, f);
-            }
-            if (stat.isFile()) {
-                f(filePath);
-            }
-        }
-    }
 }
 
-export default App;
+export default Delivery;
