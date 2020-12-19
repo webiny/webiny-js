@@ -163,7 +163,7 @@ export default {
 
                     return form;
                 },
-                async getLatestPublishedFormRevision(formId) {
+                async getLatestPublishedFormRevision(formId)  {
                     // Make sure we have a unique form ID, and not a revision ID
                     const [uniqueId] = formId.split("#");
 
@@ -386,7 +386,8 @@ export default {
 
                     const [uniqueId] = id.split("#");
 
-                    const [[[form]], [[latestForm]], [[latestPublishedForm]]] = await db
+                    // Load form, latest form and latest published form records
+                    const [[[form]], [[lForm]], [[lpForm]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
@@ -425,53 +426,81 @@ export default {
                         }
                     });
 
-                    if (latestPublishedForm && latestPublishedForm.id === id) {
-                        batch.delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId
-                            }
-                        });
-                    }
-
-                    if (latestForm.id === id) {
+                    if (lForm.id === id || (lpForm && lpForm.id === id)) {
                         // Get all form revisions
                         const [revisions] = await db.read<FbForm>({
                             ...defaults.db,
                             query: { PK: PK_FORM(), SK: { $beginsWith: uniqueId } }
                         });
 
-                        // Find revision right before the one being deleted
-                        const prevRevision = revisions
-                            .filter(rev => rev.version < form.version)
-                            .sort((a, b) => b.version - a.version)
-                            .shift();
+                        // Update or delete the "latest published" record
+                        if (lpForm && lpForm.id === id) {
+                            const publishedRevision = revisions
+                                .filter(rev => rev.id !== id && rev.publishedOn !== null)
+                                .sort(
+                                    (a, b) =>
+                                        new Date(b.publishedOn).getTime() -
+                                        new Date(a.publishedOn).getTime()
+                                )
+                                .shift();
 
-                        if (!prevRevision && revisions.length === 1) {
-                            // Means we're deleting the last revision, so we need to delete the whole form.
-                            return this.deleteForm(uniqueId);
+                            if (publishedRevision) {
+                                batch.update({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_FORM_LATEST_PUBLISHED(),
+                                        SK: id
+                                    },
+                                    data: {
+                                        PK: PK_FORM_LATEST_PUBLISHED(),
+                                        SK: uniqueId,
+                                        TYPE: TYPE_FORM_LATEST_PUBLISHED,
+                                        id: publishedRevision.id
+                                    }
+                                });
+                            } else {
+                                batch.delete({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_FORM_LATEST_PUBLISHED(),
+                                        SK: id
+                                    }
+                                });
+                            }
                         }
 
-                        batch.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
-                            },
-                            data: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId,
-                                TYPE: TYPE_FORM_LATEST,
-                                id: prevRevision.id
-                            }
-                        });
+                        if (lForm.id === id) {
+                            // Find revision right before the one being deleted
+                            const prevRevision = revisions
+                                .filter(rev => rev.version < form.version)
+                                .sort((a, b) => b.version - a.version)
+                                .shift();
 
-                        await elasticSearch.index({
-                            ...defaults.es(context),
-                            id: `L#${uniqueId}`,
-                            body: getESDataForLatestRevision(prevRevision, context)
-                        });
+                            if (!prevRevision && revisions.length === 1) {
+                                // Means we're deleting the last revision, so we need to delete the whole form.
+                                return this.deleteForm(uniqueId);
+                            }
+
+                            batch.update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_FORM_LATEST(),
+                                    SK: uniqueId
+                                },
+                                data: {
+                                    PK: PK_FORM_LATEST(),
+                                    SK: uniqueId,
+                                    TYPE: TYPE_FORM_LATEST,
+                                    id: prevRevision.id
+                                }
+                            });
+
+                            await elasticSearch.index({
+                                ...defaults.es(context),
+                                id: `L#${uniqueId}`,
+                                body: getESDataForLatestRevision(prevRevision, context)
+                            });
+                        }
                     }
 
                     await batch.execute();
@@ -618,7 +647,7 @@ export default {
                         data: form
                     });
 
-                    // Delete latest published item from DB
+                    // Update or delete "latest published" item from DB
                     if (latestPublishedForm.id === id) {
                         const [revisions] = await db.read<FbForm>({
                             ...defaults.db,
@@ -630,7 +659,7 @@ export default {
 
                         // Find published revision with highest publishedOn data
                         const publishedRevision = revisions
-                            .filter(rev => rev.id !== id)
+                            .filter(rev => rev.id !== id && rev.publishedOn !== null)
                             .sort(
                                 (a, b) =>
                                     new Date(b.publishedOn).getTime() -
