@@ -27,6 +27,7 @@ type CreateElasticSearchParamsType = {
     model: CmsContentModelType;
     args: CreateElasticSearchParamsArgType;
     onlyOwned?: boolean;
+    parentObject?: string;
 };
 type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
@@ -37,6 +38,7 @@ type CreateElasticSearchQueryArgsType = {
     where: CmsContentModelEntryListWhereType;
     fields: FieldsType;
     onlyOwned?: boolean;
+    parentObject?: string;
 };
 type ElasticSearchSortParamType = {
     order: string;
@@ -95,12 +97,18 @@ const execElasticSearchBuildQueryPlugins = (
     plugins: ElasticSearchQueryBuilderPlugin[],
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
-    const { where, fields } = args;
+    const { where, fields, parentObject } = args;
     const query: ElasticSearchQueryType = {
         match: [],
         must: [],
         mustNot: [],
         range: []
+    };
+    const withParentObject = field => {
+        if (!parentObject) {
+            return null;
+        }
+        return `${parentObject}.${field}`;
     };
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -117,9 +125,12 @@ const execElasticSearchBuildQueryPlugins = (
             if (plugin.targetOperation !== op) {
                 continue;
             }
+            const fieldWithParent = withParentObject(field);
             plugin.apply(query, {
-                field,
-                value: where[key]
+                field: fieldWithParent || field,
+                value: where[key],
+                parentObject,
+                originalField: fieldWithParent ? field : undefined
             });
         }
     }
@@ -127,7 +138,7 @@ const execElasticSearchBuildQueryPlugins = (
 };
 
 export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
-    const { context, model, args, onlyOwned } = params;
+    const { context, model, args, onlyOwned, parentObject = null } = params;
     const { where, after, limit, sort } = args;
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
@@ -155,7 +166,8 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         context,
         where,
         fields,
-        onlyOwned
+        onlyOwned,
+        parentObject
     });
     return {
         query: {

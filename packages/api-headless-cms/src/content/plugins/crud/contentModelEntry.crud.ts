@@ -94,7 +94,8 @@ export default (): ContextPlugin<CmsContext> => ({
                         limit
                     },
                     context,
-                    onlyOwned: false
+                    onlyOwned: false,
+                    parentObject: "values"
                 });
 
                 const response = await elasticSearch.search({
