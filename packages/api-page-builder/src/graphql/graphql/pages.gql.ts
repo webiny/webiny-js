@@ -32,7 +32,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
-                url: String
+                path: String
                 fullUrl: String
                 settings: PbPageSettings
                 content: JSON
@@ -69,7 +69,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 title: String
                 snippet: String
                 tags: [String]
-                url: String
+                path: String
                 fullUrl: String
                 savedOn: DateTime
                 createdFrom: ID
@@ -95,7 +95,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             input PbUpdatePageInput {
                 title: String
                 category: ID
-                url: String
+                path: String
                 settings: PbPageSettingsInput
                 content: JSON
             }
@@ -198,7 +198,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                 getPublishedPage(
                     id: ID
-                    url: String
+                    path: String
                     returnNotFoundPage: Boolean
                     returnErrorPage: Boolean
                     preview: Boolean
@@ -315,7 +315,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return resolve(() => context.pageBuilder.pages.listTags(args));
                 },
 
-                getPublishedPage: async (_, args: { id?: string; url?: string }, context) => {
+                getPublishedPage: async (_, args: { id?: string; path?: string }, context) => {
                     return resolve(() => context.pageBuilder.pages.getPublished(args));
                 },
 

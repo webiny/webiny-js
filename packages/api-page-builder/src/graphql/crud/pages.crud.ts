@@ -32,17 +32,17 @@ type PagePublished = {
     id: string;
 };
 
-type PagePublishedUrl = {
+type PagePublishedPath = {
     PK: string;
     SK: string;
-    url: string;
+    path: string;
     id: string;
 };
 
 const TYPE_PAGE = "pb.page";
 const TYPE_PAGE_LATEST = TYPE_PAGE + ".l";
 const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
-const TYPE_PAGE_PUBLISHED_URL = TYPE_PAGE + ".p.url";
+const TYPE_PAGE_PUBLISHED_PATH = TYPE_PAGE + ".p.path";
 
 const PERMISSION_NAME = TYPE_PAGE;
 
@@ -61,7 +61,7 @@ const getESPageData = (context: PbContext, page) => {
         version: page.version,
         title: page.title,
         titleLC: page.title.toLowerCase(),
-        url: page.url,
+        path: page.path,
         status: page.status,
         locked: page.locked,
         publishedOn: page.publishedOn,
@@ -94,7 +94,7 @@ const getESUpdateLatestPageData = updateData => {
         snippet: updateData?.settings?.general?.snippet || null,
         title: updateData.title,
         titleLC: updateData?.title?.toLowerCase(),
-        url: updateData.url,
+        path: updateData.path,
         savedOn: updateData.savedOn,
 
         // Save some images that could maybe be used on listing pages.
@@ -112,7 +112,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
         const PK_PAGE = () => `${getPKPrefix(context)}P`;
         const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
         const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
-        const PK_PAGE_PUBLISHED_URL = () => PK_PAGE_PUBLISHED() + "#URL";
+        const PK_PAGE_PUBLISHED_PATH = () => PK_PAGE_PUBLISHED() + "#PATH";
         const PK_PAGE_RENDER_QUEUE = () => `PB#PRQ`;
         const ES_DEFAULTS = () => defaults.es(context);
 
@@ -246,9 +246,9 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                 },
 
                 async getPublished(args) {
-                    if (!args.id && !args.url) {
+                    if (!args.id && !args.path) {
                         throw new Error(
-                            'Cannot get published page - must specify either "id" or "url".'
+                            'Cannot get published page - must specify either "id" or "path".'
                         );
                     }
 
@@ -295,20 +295,20 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                         throw notFoundError;
                     }
 
-                    // 2. If we received `args.url`, then...
-                    const [[pagePublishedUrl]] = await db.read<PagePublishedUrl>({
+                    // 2. If we received `args.path`, then...
+                    const [[pagePublishedPath]] = await db.read<PagePublishedPath>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE_PUBLISHED_URL(), SK: args.url },
+                        query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: args.path },
                         limit: 1
                     });
 
-                    if (!pagePublishedUrl) {
+                    if (!pagePublishedPath) {
                         throw notFoundError;
                     }
 
                     const [[page]] = await db.read<Page>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(), SK: pagePublishedUrl.id },
+                        query: { PK: PK_PAGE(), SK: pagePublishedPath.id },
                         limit: 1
                     });
 
@@ -327,7 +327,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                     }
 
                     const title = "Untitled";
-                    const url = path.join(category.url, "untitled-" + uniqid.time());
+                    const pagePath = path.join(category.url, "untitled-" + uniqid.time());
 
                     const identity = context.security.getIdentity();
                     new CreateDataModel().populate({ category: category.slug }).validate();
@@ -357,7 +357,7 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                         editor: DEFAULT_EDITOR,
                         category: category.slug,
                         title,
-                        url,
+                        path: pagePath,
                         version: 1,
                         status: STATUS_DRAFT,
                         locked: false,
@@ -846,15 +846,15 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                             .update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_PAGE_PUBLISHED_URL(),
+                                    PK: PK_PAGE_PUBLISHED_PATH(),
                                     SK: pageUniqueId
                                 },
                                 data: {
-                                    PK: PK_PAGE_PUBLISHED_URL(),
-                                    SK: page.url,
-                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    PK: PK_PAGE_PUBLISHED_PATH(),
+                                    SK: page.path,
+                                    TYPE: TYPE_PAGE_PUBLISHED_PATH,
                                     id: page.id,
-                                    url: page.url
+                                    path: page.path
                                 }
                             });
                     } else {
@@ -871,11 +871,11 @@ const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbCon
                             .create({
                                 ...defaults.db,
                                 data: {
-                                    PK: PK_PAGE_PUBLISHED_URL(),
-                                    SK: page.url,
-                                    TYPE: TYPE_PAGE_PUBLISHED_URL,
+                                    PK: PK_PAGE_PUBLISHED_PATH(),
+                                    SK: page.path,
+                                    TYPE: TYPE_PAGE_PUBLISHED_PATH,
                                     id: page.id,
-                                    url: page.url
+                                    path: page.path
                                 }
                             });
                     }

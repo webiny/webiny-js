@@ -11,7 +11,7 @@ export const UpdateDataModel = withFields({
     title: string({
         validation: validation.create("maxLength:150")
     }),
-    url: string({
+    path: string({
         validation: value => {
             if (value) {
                 validation.validateSync(value, "maxLength:100");
