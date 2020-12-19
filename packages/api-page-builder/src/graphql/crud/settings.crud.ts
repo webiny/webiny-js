@@ -11,7 +11,7 @@ import executeHookCallbacks from "./utils/executeHookCallbacks";
 const SettingsModel = withFields({
     installed: boolean({ value: false }),
     name: string({ validation: "required,maxLength:500" }),
-    domain: string({ validation: "url,maxLength:500" }),
+    siteUrl: string({ validation: "url,maxLength:500" }),
     favicon: object({}),
     logo: object({}),
     social: fields({

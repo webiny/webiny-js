@@ -1,7 +1,7 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         name
-        domain
+        siteUrl
         social {
             instagram
             facebook

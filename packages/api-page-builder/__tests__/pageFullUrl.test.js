@@ -39,16 +39,16 @@ describe("page full URL test", () => {
             });
         }
 
-        await updateSettings({ data: { domain: "https://domain.com" } });
+        await updateSettings({ data: { siteUrl: "https://domain.com" } });
 
         await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { fullUrl: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { fullUrl: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { fullUrl: /^https:\/\/domain.com\/some-url\/untitled-/ }
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
             ])
         );
     });

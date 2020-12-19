@@ -267,9 +267,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 revisions: async (page: Page, args, context) => {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
-                fullUrl: async (page: Page, args, context) => {
+                url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
-                    return settings.domain + page.url;
+                    return settings.siteUrl + page.path;
                 }
             },
             PbPageListItem: {
@@ -282,7 +282,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 fullUrl: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
-                    return settings.domain + page.url;
+                    return settings.siteUrl + page.path;
                 }
             },
             PbQuery: {

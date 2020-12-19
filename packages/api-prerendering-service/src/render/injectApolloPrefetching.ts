@@ -1,4 +1,4 @@
-module.exports = links => async tree => {
+export default links => async tree => {
     console.log("-> Injecting Apollo state prefetching links");
 
     tree.match({ tag: "head" }, node => {

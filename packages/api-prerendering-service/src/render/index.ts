@@ -23,13 +23,13 @@ export default (
 ): HandlerPlugin<
     DbContext,
     ArgsContext<{
-        pages: Page[];
+        paths: Page[];
     }>
 > => ({
     type: "handler",
     async handle(context) {
         const { invocationArgs: args, db } = context;
-        if (!Array.isArray(args.pages)) {
+        if (!Array.isArray(args.paths)) {
             return;
         }
 
@@ -37,36 +37,38 @@ export default (
 
         const __settings = {};
         const getSettings = async (tenant, locale) => {
+            // T#root#L#en-US#PB#SETTINGS
             const PK = `T#${tenant}#L#${locale}#PB#SETTINGS`;
 
             if (PK in __settings) {
                 return __settings[PK];
             }
 
-            __settings[PK] = await db.read({
+            const [[settings]] = await db.read({
                 ...defaults.db,
-                query: { PK, SK: "default" }
+                query: { PK, SK: "default" },
+                limit: 1
             });
 
+            __settings[PK] = settings;
             return __settings[PK];
         };
 
         const promises = [];
-        for (let i = 0; i < args.pages.length; i++) {
-            const page = args.pages[i];
-            const settings = await getSettings(page.tenant, page.locale);
+        for (let i = 0; i < args.paths.length; i++) {
+            const current = args.paths[i];
+            const settings = await getSettings(current.tenant, current.locale);
 
             promises.push(
                 new Promise(async resolve => {
-                    const files = await renderPage(settings.domain + page.path);
+                    const files = await renderPage(settings.domain + current.path);
                     for (let j = 0; j < files.length; j++) {
                         const file = files[j];
 
                         const key = path.join(
-                            "__PB__",
-                            page.tenant,
-                            page.locale,
-                            page.path,
+                            current.tenant,
+                            current.locale,
+                            current.path,
                             file.name
                         );
 
@@ -83,6 +85,8 @@ export default (
         }
 
         await Promise.all(promises);
+
+        return {};
     }
 });
 
@@ -91,6 +95,7 @@ const storeFile = ({ key, contentType, body, storageName }) => {
         .putObject({
             Bucket: storageName,
             Key: key,
+            ACL: "public-read",
             ContentType: contentType,
             Body: body
         })

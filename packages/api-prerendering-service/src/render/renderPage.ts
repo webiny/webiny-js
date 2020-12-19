@@ -1,8 +1,8 @@
-const puppeteer = require("puppeteer");
-const posthtml = require("posthtml");
-const { noopener } = require("posthtml-noopener");
-const injectApolloState = require("./injectApolloState");
-const injectApolloPrefetching = require("./injectApolloPrefetching");
+import chromium from "chrome-aws-lambda";
+import posthtml from "posthtml";
+import { noopener } from "posthtml-noopener";
+import injectApolloState from "./injectApolloState";
+import injectApolloPrefetching from "./injectApolloPrefetching";
 
 const fileSafeId = url => {
     return "page--" + url.replace(/\//g, "-");
@@ -19,10 +19,19 @@ const windowSet = (page, name, value) => {
 
 export type File = { type: string; body: any; name: string };
 
+let browser;
 export default async (url: string): Promise<File[]> => {
-    const browser = await puppeteer.launch({ headless: true });
-
     console.log(`-> Rendering "${url}"`);
+    if (!browser) {
+        browser = await chromium.puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+            ignoreHTTPSErrors: true
+        });
+    }
+
     const browserPage = await browser.newPage();
 
     // Currently, this variable is not used but lets keep it here as an example of setting page window variables.

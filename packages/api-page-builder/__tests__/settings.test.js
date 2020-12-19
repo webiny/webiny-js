@@ -27,7 +27,7 @@ describe("Settings Test", () => {
                 pageBuilder: {
                     getSettings: {
                         data: {
-                            domain: null,
+                            siteUrl: null,
                             name: null,
                             social: {
                                 facebook: null,
@@ -47,7 +47,7 @@ describe("Settings Test", () => {
         [response] = await updateSettings({
             data: {
                 name: "test 1",
-                domain: "https://www.test.com",
+                siteUrl: "https://www.test.com",
                 social: {
                     facebook: "https://www.facebook.com",
                     instagram: "https://www.instagram.com",
@@ -67,7 +67,7 @@ describe("Settings Test", () => {
                     updateSettings: {
                         data: {
                             name: "test 1",
-                            domain: "https://www.test.com",
+                            siteUrl: "https://www.test.com",
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",
@@ -94,7 +94,7 @@ describe("Settings Test", () => {
                     getSettings: {
                         data: {
                             name: "test 1",
-                            domain: "https://www.test.com",
+                            siteUrl: "https://www.test.com",
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",
