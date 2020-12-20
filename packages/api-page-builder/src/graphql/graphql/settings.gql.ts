@@ -28,8 +28,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             type PbSettingsPrerendering {
-                storage: PbSettingsPrerenderingStorageInput
-                website: PbSettingsPrerenderingWebsiteInput
+                storage: PbSettingsPrerenderingStorage
+                website: PbSettingsPrerenderingWebsite
             }
 
             type PbSettings {
