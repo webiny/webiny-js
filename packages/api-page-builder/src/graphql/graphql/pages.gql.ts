@@ -33,7 +33,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 title: String
                 status: String
                 path: String
-                fullUrl: String
+                url: String
                 settings: PbPageSettings
                 content: JSON
                 revisions: [PbPageRevision]
@@ -70,7 +70,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 snippet: String
                 tags: [String]
                 path: String
-                fullUrl: String
+                url: String
                 savedOn: DateTime
                 createdFrom: ID
                 createdOn: DateTime
@@ -280,7 +280,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 category: async (page: Page, args, context) => {
                     return context.pageBuilder.categories.get(page.category);
                 },
-                fullUrl: async (page: Page, args, context) => {
+                url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
                     return settings.siteUrl + page.path;
                 }
