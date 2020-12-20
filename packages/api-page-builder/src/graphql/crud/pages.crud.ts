@@ -8,7 +8,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PageHookPlugin, PbContext, Page, Configuration } from "@webiny/api-page-builder/types";
+import { PageHookPlugin, PbContext, Page, HandlerConfiguration } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -104,7 +104,7 @@ const getESUpdateLatestPageData = updateData => {
     };
 };
 
-const createPlugin = ({ renderingFunction }: Configuration): ContextPlugin<PbContext> => ({
+const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbContext> => ({
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch } = context;
