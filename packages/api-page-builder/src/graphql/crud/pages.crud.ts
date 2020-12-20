@@ -720,7 +720,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
                         });
 
-                        // And of course, update the published revision entry in ES.
+                        // And of course, update the latest revision entry in ES.
                         esOperations.push(
                             { index: { _id: `L#${pageUniqueId}`, _index: ES_DEFAULTS().index } },
                             getESLatestPageData(context, latestPage)
@@ -1234,32 +1234,16 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                 },
 
                 async render(args) {
+                    if (!configuration?.prerendering?.handler) {
+                        return;
+                    }
+                    return;
                     const { paths, tags } = args;
 
                     const tenant = context.security.getTenant().id;
                     const locale = i18nContent.getLocale().code;
 
                     if (paths) {
-                        console.log(
-                            "ide INVOKE",
-                            JSON.stringify(
-                                {
-                                    name: renderingFunction,
-                                    await: false,
-                                    payload: {
-                                        paths: paths.map(path => [
-                                            {
-                                                path,
-                                                tenant,
-                                                locale
-                                            }
-                                        ])
-                                    }
-                                },
-                                null,
-                                2
-                            )
-                        );
                         return await context.handlerClient.invoke({
                             name: renderingFunction,
                             await: false,
