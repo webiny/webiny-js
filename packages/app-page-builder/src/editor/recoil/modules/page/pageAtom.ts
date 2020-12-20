@@ -3,7 +3,7 @@ import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/co
 type PageCategoryType = {
     slug: string;
     name: string;
-    path: string;
+    url: string;
 };
 
 export type PageAtomType = {
