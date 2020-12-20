@@ -2,6 +2,14 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         name
         websiteUrl
+        prerendering {
+            app {
+                url
+            }
+            storage {
+                name
+            }
+        }
         social {
             instagram
             facebook

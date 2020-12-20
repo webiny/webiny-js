@@ -23,13 +23,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 name: String
             }
 
-            type PbSettingsPrerenderingWebsite {
+            type PbSettingsPrerenderingApp {
                 url: String
             }
 
             type PbSettingsPrerendering {
                 storage: PbSettingsPrerenderingStorage
-                website: PbSettingsPrerenderingWebsite
+                app: PbSettingsPrerenderingApp
             }
 
             type PbSettings {
@@ -65,13 +65,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 name: String
             }
 
-            input PbSettingsPrerenderingWebsiteInput {
+            input PbSettingsPrerenderingAppInput {
                 url: String
             }
 
             input PbSettingsPrerenderingInput {
                 storage: PbSettingsPrerenderingStorageInput
-                website: PbSettingsPrerenderingWebsiteInput
+                app: PbSettingsPrerenderingAppInput
             }
 
             input PbSocialMediaInput {

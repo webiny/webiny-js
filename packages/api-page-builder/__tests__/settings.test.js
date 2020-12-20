@@ -22,12 +22,13 @@ describe("Settings Test", () => {
     test("get and update settings", async () => {
         // 1. Should return default settings.
         let [response] = await getSettings();
-         expect(response).toEqual({
+        expect(response).toEqual({
             data: {
                 pageBuilder: {
                     getSettings: {
                         data: {
                             websiteUrl: null,
+                            prerendering: null,
                             name: null,
                             social: {
                                 facebook: null,
@@ -48,6 +49,12 @@ describe("Settings Test", () => {
             data: {
                 name: "test 1",
                 websiteUrl: "https://www.test.com",
+                prerendering: {
+                    app: {
+                        url: "https://www.app.com"
+                    },
+                    storage: { name: "storage-name" }
+                },
                 social: {
                     facebook: "https://www.facebook.com",
                     instagram: "https://www.instagram.com",
@@ -68,6 +75,12 @@ describe("Settings Test", () => {
                         data: {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
+                            prerendering: {
+                                app: {
+                                    url: "https://www.app.com"
+                                },
+                                storage: { name: "storage-name" }
+                            },
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",
@@ -95,6 +108,12 @@ describe("Settings Test", () => {
                         data: {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
+                            prerendering: {
+                                app: {
+                                    url: "https://www.app.com"
+                                },
+                                storage: { name: "storage-name" }
+                            },
                             social: {
                                 instagram: "https://www.instagram.com",
                                 facebook: "https://www.facebook.com",

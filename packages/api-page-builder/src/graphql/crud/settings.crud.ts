@@ -14,6 +14,20 @@ const SettingsModel = withFields({
     websiteUrl: string({ validation: "url,maxLength:500" }),
     favicon: object({}),
     logo: object({}),
+    prerendering: fields({
+        instanceOf: withFields({
+            app: fields({
+                instanceOf: withFields({
+                    url: string({ validation: "url" })
+                })()
+            }),
+            storage: fields({
+                instanceOf: withFields({
+                    name: string({ validation: "maxLength:500" })
+                })()
+            })
+        })()
+    }),
     social: fields({
         value: {},
         instanceOf: withFields({
@@ -107,7 +121,9 @@ const plugin: ContextPlugin<PbContext> = {
                     // Important for serving pages later.
                     if (prevWebwebsiteUrl !== nextWebwebsiteUrl) {
                         if (prevWebwebsiteUrl) {
-                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevWebwebsiteUrl } });
+                            await db.delete({
+                                query: { PK: "PB#DOMAIN#TENANT", SK: prevWebwebsiteUrl }
+                            });
                         }
 
                         const { security } = context;
