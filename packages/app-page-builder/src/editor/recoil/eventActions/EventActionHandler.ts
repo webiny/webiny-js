@@ -1,4 +1,4 @@
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions/BaseEventAction";
+import { BaseEventAction } from "./BaseEventAction";
 import {
     contentAtom,
     ContentAtomType,
@@ -11,14 +11,14 @@ import {
     revisionsAtom,
     uiAtom,
     UiAtomType
-} from "@webiny/app-page-builder/editor/recoil/modules";
+} from "../modules";
 import {
     connectedAtomValue,
     connectedBatchEnd,
     connectedBatchStart,
     updateConnectedValue
-} from "@webiny/app-page-builder/editor/recoil/modules/connected";
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
+} from "../modules/connected";
+import { PbState } from "../modules/types";
 import { EventAction } from "./EventAction";
 
 export type EventActionHandlerMetaType = {
