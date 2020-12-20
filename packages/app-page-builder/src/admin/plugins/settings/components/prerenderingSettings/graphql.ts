@@ -4,19 +4,18 @@ const fields = /* GraphQL */ `
     {
         id
         data {
-            pages {
-                home
-                notFound
-                error
-            }
-            social {
-                image {
-                    id
-                    src
+            prerendering {
+                storage {
+                    name
+                }
+                app {
+                    url
                 }
             }
         }
         error {
+            code
+            data
             message
         }
     }
