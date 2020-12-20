@@ -10,8 +10,8 @@ class PageBuilder {
     functions: {
         render: aws.lambda.Function;
     };
-    constructor({ dbTable }: { dbTable: aws.dynamodb.Table }) {
-        const render = new aws.lambda.Function("pb-render", {
+    constructor() {
+        const render = new aws.lambda.Function("render", {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
@@ -22,7 +22,7 @@ class PageBuilder {
             ],
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/pageBuilder/render/build")
+                ".": new pulumi.asset.FileArchive("./code/prerenderingService/render/build")
             }),
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),

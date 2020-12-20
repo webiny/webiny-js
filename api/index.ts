@@ -12,7 +12,7 @@ const cognito = new Cognito();
 const elasticSearch = new ElasticSearch();
 const fileManager = new FileManager();
 
-const prerenderingService = new PrerenderingService({ dbTable: dynamoDb.table });
+const prerenderingService = new PrerenderingService();
 
 const api = new Graphql({
     dynamoDbTable: dynamoDb.table,
