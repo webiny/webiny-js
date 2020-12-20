@@ -149,7 +149,7 @@ export type ListMeta = {
 
 // Pages CRUD.
 export type Tag = { id?: string; class?: string };
-export type RenderPagesArgs = { tags?: Tag[]; paths: string[] };
+export type RenderArgs = { tags?: Tag[]; paths?: string[] };
 
 export type PagesCrud = {
     get(id: string): Promise<Page>;
@@ -167,7 +167,7 @@ export type PagesCrud = {
     requestReview(id: string): Promise<Page>;
     requestChanges(id: string): Promise<Page>;
     setAsHomepage(id: string): Promise<Page>;
-    render(args: RenderPagesArgs): Promise<void>;
+    render(args: RenderArgs): Promise<void>;
 };
 
 export type PageElementsCrud = {

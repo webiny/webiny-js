@@ -3,9 +3,9 @@ import categories from "./crud/categories.crud";
 import pages from "./crud/pages.crud";
 import pageElements from "./crud/pageElements.crud";
 import settings from "./crud/settings.crud";
-import { Configuration } from "./types";
+import { HandlerConfiguration } from "./types";
 
-export default (configuration: Configuration) => [
+export default (configuration: HandlerConfiguration) => [
     menus,
     categories,
     pages(configuration),

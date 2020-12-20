@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import renderPage from "./renderPage";

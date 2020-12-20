@@ -1237,6 +1237,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     if (!configuration?.prerendering?.handler) {
                         return;
                     }
+
                     return;
                     const { paths, tags } = args;
 
@@ -1245,7 +1246,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     if (paths) {
                         return await context.handlerClient.invoke({
-                            name: renderingFunction,
+                            name: configuration.prerendering.handler,
                             await: false,
                             payload: {
                                 paths: paths.map(path => ({
