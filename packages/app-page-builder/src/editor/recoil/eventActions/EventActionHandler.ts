@@ -54,7 +54,7 @@ type RegistryType = Map<string, ListType>;
 type TargetType = { new (...args: any[]): EventAction<any> };
 type UnregisterType = () => boolean;
 
-const MAX_EVENT_ACTION_NESTING_LEVELS = 3;
+const MAX_EVENT_ACTION_NESTING_LEVELS = 4;
 
 export const executeAction = <T extends CallableArgsType = any>(
     state: PbState,
@@ -250,7 +250,7 @@ export class EventActionHandler {
         initialState: PbState,
         initiator: string[]
     ): Promise<EventActionHandlerActionCallableResponseType> {
-        if (initiator.length >= 3) {
+        if (initiator.length >= MAX_EVENT_ACTION_NESTING_LEVELS) {
             throw new Error(
                 `Max (${MAX_EVENT_ACTION_NESTING_LEVELS}) allowed levels of nesting actions reached: ${initiator.join(
                     " -> "
