@@ -13,7 +13,6 @@ import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 // Icons
 import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
-const COLUMN_COUNT = 6;
 const noop = () => null;
 const gridItem = css({
     position: "relative",
@@ -159,6 +158,10 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     removeIcon = noop
 }) => {
     const [filter, setFilter] = useState<string>("");
+    // Icon "Grid" props
+    const columnCount = useInSidebar ? 3 : 6;
+    const columnWidth = useInSidebar ? 85 : 100;
+    const gridWidth = useInSidebar ? 300 : 640;
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -213,7 +216,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     const renderCell = useCallback(
         ({ closeMenu }) => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
-                const item = icons[rowIndex * COLUMN_COUNT + columnIndex];
+                const item = icons[rowIndex * columnCount + columnIndex];
                 if (!item) {
                     return null;
                 }
@@ -264,12 +267,12 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     <Grid
                         className={grid}
                         cellRenderer={renderCell({ closeMenu })}
-                        columnCount={COLUMN_COUNT}
-                        columnWidth={100}
+                        columnCount={columnCount}
+                        columnWidth={columnWidth}
                         height={440}
-                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                        rowCount={Math.ceil(icons.length / columnCount)}
                         rowHeight={100}
-                        width={640}
+                        width={gridWidth}
                     />
                 </>
             );
