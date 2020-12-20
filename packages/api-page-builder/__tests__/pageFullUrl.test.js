@@ -39,7 +39,7 @@ describe("page full URL test", () => {
             });
         }
 
-        await updateSettings({ data: { siteUrl: "https://domain.com" } });
+        await updateSettings({ data: { websiteUrl: "https://domain.com" } });
 
         await until(
             listPages,

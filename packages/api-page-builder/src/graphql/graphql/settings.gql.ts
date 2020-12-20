@@ -36,7 +36,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 name: String
                 favicon: PbFile
                 logo: PbFile
-                siteUrl: String
+                websiteUrl: String
                 social: PbSocialMedia
                 pages: PbSettingsPages
                 prerendering: PbSettingsPrerendering
@@ -88,7 +88,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             input PbSettingsInput {
                 name: String
-                siteUrl: String
+                websiteUrl: String
                 favicon: PbFileInput
                 logo: PbFileInput
                 social: PbSocialMediaInput

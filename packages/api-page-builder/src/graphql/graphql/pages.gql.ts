@@ -269,7 +269,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
-                    return settings.siteUrl + page.path;
+                    return settings.websiteUrl + page.path;
                 }
             },
             PbPageListItem: {
@@ -282,7 +282,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.get();
-                    return settings.siteUrl + page.path;
+                    return settings.websiteUrl + page.path;
                 }
             },
             PbQuery: {

@@ -11,7 +11,7 @@ import executeHookCallbacks from "./utils/executeHookCallbacks";
 const SettingsModel = withFields({
     installed: boolean({ value: false }),
     name: string({ validation: "required,maxLength:500" }),
-    siteUrl: string({ validation: "url,maxLength:500" }),
+    websiteUrl: string({ validation: "url,maxLength:500" }),
     favicon: object({}),
     logo: object({}),
     social: fields({
@@ -89,12 +89,12 @@ const plugin: ContextPlugin<PbContext> = {
                     auth !== false && (await checkBasePermissions(context));
 
                     const current = await this.get({ auth });
-                    const prevWebsiteUrl = current.siteUrl;
+                    const prevWebwebsiteUrl = current.websiteUrl;
                     const settings = new SettingsModel().populate(current).populate(next);
                     await settings.validate();
 
                     const data = await settings.toJSON();
-                    const nextWebsiteUrl = data.siteUrl;
+                    const nextWebwebsiteUrl = data.websiteUrl;
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, data);
 
                     await db.update({
@@ -103,19 +103,19 @@ const plugin: ContextPlugin<PbContext> = {
                         data
                     });
 
-                    // Update siteUrl info - we must know to which tenant given siteUrl is linked.
+                    // Update websiteUrl info - we must know to which tenant given websiteUrl is linked.
                     // Important for serving pages later.
-                    if (prevWebsiteUrl !== nextWebsiteUrl) {
-                        if (prevWebsiteUrl) {
-                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevWebsiteUrl } });
+                    if (prevWebwebsiteUrl !== nextWebwebsiteUrl) {
+                        if (prevWebwebsiteUrl) {
+                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevWebwebsiteUrl } });
                         }
 
                         const { security } = context;
                         await db.create({
                             data: {
                                 PK: "PB#DOMAIN#TENANT",
-                                SK: nextWebsiteUrl,
-                                siteUrl: nextWebsiteUrl,
+                                SK: nextWebwebsiteUrl,
+                                websiteUrl: nextWebwebsiteUrl,
                                 tenant: security.getTenant()
                             }
                         });

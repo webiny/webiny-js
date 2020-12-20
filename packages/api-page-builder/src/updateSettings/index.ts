@@ -61,7 +61,7 @@ export default (
 
             promises.push(
                 new Promise(async resolve => {
-                    const files = await renderPage(settings.siteUrl + current.path);
+                    const files = await renderPage(settings.websiteUrl + current.path);
                     for (let j = 0; j < files.length; j++) {
                         const file = files[j];
 

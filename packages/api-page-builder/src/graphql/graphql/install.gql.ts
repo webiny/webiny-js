@@ -9,7 +9,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     schema: {
         typeDefs: /* GraphQL */ `
             input PbInstallInput {
-                siteUrl: String
+                websiteUrl: String
                 name: String!
             }
             type PbInstallResponse {

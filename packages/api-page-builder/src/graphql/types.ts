@@ -23,7 +23,7 @@ export type File = {
 export type Settings = {
     installed: boolean;
     name: string;
-    siteUrl: string;
+    websiteUrl: string;
     favicon: File;
     logo: File;
     social: {
