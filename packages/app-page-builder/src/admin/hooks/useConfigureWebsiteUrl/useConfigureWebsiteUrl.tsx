@@ -13,13 +13,13 @@ const confirmationMessageStyles = css({
     }
 });
 
-export const configureDomainTitle = t`Configure domain`;
+export const configureWebsiteUrlTitle = t`Configure website URL`;
 
-export const ConfigureDomainMessage = ({ domain }) => {
-    if (typeof domain !== "string") {
+export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
+    if (typeof websiteUrl !== "string") {
         return (
             <span className={confirmationMessageStyles}>
-                {t`Public website domain is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
+                {t`Public website website URL is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
                     {
                         pageBuilderSettingsLink: (
                             <Link
@@ -32,10 +32,10 @@ export const ConfigureDomainMessage = ({ domain }) => {
         );
     }
 
-    const isLocalHost = domain && domain.includes("localhost");
+    const isLocalHost = websiteUrl && websiteUrl.includes("localhost");
     return (
         <span className={confirmationMessageStyles}>
-            {t`No site is running at`} <strong>{domain}</strong>.
+            {t`No site is running at`} <strong>{websiteUrl}</strong>.
             <br />
             <br />
             {isLocalHost ? (
@@ -49,19 +49,19 @@ export const ConfigureDomainMessage = ({ domain }) => {
                 </span>
             )}
             <br />
-            {t`or update the domain by going into the`}{" "}
+            {t`or update the website URL by going into the`}{" "}
             <Link to={"/settings/page-builder/general"}>{t`page builder settings.`}</Link>
         </span>
     );
 };
 
-export const useConfigureDomainDialog = (domain, onAccept = null) => {
+export const useConfigureWebsiteUrlDialog = (websiteUrl, onAccept = null) => {
     const { showDialog } = useDialog();
 
     return {
-        showConfigureDomainDialog: () => {
-            showDialog(<ConfigureDomainMessage domain={domain} />, {
-                title: configureDomainTitle,
+        showConfigureWebsiteUrlDialog: () => {
+            showDialog(<ConfigureWebsiteUrlMessage websiteUrl={websiteUrl} />, {
+                title: configureWebsiteUrlTitle,
                 actions: {
                     accept: { label: t`Retry`, onClick: onAccept },
                     cancel: { label: t`Cancel` }

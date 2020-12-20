@@ -19,7 +19,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { DOMAIN_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
+import { WEBSITE_URL_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
 
 const GeneralSettings = () => {
     const { showSnackbar } = useSnackbar();
@@ -31,12 +31,12 @@ const GeneralSettings = () => {
                     <Mutation
                         mutation={UPDATE_SETTINGS}
                         update={(cache, { data }) => {
-                            const dataFromCache = cache.readQuery({ query: DOMAIN_QUERY });
+                            const dataFromCache = cache.readQuery({ query: WEBSITE_URL_QUERY });
                             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
 
                             if (updatedSettings) {
                                 cache.writeQuery({
-                                    query: DOMAIN_QUERY,
+                                    query: WEBSITE_URL_QUERY,
                                     data: set(
                                         dataFromCache,
                                         "pageBuilder.getSettings.data",
@@ -50,17 +50,17 @@ const GeneralSettings = () => {
                             <Form
                                 data={settings}
                                 onSubmit={async data => {
-                                    data.domain = (data.domain || "").replace(/\/+$/g, "");
+                                    data.websiteUrl = (data.websiteUrl || "").replace(/\/+$/g, "");
 
                                     if (
-                                        settings.domain !== data.domain &&
-                                        !data.domain.includes("localhost")
+                                        settings.websiteUrl !== data.websiteUrl &&
+                                        !data.websiteUrl.includes("localhost")
                                     ) {
                                         sendEvent("custom-domain", {
-                                            domain: data.domain
+                                            domain: data.websiteUrl
                                         });
                                         setProperties({
-                                            domain: data.domain
+                                            domain: data.websiteUrl
                                         });
                                     }
 
@@ -90,9 +90,9 @@ const GeneralSettings = () => {
                                                             </Bind>
                                                         </Cell>
                                                         <Cell span={12}>
-                                                            <Bind name={"domain"}>
+                                                            <Bind name={"websiteUrl"}>
                                                                 <Input
-                                                                    label="Domain"
+                                                                    label="Website URL"
                                                                     description={
                                                                         "eg. https://www.mysite.com"
                                                                     }

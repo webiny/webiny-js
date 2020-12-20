@@ -1,7 +1,7 @@
 import React from "react";
 import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { MenuItem } from "@webiny/ui/Menu";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
+import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { ListItemGraphic } from "@webiny/ui/List";
@@ -13,10 +13,10 @@ const openTarget = window.Cypress ? "_self" : "_blank";
 
 const PreviewPageButton: React.FunctionComponent = () => {
     const page = useRecoilValue(pageAtom);
-    const { getPagePreviewUrl, getDomain } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+    const { getPagePreviewUrl, getWebsiteUrl } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
-    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
 
     return (
         <MenuItem
@@ -24,7 +24,7 @@ const PreviewPageButton: React.FunctionComponent = () => {
                 if (isSiteRunning) {
                     window.open(getPagePreviewUrl(page), openTarget, "noopener");
                 } else {
-                    showConfigureDomainDialog();
+                    showConfigureWebsiteUrlDialog();
                 }
             }}
             data-testid={"pb-editor-page-options-menu-preview"}

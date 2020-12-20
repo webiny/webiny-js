@@ -4,13 +4,13 @@ import gql from "graphql-tag";
 import { get } from "lodash";
 import getPagePreviewUrlFunction from "./getPagePreviewUrl";
 
-export const DOMAIN_QUERY = gql`
-    query PbGetDomain {
+export const WEBSITE_URL_QUERY = gql`
+    query PbGetWebsiteUrl {
         pageBuilder {
             getSettings {
                 id
                 data {
-                    domain
+                    websiteUrl
                 }
             }
         }
@@ -18,10 +18,10 @@ export const DOMAIN_QUERY = gql`
 `;
 
 export function usePageBuilderSettings() {
-    const { data, loading } = useQuery(DOMAIN_QUERY);
+    const { data, loading } = useQuery(WEBSITE_URL_QUERY);
 
-    const getDomain = () => {
-        return get(data, "pageBuilder.getSettings.data.domain");
+    const getWebsiteUrl = () => {
+        return get(data, "pageBuilder.getSettings.data.websiteUrl");
     };
 
     const getPageUrl = useCallback(
@@ -29,7 +29,7 @@ export function usePageBuilderSettings() {
             if (loading) {
                 return null;
             }
-            return getDomain() + page.url;
+            return getWebsiteUrl() + page.path;
         },
         [data, loading]
     );
@@ -39,13 +39,13 @@ export function usePageBuilderSettings() {
             if (loading) {
                 return null;
             }
-            return getPagePreviewUrlFunction({ page, domain: getDomain() });
+            return getPagePreviewUrlFunction({ page, websiteUrl: getWebsiteUrl() });
         },
         [data, loading]
     );
 
     return {
-        getDomain,
+        getWebsiteUrl,
         getPageUrl,
         getPagePreviewUrl,
         data: loading ? null : get(data, "pageBuilder.getSettings.data")

@@ -1,9 +1,9 @@
 import { trimEnd } from "lodash";
 
-export default ({ page: { url, id }, domain }) => {
+export default ({ page: { url, id }, websiteUrl }) => {
     let previewUrl = "";
 
-    if (!domain) {
+    if (!websiteUrl) {
         previewUrl += url;
         previewUrl += "?preview=" + id;
         return previewUrl;
@@ -12,7 +12,7 @@ export default ({ page: { url, id }, domain }) => {
     previewUrl = "//";
 
     // Removes protocol from the beginning of the URL.
-    previewUrl += domain.replace(/(^\w+:|^)\/\//, "");
+    previewUrl += websiteUrl.replace(/(^\w+:|^)\/\//, "");
 
     previewUrl = trimEnd(previewUrl, "/");
     previewUrl += url;

@@ -4,7 +4,7 @@ const fields = /* GraphQL */ `
     {
         id
         data {
-            domain
+            websiteUrl
             name
             logo {
                 id

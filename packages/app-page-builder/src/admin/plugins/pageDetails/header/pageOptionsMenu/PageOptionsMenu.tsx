@@ -14,7 +14,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
+import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 
@@ -30,8 +30,8 @@ const menuStyles = css({
 
 const PageOptionsMenu = props => {
     const { page } = props;
-    const { getPageUrl, getPagePreviewUrl, getDomain } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+    const { getPageUrl, getPagePreviewUrl, getWebsiteUrl } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
@@ -45,7 +45,7 @@ const PageOptionsMenu = props => {
         )
     });
 
-    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
 
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
@@ -55,7 +55,7 @@ const PageOptionsMenu = props => {
         if (isSiteRunning) {
             window.open(url, target, "noopener");
         } else {
-            showConfigureDomainDialog();
+            showConfigureWebsiteUrlDialog();
         }
     }, [url, isSiteRunning]);
 
