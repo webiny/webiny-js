@@ -102,7 +102,8 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
                             height: data
                         }
                     }
-                }
+                },
+                history: true
             })
         );
     };
