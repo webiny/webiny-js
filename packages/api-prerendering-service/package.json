@@ -1,0 +1,51 @@
+{
+  "name": "@webiny/api-prerendering-service",
+  "version": "4.14.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-prerendering-service"
+  },
+  "description": "A simple service for prerendering website URLs and saving them into a storage of choice.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "posthtml": "^0.15.0",
+    "posthtml-noopener": "^1.0.5",
+    "puppeteer": "^5.5.0",
+    "chrome-aws-lambda": "^5.5.0",
+    "puppeteer-core": "^5.5.0"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^5.4.2",
+    "@webiny/api-plugin-elastic-search-client": "^4.14.0",
+    "@webiny/api-file-manager": "^4.14.0",
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.8.3",
+    "jest-dynalite": "^3.0.0",
+    "@webiny/db": "^4.14.0",
+    "@shelf/jest-elasticsearch": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
+  },
+  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+}

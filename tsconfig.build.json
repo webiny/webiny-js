@@ -27,6 +27,8 @@
       "@webiny/api-form-builder": ["./packages/api-form-builder/src"],
       "@webiny/api-page-builder/*": ["./packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["./packages/api-page-builder/src"],
+      "@webiny/api-prerendering-service/*": ["./packages/api-prerendering-service/src/*"],
+      "@webiny/api-prerendering-service": ["./packages/api-prerendering-service/src"],
       "@webiny/api-i18n/*": ["./packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["./packages/api-i18n/src"],
       "@webiny/api-i18n-content/*": ["./packages/api-i18n-content/src/*"],
