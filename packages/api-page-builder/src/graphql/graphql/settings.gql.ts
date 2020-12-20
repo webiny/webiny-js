@@ -19,9 +19,17 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 image: PbFile
             }
 
+            type PbSettingsPrerenderingStorage {
+                name: String
+            }
+
+            type PbSettingsPrerenderingWebsite {
+                url: String
+            }
+
             type PbSettingsPrerendering {
-                handlerName: String
-                storageName: String
+                storage: PbSettingsPrerenderingStorageInput
+                website: PbSettingsPrerenderingWebsiteInput
             }
 
             type PbSettings {
@@ -53,12 +61,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 title: String
             }
 
+            input PbSettingsPrerenderingStorageInput {
+                name: String
+            }
+
+            input PbSettingsPrerenderingWebsiteInput {
+                url: String
+            }
 
             input PbSettingsPrerenderingInput {
-                handlerName: String
-                storageName: String
+                storage: PbSettingsPrerenderingStorageInput
+                website: PbSettingsPrerenderingWebsiteInput
             }
-            
+
             input PbSocialMediaInput {
                 facebook: String
                 twitter: String
