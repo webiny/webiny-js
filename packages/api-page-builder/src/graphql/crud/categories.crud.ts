@@ -35,27 +35,28 @@ const plugin: ContextPlugin<PbContext> = {
         const PK = () => `${getPKPrefix(context)}C`;
         const ES_DEFAULTS = () => defaults.es(context);
 
-        const categoriesDataLoader = new DataLoader<string, Category>(async slugs => {
-            const batch = db.batch();
-
-            for (let i = 0; i < slugs.length; i++) {
-                batch.read({
-                    ...defaults.db,
-                    query: { PK: PK(), SK: slugs[i] }
-                });
-            }
-
-            const results = await batch.execute();
-            return results.map(([response]) => {
-                return response[0];
-            });
-        });
-
         const { getPermission } = context.security;
 
         context.pageBuilder = {
             ...context.pageBuilder,
             categories: {
+                dataLoaders: {
+                    get: new DataLoader(async slugs => {
+                        const batch = db.batch();
+
+                        for (let i = 0; i < slugs.length; i++) {
+                            batch.read({
+                                ...defaults.db,
+                                query: { PK: PK(), SK: slugs[i] }
+                            });
+                        }
+
+                        const results = await batch.execute();
+                        return results.map(([response]) => {
+                            return response[0];
+                        });
+                    })
+                },
                 async get(slug: string) {
                     await context.i18nContent.checkI18NContentPermission();
 
@@ -77,7 +78,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotAuthorizedError();
                     }
 
-                    const category = await categoriesDataLoader.load(slug);
+                    const category = await this.dataLoaders.get.load(slug);
 
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, category);
@@ -122,7 +123,7 @@ const plugin: ContextPlugin<PbContext> = {
                 async create(data) {
                     await checkBasePermissions(context, PERMISSION_NAME, { rwd: "w" });
 
-                    const existingCategory = await categoriesDataLoader.load(data.slug);
+                    const existingCategory = await this.dataLoaders.get.load(data.slug);
                     if (existingCategory) {
                         throw new NotFoundError(
                             `Category with slug "${data.slug}" already exists.`
