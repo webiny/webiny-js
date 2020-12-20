@@ -89,12 +89,12 @@ const plugin: ContextPlugin<PbContext> = {
                     auth !== false && (await checkBasePermissions(context));
 
                     const current = await this.get({ auth });
-                    const prevDomain = current.domain;
+                    const prevWebsiteUrl = current.siteUrl;
                     const settings = new SettingsModel().populate(current).populate(next);
                     await settings.validate();
 
                     const data = await settings.toJSON();
-                    const nextDomain = data.domain;
+                    const nextWebsiteUrl = data.siteUrl;
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, data);
 
                     await db.update({
@@ -103,19 +103,19 @@ const plugin: ContextPlugin<PbContext> = {
                         data
                     });
 
-                    // Update domain info - we must know to which tenant given domain is linked.
+                    // Update siteUrl info - we must know to which tenant given siteUrl is linked.
                     // Important for serving pages later.
-                    if (prevDomain !== nextDomain) {
-                        if (prevDomain) {
-                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevDomain } });
+                    if (prevWebsiteUrl !== nextWebsiteUrl) {
+                        if (prevWebsiteUrl) {
+                            await db.delete({ query: { PK: "PB#DOMAIN#TENANT", SK: prevWebsiteUrl } });
                         }
 
                         const { security } = context;
                         await db.create({
                             data: {
                                 PK: "PB#DOMAIN#TENANT",
-                                SK: nextDomain,
-                                domain: nextDomain,
+                                SK: nextWebsiteUrl,
+                                siteUrl: nextWebsiteUrl,
                                 tenant: security.getTenant()
                             }
                         });
