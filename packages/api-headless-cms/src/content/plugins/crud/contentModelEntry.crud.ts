@@ -70,16 +70,17 @@ export default (): ContextPlugin<CmsContext> => ({
             get: async (model, args) => {
                 // TODO: implement the same way as the "list" using where/sort parameters, but limit to 1
 
-                // const [response] = await db.read<CmsContentModelEntryType>({
-                //     ...utils.defaults.db,
-                //     query: { PK: utils.createContentModelEntryPk(context), SK: id },
-                //     limit: 1
-                // });
-                // if (!response || response.length === 0) {
-                //     throw new Error(`CMS Content model "${id}" not found.`);
-                // }
-                // return response.find(() => true);
-                return null;
+                // NOTE: this is a temporary implementation to get tests to work
+                const [[entry]] = await db.read<CmsContentModelEntryType>({
+                    ...utils.defaults.db,
+                    query: { PK: PK_ENTRY(), SK: args.where.id }
+                });
+
+                if (!entry) {
+                    throw new NotFoundError(`Entry not found!`);
+                }
+
+                return entry;
             },
             list: async (model: CmsContentModelType, args = {}) => {
                 const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
@@ -118,6 +119,106 @@ export default (): ContextPlugin<CmsContext> => ({
                         items.length > 0
                             ? utils.encodeElasticSearchCursor(hits[items.length - 1].sort)
                             : null
+                };
+
+                return [items, meta];
+            },
+            listLatest: async function(model) {
+                const permission = await checkPermissions({ rwd: "r" });
+                const locale = context.cms.getLocale();
+
+                const must: any = [
+                    { term: { "__type.keyword": TYPE_ENTRY_LATEST } },
+                    { term: { "modelId.keyword": model.modelId } },
+                    { term: { "locale.keyword": locale.code } }
+                ];
+
+                // Only get records which are owned by current user.
+                if (permission.own === true) {
+                    const identity = context.security.getIdentity();
+                    must.push({
+                        term: { "ownedBy.id.keyword": identity.id }
+                    });
+                }
+
+                const body = {
+                    query: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        constant_score: {
+                            filter: { bool: { must } }
+                        }
+                    },
+                    sort: [
+                        {
+                            savedOn: {
+                                order: "desc",
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                unmapped_type: "date"
+                            }
+                        }
+                    ],
+                    size: 1000
+                };
+
+                // Get "latest" form revisions from Elasticsearch.
+                const response = await elasticSearch.search({
+                    ...utils.defaults.es(context),
+                    body
+                });
+
+                const { hits, total } = response.body.hits;
+                const items = hits.map(item => item._source);
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: total.value,
+                    cursor: null
+                };
+
+                return [items, meta];
+            },
+            listPublished: async function(model) {
+                await checkPermissions({ rwd: "r" });
+                const locale = context.cms.getLocale();
+
+                const must: any = [
+                    { term: { "__type.keyword": TYPE_ENTRY_PUBLISHED } },
+                    { term: { "modelId.keyword": model.modelId } },
+                    { term: { "locale.keyword": locale.code } }
+                ];
+
+                const body = {
+                    query: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        constant_score: {
+                            filter: { bool: { must } }
+                        }
+                    },
+                    sort: [
+                        {
+                            savedOn: {
+                                order: "desc",
+                                // eslint-disable-next-line @typescript-eslint/camelcase
+                                unmapped_type: "date"
+                            }
+                        }
+                    ],
+                    size: 1000
+                };
+
+                // Get "published" form revisions from Elasticsearch.
+                const response = await elasticSearch.search({
+                    ...utils.defaults.es(context),
+                    body
+                });
+
+                const { hits, total } = response.body.hits;
+                const items = hits.map(item => item._source);
+
+                const meta = {
+                    hasMoreItems: false,
+                    totalCount: total.value,
+                    cursor: null
                 };
 
                 return [items, meta];
@@ -429,8 +530,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (esOperations.length) {
                     await elasticSearch.bulk({ body: esOperations });
                 }
-
-                return true;
             },
             async listRevisions(id) {
                 const [uniqueId] = id.split("#");

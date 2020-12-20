@@ -7,12 +7,12 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolvers/resolveGet";
 import { resolveList } from "../utils/resolvers/resolveList";
-import { resolveCreate } from "../utils/resolvers/manage/resolveCreate";
-import { resolveUpdate } from "../utils/resolvers/manage/resolveUpdate";
-import { resolveDelete } from "../utils/resolvers/manage/resolveDelete";
-import { resolvePublish } from "../utils/resolvers/manage/resolvePublish";
-import { resolveUnpublish } from "../utils/resolvers/manage/resolveUnpublish";
-import { resolveCreateFrom } from "../utils/resolvers/manage/resolveCreateFrom";
+import { resolveCreate } from "../utils/resolvers/resolveCreate";
+import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
+import { resolveDelete } from "../utils/resolvers/resolveDelete";
+import { resolvePublish } from "../utils/resolvers/resolvePublish";
+import { resolveUnpublish } from "../utils/resolvers/resolveUnpublish";
+import { resolveCreateFrom } from "../utils/resolvers/resolveCreateFrom";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 // const createPermissionChecker = (checker, model) => {

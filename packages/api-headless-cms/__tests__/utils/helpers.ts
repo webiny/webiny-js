@@ -60,9 +60,14 @@ export const getModelCreateInputObject = model => {
     ]);
 };
 
-export const until = async (execute, until, options = { tries: 5, wait: 300 }) => {
-    const tries = options.tries ?? 5;
-    const wait = options.wait ?? 300;
+type UntilOptions = {
+    name?: string;
+    tries?: number;
+    wait?: number;
+};
+
+export const until = async (execute, until, options: UntilOptions = {}) => {
+    const { name = "NO_NAME", tries = 5, wait = 300 } = options;
 
     let result;
     let triesCount = 0;
@@ -91,7 +96,7 @@ export const until = async (execute, until, options = { tries: 5, wait: 300 }) =
     }
 
     throw new Error(
-        `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+        `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
             result,
             null,
             2

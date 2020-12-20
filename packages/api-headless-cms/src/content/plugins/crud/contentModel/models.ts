@@ -1,8 +1,7 @@
 import { validation } from "@webiny/validation";
 import { pipe, object } from "@webiny/commodo";
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
-import idValidation from "@webiny/api-headless-cms/content/plugins/models/ContentModel/idValidation";
-import { any } from "@webiny/api-headless-cms/content/plugins/models/anyField";
+import idValidation from "./idValidation";
 
 const requiredShortString = validation.create("required,maxLength:255");
 const shortString = validation.create("maxLength:255");
@@ -33,7 +32,14 @@ export const ContentModelFieldModel = withFields({
         value: {},
         instanceOf: withFields({
             enabled: boolean(),
-            values: any({ list: true })
+            values: fields({
+                value: [],
+                list: true,
+                instanceOf: withFields({
+                    label: string(),
+                    value: string()
+                })
+            })
         })()
     }),
     renderer: fields({ instanceOf: RendererModel, validation: shortString }),

@@ -1,12 +1,22 @@
 import { ListResponse, ListErrorResponse } from "@webiny/handler-graphql/responses";
-import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
-import findEntries from "../findEntries";
+import {
+    CmsContentModelEntryMetaType,
+    CmsContentModelEntryResolverFactoryType as ResolverFactory,
+    CmsContentModelEntryType
+} from "@webiny/api-headless-cms/types";
 
-export const resolveList: ResolverFactory = ({ model }) => async (root, args, context, info) => {
+export const resolveList: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
     try {
-        const { entries, meta } = await findEntries({ model, args, context, info });
-        return new ListResponse(entries, meta);
-    } catch (err) {
-        return new ListErrorResponse({ code: err.code || "RESOLVE_LIST", message: err.message });
+        let response: [CmsContentModelEntryType[], CmsContentModelEntryMetaType];
+
+        if (cms.READ) {
+            response = await cms.entries.listPublished(model);
+        } else {
+            response = await cms.entries.listLatest(model);
+        }
+
+        return new ListResponse(...response);
+    } catch (e) {
+        return new ListErrorResponse(e);
     }
 };

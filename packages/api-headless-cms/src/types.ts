@@ -85,7 +85,10 @@ export type CmsContentModelType = {
     id: string;
     name: string;
     modelId: string;
-    group: string;
+    group: {
+        id: string;
+        name: string;
+    };
     description?: string;
     createdOn: Date;
     savedOn: Date;
@@ -415,6 +418,12 @@ export type CmsContentModelEntryListArgsType = {
     after?: string;
 };
 
+export type CmsContentModelEntryMetaType = {
+    cursor: string;
+    hasMoreItems: boolean;
+    totalCount: number;
+};
+
 export type CmsContentModelEntryContextType = {
     get: (
         model: CmsContentModelType,
@@ -424,6 +433,12 @@ export type CmsContentModelEntryContextType = {
         model: CmsContentModelType,
         args?: CmsContentModelEntryListArgsType
     ) => Promise<CmsContentModelEntryType[]>;
+    listLatest: (
+        model: CmsContentModelType
+    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    listPublished: (
+        model: CmsContentModelType
+    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     create: (
         model: CmsContentModelType,
         data: Record<string, any>
@@ -437,7 +452,7 @@ export type CmsContentModelEntryContextType = {
         id: string,
         data: Record<string, any>
     ) => Promise<CmsContentModelEntryType>;
-    delete: (model: CmsContentModelType, id: string) => Promise<boolean>;
+    delete: (model: CmsContentModelType, id: string) => Promise<void>;
     publish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
     unpublish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
     requestReview(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;

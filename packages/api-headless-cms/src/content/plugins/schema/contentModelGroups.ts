@@ -72,7 +72,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             CmsContentModelGroup: {
                 contentModels: async (group, args, context) => {
                     const models = await context.cms.models.list();
-                    return models.filter(m => m.group === group.id);
+                    return models.filter(m => m.group.id === group.id);
                 },
                 totalContentModels: async (group, args, context) => {
                     const models = await context.cms.models.list();

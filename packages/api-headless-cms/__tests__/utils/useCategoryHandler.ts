@@ -40,7 +40,7 @@ const getCategoryQuery = /* GraphQL */ `
     }
 `;
 
-const listCategoriesQuery = /* GraphQL */ `
+const listLatestCategoriesQuery = /* GraphQL */ `
     query ListCategories(
         $where: CategoryListWhereInput
         $sort: [CategoryListSorter]
@@ -50,6 +50,31 @@ const listCategoriesQuery = /* GraphQL */ `
         listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
             data {
                 ${categoryFields}
+            }
+            meta {
+                cursor
+                hasMoreItems
+                totalCount
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const listPublishedCategoriesQuery = /* GraphQL */ `
+    query ListCategories(
+        $where: CategoryListWhereInput
+        $sort: [CategoryListSorter]
+        $limit: Int
+        $after: String
+    ) {
+        listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
+            data {
+                id
+                createdOn
+                savedOn
+                title
+                slug
             }
             meta {
                 cursor
@@ -95,9 +120,20 @@ const updateCategoryMutation = /* GraphQL */ `
 `;
 
 const deleteCategoryMutation = /* GraphQL */ `
-    mutation DeleteCategory($id: ID!) {
-        deleteCategory(id: $id) {
+    mutation DeleteCategory($revision: ID!) {
+        deleteCategory(revision: $revision) {
             data
+            ${errorFields}
+        }
+    }
+`;
+
+const publishCategoryMutation = /* GraphQL */ `
+    mutation PublishCategory($revision: ID!) {
+        publishCategory(revision: $revision) {
+            data {
+                ${categoryFields}
+            }
             ${errorFields}
         }
     }
@@ -113,9 +149,14 @@ export const useCategoryHandler = options => {
                 body: { query: getCategoryQuery, variables }
             });
         },
-        async listCategories(variables = {}) {
+        async listLatestCategories(variables = {}) {
             return await contentHandler.invoke({
-                body: { query: listCategoriesQuery, variables }
+                body: { query: listLatestCategoriesQuery, variables }
+            });
+        },
+        async listPublishedCategories(variables = {}) {
+            return await contentHandler.invoke({
+                body: { query: listPublishedCategoriesQuery, variables }
             });
         },
         async createCategory(variables) {
@@ -140,6 +181,14 @@ export const useCategoryHandler = options => {
             return await contentHandler.invoke({
                 body: {
                     query: deleteCategoryMutation,
+                    variables
+                }
+            });
+        },
+        async publishCategory(variables) {
+            return await contentHandler.invoke({
+                body: {
+                    query: publishCategoryMutation,
                     variables
                 }
             });
