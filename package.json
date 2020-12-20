@@ -9,7 +9,7 @@
       "api/code/graphqlPlayground",
       "api/code/graphql",
       "api/code/fileManager/*",
-      "api/code/pageBuilder/*"
+      "api/code/prerenderingService/*"
     ]
   },
   "contributors": [

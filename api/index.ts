@@ -5,14 +5,15 @@ import ApiGateway from "./stack/apiGateway";
 import Cloudfront from "./stack/cloudfront";
 import ElasticSearch from "./stack/elasticSearch";
 import FileManager from "./stack/fileManager";
-import PageBuilder from "./stack/pageBuilder";
+import PrerenderingService from "./stack/prerenderingService";
 
 const dynamoDb = new DynamoDB();
 const cognito = new Cognito();
 const elasticSearch = new ElasticSearch();
 const fileManager = new FileManager();
 
-const pageBuilder = new PageBuilder();
+const prerenderingService = new PrerenderingService({ dbTable: dynamoDb.table });
+
 const api = new Graphql({
     dynamoDbTable: dynamoDb.table,
     env: {
@@ -21,7 +22,7 @@ const api = new Graphql({
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DEBUG: String(process.env.DEBUG),
         S3_BUCKET: fileManager.bucket.id,
-        PB_RENDER_FUNCTION: pageBuilder.functions.render.arn
+        PB_RENDER_FUNCTION: prerenderingService.functions.render.arn
     }
 });
 
