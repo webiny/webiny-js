@@ -1,27 +1,8 @@
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { CmsSettingsType, DbItemTypes } from "@webiny/api-headless-cms/types";
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
-import { createSettingsTestPartitionKey } from "../utils/helpers";
-
-const SETTINGS_SECONDARY_KEY = "settings";
-
-const insertCmsSettings = async (documentClient: DocumentClient, settings: CmsSettingsType) => {
-    await documentClient
-        .put({
-            TableName: "HeadlessCms",
-            Item: {
-                PK: createSettingsTestPartitionKey(),
-                SK: SETTINGS_SECONDARY_KEY,
-                TYPE: DbItemTypes.CMS_SETTINGS,
-                ...settings
-            }
-        })
-        .promise();
-};
 
 describe("Settings crud test", () => {
-    const { isInstalledQuery, installMutation, documentClient } = useAdminGqlHandler();
-
+    const { isInstalledQuery, installMutation } = useAdminGqlHandler();
+    
     test("cms is not installed", async () => {
         const [response] = await isInstalledQuery();
         expect(response).toEqual({
@@ -34,10 +15,7 @@ describe("Settings crud test", () => {
                 }
             }
         });
-        await insertCmsSettings(documentClient, {
-            isInstalled: false,
-            contentModelLastChange: new Date()
-        });
+
         const [afterInsertResponse] = await isInstalledQuery();
         expect(afterInsertResponse).toEqual({
             data: {
@@ -52,10 +30,7 @@ describe("Settings crud test", () => {
     });
 
     test("cms is installed", async () => {
-        await insertCmsSettings(documentClient, {
-            isInstalled: true,
-            contentModelLastChange: new Date()
-        });
+        await installMutation();
 
         const [response] = await isInstalledQuery();
         expect(response).toEqual({
@@ -71,11 +46,8 @@ describe("Settings crud test", () => {
     });
 
     test("cms is already installed", async () => {
-        await insertCmsSettings(documentClient, {
-            isInstalled: true,
-            contentModelLastChange: new Date()
-        });
-
+        await installMutation();
+        
         const [response] = await installMutation();
         expect(response).toEqual({
             data: {

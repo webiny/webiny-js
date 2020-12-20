@@ -1,3 +1,5 @@
+import { revisionsComment } from "./snippets";
+
 export default /* GraphQL */ `
     """
     Products being sold in our webshop
@@ -16,14 +18,12 @@ export default /* GraphQL */ `
     }
 
     type ProductMeta {
-        model: String
-        parent: ID
+        modelId: String
         version: Int
-        latestVersion: Boolean
         locked: Boolean
-        published: Boolean
         publishedOn: DateTime
         status: String
+        ${revisionsComment}
         revisions: [Product]
         title: String
     }
@@ -90,24 +90,6 @@ export default /* GraphQL */ `
         availableOn_gte: String
     }
 
-    input ProductUpdateWhereInput {
-        id: ID
-        title: String
-        price: Number
-        inStock: Boolean
-        itemsInStock: Number
-        availableOn: String
-    }
-
-    input ProductDeleteWhereInput {
-        id: ID
-        title: String
-        price: Number
-        inStock: Boolean
-        itemsInStock: Number
-        availableOn: String
-    }
-
     type ProductResponse {
         data: Product
         error: CmsError
@@ -150,9 +132,9 @@ export default /* GraphQL */ `
 
         createProductFrom(revision: ID!, data: ProductInput): ProductResponse
 
-        updateProduct(where: ProductUpdateWhereInput!, data: ProductInput!): ProductResponse
+        updateProduct(revision: ID!, data: ProductInput!): ProductResponse
 
-        deleteProduct(where: ProductDeleteWhereInput!): CmsDeleteResponse
+        deleteProduct(revision: ID!): CmsDeleteResponse
 
         publishProduct(revision: ID!): ProductResponse
 

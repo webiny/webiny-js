@@ -1,10 +1,12 @@
 import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin } from "@webiny/plugins/types";
-import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
+import { I18NLocale } from "@webiny/api-i18n/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 export type CmsValuesContext = {
     cms: {
@@ -30,7 +32,7 @@ export type CmsValuesContext = {
  * This combines all contexts used in the CMS into a single type.
  */
 export type CmsContext = BaseContext<
-    I18NContext,
+    I18NContentContext,
     TenancyContext,
     CmsValuesContext,
     CmsCrudContextType,
@@ -196,7 +198,7 @@ export type CmsFieldTypePlugins = {
     [key: string]: CmsModelFieldToGraphQLPlugin;
 };
 
-type CreatedByType = {
+export type CreatedByType = {
     id: string;
     displayName: string;
     type: string;
@@ -246,15 +248,12 @@ type CmsContentModelGroupListArgsType = {
 export type CmsContentModelGroupContextType = {
     get: (id: string) => Promise<CmsContentModelGroupType | null>;
     list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
-    create: (
-        data: CmsContentModelGroupCreateInputType,
-        createdBy: CreatedByType
-    ) => Promise<CmsContentModelGroupType>;
+    create: (data: CmsContentModelGroupCreateInputType) => Promise<CmsContentModelGroupType>;
     update: (
         id: string,
         data: CmsContentModelGroupUpdateInputType
     ) => Promise<CmsContentModelGroupType>;
-    delete: (id: string) => Promise<void>;
+    delete: (id: string) => Promise<boolean>;
 };
 
 export type CmsContentModelFieldValidationType = {
@@ -301,10 +300,7 @@ type CmsContentModelListArgsType = {
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
     list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
-    create: (
-        data: CmsContentModelCreateInputType,
-        createdBy: CreatedByType
-    ) => Promise<CmsContentModelType>;
+    create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
     update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
     delete: (id: string) => Promise<void>;
     getManager: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
@@ -334,21 +330,25 @@ export type CmsContentModelFieldInputType = {
     settings?: Record<string, any>;
 };
 
+type CmsContentModelEntryStatusType =
+    | "published"
+    | "unpublished"
+    | "reviewRequested"
+    | "changesRequested"
+    | "draft";
+
 export type CmsContentModelEntryType = {
     id: string;
     createdBy: CreatedByType;
-    createdOn: Date;
-    savedOn: Date;
+    ownedBy: CreatedByType;
+    createdOn: string;
+    savedOn: string;
     modelId: string;
-    values: Record<string, any>;
-};
-
-export type CmsContentModelEntryCreateInputType = {
-    modelId: string;
-    values: Record<string, any>;
-};
-
-export type CmsContentModelEntryUpdateInputType = {
+    locale: string;
+    publishedOn?: string;
+    version: number;
+    locked: boolean;
+    status: CmsContentModelEntryStatusType;
     values: Record<string, any>;
 };
 
@@ -360,69 +360,89 @@ export type CmsContentModelEntryListWhereType = {
     id_not?: string;
     id_not_in?: string[];
     // createdOn
-    createdOn?: Date;
-    createdOn_in?: Date[];
-    createdOn_not?: Date;
-    createdOn_not_in?: Date[];
-    createdOn_between: [Date, Date];
-    createdOn_not_between: [Date, Date];
-    createdOn_lt?: Date;
-    createdOn_lte?: Date;
-    createdOn_gt?: Date;
-    createdOn_gte?: Date;
-    // savedOn
-    savedOn?: Date;
-    savedOn_in?: Date[];
-    savedOn_not?: Date;
-    savedOn_not_in?: Date[];
-    savedOn_between: [Date, Date];
-    savedOn_not_between: [Date, Date];
-    savedOn_lt?: Date;
-    savedOn_lte?: Date;
-    savedOn_gt?: Date;
-    savedOn_gte?: Date;
-    // createdBy.id
-    createdById?: string;
-    createdById_in?: string[];
-    createdById_not?: string;
-    createdById_not_in?: string[];
-    // createdBy.type
-    createdByType?: string;
-    createdByType_in?: string[];
-    createdByType_not?: string;
-    createdByType_not_in?: string[];
-    // modelId
-    modelId?: string;
-    modelId_in?: string[];
-    modelId_not?: string;
-    modelId_not_in?: string[];
-    modelId_contains?: string;
-    modelId_not_contains?: string;
+    // createdOn?: Date;
+    // createdOn_in?: Date[];
+    // createdOn_not?: Date;
+    // createdOn_not_in?: Date[];
+    // createdOn_between: [Date, Date];
+    // createdOn_not_between: [Date, Date];
+    // createdOn_lt?: Date;
+    // createdOn_lte?: Date;
+    // createdOn_gt?: Date;
+    // createdOn_gte?: Date;
+    // // savedOn
+    // savedOn?: Date;
+    // savedOn_in?: Date[];
+    // savedOn_not?: Date;
+    // savedOn_not_in?: Date[];
+    // savedOn_between?: [Date, Date];
+    // savedOn_not_between?: [Date, Date];
+    // savedOn_lt?: Date;
+    // savedOn_lte?: Date;
+    // savedOn_gt?: Date;
+    // savedOn_gte?: Date;
+    // // createdBy.id
+    // createdById?: string;
+    // createdById_in?: string[];
+    // createdById_not?: string;
+    // createdById_not_in?: string[];
+    // // createdBy.type
+    // createdByType?: string;
+    // createdByType_in?: string[];
+    // createdByType_not?: string;
+    // createdByType_not_in?: string[];
+    // // modelId
+    // modelId?: string;
+    // modelId_in?: string[];
+    // modelId_not?: string;
+    // modelId_not_in?: string[];
+    // modelId_contains?: string;
+    // modelId_not_contains?: string;
     [key: string]: any;
 };
+
 export type CmsContentModelEntryListSortType = string[];
+
+export type CmsContentModelEntryGetArgsType = {
+    where?: CmsContentModelEntryListWhereType;
+    sort?: CmsContentModelEntryListSortType;
+};
+
 export type CmsContentModelEntryListArgsType = {
     where?: CmsContentModelEntryListWhereType;
     sort?: CmsContentModelEntryListSortType;
     limit?: number;
     after?: string;
 };
+
 export type CmsContentModelEntryContextType = {
-    get: (id: string) => Promise<CmsContentModelEntryType | null>;
+    get: (
+        model: CmsContentModelType,
+        args?: CmsContentModelEntryGetArgsType
+    ) => Promise<CmsContentModelEntryType | null>;
     list: (
         model: CmsContentModelType,
         args?: CmsContentModelEntryListArgsType
     ) => Promise<CmsContentModelEntryType[]>;
     create: (
-        contentModelId: string,
-        data: CmsContentModelEntryCreateInputType,
-        createdBy: CreatedByType
+        model: CmsContentModelType,
+        data: Record<string, any>
+    ) => Promise<CmsContentModelEntryType>;
+    createRevisionFrom: (
+        model: CmsContentModelType,
+        id: string
     ) => Promise<CmsContentModelEntryType>;
     update: (
+        model: CmsContentModelType,
         id: string,
-        data: CmsContentModelEntryUpdateInputType
+        data: Record<string, any>
     ) => Promise<CmsContentModelEntryType>;
-    delete: (id: string) => Promise<void>;
+    delete: (model: CmsContentModelType, id: string) => Promise<boolean>;
+    publish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
+    unpublish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
+    requestReview(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
+    requestChanges(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
+    listRevisions(id: string): Promise<CmsContentModelEntryType[]>;
 };
 
 export type CmsCrudContextType = {
@@ -431,7 +451,7 @@ export type CmsCrudContextType = {
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
         getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
-        modelEntries: CmsContentModelEntryContextType;
+        entries: CmsContentModelEntryContextType;
     };
 };
 
@@ -535,3 +555,23 @@ export type ElasticSearchQueryBuilderPlugin = Plugin & {
     targetOperation: ElasticSearchQueryOperations;
     apply: (query: ElasticSearchQueryType, args: ElasticSearchQueryBuilderArgsPluginType) => void;
 };
+
+// Permission types
+
+export type CmsSettingsPermissionType = SecurityPermission;
+
+export type CmsContentModelPermissionType = SecurityPermission<{
+    own: boolean;
+    rwd: string;
+}>;
+
+export type CmsContentModelGroupPermissionType = SecurityPermission<{
+    own: boolean;
+    rwd: string;
+}>;
+
+export type CmsContentModelEntryPermissionType = SecurityPermission<{
+    own: boolean;
+    rwd: string;
+    rcpu: string;
+}>;

@@ -9,7 +9,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { SecurityIdentity } from "@webiny/api-security";
 import { Client } from "@elastic/elasticsearch";
-import { createAuthenticate, createGetPermissions, PermissionsArgType } from "./helpers";
+import { createAuthenticate, createGetPermissions, until, PermissionsArgType } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -35,7 +35,7 @@ export type GQLHandlerCallableArgsType = {
     path: string;
 };
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9201";
+const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     const tenant = { id: "root", name: "Root", parent: null };
@@ -125,6 +125,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
     };
 
     return {
+        until,
         elasticSearch: new Client({
             node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),

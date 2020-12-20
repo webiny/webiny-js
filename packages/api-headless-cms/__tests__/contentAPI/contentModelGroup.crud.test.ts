@@ -162,7 +162,7 @@ describe("Content model group crud test", () => {
                 getContentModelGroup: {
                     data: null,
                     error: {
-                        message: `CMS Content model group "nonExistingId" not found.`,
+                        message: `Content model group "nonExistingId" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -181,7 +181,7 @@ describe("Content model group crud test", () => {
                 updateContentModelGroup: {
                     data: null,
                     error: {
-                        message: `CMS Content model group "nonExistingIdUpdate" not found.`,
+                        message: `Content model group "nonExistingIdUpdate" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -199,7 +199,7 @@ describe("Content model group crud test", () => {
                 deleteContentModelGroup: {
                     data: null,
                     error: {
-                        message: `CMS Content model group "nonExistingIdDelete" not found.`,
+                        message: `Content model group "nonExistingIdDelete" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -222,8 +222,8 @@ describe("Content model group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                        data: null
+                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        data: expect.any(Object)
                     }
                 }
             }
@@ -243,8 +243,8 @@ describe("Content model group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                        data: null
+                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        data: expect.any(Object)
                     }
                 }
             }
@@ -263,8 +263,8 @@ describe("Content model group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
-                        data: null
+                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        data: expect.any(Object)
                     }
                 }
             }
@@ -295,7 +295,7 @@ describe("Content model group crud test", () => {
                     data: null,
                     error: {
                         message: `Content model group with the slug "content-model-group" already exists.`,
-                        code: "CREATE_CONTENT_MODEL_GROUP_FAILED",
+                        code: "SLUG_ALREADY_EXISTS",
                         data: null
                     }
                 }

@@ -20,12 +20,20 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { documentClient } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroupType;
 
     beforeEach(async () => {
-        contentModelGroup = await helpers.createContentModelGroup(documentClient);
+        const [createCMG] = await createContentModelGroupMutation({
+            data: {
+                name: "Group",
+                slug: "group",
+                icon: "ico/ico",
+                description: "description"
+            }
+        });
+        contentModelGroup = createCMG.data.createContentModelGroup.data;
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -192,7 +200,7 @@ describe("content model test", () => {
                 getContentModel: {
                     data: null,
                     error: {
-                        message: `CMS Content model "${id}" not found.`,
+                        message: `Content model "${id}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -218,7 +226,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        message: `CMS Content model "${id}" not found.`,
+                        message: `Content model "${id}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -240,7 +248,7 @@ describe("content model test", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        message: `CMS Content model "${id}" not found.`,
+                        message: `Content model "${id}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -375,14 +383,13 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
-                        code: "UPDATE_CONTENT_MODEL_FAILED",
-                        message: `There is no field "nonExistingTitleFieldId" in the current fields, please check.`,
-                        data: null
+                        code: "VALIDATION_ERROR",
+                        message: `Field "nonExistingTitleFieldId" does not exist in the model!`
                     }
                 }
             }

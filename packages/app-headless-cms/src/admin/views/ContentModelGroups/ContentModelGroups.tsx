@@ -14,9 +14,7 @@ import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
 function ContentModelGroups() {
-    const {
-        environments: { apolloClient }
-    } = useCms();
+    const { apolloClient } = useCms();
 
     return (
         <CrudProvider

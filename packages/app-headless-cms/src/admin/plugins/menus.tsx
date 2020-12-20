@@ -36,20 +36,5 @@ export default [
         render(props) {
             return <CmsMenu {...props} />;
         }
-    } as AdminMenuPlugin,
-    {
-        type: "admin-menu-settings",
-        name: "menu-settings-cms-environments",
-        render({ Section, Item }) {
-            return (
-                <SecureView permission={"cms.settings"}>
-                    <Section label={t`Headless CMS`}>
-                        <Item label={t`Environments`} path={"/settings/cms/environments"} />
-                        <Item label={t`Aliases`} path={"/settings/cms/environments/aliases"} />
-                        <Item label={t`Access Tokens`} path={"/settings/cms/accessTokens"} />
-                    </Section>
-                </SecureView>
-            );
-        }
-    } as AdminMenuSettingsPlugin
+    } as AdminMenuPlugin
 ];

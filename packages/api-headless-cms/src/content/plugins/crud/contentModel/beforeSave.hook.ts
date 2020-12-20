@@ -1,4 +1,5 @@
 import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
+import Error from "@webiny/error";
 
 export const beforeSaveHook = async (context: CmsContext, model: CmsContentModelType) => {
     let { titleFieldId } = model;
@@ -7,9 +8,7 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
     if (titleFieldId) {
         const target = fields.find(f => f.fieldId === titleFieldId);
         if (!target) {
-            throw new Error(
-                `There is no field "${titleFieldId}" in the current fields, please check.`
-            );
+            throw new Error(`Field "${titleFieldId}" does not exist in the model!`, "VALIDATION_ERROR");
         }
     }
 

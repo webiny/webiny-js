@@ -41,14 +41,15 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }
 
         type ${mTypeName}Meta {
-            model: String
-            parent: ID
+            modelId: String
             version: Int
-            latestVersion: Boolean
             locked: Boolean
-            published: Boolean
             publishedOn: DateTime
             status: String
+            """
+            CAUTION: this field is resolved by making an extra query to DB. 
+            RECOMMENDATION: Use it only with "get" queries (avoid in "list") 
+            """
             revisions: [${mTypeName}]
             title: String
         }
@@ -67,16 +68,6 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         ${listFilterFieldsRender &&
             `input ${mTypeName}ListWhereInput {
             ${listFilterFieldsRender}
-        }`}
-
-        ${getFilterFieldsRender &&
-            `input ${mTypeName}UpdateWhereInput {
-            ${getFilterFieldsRender}
-        }`}
-
-              ${getFilterFieldsRender &&
-                  `input ${mTypeName}DeleteWhereInput {
-            ${getFilterFieldsRender}
         }`}
 
         type ${mTypeName}Response {
@@ -111,9 +102,9 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
             create${typeName}From(revision: ID!, data: ${mTypeName}Input): ${mTypeName}Response
 
-            update${typeName}(where: ${mTypeName}UpdateWhereInput!, data: ${mTypeName}Input!): ${mTypeName}Response
+            update${typeName}(revision: ID!, data: ${mTypeName}Input!): ${mTypeName}Response
 
-            delete${typeName}(where: ${mTypeName}DeleteWhereInput!): CmsDeleteResponse
+            delete${typeName}(revision: ID!): CmsDeleteResponse
 
             publish${typeName}(revision: ID!): ${mTypeName}Response
 

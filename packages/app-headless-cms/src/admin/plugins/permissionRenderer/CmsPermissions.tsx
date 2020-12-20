@@ -13,16 +13,16 @@ import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./components/CustomSection";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
-import { EnvironmentPermission } from "./components/EnvironmentPermission";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
+
 // Here "manage" represents the "MANAGE API"
 const CMS_MANAGE = "cms.manage";
 const CMS_MANAGE_FULL_ACCESS = "cms.manage.*";
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries", "environments"];
+const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries"];
 
 export const CMSPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
@@ -65,15 +65,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                     newValue.push(permission);
                 }
             });
-
-            // Settings second.
-            if (data.aliasesSettingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: "cms.settings.aliases" });
-            }
-            if (data.environmentsSettingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: "cms.settings.environments" });
-            }
-
+            
             onChange(newValue);
         },
         [parent.id, value]
@@ -134,20 +126,6 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
             Object.assign(returnData, data);
         });
 
-        // Finally, let's prepare data for Headless CMS_MANAGE settings.
-        const hasAliasesSettingsAccess = permissions.find(
-            item => item.name === `${CMS_MANAGE}.settings.aliases`
-        );
-        if (hasAliasesSettingsAccess) {
-            returnData.aliasesSettingsAccessLevel = FULL_ACCESS;
-        }
-        const hasEnvironmentsSettingsAccess = permissions.find(
-            item => item.name === `${CMS_MANAGE}.settings.environments`
-        );
-        if (hasEnvironmentsSettingsAccess) {
-            returnData.environmentsSettingsAccessLevel = FULL_ACCESS;
-        }
-
         return returnData;
     }, [parent.id]);
 
@@ -189,56 +167,6 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                                 entity={"contentEntries"}
                                 title={"Content Entries"}
                             />
-                            <EnvironmentPermission
-                                data={data}
-                                Bind={Bind}
-                                entity={"environments"}
-                            />
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>{t`Settings`}</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage environments`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"environmentsSettingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage aliases`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"aliasesSettingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
                         </Fragment>
                     )}
                 </Fragment>

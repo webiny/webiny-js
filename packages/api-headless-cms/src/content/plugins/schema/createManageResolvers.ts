@@ -80,12 +80,39 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`unpublish${typeName}`]: resolveUnpublish({ model }),
             [`create${typeName}From`]: resolveCreateFrom({ model })
         },
-        [mTypeName]: model.fields.reduce((resolvers, field) => {
-            const { manage } = fieldTypePlugins[field.type];
+        [mTypeName]: model.fields.reduce(
+            (resolvers, field) => {
+                const { manage } = fieldTypePlugins[field.type];
 
-            resolvers[field.fieldId] = manage.createResolver({ models, model, field });
+                resolvers[field.fieldId] = manage.createResolver({ models, model, field });
 
-            return resolvers;
-        }, commonFieldResolvers())
+                return resolvers;
+            },
+            {
+                ...commonFieldResolvers(),
+                meta(entry) {
+                    return entry;
+                }
+            }
+        ),
+        [`${mTypeName}Meta`]: {
+            title(entry) {
+                if (model.titleFieldId) {
+                    return entry.values[model.titleFieldId];
+                }
+
+                return "";
+            },
+            status(entry) {
+                if (entry.published) {
+                    return "published";
+                }
+
+                return entry.locked ? "locked" : "draft";
+            },
+            revisions(entry, args, context: CmsContext) {
+                return context.cms.entries.listRevisions(entry.id);
+            }
+        }
     };
 };

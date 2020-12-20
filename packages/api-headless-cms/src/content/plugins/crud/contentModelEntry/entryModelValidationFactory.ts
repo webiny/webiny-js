@@ -1,13 +1,9 @@
 import {
-    CmsContentModelEntryCreateInputType,
-    CmsContentModelEntryUpdateInputType,
     CmsContentModelFieldValidationType,
     CmsContentModelType,
     CmsContext,
     CmsModelFieldValidatorPlugin
 } from "@webiny/api-headless-cms/types";
-
-type EntryType = CmsContentModelEntryCreateInputType | CmsContentModelEntryUpdateInputType;
 
 type ValidatorArgsType = {
     value: any;
@@ -30,18 +26,17 @@ const createValidators: CreateValidatorsCallableType = async (context, model) =>
     );
     const { fields } = model;
     const validators = new Map<string, ValidatorType[]>();
-    for (const key in fields) {
-        if (!fields.hasOwnProperty(key)) {
-            continue;
-        }
-        const field = fields[key];
-        const fieldPluginValidators = fieldValidatorPlugins
-            .filter(pl => pl.validator.name === field.type)
+    for (let i = 0; i < fields.length; i++) {
+        const { validation } = fields[i];
+        const fieldValidators = fieldValidatorPlugins
+            .filter(pl => validation.find(v => v.name === pl.validator.name))
             .map(pl => pl.validator);
-        if (fieldPluginValidators.length === 0) {
+
+        if (fieldValidators.length === 0) {
             continue;
         }
-        validators.set(key, fieldPluginValidators);
+
+        validators.set(fields[i].fieldId, fieldValidators);
     }
     return validators;
 };
@@ -63,13 +58,11 @@ export const entryModelValidationFactory = async (
     const validatorList = await createValidators(context, contentModel);
     const fieldValidatorList = createFieldValidators(contentModel);
     return {
-        validate: async (entry: EntryType): Promise<Record<string, string[]>> => {
-            const { values } = entry;
-
+        validate: async (data: Record<string, any>): Promise<Record<string, string[]>> => {
             const errors: Record<string, string[]> = {};
             // key of the values is the field we are checking
-            for (const field in values) {
-                if (!values.hasOwnProperty(field)) {
+            for (const field in data) {
+                if (!data.hasOwnProperty(field)) {
                     continue;
                 }
                 const validators = validatorList.get(field);
@@ -83,7 +76,7 @@ export const entryModelValidationFactory = async (
                 if (!fieldValidators || fieldValidators.length === 0) {
                     continue;
                 }
-                const value = values[field];
+                const value = data[field];
                 // TODO is this the right approach?
                 for (const fieldValidator of fieldValidators) {
                     for (const validator of validators) {

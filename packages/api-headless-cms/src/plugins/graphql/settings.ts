@@ -1,7 +1,5 @@
-import { compose, ErrorResponse, Response } from "@webiny/handler-graphql";
-import { hasI18NContentPermission } from "@webiny/api-i18n-content";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-import { hasManageSettingsPermission } from "@webiny/api-headless-cms/utils";
 
 export default {
     typeDefs: /* GraphQL */ `
@@ -17,42 +15,24 @@ export default {
     `,
     resolvers: {
         CmsQuery: {
-            isInstalled: compose(
-                hasManageSettingsPermission(),
-                hasI18NContentPermission()
-            )(async (_, __, context: CmsContext) => {
+            isInstalled: async (_, __, context: CmsContext) => {
                 try {
                     const settings = await context.cms.settings.get();
                     return new Response(!!settings?.isInstalled);
-                } catch (ex) {
-                    if (ex instanceof ErrorResponse) {
-                        return ex;
-                    }
-                    return new ErrorResponse({
-                        code: "CMS_SETTINGS_ERROR",
-                        message: ex.message
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-            })
+            }
         },
         CmsMutation: {
-            install: compose(
-                hasManageSettingsPermission(),
-                hasI18NContentPermission()
-            )(async (_, __, context: CmsContext) => {
+            install: async (_, __, context: CmsContext) => {
                 try {
                     await context.cms.settings.install();
                     return new Response(true);
-                } catch (ex) {
-                    if (ex instanceof ErrorResponse) {
-                        return ex;
-                    }
-                    return new ErrorResponse({
-                        code: "CMS_INSTALLATION_ERROR",
-                        message: ex.message
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
-            })
+            }
         }
     }
 };

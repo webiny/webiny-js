@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
+import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
 import {
     CmsContentModelCreateInputType,
     CmsContentModelUpdateInputType,
@@ -23,34 +23,22 @@ type DeleteContentModelArgsType = {
 };
 
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
-    const resolvers: Record<string, any> = {
+    const resolvers: Resolvers<CmsContext> = {
         Query: {
-            getContentModel: async (
-                _: unknown,
-                args: ReadContentModelArgsType,
-                context: CmsContext
-            ) => {
+            getContentModel: async (_: unknown, args: ReadContentModelArgsType, context) => {
                 try {
                     const model = await context.cms.models.get(args.id);
                     return new Response(model);
-                } catch (ex) {
-                    return new ErrorResponse({
-                        message: ex.message,
-                        data: ex.data,
-                        code: ex.code || "GET_CONTENT_MODEL_FAILED"
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
             },
             listContentModels: async (_: unknown, __: unknown, context: CmsContext) => {
                 try {
                     const model = await context.cms.models.list();
                     return new Response(model);
-                } catch (ex) {
-                    return new ErrorResponse({
-                        message: ex.message,
-                        data: ex.data,
-                        code: ex.code || "LIST_CONTENT_MODEL_FAILED"
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
             }
         }
@@ -59,63 +47,30 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     let manageSchema = "";
     if (context.cms.MANAGE) {
         resolvers.Mutation = {
-            createContentModel: async (
-                _: unknown,
-                args: CreateContentModelArgsType,
-                context: CmsContext
-            ) => {
-                const identity = context.security.getIdentity();
-
-                const { data } = args;
-                const createdBy = {
-                    id: identity.id,
-                    displayName: identity.displayName,
-                    type: identity.type
-                };
-
+            createContentModel: async (_: unknown, args: CreateContentModelArgsType, context) => {
                 try {
-                    const model = await context.cms.models.create(data, createdBy);
+                    const model = await context.cms.models.create(args.data);
                     return new Response(model);
-                } catch (ex) {
-                    return new ErrorResponse({
-                        message: ex.message,
-                        data: ex.data,
-                        code: ex.code || "CREATE_CONTENT_MODEL_FAILED"
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
             },
-            updateContentModel: async (
-                _: unknown,
-                args: UpdateContentModelArgsType,
-                context: CmsContext
-            ) => {
+            updateContentModel: async (_: unknown, args: UpdateContentModelArgsType, context) => {
                 const { id, data } = args;
                 try {
                     const model = await context.cms.models.update(id, data);
                     return new Response(model);
-                } catch (ex) {
-                    return new ErrorResponse({
-                        message: ex.message,
-                        data: ex.data,
-                        code: ex.code || "UPDATE_CONTENT_MODEL_FAILED"
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
             },
-            deleteContentModel: async (
-                _: unknown,
-                args: DeleteContentModelArgsType,
-                context: CmsContext
-            ) => {
+            deleteContentModel: async (_: unknown, args: DeleteContentModelArgsType, context) => {
                 const { id } = args;
                 try {
                     await context.cms.models.delete(id);
                     return new Response(true);
-                } catch (ex) {
-                    return new ErrorResponse({
-                        message: ex.message,
-                        data: ex.data,
-                        code: ex.code || "DELETE_CONTENT_MODEL_FAILED"
-                    });
+                } catch (e) {
+                    return new ErrorResponse(e);
                 }
             }
         };
