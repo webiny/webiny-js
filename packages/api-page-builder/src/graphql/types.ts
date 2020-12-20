@@ -6,10 +6,14 @@ import { SecurityContext, SecurityPermission } from "@webiny/api-security/types"
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import DataLoader from "dataloader";
 
-export type Configuration = {
-    renderingFunction: string;
+export type HandlerConfiguration = {
+    prerendering: {
+        handler: string;
+    };
 };
+
 // Entities.
 export type File = {
     id: string;
@@ -175,6 +179,9 @@ export type PageElementsCrud = {
 };
 
 export type CategoriesCrud = {
+    dataLoaders: {
+        get: DataLoader<string, Category>;
+    };
     get(slug: string): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
