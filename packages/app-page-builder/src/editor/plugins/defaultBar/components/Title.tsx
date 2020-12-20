@@ -128,9 +128,9 @@ const Title: React.FunctionComponent = () => {
 };
 
 const getRevData = ({ title, pageTitle, pageCategoryUrl }) => {
-    const newData: { title: string; url?: string } = { title };
+    const newData: { title: string; path?: string } = { title };
     if (pageTitle === "Untitled") {
-        newData.url =
+        newData.path =
             pageCategoryUrl +
             slugify(title, {
                 replacement: "-",

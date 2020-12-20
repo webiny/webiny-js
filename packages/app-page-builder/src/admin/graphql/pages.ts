@@ -15,7 +15,7 @@ error {
 export const DATA_FIELDS = `
     id
     title
-    url
+    path
     version
     locked
     status

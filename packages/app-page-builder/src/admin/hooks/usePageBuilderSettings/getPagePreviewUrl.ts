@@ -1,10 +1,10 @@
 import { trimEnd } from "lodash";
 
-export default ({ page: { url, id }, websiteUrl }) => {
+export default ({ page: { path, id }, websiteUrl }) => {
     let previewUrl = "";
 
     if (!websiteUrl) {
-        previewUrl += url;
+        previewUrl += path;
         previewUrl += "?preview=" + id;
         return previewUrl;
     }
@@ -15,7 +15,7 @@ export default ({ page: { url, id }, websiteUrl }) => {
     previewUrl += websiteUrl.replace(/(^\w+:|^)\/\//, "");
 
     previewUrl = trimEnd(previewUrl, "/");
-    previewUrl += url;
+    previewUrl += path;
     previewUrl += "?preview=" + id + "&ssr-no-cache";
 
     return previewUrl;

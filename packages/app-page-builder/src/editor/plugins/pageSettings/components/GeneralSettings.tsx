@@ -51,11 +51,11 @@ const GeneralSettings = ({ form, data, Bind, setValue }) => {
                 </Cell>
                 <Cell span={12}>
                     <Bind
-                        name={"url"}
+                        name={"path"}
                         validators={validation.create("required")}
                         beforeChange={toSlug}
                     >
-                        <Input label="URL" description="Page URL" />
+                        <Input label="Path" description="Page path (e.g. /about-us)" />
                     </Bind>
                 </Cell>
                 <Cell span={12}>

@@ -12,7 +12,7 @@ const plugins: PbEditorPageSettingsPlugin[] = [
         name: "pb-editor-page-settings-general",
         type: "pb-editor-page-settings",
         title: "General settings",
-        description: "Manage things like title, page status,url and more.",
+        description: "Manage things like title, page status, path, and more.",
         icon: <SettingsIcon />,
         fields: `
             general {

@@ -23,7 +23,7 @@ const GET_PAGE = gql`
                 data {
                     id
                     title
-                    url
+                    path
                     version
                     locked
                     status

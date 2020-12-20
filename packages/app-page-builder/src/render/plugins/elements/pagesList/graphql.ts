@@ -12,8 +12,8 @@ export const LIST_PUBLISHED_PAGES = gql`
                 data {
                     id
                     title
+                    path
                     url
-                    fullUrl
                     snippet
                     tags
                     images {
