@@ -56,14 +56,15 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     }
 
                     // 2. Create initial page category.
-                    const staticCategory = await context.pageBuilder.categories.get("static");
+                    let staticCategory = await context.pageBuilder.categories.get("static");
                     if (!staticCategory) {
-                        await context.pageBuilder.categories.create({
+                        staticCategory = await context.pageBuilder.categories.create({
                             name: "Static",
                             slug: "static",
                             url: "/static/",
                             layout: "static"
                         });
+                        context.pageBuilder.categories.dataLoaders.get.clearAll();
                     }
 
                     // 3. Create page blocks.
