@@ -1,75 +1,85 @@
-import React, { useMemo, useCallback } from "react";
-import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
-import ColorPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/ColorPicker";
-import IconPicker from "@webiny/app-page-builder/editor/plugins/elementSettings/components/IconPicker";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
-import { get, set } from "dot-prop-immutable";
+import React, { useCallback } from "react";
+import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { getSvg } from "./utils";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+// Components
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import InputField from "../../elementSettings/components/InputField";
+import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
+import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
+import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import { updateIconElement } from "../utils/iconUtils";
 
-const IconSettings = () => {
+const classes = {
+    grid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            marginBottom: 24
+        }
+    }),
+    widthInputStyle: css({
+        maxWidth: 60
+    }),
+    rightCellStyle: css({
+        justifySelf: "end"
+    })
+};
+
+const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue
+}) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const handler = useEventActionHandler();
     const { data: { icon = {} } = {} } = element;
 
-    const updateElement = (args: UpdateElementActionArgsType) => {
-        handler.trigger(new UpdateElementActionEvent(args));
-    };
+    const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
+        element,
+        dataNamespace: "data.icon",
+        postModifyElement: updateIconElement
+    });
 
-    const setData = useMemo(() => {
-        const historyUpdated = {};
-
-        return (name, value, history = true) => {
-            const attrKey = `data.icon.${name}`;
-
-            let newElement = set(element, attrKey, value);
-            const { id, width, color } = get(newElement, "data.icon");
-            newElement = set(newElement, "data.icon.svg", getSvg(id, { width, color }));
-
-            if (!history) {
-                updateElement({ element: newElement, history });
-                return;
-            }
-
-            if (historyUpdated[name] !== value) {
-                historyUpdated[name] = value;
-                updateElement({ element: newElement });
-            }
-        };
-    }, [element.id]);
-
-    const updateIcon = useCallback(value => setData("id", value.id), [setData]);
-    const updateColor = useCallback(value => setData("color", value), [setData]);
-    const updateColorPreview = useCallback(value => setData("color", value, false), [setData]);
-    const updateWidth = useCallback(value => setData("width", value), [setData]);
+    const updateIcon = useCallback(value => getUpdateValue("id")(value?.id), [getUpdateValue]);
+    const updateColor = useCallback((value: string) => getUpdateValue("color")(value), [
+        getUpdateValue
+    ]);
+    const updateColorPreview = useCallback((value: string) => getUpdatePreview("color")(value), [
+        getUpdatePreview
+    ]);
+    const updateWidth = useCallback((value: string) => getUpdateValue("width")(value), [
+        getUpdateValue
+    ]);
 
     return (
-        <Tabs>
-            <Tab label={"Icon"}>
-                <IconPicker
-                    label={"Icon"}
-                    value={icon.id}
-                    updateValue={updateIcon}
-                    removable={false}
-                />
-                <Input
+        <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>
+            <>
+                <Wrapper containerClassName={classes.grid} label={"Icon"}>
+                    <BaseIconPicker value={icon.id} updateValue={updateIcon} removable={false} />
+                </Wrapper>
+
+                <Wrapper containerClassName={classes.grid} label={"Color"}>
+                    <BaseColorPicker
+                        value={icon.color}
+                        updateValue={updateColor}
+                        updatePreview={updateColorPreview}
+                    />
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
                     label={"Width"}
-                    value={icon.width}
-                    updateValue={updateWidth}
-                    placeholder="50"
-                />
-                <ColorPicker
-                    label={"Color"}
-                    value={icon.color}
-                    updateValue={updateColor}
-                    updatePreview={updateColorPreview}
-                />
-            </Tab>
-        </Tabs>
+                    leftCellSpan={8}
+                    rightCellSpan={4}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <InputField
+                        className={classes.widthInputStyle}
+                        value={icon.width}
+                        onChange={updateWidth}
+                        placeholder="50"
+                    />
+                </Wrapper>
+            </>
+        </Accordion>
     );
 };
 

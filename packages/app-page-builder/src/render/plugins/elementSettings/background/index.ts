@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
 
 const scaling = {
@@ -38,11 +38,14 @@ export default {
         }
 
         const { color, image } = background;
+        let newStyle = {
+            ...style
+        };
 
         const src = get(image, "file.src");
         if (src) {
-            return {
-                ...style,
+            newStyle = {
+                ...newStyle,
                 ...scaling[image.scaling || "cover"],
                 backgroundImage: `url(${src})`,
                 backgroundPosition: image.position || "center center"
@@ -50,9 +53,9 @@ export default {
         }
 
         if (color) {
-            return { ...style, backgroundColor: color };
+            newStyle = { ...newStyle, backgroundColor: color };
         }
 
-        return style;
+        return newStyle;
     }
 } as PbRenderElementStylePlugin;

@@ -1,76 +1,84 @@
-import React, { useMemo, useCallback } from "react";
-import Input from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Input";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Tabs, Tab } from "@webiny/ui/Tabs";
+import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
+import { css } from "emotion";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import { activeElementSelector } from "../../../recoil/modules";
+// Components
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import InputField from "../../elementSettings/components/InputField";
+import SpacingPicker from "../../elementSettings/components/SpacingPicker";
+import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import { justifySelfEndStyle } from "../../elementSettings/components/StyledComponents";
+import {
+    WIDTH_UNIT_OPTIONS,
+    HEIGHT_UNIT_OPTIONS
+} from "../../elementSettings/elementSettingsUtils";
 
-const ImageSettings = () => {
-    const handler = useEventActionHandler();
+const classes = {
+    grid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            marginBottom: 24
+        }
+    })
+};
+
+const spacingPickerStyle = css({
+    width: "120px",
+    "& .inner-wrapper": {
+        display: "flex"
+    }
+});
+
+const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
+    defaultAccordionValue = false
+}) => {
     const element = useRecoilValue(activeElementSelector);
     const {
-        id,
         data: { image }
     } = element;
 
-    const setData = useMemo(() => {
-        const historyUpdated = {};
-        return (name, value) => {
-            if (historyUpdated[name] === value) {
-                return;
-            }
-            historyUpdated[name] = value;
-            handler.trigger(
-                new UpdateElementActionEvent({
-                    element: {
-                        ...element,
-                        elements: [],
-                        data: {
-                            ...element.data,
-                            image: {
-                                ...(element.data.image || {}),
-                                [name]: value
-                            }
-                        }
-                    }
-                })
-            );
-        };
-    }, [id, image]);
+    const { getUpdateValue } = useUpdateHandlers({ element, dataNamespace: "data.image" });
 
-    const updateTitle = useCallback(value => setData("title", value), [id, image]);
-    const updateWidth = useCallback(value => setData("width", value), [id, image]);
-    const updateHeight = useCallback(value => setData("height", value), [id, image]);
+    const updateTitle = useCallback(value => getUpdateValue("title")(value), []);
+    const updateWidth = useCallback(value => getUpdateValue("width")(value), []);
+    const updateHeight = useCallback(value => getUpdateValue("height")(value), []);
 
     return (
-        <Tabs>
-            <Tab icon={<ImageIcon />} label="Image">
-                <Input
-                    label="Title"
-                    value={image?.title || ""}
-                    updateValue={updateTitle}
-                    inputWidth={"max-content"}
-                />
-                <Input
-                    label="Width"
-                    placeholder="auto"
-                    description="eg. 300 or 50%"
-                    value={image?.width || ""}
-                    updateValue={updateWidth}
-                    inputWidth={80}
-                />
-                <Input
-                    label="Height"
-                    placeholder="auto"
-                    description="eg. 300 or 50%"
-                    value={image?.height || ""}
-                    updateValue={updateHeight}
-                    inputWidth={80}
-                />
-            </Tab>
-        </Tabs>
+        <Accordion title={"Image"} defaultValue={defaultAccordionValue}>
+            <>
+                <Wrapper containerClassName={classes.grid} label={"Title"}>
+                    <InputField value={image?.title || ""} onChange={updateTitle} />
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Width"}
+                    rightCellClassName={justifySelfEndStyle}
+                >
+                    <SpacingPicker
+                        value={image?.width || ""}
+                        onChange={updateWidth}
+                        options={WIDTH_UNIT_OPTIONS}
+                        useDefaultStyle={false}
+                        className={spacingPickerStyle}
+                    />
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Height"}
+                    rightCellClassName={justifySelfEndStyle}
+                >
+                    <SpacingPicker
+                        value={image?.height || ""}
+                        onChange={updateHeight}
+                        options={HEIGHT_UNIT_OPTIONS}
+                        useDefaultStyle={false}
+                        className={spacingPickerStyle}
+                    />
+                </Wrapper>
+            </>
+        </Accordion>
     );
 };
 export default React.memo(ImageSettings);

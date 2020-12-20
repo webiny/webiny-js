@@ -1,9 +1,12 @@
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
-import ImagesList from "./ImagesList";
 import { getPlugins } from "@webiny/plugins";
-import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementImagesListComponentPlugin } from "../../../../types";
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import SelectField from "../../elementSettings/components/SelectField";
+import { classes } from "../../elementSettings/components/StyledComponents";
+import ImagesList from "./ImagesList";
 
 const ImagesListDesignSettings = ({ Bind, data }) => {
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
@@ -11,14 +14,14 @@ const ImagesListDesignSettings = ({ Bind, data }) => {
     );
 
     return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={12}>
+        <Accordion title={"Design"} defaultValue={true}>
+            <React.Fragment>
+                <Wrapper label={"Component"} containerClassName={classes.simpleGrid}>
                     <Bind
                         name={"component"}
                         defaultValue={components[0] ? components[0].componentName : null}
                     >
-                        <Select
+                        <SelectField
                             label={"Design"}
                             description={"Select a component to render the list"}
                         >
@@ -27,17 +30,17 @@ const ImagesListDesignSettings = ({ Bind, data }) => {
                                     {cmp.title}
                                 </option>
                             ))}
-                        </Select>
+                        </SelectField>
                     </Bind>
-                </Cell>
-            </Grid>
+                </Wrapper>
 
-            <Grid>
-                <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <ImagesList data={data} />
-                </Cell>
-            </Grid>
-        </React.Fragment>
+                <Grid className={classes.simpleGrid}>
+                    <Cell span={12} style={{ overflowY: "scroll" }}>
+                        <ImagesList data={data} />
+                    </Cell>
+                </Grid>
+            </React.Fragment>
+        </Accordion>
     );
 };
 

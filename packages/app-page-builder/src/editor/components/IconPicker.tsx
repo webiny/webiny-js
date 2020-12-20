@@ -9,6 +9,9 @@ import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import classNames from "classnames";
+import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
+// Icons
+import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
 const COLUMN_COUNT = 6;
 
@@ -85,15 +88,69 @@ const searchInput = css({
     }
 });
 
+const iconPickerWrapper = css({
+    display: "flex",
+    justifyContent: "flex-end",
+    height: 30,
+
+    "& .mdc-menu-surface--anchor": {
+        position: "static"
+    },
+
+    "& .button": {
+        boxSizing: "border-box",
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
+        border: `1px solid ${COLORS.gray}`,
+        cursor: "pointer",
+        "&:hover:not(:disabled)": { borderColor: COLORS.darkGray, backgroundColor: COLORS.gray },
+        "&:focus:not(:disabled)": {
+            borderColor: COLORS.darkGray,
+            outline: "none",
+            backgroundColor: COLORS.gray
+        },
+        "&:disabled": {
+            opacity: 0.5,
+            cursor: "not-allowed",
+            borderColor: COLORS.lightGray
+        }
+    },
+    "& .iconContainer": {
+        boxSizing: "border-box",
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
+        border: `1px solid ${COLORS.gray}`,
+
+        "& svg": {
+            width: 16,
+            height: 16
+        }
+    }
+});
+
 type IconPickerPropsType = {
     value: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
+    handlerClassName?: string;
+    useInSidebar?: boolean;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
-    removable = true
+    removable = true,
+    handlerClassName,
+    useInSidebar
 }) => {
     const [filter, setFilter] = useState<string>("");
 
@@ -146,6 +203,10 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     const icons = useMemo(() => {
         return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
     }, [filter, selectedIconPrefix, selectedIconName]);
+
+    const starIcon = useMemo(() => {
+        return allIcons.find(item => item.id[0] === "far" && item.id[1] === "star");
+    }, [allIcons]);
 
     const renderCell = useCallback(
         ({ closeMenu }) => {
@@ -214,10 +275,32 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
         [icons]
     );
 
+    if (useInSidebar) {
+        return (
+            <div className={iconPickerWrapper}>
+                <Menu
+                    handle={
+                        <div className={classNames("button", "menuHandler", handlerClassName)}>
+                            <IconPickerIcon />
+                        </div>
+                    }
+                >
+                    {renderGrid}
+                </Menu>
+                <div
+                    className={classNames("button", "iconContainer")}
+                    onClick={() => onChange(starIcon)}
+                >
+                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <Menu
             handle={
-                <div className={pickIcon}>
+                <div className={classNames(pickIcon, handlerClassName)}>
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             }

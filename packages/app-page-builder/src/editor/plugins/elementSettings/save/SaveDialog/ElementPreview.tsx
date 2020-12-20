@@ -33,8 +33,14 @@ const replaceContent = (element: PbElement, doc: Document): Document => {
         wrapper.innerHTML = newContentString;
 
         const newContentDoc: ChildNode = wrapper.firstChild;
-
-        doc.querySelector(`#${element.id}`).replaceWith(newContentDoc);
+        // Element id must not start with a number.
+        const validId = Number.isNaN(parseInt(element.id[0]));
+        if (validId) {
+            const docElement = doc.querySelector(`#${element.id}`);
+            docElement && docElement.replaceWith(newContentDoc);
+        } else {
+            console.warn(`Element "id" must not start with a number.`);
+        }
     }
 
     if (element.elements.length) {

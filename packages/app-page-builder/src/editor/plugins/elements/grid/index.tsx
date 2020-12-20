@@ -1,7 +1,7 @@
 import React from "react";
 import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
-import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/grid-6-6.svg";
+import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import {
@@ -14,7 +14,7 @@ const PreviewBox = styled("div")({
     height: 50,
     svg: {
         height: 50,
-        width: 75
+        width: 50
     }
 });
 
@@ -49,20 +49,17 @@ export default {
         }
     },
     settings: [
-        "pb-editor-page-element-settings-grid",
-        "pb-editor-page-element-settings-background",
-        "pb-editor-page-element-settings-animation",
-        "",
-        "pb-editor-page-element-settings-border",
-        "pb-editor-page-element-settings-shadow",
-        "",
-        "pb-editor-page-element-settings-padding",
-        "pb-editor-page-element-settings-margin",
-        "pb-editor-page-element-settings-width",
-        "pb-editor-page-element-settings-height",
-        "pb-editor-page-element-settings-horizontal-align-flex",
-        "pb-editor-page-element-settings-vertical-align",
-        "",
+        "pb-editor-page-element-style-settings-grid",
+        "pb-editor-page-element-style-settings-background",
+        "pb-editor-page-element-style-settings-animation",
+        "pb-editor-page-element-style-settings-border",
+        "pb-editor-page-element-style-settings-shadow",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-style-settings-width",
+        "pb-editor-page-element-style-settings-height",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-vertical-align",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
     ],
@@ -82,17 +79,19 @@ export default {
                 settings: {
                     width: { value: "100%" },
                     margin: {
-                        mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                        desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                        mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
+                        desktop: { top: "25px", left: "0px", right: "0px", bottom: "25px" },
                         advanced: true
                     },
                     padding: {
-                        mobile: { all: 10 },
-                        desktop: { all: 0 }
+                        mobile: { all: "10px" },
+                        desktop: { all: "0px" }
                     },
                     grid: {
                         cellsType
-                    }
+                    },
+                    horizontalAlignFlex: "flex-start",
+                    verticalAlign: "start"
                 }
             },
             ...options

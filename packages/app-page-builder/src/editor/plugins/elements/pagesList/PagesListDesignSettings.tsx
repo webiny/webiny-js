@@ -1,51 +1,58 @@
 import * as React from "react";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { Input } from "@webiny/ui/Input";
-import { Select } from "@webiny/ui/Select";
-import PagesList from "./PagesList";
 import { getPlugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import Accordion from "../../elementSettings/components/Accordion";
+import Wrapper from "../../elementSettings/components/Wrapper";
+import InputField from "../../elementSettings/components/InputField";
+import SelectField from "../../elementSettings/components/SelectField";
+import { classes } from "../../elementSettings/components/StyledComponents";
 
-const PagesListDesignSettings = ({ Bind, data }) => {
+const PagesListDesignSettings = ({ Bind }) => {
     const components = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
 
     return (
-        <React.Fragment>
-            <Grid>
-                <Cell span={6}>
+        <Accordion title={"Design"} defaultValue={true}>
+            <React.Fragment>
+                <Wrapper
+                    label={"Component"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
                     <Bind
                         name={"component"}
                         defaultValue={components[0] ? components[0].componentName : null}
                     >
-                        <Select
-                            label={"Design"}
-                            description={"Select a component to render the list"}
-                        >
-                            {components.map(cmp => (
-                                <option key={cmp.name} value={cmp.componentName}>
-                                    {cmp.title}
-                                </option>
-                            ))}
-                        </Select>
+                        {({ value, onChange }) => (
+                            <SelectField
+                                value={value}
+                                onChange={onChange}
+                                description={"Select a component to render the list"}
+                            >
+                                {components.map(cmp => (
+                                    <option key={cmp.name} value={cmp.componentName}>
+                                        {cmp.title}
+                                    </option>
+                                ))}
+                            </SelectField>
+                        )}
                     </Bind>
-                </Cell>
-
-                <Cell span={6}>
+                </Wrapper>
+                <Wrapper
+                    label={"Results per page"}
+                    containerClassName={classes.simpleGrid}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
                     <Bind name={"resultsPerPage"} validators={validation.create("numeric")}>
-                        <Input label={"Results per page"} />
+                        <InputField />
                     </Bind>
-                </Cell>
-            </Grid>
-
-            <Grid>
-                <Cell span={12} style={{ overflowY: "scroll" }}>
-                    <PagesList data={data} />
-                </Cell>
-            </Grid>
-        </React.Fragment>
+                </Wrapper>
+            </React.Fragment>
+        </Accordion>
     );
 };
 

@@ -1,16 +1,19 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { validation } from "@webiny/validation";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
-import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import VimeoEmbed from "./VimeoEmbed";
-import { validation } from "@webiny/validation";
 import { ReactComponent as LogoIcon } from "./vimeo-v-brands.svg";
+import Accordion from "../../../elementSettings/components/Accordion";
+import InputField from "../../../elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "../../../elementSettings/components/StyledComponents";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -46,20 +49,23 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "vimeo",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<MediaIcon />} label="Vimeo">
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input label={"Video URL"} description={"Enter a video URL"} />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                <Accordion title={"Vimeo"} defaultValue={true}>
+                    <>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <InputField
+                                placeholder={"https://vimeo.com/158050352"}
+                                description={"Enter a video URL"}
+                            />
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })

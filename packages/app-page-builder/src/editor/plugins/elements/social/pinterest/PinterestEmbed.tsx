@@ -3,6 +3,7 @@ import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
 import { PbShallowElement } from "@webiny/app-page-builder/types";
+import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {
     interface Window {
@@ -57,7 +58,7 @@ export default React.memo(
             appendSDK(props).then(() => initEmbed(props));
         }, [element]);
 
-        const empty = <div>You must configure your embed in the settings!</div>;
+        const renderEmpty = useRenderEmptyEmbed(element);
 
         const renderEmbed = useCallback(() => {
             const data = get(element, "data.source");
@@ -72,7 +73,7 @@ export default React.memo(
 
         const { url } = get(element, "data.source") || {};
 
-        return url ? renderEmbed() : empty;
+        return url ? renderEmbed() : renderEmpty();
     },
     (props, nextProps) => isEqual(props, nextProps)
 );

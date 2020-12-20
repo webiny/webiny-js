@@ -1,5 +1,6 @@
 import React from "react";
 import { css } from "emotion";
+import get from "lodash/get";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import ConnectedElement from "@webiny/app-page-builder/editor/components/ConnectedElement";
 
@@ -11,7 +12,7 @@ const Icon = ({ element }) => {
             {({ getAllClasses, elementStyle }) => (
                 <ConnectedElement elementId={element.id}>
                     {element => {
-                        const { svg = null } = element.data.icon;
+                        const svg = get(element, "data.icon.svg", null);
                         const className = getAllClasses(
                             "webiny-pb-base-page-element-style webiny-pb-page-element-icon",
                             center
