@@ -1,15 +1,15 @@
-import { updateElementAction } from "@webiny/app-page-builder/editor/recoil/actions";
-import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
+import { plugins } from "@webiny/plugins";
+import { PbEditorPageElementPlugin, PbElement } from "../../../../types";
+import { removeElementHelper } from "../../../helpers";
+import { getElementParentWithChildrenById } from "../../modules";
 import {
     EventActionCallableType,
     EventActionHandlerActionCallableResponseType,
     EventActionHandlerMetaType
-} from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { removeElementHelper } from "@webiny/app-page-builder/editor/helpers";
-import { getElementParentWithChildrenById } from "@webiny/app-page-builder/editor/recoil/modules";
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
-import { plugins } from "@webiny/plugins";
+} from "../../eventActions";
+import { PbState } from "../../modules/types";
+import { updateElementAction, UpdateElementActionEvent } from "../updateElement";
+import { DeleteElementActionArgsType } from "./types";
 
 const updateParentElement = (
     state: PbState,
@@ -22,18 +22,19 @@ const updateParentElement = (
     if (!plugin || typeof plugin.onChildDeleted !== "function") {
         return {
             state,
-            actions: []
+            actions: [new UpdateElementActionEvent({ element: parent, history: true })]
         };
     }
     const mutatedParent = plugin.onChildDeleted({ element: parent, child });
     if (!mutatedParent) {
         return {
             state,
-            actions: []
+            actions: [new UpdateElementActionEvent({ element: parent, history: true })]
         };
     }
     return updateElementAction(state, meta, {
-        element: mutatedParent
+        element: mutatedParent,
+        history: true
     }) as EventActionHandlerActionCallableResponseType;
 };
 const runUpdateElementAction = (
