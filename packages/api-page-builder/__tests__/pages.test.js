@@ -61,7 +61,7 @@ describe("CRUD Test", () => {
                                     slug: "slug"
                                 },
                                 title: "Untitled",
-                                url: /^\/some-url\/untitled-.*/,
+                                path: /^\/some-url\/untitled-.*/,
                                 publishedOn: null,
                                 locked: false,
                                 version: 1,
@@ -102,7 +102,7 @@ describe("CRUD Test", () => {
 
             data = {
                 title: "title-UPDATED-" + i,
-                url: "url-UPDATED-" + i,
+                path: "/path-UPDATED-" + i,
                 settings: {
                     general: {
                         snippet: "snippet-UPDATED-" + i,
@@ -163,7 +163,7 @@ describe("CRUD Test", () => {
                                 id: ids[2],
                                 status: "draft",
                                 title: "title-UPDATED-2",
-                                url: "url-UPDATED-2",
+                                path: "/path-UPDATED-2",
                                 snippet: "snippet-UPDATED-2",
                                 images: {
                                     general: {
@@ -186,7 +186,7 @@ describe("CRUD Test", () => {
                                 id: ids[1],
                                 status: "draft",
                                 title: "title-UPDATED-1",
-                                url: "url-UPDATED-1",
+                                path: "/path-UPDATED-1",
                                 snippet: "snippet-UPDATED-1",
                                 images: {
                                     general: {
@@ -209,7 +209,7 @@ describe("CRUD Test", () => {
                                 id: ids[0],
                                 status: "draft",
                                 title: "title-UPDATED-0",
-                                url: "url-UPDATED-0",
+                                path: "/path-UPDATED-0",
                                 snippet: "snippet-UPDATED-0",
                                 images: {
                                     general: {

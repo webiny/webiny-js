@@ -35,7 +35,7 @@ describe("getting published pages", () => {
                 id,
                 data: {
                     title: `page-${letters[i]}`,
-                    url: `url-${letters[i]}`
+                    path: `/path-${letters[i]}`
                 }
             });
 
@@ -56,10 +56,13 @@ describe("getting published pages", () => {
     });
 
     test("getting published pages by full ID", async () => {
+        await getPublishedPage({ id: initiallyCreatedPagesIds[0] });
+
         await getPublishedPage({ id: initiallyCreatedPagesIds[0] }).then(([res]) =>
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[0])
         );
     });
+
     test("getting published pages by page unique ID (ID without version)", async () => {
         const [pageUniqueId] = initiallyCreatedPagesIds[0].split("#");
         await getPublishedPage({ id: pageUniqueId }).then(([res]) =>
@@ -68,11 +71,11 @@ describe("getting published pages", () => {
     });
 
     test("getting published pages by URL", async () => {
-        await getPublishedPage({ url: "url-a" }).then(([res]) =>
+        await getPublishedPage({ path: "/path-a" }).then(([res]) =>
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[0])
         );
 
-        await getPublishedPage({ url: "url-c" }).then(([res]) =>
+        await getPublishedPage({ path: "/path-c" }).then(([res]) =>
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[4])
         );
     });

@@ -294,7 +294,7 @@ describe("versioning and publishing pages", () => {
             async ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updatePage({ id: p1.id, data: { url: "/pages-test" } }).then(([res]) =>
+        await updatePage({ id: p1.id, data: { path: "/pages-test" } }).then(([res]) =>
             expect(res.data.pageBuilder.updatePage.data.id).toBe(p1.id)
         );
 
@@ -302,20 +302,20 @@ describe("versioning and publishing pages", () => {
             async ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updatePage({ id: p2.id, data: { url: "/pages-test" } }).then(([res]) =>
+        await updatePage({ id: p2.id, data: { path: "/pages-test" } }).then(([res]) =>
             expect(res.data.pageBuilder.updatePage.data.id).toBe(p2.id)
         );
 
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p2.id });
-        await getPublishedPage({ url: "/pages-test" }).then(([res]) => {
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) => {
             const a = 123;
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p2.id);
         });
 
         // Now, if we try to publish 1st page, we should still be able to do it.
         await publishPage({ id: p1.id });
-        await getPublishedPage({ url: "/pages-test" }).then(([res]) =>
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1.id)
         );
     });

@@ -22,7 +22,7 @@ describe("Settings Test", () => {
     test("get and update settings", async () => {
         // 1. Should return default settings.
         let [response] = await getSettings();
-        expect(response).toEqual({
+         expect(response).toEqual({
             data: {
                 pageBuilder: {
                     getSettings: {

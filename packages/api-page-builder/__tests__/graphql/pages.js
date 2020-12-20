@@ -7,8 +7,8 @@ export const DATA_FIELD = /* GraphQL */ `
         }
         version
         title
+        path
         url
-        fullUrl
         content
         savedOn
         status
@@ -80,8 +80,8 @@ const LIST_DATA_FIELD = /* GraphQL */ `
                 src
             }
         }
+        path
         url
-        fullUrl
         status
         locked
         publishedOn
@@ -248,9 +248,9 @@ export const GET_PAGE = /* GraphQL */ `
 `;
 
 export const GET_PUBLISHED_PAGE = /* GraphQL */ `
-    query GetPublishedPage($id: ID, $url: String) {
+    query GetPublishedPage($id: ID, $path: String) {
         pageBuilder {
-            getPublishedPage(id: $id, url: $url) {
+            getPublishedPage(id: $id, path: $path) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
