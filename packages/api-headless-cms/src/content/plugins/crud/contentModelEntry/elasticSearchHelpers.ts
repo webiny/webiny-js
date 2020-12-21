@@ -26,7 +26,7 @@ type CreateElasticSearchParamsType = {
     context: CmsContext;
     model: CmsContentModelType;
     args: CreateElasticSearchParamsArgType;
-    onlyOwned?: boolean;
+    ownedBy?: string;
     parentObject?: string;
 };
 type CreateElasticSearchSortParamsType = {
@@ -34,10 +34,11 @@ type CreateElasticSearchSortParamsType = {
     fields: FieldsType;
 };
 type CreateElasticSearchQueryArgsType = {
+    model: CmsContentModelType;
     context: CmsContext;
     where: CmsContentModelEntryListWhereType;
     fields: FieldsType;
-    onlyOwned?: boolean;
+    ownedBy?: string;
     parentObject?: string;
 };
 type ElasticSearchSortParamType = {
@@ -97,14 +98,28 @@ const execElasticSearchBuildQueryPlugins = (
     plugins: ElasticSearchQueryBuilderPlugin[],
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
-    const { where, fields, parentObject } = args;
+    const { where, fields, parentObject, ownedBy, model, context } = args;
     const query: ElasticSearchQueryType = {
         match: [],
-        must: [],
+        must: [
+            // always search by given model id
+            { term: { "modelId.keyword": model.modelId } },
+            // and in the given locale
+            { term: { "locale.keyword": context.cms.getLocale().code } }
+        ],
         mustNot: [],
-        range: []
+        should: []
     };
-    const withParentObject = field => {
+    // also search for exact user if required
+    if (ownedBy) {
+        query.must.push({
+            term: { "ownedBy.id.keyword": ownedBy }
+        });
+    }
+    const checkIsSystemField = (field: string) => {
+        return !!model[field];
+    };
+    const withParentObject = (field: string) => {
         if (!parentObject) {
             return null;
         }
@@ -115,17 +130,17 @@ const execElasticSearchBuildQueryPlugins = (
             continue;
         }
         const { field, op } = parseWhereKey(key);
-        if (!fields[field]) {
+        const isSystemField = checkIsSystemField(field);
+        if (!fields[field] && !isSystemField) {
             throw new Error(`There is no field "${field}".`);
-        }
-        if (!fields[field].isSearchable) {
+        } else if (!fields[field].isSearchable && !isSystemField) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
         for (const plugin of plugins) {
             if (plugin.targetOperation !== op) {
                 continue;
             }
-            const fieldWithParent = withParentObject(field);
+            const fieldWithParent = isSystemField ? null : withParentObject(field);
             plugin.apply(query, {
                 field: fieldWithParent || field,
                 value: where[key],
@@ -139,9 +154,13 @@ const execElasticSearchBuildQueryPlugins = (
 
 const ES_LIMIT_MAX = 10000;
 const ES_LIMIT_DEFAULT = 50;
-export const createElasticSearchLimit = (limit?: number): number => {
+
+export const createElasticSearchLimit = (
+    limit: number,
+    defaultValue = ES_LIMIT_DEFAULT
+): number => {
     if (!limit) {
-        return ES_LIMIT_DEFAULT;
+        return defaultValue;
     }
     if (limit < ES_LIMIT_MAX) {
         return limit;
@@ -150,7 +169,7 @@ export const createElasticSearchLimit = (limit?: number): number => {
 };
 
 export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
-    const { context, model, args, onlyOwned, parentObject = null } = params;
+    const { context, model, args, ownedBy, parentObject = null } = params;
     const { where, after, limit, sort } = args;
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
@@ -175,10 +194,11 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         "elastic-search-query-builder"
     );
     const query = execElasticSearchBuildQueryPlugins(elasticSearchBuildQueryPlugins, {
+        model,
         context,
         where,
         fields,
-        onlyOwned,
+        ownedBy,
         parentObject
     });
     return {
@@ -189,8 +209,8 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
                     must: query.must.length > 0 ? query.must : undefined,
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
-                    range: query.range.length > 0 ? query.range : undefined,
-                    match: query.match.length > 0 ? query.match : undefined
+                    match: query.match.length > 0 ? query.match : undefined,
+                    should: query.should.length > 0 ? query.should : undefined
                 }
             }
         },

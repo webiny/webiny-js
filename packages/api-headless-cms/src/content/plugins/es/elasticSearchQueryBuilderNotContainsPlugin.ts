@@ -6,8 +6,11 @@ export const elasticSearchQueryBuilderNotContainsPlugin = (): ElasticSearchQuery
     targetOperation: "not_contains",
     apply(query, { field, value }) {
         query.mustNot.push({
-            term: {
-                [`${field}.keyword`]: value
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            simple_query_string: {
+                fields: [field],
+                query: value,
+                operator: "AND"
             }
         });
     }

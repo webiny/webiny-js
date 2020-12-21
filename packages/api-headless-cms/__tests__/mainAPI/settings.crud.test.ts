@@ -2,7 +2,7 @@ import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 
 describe("Settings crud test", () => {
     const { isInstalledQuery, installMutation } = useAdminGqlHandler();
-    
+
     test("cms is not installed", async () => {
         const [response] = await isInstalledQuery();
         expect(response).toEqual({
@@ -47,7 +47,7 @@ describe("Settings crud test", () => {
 
     test("cms is already installed", async () => {
         await installMutation();
-        
+
         const [response] = await installMutation();
         expect(response).toEqual({
             data: {

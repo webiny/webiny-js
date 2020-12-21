@@ -375,7 +375,7 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id3,
             { name: "publish latest revision" }
         );
-        
+
         // TODO: finish unpublishing
     });
 });

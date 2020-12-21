@@ -12,7 +12,10 @@ import {
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
-import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
+import {
+    createElasticSearchParams,
+    createElasticSearchLimit
+} from "./contentModelEntry/elasticSearchHelpers";
 import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
 
@@ -68,22 +71,22 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const entries: CmsContentModelEntryContextType = {
             get: async (model, args) => {
-                // TODO: implement the same way as the "list" using where/sort parameters, but limit to 1
-
-                // NOTE: this is a temporary implementation to get tests to work
-                const [[entry]] = await db.read<CmsContentModelEntryType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_ENTRY(), SK: args.where.id }
+                const [[item]] = await context.cms.entries.list(model, {
+                    ...args,
+                    limit: 1
                 });
-
-                if (!entry) {
+                if (!item) {
                     throw new NotFoundError(`Entry not found!`);
                 }
-
-                return entry;
+                return item;
             },
             list: async (model: CmsContentModelType, args = {}) => {
-                const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
+                const permission = await checkPermissions({ rwd: "r" });
+
+                const limit = createElasticSearchLimit(args.limit, 50);
+
+                // Possibly only get records which are owned by current user
+                const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
 
                 const body = createElasticSearchParams({
                     model,
@@ -92,7 +95,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         limit
                     },
                     context,
-                    onlyOwned: false,
+                    ownedBy,
                     parentObject: "values"
                 });
 

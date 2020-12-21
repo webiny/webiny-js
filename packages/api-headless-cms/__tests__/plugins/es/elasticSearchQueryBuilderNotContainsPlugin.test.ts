@@ -1,5 +1,6 @@
 import { elasticSearchQueryBuilderNotContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderNotContainsPlugin";
 import { createBlankQuery } from "./helpers";
+import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderNotContainsPlugin();
@@ -9,19 +10,23 @@ describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
 
         plugin.apply(query, {
             field: "name",
-            value: "firstName"
+            value: "John"
         });
-        expect(query).toEqual({
-            range: [],
+        const expected: ElasticSearchQueryType = {
             mustNot: [
                 {
-                    term: {
-                        "name.keyword": "firstName"
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    simple_query_string: {
+                        fields: ["name"],
+                        query: "John",
+                        operator: "AND"
                     }
                 }
             ],
             must: [],
-            match: []
-        });
+            match: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
     });
 });

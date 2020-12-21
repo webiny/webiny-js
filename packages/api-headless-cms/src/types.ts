@@ -432,7 +432,7 @@ export type CmsContentModelEntryContextType = {
     list: (
         model: CmsContentModelType,
         args?: CmsContentModelEntryListArgsType
-    ) => Promise<CmsContentModelEntryType[]>;
+    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     listLatest: (
         model: CmsContentModelType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
@@ -515,10 +515,25 @@ export type ElasticSearchQueryOperations =
     | "between"
     | "not_between";
 
+type ElasticSearchQueryRangeParamType = {
+    [key: string]: {
+        gt?: string | number | Date;
+        gte?: string | number | Date;
+        lt?: string | number | Date;
+        lte?: string | number | Date;
+    };
+};
+type ElasticSearchQuerySimpleQueryParamType = {
+    fields: string[];
+    query: string;
+    operator: "AND" | "OR";
+};
 type ElasticSearchQueryMustParamType = {
-    term: {
+    term?: {
         [key: string]: any;
     };
+    range?: ElasticSearchQueryRangeParamType;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
 
@@ -526,20 +541,10 @@ type ElasticSearchQueryMustNotParamType = {
     term?: {
         [key: string]: any;
     };
-    [key: string]: {
-        lte?: string | number | Date;
-        gte?: string | number | Date;
-    };
+    range?: ElasticSearchQueryRangeParamType;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
-
-type ElasticSearchQueryRangeParamType = {
-    [key: string]: {
-        lte?: string | number | Date;
-        gte?: string | number | Date;
-    };
-};
-type ElasticSearchQueryRangeParamListType = ElasticSearchQueryRangeParamType[];
 
 type ElasticSearchQueryMatchParamType = {
     [key: string]: {
@@ -550,11 +555,18 @@ type ElasticSearchQueryMatchParamType = {
 };
 type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
 
+type ElasticSearchQueryShouldParamType = {
+    term: {
+        [key: string]: any;
+    };
+};
+type ElasticSearchQueryShouldParamListType = ElasticSearchQueryShouldParamType[];
+
 export type ElasticSearchQueryType = {
     must: ElasticSearchQueryMustParamListType;
     mustNot: ElasticSearchQueryMustNotParamListType;
-    range: ElasticSearchQueryRangeParamListType;
     match: ElasticSearchQueryMatchParamListType;
+    should: ElasticSearchQueryShouldParamListType;
 };
 
 export type ElasticSearchQueryBuilderArgsPluginType = {

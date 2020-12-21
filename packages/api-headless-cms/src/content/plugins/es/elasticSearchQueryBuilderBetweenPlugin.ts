@@ -15,10 +15,12 @@ export const elasticSearchQueryBuilderBetweenPlugin = (): ElasticSearchQueryBuil
         // we take gte first because it should be a lesser value than lte, eg [5, 10]
         // 6 >= gte && 6 <= lte
         const [gte, lte] = value;
-        query.range.push({
-            [`${field}.keyword`]: {
-                lte,
-                gte
+        query.must.push({
+            range: {
+                [field]: {
+                    lte,
+                    gte
+                }
             }
         });
     }

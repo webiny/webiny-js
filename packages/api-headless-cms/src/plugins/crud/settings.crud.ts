@@ -34,12 +34,12 @@ export default {
             contentModelLastChange: new Date(),
             get: async (): Promise<CmsSettingsType | null> => {
                 await checkPermissions();
-                
+
                 const [[settings]] = await db.read<CmsSettingsType>({
                     ...utils.defaults.db,
                     query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
                 });
-                
+
                 return settings;
             },
             install: async (): Promise<CmsSettingsType> => {
@@ -55,10 +55,10 @@ export default {
                     isInstalled: true,
                     contentModelLastChange: contentModel.savedOn
                 };
-                
+
                 // this will store the initial timestamp which is then used to determine if CMS Schema was changed.
                 context.cms.settings.contentModelLastChange = contentModel.savedOn;
-                
+
                 // mark as installed in settings
                 await db.create({
                     ...utils.defaults.db,
@@ -73,7 +73,7 @@ export default {
             },
             updateContentModelLastChange: async (): Promise<CmsSettingsType> => {
                 const updatedDate = new Date();
-                
+
                 await db.update({
                     ...utils.defaults.db,
                     query: {
@@ -84,9 +84,9 @@ export default {
                         lastContentModelChange: updatedDate
                     }
                 });
-                
+
                 context.cms.settings.contentModelLastChange = updatedDate;
-                
+
                 return {
                     isInstalled: true,
                     contentModelLastChange: updatedDate

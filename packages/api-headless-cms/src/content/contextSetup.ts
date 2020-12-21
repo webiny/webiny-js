@@ -32,7 +32,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
         throw new Error(`There is no locale "${context.cms.locale}" in the system.`);
     }
     context.cms.getLocale = () => locale;
-    
+
     const settings = await context.cms.settings.get();
     context.cms.getSettings = () => ({
         ...settings,

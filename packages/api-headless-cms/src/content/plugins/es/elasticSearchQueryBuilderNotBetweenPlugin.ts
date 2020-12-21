@@ -17,7 +17,7 @@ export const elasticSearchQueryBuilderNotBetweenPlugin = (): ElasticSearchQueryB
         const [gte, lte] = value;
         query.mustNot.push({
             range: {
-                [`${field}.keyword`]: {
+                [field]: {
                     lte,
                     gte
                 }
