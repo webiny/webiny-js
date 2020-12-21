@@ -302,7 +302,7 @@ type CmsContentModelListArgsType = {
 
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
-    list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
+    list: () => Promise<CmsContentModelType[]>;
     create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
     update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
     delete: (id: string) => Promise<void>;

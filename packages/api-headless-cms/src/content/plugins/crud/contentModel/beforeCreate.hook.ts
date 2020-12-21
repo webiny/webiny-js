@@ -8,11 +8,8 @@ export const beforeCreateHook = async (context: CmsContext, model: CmsContentMod
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {
         const modelIdCamelCase = camelCase(modelId);
-        const models = await context.cms.models.list({
-            where: {
-                modelId: modelIdCamelCase
-            },
-            limit: 1
+        const models = (await context.cms.models.list()).filter(model => {
+            return model.modelId === modelIdCamelCase;
         });
 
         if (models.length === 0) {
@@ -28,14 +25,13 @@ export const beforeCreateHook = async (context: CmsContext, model: CmsContentMod
 
     while (true) {
         if (counter > MAX_MODEL_ID_SEARCH_AMOUNT) {
-            throw new Error(`While loop reached ${MAX_MODEL_ID_SEARCH_AMOUNT}`);
+            throw new Error(
+                `While loop reached #${MAX_MODEL_ID_SEARCH_AMOUNT} when checking for unique "modelId".`
+            );
         }
         const modelIdCheck = `${modelIdCamelCase}${counter || ""}`;
-        const models = await context.cms.models.list({
-            where: {
-                modelId: modelIdCheck
-            },
-            limit: 1
+        const models = (await context.cms.models.list()).filter(model => {
+            return model.modelId === modelIdCheck;
         });
         if (models.length === 0) {
             model.modelId = modelIdCheck;
