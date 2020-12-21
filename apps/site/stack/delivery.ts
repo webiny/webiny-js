@@ -18,7 +18,6 @@ class Delivery {
             origins: [
                 {
                     originId: this.bucket.arn,
-                    originPath: "/root",
                     domainName: this.bucket.websiteEndpoint,
                     customOriginConfig: {
                         originProtocolPolicy: "http-only",
