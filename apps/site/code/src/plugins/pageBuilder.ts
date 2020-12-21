@@ -9,6 +9,7 @@ import linkPreload from "./linkPreload";
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
 import block from "@webiny/app-page-builder/render/plugins/elements/block";
 import grid from "@webiny/app-page-builder/render/plugins/elements/grid";
+import cell from "@webiny/app-page-builder/render/plugins/elements/cell";
 import icon from "@webiny/app-page-builder/render/plugins/elements/icon";
 import image from "@webiny/app-page-builder/render/plugins/elements/image";
 import text from "@webiny/app-page-builder/render/plugins/elements/text";
@@ -48,6 +49,7 @@ export default [
     document(),
     block(),
     grid(),
+    cell(),
     image(),
     icon(),
     text(),
