@@ -598,6 +598,14 @@ export type CmsSettingsPermissionType = SecurityPermission;
 export type CmsContentModelPermissionType = SecurityPermission<{
     own: boolean;
     rwd: string;
+    models?: {
+        // key is locale
+        [key: string]: string[]; // array of model.modelId values
+    };
+    groups?: {
+        // key is locale
+        [key: string]: string[]; // array of group.id values
+    };
 }>;
 
 export type CmsContentModelGroupPermissionType = SecurityPermission<{
@@ -609,4 +617,12 @@ export type CmsContentModelEntryPermissionType = SecurityPermission<{
     own: boolean;
     rwd: string;
     rcpu: string;
+    models?: {
+        // key is locale
+        [key: string]: string[]; // array of model.modelId values
+    };
+    groups?: {
+        // key is locale
+        [key: string]: string[]; // array of group.id values
+    };
 }>;
