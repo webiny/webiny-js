@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
+import get from "lodash/get";
+import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
-import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { useCrud } from "@webiny/app-admin/hooks/useCrud";
-import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 import {
     DataList,
     List,
@@ -13,17 +12,77 @@ import {
     ListItemMeta,
     ListActions
 } from "@webiny/ui/List";
+import { useRouter } from "@webiny/react-router";
+import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useQuery, useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
+import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import * as GQL from "./graphql";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
 const ContentModelGroupsDataList = () => {
-    const { actions, list } = useCrud();
+    const { history } = useRouter();
+    const { showSnackbar } = useSnackbar();
+    const client = useApolloClient();
+    const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
+
+    const { showConfirmation } = useConfirmationDialog();
+
+    const data = listQuery.loading ? [] : get(listQuery, "data.listContentModelGroups.data", []);
+    const groupId = new URLSearchParams(location.search).get("id");
+
+    const deleteItem = useCallback(
+        group => {
+            showConfirmation(async () => {
+                const response = await client.mutate({
+                    mutation: GQL.DELETE_CONTENT_MODEL_GROUP,
+                    variables: { id: group.id },
+                    update(cache, { data }) {
+                        const { error } = data.deleteContentModelGroup;
+                        if (error) {
+                            return;
+                        }
+
+                        // Delete the form from list cache
+                        const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
+                        const { listContentModelGroups } = cache.readQuery(gqlParams);
+                        const index = listContentModelGroups.data.findIndex(
+                            item => item.id === group.id
+                        );
+
+                        cache.writeQuery({
+                            ...gqlParams,
+                            data: {
+                                listContentModelGroups: dotProp.delete(
+                                    listContentModelGroups,
+                                    `data.${index}`
+                                )
+                            }
+                        });
+                    }
+                });
+
+                const { error } = response.data.deleteContentModelGroup;
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                showSnackbar(t`Content model group "{name}" deleted.`({ name: group.name }));
+
+                if (groupId === group.id) {
+                    history.push(`/cms/content-model-groups`);
+                }
+            });
+        },
+        [groupId]
+    );
 
     return (
         <DataList
-            {...list}
+            loading={listQuery.loading}
+            data={data}
             title={t`Content Model Groups`}
-            actions={<CurrentEnvironmentLabel style={{ justifyContent: "flex-end" }} />}
+            refresh={listQuery.refetch}
             sorters={[
                 {
                     label: t`Newest to oldest`,
@@ -43,17 +102,21 @@ const ContentModelGroupsDataList = () => {
                 }
             ]}
         >
-            {({ data, isSelected, select }) => (
+            {({ data }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (
-                        <ListItem key={item.id} selected={isSelected(item)}>
-                            <ListItemText onClick={() => select(item)}>
+                        <ListItem key={item.id} selected={item.id === groupId}>
+                            <ListItemText
+                                onClick={() =>
+                                    history.push(`/cms/content-model-groups?id=${item.id}`)
+                                }
+                            >
                                 {item.name}
                                 <ListItemTextSecondary>
-                                    {item.totalContentModels
-                                        ? t`{totalContentModels|count:1:content model:default:content models}`(
+                                    {item.contentModels.length
+                                        ? t`{contentModels|count:1:content model:default:content models}`(
                                               {
-                                                  totalContentModels: item.totalContentModels
+                                                  contentModels: item.contentModels.length
                                               }
                                           )
                                         : t`No content models`}
@@ -62,15 +125,7 @@ const ContentModelGroupsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <ConfirmationDialog>
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() => {
-                                                    showConfirmation(() => actions.delete(item));
-                                                }}
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                    <DeleteIcon onClick={() => deleteItem(item)} />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

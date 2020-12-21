@@ -33,6 +33,8 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     }
     context.cms.getLocale = () => locale;
 
+    // Need to load settings because of the timestamp of last change to content models.
+    // Based on that timestamp, we cache/refresh the schema definition.
     const settings = await context.cms.settings.get();
     context.cms.getSettings = () => ({
         ...settings,
@@ -43,6 +45,10 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
 export default (options: any = {}): ContextPlugin<CmsContext> => ({
     type: "context",
     apply: async context => {
+        if (context.http.method === "OPTIONS") {
+            return;
+        }
+
         const { type, locale } = extractHandlerHttpParameters(context);
 
         context.cms = {

@@ -10,12 +10,13 @@ const fields = `
 
 export const LIST_CONTENT_MODEL_GROUPS = gql`
     query CmsListContentModelGroups {
-        contentModelGroups: listContentModelGroups {
+        listContentModelGroups {
             data {
-                id
-                name
-                slug
-                totalContentModels
+                ${fields}
+                contentModels {
+                    id
+                    name
+                }
             }
         }
     }
@@ -40,6 +41,10 @@ export const CREATE_CONTENT_MODEL_GROUP = gql`
         contentModelGroup: createContentModelGroup(data: $data) {
             data {
                 ${fields}
+                contentModels {
+                    id
+                    name
+                }
             }
             error {
                 code

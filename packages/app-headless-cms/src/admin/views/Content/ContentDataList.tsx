@@ -12,7 +12,6 @@ import {
     ListItemTextSecondary,
     ListItemMeta
 } from "@webiny/ui/List";
-import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -30,7 +29,6 @@ const ContentDataList = ({ contentModel, dataList }) => {
         <DataList
             {...dataList}
             title={contentModel.pluralizedName}
-            actions={<CurrentEnvironmentLabel style={{ justifyContent: "flex-end" }} />}
         >
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">

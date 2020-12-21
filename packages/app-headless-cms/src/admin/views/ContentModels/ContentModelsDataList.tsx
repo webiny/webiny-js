@@ -9,7 +9,6 @@ import { ReactComponent as ViewListIcon } from "@webiny/app-headless-cms/admin/i
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { DELETE_CONTENT_MODEL } from "../../viewsGraphql";
-import CurrentEnvironmentLabel from "./../../components/CurrentEnvironmentLabel";
 
 import {
     DataList,
@@ -100,7 +99,6 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
         <DataList
             {...dataList}
             title={t`Content Models`}
-            actions={<CurrentEnvironmentLabel style={{ justifyContent: "flex-end" }} />}
             sorters={[
                 {
                     label: t`Newest to oldest`,
