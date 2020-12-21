@@ -4,7 +4,6 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "../DynamicListMultipleValues";
-import { appendTextToLabel } from "../dateTime/utils";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";
 import Time from "./Time";
@@ -60,10 +59,9 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 <Time
                                     field={{
                                         ...props.field,
-                                        label: appendTextToLabel(
-                                            props.field.label,
+                                        label:
+                                            props.field.label +
                                             t` Value {number}`({ number: index + 1 })
-                                        )
                                     }}
                                     bind={bind.index}
                                     label={t`Value {number}`({ number: index + 1 })}
@@ -77,10 +75,9 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                 bind={bind.index}
                                 field={{
                                     ...props.field,
-                                    label: appendTextToLabel(
-                                        props.field.label,
+                                    label:
+                                        props.field.label +
                                         t` Value {number}`({ number: index + 1 })
-                                    )
                                 }}
                                 type={field.settings.type}
                                 trailingIcon={trailingIcon}
