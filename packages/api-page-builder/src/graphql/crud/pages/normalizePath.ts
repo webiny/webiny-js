@@ -1,11 +1,8 @@
-import trimStart from "lodash/trimStart";
-import trimEnd from "lodash/trimStart";
+import trim from "lodash/trim";
 
 export default (value: string) => {
     if (typeof value === string) {
-        value = "/" + trimStart(value, "/");
-        value = trimEnd(value, "/");
-        return value;
+        return "/" + trim(value, "/");
     }
     return null;
 };
