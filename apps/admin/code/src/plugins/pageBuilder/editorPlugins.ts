@@ -14,6 +14,7 @@ import social from "@webiny/app-page-builder/editor/plugins/elements/social";
 import code from "@webiny/app-page-builder/editor/plugins/elements/code";
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
+import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
 // Icons
 import icons from "@webiny/app-page-builder/editor/plugins/icons";
 // Element actions
@@ -81,6 +82,7 @@ export default [
     social,
     code,
     pagesList(),
+    heading(),
     // grid presets
     ...gridPresets,
     // Icons
