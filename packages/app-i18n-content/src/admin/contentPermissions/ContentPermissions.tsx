@@ -77,7 +77,7 @@ export const ContentPermissions = ({ parent, value, onChange }) => {
                                 <Bind name={"locales"}>
                                     <CheckboxGroup
                                         label={t`Available Locales`}
-                                        description={t`The user will be able to manage content in the selected locales.`}
+                                        description={t`The user will be able to access content in the selected locales.`}
                                     >
                                         {({ onChange, getValue }) =>
                                             getLocales().map(({ code }) => (
