@@ -1,3 +1,5 @@
+import { PbContext } from "@webiny/api-page-builder/graphql/types";
+
 export const getESPageData = (context: PbContext, page) => {
     return {
         __type: "page",
