@@ -32,6 +32,8 @@ type CreateElasticSearchParamsType = {
 type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
     fields: FieldsType;
+    parentObject?: string;
+    model: CmsContentModelType;
 };
 type CreateElasticSearchQueryArgsType = {
     model: CmsContentModelType;
@@ -61,37 +63,40 @@ const parseWhereKey = (key: string) => {
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-const creteElasticSearchSortParams = ({
-    sort,
-    fields
-}: CreateElasticSearchSortParamsType): ElasticSearchSortFieldsType[] => {
-    return (
-        sort
-            .map(value => {
-                const match = value.match(sortRegExp);
-                if (!match) {
-                    throw new Error(`Cannot sort by "${value}".`);
-                }
-                const [field, order] = match;
-                if (!fields[field]) {
-                    // TODO verify that we want to throw an error
-                    throw new Error(`It is not possible to sort by field "${field}".`);
-                }
-                if (!fields[field].isSortable) {
-                    // TODO verify that we want to throw an error
-                    throw new Error(`Field "${field}" is not sortable.`);
-                }
-                return {
-                    [field]: {
-                        order: order.toLowerCase() === "asc" ? "asc" : "desc",
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        unmapped_type: fields[field].unmappedType || undefined
-                    }
-                };
-            })
-            // TODO if throwing error, remove filtering
-            .filter(value => !!value)
-    );
+const creteElasticSearchSortParams = (
+    args: CreateElasticSearchSortParamsType
+): ElasticSearchSortFieldsType[] => {
+    const { sort, fields, model, parentObject } = args;
+    const checkIsSystemField = (field: string) => {
+        return !!model[field];
+    };
+    const withParentObject = (field: string) => {
+        if (!parentObject) {
+            return null;
+        }
+        return `${parentObject}.${field}`;
+    };
+    return sort.map(value => {
+        const match = value.match(sortRegExp);
+        if (!match) {
+            throw new Error(`Cannot sort by "${value}".`);
+        }
+        const [field, order] = match;
+        const isSystemField = checkIsSystemField(field);
+        if (!fields[field] && !isSystemField) {
+            throw new Error(`It is not possible to sort by field "${field}".`);
+        } else if (!fields[field].isSortable && !isSystemField) {
+            throw new Error(`Field "${field}" is not sortable.`);
+        }
+        const fieldName = isSystemField ? field : withParentObject(field);
+        return {
+            [fieldName]: {
+                order: order.toLowerCase() === "asc" ? "asc" : "desc",
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                unmapped_type: fields[field].unmappedType || undefined
+            }
+        };
+    });
 };
 
 const execElasticSearchBuildQueryPlugins = (
@@ -214,7 +219,7 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
                 }
             }
         },
-        sort: creteElasticSearchSortParams({ sort, fields }),
+        sort: creteElasticSearchSortParams({ sort, fields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
         search_after: decodeElasticSearchCursor(after)
