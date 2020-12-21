@@ -6,7 +6,8 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
-import omit from "@ramda/omit";
+import trimStart from "lodash/trimStart";
+import omit from "lodash/omit";
 import getPKPrefix from "./utils/getPKPrefix";
 import {
     PageHookPlugin,
@@ -402,7 +403,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
-                    return omit<Page>(["PK", "SK"], data);
+                    return omit(data, ["PK", "SK"]);
                 },
 
                 async createFrom(from) {
@@ -835,7 +836,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 PK: PK_PAGE(),
                                 SK: publishedPageData.id
                             },
-                            data: omit(["PK", "SK"], previouslyPublishedPage)
+                            data: omit(previouslyPublishedPage, ["PK", "SK"])
                         });
 
                         batch
@@ -1063,7 +1064,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             PK: PK_PAGE(),
                             SK: pageId
                         },
-                        data: omit(["PK", "SK"], page)
+                        data: omit(page, ["PK", "SK"])
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
@@ -1141,7 +1142,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             PK: PK_PAGE(),
                             SK: pageId
                         },
-                        data: omit(["PK", "SK"], page)
+                        data: omit(page, ["PK", "SK"])
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
@@ -1219,7 +1220,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             PK: PK_PAGE(),
                             SK: pageId
                         },
-                        data: omit(["PK", "SK"], page)
+                        data: omit(page, ["PK", "SK"])
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
