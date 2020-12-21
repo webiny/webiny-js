@@ -13,9 +13,9 @@ export const GET_PUBLISHED_PAGE = () => {
         .join("\n");
 
     return gql`
-        query PbGetPublishedPage($id: ID, $url: String, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean, $preview: Boolean) {
+        query PbGetPublishedPage($id: ID, $path: String, $returnNotFoundPage: Boolean, $returnErrorPage: Boolean, $preview: Boolean) {
             pageBuilder {
-                getPublishedPage(id: $id, url: $url, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage, preview: $preview) {
+                getPublishedPage(id: $id, path: $path, returnNotFoundPage: $returnNotFoundPage, returnErrorPage: $returnErrorPage, preview: $preview) {
                     data {
                         id
                         title

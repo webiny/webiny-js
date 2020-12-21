@@ -10,7 +10,7 @@ import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
  * The `preview` query parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
 const Page = () => {
-    const url = location.pathname;
+    const path = location.pathname;
     const query = new URLSearchParams(location.search);
     const id = query.get("preview");
 
@@ -18,7 +18,7 @@ const Page = () => {
     const getPublishedPageQuery = useQuery(GET_PUBLISHED_PAGE(), {
         variables: {
             id,
-            url,
+            path,
             returnErrorPage: true, // API will immediately return the data for the error page, if one occurred.
             returnNotFoundPage: true, // API will immediately return the data for the not-found page, if none was found.
             preview: !!id
