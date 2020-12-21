@@ -1,13 +1,18 @@
 import HandlerClient from "./HandlerClient";
 import { Plugin } from "@webiny/plugins/types";
 
-export type InvokeArgs = { name: string; payload?: { [key: string]: any }; await?: boolean };
-export type InvokeResult = { [key: string]: any };
+export type InvokeArgs<TInvokeArgsPayload = any> = {
+    name: string;
+    payload?: TInvokeArgsPayload;
+    await?: boolean;
+};
 
 export type HandlerClientPlugin = Plugin & {
     type: "handler-client";
     name: "handler-client";
-    invoke: <T = InvokeResult>(params: InvokeArgs) => Promise<T>;
+    invoke: <TInvokeArgsPayload = Record<string, any>, TResponse = Record<string, any>>(
+        params: InvokeArgs<TInvokeArgsPayload>
+    ) => Promise<TResponse>;
 };
 
 export type ClientContext = {
