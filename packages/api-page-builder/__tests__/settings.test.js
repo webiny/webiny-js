@@ -49,18 +49,18 @@ describe("Settings Test", () => {
         [response] = await updateSettings({
             data: {
                 name: "test 1",
-                websiteUrl: "https://www.test.com",
-                websitePreviewUrl: "https://preview.test.com",
+                websiteUrl: "https://www.test.com/",
+                websitePreviewUrl: "https://preview.test.com/",
                 prerendering: {
                     app: {
-                        url: "https://www.app.com"
+                        url: "https://www.app.com/"
                     },
                     storage: { name: "storage-name" }
                 },
                 social: {
-                    facebook: "https://www.facebook.com",
-                    instagram: "https://www.instagram.com",
-                    twitter: "https://www.twitter.com",
+                    facebook: "https://www.facebook.com/",
+                    instagram: "https://www.instagram.com/",
+                    twitter: "https://www.twitter.com/",
                     image: {
                         id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
                         src:
@@ -85,9 +85,9 @@ describe("Settings Test", () => {
                                 storage: { name: "storage-name" }
                             },
                             social: {
-                                instagram: "https://www.instagram.com",
-                                facebook: "https://www.facebook.com",
-                                twitter: "https://www.twitter.com",
+                                instagram: "https://www.instagram.com/",
+                                facebook: "https://www.facebook.com/",
+                                twitter: "https://www.twitter.com/",
                                 image: {
                                     id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
                                     src:
@@ -119,9 +119,9 @@ describe("Settings Test", () => {
                                 storage: { name: "storage-name" }
                             },
                             social: {
-                                instagram: "https://www.instagram.com",
-                                facebook: "https://www.facebook.com",
-                                twitter: "https://www.twitter.com",
+                                instagram: "https://www.instagram.com/",
+                                facebook: "https://www.facebook.com/",
+                                twitter: "https://www.twitter.com/",
                                 image: {
                                     id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
                                     src:
