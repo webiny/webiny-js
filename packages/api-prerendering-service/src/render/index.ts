@@ -25,6 +25,8 @@ export type Args = {
 export type HandlerArgs = Args | Args[];
 export type HandlerResponse = { data: Record<string, any>; error: Record<string, any> };
 
+const log = (message, ...rest) => console.log(`[api-prerendering-service] ${message}`, ...rest);
+
 export default (configuration?: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>> => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
@@ -32,6 +34,8 @@ export default (configuration?: Configuration): HandlerPlugin<ArgsContext<Handle
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
 
         const promises = [];
+
+        log("Received args: ", JSON.stringify(invocationArgs));
 
         try {
             for (let i = 0; i < handlerArgs.length; i++) {
