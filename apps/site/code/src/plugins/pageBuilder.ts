@@ -13,7 +13,6 @@ import grid from "@webiny/app-page-builder/render/plugins/elements/grid";
 import icon from "@webiny/app-page-builder/render/plugins/elements/icon";
 import image from "@webiny/app-page-builder/render/plugins/elements/image";
 import text from "@webiny/app-page-builder/render/plugins/elements/text";
-import spacer from "@webiny/app-page-builder/render/plugins/elements/spacer";
 import button from "@webiny/app-page-builder/render/plugins/elements/button";
 import codepen from "@webiny/app-page-builder/render/plugins/elements/embeds/codepen";
 import codesandbox from "@webiny/app-page-builder/render/plugins/elements/embeds/codesandbox";
@@ -54,7 +53,6 @@ export default [
     image(),
     icon(),
     text(),
-    spacer(),
     button(),
     codepen(),
     codesandbox(),
