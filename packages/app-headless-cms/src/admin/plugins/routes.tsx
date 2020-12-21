@@ -102,7 +102,7 @@ const plugins: RoutePlugin[] = [
                 )}
             />
         )
-    },
+    }
 ];
 
 export default plugins;

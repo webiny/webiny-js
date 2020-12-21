@@ -65,7 +65,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                     newValue.push(permission);
                 }
             });
-            
+
             onChange(newValue);
         },
         [parent.id, value]

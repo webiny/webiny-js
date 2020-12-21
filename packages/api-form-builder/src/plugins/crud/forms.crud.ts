@@ -163,7 +163,7 @@ export default {
 
                     return form;
                 },
-                async getLatestPublishedFormRevision(formId)  {
+                async getLatestPublishedFormRevision(formId) {
                     // Make sure we have a unique form ID, and not a revision ID
                     const [uniqueId] = formId.split("#");
 

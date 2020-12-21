@@ -23,7 +23,7 @@ export function CmsProvider(props) {
             uri: `${process.env.REACT_APP_API_URL}/cms/manage/${currentLocale}`
         });
     }
-   
+
     const value = {
         apolloClient: apolloClientsCache[currentLocale]
     };
