@@ -34,7 +34,9 @@ export const handler = createHandler(
     // Add File storage S3 plugin for API file manager.
     fileManagerS3(),
     pageBuilderPlugins({
-        renderingFunction: process.env.PB_RENDER_FUNCTION
+        prerendering: {
+            handler: process.env.PRERENDERING_HANDLER_ARN
+        }
     }),
     formBuilderPlugins(),
 

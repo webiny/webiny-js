@@ -22,7 +22,7 @@ const api = new Graphql({
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DEBUG: String(process.env.DEBUG),
         S3_BUCKET: fileManager.bucket.id,
-        PB_RENDER_FUNCTION: prerenderingService.functions.render.arn
+        PRERENDERING_HANDLER_ARN: prerenderingService.functions.render.arn
     }
 });
 
