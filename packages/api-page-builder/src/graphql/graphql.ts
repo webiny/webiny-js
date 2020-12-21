@@ -1,4 +1,3 @@
-import { merge } from "lodash";
 import menus from "./graphql/menus.gql";
 import pages from "./graphql/pages.gql";
 import pageElements from "./graphql/pageElements.gql";
@@ -56,14 +55,14 @@ export default [
                     pageBuilder: PbMutation
                 }
             `,
-            resolvers: merge({
+            resolvers: {
                 Query: {
                     pageBuilder: emptyResolver
                 },
                 Mutation: {
                     pageBuilder: emptyResolver
                 }
-            })
+            }
         }
     },
     menus,
