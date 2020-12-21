@@ -12,6 +12,7 @@ const SettingsModel = withFields({
     installed: boolean({ value: false }),
     name: string({ validation: "required,maxLength:500" }),
     websiteUrl: string({ validation: "url,maxLength:500" }),
+    websitePreviewUrl: string({ validation: "url,maxLength:500" }),
     favicon: object({}),
     logo: object({}),
     prerendering: fields({

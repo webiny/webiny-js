@@ -28,6 +28,7 @@ describe("Settings Test", () => {
                     getSettings: {
                         data: {
                             websiteUrl: null,
+                            websitePreviewUrl: null,
                             prerendering: null,
                             name: null,
                             social: {
@@ -49,6 +50,7 @@ describe("Settings Test", () => {
             data: {
                 name: "test 1",
                 websiteUrl: "https://www.test.com",
+                websitePreviewUrl: "https://preview.test.com",
                 prerendering: {
                     app: {
                         url: "https://www.app.com"
@@ -75,6 +77,7 @@ describe("Settings Test", () => {
                         data: {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
+                            websitePreviewUrl: "https://preview.test.com",
                             prerendering: {
                                 app: {
                                     url: "https://www.app.com"
@@ -108,6 +111,7 @@ describe("Settings Test", () => {
                         data: {
                             name: "test 1",
                             websiteUrl: "https://www.test.com",
+                            websitePreviewUrl: "https://preview.test.com",
                             prerendering: {
                                 app: {
                                     url: "https://www.app.com"

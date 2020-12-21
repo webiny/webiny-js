@@ -24,8 +24,17 @@ export type Settings = {
     installed: boolean;
     name: string;
     websiteUrl: string;
+    websitePreviewUrl: string;
     favicon: File;
     logo: File;
+    prerendering: {
+        app: {
+            url: string;
+        };
+        storage: {
+            name: string;
+        };
+    };
     social: {
         facebook: string;
         twitter: string;

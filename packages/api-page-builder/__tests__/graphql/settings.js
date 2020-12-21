@@ -2,6 +2,7 @@ export const DATA_FIELD = /* GraphQL */ `
     {
         name
         websiteUrl
+        websitePreviewUrl
         prerendering {
             app {
                 url
