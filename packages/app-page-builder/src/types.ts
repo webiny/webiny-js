@@ -527,3 +527,12 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
 };
 
 export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue?: boolean };
+
+export type PbConfigPluginType = Plugin & {
+    type: "pb-config";
+    config(): PbConfigType;
+};
+
+export type PbConfigType = {
+    maxEventActionsNesting: number;
+};
