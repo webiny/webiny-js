@@ -20,6 +20,7 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
+import normalizePath from "./pages/normalizePath";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
 import {
     getESLatestPageData,
@@ -252,9 +253,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     }
 
                     // 2. If we received `args.path`, then...
+                    const normalizedPath = normalizePath(args.path);
                     const [[pagePublishedPath]] = await db.read<PagePublishedPath>({
                         ...defaults.db,
-                        query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: args.path },
+                        query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath },
                         limit: 1
                     });
 
@@ -271,6 +273,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     if (page) {
                         return page;
                     }
+
                     throw notFoundError;
                 },
 
@@ -283,7 +286,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     }
 
                     const title = "Untitled";
-                    const pagePath = path.join(category.url, "untitled-" + uniqid.time());
+                    const pagePath = normalizePath(
+                        path.join(category.url, "untitled-" + uniqid.time())
+                    );
 
                     const identity = context.security.getIdentity();
                     new CreateDataModel().populate({ category: category.slug }).validate();
