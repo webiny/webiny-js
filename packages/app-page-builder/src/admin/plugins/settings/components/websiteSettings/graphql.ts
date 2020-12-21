@@ -5,6 +5,7 @@ const fields = /* GraphQL */ `
         id
         data {
             websiteUrl
+            websitePreviewUrl
             name
             logo {
                 id
@@ -18,6 +19,10 @@ const fields = /* GraphQL */ `
                 facebook
                 twitter
                 instagram
+                image {
+                    id
+                    src
+                }
             }
         }
         error {
