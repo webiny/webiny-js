@@ -108,7 +108,8 @@ const SearchBar = () => {
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
-                    element
+                    element,
+                    history: true
                 })
             );
 

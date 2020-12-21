@@ -98,7 +98,8 @@ const OEmbedComponent = (props: OEmbedProps) => {
                 };
                 eventActionHandler.trigger(
                     new UpdateElementActionEvent({
-                        element: newElement
+                        element: newElement,
+                        history: true
                     })
                 );
             }

@@ -68,7 +68,8 @@ export default (): PbEditorPageElementPlugin => {
             const block = addElementToParentHelper(element, target, position);
 
             const result = updateElementAction(state, meta, {
-                element: block
+                element: block,
+                history: true
             }) as EventActionHandlerActionCallableResponseType;
 
             result.actions.push(

@@ -67,7 +67,8 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
     const updateElement = (element: PbElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
-                element
+                element,
+                history: true
             })
         );
     };

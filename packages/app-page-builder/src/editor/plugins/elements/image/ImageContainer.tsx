@@ -48,7 +48,8 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
                             }
                         }
                     },
-                    merge: true
+                    merge: true,
+                    history: true
                 })
             );
         },

@@ -20,7 +20,7 @@ export const resizeEndAction: EventActionCallableType<ResizeEndActionArgsType> =
 ) => {
     const actions = [];
     if (element) {
-        actions.push(new UpdateElementActionEvent({ element }));
+        actions.push(new UpdateElementActionEvent({ element, history: true }));
     }
     return {
         state: {

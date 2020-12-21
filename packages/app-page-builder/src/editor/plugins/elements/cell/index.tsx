@@ -70,7 +70,8 @@ const cellPlugin: PbEditorPageElementPlugin = {
             meta,
             updateElementAction,
             {
-                element: parent
+                element: parent,
+                history: true
             }
         );
 

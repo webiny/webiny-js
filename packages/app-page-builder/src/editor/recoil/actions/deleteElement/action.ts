@@ -44,7 +44,8 @@ const runUpdateElementAction = (
     child: PbElement
 ): EventActionHandlerActionCallableResponseType => {
     const result = updateElementAction(state, meta, {
-        element: parent
+        element: parent,
+        history: true
     }) as EventActionHandlerActionCallableResponseType;
     const parentResult = updateParentElement({ ...state, ...result.state }, meta, parent, child);
     return {
