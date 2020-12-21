@@ -781,16 +781,15 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         previouslyPublishedPage.status = STATUS_UNPUBLISHED;
 
-                        await db.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(),
-                                SK: publishedPageData.id
-                            },
-                            data: omit(previouslyPublishedPage, ["PK", "SK"])
-                        });
-
                         batch
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE(),
+                                    SK: publishedPageData.id
+                                },
+                                data: previouslyPublishedPage
+                            })
                             .update({
                                 ...defaults.db,
                                 query: {
