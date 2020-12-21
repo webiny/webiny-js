@@ -1,7 +1,6 @@
 /**
  * Plugins specific to our "site" app.
  */
-import addons from "./addons";
 import linkPreload from "./linkPreload";
 
 /**
@@ -44,7 +43,6 @@ import padding from "@webiny/app-page-builder/render/plugins/elementSettings/pad
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 
 export default [
-    addons(),
     linkPreload(),
     // Page elements
     document(),
