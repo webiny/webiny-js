@@ -4,10 +4,6 @@ import { noopener } from "posthtml-noopener";
 import injectApolloState from "./injectApolloState";
 import injectApolloPrefetching from "./injectApolloPrefetching";
 
-const fileSafeId = url => {
-    return "page--" + url.replace(/\//g, "-");
-};
-
 const windowSet = (page, name, value) => {
     page.evaluateOnNewDocument(`
     Object.defineProperty(window, '${name}', {
@@ -45,7 +41,7 @@ export default async (url: string): Promise<File[]> => {
     await browserPage.setRequestInterception(true);
 
     const prefetchApolloState = [];
-    const apolloCache = [];
+    const gqlCache = [];
 
     browserPage.on("request", request => {
         if (skipResources.includes(request.resourceType())) {
@@ -67,10 +63,10 @@ export default async (url: string): Promise<File[]> => {
                 const { operationName, query, variables } = operations[i];
 
                 if (operationName === "PbGetPublishedPage") {
-                    prefetchApolloState.push(`/cache/${fileSafeId(variables.url)}/apollo.json`);
+                    prefetchApolloState.push(`${variables.path}/graphql.json`);
                 }
                 requests.push(`${url}: ${operationName} ${JSON.stringify(variables)}`);
-                apolloCache.push({
+                gqlCache.push({
                     query,
                     variables,
                     data: responses[i].data
@@ -104,7 +100,7 @@ export default async (url: string): Promise<File[]> => {
         },
         {
             name: "graphql.json",
-            body: JSON.stringify(apolloCache),
+            body: JSON.stringify(gqlCache),
             type: "application/json"
         },
         {
