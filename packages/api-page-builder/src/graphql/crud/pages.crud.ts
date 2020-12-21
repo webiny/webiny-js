@@ -8,13 +8,22 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import omit from "@ramda/omit";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PageHookPlugin, PbContext, Page, HandlerConfiguration } from "@webiny/api-page-builder/types";
+import {
+    PageHookPlugin,
+    PbContext,
+    Page,
+    HandlerConfiguration
+} from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
+import {
+    HandlerArgs as RenderHandlerArgs,
+    Args as RenderArgs
+} from "@webiny/api-prerendering-service/render";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -1238,23 +1247,33 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         return;
                     }
 
-                    return;
+                    const settings = await context.pageBuilder.settings.get();
+
+                    const appUrl = settings?.prerendering?.app?.url;
+                    const storageName = settings?.prerendering?.storage?.name;
+
+                    if (!appUrl || !storageName) {
+                        return;
+                    }
+
                     const { paths, tags } = args;
 
                     const tenant = context.security.getTenant().id;
                     const locale = i18nContent.getLocale().code;
 
-                    if (paths) {
-                        return await context.handlerClient.invoke({
+                    if (Array.isArray(paths)) {
+                        return await context.handlerClient.invoke<RenderHandlerArgs>({
                             name: configuration.prerendering.handler,
                             await: false,
-                            payload: {
-                                paths: paths.map(path => ({
-                                    path,
-                                    tenant,
-                                    locale
-                                }))
-                            }
+                            payload: paths.map<RenderArgs>(pagePath => ({
+                                url: appUrl + pagePath,
+                                configuration: {
+                                    storage: {
+                                        folder: trimStart(pagePath, "/"),
+                                        name: storageName
+                                    }
+                                }
+                            }))
                         });
                     }
 
