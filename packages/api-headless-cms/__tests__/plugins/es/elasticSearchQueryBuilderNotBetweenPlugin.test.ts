@@ -1,5 +1,6 @@
 import { elasticSearchQueryBuilderNotBetweenPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderNotBetweenPlugin";
 import { createBlankQuery } from "./helpers";
+import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderNotBetweenPlugin", () => {
     const plugin = elasticSearchQueryBuilderNotBetweenPlugin();
@@ -11,12 +12,12 @@ describe("elasticSearchQueryBuilderNotBetweenPlugin", () => {
             field: "id",
             value: [100, 200]
         });
-        expect(query).toEqual({
-            range: [],
+
+        const expected: ElasticSearchQueryType = {
             mustNot: [
                 {
                     range: {
-                        "id.keyword": {
+                        id: {
                             lte: 200,
                             gte: 100
                         }
@@ -24,7 +25,9 @@ describe("elasticSearchQueryBuilderNotBetweenPlugin", () => {
                 }
             ],
             must: [],
-            match: []
-        });
+            match: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
     });
 });

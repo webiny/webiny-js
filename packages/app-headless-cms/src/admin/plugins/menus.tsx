@@ -1,7 +1,7 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { useSecurity, SecureView } from "@webiny/app-security";
-import { AdminMenuPlugin, AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
+import { useSecurity } from "@webiny/app-security";
+import { AdminMenuPlugin } from "@webiny/app-admin/types";
 import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
 import ContentModelMenuItems from "./menus/ContentModelMenuItems";
 

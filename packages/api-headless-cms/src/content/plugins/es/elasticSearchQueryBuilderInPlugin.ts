@@ -4,11 +4,19 @@ export const elasticSearchQueryBuilderInPlugin = (): ElasticSearchQueryBuilderPl
     type: "elastic-search-query-builder",
     name: "elastic-search-query-builder-in",
     targetOperation: "in",
-    apply(query, { field, value }) {
-        query.must.push({
-            term: {
-                [`${field}.keyword`]: value
-            }
+    apply(query, { field, value: values }) {
+        if (Array.isArray(values) === false || values.length === 0) {
+            throw new Error(
+                `You cannot filter field "${field}" with "in" operator and not send an array of values.`
+            );
+        }
+        const should = values.map(value => {
+            return {
+                term: {
+                    [field]: value
+                }
+            };
         });
+        query.should.push(...should);
     }
 });

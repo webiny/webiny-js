@@ -1,5 +1,6 @@
 import { elasticSearchQueryBuilderBetweenPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderBetweenPlugin";
 import { createBlankQuery } from "./helpers";
+import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderBetweenPlugin", () => {
     const plugin = elasticSearchQueryBuilderBetweenPlugin();
@@ -11,19 +12,23 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
             field: "id"
         });
 
-        expect(query).toEqual({
-            range: [
+        const expected: ElasticSearchQueryType = {
+            mustNot: [],
+            must: [
                 {
-                    [`id.keyword`]: {
-                        lte: 110,
-                        gte: 100
+                    range: {
+                        id: {
+                            lte: 110,
+                            gte: 100
+                        }
                     }
                 }
             ],
-            mustNot: [],
-            must: [],
-            match: []
-        });
+            match: [],
+            should: []
+        };
+
+        expect(query).toEqual(expected);
     });
 
     it("should apply multiple between correctly", () => {
@@ -37,29 +42,34 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
         const to = new Date();
         to.setTime(from.getTime() + 1000000);
         plugin.apply(query, {
-            value: [from.toISOString(), to.toISOString()],
+            value: [from, to],
             field: "date"
         });
 
-        expect(query).toEqual({
-            range: [
+        const expected: ElasticSearchQueryType = {
+            mustNot: [],
+            must: [
                 {
-                    [`id.keyword`]: {
-                        lte: 110,
-                        gte: 100
+                    range: {
+                        id: {
+                            lte: 110,
+                            gte: 100
+                        }
                     }
                 },
                 {
-                    [`date.keyword`]: {
-                        lte: to.toISOString(),
-                        gte: from.toISOString()
+                    range: {
+                        date: {
+                            lte: to,
+                            gte: from
+                        }
                     }
                 }
             ],
-            mustNot: [],
-            must: [],
-            match: []
-        });
+            match: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
     });
 
     it("should throw an error when array not sent", () => {

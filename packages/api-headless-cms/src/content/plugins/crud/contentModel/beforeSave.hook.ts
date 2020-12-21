@@ -8,7 +8,10 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
     if (titleFieldId) {
         const target = fields.find(f => f.fieldId === titleFieldId);
         if (!target) {
-            throw new Error(`Field "${titleFieldId}" does not exist in the model!`, "VALIDATION_ERROR");
+            throw new Error(
+                `Field "${titleFieldId}" does not exist in the model!`,
+                "VALIDATION_ERROR"
+            );
         }
     }
 

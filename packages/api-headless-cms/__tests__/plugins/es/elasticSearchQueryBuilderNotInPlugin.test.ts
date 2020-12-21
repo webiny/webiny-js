@@ -1,5 +1,6 @@
 import { elasticSearchQueryBuilderNotInPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderNotInPlugin";
 import { createBlankQuery } from "./helpers";
+import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderNotInPlugin", () => {
     const plugin = elasticSearchQueryBuilderNotInPlugin();
@@ -9,20 +10,31 @@ describe("elasticSearchQueryBuilderNotInPlugin", () => {
 
         plugin.apply(query, {
             field: "name",
-            value: ["firstName", "lastName", "middleName"]
+            value: ["John", "Doe", "P."]
         });
-        expect(query).toEqual({
-            range: [],
+        const expected: ElasticSearchQueryType = {
             mustNot: [
                 {
                     term: {
-                        "name.keyword": ["firstName", "lastName", "middleName"]
+                        "name.keyword": "John"
+                    }
+                },
+                {
+                    term: {
+                        "name.keyword": "Doe"
+                    }
+                },
+                {
+                    term: {
+                        "name.keyword": "P."
                     }
                 }
             ],
             must: [],
-            match: []
-        });
+            match: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
     });
 
     it("should throw an error when passing a string", () => {

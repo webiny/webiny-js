@@ -93,9 +93,9 @@ export const checkOwnership = (
     if (!permission.own) {
         return;
     }
-    
+
     const identity = context.security.getIdentity();
-    
+
     if (!identity || record[field].id !== identity.id) {
         throw new NotAuthorizedError();
     }

@@ -6,6 +6,10 @@ import { elasticSearchQueryBuilderNotBetweenPlugin } from "./elasticSearchQueryB
 import { elasticSearchQueryBuilderNotPlugin } from "./elasticSearchQueryBuilderNotPlugin";
 import { elasticSearchQueryBuilderNotContainsPlugin } from "./elasticSearchQueryBuilderNotContainsPlugin";
 import { elasticSearchQueryBuilderNotInPlugin } from "./elasticSearchQueryBuilderNotInPlugin";
+import { elasticSearchQueryBuilderGtePlugin } from "./elasticSearchQueryBuilderGtePlugin";
+import { elasticSearchQueryBuilderGtPlugin } from "./elasticSearchQueryBuilderGtPlugin";
+import { elasticSearchQueryBuilderLtePlugin } from "./elasticSearchQueryBuilderLtePlugin";
+import { elasticSearchQueryBuilderLtPlugin } from "./elasticSearchQueryBuilderLtPlugin";
 
 export default () => [
     elasticSearchQueryBuilderBetweenPlugin(),
@@ -15,5 +19,9 @@ export default () => [
     elasticSearchQueryBuilderNotBetweenPlugin(),
     elasticSearchQueryBuilderNotContainsPlugin(),
     elasticSearchQueryBuilderNotInPlugin(),
-    elasticSearchQueryBuilderNotPlugin()
+    elasticSearchQueryBuilderNotPlugin(),
+    elasticSearchQueryBuilderGtePlugin(),
+    elasticSearchQueryBuilderGtPlugin(),
+    elasticSearchQueryBuilderLtePlugin(),
+    elasticSearchQueryBuilderLtPlugin()
 ];

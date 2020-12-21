@@ -4,6 +4,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
 import {
     CmsContentModelEntryContextType,
+    CmsContentModelEntryListWhereType,
     CmsContentModelEntryPermissionType,
     CmsContentModelEntryType,
     CmsContentModelType,
@@ -12,9 +13,13 @@ import {
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
 import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
-import { createElasticSearchParams } from "./contentModelEntry/createElasticSearchParams";
+import {
+    createElasticSearchParams,
+    createElasticSearchLimit
+} from "./contentModelEntry/elasticSearchHelpers";
 import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
+import { SecurityPermission } from "@webiny/api-security/types";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -45,6 +50,34 @@ const getESPublishedEntryData = (entry: CmsContentModelEntryType) => {
     return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
+type FilterModelsArgType = {
+    context: CmsContext;
+    permission: SecurityPermission;
+    where?: CmsContentModelEntryListWhereType;
+};
+const filterModels = async ({
+    context,
+    where,
+    permission
+}: FilterModelsArgType): Promise<string[] | undefined> => {
+    // TODO change when @Pavel910 creates permissions from his end
+    if (!permission.onlyCertainModels) {
+        if (!where || !where.modelId_in) {
+            return undefined;
+        }
+        return where.modelId_in;
+    }
+    const models = await context.cms.models.list();
+    if (!where || !where.modelId_in) {
+        return models.map(m => m.id);
+    }
+    return models
+        .filter(model => {
+            return where.modelId_in.includes(model.id);
+        })
+        .map(m => m.id);
+};
+
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
@@ -68,32 +101,45 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const entries: CmsContentModelEntryContextType = {
             get: async (model, args) => {
-                // TODO: implement the same way as the "list" using where/sort parameters, but limit to 1
-
-                // NOTE: this is a temporary implementation to get tests to work
-                const [[entry]] = await db.read<CmsContentModelEntryType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_ENTRY(), SK: args.where.id }
+                const [[item]] = await context.cms.entries.list(model, {
+                    ...args,
+                    limit: 1
                 });
-
-                if (!entry) {
+                if (!item) {
                     throw new NotFoundError(`Entry not found!`);
                 }
-
-                return entry;
+                return item;
             },
-            list: async (model: CmsContentModelType, args = {}) => {
-                const limit = args.limit ? (args.limit >= 10000 ? 9999 : args.limit) : 50;
+            list: async (model: CmsContentModelType, args = {}, options = {}) => {
+                const permission = await checkPermissions({ rwd: "r" });
+
+                const limit = createElasticSearchLimit(args.limit, 50);
+
+                // Possibly only get records which are owned by current user
+                const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
+
+                // filter out models that user cannot access
+                const filteredModels = await filterModels({
+                    context,
+                    permission,
+                    where: args.where
+                });
 
                 const body = createElasticSearchParams({
                     model,
                     args: {
                         ...args,
+                        where: {
+                            ...(args.where || {}),
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            modelId_in: filteredModels
+                        },
                         limit
                     },
                     context,
-                    onlyOwned: false,
-                    parentObject: "values"
+                    ownedBy,
+                    parentObject: "values",
+                    options
                 });
 
                 const response = await elasticSearch.search({
@@ -124,6 +170,18 @@ export default (): ContextPlugin<CmsContext> => ({
                 return [items, meta];
             },
             listLatest: async function(model) {
+                await checkPermissions({ rwd: "r" });
+                return context.cms.entries.list(
+                    model,
+                    {
+                        limit: 1000,
+                        sort: ["savedOn_DESC"]
+                    },
+                    {
+                        type: TYPE_ENTRY_LATEST
+                    }
+                );
+                /*
                 const permission = await checkPermissions({ rwd: "r" });
                 const locale = context.cms.getLocale();
 
@@ -176,52 +234,64 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
 
                 return [items, meta];
+                // */
             },
             listPublished: async function(model) {
                 await checkPermissions({ rwd: "r" });
-                const locale = context.cms.getLocale();
 
-                const must: any = [
-                    { term: { "__type.keyword": TYPE_ENTRY_PUBLISHED } },
-                    { term: { "modelId.keyword": model.modelId } },
-                    { term: { "locale.keyword": locale.code } }
-                ];
-
-                const body = {
-                    query: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        constant_score: {
-                            filter: { bool: { must } }
-                        }
+                return context.cms.entries.list(
+                    model,
+                    {
+                        limit: 1000,
+                        sort: ["savedOn_DESC"]
                     },
-                    sort: [
-                        {
-                            savedOn: {
-                                order: "desc",
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                unmapped_type: "date"
-                            }
-                        }
-                    ],
-                    size: 1000
-                };
-
-                // Get "published" form revisions from Elasticsearch.
-                const response = await elasticSearch.search({
-                    ...utils.defaults.es(context),
-                    body
-                });
-
-                const { hits, total } = response.body.hits;
-                const items = hits.map(item => item._source);
-
-                const meta = {
-                    hasMoreItems: false,
-                    totalCount: total.value,
-                    cursor: null
-                };
-
-                return [items, meta];
+                    {
+                        type: TYPE_ENTRY_PUBLISHED
+                    }
+                );
+                // const locale = context.cms.getLocale();
+                //
+                // const must: any = [
+                //     { term: { "__type.keyword": TYPE_ENTRY_PUBLISHED } },
+                //     { term: { "modelId.keyword": model.modelId } },
+                //     { term: { "locale.keyword": locale.code } }
+                // ];
+                //
+                // const body = {
+                //     query: {
+                //         // eslint-disable-next-line @typescript-eslint/camelcase
+                //         constant_score: {
+                //             filter: { bool: { must } }
+                //         }
+                //     },
+                //     sort: [
+                //         {
+                //             savedOn: {
+                //                 order: "desc",
+                //                 // eslint-disable-next-line @typescript-eslint/camelcase
+                //                 unmapped_type: "date"
+                //             }
+                //         }
+                //     ],
+                //     size: 1000
+                // };
+                //
+                // // Get "published" form revisions from Elasticsearch.
+                // const response = await elasticSearch.search({
+                //     ...utils.defaults.es(context),
+                //     body
+                // });
+                //
+                // const { hits, total } = response.body.hits;
+                // const items = hits.map(item => item._source);
+                //
+                // const meta = {
+                //     hasMoreItems: false,
+                //     totalCount: total.value,
+                //     cursor: null
+                // };
+                //
+                // return [items, meta];
             },
             async create(model, data) {
                 await checkPermissions({ rwd: "w" });

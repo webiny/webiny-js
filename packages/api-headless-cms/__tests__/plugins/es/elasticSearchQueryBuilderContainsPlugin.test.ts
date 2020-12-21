@@ -1,40 +1,48 @@
 import { elasticSearchQueryBuilderContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderContainsPlugin";
 import { createBlankQuery } from "./helpers";
+import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderContainsPlugin();
 
-    it("should apply match correctly", () => {
+    it("should apply contains correctly", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
             field: "name",
-            value: "firstName"
+            value: "John"
         });
 
         plugin.apply(query, {
             field: "name",
-            value: "lastName"
+            value: "Doe"
         });
 
-        expect(query).toEqual({
-            range: [],
+        const expected: ElasticSearchQueryType = {
             mustNot: [],
-            must: [],
-            match: [
+            must: [
                 {
-                    name: {
-                        query: "firstName",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    simple_query_string: {
+                        fields: ["name"],
+                        query: "John",
+                        // eslint-disable-next-line @typescript-eslint/camelcase
                         operator: "AND"
                     }
                 },
                 {
-                    name: {
-                        query: "lastName",
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    simple_query_string: {
+                        fields: ["name"],
+                        query: "Doe",
+                        // eslint-disable-next-line @typescript-eslint/camelcase
                         operator: "AND"
                     }
                 }
-            ]
-        });
+            ],
+            match: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
     });
 });

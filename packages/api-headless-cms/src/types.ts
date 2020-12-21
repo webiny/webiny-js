@@ -302,7 +302,7 @@ type CmsContentModelListArgsType = {
 
 export type CmsContentModelContextType = {
     get: (id: string) => Promise<CmsContentModelType | null>;
-    list: (args?: CmsContentModelListArgsType) => Promise<CmsContentModelType[]>;
+    list: () => Promise<CmsContentModelType[]>;
     create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
     update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
     delete: (id: string) => Promise<void>;
@@ -417,6 +417,9 @@ export type CmsContentModelEntryListArgsType = {
     limit?: number;
     after?: string;
 };
+export type CmsContentModelEntryListOptionsType = {
+    type?: string;
+};
 
 export type CmsContentModelEntryMetaType = {
     cursor: string;
@@ -431,8 +434,9 @@ export type CmsContentModelEntryContextType = {
     ) => Promise<CmsContentModelEntryType | null>;
     list: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryListArgsType
-    ) => Promise<CmsContentModelEntryType[]>;
+        args?: CmsContentModelEntryListArgsType,
+        options?: CmsContentModelEntryListOptionsType
+    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     listLatest: (
         model: CmsContentModelType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
@@ -513,12 +517,31 @@ export type ElasticSearchQueryOperations =
     | "contains"
     | "not_contains"
     | "between"
-    | "not_between";
+    | "not_between"
+    | "gt"
+    | "gte"
+    | "lt"
+    | "lte";
 
+type ElasticSearchQueryRangeParamType = {
+    [key: string]: {
+        gt?: string | number | Date;
+        gte?: string | number | Date;
+        lt?: string | number | Date;
+        lte?: string | number | Date;
+    };
+};
+type ElasticSearchQuerySimpleQueryParamType = {
+    fields: string[];
+    query: string;
+    operator: "AND" | "OR";
+};
 type ElasticSearchQueryMustParamType = {
-    term: {
+    term?: {
         [key: string]: any;
     };
+    range?: ElasticSearchQueryRangeParamType;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
 
@@ -526,20 +549,10 @@ type ElasticSearchQueryMustNotParamType = {
     term?: {
         [key: string]: any;
     };
-    [key: string]: {
-        lte?: string | number | Date;
-        gte?: string | number | Date;
-    };
+    range?: ElasticSearchQueryRangeParamType;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
-
-type ElasticSearchQueryRangeParamType = {
-    [key: string]: {
-        lte?: string | number | Date;
-        gte?: string | number | Date;
-    };
-};
-type ElasticSearchQueryRangeParamListType = ElasticSearchQueryRangeParamType[];
 
 type ElasticSearchQueryMatchParamType = {
     [key: string]: {
@@ -550,11 +563,18 @@ type ElasticSearchQueryMatchParamType = {
 };
 type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
 
+type ElasticSearchQueryShouldParamType = {
+    term: {
+        [key: string]: any;
+    };
+};
+type ElasticSearchQueryShouldParamListType = ElasticSearchQueryShouldParamType[];
+
 export type ElasticSearchQueryType = {
     must: ElasticSearchQueryMustParamListType;
     mustNot: ElasticSearchQueryMustNotParamListType;
-    range: ElasticSearchQueryRangeParamListType;
     match: ElasticSearchQueryMatchParamListType;
+    should: ElasticSearchQueryShouldParamListType;
 };
 
 export type ElasticSearchQueryBuilderArgsPluginType = {
