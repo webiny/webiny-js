@@ -1,4 +1,5 @@
 import {
+    CmsContentModelEntryListOptionsType,
     CmsContentModelEntryListSortType,
     CmsContentModelEntryListWhereType,
     CmsContentModelType,
@@ -9,12 +10,12 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
 
-type FieldType = {
+type ModelFieldType = {
     unmappedType?: string;
     isSearchable: boolean;
     isSortable: boolean;
 };
-type FieldsType = Record<string, FieldType>;
+type ModelFieldsType = Record<string, ModelFieldType>;
 
 type CreateElasticSearchParamsArgType = {
     where?: CmsContentModelEntryListWhereType;
@@ -28,10 +29,11 @@ type CreateElasticSearchParamsType = {
     args: CreateElasticSearchParamsArgType;
     ownedBy?: string;
     parentObject?: string;
+    options?: CmsContentModelEntryListOptionsType;
 };
 type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
-    fields: FieldsType;
+    modelFields: ModelFieldsType;
     parentObject?: string;
     model: CmsContentModelType;
 };
@@ -39,9 +41,10 @@ type CreateElasticSearchQueryArgsType = {
     model: CmsContentModelType;
     context: CmsContext;
     where: CmsContentModelEntryListWhereType;
-    fields: FieldsType;
+    modelFields: ModelFieldsType;
     ownedBy?: string;
     parentObject?: string;
+    options?: CmsContentModelEntryListOptionsType;
 };
 type ElasticSearchSortParamType = {
     order: string;
@@ -66,7 +69,7 @@ const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 const creteElasticSearchSortParams = (
     args: CreateElasticSearchSortParamsType
 ): ElasticSearchSortFieldsType[] => {
-    const { sort, fields, model, parentObject } = args;
+    const { sort, modelFields, model, parentObject } = args;
     const checkIsSystemField = (field: string) => {
         return !!model[field];
     };
@@ -83,9 +86,9 @@ const creteElasticSearchSortParams = (
         }
         const [field, order] = match;
         const isSystemField = checkIsSystemField(field);
-        if (!fields[field] && !isSystemField) {
+        if (!modelFields[field] && !isSystemField) {
             throw new Error(`It is not possible to sort by field "${field}".`);
-        } else if (!fields[field].isSortable && !isSystemField) {
+        } else if (!modelFields[field].isSortable && !isSystemField) {
             throw new Error(`Field "${field}" is not sortable.`);
         }
         const fieldName = isSystemField ? field : withParentObject(field);
@@ -93,34 +96,64 @@ const creteElasticSearchSortParams = (
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                unmapped_type: fields[field].unmappedType || undefined
+                unmapped_type: modelFields[field].unmappedType || undefined
             }
         };
     });
 };
 
-const execElasticSearchBuildQueryPlugins = (
-    plugins: ElasticSearchQueryBuilderPlugin[],
+const createInitialQueryValue = (
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
-    const { where, fields, parentObject, ownedBy, model, context } = args;
+    const { ownedBy, options, model, context } = args;
     const query: ElasticSearchQueryType = {
         match: [],
         must: [
             // always search by given model id
-            { term: { "modelId.keyword": model.modelId } },
+            {
+                term: {
+                    "modelId.keyword": model.modelId
+                }
+            },
             // and in the given locale
-            { term: { "locale.keyword": context.cms.getLocale().code } }
+            {
+                term: {
+                    "locale.keyword": context.cms.getLocale().code
+                }
+            }
         ],
         mustNot: [],
         should: []
     };
-    // also search for exact user if required
+    // when permission has own property, this value is passed into the fn
     if (ownedBy) {
         query.must.push({
-            term: { "ownedBy.id.keyword": ownedBy }
+            term: {
+                "ownedBy.id.keyword": ownedBy
+            }
         });
     }
+    // add more options if necessary
+    const { type } = options || {};
+    if (type) {
+        query.must.push({
+            term: {
+                "__type.keyword": type
+            }
+        });
+    }
+    //
+    return query;
+};
+/*
+ * Iterate through where keys and apply plugins where necessary
+ */
+const execElasticSearchBuildQueryPlugins = (
+    args: CreateElasticSearchQueryArgsType
+): ElasticSearchQueryType => {
+    const { where, modelFields, parentObject, model, context } = args;
+    const query = createInitialQueryValue(args);
+
     const checkIsSystemField = (field: string) => {
         return !!model[field];
     };
@@ -130,15 +163,20 @@ const execElasticSearchBuildQueryPlugins = (
         }
         return `${parentObject}.${field}`;
     };
+
+    const plugins = context.plugins.byType<ElasticSearchQueryBuilderPlugin>(
+        "elastic-search-query-builder"
+    );
+
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
             continue;
         }
         const { field, op } = parseWhereKey(key);
         const isSystemField = checkIsSystemField(field);
-        if (!fields[field] && !isSystemField) {
+        if (!modelFields[field] && !isSystemField) {
             throw new Error(`There is no field "${field}".`);
-        } else if (!fields[field].isSearchable && !isSystemField) {
+        } else if (!modelFields[field].isSearchable && !isSystemField) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
         for (const plugin of plugins) {
@@ -173,9 +211,13 @@ export const createElasticSearchLimit = (
     return ES_LIMIT_MAX - 1;
 };
 
-export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
-    const { context, model, args, ownedBy, parentObject = null } = params;
-    const { where, after, limit, sort } = args;
+/*
+ * Create an object with key fieldType and options for that field
+ */
+const createModelFieldOptions = (
+    context: CmsContext,
+    model: CmsContentModelType
+): ModelFieldsType => {
     const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
         "cms-model-field-to-graphql"
     );
@@ -184,27 +226,35 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         return field.type;
     });
 
-    const fields: FieldsType = plugins.reduce((acc, pl) => {
-        if (modelFields.includes(pl.fieldType) === false) {
+    return plugins.reduce((acc, pl) => {
+        const { fieldType, es, isSearchable, isSortable } = pl;
+        if (modelFields.includes(fieldType) === false) {
             return acc;
         }
+        const { unmappedType } = es || {};
         acc[pl.fieldType] = {
-            unmappedType: pl.es && pl.es.unmappedType ? pl.es.unmappedType : null,
-            isSearchable: pl.isSearchable === true,
-            isSortable: pl.isSortable === true
+            unmappedType: unmappedType || null,
+            isSearchable: isSearchable === true,
+            isSortable: isSortable === true
         };
         return acc;
     }, {});
-    const elasticSearchBuildQueryPlugins = context.plugins.byType<ElasticSearchQueryBuilderPlugin>(
-        "elastic-search-query-builder"
-    );
-    const query = execElasticSearchBuildQueryPlugins(elasticSearchBuildQueryPlugins, {
+};
+
+export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
+    const { context, model, args, ownedBy, parentObject = null, options } = params;
+    const { where, after, limit, sort } = args;
+
+    const modelFields = createModelFieldOptions(context, model);
+
+    const query = execElasticSearchBuildQueryPlugins({
         model,
         context,
         where,
-        fields,
+        modelFields,
         ownedBy,
-        parentObject
+        parentObject,
+        options
     });
     return {
         query: {
@@ -219,7 +269,7 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
                 }
             }
         },
-        sort: creteElasticSearchSortParams({ sort, fields, parentObject, model }),
+        sort: creteElasticSearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
         search_after: decodeElasticSearchCursor(after)

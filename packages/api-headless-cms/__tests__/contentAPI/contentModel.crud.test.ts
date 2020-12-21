@@ -257,7 +257,7 @@ describe("content model test", () => {
         });
     });
 
-    test("update content model with new field", async () => {
+    test("update content model with new fields", async () => {
         const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
             manageHandlerOpts
         );
@@ -271,10 +271,10 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const field: CmsContentModelFieldInputType = {
+        const textField: CmsContentModelFieldInputType = {
             id: mdbid(),
-            fieldId: "field1",
-            label: "Field 1",
+            fieldId: "textField",
+            label: "Text field",
             helpText: "help text",
             multipleValues: false,
             placeholderText: "placeholder text",
@@ -289,12 +289,34 @@ describe("content model test", () => {
             type: "text",
             validation: []
         };
+        const numberField: CmsContentModelFieldInputType = {
+            id: mdbid(),
+            fieldId: "numberField",
+            label: "Number field",
+            helpText: "number help text",
+            multipleValues: false,
+            placeholderText: "number placeholder text",
+            predefinedValues: {
+                enabled: false,
+                values: []
+            },
+            renderer: {
+                name: "rendererName"
+            },
+            settings: {},
+            type: "number",
+            validation: []
+        };
+
+        const fields = [textField, numberField];
         const [response] = await updateContentModelMutation({
             id: contentModel.id,
             data: {
                 name: "new name",
-                fields: [field],
-                layout: [[field.id]]
+                fields,
+                layout: fields.map(field => {
+                    return [field.id];
+                })
             }
         });
 
@@ -306,33 +328,14 @@ describe("content model test", () => {
                         createdBy: helpers.identity,
                         createdOn: /^20/,
                         description: null,
-                        titleFieldId: "field1",
-                        fields: [
-                            {
-                                fieldId: "field1",
-                                helpText: "help text",
-                                id: field.id,
-                                label: "Field 1",
-                                multipleValues: false,
-                                placeholderText: "placeholder text",
-                                predefinedValues: {
-                                    enabled: false,
-                                    values: []
-                                },
-                                renderer: {
-                                    name: "rendererName"
-                                },
-                                settings: {},
-                                type: "text",
-                                validation: []
-                            }
-                        ],
+                        titleFieldId: "textField",
+                        fields: [textField, numberField],
                         group: {
                             id: contentModelGroup.id,
                             name: "Group"
                         },
                         id: contentModel.id,
-                        layout: [[field.id]],
+                        layout: [[textField.id], [numberField.id]],
                         name: "new name"
                     },
                     error: null

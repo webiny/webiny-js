@@ -417,6 +417,9 @@ export type CmsContentModelEntryListArgsType = {
     limit?: number;
     after?: string;
 };
+export type CmsContentModelEntryListOptionsType = {
+    type?: string;
+};
 
 export type CmsContentModelEntryMetaType = {
     cursor: string;
@@ -431,7 +434,8 @@ export type CmsContentModelEntryContextType = {
     ) => Promise<CmsContentModelEntryType | null>;
     list: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryListArgsType
+        args?: CmsContentModelEntryListArgsType,
+        options?: CmsContentModelEntryListOptionsType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     listLatest: (
         model: CmsContentModelType
