@@ -1,8 +1,19 @@
 import React from "react";
 import { useQuery } from "react-apollo";
 import Render from "./Render";
+import trim from "lodash/trim";
 
 import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
+
+// Make sure the final path looks like `/xyz`. We don't want to run into situations where the prerendering engine is
+// visiting `/xyz`, but delivery URL is forcing `/xyz/`. This ensures the path is standardized, and the GraphQL
+// queries are the same on both sides.
+const trimPath = (value: string) => {
+    if (typeof value === "string") {
+        return "/" + trim(value, "/");
+    }
+    return null;
+};
 
 /**
  * This component will fetch the published page's data and pass it to the `Render` function. Note that if the
@@ -10,7 +21,7 @@ import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
  * The `preview` query parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
 const Page = () => {
-    const path = location.pathname;
+    const path = trimPath(location.pathname);
     const query = new URLSearchParams(location.search);
     const id = query.get("preview");
 
