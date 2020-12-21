@@ -7,6 +7,7 @@ import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
+import { ClientContext } from "@webiny/handler-client/types";
 
 export type HandlerConfiguration = {
     prerendering: {
@@ -218,6 +219,7 @@ export type SettingsCrud = {
 export type PbContext = Context<
     I18NContentContext,
     I18NContext,
+    ClientContext,
     DbContext,
     ElasticSearchClientContext,
     SecurityContext,
