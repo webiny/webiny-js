@@ -22,10 +22,14 @@ import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
 import {
+    getESLatestPageData,
+    getESPublishedPageData,
+    getESUpdateLatestPageData
+} from "./pages/esPageData";
+import {
     HandlerArgs as RenderHandlerArgs,
     Args as RenderArgs
 } from "@webiny/api-prerendering-service/render";
-
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
@@ -55,64 +59,6 @@ const TYPE_PAGE_PUBLISHED = TYPE_PAGE + ".p";
 const TYPE_PAGE_PUBLISHED_PATH = TYPE_PAGE + ".p.path";
 
 const PERMISSION_NAME = TYPE_PAGE;
-
-const getESPageData = (context: PbContext, page) => {
-    return {
-        __type: "page",
-        id: page.id,
-        editor: page.editor,
-        locale: page.locale,
-        tenant: page.tenant,
-        createdOn: page.createdOn,
-        savedOn: page.savedOn,
-        createdBy: page.createdBy,
-        ownedBy: page.ownedBy,
-        category: page.category,
-        version: page.version,
-        title: page.title,
-        titleLC: page.title.toLowerCase(),
-        path: page.path,
-        status: page.status,
-        locked: page.locked,
-        publishedOn: page.publishedOn,
-        home: page.home || false,
-        error: page.error || false,
-        notFound: page.notFound || false,
-
-        // Pull tags & snippet from settings.general.
-        tags: page?.settings?.general?.tags || [],
-        snippet: page?.settings?.general?.snippet || null,
-
-        // Save some images that could maybe be used on listing pages.
-        images: {
-            general: page?.settings?.general?.image
-        }
-    };
-};
-
-const getESLatestPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), latest: true };
-};
-
-const getESPublishedPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), published: true };
-};
-
-const getESUpdateLatestPageData = updateData => {
-    return {
-        tags: updateData?.settings?.general?.tags || [],
-        snippet: updateData?.settings?.general?.snippet || null,
-        title: updateData.title,
-        titleLC: updateData?.title?.toLowerCase(),
-        path: updateData.path,
-        savedOn: updateData.savedOn,
-
-        // Save some images that could maybe be used on listing pages.
-        images: {
-            general: updateData?.settings?.general?.image
-        }
-    };
-};
 
 const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbContext> => ({
     type: "context",
