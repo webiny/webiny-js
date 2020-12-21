@@ -517,7 +517,11 @@ export type ElasticSearchQueryOperations =
     | "contains"
     | "not_contains"
     | "between"
-    | "not_between";
+    | "not_between"
+    | "gt"
+    | "gte"
+    | "lt"
+    | "lte";
 
 type ElasticSearchQueryRangeParamType = {
     [key: string]: {

@@ -8,8 +8,6 @@ import {
     gridNoPaddingClass
 } from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
-import { Elevation } from "@webiny/ui/Elevation";
-import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./components/CustomSection";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";

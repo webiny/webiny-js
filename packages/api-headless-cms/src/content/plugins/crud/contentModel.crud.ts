@@ -5,7 +5,6 @@ import {
     CmsContentModelContextType,
     CmsContentModelManagerInterface,
     DbItemTypes,
-    CmsContentModelGroupPermissionType,
     CmsContentModelPermissionType
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
