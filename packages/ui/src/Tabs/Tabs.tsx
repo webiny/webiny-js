@@ -127,9 +127,8 @@ export class Tabs extends React.Component<TabsProps, State> {
     }
 
     render() {
-        const activeIndex = Number.isNaN(this.props.value)
-            ? this.state.activeTabIndex
-            : this.props.value;
+        const activeIndex =
+            this.props.value !== undefined ? this.props.value : this.state.activeTabIndex;
 
         let children = this.props.children;
         if (typeof this.props.children === "function") {

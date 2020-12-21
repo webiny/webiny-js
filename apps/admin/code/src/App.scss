@@ -37,15 +37,3 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
 
 // Import `image` tool styles
 @import "~@webiny/app-admin/components/RichTextEditor/tools/image/styles.scss";
-
-.codex-editor {
-  color: $webiny-theme-light-text-primary-on-background;
-
-  .codex-editor__redactor {
-    // ".codex-editor__redactor" element has a "padding-bottom" of 300px by default,
-    // which is too much for a page document. We're reducing it to just 100px.
-    // It is needed so that we can navigate or insert more content below the last most content.
-    padding-bottom: 100px !important;
-    margin: 0;
-  }
-}

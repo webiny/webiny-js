@@ -5,12 +5,12 @@ import pick from "lodash/pick";
 import fetch from "node-fetch";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 import * as utils from "./utils";
 import { checkOwnership } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
 import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
-import { decodeCursor, encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";

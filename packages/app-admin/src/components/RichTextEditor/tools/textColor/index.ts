@@ -5,6 +5,8 @@ import { API } from "@editorjs/editorjs";
  */
 require("./index.css").toString();
 
+const COLOR_TOOL_CLASS = "cdx-text-color";
+
 class TextColorTool {
     _state: boolean;
     color: string;
@@ -24,7 +26,7 @@ class TextColorTool {
         this._state = false;
         this.tag = "SPAN";
         this.color = "red";
-        this.class = "cdx-text-color";
+        this.class = COLOR_TOOL_CLASS;
         this.config = config || { themeColors: ["#44bd32"] };
         this._CSS = {
             colorPicker: "ce-text-color-tool",
@@ -37,10 +39,24 @@ class TextColorTool {
         return true;
     }
 
+    /**
+     * Sanitize method returns rules to let Editor know which HTML tags it should respect.
+     * @returns {object} sanitizer configuration.
+     * https://editorjs.io/sanitizer
+     */
     static get sanitize() {
+        // Block Tools are not connected with Inline ones,
+        // so markup added by Inline Tool will be removed on pasting or on saving.
+        // We need this config so that `class` & `style` attributes will remain intact for "span".
         return {
-            span: {
-                class: "cdx-text-color"
+            span: el => {
+                // Respect `class` and `style` attributes if this condition is meet.
+                if (el.classList.contains(COLOR_TOOL_CLASS)) {
+                    return {
+                        class: COLOR_TOOL_CLASS,
+                        style: el.style
+                    };
+                }
             }
         };
     }
@@ -54,7 +70,9 @@ class TextColorTool {
 
         this.button.classList.toggle(this.api.styles.inlineToolButtonActive, state);
     }
-
+    /**
+     * Render method must return HTML element of the button for Inline Toolbar.
+     */
     render() {
         this.button = document.createElement("button");
         this.button.type = "button";
@@ -107,6 +125,11 @@ class TextColorTool {
         return this.colorPicker;
     }
 
+    /**
+     * Finally, when button is pressed Editor calls
+     * surround method of the tool with Range object as an argument.
+     * @param range
+     */
     surround(range) {
         if (this.state) {
             this.unwrap(range);
@@ -121,8 +144,6 @@ class TextColorTool {
         const mark = document.createElement(this.tag);
 
         mark.classList.add(this.class);
-        // Add color
-        // mark.style.color = this.color;
 
         mark.appendChild(selectedText);
         range.insertNode(mark);
@@ -151,6 +172,10 @@ class TextColorTool {
         this.colorPicker.hidden = true;
     }
 
+    /**
+     * CheckState method of each Inline Tool is called by Editor with current `Selection`
+     * when user selects some text
+     */
     checkState() {
         const mark = this.api.selection.findParentTag(this.tag);
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
-import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
@@ -103,48 +102,36 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
                             height: data
                         }
                     }
-                }
+                },
+                history: true
             })
         );
     };
 
-    const data = element.data.settings?.height || { fullHeight: false, value: "100%" };
+    const data = element.data.settings?.height || { value: "100%" };
 
     return (
         <Accordion title={"Height"} defaultValue={defaultAccordionValue}>
             <Form data={data} onChange={updateSettings}>
-                {({ Bind, data }) => (
-                    <>
-                        <Wrapper
-                            label={"Full height"}
-                            containerClassName={classes.simpleGrid}
-                            rightCellClassName={rightCellStyle}
-                        >
-                            <Bind name={"fullHeight"}>
-                                <Switch />
-                            </Bind>
-                        </Wrapper>
-                        {!data.fullHeight && (
-                            <Wrapper
-                                label={"Height"}
-                                containerClassName={classes.simpleGrid}
-                                rightCellClassName={rightCellStyle}
-                            >
-                                <Bind name={"value"} validators={validateHeight}>
-                                    {({ value, onChange, validation }) => (
-                                        <SpacingPicker
-                                            value={value}
-                                            onChange={onChange}
-                                            validation={validation}
-                                            options={heightUnitOptions}
-                                            className={spacingPickerStyle}
-                                            useDefaultStyle={false}
-                                        />
-                                    )}
-                                </Bind>
-                            </Wrapper>
-                        )}
-                    </>
+                {({ Bind }) => (
+                    <Wrapper
+                        label={"Height"}
+                        containerClassName={classes.simpleGrid}
+                        rightCellClassName={rightCellStyle}
+                    >
+                        <Bind name={"value"} validators={validateHeight}>
+                            {({ value, onChange, validation }) => (
+                                <SpacingPicker
+                                    value={value}
+                                    onChange={onChange}
+                                    validation={validation}
+                                    options={heightUnitOptions}
+                                    className={spacingPickerStyle}
+                                    useDefaultStyle={false}
+                                />
+                            )}
+                        </Bind>
+                    </Wrapper>
                 )}
             </Form>
         </Accordion>

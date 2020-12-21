@@ -35,7 +35,8 @@ const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }
                             ? parent.elements.slice(position)
                             : [])
                     ]
-                }
+                },
+                history: true
             })
         );
     };

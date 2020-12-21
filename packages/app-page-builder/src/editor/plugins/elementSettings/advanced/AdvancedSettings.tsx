@@ -41,7 +41,8 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
 
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
-                element: merge(element, "data", formData)
+                element: merge(element, "data", formData),
+                history: true
             })
         );
     };
