@@ -1,7 +1,8 @@
-import { withFields, string, fields } from "@commodo/fields";
+import { withFields, string, fields, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
+import trimStart from "lodash/trimStart";
 
 export const CreateDataModel = withFields({
     category: string({ validation: validation.create("required,maxLength:100") })
@@ -11,16 +12,17 @@ export const UpdateDataModel = withFields({
     title: string({
         validation: validation.create("maxLength:150")
     }),
-    path: string({
-        validation: value => {
-            if (value) {
-                validation.validateSync(value, "maxLength:100");
-                if (!value.startsWith("/")) {
-                    throw new Error('Page path must start with forward slash ("/").');
-                }
-            }
+    path: onSet(value => {
+        // Ensure path starts with a single "/" character.
+        if (typeof value === "string") {
+            value = "/" + trimStart(value, "/");
         }
-    }),
+        return value;
+    })(
+        string({
+            validation: validation.create("maxLength:100")
+        })
+    ),
     category: string({ validation: validation.create("maxLength:100") }),
     content: object()
 })();
