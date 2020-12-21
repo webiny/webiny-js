@@ -1,56 +1,59 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../api-i18n-content"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../commodo"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-ssr"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../api-file-manager"
-    },
-    {
-      "path": "../api-security-tenancy"
-    }
-  ]
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../plugins"
+		},
+		{
+			"path": "../db"
+		},
+		{
+			"path": "../api-i18n-content"
+		},
+		{
+			"path": "../api-plugin-elastic-search-client"
+		},
+		{
+			"path": "../api-security"
+		},
+		{
+			"path": "../commodo"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-db"
+		},
+		{
+			"path": "../handler-ssr"
+		},
+		{
+			"path": "../validation"
+		},
+		{
+			"path": "../api-i18n"
+		},
+		{
+			"path": "../handler-graphql"
+		},
+		{
+			"path": "../handler-aws"
+		},
+		{
+			"path": "../db-dynamodb"
+		},
+		{
+			"path": "../error"
+		},
+		{
+			"path": "../api-file-manager"
+		},
+		{
+			"path": "../api-security-tenancy"
+		},
+		{
+			"path": "../api-prerendering-service"
+		}
+	]
 }
