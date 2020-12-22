@@ -38,11 +38,11 @@ export const useCmsData = (locales: string[]) => {
             }
         }
     };
-    
+
     useEffect(() => {
         loadData();
     }, [locales.sort().join(":")]);
-    
+
     return locales.reduce((acc, code) => {
         acc[code] = state[code] || { models: [], groups: [] };
         return acc;

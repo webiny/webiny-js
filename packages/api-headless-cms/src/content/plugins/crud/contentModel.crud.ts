@@ -8,7 +8,6 @@ import {
     CmsContentModelPermissionType
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
-import mdbid from "mdbid";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
@@ -28,7 +27,7 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-crud",
     async apply(context) {
-        const { db, security } = context;
+        const { db } = context;
 
         const PK_CONTENT_MODEL = () => `${utils.createCmsPK(context)}#CM`;
 
@@ -59,19 +58,19 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const models: CmsContentModelContextType = {
-            async get(id) {
+            async get(modelId) {
                 const permission = await checkPermissions("r");
 
                 const [[model]] = await db.read<CmsContentModelType>({
                     ...utils.defaults.db,
-                    query: { PK: PK_CONTENT_MODEL(), SK: id }
+                    query: { PK: PK_CONTENT_MODEL(), SK: modelId }
                 });
 
                 utils.checkOwnership(context, permission, model);
                 utils.checkModelAccess(context, permission, model);
 
                 if (!model) {
-                    throw new NotFoundError(`Content model "${id}" was not found!`);
+                    throw new NotFoundError(`Content model "${modelId}" was not found!`);
                 }
 
                 return model;
@@ -99,10 +98,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const identity = context.security.getIdentity();
-                const id = mdbid();
                 const model: CmsContentModelType = {
                     ...createdDataJson,
-                    id,
                     group: {
                         id: group.id,
                         name: group.name
@@ -124,7 +121,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...utils.defaults.db,
                     data: {
                         PK: PK_CONTENT_MODEL(),
-                        SK: id,
+                        SK: model.modelId,
                         TYPE: DbItemTypes.CMS_CONTENT_MODEL,
                         ...model
                     }
@@ -136,11 +133,11 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return model;
             },
-            async update(id, data) {
+            async update(modelId, data) {
                 await checkPermissions("w");
 
                 // Get a model record; this will also perform ownership validation.
-                const model = await context.cms.models.get(id);
+                const model = await context.cms.models.get(modelId);
 
                 const updatedData = new UpdateContentModelModel().populate(data);
                 await updatedData.validate();
@@ -171,7 +168,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: PK_CONTENT_MODEL(), SK: id },
+                    query: { PK: PK_CONTENT_MODEL(), SK: modelId },
                     data: modelData
                 });
                 await updateManager(context, {
@@ -186,18 +183,18 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...modelData
                 };
             },
-            async delete(id) {
+            async delete(modelId) {
                 await checkPermissions("d");
 
-                const model = await context.cms.models.get(id);
+                const model = await context.cms.models.get(modelId);
 
-                await beforeDeleteHook(context, { modelId: model.modelId });
+                await beforeDeleteHook(context, modelId);
 
                 await db.delete({
                     ...utils.defaults.db,
                     query: {
                         PK: PK_CONTENT_MODEL(),
-                        SK: id
+                        SK: modelId
                     }
                 });
 

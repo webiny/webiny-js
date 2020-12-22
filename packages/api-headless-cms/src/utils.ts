@@ -1,7 +1,6 @@
 import slugify from "slugify";
 import {
     CmsContentModelEntryPermissionType,
-    CmsContentModelEntryType,
     CmsContentModelPermissionType,
     CmsContentModelType,
     CmsContext,

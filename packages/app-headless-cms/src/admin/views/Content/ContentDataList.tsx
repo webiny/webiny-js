@@ -26,10 +26,7 @@ const listItemMinHeight = css({
 
 const ContentDataList = ({ contentModel, dataList }) => {
     return (
-        <DataList
-            {...dataList}
-            title={contentModel.pluralizedName}
-        >
+        <DataList {...dataList} title={contentModel.pluralizedName}>
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (

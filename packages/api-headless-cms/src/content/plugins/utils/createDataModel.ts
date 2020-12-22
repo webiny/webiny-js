@@ -39,7 +39,7 @@ export const createDataModel = (
 
     // Create content model
     const Model: any = pipe(
-        withName(`Cms${upperFirst(contentModel.id)}`),
+        withName(`Cms${upperFirst(contentModel.modelId)}`),
         // All entries need to end up in the same database collection / table.
         withStorageName("CmsContentEntry"),
         withProps(({ toStorage, populateFromStorage }) => ({
@@ -315,7 +315,7 @@ export const createDataModel = (
                         }
                     }),
                     withFields({
-                        model: setOnce()(string({ value: contentModel.id })),
+                        model: setOnce()(string({ value: contentModel.modelId })),
                         environment: setOnce()(context.commodo.fields.id()),
                         parent: context.commodo.fields.id(),
                         version: number(),
@@ -371,7 +371,7 @@ export const createDataModel = (
                 return revision.meta.version + 1;
             }
         }),
-        withModelFiltering(contentModel.id)
+        withModelFiltering(contentModel.modelId)
     )(createBase()) as Function;
 
     for (let i = 0; i < contentModel.fields.length; i++) {

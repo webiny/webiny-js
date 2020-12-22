@@ -11,7 +11,7 @@ const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 export const ContentModelPermission = ({ Bind, data, entity, title, locales }) => {
     const modelsGroups = useCmsData(locales);
-    
+
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
             <Grid>

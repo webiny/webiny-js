@@ -82,7 +82,6 @@ export type LockedFieldType = {
 };
 
 export type CmsContentModelType = {
-    id: string;
     name: string;
     modelId: string;
     group: {
@@ -267,6 +266,7 @@ export type CmsContentModelFieldValidationType = {
 
 export type CmsContentModelCreateInputType = {
     name: string;
+    modelId?: string;
     description?: string;
 };
 
@@ -301,11 +301,11 @@ type CmsContentModelListArgsType = {
 };
 
 export type CmsContentModelContextType = {
-    get: (id: string) => Promise<CmsContentModelType | null>;
+    get: (modelId: string) => Promise<CmsContentModelType | null>;
     list: () => Promise<CmsContentModelType[]>;
     create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
-    update: (id: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
-    delete: (id: string) => Promise<void>;
+    update: (modelId: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
+    delete: (modelId: string) => Promise<void>;
     getManager: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
     getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
 };
