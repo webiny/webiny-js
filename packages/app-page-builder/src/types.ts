@@ -76,6 +76,7 @@ export type PbElementDataTextType = {
     color?: string;
     alignment?: string;
     typography?: string;
+    tag?: string;
     data: {
         text: string;
     };
@@ -344,7 +345,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Whitelist elements that can accept this element (for drag&drop interaction)
     target?: string[];
     // Array of element settings plugin names.
-    settings?: Array<string>;
+    settings?: Array<string | Array<string | any>>;
     // A function to create an element data structure.
     create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id" | "path">;
     // A function to render an element in the editor.
