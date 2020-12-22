@@ -54,3 +54,14 @@ export const GET_SETTINGS = /* GraphQL */ `
         }
     }
 `;
+export const GET_DEFAULT_SETTINGS = /* GraphQL */ `
+    query GetDefaultSettings {
+        pageBuilder {
+            getDefaultSettings {
+                id
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
