@@ -50,6 +50,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 data: PbSettings
             }
 
+            type PbDefaultSettingsResponse {
+                # This field's value is hardcoded and it's here to help frontend clients cache data more easily.
+                id: ID
+                error: PbSettingsError
+                data: PbSettings
+            }
+
             type PbSettingsPages {
                 home: ID
                 notFound: ID
@@ -110,7 +117,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 # Returns default settings that are composed of the default settings for all tenants, overwritten by
                 # the default settings for the current tenant. Use a value from these settings if it hasn't
                 # been returned by the base getSettings field.
-                getDefaultSettings: PbSettingsResponse
+                getDefaultSettings: PbDefaultSettingsResponse
             }
 
             extend type PbMutation {
@@ -119,9 +126,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         `,
         resolvers: {
             PbSettingsResponse: {
-                id: (_, args, context) => {
+                id: (settings, args, context) => {
                     return context.pageBuilder.settings.default.getSettingsCacheKey();
                 }
+            },
+            PbDefaultSettingsResponse: {
+                id: () => "PB#SETTINGS"
             },
             PbQuery: {
                 getSettings: async (_, args, context) => {
