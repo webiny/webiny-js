@@ -18,7 +18,6 @@ import { useRecoilValue } from "recoil";
 const CellContainerStyle = styled("div")({
     position: "relative",
     color: "#666",
-    padding: 5,
     boxSizing: "border-box",
     flexGrow: 1,
     width: `100%`,
@@ -75,7 +74,10 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
     return (
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => (
-                <CellContainerStyle style={elementStyle} className={getAllClasses()}>
+                <CellContainerStyle
+                    style={elementStyle}
+                    className={getAllClasses("webiny-pb-base-page-element-style")}
+                >
                     {totalElements === 0 && (
                         <DropZone.Center
                             id={id}
