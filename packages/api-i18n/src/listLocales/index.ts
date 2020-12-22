@@ -1,5 +1,5 @@
 import { HandlerPlugin } from "@webiny/handler/types";
-import crud from "./../plugins/crud";
+import crud from "@webiny/api-i18n/graphql/crud";
 
 export default () => [
     crud,
