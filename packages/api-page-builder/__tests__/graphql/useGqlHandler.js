@@ -46,24 +46,35 @@ import {
     GET_CATEGORY
 } from "./graphql/categories";
 
-import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
+import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 import { Db } from "@webiny/db";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
 export default ({ permissions, identity, tenant } = {}) => {
+    const db = new DynamoDbDriver({
+        documentClient: new DocumentClient({
+            convertEmptyValues: true,
+            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+            sslEnabled: false,
+            region: "local"
+        })
+    });
+
+    const logsDb = new DynamoDbDriver({
+        documentClient: new DocumentClient({
+            convertEmptyValues: true,
+            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+            sslEnabled: false,
+            region: "local"
+        })
+    });
+
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
             logTable: "PageBuilderLogs",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
+            driver: db
         }),
         elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
@@ -127,17 +138,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         invoke,
         // Helpers.
         elasticSearch,
-        logsDb: new Db({
-            logTable: "PageBuilderLogs",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
-        }),
+        logsDb,
         deleteElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;
@@ -291,6 +292,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async getSettings(variables) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
+        },
+        async getDefaultSettings(variables) {
+            return invoke({ body: { query: GET_DEFAULT_SETTINGS, variables } });
         }
     };
 };
