@@ -4,6 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
+import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
@@ -14,19 +15,19 @@ describe("MANAGE - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
+        until,
         elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
-    beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
-        } catch {
-            // Ignore errors
+    // This function is not directly within `beforeEach` as we don't always setup the same content model.
+    // We call this function manually at the beginning of each test, where needed.
+    const setupContentModel = async (model = null) => {
+        if (!model) {
+            model = models.find(m => m.modelId === "category");
         }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -37,13 +38,11 @@ describe("MANAGE - Resolvers", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
 
-        const category = models.find(m => m.modelId === "category");
-
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
-                name: category.name,
-                modelId: category.modelId,
+                name: model.name,
+                modelId: model.modelId,
                 group: contentModelGroup.id
             }
         });
@@ -56,8 +55,8 @@ describe("MANAGE - Resolvers", () => {
         const [update] = await updateContentModelMutation({
             modelId: create.data.createContentModel.data.modelId,
             data: {
-                fields: category.fields,
-                layout: category.layout
+                fields: model.fields,
+                layout: model.layout
             }
         });
 
@@ -65,18 +64,33 @@ describe("MANAGE - Resolvers", () => {
             console.error(`[beforeEach] ${update.errors[0].message}`);
             process.exit(1);
         }
+    };
+
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.create({ index: esCmsIndex });
+        } catch {}
     });
 
     afterEach(async () => {
         try {
             await elasticSearch.indices.delete({ index: esCmsIndex });
-        } catch (e) {}
+        } catch {}
     });
 
-    test.skip(`get category`, async () => {
-        const { createCategory, getCategory } = useCategoryManageHandler(manageOpts);
+    test(`get category`, async () => {
+        await setupContentModel();
+        const { createCategory, getCategory, listCategories } = useCategoryManageHandler(
+            manageOpts
+        );
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
+
+        // Need to wait until the new entry is propagated to Elastic Search index
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === id
+        );
 
         const [get] = await getCategory({ where: { id } });
 
@@ -107,6 +121,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`list categories (no parameters)`, async () => {
+        await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
             {
@@ -125,6 +140,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`list entries (limit)`, async () => {
+        await setupContentModel();
         const query = /* GraphQL */ `
             {
                 listCategories(limit: 1) {
@@ -137,6 +153,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`list categories (sort ASC)`, async () => {
+        await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
             query ListCategories($sort: [CategoryListSorter]) {
@@ -150,6 +167,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`list categories (sort DESC)`, async () => {
+        await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
             query ListCategories($sort: [CategoryListSorter]) {
@@ -163,6 +181,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`list categories (contains, not_contains, in, not_in)`, async () => {
+        await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
             query ListCategories($where: CategoryListWhereInput) {
@@ -178,7 +197,65 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test(`create category`, async () => {
+    test(`should create category`, async () => {
+        await setupContentModel();
+        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+        const [create1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
+
+        const category1 = create1.data.createCategory.data;
+
+        expect(category1).toMatchObject({
+            id: expect.any(String),
+            createdOn: /^20/,
+            savedOn: /^20/,
+            title: "Hardware",
+            slug: "hardware",
+            meta: {
+                title: "Hardware",
+                modelId: "category",
+                version: 1,
+                locked: false,
+                publishedOn: null,
+                status: "draft",
+                revisions: [
+                    {
+                        id: expect.any(String),
+                        title: "Hardware",
+                        slug: "hardware"
+                    }
+                ]
+            }
+        });
+
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === category1.id
+        );
+    });
+
+    test(`should return validation error`, async () => {
+        await setupContentModel();
+        const { createCategory } = useCategoryManageHandler(manageOpts);
+
+        const [create] = await createCategory({ data: { title: "Hardware" } });
+
+        const { error } = create.data.createCategory;
+
+        expect(error).toMatchObject({
+            code: "VALIDATION_FAILED",
+            data: expect.arrayContaining([
+                expect.objectContaining({
+                    fieldId: expect.any(String),
+                    error: expect.any(String)
+                })
+            ])
+        });
+    });
+
+    test(`should create an entry (fields without validation)`, async () => {
+        const model = modelsWithoutValidation.find(m => m.modelId === "category");
+        await setupContentModel(model);
+
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -214,6 +291,8 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`create category revision`, async () => {
+        await setupContentModel();
+
         const {
             until,
             createCategory,
@@ -252,6 +331,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`update category`, async () => {
+        await setupContentModel();
         const { createCategory, updateCategory } = useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
@@ -278,6 +358,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test(`delete category`, async () => {
+        await setupContentModel();
         const {
             until,
             createCategory,

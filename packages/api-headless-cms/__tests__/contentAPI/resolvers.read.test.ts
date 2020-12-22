@@ -72,7 +72,7 @@ describe("READ - Resolvers", () => {
         } catch (e) {}
     });
 
-    test(`get entry by ID`, async () => {
+    test(`should return a NOT_FOUND error when getting an entry by inexisting ID`, async () => {
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
@@ -81,7 +81,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        expect(response).toEqual({
+        expect(response.data.getCategory).toMatchObject({
             data: null,
             error: {
                 code: "NOT_FOUND"
@@ -89,48 +89,29 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    test(`should return a NOT_FOUND error when getting by value from an unpublished revision`, async () => {
-        const { getCategory } = useCategoryManageHandler(readOpts);
+    test(`should return a list of published entries (no parameters)`, async () => {
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
-        const [response] = await getCategory({
-            id: 123
-        });
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const { id } = create.data.createCategory.data;
 
-        expect(response).toEqual({
-            data: {
-                getCategory: {
-                    data: null,
-                    error: {
-                        code: "NOT_FOUND"
-                    }
-                }
-            }
-        });
-    });
+        // Publish it so it becomes available in the "read" API
+        const [publish] = await publishCategory({ revision: id });
 
-    test(`list entries (no parameters)`, async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        // See if entries are available via "read" API
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories();
-
-        expect(response).toEqual({
-            data: {
-                listCategories: {
-                    data: [
-                        {
-                            id: 123,
-                            title: "fdfds",
-                            slug: "gdsgd"
-                        }
-                    ],
-                    error: null
-                }
-            }
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === id
+        );
     });
 
     test(`list entries (limit)`, async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             limit: 1
@@ -153,7 +134,7 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit + after)`, async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             limit: 1,
@@ -179,7 +160,7 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort ASC)`, async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             sort: ["title_ASC"]
@@ -202,7 +183,7 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort DESC)`, async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             sort: ["title_DESC"]
@@ -225,7 +206,7 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that contains given value", async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             where: {
@@ -250,7 +231,7 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that do not contains given value", async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             where: {
@@ -275,7 +256,7 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are in given values", async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             where: {
@@ -300,7 +281,7 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are not in given values", async () => {
-        const { listCategories } = useCategoryManageHandler(readOpts);
+        const { listCategories } = useCategoryReadHandler(readOpts);
 
         const [response] = await listCategories({
             where: {
