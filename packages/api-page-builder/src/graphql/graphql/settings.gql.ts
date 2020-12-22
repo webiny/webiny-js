@@ -106,6 +106,11 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             extend type PbQuery {
                 getSettings: PbSettingsResponse
+
+                # Returns default settings that are composed of the default settings for all tenants, overwritten by
+                # the default settings for the current tenant. Use a value from these settings if it hasn't
+                # been returned by the base getSettings field.
+                getDefaultSettings: PbSettingsResponse
             }
 
             extend type PbMutation {
@@ -122,6 +127,15 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 getSettings: async (_, args, context) => {
                     try {
                         return new Response(await context.pageBuilder.settings.default.get());
+                    } catch (err) {
+                        return new ErrorResponse(err);
+                    }
+                },
+                getDefaultSettings: async (_, args, context) => {
+                    try {
+                        return new Response(
+                            await context.pageBuilder.settings.default.getDefault()
+                        );
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
