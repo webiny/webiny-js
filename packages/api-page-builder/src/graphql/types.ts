@@ -210,17 +210,19 @@ export type MenusCrud = {
     delete(slug: string): Promise<Menu>;
 };
 
+type DefaultSettingsCrudOptions = { tenant?: string | false; locale?: string | false };
+
 export type SettingsCrud = {
     dataLoaders: {
         get: DataLoader<{ PK: string; SK: string }, DefaultSettings | InstallSettings, string>;
     };
     default: {
-        get: (options?: { auth?: boolean }) => Promise<DefaultSettings>;
+        get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
         update: (
             data: Record<string, any>,
-            options?: { auth?: boolean }
+            options?: { auth?: boolean } & DefaultSettingsCrudOptions
         ) => Promise<DefaultSettings>;
-        getSettingsCacheKey: () => string;
+        getSettingsCacheKey: (options: DefaultSettingsCrudOptions) => string;
     };
     install: {
         get: () => Promise<InstallSettings>;

@@ -60,19 +60,22 @@ const plugin: ContextPlugin<PbContext> = {
                 },
                 // Default settings - contain website, social media, and prerendering settings.
                 default: {
-                    PK: () => `${getPKPrefix(context)}SETTINGS`,
-                    SK: () => "default",
-                    getSettingsCacheKey() {
-                        return this.PK();
+                    PK: options => {
+                        const prefix = getPKPrefix(context, options);
+                        return `${prefix}SETTINGS`;
                     },
-                    async get() {
+                    SK: "default",
+                    getSettingsCacheKey(options) {
+                        return this.PK(options);
+                    },
+                    async get(options) {
                         // With this line commented, we made this endpoint public.
                         // We did this because of the public website pages which need to access the settings.
                         // It's possible we'll create another GraphQL field, made for this exact purpose.
                         // auth !== false && (await checkBasePermissions(context));
                         return context.pageBuilder.settings.dataLoaders.get.load({
-                            PK: this.PK(),
-                            SK: this.SK()
+                            PK: this.PK(options),
+                            SK: this.SK
                         });
                     },
                     async update(next, options) {
@@ -85,8 +88,8 @@ const plugin: ContextPlugin<PbContext> = {
                                 ...defaults.db,
                                 data: {
                                     ...current,
-                                    PK: this.PK(),
-                                    SK: this.SK(),
+                                    PK: this.PK(options),
+                                    SK: this.SK,
                                     TYPE,
                                     type: "default",
                                     tenant: security.getTenant().id,
@@ -106,7 +109,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                         await db.update({
                             ...defaults.db,
-                            query: { PK: this.PK(), SK: this.SK() },
+                            query: { PK: this.PK(options), SK: this.SK },
                             data
                         });
 
@@ -120,11 +123,11 @@ const plugin: ContextPlugin<PbContext> = {
                 // Note that these settings are not stored per-locale, only per-tenant.
                 install: {
                     PK: () => `${getPKPrefix(context, { includeLocale: false })}SETTINGS`,
-                    SK: () => "install",
+                    SK: "install",
                     async get() {
                         return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(),
-                            SK: this.SK()
+                            SK: this.SK
                         });
                     },
                     async update(next) {
@@ -136,7 +139,7 @@ const plugin: ContextPlugin<PbContext> = {
                                 data: {
                                     ...current,
                                     PK: this.PK(),
-                                    SK: this.SK(),
+                                    SK: this.SK,
                                     TYPE,
                                     type: "install",
                                     tenant: security.getTenant().id,
@@ -154,7 +157,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                         await db.update({
                             ...defaults.db,
-                            query: { PK: this.PK(), SK: this.SK() },
+                            query: { PK: this.PK(), SK: this.SK },
                             data
                         });
 
