@@ -255,5 +255,68 @@ describe("Settings Test", () => {
                 }
             })
         );
+
+        // Updating settings for tenant / locale should not affect default settings. Default settings can only
+        // be affected by changing default system and default tenant data.
+        await updateSettings({
+            data: {
+                name: "test 1-UPDATED",
+                websiteUrl: "https://www.test.com/-UPDATED",
+                websitePreviewUrl: "https://preview.test.com/-UPDATED",
+                prerendering: {
+                    app: {
+                        url: "https://www.app.com/-UPDATED"
+                    },
+                    storage: { name: "storage-name-UPDATED" }
+                },
+                social: {
+                    facebook: "https://www.facebook.com/-UPDATED",
+                    instagram: "https://www.instagram.com/-UPDATED",
+                    twitter: "https://www.twitter.com/-UPDATED",
+                    image: {
+                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g-UPDATED",
+                        src:
+                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png-UPDATED"
+                    }
+                }
+            }
+        })
+
+
+        await getDefaultSettings().then(([res]) =>
+            expect(res).toEqual({
+                data: {
+                    pageBuilder: {
+                        getDefaultSettings: {
+                            data: {
+                                name: "test 1",
+                                prerendering: {
+                                    app: {
+                                        url: "https://www.app.com"
+                                    },
+                                    storage: {
+                                        name: "storage-name"
+                                    }
+                                },
+                                social: {
+                                    facebook: "https://www.facebook.com/",
+                                    image: {
+                                        id: "1kucKwtX3vI2w6tYuPwJsvRFn9g",
+                                        src:
+                                            "https://d1peg08dnrinui.cloudfront.net/files/9ki1goobp-webiny_security__1_.png"
+                                    },
+                                    instagram: "https://www.instagram.com/",
+                                    twitter: "https://www.twitter.com/"
+                                },
+                                websitePreviewUrl: "https://preview.test.com",
+                                websiteUrl: "https://www.test.com"
+                            },
+                            error: null,
+                            id: "PB#SETTINGS"
+                        }
+                    }
+                }
+            })
+        );
     });
 });

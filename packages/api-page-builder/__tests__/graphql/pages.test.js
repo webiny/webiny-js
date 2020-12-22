@@ -10,6 +10,7 @@ describe("CRUD Test", () => {
         listPages,
         getPage,
         updatePage,
+        until,
         sleep,
         deleteElasticSearchIndex
     } = useGqlHandler();
@@ -136,13 +137,13 @@ describe("CRUD Test", () => {
             });
         }
 
-        while (true) {
-            await sleep();
-            [response] = await listPages({ sort: { createdOn: "desc" } });
-            if (response?.data?.pageBuilder?.listPages?.data.length) {
-                break;
+        [response] = await until(
+            () => listPages({ sort: { createdOn: "desc" } }),
+            ([res]) => {
+                const { data } = res.data.pageBuilder.listPages;
+                return data.length === 3 && data[0].title === "title-UPDATED-2";
             }
-        }
+        );
 
         expect(response).toMatchObject({
             data: {
