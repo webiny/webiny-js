@@ -8,129 +8,18 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
+import {
+    Category,
+    DefaultSettings,
+    InstallSettings,
+    Menu,
+    Page,
+    PageElement
+} from "@webiny/api-page-builder/types";
 
 export type HandlerConfiguration = {
     prerendering: {
         handler: string;
-    };
-};
-
-// Entities.
-export type File = {
-    id: string;
-    src: string;
-};
-
-export type DefaultSettings = {
-    name: string;
-    websiteUrl: string;
-    websitePreviewUrl: string;
-    favicon: File;
-    logo: File;
-    prerendering: {
-        app: {
-            url: string;
-        };
-        storage: {
-            name: string;
-        };
-    };
-    social: {
-        facebook: string;
-        twitter: string;
-        instagram: string;
-        image: File;
-    };
-    pages: {
-        home: string;
-        notFound: string;
-        error: string;
-    };
-};
-
-export type InstallSettings = {
-    installed: boolean;
-};
-
-export type PageElement = {
-    name: string;
-    type: "element" | "block";
-    category: string;
-    content: Record<string, any>; // // TODO: define types
-    preview: Record<string, any>; // TODO: define types
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
-
-export type Menu = {
-    title: string;
-    slug: string;
-    description: string;
-    items: Record<string, any>;
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
-
-export type Category = {
-    name: string;
-    slug: string;
-    url: string;
-    layout: string;
-    createdOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
-    };
-};
-
-type PageStatus = "published" | "unpublished" | "reviewRequested" | "changesRequested" | "draft";
-
-export type Page = {
-    id: string;
-    title: string;
-    path: string;
-    category: string;
-    publishedOn: string;
-    version: number;
-    settings?: {
-        social?: {
-            title: string;
-            description: string;
-            image: Record<string, any>; // TODO: define types
-            meta: Array<{ property: string; content: string }>;
-        };
-        seo?: {
-            title: string;
-            description: string;
-            meta: Array<{ name: string; content: string }>;
-        };
-        general?: {
-            tags: string[];
-            snippet: string;
-            layout: string;
-            image: Record<string, any>; // TODO: define types
-        };
-    };
-    locked: boolean;
-    status: PageStatus;
-    home: boolean;
-    error: boolean;
-    notFound: boolean;
-    createdOn: string;
-    savedOn: string;
-    createdBy: {
-        type: string;
-        id: string;
-        displayName: string;
     };
 };
 
@@ -218,6 +107,7 @@ export type SettingsCrud = {
     };
     default: {
         get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
+        getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
         update: (
             data: Record<string, any>,
             options?: { auth?: boolean } & DefaultSettingsCrudOptions
