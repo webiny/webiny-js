@@ -10,6 +10,7 @@ import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
+import TextAlignment from "./TextAlignment";
 
 const classes = {
     grid: css({
@@ -23,6 +24,9 @@ const classes = {
     }),
     rightCellStyle: css({
         justifySelf: "end"
+    }),
+    leftCellStyle: css({
+        alignSelf: "center"
     })
 };
 
@@ -36,8 +40,9 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         data: {
             text = {
                 color: "",
-                typography: "",
-                type: "paragraph"
+                typography: "paragraph",
+                type: "paragraph",
+                alignment: "left"
             }
         } = {}
     } = element;
@@ -66,6 +71,10 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         getUpdateValue
     ]);
 
+    const updateAlignment = useCallback((value: string) => getUpdateValue("alignment")(value), [
+        getUpdateValue
+    ]);
+
     return (
         <Accordion title={"Text"} defaultValue={defaultAccordionValue}>
             <>
@@ -80,6 +89,16 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
                     <SelectField value={text.typography} onChange={updateTypography}>
                         {themeTypographyOptions}
                     </SelectField>
+                </Wrapper>
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Align"}
+                    leftCellSpan={3}
+                    rightCellSpan={9}
+                    leftCellClassName={classes.leftCellStyle}
+                    rightCellClassName={classes.rightCellStyle}
+                >
+                    <TextAlignment value={text.alignment} onChange={updateAlignment} />
                 </Wrapper>
             </>
         </Accordion>
