@@ -32,6 +32,30 @@ export default [
                         { className: "outline-secondary", label: "Outline Secondary" },
                         { className: "simple", label: "Simple" }
                     ]
+                },
+                heading: {
+                    types: [
+                        { className: "", label: "Default" },
+                        { className: "webiny-pb-element-heading-basic", label: "Basic" }
+                    ]
+                },
+                paragraph: {
+                    types: [
+                        { className: "webiny-pb-typography-body", label: "Body" },
+                        { className: "webiny-pb-typography-description", label: "Description" }
+                    ]
+                },
+                list: {
+                    types: [
+                        { className: "", label: "Default" },
+                        { className: "webiny-pb-element-list-basic", label: "Basic" }
+                    ]
+                },
+                quote: {
+                    types: [
+                        { className: "", label: "Default" },
+                        { className: "webiny-pb-element-quote-basic", label: "Basic" }
+                    ]
                 }
             },
             typography: {
