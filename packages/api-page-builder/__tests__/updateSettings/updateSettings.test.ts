@@ -1,7 +1,7 @@
-import useGqlHandler from "./useHandler";
+import useHandler from "./useHandler";
 
 describe("Update Settings Handler Test", () => {
-    const { handler } = useGqlHandler();
+    const { handler } = useHandler();
 
     test("update settings", async () => {
         const result = await handler({
@@ -28,7 +28,7 @@ describe("Update Settings Handler Test", () => {
             }
         });
 
-        expect(result, {
+        expect(result).toEqual({
             data: {
                 name: "test 1",
                 websiteUrl: "https://www.test.com",
