@@ -80,7 +80,10 @@ const plugin: ContextPlugin<PbContext> = {
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
-                        const tenantAllLocales = await this.get({ tenant: options.tenant });
+                        const tenantAllLocales = await this.get({ tenant: options?.tenant });
+                        if (!allTenants && !tenantAllLocales) {
+                            return null;
+                        }
                         return merge({}, allTenants, tenantAllLocales);
                     },
                     async update(next, options) {
