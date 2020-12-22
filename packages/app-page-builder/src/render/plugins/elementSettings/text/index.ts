@@ -5,12 +5,17 @@ export default {
     name: "pb-render-page-element-style-text",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
-        const { color } = get(element, "data.text", {});
+        const { color, alignment } = get(element, "data.text", {});
+        const newStyle = { ...style };
 
-        if (!color) {
-            return style;
+        if (color) {
+            newStyle["color"] = color;
         }
 
-        return { ...style, color: color };
+        if (alignment) {
+            newStyle["textAlign"] = alignment;
+        }
+
+        return newStyle;
     }
 } as PbRenderElementStylePlugin;
