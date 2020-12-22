@@ -189,7 +189,6 @@ describe("content model test", () => {
     });
 
     test("get existing content model", async () => {
-        // const {createContentModelMutation} = useAdminGqlHandler();
         const { createContentModelMutation, getContentModelQuery } = useContentGqlHandler(
             manageHandlerOpts
         );
