@@ -167,6 +167,25 @@ export const validateModelAccess = (
     return true;
 };
 
+export const checkEntryAccess = (
+    context: CmsContext,
+    permission: SecurityPermission<CmsContentModelEntryPermissionType>,
+    model: CmsContentModelType
+): void => {
+    if (validateEntryAccess(context, permission, model)) {
+        return;
+    }
+    throw new NotAuthorizedError();
+};
+
+export const validateEntryAccess = (
+    context: CmsContext,
+    permission: SecurityPermission<CmsContentModelEntryPermissionType>,
+    model: CmsContentModelType
+): boolean => {
+    return validateModelAccess(context, permission, model);
+};
+
 export const toSlug = text => {
     return slugify(text, {
         replacement: "-",
