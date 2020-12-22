@@ -1,104 +1,69 @@
-// @ts-nocheck
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
-import renderPage from "./renderPage";
-import path from "path";
-import S3 from "aws-sdk/clients/s3";
 import { DbContext } from "@webiny/handler-db/types";
+import { SettingsModel } from "@webiny/api-page-builder/utils/models";
 import defaults from "@webiny/api-page-builder/utils/defaults";
 
-const s3 = new S3({ region: process.env.AWS_REGION });
-
-export type Page = {
-    path: string;
-    tenant: string;
-    locale: string;
+export type HandlerArgs = {
+    data: {
+        prerendering: {
+            app: {
+                url: string;
+            };
+            storage: {
+                name: string;
+            };
+        };
+    };
 };
 
-export type Configuration = {
-    storageName: string;
+export type HandlerResponse = {
+    data: Record<string, any>;
+    error: {
+        code: string;
+        message: string;
+        data: Record<string, any>;
+    };
 };
 
-export default (
-    configuration: Configuration
-): HandlerPlugin<
-    DbContext,
-    ArgsContext<{
+const PK = "PB#SETTINGS";
+const SK = "default";
 
-    }>
-> => ({
+export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
     type: "handler",
     async handle(context) {
-        const { invocationArgs: args, db } = context;
-        if (!Array.isArray(args.paths)) {
-            return;
-        }
-
-        const { storageName } = configuration;
-
-        const __settings = {};
-        const getSettings = async (tenant, locale) => {
-            // T#root#L#en-US#PB#SETTINGS
-            const PK = `T#${tenant}#L#${locale}#PB#SETTINGS`;
-
-            if (PK in __settings) {
-                return __settings[PK];
-            }
-
-            const [[settings]] = await db.read({
+        try {
+            const { invocationArgs: args, db } = context;
+            let [[existingSettingsData]] = await db.read({
                 ...defaults.db,
-                query: { PK, SK: "default" },
-                limit: 1
+                query: { PK, SK }
             });
 
-            __settings[PK] = settings;
-            return __settings[PK];
-        };
+            if (!existingSettingsData) {
+                await db.create({
+                    ...defaults.db,
+                    data: { PK, SK }
+                });
 
-        const promises = [];
-        for (let i = 0; i < args.paths.length; i++) {
-            const current = args.paths[i];
-            const settings = await getSettings(current.tenant, current.locale);
+                existingSettingsData = {};
+            }
 
-            promises.push(
-                new Promise(async resolve => {
-                    const files = await renderPage(settings.websiteUrl + current.path);
-                    for (let j = 0; j < files.length; j++) {
-                        const file = files[j];
+            const updateSettingsModel = new SettingsModel();
+            updateSettingsModel.populate(existingSettingsData).populate(args.data);
 
-                        const key = path.join(
-                            current.tenant,
-                            current.locale,
-                            current.path,
-                            file.name
-                        );
+            await updateSettingsModel.validate();
 
-                        await storeFile({
-                            key,
-                            body: file.body,
-                            contentType: file.type,
-                            storageName
-                        });
-                    }
-                    resolve();
-                })
-            );
+            const updateSettingsData = await updateSettingsModel.toJSON();
+            await db.update({ ...defaults.db, query: { PK, SK }, data: updateSettingsData });
+
+            return { data: updateSettingsData, error: null };
+        } catch (e) {
+            return {
+                data: null,
+                error: {
+                    message: e.message
+                }
+            };
         }
-
-        await Promise.all(promises);
-
-        return {};
     }
 });
-
-const storeFile = ({ key, contentType, body, storageName }) => {
-    return s3
-        .putObject({
-            Bucket: storageName,
-            Key: key,
-            ACL: "public-read",
-            ContentType: contentType,
-            Body: body
-        })
-        .promise();
-};
