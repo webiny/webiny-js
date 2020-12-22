@@ -35,7 +35,7 @@ export const handler = createHandler(
     fileManagerS3(),
     pageBuilderPlugins({
         prerendering: {
-            handler: process.env.PRERENDERING_HANDLER_ARN
+            handler: process.env.PRERENDERING_HANDLER
         }
     }),
     formBuilderPlugins(),
