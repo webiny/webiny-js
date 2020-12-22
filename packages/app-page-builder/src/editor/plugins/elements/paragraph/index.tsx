@@ -1,18 +1,15 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
-import Text, { className } from "./Text";
+import Text, { textClassName } from "./Paragraph";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { OutputBlockData } from "@editorjs/editorjs";
 
-const createInitialEditorValue = (text: string, type: string): OutputBlockData[] => {
-    return [
-        {
-            type,
-            data: {
-                text
-            }
+const createInitialEditorValue = (text: string, type: string) => {
+    return {
+        type,
+        data: {
+            text
         }
-    ];
+    };
 };
 
 export default (): PbEditorPageElementPlugin => {
@@ -24,22 +21,24 @@ export default (): PbEditorPageElementPlugin => {
     };
 
     return {
-        name: "pb-editor-page-element-text",
+        name: "pb-editor-page-element-paragraph",
         type: "pb-editor-page-element",
-        elementType: "text",
+        elementType: "paragraph",
         toolbar: {
-            title: "Text",
+            title: "Paragraph",
             group: "pb-editor-element-group-basic",
             preview() {
                 const previewText = loremIpsum(defaultLipsum);
 
-                return <p className={className}>{previewText}</p>;
+                return <p className={textClassName}>{previewText}</p>;
             }
         },
         settings: [
             "pb-editor-page-element-style-settings-background",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",
+            "pb-editor-page-element-style-settings-text",
+            "pb-editor-page-element-style-settings-horizontal-align",
             "pb-editor-page-element-style-settings-padding",
             "pb-editor-page-element-style-settings-margin",
             "pb-editor-page-element-settings-clone",
@@ -50,7 +49,7 @@ export default (): PbEditorPageElementPlugin => {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
-                type: "text",
+                type: "paragraph",
                 elements: [],
                 data: {
                     text: createInitialEditorValue(previewText, content.typography || "paragraph"),
