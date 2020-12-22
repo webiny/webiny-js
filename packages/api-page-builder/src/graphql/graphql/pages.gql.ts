@@ -268,7 +268,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.get();
+                    const settings = await context.pageBuilder.settings.default.get();
                     return settings.websiteUrl + page.path;
                 }
             },
@@ -281,7 +281,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.categories.get(page.category);
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.get();
+                    const settings = await context.pageBuilder.settings.default.get();
                     return settings.websiteUrl + page.path;
                 }
             },

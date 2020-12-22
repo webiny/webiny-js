@@ -10,7 +10,7 @@ type Options = {
 
 export default (context: Context<TenancyContext, I18NContentContext>, options: Options = {}) => {
     let prefix = "PB#";
-    if (!options.includeTenant && !options.includeLocale) {
+    if (options.includeTenant === false && options.includeLocale === false) {
         return prefix;
     }
 

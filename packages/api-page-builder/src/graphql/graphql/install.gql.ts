@@ -30,15 +30,14 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbQuery: {
                 isInstalled: async (_, args, context) => {
-                    const { i18nContent, security } = context;
-                    if (!security.getTenant() || !i18nContent.getLocale()) {
+                    const { security } = context;
+                    if (!security.getTenant()) {
                         return false;
                     }
 
-                    const settings = await context.pageBuilder.settings.get({
-                        auth: false
-                    });
-                    return new Response(settings.installed);
+                    const settings = await context.pageBuilder.settings.install.get();
+                    const isInstalled = Boolean(settings?.installed);
+                    return new Response(isInstalled);
                 }
             },
             PbMutation: {
@@ -100,9 +99,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     );
 
                     // 6. Mark the Page Builder app as installed.
-                    const settings = await context.pageBuilder.settings.get();
-                    if (!settings.installed) {
-                        await context.pageBuilder.settings.update({
+                    const settings = await context.pageBuilder.settings.install.get();
+                    if (!settings?.installed) {
+                        await context.pageBuilder.settings.install.update({
                             installed: true
                         });
                     }

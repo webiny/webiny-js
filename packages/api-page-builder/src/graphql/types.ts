@@ -21,8 +21,7 @@ export type File = {
     src: string;
 };
 
-export type Settings = {
-    installed: boolean;
+export type DefaultSettings = {
     name: string;
     websiteUrl: string;
     websitePreviewUrl: string;
@@ -49,7 +48,10 @@ export type Settings = {
     };
 };
 
-// TODO
+export type InstallSettings = {
+    installed: boolean;
+};
+
 export type PageElement = {
     name: string;
     type: "element" | "block";
@@ -209,9 +211,21 @@ export type MenusCrud = {
 };
 
 export type SettingsCrud = {
-    get: (options?: { auth: boolean }) => Promise<Settings>;
-    update: (data: Record<string, any>, options?: { auth: boolean }) => Promise<Settings>;
-    getSettingsCacheKey: () => string;
+    dataLoaders: {
+        get: DataLoader<{ PK: string; SK: string }, DefaultSettings | InstallSettings, string>;
+    };
+    default: {
+        get: (options?: { auth?: boolean }) => Promise<DefaultSettings>;
+        update: (
+            data: Record<string, any>,
+            options?: { auth?: boolean }
+        ) => Promise<DefaultSettings>;
+        getSettingsCacheKey: () => string;
+    };
+    install: {
+        get: () => Promise<InstallSettings>;
+        update: (data: Record<string, any>) => Promise<InstallSettings>;
+    };
 };
 
 // PBContext types.
@@ -301,8 +315,8 @@ export type MenuHookPlugin = HookPlugin<
 
 export type SettingsHookPlugin = Plugin<{
     type: "pb-settings-hook";
-    beforeUpdate?: HookCallbackFunction<Settings>;
-    afterUpdate?: HookCallbackFunction<Settings>;
+    beforeUpdate?: HookCallbackFunction<DefaultSettings>;
+    afterUpdate?: HookCallbackFunction<DefaultSettings>;
 }>;
 
 export type InstallHookPlugin = Plugin<{

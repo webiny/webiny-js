@@ -26,7 +26,7 @@ describe("Settings Test", () => {
             data: {
                 pageBuilder: {
                     getSettings: {
-                        data: {
+                        data: null, /*{
                             websiteUrl: null,
                             websitePreviewUrl: null,
                             prerendering: null,
@@ -37,7 +37,7 @@ describe("Settings Test", () => {
                                 twitter: null,
                                 image: null
                             }
-                        },
+                        },*/
                         error: null,
                         id: "T#root#L#en-US#PB#SETTINGS"
                     }
@@ -164,12 +164,12 @@ describe("Settings Test", () => {
         let [logs] = await logsDb.readLogs();
         let { id: cursor } = logs.pop();
 
-        await listPublishedPages();
+        const reza = await listPublishedPages();
 
         // When listing published pages, settings must have been loaded from the DB only once.
         await logsDb
             .readLogs()
-            .then(([logs]) => logs.filter(item => item.id > cursor))
+            .then(([logs]) => logs.filter(item => item.id > cursor && item.operation === 'read'))
             .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#SETTINGS"))
             .then(logs => expect(logs.length).toBe(1));
     });

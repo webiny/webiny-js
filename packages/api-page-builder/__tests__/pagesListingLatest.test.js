@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityB } from "./mocks";
 
-jest.setTimeout(15000);
+jest.setTimeout(20000);
 
 describe("listing latest pages", () => {
     const {
