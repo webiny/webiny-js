@@ -7,6 +7,7 @@ import contextSetup from "./contextSetup";
 import contentModelManager from "./plugins/contentModelManager";
 import fieldTypePlugins from "./plugins/graphqlFields";
 import validatorsPlugins from "./plugins/validators";
+import elasticSearchOperators from "./plugins/es";
 
 type CmsContentPluginsIndexArgsType = {
     debug?: boolean;
@@ -21,5 +22,6 @@ export default (options: CmsContentPluginsIndexArgsType = {}) => [
     contentModelEntry(),
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
-    validatorsPlugins()
+    validatorsPlugins(),
+    elasticSearchOperators()
 ];
