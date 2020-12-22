@@ -4,7 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 
-describe.skip("READ - Resolvers", () => {
+describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
     const readHandlerOpts = {
@@ -22,6 +22,7 @@ describe.skip("READ - Resolvers", () => {
 
         const category = models.find(m => m.modelId === "category");
 
+        // TODO fix because this will not work sicne admin queries are not loaded in this test
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {

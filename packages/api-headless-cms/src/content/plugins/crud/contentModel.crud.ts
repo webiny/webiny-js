@@ -21,7 +21,7 @@ import { afterDeleteHook } from "./contentModel/afterDelete.hook";
 import { beforeCreateHook } from "./contentModel/beforeCreate.hook";
 import { afterCreateHook } from "./contentModel/afterCreate.hook";
 
-const MANAGE_CM = "cms.manage.contentModel";
+// const MANAGE_CM = "cms.manage.contentModel";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",

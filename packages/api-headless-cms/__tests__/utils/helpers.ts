@@ -1,5 +1,28 @@
 import { pick } from "lodash";
 import { SecurityIdentity } from "@webiny/api-security";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import contentModelGroup from "../contentAPI/mocks/contentModelGroup";
+
+export const createContentModelGroup = async (
+    client: DocumentClient
+): Promise<CmsContentModelGroupType> => {
+    const model: CmsContentModelGroupType = {
+        ...contentModelGroup,
+        createdBy: identity,
+        createdOn: new Date(),
+        savedOn: new Date()
+    };
+
+    await client.put({
+        TableName: "HeadlessCms",
+        Item: {
+            TYPE: "cms.group",
+            ...model
+        }
+    });
+    return model;
+};
 
 export type PermissionsArgType = {
     name: string;
