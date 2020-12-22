@@ -5,7 +5,7 @@ import trimEnd from "lodash/trimEnd";
 // We don't want trailing slashes in Page Builder app's important URLs (website URL, website preview URL, app URL).
 const trimTrailingSlashes = value => trimEnd(value, "/");
 
-export const PbSettingsModel = withFields({
+export default withFields({
     name: string({ validation: "required,maxLength:500" }),
     websiteUrl: onSet(trimTrailingSlashes)(string({ validation: "url,maxLength:500" })),
     websitePreviewUrl: onSet(trimTrailingSlashes)(string({ validation: "url,maxLength:500" })),
