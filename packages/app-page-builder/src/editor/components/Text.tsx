@@ -13,11 +13,13 @@ type TextElementProps = {
     elementId: string;
     editorOptions: any;
     rootClassName?: string;
+    useCustomTag?: boolean;
 };
 const Text: React.FunctionComponent<TextElementProps> = ({
     elementId,
     editorOptions,
-    rootClassName
+    rootClassName,
+    useCustomTag
 }) => {
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const activeElementId = useRecoilValue(activeElementIdSelector);
@@ -37,7 +39,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         return null;
     }
 
-    const { typography, data } = element.data.text;
+    const { typography, data, tag } = element.data.text;
 
     return (
         <ElementRoot
@@ -45,6 +47,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
             className={classNames(textClassName, rootClassName, typography)}
         >
             <ReactMediumEditor
+                tag={useCustomTag ? tag : "div"}
                 value={data.text}
                 onChange={onChange}
                 options={editorOptions}
