@@ -1200,8 +1200,19 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     const settings = await context.pageBuilder.settings.get();
 
-                    const appUrl = settings?.prerendering?.app?.url;
-                    const storageName = settings?.prerendering?.storage?.name;
+                    let appUrl = settings?.prerendering?.app?.url;
+                    let storageName = settings?.prerendering?.storage?.name;
+
+                    if (!appUrl || !storageName) {
+                        const defaultSettings = await context.pageBuilder.settings.getDefault();
+                        if (!appUrl) {
+                            appUrl = defaultSettings?.prerendering?.app?.url;
+                        }
+
+                        if (!storageName) {
+                            storageName = defaultSettings?.prerendering?.storage?.name;
+                        }
+                    }
 
                     if (!appUrl || !storageName) {
                         return;
