@@ -1,16 +1,8 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
+import { PbEditorPageElementPlugin } from "../../../../types";
 import Text, { textClassName } from "./Paragraph";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-
-const createInitialEditorValue = (text: string, type: string) => {
-    return {
-        type,
-        data: {
-            text
-        }
-    };
-};
+import { createInitialEditorValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {

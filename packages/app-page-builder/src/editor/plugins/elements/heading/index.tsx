@@ -1,16 +1,8 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
+import { PbEditorPageElementPlugin } from "../../../../types";
 import Heading, { headingClassName } from "./Heading";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-
-const createInitialEditorValue = (text: string, type: string) => {
-    return {
-        type,
-        data: {
-            text
-        }
-    };
-};
+import { createInitialEditorValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -53,7 +45,7 @@ export default (): PbEditorPageElementPlugin => {
                 type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(previewText, content.typography || "h1"),
+                    text: createInitialEditorValue(previewText, content.typography || "h2"),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },

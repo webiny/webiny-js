@@ -1,16 +1,8 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
+import { PbEditorPageElementPlugin } from "../../../../types";
 import List, { className } from "./List";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-
-const createInitialEditorValue = (text: string, type: string) => {
-    return {
-        type,
-        data: {
-            text
-        }
-    };
-};
+import { createInitialEditorValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -52,7 +44,13 @@ export default (): PbEditorPageElementPlugin => {
         ],
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
-            const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
+            const previewText =
+                content.text ||
+                `<ul>
+                    <li>Point 1</li>
+                    <li>Point 2</li>
+                    <li>Point 3</li>
+                </ul>`;
 
             return {
                 type: "list",

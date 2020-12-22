@@ -1,15 +1,7 @@
 import React from "react";
 import Quote, { className } from "./Quote";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-
-const createInitialEditorValue = (text: string, type: string) => {
-    return {
-        type,
-        data: {
-            text
-        }
-    };
-};
+import { createInitialEditorValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -43,16 +35,14 @@ export default (): PbEditorPageElementPlugin => {
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
             const previewText =
-                content.text || "We Live In A Twilight World. There Are No Friends At Dusk.";
+                content.text ||
+                `<blockquote>We Live In A Twilight World. There Are No Friends At Dusk.</blockquote>`;
 
             return {
                 type: "quote",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(
-                        previewText,
-                        content.typography || "description"
-                    ),
+                    text: createInitialEditorValue(previewText, content.typography || "h3"),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
