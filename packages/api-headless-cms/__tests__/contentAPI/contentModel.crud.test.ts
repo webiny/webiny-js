@@ -188,6 +188,38 @@ describe("content model test", () => {
         });
     });
 
+    test("get existing content model", async () => {
+        // const {createContentModelMutation} = useAdminGqlHandler();
+        const { createContentModelMutation, getContentModelQuery } = useContentGqlHandler(
+            manageHandlerOpts
+        );
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        const [response] = await getContentModelQuery({
+            modelId: contentModel.modelId
+        });
+
+        expect(response).toEqual({
+            data: {
+                getContentModel: {
+                    data: {
+                        ...contentModel
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
     test("error when getting non-existing model", async () => {
         const { getContentModelQuery } = useContentGqlHandler(manageHandlerOpts);
         const modelId = "nonExistingId";
