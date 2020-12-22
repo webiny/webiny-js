@@ -38,6 +38,7 @@ export default (): PbEditorPageElementPlugin => {
             "pb-editor-page-element-style-settings-background",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",
+            "pb-editor-page-element-style-settings-text",
             "pb-editor-page-element-style-settings-horizontal-align",
             "pb-editor-page-element-style-settings-padding",
             "pb-editor-page-element-style-settings-margin",
@@ -52,7 +53,7 @@ export default (): PbEditorPageElementPlugin => {
                 type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(previewText, content.typography || "paragraph"),
+                    text: createInitialEditorValue(previewText, content.typography || "h1"),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
