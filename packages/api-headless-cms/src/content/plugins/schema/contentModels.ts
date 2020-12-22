@@ -202,7 +202,11 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
 
                 extend type Query {
-                    getContentModel(modelId: ID, where: JSON, sort: String): CmsContentModelResponse
+                    getContentModel(
+                        modelId: ID!
+                        where: JSON
+                        sort: String
+                    ): CmsContentModelResponse
 
                     listContentModels: CmsContentModelListResponse
                 }

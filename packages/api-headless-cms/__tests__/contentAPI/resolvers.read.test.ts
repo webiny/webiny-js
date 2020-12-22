@@ -1,24 +1,40 @@
-/* eslint-disable */
 import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
+import { useCategoryHandler } from "../utils/useCategoryHandler";
 
-describe.skip("READ - Resolvers", () => {
+describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
-    const readHandlerOpts = {
-        path: "read/en-US"
-    };
+    const esCmsIndex = "root-headless-cms";
+
+    const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read/en-US" };
 
     const {
-        documentClient,
+        sleep,
+        elasticSearch,
         createContentModelMutation,
-        updateContentModelMutation
-    } = useContentGqlHandler(readHandlerOpts);
+        updateContentModelMutation,
+        createContentModelGroupMutation
+    } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        contentModelGroup = await helpers.createContentModelGroup(documentClient);
+        try {
+            await elasticSearch.indices.create({ index: esCmsIndex });
+        } catch {
+            // Ignore errors
+        }
+
+        const [createCMG] = await createContentModelGroupMutation({
+            data: {
+                name: "Group",
+                slug: "group",
+                icon: "ico/ico",
+                description: "description"
+            }
+        });
+        contentModelGroup = createCMG.data.createContentModelGroup.data;
 
         const category = models.find(m => m.modelId === "category");
 
@@ -31,143 +47,276 @@ describe.skip("READ - Resolvers", () => {
             }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [update] = await updateContentModelMutation({
+        await updateContentModelMutation({
             id: create.data.createContentModel.data.id,
             data: {
                 fields: category.fields,
                 layout: category.layout
             }
         });
+
+        await sleep(300);
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: esCmsIndex });
+        } catch (e) {}
     });
 
     test(`get entry by ID`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($id: ID!) {
-                getCategory(where: { id: $id }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
-                        message
-                    }
+        const { getCategory } = useCategoryHandler(readOpts);
+
+        const [response] = await getCategory({
+            id: 123
+        });
+
+        expect(response).toEqual({
+            data: {
+                getCategory: {
+                    data: {
+                        id: 123,
+                        title: "title",
+                        slug: "slug"
+                    },
+                    error: null
                 }
             }
-        `;
+        });
     });
 
     test(`should return a NOT_FOUND error when getting by value from an unpublished revision`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
+        const { getCategory } = useCategoryHandler(readOpts);
+
+        const [response] = await getCategory({
+            id: 123
+        });
+
+        expect(response).toEqual({
+            data: {
+                getCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND"
                     }
                 }
             }
-        `;
-
-        // expect(data.getCategory.data).toBeNull();
-        // expect(data.getCategory.error.code).toBe("NOT_FOUND");
+        });
     });
 
     test(`list entries (no parameters)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories {
-                    data {
-                        id
-                        title
-                        slug
-                    }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories();
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            id: 123,
+                            title: "fdfds",
+                            slug: "gdsgd"
+                        }
+                    ],
+                    error: null
                 }
             }
-        `;
+        });
     });
 
     test(`list entries (limit)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories(limit: 1) {
-                    data {
-                        id
-                    }
-                    meta {
-                        totalCount
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            limit: 1
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            id: 123
+                        }
+                    ],
+                    meta: {
+                        totalCount: 5
                     }
                 }
             }
-        `;
+        });
     });
 
     test(`list entries (limit + after)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($after: String) {
-                listCategories(after: $after, limit: 1) {
-                    data {
-                        title
-                    }
-                    meta {
-                        cursor
-                        hasMoreItems
-                        totalCount
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            limit: 1,
+            after: "someAfterString"
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "category"
+                        }
+                    ],
+                    meta: {
+                        cursor: "fds",
+                        hasMoreItems: true,
+                        totalCount: 15
                     }
                 }
             }
-        `;
+        });
     });
 
     test(`list entries (sort ASC)`, async () => {
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            sort: ["title_ASC"]
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "First category"
+                        },
+                        {
+                            title: "Second category"
+                        }
+                    ]
                 }
             }
-        `;
+        });
     });
 
     test(`list entries (sort DESC)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            sort: ["title_DESC"]
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "Second category"
+                        },
+                        {
+                            title: "First category"
+                        }
+                    ]
                 }
             }
-        `;
+        });
     });
 
-    test(`list entries (contains, not_contains, in, not_in)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($where: CategoryListWhereInput) {
-                listCategories(where: $where) {
-                    data {
-                        title
-                    }
-                    error {
-                        message
-                    }
+    test("list entries that contains given value", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                title_contains: "first"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "First category",
+                            slug: "first-category"
+                        }
+                    ],
+                    error: null
                 }
             }
-        `;
+        });
+    });
+
+    test("list entries that do not contains given value", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                title_not_contains: "first"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "Second category",
+                            slug: "second-category"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are in given values", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                slug_in: ["first-category"]
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "First category",
+                            slug: "first-category"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are not in given values", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                slug_not_in: ["first-category"]
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                listLatestCategories: {
+                    data: [
+                        {
+                            title: "Second category",
+                            slug: "second-category"
+                        }
+                    ],
+                    error: null
+                }
+            }
+        });
     });
 });
