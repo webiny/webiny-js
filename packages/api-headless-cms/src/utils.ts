@@ -1,5 +1,7 @@
 import slugify from "slugify";
 import {
+    CmsContentModelEntryPermissionType,
+    CmsContentModelEntryType,
     CmsContentModelPermissionType,
     CmsContentModelType,
     CmsContext,
@@ -119,42 +121,50 @@ export const validateOwnership = (
         return false;
     }
 };
-
+/**
+ * model access is checking for both specific model or group access
+ * if permission has specific models set as access pattern then groups will not matter (although both can be set)
+ */
 export const checkModelAccess = (
     context: CmsContext,
     permission: SecurityPermission<CmsContentModelPermissionType>,
     model: CmsContentModelType
 ): void => {
-    const locale = context.cms.getLocale().code;
-    const { models, groups } = permission;
-    // when no models or groups defined on permission
-    // it means user has access to everything
-    if (!models && !groups) {
+    if (validateModelAccess(context, permission, model)) {
         return;
     }
-    // when there is no locale in models or groups, it means that no access was given
-    // this happens when access control was set but no models or groups were added
-    if (models) {
-        if (!models[locale] || !models[locale].includes(model.id)) {
-            throw new NotAuthorizedError();
-        }
-        return;
-    }
-    if (!groups[locale] || !groups[locale].includes(model.group.id)) {
-        throw new NotAuthorizedError();
-    }
+    throw new NotAuthorizedError();
 };
 export const validateModelAccess = (
     context: CmsContext,
     permission: SecurityPermission<CmsContentModelPermissionType>,
     model: CmsContentModelType
 ): boolean => {
-    try {
-        checkModelAccess(context, permission, model);
+    const { models, groups } = permission;
+    // when no models or groups defined on permission
+    // it means user has access to everything
+    if (!models && !groups) {
         return true;
-    } catch {
+    }
+    const locale = context.cms.getLocale().code;
+    // when there is no locale in models or groups, it means that no access was given
+    // this happens when access control was set but no models or groups were added
+    if (models) {
+        if (
+            Array.isArray(models[locale]) === false ||
+            models[locale].includes(model.modelId) === false
+        ) {
+            return false;
+        }
+        return true;
+    }
+    if (
+        Array.isArray(groups[locale]) === false ||
+        groups[locale].includes(model.group.id) === false
+    ) {
         return false;
     }
+    return true;
 };
 
 export const toSlug = text => {

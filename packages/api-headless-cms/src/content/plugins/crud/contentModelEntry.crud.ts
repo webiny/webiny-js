@@ -50,32 +50,54 @@ const getESPublishedEntryData = (entry: CmsContentModelEntryType) => {
     return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
-type FilterModelsArgType = {
+type FetchAllowedEntryModelIdListArgsType = {
     context: CmsContext;
-    permission: SecurityPermission;
+    permission: SecurityPermission<CmsContentModelEntryPermissionType>;
     where?: CmsContentModelEntryListWhereType;
 };
-const filterModels = async ({
-    context,
-    where,
-    permission
-}: FilterModelsArgType): Promise<string[] | undefined> => {
-    // TODO change when @Pavel910 creates permissions from his end
-    if (!permission.onlyCertainModels) {
-        if (!where || !where.modelId_in) {
-            return undefined;
+
+const fetchAllowedEntryModelIdList = async (
+    args: FetchAllowedEntryModelIdListArgsType
+): Promise<string[] | undefined> => {
+    const { context, permission, where } = args;
+    const locale = context.cms.getLocale().code;
+    // we can filter by modelId_in, modelId, modelId_not and modelId_not_in
+    let whereModelIdIn: string[] | undefined = where.modelId_in;
+    if (where.modelId) {
+        whereModelIdIn = [where.modelId];
+    }
+    let whereModelNotIn: string[] | undefined = where.modelId_not_in;
+    if (where.modelId_not) {
+        whereModelNotIn = [where.modelId_not];
+    }
+    // filter out models immediately
+    const models = (await context.cms.models.list()).filter(model => {
+        if (!whereModelIdIn && !whereModelNotIn) {
+            return true;
+        } else if (whereModelNotIn && whereModelNotIn.includes(model.modelId)) {
+            return false;
         }
-        return where.modelId_in;
+        return whereModelIdIn.includes(model.modelId);
+    });
+    const { models: permissionModels, groups: permissionGroups } = permission;
+    // when no models or groups just filter by where_in if it exists
+    if (!permissionModels && !permissionModels) {
+        return models.map(model => model.modelId);
     }
-    const models = await context.cms.models.list();
-    if (!where || !where.modelId_in) {
-        return models.map(m => m.id);
+    // if there are models in permissions
+    // we use modelId to check if it is allowed to user
+    if (permissionModels) {
+        const allowedModels = permissionModels[locale] || [];
+        return models
+            .filter(model => allowedModels.includes(model.modelId))
+            .map(model => model.modelId);
     }
+    // there is a possibility that there is nothing allowed in groups locale property
+    // happens when user selects group access pattern but does not select any group
+    const allowedGroups = permissionGroups[locale] || [];
     return models
-        .filter(model => {
-            return where.modelId_in.includes(model.id);
-        })
-        .map(m => m.id);
+        .filter(model => allowedGroups.includes(model.group.id))
+        .map(model => model.modelId);
 };
 
 export default (): ContextPlugin<CmsContext> => ({
@@ -118,8 +140,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Possibly only get records which are owned by current user
                 const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
 
-                // filter out models that user cannot access
-                const filteredModels = await filterModels({
+                // fetch only models that user can access
+                const allowedModels = await fetchAllowedEntryModelIdList({
                     context,
                     permission,
                     where: args.where
@@ -132,7 +154,14 @@ export default (): ContextPlugin<CmsContext> => ({
                         where: {
                             ...(args.where || {}),
                             // eslint-disable-next-line @typescript-eslint/camelcase
-                            modelId_in: filteredModels
+                            modelId_in: allowedModels,
+                            // we need to unset everything that has to do with filtering by modelId
+                            // since we already put all filtered modelId's to modelId_in
+                            modelId: undefined,
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            modelId_not_in: undefined,
+                            // eslint-disable-next-line @typescript-eslint/camelcase
+                            modelId_not: undefined
                         },
                         limit
                     },
