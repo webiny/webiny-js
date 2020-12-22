@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import { createPublishMutation } from "../../../../views/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { get } from "lodash";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";

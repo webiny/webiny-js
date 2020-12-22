@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { useRouter } from "@webiny/react-router";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
+import { useContentModelEditor } from "../../../views/components/ContentModelEditor/Context";
 import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.namespace("app-headless-cms/admin/editor/top-bar/save-button");

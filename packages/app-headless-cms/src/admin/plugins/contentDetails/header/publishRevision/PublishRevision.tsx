@@ -4,7 +4,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { get } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+import { createPublishMutation } from "../../../../views/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";

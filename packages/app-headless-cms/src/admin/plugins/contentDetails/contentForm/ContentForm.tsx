@@ -1,16 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
-import { ContentModelForm } from "@webiny/app-headless-cms/admin/components/ContentModelForm";
 import { useRouter } from "@webiny/react-router";
-import {
-    createCreateFromMutation,
-    createCreateMutation,
-    createListQuery,
-    createUpdateMutation
-} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import { ContentModelForm } from "../../../views/components/ContentModelForm";
+import * as GQL from "../../../views/components/ContentModelForm/graphql";
 
 const ContentForm = ({ contentModel, content, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
@@ -19,10 +14,10 @@ const ContentForm = ({ contentModel, content, setLoading, getLoading, setState }
 
     const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM, LIST_CONTENT } = useMemo(() => {
         return {
-            LIST_CONTENT: createListQuery(contentModel),
-            CREATE_CONTENT: createCreateMutation(contentModel),
-            UPDATE_CONTENT: createUpdateMutation(contentModel),
-            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel)
+            LIST_CONTENT: GQL.createListQuery(contentModel),
+            CREATE_CONTENT: GQL.createCreateMutation(contentModel),
+            UPDATE_CONTENT: GQL.createUpdateMutation(contentModel),
+            CREATE_CONTENT_FROM: GQL.createCreateFromMutation(contentModel)
         };
     }, [contentModel.modelId]);
 

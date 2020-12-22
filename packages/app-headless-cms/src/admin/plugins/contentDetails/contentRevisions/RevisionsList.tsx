@@ -5,14 +5,10 @@ import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
-import {
-    createCreateFromMutation,
-    createDeleteMutation,
-    createPublishMutation
-} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
+import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import Revision from "./Revision";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
@@ -46,9 +42,9 @@ const RevisionsList = props => {
 
     const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
         return {
-            CREATE_CONTENT_FROM: createCreateFromMutation(contentModel),
-            DELETE_CONTENT: createDeleteMutation(contentModel),
-            PUBLISH_CONTENT: createPublishMutation(contentModel)
+            CREATE_CONTENT_FROM: GQL.createCreateFromMutation(contentModel),
+            DELETE_CONTENT: GQL.createDeleteMutation(contentModel),
+            PUBLISH_CONTENT: GQL.createPublishMutation(contentModel)
         };
     }, [contentModel.modelId]);
 

@@ -5,12 +5,12 @@ import { Dialog, DialogContent, DialogTitle, DialogActions, DialogButton } from 
 import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { i18n } from "@webiny/app/i18n";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { getPlugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
+import { useContentModelEditor } from "../../../../../views/components/ContentModelEditor/Context";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 

@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import get from "lodash.get";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
-import { createListQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
+import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import ContentDataList from "./ContentDataList";
 import ContentDetails from "./ContentDetails";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import { createListQuery } from "../components/ContentModelForm/graphql";
 
 export const ContentRender = ({ contentModel }) => {
     const apolloClient = useApolloClient();

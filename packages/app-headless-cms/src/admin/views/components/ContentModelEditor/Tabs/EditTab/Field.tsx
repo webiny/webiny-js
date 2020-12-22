@@ -6,7 +6,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { ReactComponent as TitleIcon } from "@webiny/app-headless-cms/admin/icons/title-24px.svg";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
+import { useContentModelEditor } from "../../Context";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { getPlugins } from "@webiny/plugins";

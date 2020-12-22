@@ -7,12 +7,12 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useContentModelEditor } from "@webiny/app-headless-cms/admin/components/ContentModelEditor/Context";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
 import { Input } from "@webiny/ui/Input";
+import { CmsEditorFieldValidatorPlugin } from "@webiny/app-headless-cms/types";
+import { useContentModelEditor } from "../../../../ContentModelEditor/Context";
 
 const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {

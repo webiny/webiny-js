@@ -4,8 +4,8 @@ import { ReactElement, ReactNode } from "react";
 import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import Label from "@webiny/app-headless-cms/admin/components/ContentModelForm/ContentFormRender/components/Label";
 import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
 
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";

@@ -5,10 +5,7 @@ import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import {
-    createReadQuery,
-    createListRevisionsQuery
-} from "../../components/ContentModelForm/graphql";
+import * as GQL from "../components/ContentModelForm/graphql";
 
 const DetailsContainer = styled("div")({
     overflow: "hidden",
@@ -40,8 +37,8 @@ const ContentDetails = ({ contentModel, dataList }) => {
 
     const { READ_CONTENT, LIST_REVISIONS } = useMemo(() => {
         return {
-            READ_CONTENT: createReadQuery(contentModel),
-            LIST_REVISIONS: createListRevisionsQuery(contentModel)
+            READ_CONTENT: GQL.createReadQuery(contentModel),
+            LIST_REVISIONS: GQL.createListRevisionsQuery(contentModel)
         };
     }, [contentModel.modelId]);
 
