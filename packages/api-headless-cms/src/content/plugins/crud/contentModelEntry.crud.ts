@@ -654,7 +654,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (publishedEntryData) {
                     // If there is a `published` entry already, we need to set it to `unpublished`. We need to
                     // execute two updates: update the previously published entry's status and the published
-                    // entry record (PK_PAGE_PUBLISHED()).
+                    // entry record (PK_ENTRY_PUBLISHED()).
 
                     // DynamoDB does not support `batchUpdate` - so here we load the previously published
                     // entry's data to update its status within a batch operation. If, hopefully,
@@ -732,20 +732,217 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return entry;
             },
-            requestChanges(
-                model: CmsContentModelType,
-                id: string
-            ): Promise<CmsContentModelEntryType> {
-                return Promise.resolve(undefined);
+            async requestChanges(model, id) {
+                const permission = await checkPermissions({ rcpu: "c" });
+                const [uniqueId] = id.split("#");
+
+                const [[[entry]], [[latestEntryData]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: id }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                    })
+                    .execute();
+
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                    );
+                }
+
+                if (entry.status !== STATUS_REVIEW_REQUESTED) {
+                    throw new Error(
+                        "Cannot request changes on an entry that's not under review.",
+                        "ENTRY_NOT_UNDER_REVIEW"
+                    );
+                }
+
+                const identity = context.security.getIdentity();
+                if (entry.ownedBy.id === identity.id) {
+                    throw new Error(
+                        "You cannot request changes on your own entry.",
+                        "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
+                    );
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                // Change entry's status.
+                const updatedData = {
+                    status: STATUS_CHANGES_REQUESTED,
+                    locked: false
+                };
+
+                await db.update({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_ENTRY(),
+                        SK: id
+                    },
+                    data: updatedData
+                });
+
+                // If we updated the latest version, then make sure the changes are propagated to ES too.
+                if (latestEntryData.id === id) {
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...utils.defaults.es(context),
+                        id: `CME#L#${uniqueId}`,
+                        body: {
+                            doc: {
+                                status: STATUS_CHANGES_REQUESTED,
+                                locked: false
+                            }
+                        }
+                    });
+                }
+
+                return Object.assign(entry, updatedData);
             },
-            requestReview(
-                model: CmsContentModelType,
-                id: string
-            ): Promise<CmsContentModelEntryType> {
-                return Promise.resolve(undefined);
+            async requestReview(model, id) {
+                const permission = await checkPermissions({ rcpu: "r" });
+                const [uniqueId] = id.split("#");
+
+                const results = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: id }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                    })
+                    .execute();
+
+                const entry: CmsContentModelEntryType = results[0][0];
+                const latestEntryData: { id: string } = results[1][0];
+
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                    );
+                }
+
+                const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
+                if (!allowedStatuses.includes(entry.status)) {
+                    throw new Error(
+                        "Cannot request review - entry is not a draft nor was a change request issued."
+                    );
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                // Change entry's status.
+                const updatedData = {
+                    status: STATUS_REVIEW_REQUESTED,
+                    locked: true
+                };
+
+                await db.update({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_ENTRY(),
+                        SK: id
+                    },
+                    data: updatedData
+                });
+
+                // If we updated the latest version, then make sure the changes are propagated to ES too.
+                if (latestEntryData.id === id) {
+                    // Index file in "Elastic Search"
+                    await elasticSearch.update({
+                        ...utils.defaults.es(context),
+                        id: `CME#L#${uniqueId}`,
+                        body: {
+                            doc: {
+                                status: STATUS_REVIEW_REQUESTED,
+                                locked: true
+                            }
+                        }
+                    });
+                }
+
+                return Object.assign(entry, updatedData);
             },
-            unpublish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType> {
-                return Promise.resolve(undefined);
+            async unpublish(model, id) {
+                const permission = await checkPermissions({ rcpu: "u" });
+
+                const [uniqueId] = id.split("#");
+
+                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
+                    .batch()
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY(), SK: id }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: { PK: PK_ENTRY_PUBLISHED(), SK: uniqueId }
+                    })
+                    .execute();
+
+                if (!entry) {
+                    throw new NotFoundError(
+                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                    );
+                }
+
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                if (!publishedEntryData || publishedEntryData.id !== id) {
+                    throw new Error(`Entry "${id}" is not published.`);
+                }
+
+                entry.status = STATUS_UNPUBLISHED;
+
+                await db
+                    .batch()
+                    .delete({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY_PUBLISHED(),
+                            SK: id
+                        }
+                    })
+                    .update({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY_PUBLISHED(),
+                            SK: uniqueId
+                        },
+                        data: entry
+                    })
+                    .execute();
+
+                // Update data in ES.
+                const es = utils.defaults.es(context);
+                const esOperations = [];
+
+                // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+                if (latestEntryData.id === id) {
+                    esOperations.push(
+                        { update: { _id: `CME#L#${uniqueId}`, _index: es.index } },
+                        { doc: { status: STATUS_UNPUBLISHED } }
+                    );
+                }
+
+                // Delete the published revision entry in ES.
+                esOperations.push({
+                    delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
+                });
+
+                await elasticSearch.bulk({ body: esOperations });
+
+                return entry;
             }
         };
 
