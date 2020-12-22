@@ -41,7 +41,7 @@ export default (): PbEditorPageElementPlugin => {
                         width: { value: "100%" },
                         margin: {
                             mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
-                            desktop: { top: "25px", left: "0px", right: "0px", bottom: "25px" },
+                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
                             advanced: true
                         },
                         padding: {
