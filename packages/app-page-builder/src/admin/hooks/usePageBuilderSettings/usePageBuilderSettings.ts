@@ -1,53 +1,50 @@
-import { useCallback } from "react";
 import { useQuery } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import getPagePreviewUrlFunction from "./getPagePreviewUrl";
 
-export const WEBSITE_URL_QUERY = gql`
+const DATA_FIELDS = /* GraphQL */ `
+    {
+        websiteUrl
+        websitePreviewUrl
+    }
+`;
+
+export const SETTINGS_QUERY = gql`
     query PbGetWebsiteUrl {
         pageBuilder {
             getSettings {
                 id
-                data {
-                    websiteUrl
-                }
+                data ${DATA_FIELDS}
+            }
+            getDefaultSettings {
+                id
+                data ${DATA_FIELDS}
             }
         }
     }
 `;
 
 export function usePageBuilderSettings() {
-    const { data, loading } = useQuery(WEBSITE_URL_QUERY);
+    const settingsQuery = useQuery(SETTINGS_QUERY);
 
-    const getWebsiteUrl = () => {
-        return get(data, "pageBuilder.getSettings.data.websiteUrl");
+    const settings = get(settingsQuery, "data.pageBuilder.getSettings.data") || {};
+    const defaultSettings = get(settingsQuery, "data.pageBuilder.getDefaultSettings.data") || {};
+
+    const getWebsiteUrl = (preview = false) => {
+        if (preview) {
+            return settings.websitePreviewUrl || defaultSettings.websitePreviewUrl;
+        }
+        return settings.websiteUrl || defaultSettings.websiteUrl;
     };
 
-    const getPageUrl = useCallback(
-        page => {
-            if (loading) {
-                return null;
-            }
-            return getWebsiteUrl() + page.path;
-        },
-        [data, loading]
-    );
-
-    const getPagePreviewUrl = useCallback(
-        page => {
-            if (loading) {
-                return null;
-            }
-            return getPagePreviewUrlFunction({ page, websiteUrl: getWebsiteUrl() });
-        },
-        [data, loading]
-    );
+    const getPageUrl = (page, preview = false) => {
+        return getWebsiteUrl(preview) + page.path;
+    };
 
     return {
         getWebsiteUrl,
         getPageUrl,
-        getPagePreviewUrl,
-        data: loading ? null : get(data, "pageBuilder.getSettings.data")
+        settings,
+        defaultSettings
     };
 }
