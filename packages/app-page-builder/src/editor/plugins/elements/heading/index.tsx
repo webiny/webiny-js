@@ -44,7 +44,10 @@ export default (): PbEditorPageElementPlugin => {
                 type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(previewText, content.typography || "h2"),
+                    text: createInitialEditorValue(
+                        previewText,
+                        content.typography || this.elementType
+                    ),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },

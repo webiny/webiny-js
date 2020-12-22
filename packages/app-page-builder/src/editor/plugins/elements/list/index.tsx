@@ -57,7 +57,7 @@ export default (): PbEditorPageElementPlugin => {
                 data: {
                     text: createInitialEditorValue(
                         previewText,
-                        content.typography || "description"
+                        content.typography || this.elementType
                     ),
                     settings: {
                         margin: {
