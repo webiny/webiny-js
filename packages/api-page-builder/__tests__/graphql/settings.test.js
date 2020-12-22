@@ -153,7 +153,7 @@ describe("Settings Test", () => {
         let [logs] = await logsDb.readLogs();
         let { id: cursor } = logs.pop();
 
-        const reza = await listPublishedPages();
+        await listPublishedPages();
 
         // When listing published pages, settings must have been loaded from the DB only once.
         await logsDb
