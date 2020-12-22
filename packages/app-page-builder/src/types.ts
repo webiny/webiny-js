@@ -72,6 +72,14 @@ export type PbElementDataSettingsBorderType = {
         left?: boolean;
     };
 };
+export type PbElementDataTextType = {
+    color?: string;
+    alignment?: string;
+    typography?: string;
+    data: {
+        text: string;
+    };
+};
 export type PbElementDataImageType = {
     width?: string | number;
     height?: string | number;
@@ -129,7 +137,7 @@ export type PbElementDataSettingsType = {
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
-    text?: any;
+    text?: PbElementDataTextType;
     image?: PbElementDataImageType;
     link?: {
         href?: string;
