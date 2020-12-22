@@ -27,7 +27,10 @@ export default (): PbEditorPageElementPlugin => {
             }
         },
         settings: [
-            "pb-editor-page-element-style-settings-text",
+            [
+                "pb-editor-page-element-style-settings-text",
+                { useCustomTag: true, tags: ["h1", "h2", "h3", "h4", "h5", "h6"] }
+            ],
             "pb-editor-page-element-style-settings-background",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",

@@ -5,7 +5,7 @@ import TextSettings from "./TextSettings";
 export default {
     name: "pb-editor-page-element-style-settings-text",
     type: "pb-editor-page-element-style-settings",
-    render() {
-        return <TextSettings />;
+    render({ options }) {
+        return <TextSettings options={options} />;
     }
 } as PbEditorPageElementStyleSettingsPlugin;

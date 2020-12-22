@@ -30,9 +30,9 @@ const classes = {
     })
 };
 
-const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
-    defaultAccordionValue
-}) => {
+const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
+    options: any;
+}> = ({ defaultAccordionValue, options }) => {
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
@@ -42,13 +42,15 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
                 color: "",
                 typography: "paragraph",
                 type: "paragraph",
-                alignment: "left"
+                alignment: "left",
+                tag: "h1"
             }
         } = {}
     } = element;
 
     const themeTypographyOptions = useMemo(() => {
-        return Object.values(theme.typography).map(el => (
+        const { types } = theme.elements[element.type];
+        return types.map(el => (
             <option value={el.className} key={el.label}>
                 {el.label}
             </option>
@@ -75,6 +77,10 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         getUpdateValue
     ]);
 
+    const updateTag = useCallback((value: string) => getUpdateValue("tag")(value), [
+        getUpdateValue
+    ]);
+
     return (
         <Accordion title={"Text"} defaultValue={defaultAccordionValue}>
             <>
@@ -85,14 +91,35 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
                         updatePreview={updateColorPreview}
                     />
                 </Wrapper>
-                <Wrapper containerClassName={classes.grid} label={"Typography"}>
+                {options.useCustomTag && (
+                    <Wrapper
+                        containerClassName={classes.grid}
+                        label={"Heading Type"}
+                        leftCellSpan={5}
+                        rightCellSpan={7}
+                    >
+                        <SelectField value={text.tag} onChange={updateTag}>
+                            {options.tags.map(tag => (
+                                <option value={tag} key={tag}>
+                                    {tag.toUpperCase()}
+                                </option>
+                            ))}
+                        </SelectField>
+                    </Wrapper>
+                )}
+                <Wrapper
+                    containerClassName={classes.grid}
+                    label={"Typography"}
+                    leftCellSpan={5}
+                    rightCellSpan={7}
+                >
                     <SelectField value={text.typography} onChange={updateTypography}>
                         {themeTypographyOptions}
                     </SelectField>
                 </Wrapper>
                 <Wrapper
                     containerClassName={classes.grid}
-                    label={"Align"}
+                    label={"Alignment"}
                     leftCellSpan={3}
                     rightCellSpan={9}
                     leftCellClassName={classes.leftCellStyle}
