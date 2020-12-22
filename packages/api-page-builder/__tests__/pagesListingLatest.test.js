@@ -45,8 +45,11 @@ describe("listing latest pages", () => {
             initiallyCreatedPagesIds.push(id);
         }
 
-        // List should show all five pages.
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 5);
+        // List should show all five pages - all updated.
+        await until(listPages, ([res]) => {
+            const data = res.data.pageBuilder.listPages.data;
+            return data.length === 5 && data[4].title === "page-c";
+        });
     });
 
     test("sorting", async () => {
