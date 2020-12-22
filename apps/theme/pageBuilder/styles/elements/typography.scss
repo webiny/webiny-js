@@ -39,6 +39,24 @@ blockquote {
   margin-bottom: $leading;
 }
 
+.webiny-pb-element-heading-basic {
+  font-weight: 600;
+}
+.webiny-pb-element-list-basic {
+  ul,
+  ol {
+    margin-top: 8px;
+  }
+  li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+  }
+}
+.webiny-pb-element-quote-basic {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  color: #4B5563;
+}
 .webiny-pb-typography-h1,
 .webiny-pb-typography-h2,
 .webiny-pb-typography-h3,
