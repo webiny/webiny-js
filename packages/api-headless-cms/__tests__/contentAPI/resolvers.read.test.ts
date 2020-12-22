@@ -1,35 +1,44 @@
 import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
-import contentModelGroupMock from "./mocks/contentModelGroup";
+import { useCategoryHandler } from "../utils/useCategoryHandler";
 
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
-    const readHandlerOpts = {
-        path: "read/en-US"
-    };
-    const manageHandlerOpts = {
-        path: "manage/en-US"
-    };
+    const esCmsIndex = "root-headless-cms";
 
-    const { invoke, updateContentModelMutation } = useContentGqlHandler(readHandlerOpts);
-    const { createContentModelMutation, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read/en-US" };
+
+    const {
+        sleep,
+        elasticSearch,
+        createContentModelMutation,
+        updateContentModelMutation,
+        createContentModelGroupMutation
+    } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        const [createGroupResponse] = await createContentModelGroupMutation({
+        try {
+            await elasticSearch.indices.create({ index: esCmsIndex });
+        } catch {
+            // Ignore errors
+        }
+
+        const [createCMG] = await createContentModelGroupMutation({
             data: {
-                ...contentModelGroupMock,
-                id: undefined
+                name: "Group",
+                slug: "group",
+                icon: "ico/ico",
+                description: "description"
             }
         });
-
-        contentModelGroup = createGroupResponse.data.createContentModelGroup.data;
+        contentModelGroup = createCMG.data.createContentModelGroup.data;
 
         const category = models.find(m => m.modelId === "category");
 
+        // Create initial record
         const [create] = await createContentModelMutation({
             data: {
                 name: category.name,
@@ -45,32 +54,21 @@ describe("READ - Resolvers", () => {
                 layout: category.layout
             }
         });
+
+        await sleep(300);
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: esCmsIndex });
+        } catch (e) {}
     });
 
     test(`get entry by ID`, async () => {
-        const query = /* GraphQL */ `
-            query GetCategory($id: ID) {
-                getCategory(where: { id: $id }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
-                        message
-                    }
-                }
-            }
-        `;
+        const { getCategory } = useCategoryHandler(readOpts);
 
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    id: "" // TODO category id
-                }
-            }
+        const [response] = await getCategory({
+            id: 123
         });
 
         expect(response).toEqual({
@@ -88,29 +86,10 @@ describe("READ - Resolvers", () => {
     });
 
     test(`should return a NOT_FOUND error when getting by value from an unpublished revision`, async () => {
-        const query = /* GraphQL */ `
-            query GetCategory($slug: String) {
-                getCategory(where: { slug: $slug }) {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        code
-                    }
-                }
-            }
-        `;
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    where: {
-                        slug: "first-category"
-                    }
-                }
-            }
+        const { getCategory } = useCategoryHandler(readOpts);
+
+        const [response] = await getCategory({
+            id: 123
         });
 
         expect(response).toEqual({
@@ -126,26 +105,13 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (no parameters)`, async () => {
-        const query = /* GraphQL */ `
-            {
-                listCategories {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                }
-            }
-        `;
-        const [response] = await invoke({
-            body: {
-                query
-            }
-        });
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories();
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             id: 123,
@@ -160,30 +126,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit)`, async () => {
-        const query = /* GraphQL */ `
-            query ListCategories($limit: Number) {
-                listCategories(limit: $limit) {
-                    data {
-                        id
-                    }
-                    meta {
-                        totalCount
-                    }
-                }
-            }
-        `;
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    limit: 1
-                }
-            }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            limit: 1
         });
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             id: 123
@@ -198,33 +149,16 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit + after)`, async () => {
-        const query = /* GraphQL */ `
-            query ListCategories($after: String, $limit: Number) {
-                listCategories(after: $after, limit: $limit) {
-                    data {
-                        title
-                    }
-                    meta {
-                        cursor
-                        hasMoreItems
-                        totalCount
-                    }
-                }
-            }
-        `;
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    limit: 1,
-                    after: "afterString"
-                }
-            }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            limit: 1,
+            after: "someAfterString"
         });
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "category"
@@ -241,27 +175,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort ASC)`, async () => {
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    sort: ["title_ASC"]
-                }
-            }
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            sort: ["title_ASC"]
         });
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "First category"
@@ -276,29 +198,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort DESC)`, async () => {
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
+        const { listLatestCategories } = useCategoryHandler(readOpts);
 
-        const [response] = await invoke({
-            body: {
-                query,
-                variables: {
-                    sort: ["title_DESC"]
-                }
-            }
+        const [response] = await listLatestCategories({
+            sort: ["title_DESC"]
         });
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "Second category"
@@ -312,35 +220,19 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    test(`list entries (contains, not_contains, in, not_in)`, async () => {
-        const query = /* GraphQL */ `
-            query ListCategories($where: CategoryListWhereInput) {
-                listCategories(where: $where) {
-                    data {
-                        title
-                    }
-                    error {
-                        message
-                    }
-                }
-            }
-        `;
+    test("list entries that contains given value", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
 
-        const [containsResponse] = await invoke({
-            body: {
-                query,
-                variables: {
-                    where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        title_contains: "First"
-                    }
-                }
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                title_contains: "first"
             }
         });
 
-        expect(containsResponse).toEqual({
+        expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "First category",
@@ -351,21 +243,21 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+    });
 
-        const [notContainsResponse] = await invoke({
-            body: {
-                query,
-                variables: {
-                    where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        title_not_contains: "First"
-                    }
-                }
+    test("list entries that do not contains given value", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                title_not_contains: "first"
             }
         });
-        expect(notContainsResponse).toEqual({
+
+        expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "Second category",
@@ -376,48 +268,46 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+    });
 
-        const [inResponse] = await invoke({
-            body: {
-                query,
-                variables: {
-                    where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        slug_in: ["first-category"]
-                    }
-                }
+    test("list entries that are in given values", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                slug_in: ["first-category"]
             }
         });
 
-        expect(inResponse).toEqual({
+        expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "First category",
-                            slug: "first-category,"
+                            slug: "first-category"
                         }
                     ],
                     error: null
                 }
             }
         });
+    });
 
-        const [notInResponse] = await invoke({
-            body: {
-                query,
-                variables: {
-                    where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        slug_not_in: ["first-category"]
-                    }
-                }
+    test("list entries that are not in given values", async () => {
+        const { listLatestCategories } = useCategoryHandler(readOpts);
+
+        const [response] = await listLatestCategories({
+            where: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                slug_not_in: ["first-category"]
             }
         });
 
-        expect(notInResponse).toEqual({
+        expect(response).toEqual({
             data: {
-                listCategories: {
+                listLatestCategories: {
                     data: [
                         {
                             title: "Second category",
