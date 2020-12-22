@@ -86,9 +86,11 @@ const createElasticSearchSortParams = (
     args: CreateElasticSearchSortParamsType
 ): ElasticSearchSortFieldsType[] => {
     const { sort, modelFields, model, parentObject } = args;
-    const checkIsSystemField = (field: string) => {
-        return !!model[field];
-    };
+
+    if (!sort) {
+        return undefined;
+    }
+
     const withParentObject = (field: string) => {
         if (!parentObject) {
             return null;
