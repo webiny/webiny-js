@@ -68,6 +68,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 utils.checkOwnership(context, permission, model);
+                utils.checkModelAccess(context, permission, model);
 
                 if (!model) {
                     throw new NotFoundError(`Content model "${id}" was not found!`);
@@ -78,7 +79,12 @@ export default (): ContextPlugin<CmsContext> => ({
             async list() {
                 const permission = await checkPermissions("r");
                 const models = await loaders.listModels.load("listModels");
-                return models.filter(model => utils.validateOwnership(context, permission, model));
+                return models.filter(model => {
+                    if (!utils.validateOwnership(context, permission, model)) {
+                        return false;
+                    }
+                    return utils.validateModelAccess(context, permission, model);
+                });
             },
             async create(data) {
                 await checkPermissions("w");

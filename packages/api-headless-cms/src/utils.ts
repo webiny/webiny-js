@@ -1,5 +1,10 @@
 import slugify from "slugify";
-import { CmsContext, CreatedByType } from "./types";
+import {
+    CmsContentModelPermissionType,
+    CmsContentModelType,
+    CmsContext,
+    CreatedByType
+} from "./types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -109,6 +114,43 @@ export const validateOwnership = (
 ): boolean => {
     try {
         checkOwnership(context, permission, record, field);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
+export const checkModelAccess = (
+    context: CmsContext,
+    permission: SecurityPermission<CmsContentModelPermissionType>,
+    model: CmsContentModelType
+): void => {
+    const locale = context.cms.getLocale().code;
+    const { models, groups } = permission;
+    // when no models or groups defined on permission
+    // it means user has access to everything
+    if (!models && !groups) {
+        return;
+    }
+    // when there is no locale in models or groups, it means that no access was given
+    // this happens when access control was set but no models or groups were added
+    if (models) {
+        if (!models[locale] || !models[locale].includes(model.id)) {
+            throw new NotAuthorizedError();
+        }
+        return;
+    }
+    if (!groups[locale] || !groups[locale].includes(model.group.id)) {
+        throw new NotAuthorizedError();
+    }
+};
+export const validateModelAccess = (
+    context: CmsContext,
+    permission: SecurityPermission<CmsContentModelPermissionType>,
+    model: CmsContentModelType
+): boolean => {
+    try {
+        checkModelAccess(context, permission, model);
         return true;
     } catch {
         return false;
