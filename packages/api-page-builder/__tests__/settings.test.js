@@ -26,18 +26,7 @@ describe("Settings Test", () => {
             data: {
                 pageBuilder: {
                     getSettings: {
-                        data: null, /*{
-                            websiteUrl: null,
-                            websitePreviewUrl: null,
-                            prerendering: null,
-                            name: null,
-                            social: {
-                                facebook: null,
-                                instagram: null,
-                                twitter: null,
-                                image: null
-                            }
-                        },*/
+                        data: null,
                         error: null,
                         id: "T#root#L#en-US#PB#SETTINGS"
                     }
@@ -169,7 +158,7 @@ describe("Settings Test", () => {
         // When listing published pages, settings must have been loaded from the DB only once.
         await logsDb
             .readLogs()
-            .then(([logs]) => logs.filter(item => item.id > cursor && item.operation === 'read'))
+            .then(([logs]) => logs.filter(item => item.id > cursor && item.operation === "read"))
             .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#SETTINGS"))
             .then(logs => expect(logs.length).toBe(1));
     });
