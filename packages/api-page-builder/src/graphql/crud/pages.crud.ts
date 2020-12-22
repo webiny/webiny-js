@@ -1197,13 +1197,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         return;
                     }
 
-                    const settings = await context.pageBuilder.settings.get();
+                    const settings = await context.pageBuilder.settings.default.get();
 
                     let appUrl = settings?.prerendering?.app?.url;
                     let storageName = settings?.prerendering?.storage?.name;
 
                     if (!appUrl || !storageName) {
-                        const defaultSettings = await context.pageBuilder.settings.getDefault();
+                        const defaultSettings = await context.pageBuilder.settings.default.getDefault();
                         if (!appUrl) {
                             appUrl = defaultSettings?.prerendering?.app?.url;
                         }
