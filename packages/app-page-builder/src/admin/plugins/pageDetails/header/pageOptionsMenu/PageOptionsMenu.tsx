@@ -30,8 +30,13 @@ const menuStyles = css({
 
 const PageOptionsMenu = props => {
     const { page } = props;
-    const { getPageUrl, getPagePreviewUrl, getWebsiteUrl } = usePageBuilderSettings();
+    const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
+
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
 
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
@@ -45,11 +50,9 @@ const PageOptionsMenu = props => {
         )
     });
 
-    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
-
     // We must prevent opening in new tab - Cypress doesn't work with new tabs.
     const target = window.Cypress ? "_self" : "_blank";
-    const url = page.locked ? getPageUrl(page) : getPagePreviewUrl(page);
+    const url = getPageUrl(page, !page.locked);
 
     const handlePreviewClick = useCallback(() => {
         if (isSiteRunning) {
@@ -59,6 +62,7 @@ const PageOptionsMenu = props => {
         }
     }, [url, isSiteRunning]);
 
+    const previewButtonLabel = page.locked ? "View" : "Preview";
     return (
         <Menu
             className={menuStyles}
@@ -69,27 +73,15 @@ const PageOptionsMenu = props => {
                 />
             }
         >
-            {page.locked ? (
-                <MenuItem onClick={handlePreviewClick}>
-                    <ListItemGraphic>
-                        <Icon
-                            data-testid="pb-page-details-header-page-options-menu-preview"
-                            icon={<PreviewIcon />}
-                        />
-                    </ListItemGraphic>
-                    View
-                </MenuItem>
-            ) : (
-                <MenuItem onClick={handlePreviewClick}>
-                    <ListItemGraphic>
-                        <Icon
-                            data-testid="pb-page-details-header-page-options-menu-preview"
-                            icon={<PreviewIcon />}
-                        />
-                    </ListItemGraphic>
-                    Preview
-                </MenuItem>
-            )}
+            <MenuItem onClick={handlePreviewClick}>
+                <ListItemGraphic>
+                    <Icon
+                        data-testid="pb-page-details-header-page-options-menu-preview"
+                        icon={<PreviewIcon />}
+                    />
+                </ListItemGraphic>
+                {previewButtonLabel}
+            </MenuItem>
 
             <Mutation mutation={setHomePage}>
                 {update => (

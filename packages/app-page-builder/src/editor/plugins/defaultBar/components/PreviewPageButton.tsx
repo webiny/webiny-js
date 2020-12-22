@@ -13,16 +13,17 @@ const openTarget = window.Cypress ? "_self" : "_blank";
 
 const PreviewPageButton: React.FunctionComponent = () => {
     const page = useRecoilValue(pageAtom);
-    const { getPagePreviewUrl, getWebsiteUrl } = usePageBuilderSettings();
+    const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
+
 
     return (
         <MenuItem
             onClick={() => {
                 if (isSiteRunning) {
-                    window.open(getPagePreviewUrl(page), openTarget, "noopener");
+                    window.open(getPageUrl(page, true), openTarget, "noopener");
                 } else {
                     showConfigureWebsiteUrlDialog();
                 }

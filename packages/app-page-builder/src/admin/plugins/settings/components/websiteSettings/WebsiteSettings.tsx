@@ -19,7 +19,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { WEBSITE_URL_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
+import { SETTINGS_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings/usePageBuilderSettings";
 
 const WebsiteSettings = () => {
     const { showSnackbar } = useSnackbar();
@@ -33,12 +33,12 @@ const WebsiteSettings = () => {
 
     const [update, { loading: mutationInProgress }] = useMutation(UPDATE_SETTINGS, {
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery({ query: WEBSITE_URL_QUERY });
+            const dataFromCache = cache.readQuery({ query: SETTINGS_QUERY });
             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
 
             if (updatedSettings) {
                 cache.writeQuery({
-                    query: WEBSITE_URL_QUERY,
+                    query: SETTINGS_QUERY,
                     data: set(dataFromCache, "pageBuilder.getSettings.data", updatedSettings)
                 });
             }
