@@ -1,74 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import get from "lodash.get";
-import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useDataList } from "@webiny/app/hooks/useDataList";
-import { createListQuery } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
-import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
+import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import ContentDataList from "./ContentDataList";
-import ContentDetails from "./ContentDetails";
 import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
+import { ContentRender } from "./ContentRender";
 
 const t = i18n.ns("app-headless-cms/admin/content");
-
-const ContentRender = ({ contentModel }) => {
-    const apolloClient = useApolloClient();
-    const { history } = useRouter();
-
-    const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
-
-    const query = new URLSearchParams(location.search);
-
-    let variables = {};
-    if (query.get("search")) {
-        // We use the title field with the "contains" operator for doing basic searches.
-        const searchField = contentModel.titleFieldId + "_contains";
-        variables = {
-            where: {
-                [searchField]: query.get("search")
-            }
-        };
-    }
-
-    const dataList = useDataList({
-        client: apolloClient,
-        query: LIST_QUERY,
-        variables,
-        getData: response => {
-            return get(response, "content.data");
-        },
-        getMeta: response => {
-            return get(response, "content.meta");
-        },
-        getError: response => {
-            return get(response, "content.error");
-        }
-    });
-
-    return (
-        <React.Fragment>
-            <SplitView>
-                <LeftPanel span={4}>
-                    <ContentDataList dataList={dataList} contentModel={contentModel} />
-                </LeftPanel>
-                <RightPanel span={8}>
-                    <ContentDetails dataList={dataList} contentModel={contentModel} />
-                </RightPanel>
-            </SplitView>
-            <FloatingActionButton
-                data-testid="new-record-button"
-                onClick={() => {
-                    const query = new URLSearchParams(location.search);
-                    query.delete("id");
-                    history.push({ search: query.toString() });
-                }}
-            />
-        </React.Fragment>
-    );
-};
 
 const Content = () => {
     const { match } = useRouter();
@@ -101,7 +40,7 @@ const Content = () => {
 
     // Added "key" prop which somehow fixes the "Internal Error: may not update existing query string in store" error
     // that would occur when doing a search on a different content model (via the global search bar).
-    // Didn't find what was actually causing the issue, nor the Google returned any results for the error above.
+    // Didn't find what was actually causing the issue, nor did the Google return any results for the error above.
     return <ContentRender contentModel={contentModel} key={contentModel.modelId} />;
 };
 

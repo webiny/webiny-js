@@ -8,7 +8,7 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import {
     createReadQuery,
     createListRevisionsQuery
-} from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
+} from "../../components/ContentModelForm/graphql";
 
 const DetailsContainer = styled("div")({
     overflow: "hidden",

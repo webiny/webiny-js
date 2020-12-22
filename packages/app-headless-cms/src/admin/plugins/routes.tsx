@@ -27,7 +27,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-model-groups"}
                 render={() => (
-                    <SecureRoute permission={"cms.contentModelGroup.crud"}>
+                    <SecureRoute permission={"cms.contentModelGroup"}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content Model Groups`}</title>
@@ -49,7 +49,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/manage/:modelId"}
                 render={() => (
-                    <SecureRoute permission={"cms.contentModel.crud"}>
+                    <SecureRoute permission={"cms.contentModel"}>
                         <AdminLayout>
                             <Helmet>
                                 <title>{t`Content`}</title>
@@ -71,7 +71,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path={"/cms/content-models/:id"}
                 render={() => (
-                    <SecureRoute permission={"cms.contentModel.crud"}>
+                    <SecureRoute permission={"cms.contentModel"}>
                         <Helmet>
                             <title>{t`Edit Content Model`}</title>
                         </Helmet>
@@ -91,7 +91,7 @@ const plugins: RoutePlugin[] = [
                 exact
                 path="/cms/content-models"
                 render={() => (
-                    <SecureRoute permission={"cms.contentModel.crud"}>
+                    <SecureRoute permission={"cms.contentModel"}>
                         <AdminLayout>
                             <Helmet title={t`Content Models`} />
                             <Loader>

@@ -2,6 +2,7 @@ import React from "react";
 import { upperFirst } from "lodash";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
+import pluralize from "pluralize";
 import { i18n } from "@webiny/app/i18n";
 import { Typography } from "@webiny/ui/Typography";
 import {
@@ -26,10 +27,7 @@ const listItemMinHeight = css({
 
 const ContentDataList = ({ contentModel, dataList }) => {
     return (
-        <DataList
-            {...dataList}
-            title={contentModel.pluralizedName}
-        >
+        <DataList {...dataList} title={pluralize(contentModel.name)}>
             {({ data, isSelected, select }) => (
                 <List data-testid="default-data-list">
                     {data.map(item => (

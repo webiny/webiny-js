@@ -10,8 +10,8 @@ const t = i18n.ns("app-headless-cms/admin/menus");
 const CmsMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    const contentModels = identity.getPermission("cms.content-model");
-    const contentModelGroups = identity.getPermission("cms.content-model-group");
+    const contentModels = identity.getPermission("cms.contentModel");
+    const contentModelGroups = identity.getPermission("cms.contentModelGroup");
 
     if (!contentModels && !contentModelGroups) {
         return null;

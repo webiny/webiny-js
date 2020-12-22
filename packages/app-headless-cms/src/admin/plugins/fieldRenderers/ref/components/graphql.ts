@@ -40,11 +40,10 @@ export const createGetQuery = model => {
 };
 
 export const GET_CONTENT_MODEL = gql`
-    query HeadlessCmsGetContentModel($where: JSON) {
-        getContentModel(where: $where) {
+    query CmsGetContentModel($id: ID!) {
+        getContentModel(id: $id) {
             data {
                 id
-                pluralizedModelId
                 modelId
                 titleFieldId
             }

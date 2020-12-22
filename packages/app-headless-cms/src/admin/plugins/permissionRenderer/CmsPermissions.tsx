@@ -20,7 +20,7 @@ const CMS_PERMISSION_FULL_ACCESS = "cms.*";
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries"];
+const ENTITIES = ["contentModel", "contentModelGroup", "contentEntry"];
 const API_ENDPOINTS = [
     { id: "read", name: "Read" },
     { id: "manage", name: "Manage" },
