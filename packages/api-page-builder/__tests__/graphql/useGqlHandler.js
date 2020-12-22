@@ -52,29 +52,30 @@ import { Db } from "@webiny/db";
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
 export default ({ permissions, identity, tenant } = {}) => {
-    const db = new DynamoDbDriver({
-        documentClient: new DocumentClient({
-            convertEmptyValues: true,
-            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-            sslEnabled: false,
-            region: "local"
+    const logsDb = new Db({
+        logTable: "PageBuilderLogs",
+        driver: new DynamoDbDriver({
+            documentClient: new DocumentClient({
+                convertEmptyValues: true,
+                endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                sslEnabled: false,
+                region: "local"
+            })
         })
-    });
-
-    const logsDb = new DynamoDbDriver({
-        documentClient: new DocumentClient({
-            convertEmptyValues: true,
-            endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-            sslEnabled: false,
-            region: "local"
-        })
-    });
+    })
 
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
             logTable: "PageBuilderLogs",
-            driver: db
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                    sslEnabled: false,
+                    region: "local"
+                })
+            })
         }),
         elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
         apolloServerPlugins(),
