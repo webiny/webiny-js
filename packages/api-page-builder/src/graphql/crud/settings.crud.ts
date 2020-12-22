@@ -10,8 +10,8 @@ import {
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
-import DefaultSettingsModel from "@webiny/api-page-builder/utils/models/DefaultSettings.model";
-import InstallSettingsModel from "@webiny/api-page-builder/utils/models/InstallSettings.model";
+import { DefaultSettingsModel, InstallSettingsModel } from "@webiny/api-page-builder/utils/models";
+import merge from "lodash/merge";
 
 const TYPE = "pb.settings";
 
@@ -77,6 +77,11 @@ const plugin: ContextPlugin<PbContext> = {
                             PK: this.PK(options),
                             SK: this.SK
                         });
+                    },
+                    async getDefault(options) {
+                        const allTenants = await this.get({ tenant: false, locale: false });
+                        const tenantAllLocales = await this.get({ tenant: options.tenant });
+                        return merge({}, allTenants, tenantAllLocales);
                     },
                     async update(next, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
