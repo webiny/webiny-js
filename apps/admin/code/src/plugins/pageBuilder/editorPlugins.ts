@@ -6,7 +6,9 @@ import block from "@webiny/app-page-builder/editor/plugins/elements/block";
 import grid from "@webiny/app-page-builder/editor/plugins/elements/grid";
 import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
-import text from "@webiny/app-page-builder/editor/plugins/elements/text";
+import paragraph from "@webiny/app-page-builder/editor/plugins/elements/paragraph";
+import list from "@webiny/app-page-builder/editor/plugins/elements/list";
+import quote from "@webiny/app-page-builder/editor/plugins/elements/quote";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
 import media from "@webiny/app-page-builder/editor/plugins/elements/media";
@@ -53,6 +55,7 @@ import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
+import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Page settings
@@ -76,7 +79,9 @@ export default [
     icon(),
     image(),
     imagesList(),
-    text(),
+    paragraph(),
+    list(),
+    quote(),
     button(),
     media,
     social,
@@ -122,6 +127,7 @@ export default [
     save,
     link,
     gridSettings,
+    textSettings,
     // Default bar
     defaultBarPlugins,
     // Page settings

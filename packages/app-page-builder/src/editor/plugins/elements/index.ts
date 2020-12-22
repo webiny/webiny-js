@@ -1,7 +1,7 @@
 import document from "./document";
 import block from "./block";
 import image from "./image";
-import text from "./text";
+import paragraph from "./paragraph";
 import grid from "./grid";
 import cell from "./cell";
 import icon from "./icon";
@@ -20,7 +20,7 @@ export default [
     ...icon(),
     ...image(),
     ...imagesList(),
-    text(),
+    paragraph(),
     ...button(),
     ...media,
     ...social,
