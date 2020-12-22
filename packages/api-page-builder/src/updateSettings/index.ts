@@ -1,37 +1,31 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { SettingsModel } from "@webiny/api-page-builder/utils/models";
+import DefaultSettingsModel from "@webiny/api-page-builder/utils/models/DefaultSettings.model";
 import defaults from "@webiny/api-page-builder/utils/defaults";
+import { DefaultSettings } from "@webiny/api-page-builder/types";
 
 export type HandlerArgs = {
-    data: {
-        prerendering: {
-            app: {
-                url: string;
-            };
-            storage: {
-                name: string;
-            };
-        };
-    };
+    data: DefaultSettings;
 };
 
 export type HandlerResponse = {
-    data: Record<string, any>;
+    data: DefaultSettings;
     error: {
-        code: string;
         message: string;
-        data: Record<string, any>;
     };
 };
 
 const PK = "PB#SETTINGS";
 const SK = "default";
 
+/**
+ * Updates system default settings, for all tenants and all locales. Of course, these values can later be overridden
+ * via the settings UI in the Admin app. But it's with these settings that every new tenant / locale will start off.
+ */
 export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
     type: "handler",
-    async handle(context) {
+    async handle(context): Promise<HandlerResponse> {
         try {
             const { invocationArgs: args, db } = context;
             let [[existingSettingsData]] = await db.read({
@@ -48,12 +42,12 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
                 existingSettingsData = {};
             }
 
-            const updateSettingsModel = new SettingsModel();
-            updateSettingsModel.populate(existingSettingsData).populate(args.data);
+            const defaultSettingModel = new DefaultSettingsModel();
+            defaultSettingModel.populate(existingSettingsData).populate(args.data);
 
-            await updateSettingsModel.validate();
+            await defaultSettingModel.validate();
 
-            const updateSettingsData = await updateSettingsModel.toJSON();
+            const updateSettingsData = await defaultSettingModel.toJSON();
             await db.update({ ...defaults.db, query: { PK, SK }, data: updateSettingsData });
 
             return { data: updateSettingsData, error: null };
