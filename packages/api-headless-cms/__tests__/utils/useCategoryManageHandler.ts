@@ -26,6 +26,7 @@ const errorFields = `
     error {
         code
         message
+        data
     }
 `;
 
