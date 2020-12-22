@@ -13,18 +13,18 @@ const t = i18n.ns("app-headless-cms/admin/editor");
 const ContentModelEditor = () => {
     const {
         getContentModel,
-        state: { data, id }
+        state: { data, modelId }
     } = useContentModelEditor();
 
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     React.useEffect(() => {
-        getContentModel(id).catch(() => {
+        getContentModel(modelId).catch(() => {
             history.push(`/cms/content-models`);
             showSnackbar(t`Could not load content model with given ID.`);
         });
-    }, [id]);
+    }, [modelId]);
 
     if (!data) {
         return null;

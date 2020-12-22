@@ -13,7 +13,7 @@ const CreateContentButton = () => {
 
     return (
         <ButtonDefault
-            onClick={() => router.history.push(`/cms/content-models/manage/${data.modelId}`)}
+            onClick={() => router.history.push(`/cms/content-entries/${data.modelId}`)}
             style={{ marginLeft: 5 }}
             disabled={loading}
         >

@@ -27,10 +27,9 @@ export const FIELDS_FIELDS = `
 `;
 
 export const GET_CONTENT_MODEL = gql`
-    query CmsGetContentModel($id: ID!) {
-        getContentModel(id: $id) {
+    query CmsGetContentModel($modelId: ID!) {
+        getContentModel(modelId: $modelId) {
             data {
-                id
                 name
                 description
                 modelId
@@ -51,10 +50,10 @@ export const GET_CONTENT_MODEL = gql`
 `;
 
 export const UPDATE_CONTENT_MODEL = gql`
-    mutation CmsUpdateContentModel($id: ID!, $data: CmsContentModelUpdateInput!) {
-        updateContentModel(id: $id, data: $data) {
+    mutation CmsUpdateContentModel($modelId: ID!, $data: CmsContentModelUpdateInput!) {
+        updateContentModel(modelId: $modelId, data: $data) {
             data {
-                id
+                modelId
                 name
                 titleFieldId
                 fields {

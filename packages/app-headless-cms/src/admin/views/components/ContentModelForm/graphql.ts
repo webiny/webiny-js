@@ -1,5 +1,6 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
+import pluralize from "pluralize";
 import { getPlugins } from "@webiny/plugins";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
@@ -13,10 +14,9 @@ const ERROR_FIELD = /* GraphQL */ `
 
 const CONTENT_META_FIELDS = /* GraphQL */ `
     title
-    published
+    publishedOn
     version
     locked
-    parent
     status
 `;
 
@@ -42,7 +42,7 @@ export const createReadQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query get${ucFirstModelId}($id: ID!) {
+        query CmsEntriesGet${ucFirstModelId}($id: ID!) {
             content: get${ucFirstModelId}(where: { id: $id }) {
                 data {
                     id
@@ -50,23 +50,6 @@ export const createReadQuery = model => {
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}
-                    }
-                }
-                error ${ERROR_FIELD}
-            }
-        }
-    `;
-};
-
-export const createListRevisionsQuery = model => {
-    const ucFirstModelId = upperFirst(model.modelId);
-
-    return gql`
-        query List${ucFirstModelId}Revisions($id: ID!) {
-            content: get${ucFirstModelId}(where: { id: $id }) {
-                data {
-                    id
-                    meta {
                         revisions {
                             id
                             savedOn
@@ -83,11 +66,11 @@ export const createListRevisionsQuery = model => {
 };
 
 export const createListQuery = model => {
-    const ucFirstPluralizedModelId = upperFirst(model.pluralizedModelId);
+    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query list${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
+        query CmsEntriesList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
             content: list${ucFirstPluralizedModelId}(
                 where: $where
                 sort: $sort
@@ -99,9 +82,7 @@ export const createListQuery = model => {
                     savedOn
                     meta {
                         title
-                        published
                         version
-                        parent
                         status
                     }
                 }
@@ -115,7 +96,7 @@ export const createDeleteMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Delete${ucFirstModelId}($revision: ID!) {
+        mutation CmsEntriesDelete${ucFirstModelId}($revision: ID!) {
             content: delete${ucFirstModelId}(where: { id: $revision }) {
                 data
                 error ${ERROR_FIELD}
@@ -128,7 +109,7 @@ export const createCreateMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Create${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
+        mutation CmsEntriesCreate${ucFirstModelId}($data: ${ucFirstModelId}Input!) {
             content: create${ucFirstModelId}(data: $data) {
                 data {
                     id

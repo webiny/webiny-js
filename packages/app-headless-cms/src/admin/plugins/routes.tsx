@@ -16,7 +16,7 @@ const Loader = ({ children, ...props }) => (
 const ContentModelEditor = lazy(() => import("../views/Editor"));
 const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
 const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
-const ContentView = lazy(() => import("../views/Content/Content"));
+const ContentEntiesView = lazy(() => import("../views/ContentEntries"));
 
 const plugins: RoutePlugin[] = [
     {
@@ -47,7 +47,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/cms/content-models/manage/:modelId"}
+                path={"/cms/content-entries/:modelId"}
                 render={() => (
                     <SecureRoute permission={"cms.contentModel"}>
                         <AdminLayout>
@@ -55,7 +55,7 @@ const plugins: RoutePlugin[] = [
                                 <title>{t`Content`}</title>
                             </Helmet>
                             <Loader>
-                                <ContentView />
+                                <ContentEntiesView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>
@@ -69,7 +69,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/cms/content-models/:id"}
+                path={"/cms/content-models/:modelId"}
                 render={() => (
                     <SecureRoute permission={"cms.contentModel"}>
                         <Helmet>

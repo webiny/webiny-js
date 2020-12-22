@@ -19,15 +19,32 @@ const style = {
     })
 };
 
-const HeadlessCmsApiUrls = function() {
+const endpoints = [
+    {
+        title: "Content Manage API",
+        type: "manage"
+    },
+    {
+        title: "Content Read API",
+        type: "read"
+    },
+    {
+        title: "Content Preview API",
+        type: "preview"
+    }
+];
+
+const HeadlessCmsApiUrls = () => {
     const { identity } = useSecurity();
-    const { getLocales } = useI18N();
+    const { getCurrentLocale } = useI18N();
     const { showSnackbar } = useSnackbar();
 
     const hasPermission = identity.getPermission("cms");
     if (!hasPermission) {
         return null;
     }
+
+    const locale = getCurrentLocale("content");
 
     const graphqlApiUrl = process.env.REACT_APP_API_URL;
 
@@ -36,62 +53,25 @@ const HeadlessCmsApiUrls = function() {
             <Typography use={"headline6"} style={{ fontSize: "1.4rem" }}>
                 Headless CMS
             </Typography>
-            {getLocales().map(locale => {
-                return (
-                    <div key={locale.code} className={style.aliasContainer}>
-                        <Typography use={"headline6"}>Locale: {locale.code}</Typography>
-                        <div className={style.apiUrl}>
-                            <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                Content Delivery API:
-                            </Typography>
-                            <a
-                                href={`${graphqlApiUrl}/cms/read/${locale.code}`}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                {`${graphqlApiUrl}/cms/read/${locale.code}`}
-                            </a>
-                            <CopyButton
-                                value={`${graphqlApiUrl}/cms/read/${locale.code}`}
-                                onCopy={() => showSnackbar("Successfully copied!")}
-                            />
-                        </div>
-                        <div className={style.apiUrl}>
-                            <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                Content Preview API:
-                            </Typography>
-                            <a
-                                href={`${graphqlApiUrl}/cms/preview/${locale.code}`}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                {`${graphqlApiUrl}/cms/preview/${locale.code}`}
-                            </a>
-                            <CopyButton
-                                value={`${graphqlApiUrl}/cms/preview/${locale.code}`}
-                                onCopy={() => showSnackbar("Successfully copied!")}
-                            />
-                        </div>
-                        <div className={style.apiUrl}>
-                            <Typography use={"subtitle1"} className={style.aliasTitle}>
-                                Content Management API:
-                            </Typography>
-                            <a
-                                href={`${graphqlApiUrl}/cms/manage/${locale.code}`}
-                                rel="noopener noreferrer"
-                                target="_blank"
-                            >
-                                {`${graphqlApiUrl}/cms/manage/${locale.code}`}
-                            </a>
-                            <CopyButton
-                                value={`${graphqlApiUrl}/cms/manage/${locale.code}`}
-                                onCopy={() => showSnackbar("Successfully copied!")}
-                            />
-                        </div>
-                        <br />
-                    </div>
-                );
-            })}
+
+            {endpoints.map(endpoint => (
+                <div key={endpoint.type} className={style.apiUrl}>
+                    <Typography use={"subtitle1"} className={style.aliasTitle}>
+                        {endpoint.title}
+                    </Typography>
+                    <a
+                        href={`${graphqlApiUrl}/cms/${endpoint.type}/${locale}`}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        {`${graphqlApiUrl}/cms/${endpoint.type}/${locale}`}
+                    </a>
+                    <CopyButton
+                        value={`${graphqlApiUrl}/cms/${endpoint.type}/${locale}`}
+                        onCopy={() => showSnackbar("Successfully copied!")}
+                    />
+                </div>
+            ))}
         </div>
     );
 };

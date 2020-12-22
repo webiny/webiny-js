@@ -67,7 +67,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
             {
                 publishItLink: (
                     <Link
-                        to={`/cms/content-models/manage/${refContentModel.modelId}?id=${id}`}
+                        to={`/cms/content-entries/${refContentModel.modelId}?id=${id}`}
                     >{t`publish it`}</Link>
                 )
             }

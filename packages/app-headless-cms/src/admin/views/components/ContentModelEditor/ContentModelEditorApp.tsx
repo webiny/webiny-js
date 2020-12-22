@@ -6,7 +6,7 @@ import { match } from "react-router";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
 type QueryMatch = {
-    id?: string;
+    modelId?: string;
 };
 
 const ContentModelEditorApp = () => {
@@ -15,14 +15,14 @@ const ContentModelEditorApp = () => {
     const { apolloClient } = useCms();
 
     const matched: match<QueryMatch> = router.match;
-    const { id } = matched.params;
+    const { modelId } = matched.params;
 
     if (!apolloClient) {
         return null;
     }
 
     return (
-        <ContentModelEditorProvider key={id} apollo={apolloClient} id={id}>
+        <ContentModelEditorProvider key={modelId} apollo={apolloClient} modelId={modelId}>
             <ContentModelEditor />
         </ContentModelEditorProvider>
     );

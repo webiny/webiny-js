@@ -100,7 +100,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                         }
 
                         await contentModelsDataList.refresh();
-                        history.push("/cms/content-models/" + response.data.id);
+                        history.push("/cms/content-models/" + response.data.modelId);
                     }}
                 >
                     {({ Bind, submit }) => (

@@ -10,6 +10,7 @@ import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import Revision from "./Revision";
+import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -35,9 +36,19 @@ const style = {
     })
 };
 
-const RevisionsList = props => {
+type Props = {
+    setLoading: (loading: boolean) => void;
+    getLoading: () => boolean;
+    content: Record<string, any>;
+    refetchContent: () => void;
+    contentModel: CmsEditorContentModel;
+    state: any;
+    setState: (state: any) => void;
+};
+
+const RevisionsList = (props: Props) => {
     const { showSnackbar } = useSnackbar();
-    const { content, contentModel, setLoading, dataList, revisionsList } = props;
+    const { content, contentModel, setLoading } = props;
     const { history } = useRouter();
 
     const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
@@ -91,7 +102,7 @@ const RevisionsList = props => {
         if (revision.id === revision.meta.parent) {
             await dataList.refresh();
             setLoading(false);
-            history.push(`/cms/content-models/manage/${contentModel.modelId}`);
+            history.push(`/cms/content-entries/${contentModel.modelId}`);
             showSnackbar(t`Content entry and all of its revisions deleted.`);
             return;
         }

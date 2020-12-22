@@ -40,10 +40,9 @@ export const createGetQuery = model => {
 };
 
 export const GET_CONTENT_MODEL = gql`
-    query CmsGetContentModel($id: ID!) {
-        getContentModel(id: $id) {
+    query CmsGetContentModel($modelId: ID!) {
+        getContentModel(modelId: $modelId) {
             data {
-                id
                 modelId
                 titleFieldId
             }

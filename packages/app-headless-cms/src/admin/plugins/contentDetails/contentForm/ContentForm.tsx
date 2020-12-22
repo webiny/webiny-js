@@ -7,7 +7,7 @@ import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 
-const ContentForm = ({ contentModel, content, setLoading, getLoading, setState }) => {
+const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
     const query = new URLSearchParams(location.search);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -116,14 +116,14 @@ const ContentForm = ({ contentModel, content, setLoading, getLoading, setState }
         <ContentModelForm
             loading={getLoading()}
             contentModel={contentModel}
-            content={content}
+            entry={entry}
             onForm={contentForm => setState({ contentForm })}
             onSubmit={async data => {
-                if (content.id) {
-                    if (get(content, "meta.locked")) {
-                        return createContentFrom(content.id, data);
+                if (entry.id) {
+                    if (get(entry, "meta.locked")) {
+                        return createContentFrom(entry.id, data);
                     }
-                    return updateContent(content.id, data);
+                    return updateContent(entry.id, data);
                 }
                 return createContent(data);
             }}

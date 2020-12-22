@@ -39,7 +39,7 @@ const viewEntriesIconStyles = css({
 });
 
 export type ContentModelsDataListProps = {
-    id?: any;
+    modelId?: any;
     dataList: any;
 };
 
@@ -53,7 +53,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
     const deleteRecord = async item => {
         const res = await client.mutate({
             mutation: DELETE_CONTENT_MODEL,
-            variables: { id: item.id },
+            variables: { modelId: item.modelId },
             awaitRefetchQueries: true,
             refetchQueries: [
                 "HeadlessCmsListContentModels",
@@ -71,9 +71,9 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
             });
         }
 
-        if (item.id === props.id) {
+        if (item.modelId === props.modelId) {
             const query = new URLSearchParams(location.search);
-            query.delete("id");
+            query.delete("modelId");
             history.push({ search: query.toString() });
         }
 
@@ -82,17 +82,17 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
 
     const editHandlers = useRef({});
     const editRecord = useCallback(contentModel => {
-        if (!editHandlers.current[contentModel.id]) {
-            editHandlers.current[contentModel.id] = async () => {
-                history.push("/cms/content-models/" + contentModel.id);
+        if (!editHandlers.current[contentModel.modelId]) {
+            editHandlers.current[contentModel.modelId] = async () => {
+                history.push("/cms/content-models/" + contentModel.modelId);
             };
         }
 
-        return editHandlers.current[contentModel.id];
+        return editHandlers.current[contentModel.modelId];
     }, undefined);
 
     const viewContentEntries = useCallback(contentModel => {
-        return () => history.push("/cms/content-models/manage/" + contentModel.modelId);
+        return () => history.push("/cms/content-entries/" + contentModel.modelId);
     }, undefined);
 
     return (
@@ -121,7 +121,7 @@ const ContentModelsDataList = (props: ContentModelsDataListProps) => {
             {({ data = [] }) => (
                 <List data-testid="default-data-list">
                     {data.map(contentModel => (
-                        <ListItem key={contentModel.id} className={listItemMinHeight}>
+                        <ListItem key={contentModel.modelId} className={listItemMinHeight}>
                             <ListItemText>
                                 {contentModel.name}
                                 <ListItemTextSecondary>

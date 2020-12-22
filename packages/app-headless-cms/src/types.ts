@@ -77,7 +77,6 @@ export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 export type CmsEditorContentModel = {
     id: CmsEditorFieldId;
     version: number;
-    parent: string;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
     name: string;
@@ -122,7 +121,7 @@ export type CmsContentModelFormProps = {
     loading?: boolean;
     onForm?: (form: any) => void;
     contentModel: CmsEditorContentModel;
-    content?: { [key: string]: any };
+    entry?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
     onChange?: (data: { [key: string]: any }) => any;
 };

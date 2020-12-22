@@ -7,7 +7,7 @@ const ERROR_FIELDS = `
 `;
 
 const BASE_CONTENT_MODEL_FIELDS = `
-    id
+    modelId
     name
     savedOn
 `;
@@ -23,7 +23,6 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 contentModels {
                     name
                     modelId
-                    id
                 }
             }
         }
@@ -35,7 +34,6 @@ export const LIST_CONTENT_MODELS = gql`
         listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
-                modelId
             }
         }
     }
@@ -45,7 +43,6 @@ export const CREATE_CONTENT_MODEL = gql`
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
             data {
-                id
                 name
                 description
                 modelId
@@ -59,8 +56,8 @@ export const CREATE_CONTENT_MODEL = gql`
 `;
 
 export const DELETE_CONTENT_MODEL = gql`
-    mutation HeadlessCmsDeleteContentModel($id: ID!) {
-        deleteContentModel(id: $id) {
+    mutation HeadlessCmsDeleteContentModel($modelId: ID!) {
+        deleteContentModel(modelId: $modelId) {
             data
             error {
                 ${ERROR_FIELDS}

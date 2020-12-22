@@ -25,50 +25,41 @@ declare global {
         }
     }
 }
-const ContentDetails = ({ contentModel, dataList }) => {
+const ContentDetails = ({ contentModel }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [state, setState] = useState({});
-
     const [loading, setLoading] = useState(false);
 
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
 
-    const { READ_CONTENT, LIST_REVISIONS } = useMemo(() => {
+    const { READ_CONTENT } = useMemo(() => {
         return {
-            READ_CONTENT: GQL.createReadQuery(contentModel),
-            LIST_REVISIONS: GQL.createListRevisionsQuery(contentModel)
+            READ_CONTENT: GQL.createReadQuery(contentModel)
         };
     }, [contentModel.modelId]);
 
-    const { data, loading: readQueryLoading, refetch: readQueryRefetch } = useQuery(READ_CONTENT, {
+    const { data, loading: readQueryLoading, refetch } = useQuery(READ_CONTENT, {
         variables: { id: contentId },
         skip: !contentId,
         onCompleted: data => {
-            const error = get(data, `content.error.message`);
+            if (!data) {
+                return;
+            }
+
+            const { error } = data.content;
             if (error) {
                 query.delete("id");
                 history.push({ search: query.toString() });
-                showSnackbar(error);
+                showSnackbar(error.message);
             }
         }
     });
 
     const getLoading = useCallback(() => readQueryLoading || loading, [loading, readQueryLoading]);
-
-    const refetchContent = useCallback(async () => {
-        setLoading(true);
-        await readQueryRefetch();
-        setLoading(false);
-    }, [readQueryRefetch]);
-
-    const content = get(data, "content.data") || {};
-    const contentParent = get(content, "meta.parent");
-    const revisionsList = useQuery(LIST_REVISIONS, {
-        skip: !contentParent,
-        variables: { id: contentParent }
-    });
+    
+    const entry = get(data, "content.data") || {};
 
     return (
         <DetailsContainer>
@@ -76,11 +67,9 @@ const ContentDetails = ({ contentModel, dataList }) => {
                 {renderPlugins("cms-content-details", {
                     setLoading,
                     getLoading,
-                    dataList,
-                    content,
-                    refetchContent,
+                    entry,
+                    refetchContent: refetch,
                     contentModel,
-                    revisionsList,
                     state,
                     setState
                 })}

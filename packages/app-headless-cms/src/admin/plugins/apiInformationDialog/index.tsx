@@ -1,6 +1,6 @@
 import React from "react";
 import { ApiInformationDialogPlugin } from "@webiny/app-admin/types";
-import HeadlessCmsApiUrls from "./apiInformationDialog/HeadlessCmsApiUrls";
+import HeadlessCmsApiUrls from "./HeadlessCmsApiUrls";
 
 const plugin: ApiInformationDialogPlugin = {
     type: "admin-api-information-dialog",

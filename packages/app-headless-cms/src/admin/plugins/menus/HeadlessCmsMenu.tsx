@@ -43,7 +43,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
                     plugins.register({
                         type: "admin-global-search",
                         name: "admin-global-search-headless-cms-" + contentModel.modelId,
-                        route: "/cms/content-models/manage/" + contentModel.modelId,
+                        route: "/cms/content-entries/" + contentModel.modelId,
                         label: contentModel.name
                     });
                 }

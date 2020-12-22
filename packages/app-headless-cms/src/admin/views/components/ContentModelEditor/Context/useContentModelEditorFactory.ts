@@ -29,10 +29,10 @@ export default ContentModelEditorContext => {
             apollo: state.apollo,
             data: state.data,
             state,
-            async getContentModel(id: string) {
+            async getContentModel(modelId: string) {
                 const response = await self.apollo.query({
                     query: GET_CONTENT_MODEL,
-                    variables: { id }
+                    variables: { modelId }
                 });
 
                 const { data, error } = get(response, "data.getContentModel");
@@ -47,7 +47,7 @@ export default ContentModelEditorContext => {
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
-                        id: data.id,
+                        modelId: data.modelId,
                         data: pick(data, [
                             "layout",
                             "fields",

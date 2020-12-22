@@ -82,7 +82,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
                                 <React.Fragment key={id}>
                                     {index > 0 && ", "}
                                     <Link
-                                        to={`/cms/content-models/manage/${refContentModel.modelId}?id=${id}`}
+                                        to={`/cms/content-entries/${refContentModel.modelId}?id=${id}`}
                                     >
                                         {name}
                                     </Link>
