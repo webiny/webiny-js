@@ -35,6 +35,7 @@ export const GET_SETTINGS = gql`
         query GetSettings {
             pageBuilder {
                 getSettings ${fields}
+                getDefaultSettings ${fields}
             }
         }
     `;

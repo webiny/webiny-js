@@ -23,6 +23,10 @@ const PrerenderingSettings = () => {
     const { data, loading: queryInProgress } = useQuery(GET_SETTINGS);
     const settings = get(data, "pageBuilder.getSettings.data") || {};
 
+    const prerendering = get(data, "pageBuilder.getDefaultSettings.data.prerendering");
+    const appUrl = get(prerendering, "app.url");
+    const storageName = get(prerendering, "storage.name");
+
     const [update, { loading: mutationInProgress }] = useMutation(UPDATE_SETTINGS);
 
     return (
@@ -45,11 +49,23 @@ const PrerenderingSettings = () => {
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
-                                <Bind name={"prerendering.app.url"} validators={validation.create("url")}>
+                                <Bind
+                                    name={"prerendering.app.url"}
+                                    validators={validation.create("url")}
+                                >
                                     <Input
                                         label="App URL"
                                         description={
-                                            "This is the URL over which your app is available and which will be used for prerendering."
+                                            <span>
+                                                This is the URL over which your app is available and
+                                                which will be used for prerendering.
+                                                {appUrl && (
+                                                    <>
+                                                        If not specified, the default one (
+                                                        <a href={appUrl}>{appUrl}</a>) will be used.
+                                                    </>
+                                                )}
+                                            </span>
                                         }
                                     />
                                 </Bind>
@@ -59,7 +75,18 @@ const PrerenderingSettings = () => {
                                     <Input
                                         label="Storage name"
                                         description={
-                                            "The name of the cloud resource (bucket) in which the prerender pages and other related resources will be stored."
+                                            <span>
+                                                The name of the cloud resource (bucket) in which the
+                                                prerender pages and other related resources will be
+                                                stored.{" "}
+                                                {storageName && (
+                                                    <>
+                                                        If not specified, the default one (
+                                                        <strong>{storageName}</strong>) will be
+                                                        used.
+                                                    </>
+                                                )}
+                                            </span>
                                         }
                                     />
                                 </Bind>

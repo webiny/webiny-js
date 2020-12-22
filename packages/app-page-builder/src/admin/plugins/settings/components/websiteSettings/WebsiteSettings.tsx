@@ -27,6 +27,10 @@ const WebsiteSettings = () => {
     const { data, loading: queryInProgress } = useQuery(GET_SETTINGS);
     const settings = get(data, "pageBuilder.getSettings.data") || {};
 
+    const defaultSettings = get(data, "pageBuilder.getDefaultSettings.data");
+    const websiteUrl = get(defaultSettings, "websiteUrl");
+    const websitePreviewUrl = get(defaultSettings, "websitePreviewUrl");
+
     const [update, { loading: mutationInProgress }] = useMutation(UPDATE_SETTINGS, {
         update: (cache, { data }) => {
             const dataFromCache = cache.readQuery({ query: WEBSITE_URL_QUERY });
@@ -79,7 +83,20 @@ const WebsiteSettings = () => {
                                 <Bind name={"websiteUrl"} validators={validation.create("url")}>
                                     <Input
                                         label="Website URL"
-                                        description={"eg. https://www.mysite.com"}
+                                        description={
+                                            <>
+                                                The URL on which your app is available.{" "}
+                                                {websiteUrl && (
+                                                    <>
+                                                        If not specified, the default one (
+                                                        <a href={websiteUrl} target={"blank"}>
+                                                            {websiteUrl}
+                                                        </a>
+                                                        ) will be used.
+                                                    </>
+                                                )}
+                                            </>
+                                        }
                                     />
                                 </Bind>
                             </Cell>
@@ -90,7 +107,23 @@ const WebsiteSettings = () => {
                                 >
                                     <Input
                                         label="Website preview URL"
-                                        description={"eg. https://preview.mysite.com"}
+                                        description={
+                                            <>
+                                                The preview URL on which your app is available.{" "}
+                                                {websitePreviewUrl && (
+                                                    <>
+                                                        If not specified, the default one (
+                                                        <a
+                                                            href={websitePreviewUrl}
+                                                            target={"blank"}
+                                                        >
+                                                            {websitePreviewUrl}
+                                                        </a>
+                                                        ) will be used.
+                                                    </>
+                                                )}
+                                            </>
+                                        }
                                     />
                                 </Bind>
                             </Cell>
