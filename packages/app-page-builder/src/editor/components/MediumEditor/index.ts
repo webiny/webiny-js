@@ -4,7 +4,7 @@ import { css } from "emotion";
 // FIXME: Move to appropriate location
 // load theme styles with webpack
 require("medium-editor/dist/css/medium-editor.css");
-require("medium-editor/dist/css/themes/default.css");
+require("medium-editor/dist/css/themes/mani.css");
 
 const editorClass = css({
     "&:focus": {
@@ -29,10 +29,17 @@ type ReactMediumEditorProps = {
     onChange: (value: string) => void;
     tag?: string;
     options?: any;
+    disableEditing: boolean;
     [key: string]: any;
 };
 
-const ReactMediumEditor = ({ tag = "div", value, options, ...props }: ReactMediumEditorProps) => {
+const ReactMediumEditor = ({
+    tag = "div",
+    value,
+    options,
+    disableEditing,
+    ...props
+}: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef();
 
@@ -41,7 +48,19 @@ const ReactMediumEditor = ({ tag = "div", value, options, ...props }: ReactMediu
             return;
         }
 
-        editorRef.current = new MediumEditor(elementRef.current, options);
+        editorRef.current = new MediumEditor(elementRef.current, {
+            extensions: {
+                // https://github.com/yabwe/medium-editor#disable-file-dragging
+                // Disable file dragging by providing a dummy ImageDragging extension.
+                imageDragging: {}
+            },
+            ...options,
+            toolbar: {
+                ...options.toolbar,
+                buttons: [...options.toolbar.buttons, "removeFormat"]
+            },
+            disableEditing
+        });
 
         const handleChange = (data, editable) => {
             if (props.onChange) {

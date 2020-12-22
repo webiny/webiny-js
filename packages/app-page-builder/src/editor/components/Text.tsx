@@ -2,7 +2,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import { PbElement } from "../../types";
-import { elementWithChildrenByIdSelector } from "../recoil/modules";
+import { elementWithChildrenByIdSelector, activeElementIdSelector } from "../recoil/modules";
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
@@ -20,6 +20,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     rootClassName
 }) => {
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const activeElementId = useRecoilValue(activeElementIdSelector);
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: "data.text"
@@ -43,7 +44,12 @@ const Text: React.FunctionComponent<TextElementProps> = ({
             element={element}
             className={classNames(textClassName, rootClassName, typography)}
         >
-            <ReactMediumEditor value={data.text} onChange={onChange} options={editorOptions} />
+            <ReactMediumEditor
+                value={data.text}
+                onChange={onChange}
+                options={editorOptions}
+                disableEditing={activeElementId !== elementId}
+            />
         </ElementRoot>
     );
 };
