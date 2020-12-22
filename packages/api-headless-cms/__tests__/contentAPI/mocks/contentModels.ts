@@ -18,7 +18,6 @@ const ids = {
 
 const models: CmsContentModelType[] = [
     {
-        id: "1",
         createdOn: new Date(),
         savedOn: new Date(),
         titleFieldId: "title",
@@ -26,7 +25,10 @@ const models: CmsContentModelType[] = [
         name: "Category",
         description: "Product category",
         modelId: "category",
-        group: contentModelGroup.id,
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
         layout: [[ids.field11], [ids.field12]],
         fields: [
             {
@@ -83,7 +85,6 @@ const models: CmsContentModelType[] = [
         ]
     },
     {
-        id: "2",
         createdOn: new Date(),
         savedOn: new Date(),
         titleFieldId: "title",
@@ -91,7 +92,10 @@ const models: CmsContentModelType[] = [
         name: "Product",
         modelId: "product",
         description: "Products being sold in our webshop",
-        group: contentModelGroup.id,
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
         layout: [
             [ids.field21],
             [ids.field22],
@@ -234,7 +238,6 @@ const models: CmsContentModelType[] = [
         ]
     },
     {
-        id: "3",
         createdOn: new Date(),
         savedOn: new Date(),
         titleFieldId: "text",
@@ -242,7 +245,10 @@ const models: CmsContentModelType[] = [
         name: "Review",
         description: "Product review",
         modelId: "review",
-        group: contentModelGroup.id,
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
         layout: [[ids.field31], [ids.field32], [ids.field33]],
         fields: [
             {
