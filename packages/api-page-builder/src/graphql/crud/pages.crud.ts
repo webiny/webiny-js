@@ -1175,7 +1175,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
                     if (latestPageData.id === pageId) {
-                        // todo: should eliminate probably and store this flag into PAGE
                         const [uniqueId] = pageId.split("#");
                         // Index file in "Elastic Search"
                         await elasticSearch.update({
