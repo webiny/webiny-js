@@ -5,6 +5,7 @@ import ApiGateway from "./stack/apiGateway";
 import Cloudfront from "./stack/cloudfront";
 import ElasticSearch from "./stack/elasticSearch";
 import FileManager from "./stack/fileManager";
+import PageBuilder from "./stack/pageBuilder";
 import PrerenderingService from "./stack/prerenderingService";
 
 const dynamoDb = new DynamoDB();
@@ -14,15 +15,19 @@ const fileManager = new FileManager();
 
 const prerenderingService = new PrerenderingService();
 
+const pageBuilder = new PageBuilder({
+    dbTable: dynamoDb.table
+});
+
 const api = new Graphql({
-    dynamoDbTable: dynamoDb.table,
     env: {
         ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DEBUG: String(process.env.DEBUG),
         S3_BUCKET: fileManager.bucket.id,
-        PRERENDERING_HANDLER_ARN: prerenderingService.functions.render.arn
+        DB_TABLE: dynamoDb.table.name,
+        PRERENDERING_HANDLER: prerenderingService.functions.render.arn
     }
 });
 
@@ -76,6 +81,7 @@ const apiGateway = new ApiGateway({
 const cloudfront = new Cloudfront({ apiGateway });
 
 export const region = process.env.AWS_REGION;
-export const cdnDomain = cloudfront.cloudfront.domainName.apply(value => `https://${value}`);
+export const apiUrl = cloudfront.cloudfront.domainName.apply(value => `https://${value}`);
 export const cognitoUserPoolId = cognito.userPool.id;
 export const cognitoAppClientId = cognito.userPoolClient.id;
+export const updatePageBuilderSettingsFunction = pageBuilder.functions.updateSettings.arn;
