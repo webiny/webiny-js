@@ -1,7 +1,8 @@
 import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
-import { useCategoryHandler } from "../utils/useCategoryHandler";
+import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
@@ -12,7 +13,6 @@ describe("READ - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        sleep,
         elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
@@ -47,15 +47,23 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        await updateContentModelMutation({
-            id: create.data.createContentModel.data.id,
+        if (create.errors) {
+            console.error(`[beforeEach] ${create.errors[0].message}`);
+            process.exit(1);
+        }
+
+        const [update] = await updateContentModelMutation({
+            modelId: create.data.createContentModel.data.modelId,
             data: {
                 fields: category.fields,
                 layout: category.layout
             }
         });
 
-        await sleep(300);
+        if (update.errors) {
+            console.error(`[beforeEach] ${update.errors[0].message}`);
+            process.exit(1);
+        }
     });
 
     afterEach(async () => {
@@ -65,28 +73,24 @@ describe("READ - Resolvers", () => {
     });
 
     test(`get entry by ID`, async () => {
-        const { getCategory } = useCategoryHandler(readOpts);
+        const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
-            id: 123
+            where: {
+                id: 123
+            }
         });
 
         expect(response).toEqual({
-            data: {
-                getCategory: {
-                    data: {
-                        id: 123,
-                        title: "title",
-                        slug: "slug"
-                    },
-                    error: null
-                }
+            data: null,
+            error: {
+                code: "NOT_FOUND"
             }
         });
     });
 
     test(`should return a NOT_FOUND error when getting by value from an unpublished revision`, async () => {
-        const { getCategory } = useCategoryHandler(readOpts);
+        const { getCategory } = useCategoryManageHandler(readOpts);
 
         const [response] = await getCategory({
             id: 123
@@ -105,13 +109,13 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (no parameters)`, async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories();
+        const [response] = await listCategories();
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             id: 123,
@@ -126,15 +130,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit)`, async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             limit: 1
         });
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             id: 123
@@ -149,16 +153,16 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit + after)`, async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             limit: 1,
             after: "someAfterString"
         });
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "category"
@@ -175,15 +179,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort ASC)`, async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             sort: ["title_ASC"]
         });
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "First category"
@@ -198,15 +202,15 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort DESC)`, async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             sort: ["title_DESC"]
         });
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "Second category"
@@ -221,9 +225,9 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that contains given value", async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             where: {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 title_contains: "first"
@@ -232,7 +236,7 @@ describe("READ - Resolvers", () => {
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "First category",
@@ -246,9 +250,9 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that do not contains given value", async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             where: {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 title_not_contains: "first"
@@ -257,7 +261,7 @@ describe("READ - Resolvers", () => {
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "Second category",
@@ -271,9 +275,9 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are in given values", async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             where: {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 slug_in: ["first-category"]
@@ -282,7 +286,7 @@ describe("READ - Resolvers", () => {
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "First category",
@@ -296,9 +300,9 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are not in given values", async () => {
-        const { listLatestCategories } = useCategoryHandler(readOpts);
+        const { listCategories } = useCategoryManageHandler(readOpts);
 
-        const [response] = await listLatestCategories({
+        const [response] = await listCategories({
             where: {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 slug_not_in: ["first-category"]
@@ -307,7 +311,7 @@ describe("READ - Resolvers", () => {
 
         expect(response).toEqual({
             data: {
-                listLatestCategories: {
+                listCategories: {
                     data: [
                         {
                             title: "Second category",

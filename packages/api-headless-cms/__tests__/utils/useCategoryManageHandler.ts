@@ -40,7 +40,7 @@ const getCategoryQuery = /* GraphQL */ `
     }
 `;
 
-const listLatestCategoriesQuery = /* GraphQL */ `
+const listCategoriesQuery = /* GraphQL */ `
     query ListCategories(
         $where: CategoryListWhereInput
         $sort: [CategoryListSorter]
@@ -50,31 +50,6 @@ const listLatestCategoriesQuery = /* GraphQL */ `
         listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
             data {
                 ${categoryFields}
-            }
-            meta {
-                cursor
-                hasMoreItems
-                totalCount
-            }
-            ${errorFields}
-        }
-    }
-`;
-
-const listPublishedCategoriesQuery = /* GraphQL */ `
-    query ListCategories(
-        $where: CategoryListWhereInput
-        $sort: [CategoryListSorter]
-        $limit: Int
-        $after: String
-    ) {
-        listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
-            data {
-                id
-                createdOn
-                savedOn
-                title
-                slug
             }
             meta {
                 cursor
@@ -139,7 +114,7 @@ const publishCategoryMutation = /* GraphQL */ `
     }
 `;
 
-export const useCategoryHandler = options => {
+export const useCategoryManageHandler = options => {
     const contentHandler = useContentGqlHandler(options);
 
     return {
@@ -149,14 +124,9 @@ export const useCategoryHandler = options => {
                 body: { query: getCategoryQuery, variables }
             });
         },
-        async listLatestCategories(variables = {}) {
+        async listCategories(variables = {}) {
             return await contentHandler.invoke({
-                body: { query: listLatestCategoriesQuery, variables }
-            });
-        },
-        async listPublishedCategories(variables = {}) {
-            return await contentHandler.invoke({
-                body: { query: listPublishedCategoriesQuery, variables }
+                body: { query: listCategoriesQuery, variables }
             });
         },
         async createCategory(variables) {

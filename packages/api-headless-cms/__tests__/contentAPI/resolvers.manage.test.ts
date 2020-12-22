@@ -1,7 +1,8 @@
 /* eslint-disable */
 import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { useCategoryHandler } from "../utils/useCategoryHandler";
+import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 
 describe("MANAGE - Resolvers", () => {
@@ -13,7 +14,6 @@ describe("MANAGE - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        sleep,
         elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
@@ -22,7 +22,7 @@ describe("MANAGE - Resolvers", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: "root-headless-cms" });
+            await elasticSearch.indices.create({ index: esCmsIndex });
         } catch {
             // Ignore errors
         }
@@ -48,16 +48,23 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        if (create.errors) {
+            console.error(`[beforeEach] ${create.errors[0].message}`);
+            process.exit(1);
+        }
+
         const [update] = await updateContentModelMutation({
-            id: create.data.createContentModel.data.id,
+            modelId: create.data.createContentModel.data.modelId,
             data: {
                 fields: category.fields,
                 layout: category.layout
             }
         });
 
-        await sleep(300);
+        if (update.errors) {
+            console.error(`[beforeEach] ${update.errors[0].message}`);
+            process.exit(1);
+        }
     });
 
     afterEach(async () => {
@@ -67,7 +74,7 @@ describe("MANAGE - Resolvers", () => {
     });
 
     test.skip(`get category`, async () => {
-        const { createCategory, getCategory } = useCategoryHandler(manageOpts);
+        const { createCategory, getCategory } = useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
 
@@ -171,8 +178,8 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test.skip(`create category`, async () => {
-        const { until, createCategory, listLatestCategories } = useCategoryHandler(manageOpts);
+    test(`create category`, async () => {
+        const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
         const [result] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const category = result.data.createCategory.data;
@@ -201,25 +208,25 @@ describe("MANAGE - Resolvers", () => {
         });
 
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === category.id
         );
     });
 
-    test.skip(`create category revision`, async () => {
+    test(`create category revision`, async () => {
         const {
             until,
             createCategory,
             createCategoryFrom,
-            listLatestCategories
-        } = useCategoryHandler(manageOpts);
+            listCategories
+        } = useCategoryManageHandler(manageOpts);
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
         const { id } = create.data.createCategory.data;
 
         // Wait until the new category is propagated to ES index (listCategories works with ES directly in MANAGE API)
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id
         );
 
@@ -239,13 +246,13 @@ describe("MANAGE - Resolvers", () => {
 
         // Wait until the new category revision is propagated to ES index
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === newEntry.id
         );
     });
 
-    test.skip(`update category`, async () => {
-        const { createCategory, updateCategory } = useCategoryHandler(manageOpts);
+    test(`update category`, async () => {
+        const { createCategory, updateCategory } = useCategoryManageHandler(manageOpts);
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = create.data.createCategory.data;
@@ -270,22 +277,22 @@ describe("MANAGE - Resolvers", () => {
         expect(createdOn).toBeLessThan(updatedOn);
     });
 
-    test.skip(`delete category`, async () => {
+    test(`delete category`, async () => {
         const {
             until,
             createCategory,
             createCategoryFrom,
             getCategory,
-            listLatestCategories,
+            listCategories,
             deleteCategory
-        } = useCategoryHandler(manageOpts);
+        } = useCategoryManageHandler(manageOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
         const { id } = revision1.data.createCategory.data;
 
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length > 0,
             { name: "create first revision" }
         );
@@ -299,7 +306,7 @@ describe("MANAGE - Resolvers", () => {
 
         // Wait until the new revision is indexed in Elastic as "latest"
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
             { name: "create 2 more revisions" }
         );
@@ -309,13 +316,13 @@ describe("MANAGE - Resolvers", () => {
 
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
-            () => listLatestCategories().then(([data]) => data),
+            () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
             { name: "delete latest revision" }
         );
 
         // Make sure revision #2 is now "latest"
-        const [list2] = await listLatestCategories();
+        const [list2] = await listCategories();
         const { data: data2 } = list2.data.listCategories;
         expect(data2.length).toBe(1);
         expect(data2[0].id).toEqual(id2);
@@ -331,16 +338,16 @@ describe("MANAGE - Resolvers", () => {
         expect(meta.revisions[0].id).toEqual(id2);
     });
 
-    test(`publish and unpublish a category`, async () => {
+    test.skip(`publish and unpublish a category`, async () => {
         const {
             until,
             createCategory,
             createCategoryFrom,
-            listLatestCategories,
+            listCategories: listLatestCategories,
             publishCategory
-        } = useCategoryHandler(manageOpts);
+        } = useCategoryManageHandler(manageOpts);
 
-        const { listPublishedCategories } = useCategoryHandler(readOpts);
+        const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
