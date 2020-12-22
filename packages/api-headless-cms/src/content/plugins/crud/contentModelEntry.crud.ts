@@ -11,7 +11,7 @@ import {
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
-import { entryModelValidationFactory } from "./contentModelEntry/entryModelValidationFactory";
+import { validateModelEntryData } from "./contentModelEntry/entryDataValidation";
 import {
     createElasticSearchParams,
     createElasticSearchLimit
@@ -256,12 +256,20 @@ export default (): ContextPlugin<CmsContext> => ({
                 //
                 // return [items, meta];
             },
-            async create(model, data) {
+            async create(model, inputData) {
                 const permission = await checkPermissions({ rwd: "w" });
                 utils.checkEntryAccess(context, permission, model);
 
-                const validation = await entryModelValidationFactory(context, model);
-                await validation.validate(data);
+                // Make sure we only work with fields that are defined in the model.
+                const data = model.fields.reduce((acc, field) => {
+                    if (field.fieldId in inputData) {
+                        acc[field.fieldId] = inputData[field.fieldId];
+                    }
+
+                    return acc;
+                }, {});
+
+                await validateModelEntryData(context, model, data);
 
                 const identity = security.getIdentity();
                 const locale = context.cms.getLocale();
@@ -402,11 +410,20 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return newEntry;
             },
-            async update(model, id, data) {
-                // TODO: @pavel check the UI to see if this `data` is an object with user-defined fields
+            async update(model, id, inputData) {
                 const permission = await checkPermissions({ rwd: "w" });
                 utils.checkEntryAccess(context, permission, model);
 
+                // Make sure we only work with fields that are defined in the model.
+                const data = model.fields.reduce((acc, field) => {
+                    acc[field.fieldId] = inputData[field.fieldId];
+                    return acc;
+                }, {});
+
+                // Validate data early. We don't want to query DB if input data is invalid.
+                await validateModelEntryData(context, model, data);
+
+                // Now we know the data is valid, proceed with DB calls.
                 const [uniqueId] = id.split("#");
 
                 const [[[entry]], [[latestEntry]]] = await db
@@ -432,9 +449,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
-
-                const validation = await entryModelValidationFactory(context, model);
-                await validation.validate(data);
 
                 const updatedEntry: Partial<CmsContentModelEntryType> = {
                     values: data,
