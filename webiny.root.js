@@ -1,6 +1,7 @@
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const path = require("path");
+const { red, green } = require("chalk");
 
 module.exports = {
     projectName: "webiny-js",
@@ -68,26 +69,41 @@ module.exports = {
 
                     // 3. Let's update relevant Page Builde app's URLs, by invoking the `updateSettings` function,
                     // which has been exported from the `api` stack for this exact purpose.
-                    const lambdaClient = new LambdaClient({ region: apiExports.region });
-                    const response = await lambdaClient
-                        .invoke({
-                            FunctionName: apiExports.updatePageBuilderSettingsFunction,
-                            Payload: JSON.stringify({
-                                data: {
-                                    prerendering: {
-                                        app: {
-                                            url: siteExports.appURL
-                                        },
-                                        storage: {
-                                            name: siteExports.deliveryStorage
+                    try {
+                        const lambdaClient = new LambdaClient({ region: apiExports.region });
+
+                        const response = await lambdaClient
+                            .invoke({
+                                FunctionName: apiExports.updatePageBuilderSettingsFunction,
+                                Payload: JSON.stringify({
+                                    data: {
+                                        websiteUrl: siteExports.deliveryURL,
+                                        websitePreviewUrl: siteExports.appURL,
+                                        prerendering: {
+                                            app: {
+                                                url: siteExports.appURL
+                                            },
+                                            storage: {
+                                                name: siteExports.deliveryStorage
+                                            }
                                         }
                                     }
-                                }
+                                })
                             })
-                        })
-                        .promise();
+                            .promise();
 
-                    console.log('dobeo response', response)
+                        const { error } = JSON.parse(response.Payload);
+                        if (error) {
+                            throw error;
+                        }
+
+                        console.log(`${green("✔")} Default Page Builder app's settings updated.`);
+                    } catch (e) {
+                        console.log(
+                            `‼️  An error occurred while trying to update default Page Builder app's settings:`
+                        );
+                        console.log(e);
+                    }
                 }
             }
         ]
