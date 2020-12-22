@@ -4,7 +4,6 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
 import {
     CmsContentModelEntryContextType,
-    CmsContentModelEntryListWhereType,
     CmsContentModelEntryPermissionType,
     CmsContentModelEntryType,
     CmsContentModelType,
@@ -19,7 +18,6 @@ import {
 } from "./contentModelEntry/elasticSearchHelpers";
 import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
-import { SecurityPermission } from "@webiny/api-security/types";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -50,34 +48,6 @@ const getESPublishedEntryData = (entry: CmsContentModelEntryType) => {
     return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
-type FilterModelsArgType = {
-    context: CmsContext;
-    permission: SecurityPermission;
-    where?: CmsContentModelEntryListWhereType;
-};
-const filterModels = async ({
-    context,
-    where,
-    permission
-}: FilterModelsArgType): Promise<string[] | undefined> => {
-    // TODO change when @Pavel910 creates permissions from his end
-    if (!permission.onlyCertainModels) {
-        if (!where || !where.modelId_in) {
-            return undefined;
-        }
-        return where.modelId_in;
-    }
-    const models = await context.cms.models.list();
-    if (!where || !where.modelId_in) {
-        return models.map(m => m.id);
-    }
-    return models
-        .filter(model => {
-            return where.modelId_in.includes(model.id);
-        })
-        .map(m => m.id);
-};
-
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
@@ -101,6 +71,9 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const entries: CmsContentModelEntryContextType = {
             get: async (model, args) => {
+                const permission = await checkPermissions({ rwd: "r" });
+                utils.checkEntryAccess(context, permission, model);
+
                 const [[item]] = await context.cms.entries.list(model, {
                     ...args,
                     limit: 1
@@ -112,18 +85,12 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             list: async (model: CmsContentModelType, args = {}, options = {}) => {
                 const permission = await checkPermissions({ rwd: "r" });
+                utils.checkEntryAccess(context, permission, model);
 
                 const limit = createElasticSearchLimit(args.limit, 50);
 
                 // Possibly only get records which are owned by current user
                 const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
-
-                // filter out models that user cannot access
-                const filteredModels = await filterModels({
-                    context,
-                    permission,
-                    where: args.where
-                });
 
                 const body = createElasticSearchParams({
                     model,
@@ -131,8 +98,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...args,
                         where: {
                             ...(args.where || {}),
-                            // eslint-disable-next-line @typescript-eslint/camelcase
-                            modelId_in: filteredModels
+                            modelId: model.modelId
                         },
                         limit
                     },
@@ -170,7 +136,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 return [items, meta];
             },
             listLatest: async function(model) {
-                await checkPermissions({ rwd: "r" });
                 return context.cms.entries.list(
                     model,
                     {
@@ -237,8 +202,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 // */
             },
             listPublished: async function(model) {
-                await checkPermissions({ rwd: "r" });
-
                 return context.cms.entries.list(
                     model,
                     {
@@ -294,7 +257,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 // return [items, meta];
             },
             async create(model, data) {
-                await checkPermissions({ rwd: "w" });
+                const permission = await checkPermissions({ rwd: "w" });
+                utils.checkEntryAccess(context, permission, model);
 
                 const validation = await entryModelValidationFactory(context, model);
                 await validation.validate(data);
@@ -359,7 +323,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return entry;
             },
             async createRevisionFrom(model, sourceId) {
-                await checkPermissions({ rwd: "w" });
+                const permission = await checkPermissions({ rwd: "w" });
+                utils.checkEntryAccess(context, permission, model);
 
                 // Entries are identified by a common parent ID + Revision number
                 const [uniqueId] = sourceId.split("#");
@@ -440,6 +405,7 @@ export default (): ContextPlugin<CmsContext> => ({
             async update(model, id, data) {
                 // TODO: @pavel check the UI to see if this `data` is an object with user-defined fields
                 const permission = await checkPermissions({ rwd: "w" });
+                utils.checkEntryAccess(context, permission, model);
 
                 const [uniqueId] = id.split("#");
 
@@ -499,6 +465,7 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             async delete(model, id) {
                 const permission = await checkPermissions({ rwd: "d" });
+                utils.checkEntryAccess(context, permission, model);
 
                 const [uniqueId] = id.split("#");
 
@@ -608,6 +575,7 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             async publish(model, id) {
                 const permission = await checkPermissions({ rcpu: "p" });
+                utils.checkEntryAccess(context, permission, model);
 
                 const [uniqueId] = id.split("#");
 

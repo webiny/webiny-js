@@ -57,7 +57,6 @@ export const ContentModelFieldModel = withFields({
 
 export const UpdateContentModelModel = withFields({
     name: string({ validation: shortString }),
-    modelId: string({ validation: shortString }),
     description: string({ validation: shortString }),
     group: string({ validation: shortString }),
     titleFieldId: string(),

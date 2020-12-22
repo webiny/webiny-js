@@ -11,7 +11,7 @@ type CreateContentModelArgsType = {
 };
 
 type ReadContentModelArgsType = {
-    id: string;
+    modelId: string;
 };
 
 type UpdateContentModelArgsType = ReadContentModelArgsType & {
@@ -19,7 +19,7 @@ type UpdateContentModelArgsType = ReadContentModelArgsType & {
 };
 
 type DeleteContentModelArgsType = {
-    id: string;
+    modelId: string;
 };
 
 const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
@@ -27,7 +27,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         Query: {
             getContentModel: async (_: unknown, args: ReadContentModelArgsType, context) => {
                 try {
-                    const model = await context.cms.models.get(args.id);
+                    const model = await context.cms.models.get(args.modelId);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -56,18 +56,18 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
             },
             updateContentModel: async (_: unknown, args: UpdateContentModelArgsType, context) => {
-                const { id, data } = args;
+                const { modelId, data } = args;
                 try {
-                    const model = await context.cms.models.update(id, data);
+                    const model = await context.cms.models.update(modelId, data);
                     return new Response(model);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
             deleteContentModel: async (_: unknown, args: DeleteContentModelArgsType, context) => {
-                const { id } = args;
+                const { modelId } = args;
                 try {
-                    await context.cms.models.delete(id);
+                    await context.cms.models.delete(modelId);
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
@@ -118,7 +118,6 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
 
             input CmsContentModelUpdateInput {
                 name: String
-                modelId: String
                 group: ID
                 description: String
                 layout: [[ID!]!]!
@@ -130,11 +129,11 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
 
                 updateContentModel(
-                    id: ID!
+                    modelId: ID!
                     data: CmsContentModelUpdateInput!
                 ): CmsContentModelResponse
 
-                deleteContentModel(id: ID!): CmsDeleteResponse
+                deleteContentModel(modelId: ID!): CmsDeleteResponse
             }
         `;
     }
@@ -178,7 +177,6 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
 
                 type CmsContentModel {
-                    id: ID!
                     name: String!
                     modelId: String!
                     description: String
@@ -204,7 +202,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 }
 
                 extend type Query {
-                    getContentModel(id: ID, where: JSON, sort: String): CmsContentModelResponse
+                    getContentModel(modelId: ID, where: JSON, sort: String): CmsContentModelResponse
 
                     listContentModels: CmsContentModelListResponse
                 }

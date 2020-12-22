@@ -1,6 +1,6 @@
 const DATA_FIELD = /* GraphQL*/ `
     {
-        id
+        modelId
         name
         description
         group {
@@ -48,8 +48,8 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const GET_CONTENT_MODEL_QUERY = /* GraphQL */ `
-    query GetContentModelQuery($id: ID!) {
-        getContentModel(id: $id) {
+    query GetContentModelQuery($modelId: ID!) {
+        getContentModel(modelId: $modelId) {
             data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }
@@ -75,8 +75,8 @@ export const CREATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
 `;
 
 export const UPDATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
-    mutation UpdateContentModelMutation($id: ID!, $data: CmsContentModelUpdateInput!) {
-        updateContentModel(id: $id, data: $data) {
+    mutation UpdateContentModelMutation($modelId: ID!, $data: CmsContentModelUpdateInput!) {
+        updateContentModel(modelId: $modelId, data: $data) {
             data ${DATA_FIELD}
             error ${ERROR_FIELD}
         }
@@ -84,8 +84,8 @@ export const UPDATE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
 `;
 
 export const DELETE_CONTENT_MODEL_MUTATION = /* GraphQL */ `
-    mutation DeleteContentModelMutation($id: ID!) {
-        deleteContentModel(id: $id) {
+    mutation DeleteContentModelMutation($modelId: ID!) {
+        deleteContentModel(modelId: $modelId) {
             data
             error ${ERROR_FIELD}
         }

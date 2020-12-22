@@ -91,7 +91,7 @@ describe("content model test", () => {
             data: {
                 createContentModel: {
                     data: {
-                        id: /^([a-zA-Z0-9]+)$/,
+                        modelId: "contentModel",
                         createdBy: helpers.identity,
                         createdOn: /^20/,
                         savedOn: /^20/
@@ -103,7 +103,7 @@ describe("content model test", () => {
         const createdContentModel = createResponse.data.createContentModel.data;
 
         const [getResponse] = await getContentModelQuery({
-            id: createdContentModel.id
+            modelId: createdContentModel.modelId
         });
 
         expect(getResponse).toEqual({
@@ -117,7 +117,7 @@ describe("content model test", () => {
 
         // nothing is changed in this update - just the date
         const [updateResponse] = await updateContentModelMutation({
-            id: createdContentModel.id,
+            modelId: createdContentModel.modelId,
             data: {
                 fields: [],
                 layout: []
@@ -138,7 +138,7 @@ describe("content model test", () => {
 
         // change some values in content model
         const [changedUpdateResponse] = await updateContentModelMutation({
-            id: createdContentModel.id,
+            modelId: createdContentModel.modelId,
             data: {
                 name: "changed name",
                 description: "changed description",
@@ -175,7 +175,7 @@ describe("content model test", () => {
         });
 
         const [deleteResponse] = await deleteContentModelMutation({
-            id: updatedContentModel.id
+            modelId: updatedContentModel.modelId
         });
 
         expect(deleteResponse).toEqual({
@@ -190,9 +190,9 @@ describe("content model test", () => {
 
     test("error when getting non-existing model", async () => {
         const { getContentModelQuery } = useContentGqlHandler(manageHandlerOpts);
-        const id = "nonExistingId";
+        const modelId = "nonExistingId";
         const [response] = await getContentModelQuery({
-            id
+            modelId
         });
 
         expect(response).toEqual({
@@ -200,7 +200,7 @@ describe("content model test", () => {
                 getContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${id}" was not found!`,
+                        message: `Content model "${modelId}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -211,9 +211,9 @@ describe("content model test", () => {
 
     test("error when updating non-existing model", async () => {
         const { updateContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
-        const id = "nonExistingId";
+        const modelId = "nonExistingId";
         const [response] = await updateContentModelMutation({
-            id,
+            modelId,
             data: {
                 name: "new name",
                 fields: [],
@@ -226,7 +226,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${id}" was not found!`,
+                        message: `Content model "${modelId}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -238,9 +238,9 @@ describe("content model test", () => {
     test("error when deleting non-existing model", async () => {
         const { deleteContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
 
-        const id = "nonExistingId";
+        const modelId = "nonExistingId";
         const [response] = await deleteContentModelMutation({
-            id
+            modelId
         });
 
         expect(response).toEqual({
@@ -248,7 +248,7 @@ describe("content model test", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${id}" was not found!`,
+                        message: `Content model "${modelId}" was not found!`,
                         code: "NOT_FOUND",
                         data: null
                     }
@@ -310,7 +310,7 @@ describe("content model test", () => {
 
         const fields = [textField, numberField];
         const [response] = await updateContentModelMutation({
-            id: contentModel.id,
+            modelId: contentModel.modelId,
             data: {
                 name: "new name",
                 fields,
@@ -334,7 +334,7 @@ describe("content model test", () => {
                             id: contentModelGroup.id,
                             name: "Group"
                         },
-                        id: contentModel.id,
+                        modelId: contentModel.modelId,
                         layout: [[textField.id], [numberField.id]],
                         name: "new name"
                     },
@@ -377,7 +377,7 @@ describe("content model test", () => {
             validation: []
         };
         const [response] = await updateContentModelMutation({
-            id: contentModel.id,
+            modelId: contentModel.modelId,
             data: {
                 name: "new name",
                 titleFieldId: "nonExistingTitleFieldId",

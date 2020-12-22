@@ -45,7 +45,7 @@ export const PermissionSelector = ({
     const description = t`Select the {selectorKey} user will be allowed to access.`({
         selectorKey
     });
-    
+
     return (
         <Fragment>
             {locales.map(code => (

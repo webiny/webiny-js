@@ -51,13 +51,17 @@ type ElasticSearchSortParamType = {
 };
 type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
 
-const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)_?([a-zA-Z0-9_]+)$/);
+const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 const parseWhereKey = (key: string) => {
     const match = key.match(parseWhereKeyRegExp);
     if (!match) {
         throw new Error(`It is not possible to search by key "${key}"`);
     }
-    const [field, op = "eq"] = match;
+    const [, field, operation = "eq"] = match;
+    const op = operation.match(/^_/) ? operation.substr(1) : operation;
+    if (!field.match(/^([a-zA-Z]+)$/)) {
+        throw new Error(`Cannot filter by "${field}".`);
+    }
     return {
         field,
         op
@@ -84,11 +88,11 @@ const creteElasticSearchSortParams = (
         if (!match) {
             throw new Error(`Cannot sort by "${value}".`);
         }
-        const [field, order] = match;
+        const [, field, order] = match;
         const isSystemField = checkIsSystemField(field);
-        if (!modelFields[field] && !isSystemField) {
-            throw new Error(`It is not possible to sort by field "${field}".`);
-        } else if (!modelFields[field].isSortable && !isSystemField) {
+        const modelFieldOptions = (modelFields[field] || {}) as any;
+        const { isSortable = false, unmappedType } = modelFieldOptions;
+        if (!isSortable && !isSystemField) {
             throw new Error(`Field "${field}" is not sortable.`);
         }
         const fieldName = isSystemField ? field : withParentObject(field);
@@ -96,7 +100,7 @@ const creteElasticSearchSortParams = (
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                unmapped_type: modelFields[field].unmappedType || undefined
+                unmapped_type: unmappedType
             }
         };
     });
@@ -174,9 +178,11 @@ const execElasticSearchBuildQueryPlugins = (
         }
         const { field, op } = parseWhereKey(key);
         const isSystemField = checkIsSystemField(field);
-        if (!modelFields[field] && !isSystemField) {
+        const modelFieldOptions = modelFields[field];
+        const { isSearchable = false } = modelFieldOptions || {};
+        if (!modelFieldOptions && !isSystemField) {
             throw new Error(`There is no field "${field}".`);
-        } else if (!modelFields[field].isSearchable && !isSystemField) {
+        } else if (!isSearchable && !isSystemField) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
         for (const plugin of plugins) {
@@ -258,20 +264,17 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
     });
     return {
         query: {
-            // eslint-disable-next-line @typescript-eslint/camelcase
-            constant_score: {
-                bool: {
-                    must: query.must.length > 0 ? query.must : undefined,
-                    // eslint-disable-next-line @typescript-eslint/camelcase
-                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
-                    match: query.match.length > 0 ? query.match : undefined,
-                    should: query.should.length > 0 ? query.should : undefined
-                }
+            bool: {
+                must: query.must.length > 0 ? query.must : undefined,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                match: query.match.length > 0 ? query.match : undefined,
+                should: query.should.length > 0 ? query.should : undefined
             }
         },
         sort: creteElasticSearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticSearchCursor(after)
+        search_after: decodeElasticSearchCursor(after) || undefined
     };
 };
