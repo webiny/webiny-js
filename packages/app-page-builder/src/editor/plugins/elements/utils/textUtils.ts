@@ -12,6 +12,7 @@ export const createInitialEditorValue = (text: string, type: string) => {
     return {
         type,
         typography: className,
+        alignment: "left",
         data: {
             text
         }
