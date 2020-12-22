@@ -15,6 +15,7 @@ type ModelFieldType = {
     isSearchable: boolean;
     isSortable: boolean;
 };
+
 type ModelFieldsType = Record<string, ModelFieldType>;
 
 type CreateElasticSearchParamsArgType = {
@@ -23,6 +24,7 @@ type CreateElasticSearchParamsArgType = {
     limit: number;
     after?: string;
 };
+
 type CreateElasticSearchParamsType = {
     context: CmsContext;
     model: CmsContentModelType;
@@ -31,12 +33,14 @@ type CreateElasticSearchParamsType = {
     parentObject?: string;
     options?: CmsContentModelEntryListOptionsType;
 };
+
 type CreateElasticSearchSortParamsType = {
     sort: CmsContentModelEntryListSortType;
     modelFields: ModelFieldsType;
     parentObject?: string;
     model: CmsContentModelType;
 };
+
 type CreateElasticSearchQueryArgsType = {
     model: CmsContentModelType;
     context: CmsContext;
@@ -46,31 +50,39 @@ type CreateElasticSearchQueryArgsType = {
     parentObject?: string;
     options?: CmsContentModelEntryListOptionsType;
 };
+
 type ElasticSearchSortParamType = {
     order: string;
 };
+
 type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
+
 const parseWhereKey = (key: string) => {
     const match = key.match(parseWhereKeyRegExp);
+
     if (!match) {
         throw new Error(`It is not possible to search by key "${key}"`);
     }
+
     const [, field, operation = "eq"] = match;
     const op = operation.match(/^_/) ? operation.substr(1) : operation;
+
     if (!field.match(/^([a-zA-Z]+)$/)) {
         throw new Error(`Cannot filter by "${field}".`);
     }
-    return {
-        field,
-        op
-    };
+
+    return { field, op };
 };
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-const creteElasticSearchSortParams = (
+const checkIsSystemField = (model: CmsContentModelType, field: string) => {
+    return !model.fields.find(f => f.fieldId === field);
+};
+
+const createElasticSearchSortParams = (
     args: CreateElasticSearchSortParamsType
 ): ElasticSearchSortFieldsType[] => {
     const { sort, modelFields, model, parentObject } = args;
@@ -83,19 +95,25 @@ const creteElasticSearchSortParams = (
         }
         return `${parentObject}.${field}`;
     };
+
     return sort.map(value => {
         const match = value.match(sortRegExp);
+
         if (!match) {
             throw new Error(`Cannot sort by "${value}".`);
         }
+
         const [, field, order] = match;
-        const isSystemField = checkIsSystemField(field);
+        const isSystemField = checkIsSystemField(model, field);
         const modelFieldOptions = (modelFields[field] || {}) as any;
         const { isSortable = false, unmappedType } = modelFieldOptions;
+
         if (!isSortable && !isSystemField) {
             throw new Error(`Field "${field}" is not sortable.`);
         }
+
         const fieldName = isSystemField ? field : withParentObject(field);
+
         return {
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
@@ -110,6 +128,7 @@ const createInitialQueryValue = (
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
     const { ownedBy, options, model, context } = args;
+
     const query: ElasticSearchQueryType = {
         match: [],
         must: [
@@ -129,6 +148,7 @@ const createInitialQueryValue = (
         mustNot: [],
         should: []
     };
+
     // when permission has own property, this value is passed into the fn
     if (ownedBy) {
         query.must.push({
@@ -137,6 +157,7 @@ const createInitialQueryValue = (
             }
         });
     }
+
     // add more options if necessary
     const { type } = options || {};
     if (type) {
@@ -149,6 +170,7 @@ const createInitialQueryValue = (
     //
     return query;
 };
+
 /*
  * Iterate through where keys and apply plugins where necessary
  */
@@ -158,9 +180,6 @@ const execElasticSearchBuildQueryPlugins = (
     const { where, modelFields, parentObject, model, context } = args;
     const query = createInitialQueryValue(args);
 
-    const checkIsSystemField = (field: string) => {
-        return !!model[field];
-    };
     const withParentObject = (field: string) => {
         if (!parentObject) {
             return null;
@@ -176,19 +195,23 @@ const execElasticSearchBuildQueryPlugins = (
         if (where.hasOwnProperty(key) === false) {
             continue;
         }
+
         const { field, op } = parseWhereKey(key);
-        const isSystemField = checkIsSystemField(field);
+        const isSystemField = checkIsSystemField(model, field);
         const modelFieldOptions = modelFields[field];
         const { isSearchable = false } = modelFieldOptions || {};
+
         if (!modelFieldOptions && !isSystemField) {
             throw new Error(`There is no field "${field}".`);
         } else if (!isSearchable && !isSystemField) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
+
         for (const plugin of plugins) {
             if (plugin.targetOperation !== op) {
                 continue;
             }
+
             const fieldWithParent = isSystemField ? null : withParentObject(field);
             plugin.apply(query, {
                 field: fieldWithParent || field,
@@ -198,6 +221,7 @@ const execElasticSearchBuildQueryPlugins = (
             });
         }
     }
+
     return query;
 };
 
@@ -262,6 +286,7 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         parentObject,
         options
     });
+
     return {
         query: {
             bool: {
@@ -272,7 +297,7 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
                 should: query.should.length > 0 ? query.should : undefined
             }
         },
-        sort: creteElasticSearchSortParams({ sort, modelFields, parentObject, model }),
+        sort: createElasticSearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
         search_after: decodeElasticSearchCursor(after) || undefined
