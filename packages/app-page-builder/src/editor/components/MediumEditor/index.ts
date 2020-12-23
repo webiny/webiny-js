@@ -27,27 +27,28 @@ const editorClass = css({
 type ReactMediumEditorProps = {
     value: string;
     onChange: (value: string) => void;
-    tag?: string;
+    onSelect: () => void;
+    tag: string;
     options?: any;
-    disableEditing: boolean;
     [key: string]: any;
 };
 
 const ReactMediumEditor = ({
-    tag = "div",
+    tag,
     value,
+    onChange,
     options,
-    disableEditing,
+    onSelect,
     ...props
 }: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
-    const editorRef = React.useRef();
+    const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
     React.useEffect(() => {
         if (!elementRef && !elementRef.current) {
             return;
         }
-
+        // Create "MediumEditor" instance
         editorRef.current = new MediumEditor(elementRef.current, {
             extensions: {
                 // https://github.com/yabwe/medium-editor#disable-file-dragging
@@ -58,35 +59,30 @@ const ReactMediumEditor = ({
             toolbar: {
                 ...options.toolbar,
                 buttons: [...options.toolbar.buttons, "removeFormat"]
-            },
-            disableEditing
+            }
         });
 
         const handleChange = (data, editable) => {
-            if (props.onChange) {
-                // @ts-ignore
-                editorRef.current.restoreSelection();
-                props.onChange(editable.innerHTML);
+            if (onChange) {
+                onChange(editable.innerHTML);
             }
         };
 
-        // Subscribe to onchange
-        // @ts-ignore
+        const handleSelect = (data, editable) => {
+            if (onSelect) {
+                onSelect();
+                onChange(editable.innerHTML);
+            }
+        };
+
         editorRef.current.subscribe("blur", handleChange);
 
+        editorRef.current.subscribe("editableInput", handleSelect);
+
         return () => {
-            // UnSubscribe to onchange
-            // @ts-ignore
-            editorRef.current.unsubscribe("blur", handleChange);
-            // @ts-ignore
             editorRef.current.destroy();
         };
-    }, [props, options]);
-
-    if (editorRef.current) {
-        // @ts-ignore
-        editorRef.current.saveSelection();
-    }
+    }, [onChange, options, onSelect]);
 
     return React.createElement(tag, {
         ...props,

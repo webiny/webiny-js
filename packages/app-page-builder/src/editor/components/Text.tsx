@@ -38,8 +38,8 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         },
         [getUpdateValue]
     );
-    const onEdit = useCallback(() => {
-        // Mark element active on editor change
+    const onSelect = useCallback(() => {
+        // Mark element active on editor element selection
         if (elementId && activeElementId !== elementId) {
             setUiAtomValue(prev => activateElementMutation(prev, elementId));
         }
@@ -61,7 +61,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
                 value={data.text}
                 onChange={onChange}
                 options={editorOptions}
-                onEdit={onEdit}
+                onSelect={onSelect}
             />
         </ElementRoot>
     );
