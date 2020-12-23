@@ -39,7 +39,7 @@ const style = {
 type Props = {
     setLoading: (loading: boolean) => void;
     getLoading: () => boolean;
-    content: Record<string, any>;
+    entry: Record<string, any>;
     refetchContent: () => void;
     contentModel: CmsEditorContentModel;
     state: any;
@@ -48,7 +48,7 @@ type Props = {
 
 const RevisionsList = (props: Props) => {
     const { showSnackbar } = useSnackbar();
-    const { content, contentModel, setLoading } = props;
+    const { entry, contentModel, setLoading } = props;
     const { history } = useRouter();
 
     const { CREATE_CONTENT_FROM, DELETE_CONTENT, PUBLISH_CONTENT } = useMemo(() => {
@@ -59,13 +59,13 @@ const RevisionsList = (props: Props) => {
         };
     }, [contentModel.modelId]);
 
-    const revisions = get(revisionsList, "data.content.data.meta.revisions", []);
+    const revisions = get(entry, "meta.revisions", []);
 
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
     const [deleteMutation] = useMutation(DELETE_CONTENT);
     const [publishMutation] = useMutation(PUBLISH_CONTENT);
 
-    const createContentFrom = useCallback(async revision => {
+    const createEntryFrom = useCallback(async revision => {
         setLoading(true);
         const response = await createFromMutation({
             variables: { revision: revision.id }
@@ -77,7 +77,7 @@ const RevisionsList = (props: Props) => {
             return;
         }
 
-        await Promise.all([dataList.refresh(), revisionsList.refetch()]);
+        // TODO: replace with cache update: await Promise.all([dataList.refresh(), revisionsList.refetch()]);
         setLoading(false);
 
         showSnackbar(t`New content entry revision created.`);
@@ -100,21 +100,21 @@ const RevisionsList = (props: Props) => {
         }
 
         if (revision.id === revision.meta.parent) {
-            await dataList.refresh();
+            // TODO: replace with cache update: await dataList.refresh();
             setLoading(false);
             history.push(`/cms/content-entries/${contentModel.modelId}`);
             showSnackbar(t`Content entry and all of its revisions deleted.`);
             return;
         }
 
-        await Promise.all([dataList.refresh(), revisionsList.refetch()]);
+        // TODO: replace with cache update: await Promise.all([dataList.refresh(), revisionsList.refetch()]);
         setLoading(false);
 
-        if (revision.id === content.id) {
+        if (revision.id === entry.id) {
             let revisionId;
-            for (let i = 0; i < content.revisions.length; i++) {
-                const current = content.revisions[i];
-                if (current.id !== content.id) {
+            for (let i = 0; i < entry.revisions.length; i++) {
+                const current = entry.revisions[i];
+                if (current.id !== entry.id) {
                     revisionId = current.id;
                     break;
                 }
@@ -136,14 +136,14 @@ const RevisionsList = (props: Props) => {
             variables: { revision: revision.id }
         });
 
-        const content = get(response, "data.content");
-        if (content.error) {
+        const { error } = get(response, "data.content");
+        if (error) {
             setLoading(false);
-            showSnackbar(content.error.message);
+            showSnackbar(error.message);
             return;
         }
 
-        await dataList.refresh();
+        // TODO: replace with cache update: await dataList.refresh();
         setLoading(false);
 
         showSnackbar(
@@ -158,14 +158,14 @@ const RevisionsList = (props: Props) => {
     return (
         <Elevation className={style.list} z={2}>
             {props.getLoading() && <CircularProgress />}
-            {content.id && revisions.length ? (
+            {entry.id && revisions.length ? (
                 <List nonInteractive twoLine>
                     {revisions.map(revisions => (
                         <Revision
                             {...props}
                             revision={revisions}
                             key={revisions.id}
-                            createContentFrom={createContentFrom}
+                            createContentFrom={createEntryFrom}
                             deleteContent={deleteContent}
                             publishContent={publishContent}
                         />

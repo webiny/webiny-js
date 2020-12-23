@@ -30,7 +30,7 @@ const menuStyles = css({
     }
 });
 
-const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, setLoading }) => {
+const ContentFormOptionsMenu = ({ contentModel, entry, refresh, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
@@ -41,7 +41,7 @@ const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, s
 
     const [deleteContentMutation] = useMutation(DELETE_CONTENT);
 
-    const title = get(content, "meta.title");
+    const title = get(entry, "meta.title");
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete content entry`,
@@ -59,12 +59,12 @@ const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, s
         showConfirmation(async () => {
             setLoading(true);
             const { data: res } = await deleteContentMutation({
-                variables: { revision: content.meta.parent }
+                variables: { revision: entry.meta.parent }
             });
 
             setLoading(false);
 
-            dataList.refresh();
+            refresh();
 
             const { error } = get(res, "content");
             if (error) {
@@ -81,7 +81,7 @@ const ContentFormOptionsMenu = ({ contentModel, content, dataList, getLoading, s
 
     return (
         <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
-            <MenuItem onClick={confirmDelete} disabled={!content.id || getLoading()}>
+            <MenuItem onClick={confirmDelete} disabled={!entry.id || getLoading()}>
                 <ListItemGraphic>
                     <Icon icon={<DeleteIcon />} />
                 </ListItemGraphic>

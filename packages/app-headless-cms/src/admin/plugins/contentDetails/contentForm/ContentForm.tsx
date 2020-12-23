@@ -51,7 +51,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 return showSnackbar(response.data.content.message);
             }
 
-            showSnackbar("Content created successfully.");
+            showSnackbar(`${contentModel.name} entry created successfully!`);
             const { id } = response.data.content.data;
             query.set("id", id);
             history.push({ search: query.toString() });
