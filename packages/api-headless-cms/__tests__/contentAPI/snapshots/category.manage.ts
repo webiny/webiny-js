@@ -77,7 +77,7 @@ export default /* GraphQL */ `
     }
 
     extend type Query {
-        getCategory(where: CategoryGetWhereInput!): CategoryResponse
+        getCategory(revision: ID!): CategoryResponse
 
         listCategories(
             where: CategoryListWhereInput

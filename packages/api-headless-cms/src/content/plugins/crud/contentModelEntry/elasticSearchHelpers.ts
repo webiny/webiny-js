@@ -275,6 +275,13 @@ const createModelFieldOptions = (
             isSystemField: true,
             isSearchable: true,
             isSortable: true
+        },
+        createdOn: {
+            type: "date",
+            unmappedType: "date",
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: true
         }
     };
 

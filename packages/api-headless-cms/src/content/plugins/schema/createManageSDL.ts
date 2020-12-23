@@ -87,7 +87,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         }`}
 
         extend type Query {
-            get${typeName}(where: ${mTypeName}GetWhereInput!): ${mTypeName}Response
+            get${typeName}(revision: ID!): ${mTypeName}Response
 
             list${pluralizedTypeName(typeName)}(
                 where: ${mTypeName}ListWhereInput

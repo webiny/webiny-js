@@ -199,7 +199,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 2
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data.length === 2
         );
 
         expect(result).toMatchObject({
@@ -246,7 +246,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 1
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data.length === 1
         );
 
         expect(firstResult).toMatchObject({
@@ -280,7 +280,8 @@ describe("READ - Resolvers", () => {
                     limit: 1,
                     after: firstCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data.length === 1,
+            { name: "list categories after first cursor limit 1" }
         );
 
         expect(secondResult).toMatchObject({
@@ -314,7 +315,8 @@ describe("READ - Resolvers", () => {
                     limit: 1,
                     after: secondCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data.length === 1,
+            { name: "list categories after second cursor limit 1" }
         );
 
         expect(thirdResult).toMatchObject({
@@ -348,7 +350,8 @@ describe("READ - Resolvers", () => {
                     limit: 2,
                     after: firstCursor
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data.length === 2,
+            { name: "list categories after first cursor limit 2" }
         );
         expect(fourthResult).toMatchObject({
             data: {
@@ -381,23 +384,54 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort ASC)`, async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            sort: ["title_ASC"]
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    sort: ["savedOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 3
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "First category"
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
                         },
                         {
-                            title: "Second category"
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        },
+                        {
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
                         }
-                    ]
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
                 }
             }
         });

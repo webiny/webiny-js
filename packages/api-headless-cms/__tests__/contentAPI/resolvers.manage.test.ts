@@ -92,7 +92,7 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const [get] = await getCategory({ where: { id } });
+        const [get] = await getCategory({ revision: id });
 
         expect(get.data.getCategory.data).toMatchObject({
             id,
@@ -412,7 +412,7 @@ describe("MANAGE - Resolvers", () => {
         await deleteCategory({ revision: id });
 
         // Get revision #2 and verify it's the only remaining revision of this form
-        const [get] = await getCategory({ where: { id: id2 } });
+        const [get] = await getCategory({ revision: id2 });
         const { meta } = get.data.getCategory.data;
         expect(meta.version).toBe(2);
         expect(meta.revisions.length).toBe(1);

@@ -5,7 +5,14 @@ interface RenderSortEnum {
 }
 
 export const renderSortEnum: RenderSortEnum = ({ model, fieldTypePlugins }) => {
-    const sorters = [`id_ASC`, `id_DESC`];
+    const sorters = [
+        `id_ASC`,
+        `id_DESC`,
+        "savedOn_ASC",
+        "savedOn_DESC",
+        "createdOn_ASC",
+        "createdOn_DESC"
+    ];
 
     const fieldIds = model.fields
         .filter(f => fieldTypePlugins[f.type].isSortable)

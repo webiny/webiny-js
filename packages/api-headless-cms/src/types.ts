@@ -428,6 +428,12 @@ export type CmsContentModelEntryMetaType = {
 };
 
 export type CmsContentModelEntryContextType = {
+    manageGet: (
+        model: CmsContentModelType,
+        args: {
+            revision: string;
+        }
+    ) => Promise<CmsContentModelEntryType | null>;
     get: (
         model: CmsContentModelType,
         args?: CmsContentModelEntryGetArgsType

@@ -31,8 +31,8 @@ const errorFields = `
 `;
 
 const getCategoryQuery = /* GraphQL */ `
-    query GetCategory($where: CategoryGetWhereInput!) {
-        getCategory(where: $where) {
+    query GetCategory($revision: ID!) {
+        getCategory(revision: $revision) {
             data {
                 ${categoryFields}
             }

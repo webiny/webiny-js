@@ -44,6 +44,10 @@ export default /* GraphQL */ `
         title_DESC
         slug_ASC
         slug_DESC
+        savedOn_ASC
+        savedOn_DESC
+        createdOn_ASC
+        createdOn_DESC
     }
 
     type CategoryResponse {
