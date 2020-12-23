@@ -19,6 +19,14 @@ describe("Settings Test", () => {
 
     beforeEach(async () => {
         await deleteElasticSearchIndex();
+        await createCategory({
+            data: {
+                slug: `category`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
     });
 
     test("get and update settings", async () => {
@@ -129,15 +137,6 @@ describe("Settings Test", () => {
     });
 
     test("ensure we don't overload settings when listing pages", async () => {
-        await createCategory({
-            data: {
-                slug: `category`,
-                name: `name`,
-                url: `/some-url/`,
-                layout: `layout`
-            }
-        });
-
         // Let's create five pages and publish them.
         for (let i = 0; i < 5; i++) {
             createPage({ category: "category" }).then(([res]) =>
@@ -319,15 +318,6 @@ describe("Settings Test", () => {
     });
 
     test("settings special pages (error, notFound, home)", async () => {
-        await createCategory({
-            data: {
-                slug: `category`,
-                name: `name`,
-                url: `/some-url/`,
-                layout: `layout`
-            }
-        });
-
         let page = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
@@ -396,6 +386,90 @@ describe("Settings Test", () => {
                                 }
                             },
                             error: null
+                        }
+                    }
+                }
+            })
+        );
+    });
+
+    test("must not be able to unset pages as special", async () => {
+        let page = await createPage({ category: "category" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+        const [pid] = page.id.split("#");
+
+        await publishPage({ id: page.id }).then(() =>
+            updateSettings({
+                data: {
+                    pages: {
+                        home: page.id,
+                        error: page.id,
+                        notFound: page.id
+                    }
+                }
+            })
+        );
+
+        await getSettings().then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: {
+                                pages: {
+                                    home: pid,
+                                    error: pid,
+                                    notFound: pid
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        );
+
+        await updateSettings({
+            data: {
+                pages: {
+                    home: null,
+                    error: null,
+                    notFound: null
+                }
+            }
+        }).then(([res]) =>
+            expect(res).toEqual({
+                data: {
+                    pageBuilder: {
+                        updateSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: null,
+                            error: {
+                                code: "CANNOT_UNSET_SPECIAL_PAGE",
+                                data: null,
+                                message:
+                                    'Cannot unset "home" page. Please provide a new page if you want to unset current one.'
+                            }
+                        }
+                    }
+                }
+            })
+        );
+
+        await getSettings().then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: {
+                                pages: {
+                                    home: pid,
+                                    error: pid,
+                                    notFound: pid
+                                }
+                            }
                         }
                     }
                 }
