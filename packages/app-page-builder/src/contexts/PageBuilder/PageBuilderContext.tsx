@@ -6,12 +6,7 @@ export const PageBuilderContext = React.createContext(null);
 
 export type PageBuilderContextValue = {
     theme: PbTheme;
-    defaults?: {
-        pages?: {
-            notFound?: React.ComponentType<any>;
-            error?: React.ComponentType<any>;
-        };
-    };
+    defaults?: {};
 };
 
 export type PageBuilderProviderProps = {

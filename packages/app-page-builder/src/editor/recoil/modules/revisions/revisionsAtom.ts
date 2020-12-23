@@ -7,9 +7,6 @@ export type RevisionItemAtomType = {
     version: number;
     parent?: string;
     published: boolean;
-    isHomePage: boolean;
-    isErrorPage: boolean;
-    isNotFoundPage: boolean;
     locked: boolean;
     savedOn?: Date;
 };
