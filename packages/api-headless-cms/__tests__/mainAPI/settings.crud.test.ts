@@ -1,7 +1,23 @@
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 
 describe("Settings crud test", () => {
-    const { isInstalledQuery, installMutation } = useAdminGqlHandler();
+    const { isInstalledQuery, installMutation, elasticSearch } = useAdminGqlHandler();
+
+    const esCmsIndex = "root-headless-cms";
+
+    beforeEach(async () => {
+        try {
+            await elasticSearch.indices.create({ index: esCmsIndex });
+        } catch {
+            // Ignore errors
+        }
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: esCmsIndex });
+        } catch (e) {}
+    });
 
     test("cms is not installed", async () => {
         const [response] = await isInstalledQuery();

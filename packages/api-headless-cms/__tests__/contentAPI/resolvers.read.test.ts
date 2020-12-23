@@ -111,23 +111,68 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit)`, async () => {
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+        // Create an entry
+        const [firstCategoryResponse] = await createCategory({
+            data: { title: "Title 1", slug: "slug-1" }
+        });
+        const firstCategory = firstCategoryResponse.data.createCategory.data;
+        const { id: firstCategoryId } = firstCategory;
+        const [secondCategoryResponse] = await createCategory({
+            data: { title: "Title 2", slug: "slug-2" }
+        });
+        const secondCategory = secondCategoryResponse.data.createCategory.data;
+        const { id: secondCategoryId } = secondCategory;
+        const [thirdCategoryResponse] = await createCategory({
+            data: { title: "Title 3", slug: "slug-3" }
+        });
+        const thirdCategory = thirdCategoryResponse.data.createCategory.data;
+        const { id: thirdCategoryId } = thirdCategory;
+
+        // Publish categories so then become available in the "read" API
+        await publishCategory({ revision: firstCategoryId });
+        await publishCategory({ revision: secondCategoryId });
+        await publishCategory({ revision: thirdCategoryId });
+
+        // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            limit: 1
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    limit: 2
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            id: 123
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        },
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
                         }
                     ],
                     meta: {
-                        totalCount: 5
-                    }
+                        hasMoreItems: true,
+                        totalCount: 3,
+                        cursor: /^([a-zA-Z0-9]+)$/
+                    },
+                    error: null
                 }
             }
         });

@@ -438,10 +438,12 @@ export type CmsContentModelEntryContextType = {
         options?: CmsContentModelEntryListOptionsType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     listLatest: (
-        model: CmsContentModelType
+        model: CmsContentModelType,
+        args?: CmsContentModelEntryListArgsType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     listPublished: (
-        model: CmsContentModelType
+        model: CmsContentModelType,
+        args?: CmsContentModelEntryListArgsType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     create: (
         model: CmsContentModelType,

@@ -22,7 +22,7 @@ export default {
     type: "context",
     name: "context-settings-crud",
     apply(context) {
-        const { db } = context;
+        const { db, elasticSearch } = context;
 
         const PK_SETTINGS = () => `${utils.createCmsPK(context)}#SETTINGS`;
 
@@ -69,6 +69,14 @@ export default {
                         ...model
                     }
                 });
+
+                // Create ES index if it doesn't already exist.
+                const esIndex = utils.defaults.es(context);
+                const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                if (!exists) {
+                    await elasticSearch.indices.create(esIndex);
+                }
+
                 return model;
             },
             updateContentModelLastChange: async (): Promise<CmsSettingsType> => {

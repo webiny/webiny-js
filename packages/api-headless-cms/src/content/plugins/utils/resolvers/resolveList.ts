@@ -10,9 +10,9 @@ export const resolveList: ResolverFactory = ({ model }) => async (root, args, { 
         let response: [CmsContentModelEntryType[], CmsContentModelEntryMetaType];
 
         if (cms.READ) {
-            response = await cms.entries.listPublished(model);
+            response = await cms.entries.listPublished(model, args);
         } else {
-            response = await cms.entries.listLatest(model);
+            response = await cms.entries.listLatest(model, args);
         }
 
         return new ListResponse(...response);
