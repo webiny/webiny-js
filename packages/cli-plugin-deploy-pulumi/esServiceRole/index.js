@@ -5,7 +5,11 @@ const { green } = require("chalk");
 module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
-    async hook() {
+    async hook(args) {
+        if (args.stack !== "api") {
+            return;
+        }
+
         const spinner = new ora();
         spinner.start(`Checking Elastic Search service role...`);
         const iam = new IAM();
