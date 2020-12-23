@@ -3,15 +3,27 @@ import gql from "graphql-tag";
 export const LIST_FORMS = gql`
     query FormsListForms {
         formBuilder {
-            listForms(limit: 50) {
+            listForms {
                 data {
-                    parent
+                    id
                     name
-                    publishedRevisions {
+                }
+            }
+        }
+    }
+`;
+
+export const GET_FORM = gql`
+    query FormsGetForm($id: ID!) {
+        formBuilder {
+            getForm(id: $id) {
+                data {
+                    id
+                    revisions {
                         id
                         name
-                        version
                         published
+                        version
                     }
                 }
             }
