@@ -6,12 +6,6 @@ error {
     message
 }`;
 
-/**
- isHomePage
- isErrorPage
- isNotFoundPage
- savedOn
- * */
 export const DATA_FIELDS = `
     id
     title
