@@ -144,12 +144,12 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return [items, meta];
             },
-            listLatest: async function(model) {
+            listLatest: async function(model, args) {
                 return context.cms.entries.list(
                     model,
                     {
-                        limit: 1000,
-                        sort: ["savedOn_DESC"]
+                        sort: ["savedOn_DESC"],
+                        ...args
                     },
                     {
                         type: TYPE_ENTRY_LATEST
@@ -210,12 +210,12 @@ export default (): ContextPlugin<CmsContext> => ({
                 return [items, meta];
                 // */
             },
-            listPublished: async function(model) {
+            listPublished: async function(model, args) {
                 return context.cms.entries.list(
                     model,
                     {
-                        limit: 1000,
-                        sort: ["savedOn_DESC"]
+                        sort: ["savedOn_DESC"],
+                        ...args
                     },
                     {
                         type: TYPE_ENTRY_PUBLISHED

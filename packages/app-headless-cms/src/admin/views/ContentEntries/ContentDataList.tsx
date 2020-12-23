@@ -30,11 +30,11 @@ const ContentDataList = ({ contentModel }) => {
     const entryId = query.get("id");
     const searchQuery = query.get("search");
 
-    let variables = {};
+    // let variables = {};
     if (searchQuery) {
         // We use the title field with the "contains" operator for doing basic searches.
-        const searchField = contentModel.titleFieldId + "_contains";
-        variables = { where: { [searchField]: searchQuery } };
+        // const searchField = contentModel.titleFieldId + "_contains";
+        // variables = { where: { [searchField]: searchQuery } };
     }
 
     // Generate a query based on current content model
