@@ -41,10 +41,17 @@ export type Category = {
     };
 };
 
-type PageStatus = "published" | "unpublished" | "reviewRequested" | "changesRequested" | "draft";
+export type PageStatus =
+    | "published"
+    | "unpublished"
+    | "reviewRequested"
+    | "changesRequested"
+    | "draft";
+export type PageSpecialType = "home" | "error" | "notFound";
 
 export type Page = {
     id: string;
+    pid: string;
     title: string;
     path: string;
     category: string;
@@ -77,6 +84,11 @@ export type Page = {
     createdOn: string;
     savedOn: string;
     createdBy: {
+        type: string;
+        id: string;
+        displayName: string;
+    };
+    ownedBy: {
         type: string;
         id: string;
         displayName: string;
