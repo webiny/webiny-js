@@ -59,7 +59,7 @@ const ContentDetails = ({ contentModel }) => {
     });
 
     const getLoading = useCallback(() => readQueryLoading || loading, [loading, readQueryLoading]);
-    
+
     const entry = get(data, "content.data") || {};
 
     return (

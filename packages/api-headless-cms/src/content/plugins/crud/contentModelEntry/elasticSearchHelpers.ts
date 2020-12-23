@@ -14,6 +14,8 @@ type ModelFieldType = {
     unmappedType?: string;
     isSearchable: boolean;
     isSortable: boolean;
+    type: string;
+    isSystemField?: boolean;
 };
 
 type ModelFieldsType = Record<string, ModelFieldType>;
@@ -85,7 +87,7 @@ const checkIsSystemField = (model: CmsContentModelType, field: string) => {
 const createElasticSearchSortParams = (
     args: CreateElasticSearchSortParamsType
 ): ElasticSearchSortFieldsType[] => {
-    const { sort, modelFields, model, parentObject } = args;
+    const { sort, modelFields, parentObject } = args;
 
     if (!sort) {
         return undefined;
@@ -106,9 +108,8 @@ const createElasticSearchSortParams = (
         }
 
         const [, field, order] = match;
-        const isSystemField = checkIsSystemField(model, field);
         const modelFieldOptions = (modelFields[field] || {}) as any;
-        const { isSortable = false, unmappedType } = modelFieldOptions;
+        const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
 
         if (!isSortable && !isSystemField) {
             throw new Error(`Field "${field}" is not sortable.`);
@@ -255,22 +256,54 @@ const createModelFieldOptions = (
     );
 
     const modelFields = model.fields.map(field => {
-        return field.type;
+        return {
+            id: field.fieldId,
+            type: field.type
+        };
     });
 
-    return plugins.reduce((acc, pl) => {
-        const { fieldType, es, isSearchable, isSortable } = pl;
-        if (modelFields.includes(fieldType) === false) {
-            return acc;
+    const systemFields: ModelFieldsType = {
+        id: {
+            type: "text",
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: true
+        },
+        savedOn: {
+            type: "date",
+            unmappedType: "date",
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: true
         }
+    };
+
+    const pluginFieldTypes = plugins.reduce((types, plugin) => {
+        const { fieldType, es, isSearchable, isSortable } = plugin;
         const { unmappedType } = es || {};
-        acc[pl.fieldType] = {
+        types[fieldType] = {
             unmappedType: unmappedType || null,
             isSearchable: isSearchable === true,
             isSortable: isSortable === true
         };
-        return acc;
+        return types;
     }, {});
+
+    return modelFields.reduce((fields, { id, type }) => {
+        if (!pluginFieldTypes[type]) {
+            throw new Error(`There is no plugin for field type "${type}".`);
+        }
+        const { isSearchable, isSortable, unmappedType } = pluginFieldTypes[type];
+        fields[id] = {
+            type,
+            isSearchable,
+            isSortable,
+            unmappedType,
+            isSystemField: false
+        };
+
+        return fields;
+    }, systemFields);
 };
 
 export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {

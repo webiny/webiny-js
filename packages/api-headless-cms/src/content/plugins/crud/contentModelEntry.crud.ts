@@ -1,6 +1,6 @@
 import mdbid from "mdbid";
 import { ContextPlugin } from "@webiny/handler/types";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { ErrorResponse, NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
 import {
     CmsContentModelEntryContextType,
@@ -108,10 +108,19 @@ export default (): ContextPlugin<CmsContext> => ({
                     options
                 });
 
-                const response = await elasticSearch.search({
-                    ...utils.defaults.es(context),
-                    body
-                });
+                let response;
+                try {
+                    response = await elasticSearch.search({
+                        ...utils.defaults.es(context),
+                        body
+                    });
+                } catch (ex) {
+                    throw new ErrorResponse({
+                        message: ex.message,
+                        code: ex.code,
+                        data: ex.meta
+                    });
+                }
 
                 const { hits, total } = response.body.hits;
                 const items = hits.map(item => item._source);
