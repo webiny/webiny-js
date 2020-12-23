@@ -49,7 +49,6 @@ const Heading: React.FunctionComponent<TextType> = ({ elementId }) => {
         <Text
             elementId={elementId}
             editorOptions={DEFAULT_EDITOR_OPTIONS}
-            useCustomTag={true}
             rootClassName={headingClassName}
         />
     );
