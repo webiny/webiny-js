@@ -70,6 +70,7 @@ export default (configuration?: Configuration): HandlerPlugin<ArgsContext<Handle
 
             return { data: null, error: null };
         } catch (e) {
+            log("An error occurred while prerendering...", e);
             return { data: null, error: e };
         }
     }
