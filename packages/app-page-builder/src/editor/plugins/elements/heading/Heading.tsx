@@ -46,7 +46,12 @@ type TextType = {
 };
 const Heading: React.FunctionComponent<TextType> = ({ elementId }) => {
     return (
-        <Text elementId={elementId} editorOptions={DEFAULT_EDITOR_OPTIONS} useCustomTag={true} />
+        <Text
+            elementId={elementId}
+            editorOptions={DEFAULT_EDITOR_OPTIONS}
+            useCustomTag={true}
+            rootClassName={headingClassName}
+        />
     );
 };
 export default React.memo(Heading);
