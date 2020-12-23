@@ -1,7 +1,7 @@
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const path = require("path");
-const { red, green } = require("chalk");
+const { green } = require("chalk");
 
 module.exports = {
     projectName: "webiny-js",
