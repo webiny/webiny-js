@@ -38,7 +38,6 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
             }
 
             showSnackbar(t`Content published successfully.`);
-            // TODO: is this necessary? revisionsList.refetch();
         },
         [entry.id]
     );

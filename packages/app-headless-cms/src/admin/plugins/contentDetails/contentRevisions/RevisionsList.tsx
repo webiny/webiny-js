@@ -160,11 +160,11 @@ const RevisionsList = (props: Props) => {
             {props.getLoading() && <CircularProgress />}
             {entry.id && revisions.length ? (
                 <List nonInteractive twoLine>
-                    {revisions.map(revisions => (
+                    {revisions.map(revision => (
                         <Revision
                             {...props}
-                            revision={revisions}
-                            key={revisions.id}
+                            revision={revision}
+                            key={revision.id}
                             createContentFrom={createEntryFrom}
                             deleteContent={deleteContent}
                             publishContent={publishContent}

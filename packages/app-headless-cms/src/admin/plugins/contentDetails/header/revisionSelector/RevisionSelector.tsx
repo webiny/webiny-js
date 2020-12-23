@@ -36,7 +36,7 @@ const RevisionSelector = ({ entry, getLoading }) => {
     const allRevisions = get(entry, "meta.revisions", [
         { id: "new", meta: { version: 1, status: "draft" } }
     ]);
-    
+
     return (
         <Menu
             className={menuStyles}
@@ -51,7 +51,7 @@ const RevisionSelector = ({ entry, getLoading }) => {
                 <MenuItem
                     key={revision.id}
                     onClick={() => {
-                        query.set("id", revision.id);
+                        query.set("id", encodeURIComponent(revision.id));
                         history.push({ search: query.toString() });
                     }}
                 >

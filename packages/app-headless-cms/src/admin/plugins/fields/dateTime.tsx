@@ -3,7 +3,7 @@ import { get } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { Input } from "@webiny/ui/Input";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DateTimeIcon } from "./icons/schedule-black-24px.svg";
 
@@ -34,9 +34,11 @@ const plugin: CmsEditorFieldTypePlugin = {
             };
         },
         renderSettings({ form: { Bind, data }, contentModel }) {
-            const lockedFields = get(contentModel, "lockedFields", []);
+            const lockedFields = contentModel.lockedFields || [];
             const fieldId = get(data, "fieldId", null);
-            const lockedField = lockedFields.find(lockedField => lockedField.fieldId === fieldId);
+            const lockedField = lockedFields.find(
+                lockedField => lockedField.fieldId === fieldId
+            ) as CmsEditorField<{ formatType: string }>;
 
             return (
                 <Grid>
@@ -53,7 +55,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                             <Select
                                 label={t`Format`}
                                 description={t`Cannot be changed later`}
-                                disabled={lockedField && lockedField.formatType}
+                                disabled={lockedField && Boolean(lockedField.formatType)}
                             >
                                 <option value={t`date`}>{t`Date only`}</option>
                                 <option value={t`time`}>{t`Time only`}</option>

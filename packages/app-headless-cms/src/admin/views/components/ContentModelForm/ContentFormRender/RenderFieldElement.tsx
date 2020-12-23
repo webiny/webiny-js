@@ -34,8 +34,8 @@ const RenderFieldElement = (props: {
             }
 
             const name = field.fieldId;
-            let validators,
-                defaultValue = undefined;
+            let validators = undefined;
+            let defaultValue = undefined;
 
             if (field.multipleValues) {
                 defaultValue = [];
@@ -52,14 +52,16 @@ const RenderFieldElement = (props: {
                     <BaseFormBind name={name} validators={validators} defaultValue={defaultValue}>
                         {bind => {
                             const value = getValue({ bind, field, index });
-                            const onChange = value => setValue({ value, bind, field, index });
+                            const onChange = value => {
+                                setValue({ value, bind, field, index });
+                            };
 
                             const props = {
                                 ...bind,
                                 value,
                                 onChange
                             };
-
+                            
                             // Multiple-values functions below.
                             if (field.multipleValues) {
                                 if (index >= 0) {
@@ -79,10 +81,15 @@ const RenderFieldElement = (props: {
                                         }
                                     };
                                 } else {
-                                    props.appendValue = newValue => onChange([...value, newValue]);
-                                    props.prependValue = newValue => onChange([newValue, ...value]);
-                                    props.appendValues = newValues =>
+                                    props.appendValue = newValue => {
+                                        onChange([...value, newValue]);
+                                    };
+                                    props.prependValue = newValue => {
+                                        onChange([newValue, ...value]);
+                                    };
+                                    props.appendValues = newValues => {
                                         onChange([...value, ...newValues]);
+                                    };
                                 }
                             }
 

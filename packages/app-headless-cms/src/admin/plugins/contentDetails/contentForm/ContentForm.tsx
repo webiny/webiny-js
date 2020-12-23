@@ -8,7 +8,6 @@ import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 
 const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
-    console.log("form entry", entry);
     const query = new URLSearchParams(location.search);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();

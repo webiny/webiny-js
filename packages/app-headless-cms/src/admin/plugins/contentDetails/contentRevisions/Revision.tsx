@@ -38,12 +38,12 @@ const revisionsMenu = css({
 
 const getIcon = (rev: CmsEditorContentModel) => {
     switch (true) {
-        case rev.meta.locked && !rev.meta.published:
+        case rev.meta.locked && rev.meta.status !== "published":
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case rev.meta.published:
+        case rev.meta.status === "published":
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
@@ -104,9 +104,8 @@ const Revision = props => {
                             {!revision.meta.locked && (
                                 <MenuItem
                                     onClick={() => {
-                                        const { id } = revision;
                                         const query = new URLSearchParams(location.search);
-                                        query.set("id", id);
+                                        query.set("id", encodeURIComponent(revision.id));
                                         history.push({ search: query.toString() });
                                         switchTab(0);
                                     }}
@@ -118,7 +117,7 @@ const Revision = props => {
                                 </MenuItem>
                             )}
 
-                            {!revision.meta.published && (
+                            {revision.meta.status !== "published" && (
                                 <MenuItem onClick={() => publishContent(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
@@ -127,7 +126,7 @@ const Revision = props => {
                                 </MenuItem>
                             )}
 
-                            {!revision.meta.locked && revision.id !== revision.meta.parent && (
+                            {!revision.meta.locked && (
                                 <div>
                                     <MenuDivider />
                                     <MenuItem

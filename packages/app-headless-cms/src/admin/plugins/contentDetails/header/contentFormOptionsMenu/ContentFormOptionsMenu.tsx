@@ -47,8 +47,9 @@ const ContentFormOptionsMenu = ({ contentModel, entry, refresh, getLoading, setL
         title: t`Delete content entry`,
         message: (
             <p>
-                {t`You are about to delete this content entry and all of its revisions!
-                    Are you sure you want to permanently delete {title}?`({
+                {t`You are about to delete this content entry and all of its revisions!`}
+                <br />
+                {t`Are you sure you want to permanently delete {title}?`({
                     title: <strong>{title}</strong>
                 })}
             </p>
@@ -58,14 +59,15 @@ const ContentFormOptionsMenu = ({ contentModel, entry, refresh, getLoading, setL
     const confirmDelete = useCallback(() => {
         showConfirmation(async () => {
             setLoading(true);
+            const [uniqueId] = entry.id.split("#");
             const { data: res } = await deleteContentMutation({
-                variables: { revision: entry.meta.parent }
+                variables: { revision: uniqueId }
             });
 
             setLoading(false);
-
-            refresh();
-
+            
+            // TODO: update list cache
+            
             const { error } = get(res, "content");
             if (error) {
                 return showDialog(error.message, { title: t`Could not delete content` });

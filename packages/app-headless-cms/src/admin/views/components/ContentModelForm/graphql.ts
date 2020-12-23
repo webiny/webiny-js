@@ -97,7 +97,7 @@ export const createDeleteMutation = model => {
 
     return gql`
         mutation CmsEntriesDelete${ucFirstModelId}($revision: ID!) {
-            content: delete${ucFirstModelId}(where: { id: $revision }) {
+            content: delete${ucFirstModelId}(revision: $revision) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -174,6 +174,7 @@ export const createPublishMutation = model => {
                         ${CONTENT_META_FIELDS}
                         revisions {
                             id
+                            savedOn
                             meta {
                                 ${CONTENT_META_FIELDS}
                             }
@@ -197,6 +198,7 @@ export const createUnpublishMutation = model => {
                         ${CONTENT_META_FIELDS}
                         revisions {
                             id
+                            savedOn
                             meta {
                                 ${CONTENT_META_FIELDS}
                             }
