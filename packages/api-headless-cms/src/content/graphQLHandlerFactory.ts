@@ -5,6 +5,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { CmsContext, CmsSettingsType } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
+import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 
 type CreateGraphQLHandlerOptionsType = {
     debug?: boolean;
@@ -90,6 +91,17 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
     return schema;
 };
 
+const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
+    const { type } = context.cms || {};
+    if (!type) {
+        throw new NotAuthorizedError();
+    }
+    const permission = await context.security.getPermission(`cms.endpoint.${type}`);
+    if (!permission) {
+        throw new NotAuthorizedError();
+    }
+};
+
 export const graphQLHandlerFactory = (
     options: CreateGraphQLHandlerOptionsType = {}
 ): HandlerPlugin => ({
@@ -100,6 +112,12 @@ export const graphQLHandlerFactory = (
 
         if (!http || !http.path || !http.path.parameters) {
             return next();
+        }
+
+        try {
+            await checkEndpointAccess(context);
+        } catch (ex) {
+            return respond(http, new NotAuthorizedResponse());
         }
 
         if (http.method === "OPTIONS") {
