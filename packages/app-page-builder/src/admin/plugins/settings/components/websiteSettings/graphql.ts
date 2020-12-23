@@ -15,6 +15,11 @@ const fields = /* GraphQL */ `
                 id
                 src
             }
+            pages {
+                home
+                error
+                notFound
+            }
             social {
                 facebook
                 twitter
