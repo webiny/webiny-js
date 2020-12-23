@@ -104,11 +104,7 @@ export const createManageResolvers: CreateManageResolvers = ({
                 return "";
             },
             status(entry) {
-                if (entry.published) {
-                    return "published";
-                }
-
-                return entry.locked ? "locked" : "draft";
+                return entry.status;
             },
             revisions(entry, args, context: CmsContext) {
                 return context.cms.entries.listRevisions(entry.id);
