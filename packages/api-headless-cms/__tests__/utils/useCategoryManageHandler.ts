@@ -1,4 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
+import { GQLHandlerCallableArgsType } from "./useGqlHandler";
 
 const categoryFields = `
     id
@@ -31,8 +32,8 @@ const errorFields = `
 `;
 
 const getCategoryQuery = /* GraphQL */ `
-    query GetCategory($where: CategoryGetWhereInput!) {
-        getCategory(where: $where) {
+    query GetCategory($revision: ID!) {
+        getCategory(revision: $revision) {
             data {
                 ${categoryFields}
             }
@@ -115,7 +116,7 @@ const publishCategoryMutation = /* GraphQL */ `
     }
 `;
 
-export const useCategoryManageHandler = options => {
+export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {

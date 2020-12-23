@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
-import { resolveGet } from "../utils/resolvers/resolveGet";
+import { resolveManageGet } from "../utils/resolvers/resolveManageGet";
 import { resolveList } from "../utils/resolvers/resolveList";
 import { resolveCreate } from "../utils/resolvers/resolveCreate";
 import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
@@ -69,7 +69,7 @@ export const createManageResolvers: CreateManageResolvers = ({
 
     return {
         Query: {
-            [`get${typeName}`]: resolveGet({ model }),
+            [`get${typeName}`]: resolveManageGet({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         Mutation: {

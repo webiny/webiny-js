@@ -25,18 +25,14 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     simple_query_string: {
                         fields: ["name"],
-                        query: "John",
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        operator: "AND"
+                        query: "John"
                     }
                 },
                 {
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     simple_query_string: {
                         fields: ["name"],
-                        query: "Doe",
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        operator: "AND"
+                        query: "Doe"
                     }
                 }
             ],

@@ -70,6 +70,23 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const entries: CmsContentModelEntryContextType = {
+            manageGet: async (model, { revision }) => {
+                const permission = await checkPermissions({ rwd: "r" });
+                utils.checkEntryAccess(context, permission, model);
+
+                const [[entry]] = await db.read<CmsContentModelEntryType>({
+                    ...utils.defaults.db,
+                    query: { PK: PK_ENTRY(), SK: revision }
+                });
+
+                if (!entry) {
+                    throw new NotFoundError(`Content model entry "${revision}" was not found!`);
+                }
+
+                utils.checkOwnership(context, permission, entry);
+
+                return entry;
+            },
             get: async (model, args) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkEntryAccess(context, permission, model);
@@ -96,10 +113,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     model,
                     args: {
                         ...args,
-                        where: {
-                            ...(args.where || {}),
-                            modelId: model.modelId
-                        },
                         limit
                     },
                     context,

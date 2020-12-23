@@ -18,8 +18,7 @@ describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     simple_query_string: {
                         fields: ["name"],
-                        query: "John",
-                        operator: "AND"
+                        query: "John"
                     }
                 }
             ],

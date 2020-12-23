@@ -15,18 +15,8 @@ describe("elasticSearchQueryBuilderNotInPlugin", () => {
         const expected: ElasticSearchQueryType = {
             mustNot: [
                 {
-                    term: {
-                        "name.keyword": "John"
-                    }
-                },
-                {
-                    term: {
-                        "name.keyword": "Doe"
-                    }
-                },
-                {
-                    term: {
-                        "name.keyword": "P."
+                    terms: {
+                        "name.keyword": ["John", "Doe", "P."]
                     }
                 }
             ],

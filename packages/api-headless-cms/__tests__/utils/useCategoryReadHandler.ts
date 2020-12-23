@@ -1,4 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
+import { GQLHandlerCallableArgsType } from "./useGqlHandler";
 
 const categoryFields = `
     id
@@ -51,7 +52,7 @@ const listCategoriesQuery = /* GraphQL */ `
     }
 `;
 
-export const useCategoryReadHandler = options => {
+export const useCategoryReadHandler = (options: GQLHandlerCallableArgsType) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {
