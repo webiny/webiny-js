@@ -74,9 +74,9 @@ export type PbElementDataSettingsBorderType = {
 };
 export type PbElementDataTextType = {
     color?: string;
-    alignment?: string;
-    typography?: string;
-    tag?: string;
+    alignment: string;
+    typography: string;
+    tag: string;
     data: {
         text: string;
     };
