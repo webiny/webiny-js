@@ -5,6 +5,16 @@ import trimEnd from "lodash/trimEnd";
 // We don't want trailing slashes in Page Builder app's important URLs (website URL, website preview URL, app URL).
 const trimTrailingSlashes = value => trimEnd(value, "/");
 
+// `pid` (page ID) is an ID consisting only of the unique page ID, without the version suffix (e.g. #0002).
+const extractPid: string = (value: string) => {
+    if (typeof value !== "string") {
+        return null;
+    }
+
+    const [pid] = value.split("#");
+    return pid || null;
+};
+
 export default withFields({
     name: string({ validation: "required,maxLength:500" }),
     websiteUrl: onSet(trimTrailingSlashes)(string({ validation: "url,maxLength:500" })),
@@ -37,9 +47,9 @@ export default withFields({
     pages: fields({
         value: {},
         instanceOf: withFields({
-            home: string(),
-            notFound: string(),
-            error: string()
+            home: onSet(extractPid)(string()),
+            notFound: onSet(extractPid)(string()),
+            error: onSet(extractPid)(string())
         })()
     })
 })();
