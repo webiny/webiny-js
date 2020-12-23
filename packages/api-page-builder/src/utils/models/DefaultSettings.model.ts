@@ -6,7 +6,7 @@ import trimEnd from "lodash/trimEnd";
 const trimTrailingSlashes = value => trimEnd(value, "/");
 
 // `pid` (page ID) is an ID consisting only of the unique page ID, without the version suffix (e.g. #0002).
-const extractPid: string = (value: string) => {
+const extractPid = (value: string): string => {
     if (typeof value !== "string") {
         return null;
     }
