@@ -6,7 +6,9 @@ import block from "@webiny/app-page-builder/editor/plugins/elements/block";
 import grid from "@webiny/app-page-builder/editor/plugins/elements/grid";
 import cell from "@webiny/app-page-builder/editor/plugins/elements/cell";
 import image from "@webiny/app-page-builder/editor/plugins/elements/image";
-import text from "@webiny/app-page-builder/editor/plugins/elements/text";
+import paragraph from "@webiny/app-page-builder/editor/plugins/elements/paragraph";
+import list from "@webiny/app-page-builder/editor/plugins/elements/list";
+import quote from "@webiny/app-page-builder/editor/plugins/elements/quote";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
 import media from "@webiny/app-page-builder/editor/plugins/elements/media";
@@ -14,6 +16,7 @@ import social from "@webiny/app-page-builder/editor/plugins/elements/social";
 import code from "@webiny/app-page-builder/editor/plugins/elements/code";
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
+import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
 // Icons
 import icons from "@webiny/app-page-builder/editor/plugins/icons";
 // Element actions
@@ -52,6 +55,7 @@ import align from "@webiny/app-page-builder/editor/plugins/elementSettings/align
 import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
+import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Page settings
@@ -72,10 +76,13 @@ export default [
     block(),
     gridBlock,
     ...cell(),
+    heading(),
+    paragraph(),
+    list(),
+    quote(),
     icon(),
     image(),
     imagesList(),
-    text(),
     button(),
     media,
     social,
@@ -120,6 +127,7 @@ export default [
     save,
     link,
     gridSettings,
+    textSettings,
     // Default bar
     defaultBarPlugins,
     // Page settings

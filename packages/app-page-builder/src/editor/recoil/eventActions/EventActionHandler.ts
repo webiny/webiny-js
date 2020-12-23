@@ -24,6 +24,7 @@ import { EventAction } from "./EventAction";
 export type EventActionHandlerMetaType = {
     client: any;
 };
+export type EventActionHandlerConfigType = { maxEventActionsNesting: number };
 type CallableStateType = {
     ui?: UiAtomType;
     plugins?: PluginsAtomType;
@@ -53,8 +54,6 @@ type RegistryType = Map<string, ListType>;
 
 type TargetType = { new (...args: any[]): EventAction<any> };
 type UnregisterType = () => boolean;
-
-const MAX_EVENT_ACTION_NESTING_LEVELS = 4;
 
 export const executeAction = <T extends CallableArgsType = any>(
     state: PbState,
@@ -110,17 +109,24 @@ export class EventActionHandler {
     private readonly _registry: RegistryType = new Map();
     private readonly _trackedStates: string[];
     private readonly _meta: EventActionHandlerMetaType;
+    private readonly _config: EventActionHandlerConfigType;
 
     public get meta(): EventActionHandlerMetaType {
         return this._meta;
     }
 
+    public get config(): EventActionHandlerConfigType {
+        return this._config;
+    }
+
     public constructor(
         trackedStates: (keyof CallableStateType)[] = [],
-        meta: EventActionHandlerMetaType
+        meta: EventActionHandlerMetaType,
+        config: EventActionHandlerConfigType
     ) {
         this._trackedStates = trackedStates;
         this._meta = meta;
+        this._config = config;
     }
 
     public on(target: TargetType, callable: EventActionCallableType): UnregisterType {
@@ -250,11 +256,11 @@ export class EventActionHandler {
         initialState: PbState,
         initiator: string[]
     ): Promise<EventActionHandlerActionCallableResponseType> {
-        if (initiator.length >= MAX_EVENT_ACTION_NESTING_LEVELS) {
+        if (initiator.length >= this.config.maxEventActionsNesting) {
             throw new Error(
-                `Max (${MAX_EVENT_ACTION_NESTING_LEVELS}) allowed levels of nesting actions reached: ${initiator.join(
-                    " -> "
-                )}`
+                `Max (${
+                    this.config.maxEventActionsNesting
+                }) allowed levels of nesting actions reached: ${initiator.join(" -> ")}`
             );
         }
         const name = ev.getName();
