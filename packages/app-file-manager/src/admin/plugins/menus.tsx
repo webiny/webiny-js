@@ -10,7 +10,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-file-manager/admin");
 
-const PERMISSION_FM_SETTINGS = ["fm.settings"];
+const PERMISSION_FM_SETTINGS = "fm.settings";
 
 export default [
     {
@@ -22,7 +22,7 @@ export default [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={"File Manager Settings - General"} />
-                        <SecureRoute scopes={PERMISSION_FM_SETTINGS}>
+                        <SecureRoute permission={PERMISSION_FM_SETTINGS}>
                             <FileManagerSettings />
                         </SecureRoute>
                     </AdminLayout>
@@ -35,7 +35,7 @@ export default [
         name: "menu-file-manager-settings",
         render({ Section, Item }) {
             return (
-                <SecureView scopes={PERMISSION_FM_SETTINGS}>
+                <SecureView permission={PERMISSION_FM_SETTINGS}>
                     <Section label={t`File Manager`}>
                         <Item label={t`General`} path="/settings/file-manager/general" />
                     </Section>

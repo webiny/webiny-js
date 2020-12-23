@@ -13,8 +13,6 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
-const ROLE_PB_SETTINGS = ["pb:settings"];
-
 const plugins = [
     {
         type: "route",
@@ -25,7 +23,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Page Builder - Website Settings`} />
-                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
+                        <SecureRoute permission={"pb.settings"}>
                             <PageBuilderSettings />
                         </SecureRoute>
                     </AdminLayout>
@@ -42,7 +40,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Page Builder - General Settings`} />
-                        <SecureRoute scopes={ROLE_PB_SETTINGS}>
+                        <SecureRoute permission={"pb.settings"}>
                             <GeneralSettings />
                         </SecureRoute>
                     </AdminLayout>
@@ -55,7 +53,7 @@ const plugins = [
         name: "menu-settings-page-builder",
         render({ Section, Item }) {
             return (
-                <SecureView scopes={ROLE_PB_SETTINGS}>
+                <SecureView permission={"pb.settings"}>
                     <Section label={t`Page Builder`}>
                         {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
                             plugin => (
