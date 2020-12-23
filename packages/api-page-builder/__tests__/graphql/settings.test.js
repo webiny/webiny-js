@@ -5,7 +5,6 @@ jest.setTimeout(15000);
 
 describe("Settings Test", () => {
     const {
-        db,
         createCategory,
         createPage,
         getSettings,
@@ -280,8 +279,7 @@ describe("Settings Test", () => {
                     }
                 }
             }
-        })
-
+        });
 
         await getDefaultSettings().then(([res]) =>
             expect(res).toEqual({
@@ -313,6 +311,91 @@ describe("Settings Test", () => {
                             },
                             error: null,
                             id: "PB#SETTINGS"
+                        }
+                    }
+                }
+            })
+        );
+    });
+
+    test("settings special pages (error, notFound, home)", async () => {
+        await createCategory({
+            data: {
+                slug: `category`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        let page = await createPage({ category: "category" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updateSettings({
+            data: {
+                pages: {
+                    home: page.id
+                }
+            }
+        }).then(([res]) =>
+            expect(res).toEqual({
+                data: {
+                    pageBuilder: {
+                        updateSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: null,
+                            error: {
+                                code: "NOT_FOUND",
+                                data: null,
+                                message: "Page not found."
+                            }
+                        }
+                    }
+                }
+            })
+        );
+
+        await publishPage({ id: page.id });
+
+        const [pid] = page.id.split("#");
+
+        await updateSettings({
+            data: {
+                pages: {
+                    home: page.id
+                }
+            }
+        }).then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        updateSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: {
+                                pages: {
+                                    home: pid
+                                }
+                            },
+                            error: null
+                        }
+                    }
+                }
+            })
+        );
+
+        await getSettings().then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getSettings: {
+                            id: "T#root#L#en-US#PB#SETTINGS",
+                            data: {
+                                pages: {
+                                    home: pid
+                                }
+                            },
+                            error: null
                         }
                     }
                 }

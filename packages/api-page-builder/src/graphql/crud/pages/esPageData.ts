@@ -18,9 +18,6 @@ export const getESPageData = (context: PbContext, page) => {
         status: page.status,
         locked: page.locked,
         publishedOn: page.publishedOn,
-        home: page.home || false,
-        error: page.error || false,
-        notFound: page.notFound || false,
 
         // Pull tags & snippet from settings.general.
         tags: page?.settings?.general?.tags || [],

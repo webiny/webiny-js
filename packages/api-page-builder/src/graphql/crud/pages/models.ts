@@ -14,7 +14,7 @@ export const UpdateDataModel = withFields({
     }),
     path: onSet(normalizePath)(
         string({
-            validation: validation.create("maxLength:100")
+            validation: validation.create("minLength:2,maxLength:100")
         })
     ),
     category: string({ validation: validation.create("maxLength:100") }),

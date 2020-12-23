@@ -14,7 +14,8 @@ import {
     InstallSettings,
     Menu,
     Page,
-    PageElement
+    PageElement,
+    PageSpecialType
 } from "@webiny/api-page-builder/types";
 
 export type HandlerConfiguration = {
@@ -50,7 +51,10 @@ export type ListMeta = {
 
 // Pages CRUD.
 export type Tag = { id?: string; class?: string };
-export type RenderArgs = { tags?: Tag[]; paths?: string[] };
+export type RenderArgs = {
+    tags?: Tag[];
+    paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
+};
 
 export type PagesCrud = {
     get(id: string): Promise<Page>;
@@ -67,7 +71,7 @@ export type PagesCrud = {
     unpublish(id: string): Promise<Page>;
     requestReview(id: string): Promise<Page>;
     requestChanges(id: string): Promise<Page>;
-    setAsHomepage(id: string): Promise<Page>;
+    setAs(page: string, specialType: PageSpecialType): Promise<void>;
     render(args: RenderArgs): Promise<void>;
 };
 
@@ -121,7 +125,6 @@ export type SettingsCrud = {
 };
 
 // PBContext types.
-
 export type PbContext = Context<
     I18NContentContext,
     I18NContext,
@@ -172,7 +175,12 @@ export type PageSecurityPermission = PbSecurityPermission<
 >;
 
 // Hook plugins.
-export type HookCallbackFunction<TData> = (context: PbContext, data: TData) => void | Promise<void>;
+export type HookCallbackFunction<A1 = any, A2 = any, A3 = any> = (
+    context: PbContext,
+    arg1: A1,
+    arg2: A2,
+    arg3: A3
+) => void | Promise<void>;
 export type HookPlugin<TType, TData, TExtraHooks = {}> = {
     type: TType;
     beforeCreate?: HookCallbackFunction<TData>;
@@ -205,10 +213,29 @@ export type MenuHookPlugin = HookPlugin<
     }
 >;
 
+type SettingsHookPluginPreviousSettings = DefaultSettings;
+type SettingsHookPluginNextSettings = DefaultSettings;
+
 export type SettingsHookPlugin = Plugin<{
     type: "pb-settings-hook";
-    beforeUpdate?: HookCallbackFunction<DefaultSettings>;
-    afterUpdate?: HookCallbackFunction<DefaultSettings>;
+    beforeUpdate?: HookCallbackFunction<
+        SettingsHookPluginPreviousSettings,
+        SettingsHookPluginNextSettings,
+        {
+            diff: {
+                pages: Array<[PageSpecialType, string, string, Page]>;
+            };
+        }
+    >;
+    afterUpdate?: HookCallbackFunction<
+        SettingsHookPluginPreviousSettings,
+        SettingsHookPluginNextSettings,
+        {
+            diff: {
+                pages: Array<[PageSpecialType, string, string, Page]>;
+            };
+        }
+    >;
 }>;
 
 export type InstallHookPlugin = Plugin<{

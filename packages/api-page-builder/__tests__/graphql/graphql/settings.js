@@ -11,6 +11,11 @@ export const DATA_FIELD = /* GraphQL */ `
                 name
             }
         }
+        pages {
+            home
+            notFound
+            error
+        }
         social {
             instagram
             facebook

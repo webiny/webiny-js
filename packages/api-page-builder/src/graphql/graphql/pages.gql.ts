@@ -25,8 +25,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 createdOn: DateTime
                 savedOn: DateTime
                 publishedOn: DateTime
-                error: Boolean
-                notFound: Boolean
                 locked: Boolean
                 category: PbPageCategory
                 version: Int
@@ -37,7 +35,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 settings: PbPageSettings
                 content: JSON
                 revisions: [PbPageRevision]
-                home: Boolean
             }
 
             type PbPageRevision {
@@ -60,9 +57,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 status: String
                 locked: Boolean
                 publishedOn: DateTime
-                home: Boolean
-                error: Boolean
-                notFound: Boolean
                 images: PbPageListItemImages
                 version: Int
                 category: PbPageCategory

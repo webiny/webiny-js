@@ -14,8 +14,6 @@ export const DATA_FIELD = /* GraphQL */ `
         status
         locked
         publishedOn
-        error
-        notFound
         locked
         revisions {
             id

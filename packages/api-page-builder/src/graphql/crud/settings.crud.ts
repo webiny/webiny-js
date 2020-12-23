@@ -12,6 +12,7 @@ import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import { DefaultSettingsModel, InstallSettingsModel } from "@webiny/api-page-builder/utils/models";
 import merge from "lodash/merge";
+import Error from "@webiny/error";
 
 const TYPE = "pb.settings";
 
@@ -80,58 +81,117 @@ const plugin: ContextPlugin<PbContext> = {
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
-                        const tenantAllLocales = await this.get({ tenant: options?.tenant, locale: false });
+                        const tenantAllLocales = await this.get({
+                            tenant: options?.tenant,
+                            locale: false
+                        });
                         if (!allTenants && !tenantAllLocales) {
                             return null;
                         }
 
                         return merge({}, allTenants, tenantAllLocales);
                     },
-                    async update(next, options) {
+                    async update(rawData, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
 
-                        let current = await this.get();
-                        if (!current) {
-                            current = await new DefaultSettingsModel().populate({}).toJSON();
+                        let previous = await this.get();
+                        if (!previous) {
+                            previous = await new DefaultSettingsModel().populate({}).toJSON();
                             await db.create({
                                 ...defaults.db,
                                 data: {
-                                    ...current,
+                                    ...previous,
                                     PK: this.PK(options),
                                     SK: this.SK,
                                     TYPE,
                                     type: "default",
                                     tenant: security.getTenant().id,
-                                    locale: i18nContent.getLocale.id
+                                    locale: i18nContent.getLocale().code
                                 }
                             });
                         }
 
-                        const settings = new DefaultSettingsModel()
-                            .populate(current)
-                            .populate(next);
-                        await settings.validate();
+                        const settingsModel = new DefaultSettingsModel()
+                            .populate(previous)
+                            .populate(rawData);
+                        await settingsModel.validate();
 
-                        const data = await settings.toJSON();
+                        const next = await settingsModel.toJSON();
 
-                        await executeHookCallbacks(hookPlugins, "beforeUpdate", context, data);
+                        // Before continuing, let's check for differences that matter.
+
+                        // 1. Check differences in `pages` property (`home`, `notFound`, `error`). If there are
+                        // differences, check if the pages can be set as the new `specialType` page, and then,
+                        // after save, make sure to trigger events, on which other plugins can do their tasks.
+                        const specialTypes = ["home", "error", "notFound"];
+
+                        const changedPages = [];
+                        for (let i = 0; i < specialTypes.length; i++) {
+                            const specialType = specialTypes[i];
+                            const p = previous?.pages?.[specialType];
+                            const n = next?.pages?.[specialType];
+                            if (p !== n) {
+                                const page = await context.pageBuilder.pages.getPublished({
+                                    id: n
+                                });
+                                if (!page) {
+                                    throw new Error(
+                                        `Cannot set page "${page.title}" as ${specialType} because it's not published`,
+                                        "CANNOT_SET_SPECIAL_NOT_PUBLISHED"
+                                    );
+                                }
+
+                                changedPages.push([
+                                    specialType,
+                                    p,
+                                    n,
+                                    await context.pageBuilder.pages.getPublished({
+                                        id: n
+                                    })
+                                ]);
+                            }
+                        }
+
+                        await executeHookCallbacks(
+                            hookPlugins,
+                            "beforeUpdate",
+                            context,
+                            previous,
+                            next,
+                            {
+                                diff: {
+                                    pages: changedPages
+                                }
+                            }
+                        );
 
                         await db.update({
                             ...defaults.db,
                             query: { PK: this.PK(options), SK: this.SK },
-                            data
+                            data: next
                         });
 
-                        await executeHookCallbacks(hookPlugins, "afterUpdate", context, data);
+                        await executeHookCallbacks(
+                            hookPlugins,
+                            "afterUpdate",
+                            context,
+                            previous,
+                            next,
+                            {
+                                diff: {
+                                    pages: changedPages
+                                }
+                            }
+                        );
 
-                        return settings.toJSON();
+                        return next;
                     }
                 },
 
                 // Contains the information related to app's installation state (installed or not installed).
                 // Note that these settings are not stored per-locale, only per-tenant.
                 install: {
-                    PK: () => `${getPKPrefix(context, { includeLocale: false })}SETTINGS`,
+                    PK: () => `${getPKPrefix(context, { locale: false })}SETTINGS`,
                     SK: "install",
                     async get() {
                         return context.pageBuilder.settings.dataLoaders.get.load({
@@ -152,7 +212,7 @@ const plugin: ContextPlugin<PbContext> = {
                                     TYPE,
                                     type: "install",
                                     tenant: security.getTenant().id,
-                                    locale: i18nContent.getLocale.id
+                                    locale: i18nContent.getLocale().code
                                 }
                             });
                         }
