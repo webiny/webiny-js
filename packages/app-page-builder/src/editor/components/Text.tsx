@@ -1,8 +1,13 @@
-import React from "react";
-import { useRecoilValue } from "recoil";
+import React, { useCallback } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import classNames from "classnames";
 import { PbElement } from "../../types";
-import { elementWithChildrenByIdSelector, activeElementIdSelector } from "../recoil/modules";
+import {
+    elementWithChildrenByIdSelector,
+    activeElementIdSelector,
+    activateElementMutation,
+    uiAtom
+} from "../recoil/modules";
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
@@ -21,6 +26,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     rootClassName,
     useCustomTag
 }) => {
+    const setUiAtomValue = useSetRecoilState(uiAtom);
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const activeElementId = useRecoilValue(activeElementIdSelector);
     const { getUpdateValue } = useUpdateHandlers({
@@ -28,12 +34,18 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         dataNamespace: "data.text"
     });
 
-    const onChange = React.useCallback(
+    const onChange = useCallback(
         value => {
             getUpdateValue("data.text")(value);
         },
         [getUpdateValue]
     );
+    const onEdit = useCallback(() => {
+        // Mark element active on editor change
+        if (elementId && activeElementId !== elementId) {
+            setUiAtomValue(prev => activateElementMutation(prev, elementId));
+        }
+    }, [activeElementId, elementId]);
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {
         return null;
@@ -51,7 +63,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
                 value={data.text}
                 onChange={onChange}
                 options={editorOptions}
-                disableEditing={activeElementId !== elementId}
+                onEdit={onEdit}
             />
         </ElementRoot>
     );
