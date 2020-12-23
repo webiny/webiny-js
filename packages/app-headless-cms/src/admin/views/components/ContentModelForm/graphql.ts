@@ -134,6 +134,7 @@ export const createCreateFromMutation = model => {
                 data {
                     id
                     savedOn
+                    ${createFieldsList(model)}
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
@@ -147,8 +148,8 @@ export const createUpdateMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Update${ucFirstModelId}($id: ID!, $data: ${ucFirstModelId}Input!) {
-            content: update${ucFirstModelId}(where: { id: $id }, data: $data) {
+        mutation Update${ucFirstModelId}($revision: ID!, $data: ${ucFirstModelId}Input!) {
+            content: update${ucFirstModelId}(revision: $revision, data: $data) {
                 data {
                     id
                     ${createFieldsList(model)}

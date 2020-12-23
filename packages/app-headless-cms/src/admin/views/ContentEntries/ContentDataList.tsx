@@ -59,11 +59,12 @@ const ContentDataList = ({ contentModel }) => {
                             selected={item.id === entryId}
                         >
                             <UIList.ListItemText
-                                onClick={() =>
+                                onClick={() => {
+                                    console.log("clicked", item.id);
                                     history.push(
-                                        `/cms/content-entries/${contentModel.modelId}?id=${item.id}`
-                                    )
-                                }
+                                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(item.id)}`
+                                    );
+                                }}
                             >
                                 {item.meta.title || "Untitled"}
                                 <UIList.ListItemTextSecondary>

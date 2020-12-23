@@ -8,6 +8,7 @@ import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 
 const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
+    console.log("form entry", entry);
     const query = new URLSearchParams(location.search);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -61,15 +62,16 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
     );
 
     const updateContent = useCallback(
-        async (id, data) => {
+        async (revision, data) => {
             setLoading(true);
             const response = await updateMutation({
-                variables: { id, data }
+                variables: { revision, data }
             });
             setLoading(false);
 
-            if (response.data.content.error) {
-                return showSnackbar(response.data.content.message);
+            const { error } = response.data.content;
+            if (error) {
+                return showSnackbar(error.message);
             }
 
             showSnackbar("Content saved successfully.");
@@ -79,10 +81,10 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
     );
 
     const createContentFrom = useCallback(
-        async (id, data) => {
+        async (revision, data) => {
             setLoading(true);
             const response = await createFromMutation({
-                variables: { revision: id, data },
+                variables: { revision, data },
                 update(cache, response) {
                     if (response.data.content.error) {
                         return;
@@ -91,20 +93,24 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                     const data = cloneDeep(
                         cache.readQuery<any>({ query: LIST_CONTENT })
                     );
-                    const previousItemIndex = data.content.data.findIndex(item => item.id === id);
+                    const previousItemIndex = data.content.data.findIndex(
+                        item => item.id === revision
+                    );
                     data.content.data.splice(previousItemIndex, 1, response.data.content.data);
                     cache.writeQuery({ query: LIST_CONTENT, data });
                 }
             });
             setLoading(false);
 
-            if (response.data.content.error) {
-                return showSnackbar(response.data.content.message);
+            const { data: newRevision, error } = response.data.content;
+            if (error) {
+                return showSnackbar(error.message);
             }
+            
+            // TODO: update list cache
 
-            showSnackbar("A new revision was created.");
-            const { id: revisionId } = response.data.content.data;
-            query.set("id", revisionId);
+            showSnackbar("A new revision was created!");
+            query.set("id", newRevision.id);
             history.push({ search: query.toString() });
 
             return response;

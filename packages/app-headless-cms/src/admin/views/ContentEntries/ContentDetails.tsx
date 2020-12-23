@@ -44,7 +44,6 @@ const ContentDetails = ({ contentModel }) => {
         variables: { id: contentId },
         skip: !contentId,
         onCompleted: data => {
-            console.log(data);
             if (!data) {
                 return;
             }

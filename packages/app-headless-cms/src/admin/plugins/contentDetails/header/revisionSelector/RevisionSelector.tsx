@@ -24,19 +24,19 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = ({ content, getLoading, revisionsList }) => {
+const RevisionSelector = ({ entry, getLoading }) => {
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const currentRevision = {
-        version: get(content, "meta.version", 1),
-        status: get(content, "meta.status", "draft")
+        version: get(entry, "meta.version", 1),
+        status: get(entry, "meta.status", "draft")
     };
 
-    const allRevisions = get(revisionsList, "data.content.data.meta.revisions", [
+    const allRevisions = get(entry, "meta.revisions", [
         { id: "new", meta: { version: 1, status: "draft" } }
     ]);
-
+    
     return (
         <Menu
             className={menuStyles}

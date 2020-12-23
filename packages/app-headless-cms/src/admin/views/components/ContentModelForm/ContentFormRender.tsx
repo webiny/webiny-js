@@ -16,7 +16,7 @@ export const ContentFormRender = ({
     getFields,
     getDefaultValues,
     loading = false,
-    content,
+    entry,
     contentModel,
     onSubmit,
     onChange,
@@ -39,7 +39,7 @@ export const ContentFormRender = ({
         <Form
             onChange={onChange}
             onSubmit={onSubmit}
-            data={content ? content : getDefaultValues()}
+            data={entry ? entry : getDefaultValues()}
             ref={ref}
         >
             {({ Bind }) => (

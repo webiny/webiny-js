@@ -91,14 +91,14 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const { content, onSubmit, onChange, onForm } = props;
+    const { entry, onSubmit, onChange, onForm } = props;
 
     return (
         <ContentFormRender
             onForm={onForm}
             getFields={getFields}
             getDefaultValues={getDefaultValues}
-            content={content}
+            entry={entry}
             contentModel={contentModel}
             onChange={onChange}
             onSubmit={async data => {
