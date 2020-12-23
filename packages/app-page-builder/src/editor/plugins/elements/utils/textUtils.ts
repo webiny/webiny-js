@@ -12,14 +12,25 @@ const getTypographyFromTheme = (type: string) => {
     const [defaultType] = types;
     return defaultType.className;
 };
-
-export const createInitialEditorValue = (text: string, type: string) => {
+type CreateInitialTextValueArgs = {
+    text: string;
+    type: string;
+    tag?: string;
+    alignment?: string;
+};
+export const createInitialTextValue = ({
+    text,
+    type,
+    alignment = "left",
+    tag = "div"
+}: CreateInitialTextValueArgs) => {
     const typography = getTypographyFromTheme(type);
 
     return {
         type,
         typography,
-        alignment: "left",
+        alignment,
+        tag,
         data: {
             text
         }

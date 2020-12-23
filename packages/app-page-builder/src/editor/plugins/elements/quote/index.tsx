@@ -1,7 +1,7 @@
 import React from "react";
 import Quote, { className } from "./Quote";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { createInitialEditorValue } from "../utils/textUtils";
+import { createInitialTextValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -41,10 +41,7 @@ export default (): PbEditorPageElementPlugin => {
                 type: "quote",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(
-                        previewText,
-                        content.typography || this.elementType
-                    ),
+                    text: createInitialTextValue({ text: previewText, type: this.elementType }),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },

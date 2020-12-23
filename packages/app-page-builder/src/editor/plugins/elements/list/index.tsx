@@ -2,7 +2,7 @@ import React from "react";
 import loremIpsum from "lorem-ipsum";
 import { PbEditorPageElementPlugin } from "../../../../types";
 import List, { className } from "./List";
-import { createInitialEditorValue } from "../utils/textUtils";
+import { createInitialTextValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -55,10 +55,7 @@ export default (): PbEditorPageElementPlugin => {
                 type: "list",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(
-                        previewText,
-                        content.typography || this.elementType
-                    ),
+                    text: createInitialTextValue({ text: previewText, type: this.elementType }),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
