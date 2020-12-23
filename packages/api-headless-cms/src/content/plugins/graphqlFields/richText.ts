@@ -19,14 +19,14 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createResolver({ field }) {
             return instance => {
-                return instance[field.fieldId];
+                return instance.values[field.fieldId];
             };
         }
     },
     manage: {
         createResolver({ field }) {
             return instance => {
-                return instance[field.fieldId];
+                return instance.values[field.fieldId];
             };
         },
         createTypeField({ field }) {

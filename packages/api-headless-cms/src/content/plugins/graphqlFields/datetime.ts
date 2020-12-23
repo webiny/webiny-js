@@ -29,7 +29,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createResolver({ field }) {
             return instance => {
-                return instance[field.fieldId];
+                return instance.values[field.fieldId];
             };
         },
         createTypeField({ field }) {
@@ -44,7 +44,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createListFilters,
         createResolver({ field }) {
             return instance => {
-                return instance[field.fieldId];
+                return instance.values[field.fieldId];
             };
         },
         createTypeField({ field }) {
