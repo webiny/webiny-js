@@ -4,6 +4,40 @@ import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
+const categoryManagerHelper = async manageOpts => {
+    // Use "manage" API to create and publish entries
+    const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+    // Create an entry
+    const [firstCategoryResponse] = await createCategory({
+        data: { title: "Title 1", slug: "slug-1" }
+    });
+    const firstCategory = firstCategoryResponse.data.createCategory.data;
+    const { id: firstCategoryId } = firstCategory;
+    const [secondCategoryResponse] = await createCategory({
+        data: { title: "Title 2", slug: "slug-2" }
+    });
+    const secondCategory = secondCategoryResponse.data.createCategory.data;
+    const { id: secondCategoryId } = secondCategory;
+    const [thirdCategoryResponse] = await createCategory({
+        data: { title: "Title 3", slug: "slug-3" }
+    });
+    const thirdCategory = thirdCategoryResponse.data.createCategory.data;
+    const { id: thirdCategoryId } = thirdCategory;
+
+    // Publish categories so then become available in the "read" API
+    await publishCategory({ revision: firstCategoryId });
+    await publishCategory({ revision: secondCategoryId });
+    await publishCategory({ revision: thirdCategoryId });
+
+    return {
+        until,
+        firstCategory,
+        secondCategory,
+        thirdCategory
+    };
+};
+
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
@@ -153,30 +187,8 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit)`, async () => {
-        // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
-
-        // Create an entry
-        const [firstCategoryResponse] = await createCategory({
-            data: { title: "Title 1", slug: "slug-1" }
-        });
-        const firstCategory = firstCategoryResponse.data.createCategory.data;
-        const { id: firstCategoryId } = firstCategory;
-        const [secondCategoryResponse] = await createCategory({
-            data: { title: "Title 2", slug: "slug-2" }
-        });
-        const secondCategory = secondCategoryResponse.data.createCategory.data;
-        const { id: secondCategoryId } = secondCategory;
-        const [thirdCategoryResponse] = await createCategory({
-            data: { title: "Title 3", slug: "slug-3" }
-        });
-        const thirdCategory = thirdCategoryResponse.data.createCategory.data;
-        const { id: thirdCategoryId } = thirdCategory;
-
-        // Publish categories so then become available in the "read" API
-        await publishCategory({ revision: firstCategoryId });
-        await publishCategory({ revision: secondCategoryId });
-        await publishCategory({ revision: thirdCategoryId });
+        // create categories and return until from manage handler
+        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -221,26 +233,148 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (limit + after)`, async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            limit: 1,
-            after: "someAfterString"
-        });
+        // we need list with first result because of cursor that we need for later
+        const firstResult = await until(
+            () =>
+                listCategories({
+                    limit: 1
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
 
-        expect(response).toEqual({
+        expect(firstResult).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "category"
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
                         }
                     ],
                     meta: {
-                        cursor: "fds",
+                        cursor: /([a-zA-Z0-9]+)/,
                         hasMoreItems: true,
-                        totalCount: 15
-                    }
+                        totalCount: 3
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const firstCursor = firstResult.data.listCategories.meta.cursor;
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const secondResult = await until(
+            () =>
+                listCategories({
+                    limit: 1,
+                    after: firstCursor
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
+
+        expect(secondResult).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: true,
+                        totalCount: 3
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const secondCursor = secondResult.data.listCategories.meta.cursor;
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const thirdResult = await until(
+            () =>
+                listCategories({
+                    limit: 1,
+                    after: secondCursor
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
+
+        expect(thirdResult).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
+                }
+            }
+        });
+
+        // also, when limit 2 with first cursor, there should be 2 categories listed
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const fourthResult = await until(
+            () =>
+                listCategories({
+                    limit: 2,
+                    after: firstCursor
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
+        expect(fourthResult).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        },
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
                 }
             }
         });
