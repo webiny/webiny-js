@@ -35,21 +35,9 @@ export default [
                 );
             }
 
-            console.log("idemo nog-found!!");
             // Finally, if we just published a page that is set as current not-found page, let's do
             // another rerender and save that into the NOT_FOUND_FOLDER.
             if (settings?.pages?.notFound === page.pid) {
-                console.log(
-                    "pusham",
-                    JSON.stringify([
-                        {
-                            path: page.path,
-                            configuration: {
-                                storage: { folder: NOT_FOUND_FOLDER }
-                            }
-                        }
-                    ])
-                );
                 promises.push(
                     context.pageBuilder.pages.render({
                         paths: [
