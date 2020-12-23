@@ -72,12 +72,54 @@ describe("READ - Resolvers", () => {
         } catch (e) {}
     });
 
+    test("should return a record by id", async () => {
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const category = create.data.createCategory.data;
+        const { id: categoryId } = category;
+
+        // Publish it so it becomes available in the "read" API
+        await publishCategory({ revision: categoryId });
+
+        // See if entries are available via "read" API
+        const { getCategory } = useCategoryReadHandler(readOpts);
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                getCategory({
+                    where: {
+                        id: categoryId
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.getCategory.data
+        );
+
+        expect(result).toEqual({
+            data: {
+                getCategory: {
+                    data: {
+                        id: category.id,
+                        createdOn: category.createdOn,
+                        savedOn: category.savedOn,
+                        title: category.title,
+                        slug: category.slug
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
     test(`should return a NOT_FOUND error when getting an entry by non-existing ID`, async () => {
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
             where: {
-                id: 123
+                id: "nonExistingCategoryId"
             }
         });
 
