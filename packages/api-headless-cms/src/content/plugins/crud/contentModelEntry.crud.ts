@@ -490,106 +490,173 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "d" });
                 utils.checkEntryAccess(context, permission, model);
 
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
-                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
-                    .batch()
-                    .read({
+                // If entry version is included in the ID, we only delete that specific revision.
+                if (version) {
+                    const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
+                        .batch()
+                        .read({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY(),
+                                SK: id
+                            }
+                        })
+                        .read({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_LATEST(),
+                                SK: uniqueId
+                            }
+                        })
+                        .read({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_PUBLISHED(),
+                                SK: uniqueId
+                            }
+                        })
+                        .execute();
+
+                    if (!entry) {
+                        throw new NotFoundError(`Entry "${id}" was not found!`);
+                    }
+
+                    utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                    // Delete entry from DB
+                    const batch = db.batch().delete({
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY(),
                             SK: id
                         }
-                    })
-                    .read({
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY_LATEST(),
-                            SK: uniqueId
-                        }
-                    })
-                    .read({
+                    });
+
+                    const es = utils.defaults.es(context);
+                    const esOperations = [];
+
+                    const isLatest = latestEntryData ? latestEntryData.id === id : false;
+                    const isPublished = publishedEntryData ? publishedEntryData.id === id : false;
+
+                    // If the entry is published, remove published data, both from DB and ES.
+                    if (isPublished) {
+                        batch.delete({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_PUBLISHED(),
+                                SK: uniqueId
+                            }
+                        });
+
+                        esOperations.push({
+                            delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
+                        });
+                    }
+
+                    // If the entry is "latest", assign the previously latest entry as the new latest.
+                    // Updates must be made on both DB and ES side.
+                    if (isLatest) {
+                        const [[prevLatestEntry]] = await db.read<CmsContentModelEntryType>({
+                            ...utils.defaults.db,
+                            query: { PK: PK_ENTRY(), SK: { $lt: id } },
+                            sort: { SK: -1 },
+                            limit: 1
+                        });
+
+                        // Update latest entry data.
+                        batch.update({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_LATEST(),
+                                SK: uniqueId
+                            },
+                            data: {
+                                ...latestEntryData,
+                                id: prevLatestEntry.id
+                            }
+                        });
+
+                        // Update the latest revision entry in ES.
+                        esOperations.push(
+                            { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
+                            getESLatestEntryData(prevLatestEntry)
+                        );
+                    }
+
+                    // Execute DB operations
+                    await batch.execute();
+
+                    // If the entry was neither published nor latest, we shouldn't have any operations to execute.
+                    if (esOperations.length) {
+                        await elasticSearch.bulk({ body: esOperations });
+                    }
+
+                    return;
+                }
+
+                // If we only have the entry ID, without the version number in it, delete all data related to that entry!
+                const [entries] = await db.read({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_ENTRY(),
+                        SK: { $beginsWith: `${uniqueId}#` }
+                    }
+                });
+
+                if (!entries.length) {
+                    throw new NotFoundError(`Entry "${id}" was not found!`);
+                }
+
+                utils.checkOwnership(context, permission, entries[0], "ownedBy");
+
+                // TODO: handle batch via pagination in case we have more than 23 revisions.
+                // 23 because we also have "latest" and "published" records to delete
+                // and Dynamo has a batchDelete limit of 25.
+                
+                // Delete all items from DB
+                await db
+                    .batch()
+                    .delete(
+                        ...entries.map(entry => ({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY(),
+                                SK: entry.id
+                            }
+                        }))
+                    )
+                    .delete({
+                        // Also attempt to delete the "published" item (if it exists)
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY_PUBLISHED(),
+                            SK: uniqueId
+                        }
+                    })
+                    .delete({
+                        // And the "latest" item
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY_LATEST(),
                             SK: uniqueId
                         }
                     })
                     .execute();
 
-                if (!entry) {
-                    throw new NotFoundError(`Entry "${id}" was not found!`);
-                }
-
-                utils.checkOwnership(context, permission, entry, "ownedBy");
-
-                // Delete entry from DB
-                const batch = db.batch().delete({
-                    ...utils.defaults.db,
-                    query: {
-                        PK: PK_ENTRY(),
-                        SK: id
-                    }
-                });
-
+                // Remove everything from Elastic Search as well.
                 const es = utils.defaults.es(context);
-                const esOperations = [];
-
-                const isLatest = latestEntryData ? latestEntryData.id === id : false;
-                const isPublished = publishedEntryData ? publishedEntryData.id === id : false;
-
-                // If the entry is published, remove published data, both from DB and ES.
-                if (isPublished) {
-                    batch.delete({
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY_PUBLISHED(),
-                            SK: uniqueId
-                        }
-                    });
-
-                    esOperations.push({
-                        delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
-                    });
-                }
-
-                // If the entry is "latest", assign the previously latest entry as the new latest.
-                // Updates must be made on both DB and ES side.
-                if (isLatest) {
-                    const [[prevLatestEntry]] = await db.read<CmsContentModelEntryType>({
-                        ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: { $lt: id } },
-                        sort: { SK: -1 },
-                        limit: 1
-                    });
-
-                    // Update latest entry data.
-                    batch.update({
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY_LATEST(),
-                            SK: uniqueId
+                await elasticSearch.bulk({
+                    body: [
+                        {
+                            delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
                         },
-                        data: {
-                            ...latestEntryData,
-                            id: prevLatestEntry.id
+                        {
+                            delete: { _id: `CME#L#${uniqueId}`, _index: es.index }
                         }
-                    });
-
-                    // Update the latest revision entry in ES.
-                    esOperations.push(
-                        { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
-                        getESLatestEntryData(prevLatestEntry)
-                    );
-                }
-
-                // Execute DB operations
-                await batch.execute();
-
-                // If the entry was neither published nor latest, we shouldn't have any operations to execute.
-                if (esOperations.length) {
-                    await elasticSearch.bulk({ body: esOperations });
-                }
+                    ]
+                });
             },
             async listRevisions(id) {
                 const [uniqueId] = id.split("#");
