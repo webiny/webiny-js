@@ -90,7 +90,7 @@ const getStorageName = (args: Args, configuration: Configuration) => {
 };
 
 const getStorageFolder = (args: Args, configuration: Configuration) => {
-    return args?.configuration?.storage.folder || configuration?.storage.folder;
+    return args?.configuration?.storage.folder ?? configuration?.storage.folder;
 };
 
 const storeFile = ({ key, contentType, body, storageName }) => {
