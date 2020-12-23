@@ -14,14 +14,14 @@ export const SAVE_FORM_VIEW = gql`
 
 export const CREATE_FORM_SUBMISSION = gql`
     mutation CreateFormSubmission(
-        $id: ID!
+        $form: ID!
         $data: JSON!
         $meta: JSON!
         $reCaptchaResponseToken: String
     ) {
         formBuilder {
             createFormSubmission(
-                id: $id
+                form: $form
                 data: $data
                 meta: $meta
                 reCaptchaResponseToken: $reCaptchaResponseToken
