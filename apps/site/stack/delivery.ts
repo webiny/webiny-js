@@ -8,7 +8,7 @@ class Delivery {
             acl: "public-read",
             website: {
                 indexDocument: "index.html",
-                errorDocument: "index.html"
+                errorDocument: "_NOT_FOUND_PAGE_/index.html"
             }
         });
 
@@ -68,9 +68,6 @@ class Delivery {
                 maxTtl: 600
             },
             priceClass: "PriceClass_100",
-            customErrorResponses: [
-                { errorCode: 404, responseCode: 404, responsePagePath: "/index.html" }
-            ],
             restrictions: {
                 geoRestriction: {
                     restrictionType: "none"
