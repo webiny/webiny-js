@@ -8,7 +8,9 @@ import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { validation } from "@webiny/validation";
 
-const t = i18n.ns("app-headless-cms/admin/views/components/editor/tabs/edit-field-dialog/appearance-tab");
+const t = i18n.ns(
+    "app-headless-cms/admin/views/components/editor/tabs/edit-field-dialog/appearance-tab"
+);
 
 const style = {
     topLabel: css({

@@ -72,7 +72,7 @@ describe("READ - Resolvers", () => {
         } catch (e) {}
     });
 
-    test(`should return a NOT_FOUND error when getting an entry by inexisting ID`, async () => {
+    test(`should return a NOT_FOUND error when getting an entry by non-existing ID`, async () => {
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
@@ -98,7 +98,7 @@ describe("READ - Resolvers", () => {
         const { id } = create.data.createCategory.data;
 
         // Publish it so it becomes available in the "read" API
-        const [publish] = await publishCategory({ revision: id });
+        await publishCategory({ revision: id });
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
