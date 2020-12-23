@@ -51,7 +51,7 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
     };
 };
 
-export type CmsEditorField = {
+export type CmsEditorField<T = unknown> = T & {
     id?: string;
     type: string;
     fieldId?: CmsEditorFieldId;
@@ -79,6 +79,7 @@ export type CmsEditorContentModel = {
     version: number;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
+    lockedFields: CmsEditorField[];
     name: string;
     modelId: string;
     titleFieldId: string;
