@@ -10,13 +10,10 @@ export const elasticSearchQueryBuilderNotInPlugin = (): ElasticSearchQueryBuilde
                 `You cannot filter "${field}" with not_in and not send an array of values.`
             );
         }
-        const mustNot = values.map(value => {
-            return {
-                term: {
-                    [`${field}.keyword`]: value
-                }
-            };
+        query.mustNot.push({
+            terms: {
+                [`${field}.keyword`]: values
+            }
         });
-        query.mustNot.push(...mustNot);
     }
 });

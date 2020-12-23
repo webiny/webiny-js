@@ -80,10 +80,6 @@ const parseWhereKey = (key: string) => {
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-const checkIsSystemField = (model: CmsContentModelType, field: string) => {
-    return !model.fields.find(f => f.fieldId === field);
-};
-
 const createElasticSearchSortParams = (
     args: CreateElasticSearchSortParamsType
 ): ElasticSearchSortFieldsType[] => {
@@ -111,12 +107,13 @@ const createElasticSearchSortParams = (
         const modelFieldOptions = (modelFields[field] || {}) as any;
         const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
 
-        if (!isSortable && !isSystemField) {
+        if (!isSortable) {
             throw new Error(`Field "${field}" is not sortable.`);
         }
 
-        const fieldName = isSystemField ? field : withParentObject(field);
+        const name = isSystemField ? field : withParentObject(field);
 
+        const fieldName = unmappedType ? name : `${name}.keyword`;
         return {
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
@@ -180,7 +177,7 @@ const createInitialQueryValue = (
 const execElasticSearchBuildQueryPlugins = (
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
-    const { where, modelFields, parentObject, model, context } = args;
+    const { where, modelFields, parentObject, context } = args;
     const query = createInitialQueryValue(args);
 
     const withParentObject = (field: string) => {
@@ -200,13 +197,12 @@ const execElasticSearchBuildQueryPlugins = (
         }
 
         const { field, op } = parseWhereKey(key);
-        const isSystemField = checkIsSystemField(model, field);
         const modelFieldOptions = modelFields[field];
-        const { isSearchable = false } = modelFieldOptions || {};
+        const { isSearchable = false, isSystemField } = modelFieldOptions || {};
 
-        if (!modelFieldOptions && !isSystemField) {
+        if (!modelFieldOptions) {
             throw new Error(`There is no field "${field}".`);
-        } else if (!isSearchable && !isSystemField) {
+        } else if (!isSearchable) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
 
@@ -289,7 +285,7 @@ const createModelFieldOptions = (
         const { fieldType, es, isSearchable, isSortable } = plugin;
         const { unmappedType } = es || {};
         types[fieldType] = {
-            unmappedType: unmappedType || null,
+            unmappedType: unmappedType || undefined,
             isSearchable: isSearchable === true,
             isSortable: isSortable === true
         };

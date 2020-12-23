@@ -9,8 +9,7 @@ export const elasticSearchQueryBuilderContainsPlugin = (): ElasticSearchQueryBui
             // eslint-disable-next-line @typescript-eslint/camelcase
             simple_query_string: {
                 fields: [field],
-                query: value,
-                operator: "AND"
+                query: value
             }
         });
     }

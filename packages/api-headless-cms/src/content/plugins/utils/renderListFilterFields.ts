@@ -14,7 +14,26 @@ export const renderListFilterFields: RenderListFilterFields = ({
     fieldTypePlugins
 }) => {
     const fields: string[] = [
-        ["id: ID", "id_not: ID", "id_in: [ID]", "id_not_in: [ID]"].join("\n")
+        [
+            "id: ID",
+            "id_not: ID",
+            "id_in: [ID]",
+            "id_not_in: [ID]",
+            "createdOn: DateTime",
+            "createdOn_gt: DateTime",
+            "createdOn_gte: DateTime",
+            "createdOn_lt: DateTime",
+            "createdOn_lte: DateTime",
+            "createdOn_between: [DateTime]",
+            "createdOn_not_between: [DateTime]",
+            "savedOn: DateTime",
+            "savedOn_gt: DateTime",
+            "savedOn_gte: DateTime",
+            "savedOn_lt: DateTime",
+            "savedOn_lte: DateTime",
+            "savedOn_between: [DateTime]",
+            "savedOn_not_between: [DateTime]"
+        ].join("\n")
     ];
 
     for (let i = 0; i < model.fields.length; i++) {

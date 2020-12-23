@@ -6,21 +6,27 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 
 const categoryManagerHelper = async manageOpts => {
     // Use "manage" API to create and publish entries
-    const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+    const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
 
     // Create an entry
     const [firstCategoryResponse] = await createCategory({
-        data: { title: "Title 1", slug: "slug-1" }
+        data: { title: "First", slug: "first-slug" }
     });
     const firstCategory = firstCategoryResponse.data.createCategory.data;
     const { id: firstCategoryId } = firstCategory;
     const [secondCategoryResponse] = await createCategory({
-        data: { title: "Title 2", slug: "slug-2" }
+        data: {
+            title: "Second",
+            slug: "second-slug"
+        }
     });
     const secondCategory = secondCategoryResponse.data.createCategory.data;
     const { id: secondCategoryId } = secondCategory;
     const [thirdCategoryResponse] = await createCategory({
-        data: { title: "Title 3", slug: "slug-3" }
+        data: {
+            title: "Third",
+            slug: "third-slug"
+        }
     });
     const thirdCategory = thirdCategoryResponse.data.createCategory.data;
     const { id: thirdCategoryId } = thirdCategory;
@@ -31,10 +37,13 @@ const categoryManagerHelper = async manageOpts => {
     await publishCategory({ revision: thirdCategoryId });
 
     return {
+        sleep,
         until,
         firstCategory,
         secondCategory,
-        thirdCategory
+        thirdCategory,
+        createCategory,
+        publishCategory
     };
 };
 
@@ -199,7 +208,8 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 2
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2
+            ({ data }) => data.listCategories.data.length === 2,
+            { name: "list entries with limit" }
         );
 
         expect(result).toMatchObject({
@@ -246,7 +256,8 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 1
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1
+            ({ data }) => data.listCategories.data.length === 1,
+            { name: "list entries with limit after" }
         );
 
         expect(firstResult).toMatchObject({
@@ -281,7 +292,7 @@ describe("READ - Resolvers", () => {
                     after: firstCursor
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 1,
-            { name: "list categories after first cursor limit 1" }
+            { name: "list categories after first cursor with limit" }
         );
 
         expect(secondResult).toMatchObject({
@@ -316,7 +327,7 @@ describe("READ - Resolvers", () => {
                     after: secondCursor
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 1,
-            { name: "list categories after second cursor limit 1" }
+            { name: "list categories after second cursor with limit" }
         );
 
         expect(thirdResult).toMatchObject({
@@ -351,7 +362,7 @@ describe("READ - Resolvers", () => {
                     after: firstCursor
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 2,
-            { name: "list categories after first cursor limit 2" }
+            { name: "list categories after first cursor with limit" }
         );
         expect(fourthResult).toMatchObject({
             data: {
@@ -438,47 +449,95 @@ describe("READ - Resolvers", () => {
     });
 
     test(`list entries (sort DESC)`, async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            sort: ["title_DESC"]
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    sort: ["title_DESC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 3,
+            { name: "list entries by title DESC" }
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "Second category"
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
                         },
                         {
-                            title: "First category"
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        },
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
                         }
-                    ]
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
                 }
             }
         });
     });
 
     test("list entries that contains given value", async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory } = await categoryManagerHelper(manageOpts);
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            where: {
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                title_contains: "first"
-            }
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        title_contains: "first"
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "First category",
-                            slug: "first-category"
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
                         }
                     ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    },
                     error: null
                 }
             }
@@ -486,24 +545,47 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that do not contains given value", async () => {
+        // create categories and return until from manage handler
+        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            where: {
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                title_not_contains: "first"
-            }
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        title_not_contains: "first"
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 2
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "Second category",
-                            slug: "second-category"
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        },
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
                         }
                     ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    },
                     error: null
                 }
             }
@@ -511,24 +593,47 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are in given values", async () => {
+        // create categories and return until from manage handler
+        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            where: {
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                slug_in: ["first-category"]
-            }
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        slug_in: [secondCategory.slug, thirdCategory.slug]
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 2
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "First category",
-                            slug: "first-category"
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        },
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
                         }
                     ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    },
                     error: null
                 }
             }
@@ -536,24 +641,283 @@ describe("READ - Resolvers", () => {
     });
 
     test("list entries that are not in given values", async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const [response] = await listCategories({
-            where: {
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                slug_not_in: ["first-category"]
-            }
-        });
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        slug_not_in: [secondCategory.slug, thirdCategory.slug]
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 1
+        );
 
-        expect(response).toEqual({
+        expect(result).toMatchObject({
             data: {
                 listCategories: {
                     data: [
                         {
-                            title: "Second category",
-                            slug: "second-category"
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
                         }
                     ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are created after given date", async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+
+        const date = new Date();
+        date.setTime(date.getTime() - 86400000);
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        createdOn_gt: date
+                    },
+                    sort: ["createdOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 3
+        );
+
+        expect(result).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
+                        },
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        },
+                        {
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are created after or at given date: one returned", async () => {
+        // create categories and return until from manage handler
+        const { until, thirdCategory } = await categoryManagerHelper(manageOpts);
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        createdOn_gte: thirdCategory.createdOn
+                    },
+                    sort: ["createdOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 1
+        );
+
+        expect(result).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are created before given date: none returned", async () => {
+        // create categories and return until from manage handler
+        const { until } = await categoryManagerHelper(manageOpts);
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+
+        const date = new Date();
+        date.setTime(date.getTime() - 86400000 * 100);
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        createdOn_lt: date
+                    },
+                    sort: ["createdOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => Array.isArray(data.listCategories.data)
+        );
+
+        expect(result).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 0
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are created before or at given date: one returned", async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory } = await categoryManagerHelper(manageOpts);
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        savedOn_lte: secondCategory.savedOn
+                    },
+                    sort: ["savedOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 2
+        );
+
+        expect(result).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
+                        },
+                        {
+                            id: secondCategory.id,
+                            createdOn: secondCategory.createdOn,
+                            savedOn: secondCategory.savedOn,
+                            slug: secondCategory.slug,
+                            title: secondCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that are not created between given dates", async () => {
+        // create categories and return until from manage handler
+        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
+            manageOpts
+        );
+
+        const { listCategories } = useCategoryReadHandler(readOpts);
+
+        const from = new Date(secondCategory.savedOn);
+        from.setTime(from.getTime() - 10);
+        const to = new Date(secondCategory.savedOn);
+        to.setTime(to.getTime() + 10);
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const result = await until(
+            () =>
+                listCategories({
+                    where: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        savedOn_not_between: [from, to]
+                    },
+                    sort: ["savedOn_ASC"]
+                }).then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 2
+        );
+
+        expect(result).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: firstCategory.id,
+                            createdOn: firstCategory.createdOn,
+                            savedOn: firstCategory.savedOn,
+                            slug: firstCategory.slug,
+                            title: firstCategory.title
+                        },
+                        {
+                            id: thirdCategory.id,
+                            createdOn: thirdCategory.createdOn,
+                            savedOn: thirdCategory.savedOn,
+                            slug: thirdCategory.slug,
+                            title: thirdCategory.title
+                        }
+                    ],
+                    meta: {
+                        cursor: /([a-zA-Z0-9]+)/,
+                        hasMoreItems: false,
+                        totalCount: 2
+                    },
                     error: null
                 }
             }

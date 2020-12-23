@@ -15,20 +15,15 @@ describe("elasticSearchQueryBuilderInPlugin", () => {
 
         const expected: ElasticSearchQueryType = {
             mustNot: [],
-            must: [],
-            match: [],
-            should: [
+            must: [
                 {
-                    term: {
-                        name: "John"
-                    }
-                },
-                {
-                    term: {
-                        name: "Johnny"
+                    terms: {
+                        ["name.keyword"]: ["John", "Johnny"]
                     }
                 }
-            ]
+            ],
+            match: [],
+            should: []
         };
         expect(query).toEqual(expected);
     });

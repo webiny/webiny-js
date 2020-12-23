@@ -542,11 +542,13 @@ type ElasticSearchQueryRangeParamType = {
 type ElasticSearchQuerySimpleQueryParamType = {
     fields: string[];
     query: string;
-    operator: "AND" | "OR";
 };
 type ElasticSearchQueryMustParamType = {
     term?: {
         [key: string]: any;
+    };
+    terms?: {
+        [key: string]: any[];
     };
     range?: ElasticSearchQueryRangeParamType;
     simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
@@ -556,6 +558,9 @@ type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
 type ElasticSearchQueryMustNotParamType = {
     term?: {
         [key: string]: any;
+    };
+    terms?: {
+        [key: string]: any[];
     };
     range?: ElasticSearchQueryRangeParamType;
     simple_query_string?: ElasticSearchQuerySimpleQueryParamType;

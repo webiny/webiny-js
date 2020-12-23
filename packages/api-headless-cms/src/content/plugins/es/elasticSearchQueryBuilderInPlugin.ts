@@ -10,13 +10,10 @@ export const elasticSearchQueryBuilderInPlugin = (): ElasticSearchQueryBuilderPl
                 `You cannot filter field "${field}" with "in" operator and not send an array of values.`
             );
         }
-        const should = values.map(value => {
-            return {
-                term: {
-                    [field]: value
-                }
-            };
+        query.must.push({
+            terms: {
+                [`${field}.keyword`]: values
+            }
         });
-        query.should.push(...should);
     }
 });
