@@ -114,17 +114,17 @@ export const graphQLHandlerFactory = (
             return next();
         }
 
-        try {
-            await checkEndpointAccess(context);
-        } catch (ex) {
-            return respond(http, new NotAuthorizedResponse());
-        }
-
         if (http.method === "OPTIONS") {
             return http.response({
                 statusCode: 204,
                 headers: DEFAULT_HEADERS
             });
+        }
+
+        try {
+            await checkEndpointAccess(context);
+        } catch (ex) {
+            return respond(http, new NotAuthorizedResponse());
         }
 
         if (http.method !== "POST") {

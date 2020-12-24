@@ -1,4 +1,8 @@
-import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentModelType,
+    CmsContext,
+    CmsModelLockedFieldPlugin
+} from "@webiny/api-headless-cms/types";
 import Error from "@webiny/error";
 
 export const beforeSaveHook = async (context: CmsContext, model: CmsContentModelType) => {
@@ -42,6 +46,10 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
     }
     model.titleFieldId = titleFieldId || null;
 
+    const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
+        "cms-model-locked-field"
+    );
+
     // We must not allow removal or changes in fields that are already in use in content entries.
     for (const lockedField of lockedFields) {
         const existingField = fields.find(item => item.fieldId === lockedField.fieldId);
@@ -63,17 +71,18 @@ export const beforeSaveHook = async (context: CmsContext, model: CmsContentModel
             );
         }
 
-        const cmsLockedFieldPlugins = context.plugins
-            .byType("cms-model-locked-field")
-            .filter(pl => pl.fieldType === lockedField.type);
         // Check `lockedField` invariant for specific field
-        cmsLockedFieldPlugins.forEach(plugin => {
-            if (typeof plugin.checkLockedField === "function") {
-                plugin.checkLockedField({
-                    lockedField,
-                    field: existingField
-                });
+        const lockedFieldsByType = cmsLockedFieldPlugins.filter(
+            pl => pl.fieldType === lockedField.type
+        );
+        for (const plugin of lockedFieldsByType) {
+            if (typeof plugin.checkLockedField !== "function") {
+                continue;
             }
-        });
+            plugin.checkLockedField({
+                lockedField,
+                field: existingField
+            });
+        }
     }
 };

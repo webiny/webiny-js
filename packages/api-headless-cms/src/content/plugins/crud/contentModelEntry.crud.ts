@@ -18,6 +18,10 @@ import {
 } from "./contentModelEntry/elasticSearchHelpers";
 import { createRevisionsDataLoader } from "./contentModelEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
+import { beforeCreateHook } from "./contentModelEntry/beforeCreate.hook";
+import { afterCreateHook } from "./contentModelEntry/afterCreate.hook";
+import { beforeSaveHook } from "./contentModelEntry/beforeSave.hook";
+import { afterSaveHook } from "./contentModelEntry/afterSave.hook";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -168,60 +172,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         type: TYPE_ENTRY_LATEST
                     }
                 );
-                /*
-                const permission = await checkPermissions({ rwd: "r" });
-                const locale = context.cms.getLocale();
-
-                const must: any = [
-                    { term: { "__type.keyword": TYPE_ENTRY_LATEST } },
-                    { term: { "modelId.keyword": model.modelId } },
-                    { term: { "locale.keyword": locale.code } }
-                ];
-
-                // Only get records which are owned by current user.
-                if (permission.own === true) {
-                    const identity = context.security.getIdentity();
-                    must.push({
-                        term: { "ownedBy.id.keyword": identity.id }
-                    });
-                }
-
-                const body = {
-                    query: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
-                        constant_score: {
-                            filter: { bool: { must } }
-                        }
-                    },
-                    sort: [
-                        {
-                            savedOn: {
-                                order: "desc",
-                                // eslint-disable-next-line @typescript-eslint/camelcase
-                                unmapped_type: "date"
-                            }
-                        }
-                    ],
-                    size: 1000
-                };
-
-                // Get "latest" form revisions from Elasticsearch.
-                const response = await elasticSearch.search({
-                    ...utils.defaults.es(context),
-                    body
-                });
-
-                const { hits, total } = response.body.hits;
-                const items = hits.map(item => item._source);
-
-                const meta = {
-                    hasMoreItems: false,
-                    totalCount: total.value,
-                    cursor: null
-                };
-
-                return [items, meta];
-                // */
             },
             listPublished: async function(model, args) {
                 return context.cms.entries.list(
@@ -234,49 +184,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         type: TYPE_ENTRY_PUBLISHED
                     }
                 );
-                // const locale = context.cms.getLocale();
-                //
-                // const must: any = [
-                //     { term: { "__type.keyword": TYPE_ENTRY_PUBLISHED } },
-                //     { term: { "modelId.keyword": model.modelId } },
-                //     { term: { "locale.keyword": locale.code } }
-                // ];
-                //
-                // const body = {
-                //     query: {
-                //         // eslint-disable-next-line @typescript-eslint/camelcase
-                //         constant_score: {
-                //             filter: { bool: { must } }
-                //         }
-                //     },
-                //     sort: [
-                //         {
-                //             savedOn: {
-                //                 order: "desc",
-                //                 // eslint-disable-next-line @typescript-eslint/camelcase
-                //                 unmapped_type: "date"
-                //             }
-                //         }
-                //     ],
-                //     size: 1000
-                // };
-                //
-                // // Get "published" form revisions from Elasticsearch.
-                // const response = await elasticSearch.search({
-                //     ...utils.defaults.es(context),
-                //     body
-                // });
-                //
-                // const { hits, total } = response.body.hits;
-                // const items = hits.map(item => item._source);
-                //
-                // const meta = {
-                //     hasMoreItems: false,
-                //     totalCount: total.value,
-                //     cursor: null
-                // };
-                //
-                // return [items, meta];
             },
             async create(model, inputData) {
                 const permission = await checkPermissions({ rwd: "w" });
@@ -320,6 +227,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     values: data
                 };
 
+                await beforeCreateHook(model, entry);
+
                 await db
                     .batch()
                     // Create main entry item
@@ -349,6 +258,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     id: `CME#L#${uniqueId}`,
                     body: getESLatestEntryData(entry)
                 });
+
+                await afterCreateHook(model, entry);
 
                 return entry;
             },
@@ -472,15 +383,22 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                const updatedEntry: Partial<CmsContentModelEntryType> = {
+                // we need full entry model because of before and after save hooks
+                const updatedEntryModel: CmsContentModelEntryType = {
+                    ...entry,
                     values: data,
                     savedOn: new Date().toISOString()
                 };
 
+                await beforeSaveHook(model, updatedEntryModel);
+
                 await db.update({
                     ...utils.defaults.db,
                     query: { PK: PK_ENTRY(), SK: id },
-                    data: updatedEntry
+                    data: {
+                        values: updatedEntryModel.values,
+                        savedOn: updatedEntryModel.savedOn
+                    }
                 });
 
                 if (latestEntry.id === id) {
@@ -489,15 +407,17 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...utils.defaults.es(context),
                         id: `CME#L#${uniqueId}`,
                         body: {
-                            doc: updatedEntry
+                            doc: {
+                                values: updatedEntryModel.values,
+                                savedOn: updatedEntryModel.savedOn
+                            }
                         }
                     });
                 }
 
-                return {
-                    ...entry,
-                    ...updatedEntry
-                };
+                await afterSaveHook(model, updatedEntryModel);
+
+                return updatedEntryModel;
             },
             async delete(model, id) {
                 const permission = await checkPermissions({ rwd: "d" });
@@ -627,7 +547,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // TODO: handle batch via pagination in case we have more than 23 revisions.
                 // 23 because we also have "latest" and "published" records to delete
                 // and Dynamo has a batchDelete limit of 25.
-                
+
                 // Delete all items from DB
                 await db
                     .batch()
