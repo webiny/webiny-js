@@ -442,6 +442,11 @@ export type PbEditorDefaultBarLeftPlugin = Plugin & {
     render(): ReactElement;
 };
 
+export type PbEditorDefaultBarCenterPlugin = Plugin & {
+    type: "pb-editor-default-bar-center";
+    render(): ReactElement;
+};
+
 export type PbEditorDefaultBarRightPlugin = Plugin & {
     type: "pb-editor-default-bar-right";
     render(): ReactElement;
@@ -544,4 +549,13 @@ export type PbConfigPluginType = Plugin & {
 
 export type PbConfigType = {
     maxEventActionsNesting: number;
+};
+
+export type PbEditorResponsiveModePlugin = Plugin & {
+    type: "pb-editor-responsive-mode";
+    config: {
+        name: string;
+        label: string;
+        icon: React.ReactElement;
+    };
 };
