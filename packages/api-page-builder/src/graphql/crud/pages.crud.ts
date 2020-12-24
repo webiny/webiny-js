@@ -243,9 +243,20 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     limit: 1
                                 });
 
-                                if (page && page.status === "published") {
-                                    return page;
+                                // The preview flag only works with full IDs. In other words, you cannot get
+                                // a page for preview via URL or PID. Only the exact `PID#VERSION` works here.
+                                if (page) {
+                                    // So, if preview enabled, return the page, without checking if the page
+                                    // is published. The preview flag is not utilized anywhere else.
+                                    if (args.preview) {
+                                        return page;
+                                    }
+
+                                    if (page.status === "published") {
+                                        return page;
+                                    }
                                 }
+
                                 throw notFoundError;
                             }
 
