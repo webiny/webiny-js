@@ -8,3 +8,4 @@ export * from "./disableDraggingMutation";
 export * from "./textEditorActiveMutation";
 export * from "./updateSidebarActiveTabIndexMutation";
 export * from "./highlightElementTabMutation";
+export * from "./setEditorModeMutation";
