@@ -1,7 +1,8 @@
 import {
     contentSelector,
     isPluginActiveSelector,
-    layoutSelector
+    layoutSelector,
+    uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import React from "react";
 import styled from "@emotion/styled";
@@ -18,6 +19,7 @@ const BREADCRUMB_HEIGHT = 33;
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
     position: "relative",
+    margin: "0 auto",
     ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible",
@@ -52,6 +54,7 @@ const Content = () => {
     const rootElement = useRecoilValue(contentSelector);
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
+    const { editorMode } = useRecoilValue(uiAtom);
 
     const { theme } = usePageBuilder();
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
@@ -64,8 +67,11 @@ const Content = () => {
         return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
     }
     return (
-        <Elevation className={contentContainerWrapper} z={2}>
-            <ContentContainer theme={theme}>
+        <Elevation className={contentContainerWrapper} z={0}>
+            <ContentContainer
+                theme={theme}
+                className={`webiny-pb-page-document-mode--${editorMode}`}
+            >
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
                 )}
