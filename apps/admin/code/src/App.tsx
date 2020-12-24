@@ -20,7 +20,7 @@ import { getIdentityData } from "./components/getIdentityData";
 import "./App.scss";
 
 export const App = () => (
-    <ApolloProvider client={createApolloClient()}>
+    <ApolloProvider client={createApolloClient({ uri: process.env.REACT_APP_GRAPHQL_API_URL })}>
         {/* 
             <SecurityProvider> is a generic provider of identity information. 3rd party identity providers (like Cognito,
             Okta, Auth0) will handle the authentication, and set the information about the user into this provider,
@@ -76,10 +76,9 @@ export const App = () => (
                                         {/* TODO: remove this provider once new PB is merged. */}
                                         <PageBuilderProvider>
                                             {/*
-                                                <CmsProvider> handles CMS environments and provides an Apollo Client instance
-                                                that points to the /manage GraphQL API.   
+                                                <CmsProvider> provides an Apollo Client instance that points to the /manage GraphQL API.   
                                             */}
-                                            <CmsProvider>
+                                            <CmsProvider createApolloClient={createApolloClient}>
                                                 {/*
                                                     <Routes/> is a helper component that loads all "route" plugins, sorts them
                                                     in the correct "path" order and renders using the <Switch> component, 
