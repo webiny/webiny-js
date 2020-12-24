@@ -1,14 +1,11 @@
 import {
     CmsContentModelManagerInterface,
-    CmsContentModelManagerListArgsType,
     CmsContentModelType,
     CmsContext,
     ContentModelManagerPlugin
 } from "@webiny/api-headless-cms/types";
-// TODO finish the default content model manager
-// need to have fn to create partition keys
-// need to insert and update model in the elasticsearch
-class DefaultContentModelManager<T> implements CmsContentModelManagerInterface<T> {
+
+class DefaultContentModelManager implements CmsContentModelManagerInterface {
     private readonly _context: CmsContext;
     private readonly _model: CmsContentModelType;
 
@@ -17,29 +14,32 @@ class DefaultContentModelManager<T> implements CmsContentModelManagerInterface<T
         this._model = model;
     }
 
-    // eslint-disable-next-line
-    public async create<TData>(data: TData): Promise<T> {
-        return ({} as unknown) as T;
+    public async create(data) {
+        return this._context.cms.entries.create(this._model, data);
     }
 
-    // eslint-disable-next-line
-    public async delete(id: string): Promise<boolean> {
-        return false;
+    public async delete(id: string) {
+        return this._context.cms.entries.delete(this._model, id);
     }
 
-    // eslint-disable-next-line
-    public async get(id: string): Promise<T> {
-        return ({} as unknown) as T;
+    public async get(args) {
+        return this._context.cms.entries.get(this._model, args);
     }
 
-    // eslint-disable-next-line
-    public async list(args?: CmsContentModelManagerListArgsType): Promise<T[]> {
-        return ([] as unknown) as T[];
+    public async list(args, options) {
+        return this._context.cms.entries.list(this._model, args, options);
     }
 
-    // eslint-disable-next-line
-    public async update<TData>(data: TData): Promise<T> {
-        return ({} as unknown) as T;
+    public async listPublished(args) {
+        return this._context.cms.entries.listPublished(this._model, args);
+    }
+
+    public async listLatest(args) {
+        return this._context.cms.entries.listLatest(this._model, args);
+    }
+
+    public async update(id, data) {
+        return this._context.cms.entries.update(this._model, id, data);
     }
 }
 const plugin: ContentModelManagerPlugin = {

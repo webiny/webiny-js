@@ -227,7 +227,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     values: data
                 };
 
-                await beforeCreateHook(model, entry);
+                await beforeCreateHook({ model, entry, context });
 
                 await db
                     .batch()
@@ -259,7 +259,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     body: getESLatestEntryData(entry)
                 });
 
-                await afterCreateHook(model, entry);
+                await afterCreateHook({ model, entry, context });
 
                 return entry;
             },
@@ -390,7 +390,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     savedOn: new Date().toISOString()
                 };
 
-                await beforeSaveHook(model, updatedEntryModel);
+                await beforeSaveHook({ model, entry: updatedEntryModel, context });
 
                 await db.update({
                     ...utils.defaults.db,
@@ -415,7 +415,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     });
                 }
 
-                await afterSaveHook(model, updatedEntryModel);
+                await afterSaveHook({ model, entry: updatedEntryModel, context });
 
                 return updatedEntryModel;
             },

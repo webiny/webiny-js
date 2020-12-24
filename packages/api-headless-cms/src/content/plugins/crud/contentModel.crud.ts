@@ -43,14 +43,14 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         // manager per request - something similar to dataloader
-        const managers = new Map<string, CmsContentModelManagerInterface<any>>();
-        const updateManager = async <T>(
+        const managers = new Map<string, CmsContentModelManagerInterface>();
+        const updateManager = async (
             context: CmsContext,
             model: CmsContentModelType
-        ): Promise<CmsContentModelManagerInterface<T>> => {
+        ): Promise<CmsContentModelManagerInterface> => {
             const manager = await contentModelManagerFactory(context, model);
             managers.set(model.modelId, manager);
-            return (manager as unknown) as CmsContentModelManagerInterface<T>;
+            return manager;
         };
 
         const checkPermissions = (check: string): Promise<CmsContentModelPermissionType> => {
@@ -112,6 +112,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     createdOn: new Date().toISOString(),
                     savedOn: new Date().toISOString(),
                     fields: [],
+                    lockedFields: [],
                     layout: []
                 };
 
@@ -132,6 +133,18 @@ export default (): ContextPlugin<CmsContext> => ({
                 await afterCreateHook(context, model);
 
                 return model;
+            },
+            /**
+             * @internal
+             */
+            async updateModel(model: CmsContentModelType) {
+                await db.update({
+                    ...utils.defaults.db,
+                    query: { PK: PK_CONTENT_MODEL(), SK: model.modelId },
+                    data: model
+                });
+
+                await updateManager(context, model);
             },
             async update(modelId, data) {
                 await checkPermissions("w");
@@ -171,6 +184,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     query: { PK: PK_CONTENT_MODEL(), SK: modelId },
                     data: modelData
                 });
+
                 await updateManager(context, {
                     ...model,
                     ...modelData
@@ -211,7 +225,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (!model) {
                     throw new NotFoundError(`There is no content model "${modelId}".`);
                 }
-                return await updateManager<T>(context, model);
+                return await updateManager(context, model);
             },
             getManagers: () => managers
         };

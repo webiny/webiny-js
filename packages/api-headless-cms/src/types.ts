@@ -285,29 +285,36 @@ export type CmsContentModelManagerListArgsType = {
     after?: number;
 };
 
-export interface CmsContentModelManagerInterface<TModel> {
-    list(args?: CmsContentModelManagerListArgsType): Promise<TModel[]>;
-    get(id: string): Promise<TModel>;
-    create<TData>(data: TData): Promise<TModel>;
-    update<TData>(data: TData): Promise<TModel>;
-    delete(id: string): Promise<boolean>;
+export interface CmsContentModelManagerInterface {
+    list(
+        args?: CmsContentModelEntryListArgsType,
+        options?: CmsContentModelEntryListOptionsType
+    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    listPublished(
+        args?: CmsContentModelEntryListArgsType
+    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    listLatest(
+        args?: CmsContentModelEntryListArgsType
+    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    get(args?: CmsContentModelEntryGetArgsType): Promise<CmsContentModelEntryType>;
+    create(data: Record<string, any>): Promise<CmsContentModelEntryType>;
+    update(id: string, data: Record<string, any>): Promise<CmsContentModelEntryType>;
+    delete(id: string): Promise<void>;
 }
-
-type CmsContentModelListArgsType = {
-    where?: Record<string, any>;
-    sort?: Record<string, any>;
-    limit?: number;
-    after?: string;
-};
 
 export type CmsContentModelContextType = {
     get: (modelId: string) => Promise<CmsContentModelType | null>;
     list: () => Promise<CmsContentModelType[]>;
     create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
+    /**
+     * use only for directly updating model data with no validation
+     * @internal
+     */
+    updateModel: (model: CmsContentModelType) => Promise<void>;
     update: (modelId: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
     delete: (modelId: string) => Promise<void>;
-    getManager: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
-    getManagers: () => Map<string, CmsContentModelManagerInterface<any>>;
+    getManager: (modelId: string) => Promise<CmsContentModelManagerInterface>;
+    getManagers: () => Map<string, CmsContentModelManagerInterface>;
 };
 
 type CmsContentModelFieldPredefinedValuesType = {
@@ -477,7 +484,7 @@ export type CmsCrudContextType = {
         settings: CmsSettingsContextType;
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
-        getModel: <T>(modelId: string) => Promise<CmsContentModelManagerInterface<T>>;
+        getModel: (modelId: string) => Promise<CmsContentModelManagerInterface>;
         entries: CmsContentModelEntryContextType;
     };
 };
@@ -491,7 +498,7 @@ export type ContentModelManagerPlugin = Plugin & {
     create<T>(
         context: CmsContext,
         model: CmsContentModelType
-    ): Promise<CmsContentModelManagerInterface<T>>;
+    ): Promise<CmsContentModelManagerInterface>;
 };
 
 export enum DbItemTypes {
