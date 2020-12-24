@@ -4,6 +4,7 @@ export const getESPageData = (context: PbContext, page) => {
     return {
         __type: "page",
         id: page.id,
+        pid: page.pid,
         editor: page.editor,
         locale: page.locale,
         createdOn: page.createdOn,
