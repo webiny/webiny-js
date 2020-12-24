@@ -42,8 +42,8 @@ export const createReadQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query CmsEntriesGet${ucFirstModelId}($id: ID!) {
-            content: get${ucFirstModelId}(where: { id: $id }) {
+        query CmsEntriesGet${ucFirstModelId}($revision: ID!) {
+            content: get${ucFirstModelId}(revision: $revision) {
                 data {
                     id
                     ${createFieldsList(model)}
@@ -129,7 +129,7 @@ export const createCreateFromMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Create${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input) {
+        mutation CmsCreate${ucFirstModelId}From($revision: ID!, $data: ${ucFirstModelId}Input) {
             content: create${ucFirstModelId}From(revision: $revision, data: $data) {
                 data {
                     id
@@ -148,7 +148,7 @@ export const createUpdateMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Update${ucFirstModelId}($revision: ID!, $data: ${ucFirstModelId}Input!) {
+        mutation CmsUpdate${ucFirstModelId}($revision: ID!, $data: ${ucFirstModelId}Input!) {
             content: update${ucFirstModelId}(revision: $revision, data: $data) {
                 data {
                     id
@@ -166,7 +166,7 @@ export const createPublishMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Publish${ucFirstModelId}($revision: ID!) {
+        mutation CmsPublish${ucFirstModelId}($revision: ID!) {
             content: publish${ucFirstModelId}(revision: $revision) {
                 data {
                     id
@@ -190,7 +190,7 @@ export const createUnpublishMutation = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        mutation Unpublish${ucFirstModelId}($revision: ID!) {
+        mutation CmsUnpublish${ucFirstModelId}($revision: ID!) {
             content: unpublish${ucFirstModelId}(revision: $revision) {
                 data {
                     id

@@ -4,7 +4,7 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { GET_CONTENT_MODEL_BY_MODEL_ID } from "./graphql";
+import { GET_CONTENT_MODEL } from "../components/ContentModelEditor/Context/graphql";
 import { ContentEntries } from "./ContentEntries";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -17,7 +17,7 @@ const ContentEntriesContainer = () => {
     const modelId = get(match, "params.modelId");
     const { showSnackbar } = useSnackbar();
 
-    useQuery(GET_CONTENT_MODEL_BY_MODEL_ID, {
+    useQuery(GET_CONTENT_MODEL, {
         skip: !modelId,
         variables: { modelId },
         onCompleted: data => {

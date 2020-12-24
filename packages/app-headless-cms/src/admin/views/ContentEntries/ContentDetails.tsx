@@ -41,7 +41,7 @@ const ContentDetails = ({ contentModel }) => {
     }, [contentModel.modelId]);
 
     const { data, loading: readQueryLoading, refetch } = useQuery(READ_CONTENT, {
-        variables: { id: contentId },
+        variables: { revision: decodeURIComponent(contentId) },
         skip: !contentId,
         onCompleted: data => {
             if (!data) {

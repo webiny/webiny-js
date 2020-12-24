@@ -43,7 +43,7 @@ const ContentModelGroupsDataList = () => {
                             return;
                         }
 
-                        // Delete the form from list cache
+                        // Delete the item from list cache
                         const gqlParams = { query: GQL.LIST_CONTENT_MODEL_GROUPS };
                         const { listContentModelGroups } = cache.readQuery(gqlParams);
                         const index = listContentModelGroups.data.findIndex(
