@@ -8,6 +8,7 @@ error {
 
 export const DATA_FIELDS = `
     id
+    pid
     title
     path
     version
@@ -49,6 +50,7 @@ export const LIST_PAGES = gql`
             listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
                     id
+                    pid
                     status
                     title
                     version
@@ -82,19 +84,6 @@ export const LIST_PAGES = gql`
     }
 `;
 
-/**
- *
- settings {
-                        _empty
-                        ${getPlugins("pb-editor-page-settings")
-                            .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
-                            .join("\n")}
-                    }
- revisions {
-                        ${sharedFields}
-                    }
- *
- * */
 export const GET_PAGE = gql`
     query GetPage($id: ID!) {
         pageBuilder {
