@@ -105,13 +105,13 @@ function PredefinedValuesDynamicFieldset({ getBind, renderValueInput = null }) {
                                         <GridInner className={emptyStyles}>
                                             <Cell span={12}>
                                                 <Typography use={"subtitle1"}>
-                                                    {t`There are no predefined values added yet.`}
+                                                    {t`There are no predefined values available.`}
                                                 </Typography>
                                             </Cell>
                                             <Cell span={12}>
                                                 <ButtonPrimary
                                                     onClick={actions.add()}
-                                                >{t`Add predefined value`}</ButtonPrimary>
+                                                >{t`Add a predefined value`}</ButtonPrimary>
                                             </Cell>
                                         </GridInner>
                                     </React.Fragment>
