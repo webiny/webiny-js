@@ -11,6 +11,7 @@ import {
     PbEditorEventActionPlugin
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -60,16 +61,9 @@ export default (): Plugin[] => {
                     elements: [],
                     data: {
                         settings: {
-                            horizontalAlign: "center",
-                            margin: {
-                                desktop: { all: "0px" },
-                                mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                                advanced: true
-                            },
-                            padding: {
-                                desktop: { all: "0px" },
-                                mobile: { all: "0px" }
-                            }
+                            horizontalAlign: createInitialPerDeviceSettingValue("center"),
+                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
+                            padding: createInitialPerDeviceSettingValue({ all: "0px" })
                         }
                     },
                     ...options

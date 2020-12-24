@@ -12,6 +12,7 @@ import {
 } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -40,16 +41,17 @@ export default (): PbEditorPageElementPlugin => {
                     settings: {
                         width: { value: "100%" },
                         margin: {
-                            mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
+                            ...createInitialPerDeviceSettingValue({
+                                top: "0px",
+                                right: "0px",
+                                bottom: "0px",
+                                left: "0px",
+                                advanced: true
+                            })
                         },
-                        padding: {
-                            mobile: { all: "10px" },
-                            desktop: { all: "0px" }
-                        },
-                        horizontalAlignFlex: "flex-start",
-                        verticalAlign: "start"
+                        padding: createInitialPerDeviceSettingValue({ all: "10px" }),
+                        horizontalAlignFlex: createInitialPerDeviceSettingValue("flex-start"),
+                        verticalAlign: createInitialPerDeviceSettingValue("start")
                     }
                 },
                 ...options

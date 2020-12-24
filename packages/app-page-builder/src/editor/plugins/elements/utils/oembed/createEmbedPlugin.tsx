@@ -6,6 +6,7 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
+import { createInitialPerDeviceSettingValue } from "../../../elementSettings/elementSettingsUtils";
 
 type EmbedPluginConfig = {
     type: string;
@@ -48,8 +49,8 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
                 elements: [],
                 data: {
                     settings: {
-                        margin: { desktop: { all: "0px" }, mobile: { all: "0px" } },
-                        padding: { desktop: { all: "0px" }, mobile: { all: "0px" } }
+                        margin: createInitialPerDeviceSettingValue({ all: "0px" }),
+                        padding: createInitialPerDeviceSettingValue({ all: "0px" })
                     }
                 },
                 ...options

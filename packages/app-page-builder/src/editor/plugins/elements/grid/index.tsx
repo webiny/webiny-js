@@ -8,6 +8,7 @@ import {
     getDefaultPresetCellsTypePluginType,
     calculatePresetCells
 } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -79,19 +80,20 @@ export default {
                 settings: {
                     width: { value: "100%" },
                     margin: {
-                        mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
-                        desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                        advanced: true
+                        ...createInitialPerDeviceSettingValue({
+                            top: "0px",
+                            right: "0px",
+                            bottom: "0px",
+                            left: "0px",
+                            advanced: true
+                        })
                     },
-                    padding: {
-                        mobile: { all: "10px" },
-                        desktop: { all: "0px" }
-                    },
+                    padding: createInitialPerDeviceSettingValue({ all: "10px" }),
                     grid: {
                         cellsType
                     },
-                    horizontalAlignFlex: "flex-start",
-                    verticalAlign: "start"
+                    horizontalAlignFlex: createInitialPerDeviceSettingValue("flex-start"),
+                    verticalAlign: createInitialPerDeviceSettingValue("start")
                 }
             },
             ...options

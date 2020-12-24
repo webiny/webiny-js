@@ -2,6 +2,7 @@ import React from "react";
 import Quote, { className } from "./Quote";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { createInitialTextValue } from "../utils/textUtils";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -43,15 +44,8 @@ export default (): PbEditorPageElementPlugin => {
                 data: {
                     text: createInitialTextValue({ text: previewText, type: this.elementType }),
                     settings: {
-                        margin: {
-                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
-                        },
-                        padding: {
-                            desktop: { all: "0px" },
-                            mobile: { all: "0px" }
-                        }
+                        margin: createInitialPerDeviceSettingValue({ all: "0px" }),
+                        padding: createInitialPerDeviceSettingValue({ all: "0px" })
                     }
                 },
                 ...options

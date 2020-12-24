@@ -4,6 +4,7 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";
 
@@ -44,15 +45,9 @@ export default () => {
                     data: {
                         text: "Click me",
                         settings: {
-                            margin: {
-                                desktop: { all: "0px" },
-                                mobile: { all: "0px" }
-                            },
-                            padding: {
-                                desktop: { all: "0px" },
-                                mobile: { all: "0px" }
-                            },
-                            horizontalAlignFlex: "center"
+                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
+                            padding: createInitialPerDeviceSettingValue({ all: "0px" }),
+                            horizontalAlignFlex: createInitialPerDeviceSettingValue("center")
                         }
                     },
                     ...options

@@ -3,6 +3,7 @@ import loremIpsum from "lorem-ipsum";
 import { PbEditorPageElementPlugin } from "../../../../types";
 import Text, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -48,15 +49,8 @@ export default (): PbEditorPageElementPlugin => {
                         type: this.elementType
                     }),
                     settings: {
-                        margin: {
-                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
-                        },
-                        padding: {
-                            desktop: { all: "0px" },
-                            mobile: { all: "0px" }
-                        }
+                        margin: createInitialPerDeviceSettingValue({ all: "0px" }),
+                        padding: createInitialPerDeviceSettingValue({ all: "0px" })
                     }
                 },
                 ...options
