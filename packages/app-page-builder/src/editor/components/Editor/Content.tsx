@@ -1,19 +1,20 @@
+import React from "react";
+import { useRecoilValue } from "recoil";
+import styled from "@emotion/styled";
+import { css } from "emotion";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { Elevation } from "@webiny/ui/Elevation";
+import { PbEditorContentPlugin, PbElement, PbPageLayout, PbPageLayoutPlugin } from "../../../types";
 import {
     contentSelector,
     isPluginActiveSelector,
     layoutSelector,
     uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import React from "react";
-import styled from "@emotion/styled";
-import { css } from "emotion";
-import { plugins } from "@webiny/plugins";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import { Elevation } from "@webiny/ui/Elevation";
-import { PbElement, PbPageLayout, PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
-import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
-import { useRecoilValue } from "recoil";
+} from "../../recoil/modules";
+
+import { usePageBuilder } from "../../../hooks/usePageBuilder";
+import Element from "../Element";
 
 const BREADCRUMB_HEIGHT = 33;
 const ContentContainer = styled("div")(({ theme }) => ({
@@ -70,7 +71,7 @@ const Content = () => {
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
                 theme={theme}
-                className={`webiny-pb-page-document-mode--${editorMode}`}
+                className={`webiny-pb-page-document-mode--${kebabCase(editorMode)}`}
             >
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
