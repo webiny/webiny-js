@@ -10,14 +10,10 @@ const topBar = css({
 const DefaultEditorBar = () => {
     return (
         <TopAppBar className={topBar} fixed>
-            <TopAppBarSection style={{ width: "50%" }} alignStart>
+            <TopAppBarSection style={{ width: "33%" }} alignStart>
                 {renderPlugins("pb-editor-default-bar-left")}
             </TopAppBarSection>
-            {/*
-            <TopAppBarSection className={alignCenter}>
-                {renderPlugins("pb-editor-default-bar-center")}
-            </TopAppBarSection>
-            */}
+            <TopAppBarSection>{renderPlugins("pb-editor-default-bar-center")}</TopAppBarSection>
             <TopAppBarSection style={{ width: "33%" }} alignEnd>
                 {renderPlugins("pb-editor-default-bar-right")}
             </TopAppBarSection>
