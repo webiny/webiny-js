@@ -3,7 +3,7 @@ import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { Context } from "@webiny/handler/types";
 import Error from "@webiny/error";
 
-type Options = {
+export type Options = {
     tenant?: boolean | string;
     locale?: boolean | string;
 };
