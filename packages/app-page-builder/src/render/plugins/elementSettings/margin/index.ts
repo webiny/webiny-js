@@ -1,5 +1,7 @@
-import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbEditorResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
 
 const validateSpacingValue = value => {
     if (!value) {
@@ -22,15 +24,20 @@ export default {
             return style;
         }
 
-        const adv = margin.advanced;
-        const { desktop = {}, mobile = {} } = margin;
+        // Get editor modes
+        const editorModes = plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .map(pl => pl.config);
 
         ["top", "right", "bottom", "left"].forEach(side => {
-            const desktopValue = adv ? desktop[side] : desktop.all;
-            const mobileValue = adv ? mobile[side] : mobile.all;
-
-            style[`--desktop-margin-${side}`] = validateSpacingValue(desktopValue);
-            style[`--mobile-margin-${side}`] = validateSpacingValue(mobileValue);
+            // Set per-device property value
+            editorModes.forEach(({ name: deviceName }) => {
+                const adv = get(margin, `${deviceName}.advanced`, false);
+                const value = adv
+                    ? get(margin, `${deviceName}.${side}`)
+                    : get(margin, `${deviceName}.all`);
+                style[`--${kebabCase(deviceName)}-margin-${side}`] = validateSpacingValue(value);
+            });
         });
 
         return style;

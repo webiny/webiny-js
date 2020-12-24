@@ -1,5 +1,7 @@
-import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbEditorResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
 
 const validateSpacingValue = value => {
     const parsedValue = parseInt(value);
@@ -18,16 +20,20 @@ export default {
         if (!padding) {
             return style;
         }
-
-        const adv = padding.advanced;
-        const { desktop = {}, mobile = {} } = padding;
-
+        // Get editor modes
+        const editorModes = plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .map(pl => pl.config);
+        // Set per side padding value
         ["top", "right", "bottom", "left"].forEach(side => {
-            const desktopValue = adv ? desktop[side] : desktop.all;
-            const mobileValue = adv ? mobile[side] : mobile.all;
-
-            style[`--desktop-padding-${side}`] = validateSpacingValue(desktopValue);
-            style[`--mobile-padding-${side}`] = validateSpacingValue(mobileValue);
+            // Set per-device property value
+            editorModes.forEach(({ name: deviceName }) => {
+                const adv = get(padding, `${deviceName}.advanced`, false);
+                const value = adv
+                    ? get(padding, `${deviceName}.${side}`)
+                    : get(padding, `${deviceName}.all`);
+                style[`--${kebabCase(deviceName)}-padding-${side}`] = validateSpacingValue(value);
+            });
         });
 
         return style;
