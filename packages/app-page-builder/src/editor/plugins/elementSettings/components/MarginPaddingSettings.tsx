@@ -6,7 +6,7 @@ import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
@@ -136,8 +136,9 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     defaultAccordionValue
 }) => {
     const valueKey = `data.settings.${styleAttribute}`;
+    const { editorMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const advanced = get(element, `${valueKey}.advanced`, false);
+    const advanced = get(element, `${valueKey}.${editorMode}.advanced`, false);
 
     const { getUpdateValue } = useUpdateHandlers({
         element,
@@ -148,17 +149,16 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 return;
             }
             const changeInTopValue = name.includes(".top");
-            const advanced = get(newElement, `${valueKey}.advanced`);
+            const advanced = get(newElement, `${valueKey}.${editorMode}.advanced`);
             // Update all values in advanced settings
             if (!advanced && changeInTopValue) {
-                const prefix = name.includes("desktop") ? "desktop" : "mobile";
                 // Modify the element directly.
-                set(newElement, `${valueKey}.${prefix}.top`, newValue);
-                set(newElement, `${valueKey}.${prefix}.right`, newValue);
-                set(newElement, `${valueKey}.${prefix}.bottom`, newValue);
-                set(newElement, `${valueKey}.${prefix}.left`, newValue);
+                set(newElement, `${valueKey}.${editorMode}.top`, newValue);
+                set(newElement, `${valueKey}.${editorMode}.right`, newValue);
+                set(newElement, `${valueKey}.${editorMode}.bottom`, newValue);
+                set(newElement, `${valueKey}.${editorMode}.left`, newValue);
                 // Also set "all"
-                set(newElement, `${valueKey}.${prefix}.all`, newValue);
+                set(newElement, `${valueKey}.${editorMode}.all`, newValue);
             }
         }
     });
@@ -166,7 +166,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const toggleAdvanced = useCallback(
         event => {
             event.stopPropagation();
-            getUpdateValue("advanced")(!advanced);
+            getUpdateValue(`${editorMode}.advanced`)(!advanced);
         },
         [advanced]
     );
@@ -174,11 +174,11 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
             if (advanced) {
-                return get(element, valueKey + ".desktop." + side, DEFAULT_VALUE);
+                return get(element, valueKey + `.${editorMode}.` + side, DEFAULT_VALUE);
             }
-            return get(element, valueKey + ".desktop." + "all", DEFAULT_VALUE);
+            return get(element, valueKey + `.${editorMode}.` + "all", DEFAULT_VALUE);
         });
-    }, [advanced, element]);
+    }, [advanced, element, editorMode]);
 
     return (
         <Accordion
@@ -202,7 +202,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Top className="align-center">
                     <SpacingPicker
                         value={top}
-                        onChange={getUpdateValue("desktop.top")}
+                        onChange={getUpdateValue(`${editorMode}.top`)}
                         options={options[styleAttribute]}
                     />
                 </Top>
@@ -210,7 +210,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Left>
                     <SpacingPicker
                         value={left}
-                        onChange={getUpdateValue("desktop.left")}
+                        onChange={getUpdateValue(`${editorMode}.left`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -225,7 +225,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Right>
                     <SpacingPicker
                         value={right}
-                        onChange={getUpdateValue("desktop.right")}
+                        onChange={getUpdateValue(`${editorMode}.right`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -234,7 +234,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Bottom className={"align-center"}>
                     <SpacingPicker
                         value={bottom}
-                        onChange={getUpdateValue("desktop.bottom")}
+                        onChange={getUpdateValue(`${editorMode}.bottom`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
