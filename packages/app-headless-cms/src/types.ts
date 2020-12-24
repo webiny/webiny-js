@@ -90,6 +90,19 @@ export type CmsEditorContentModel = {
     meta: any;
 };
 
+export type CmsEditorContentEntry = {
+    id: string;
+    savedOn: string;
+    [key: string]: any;
+    meta: {
+        title: string;
+        locked: boolean;
+        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        version: number;
+        revisions: CmsEditorContentEntry[];
+    };
+};
+
 export type CmsEditorFieldValidator = {
     name: string;
     message: string;
