@@ -1,5 +1,5 @@
 import React from "react";
-import createApolloClient from "./createApolloClient";
+import ApolloClient from "apollo-client";
 import { useSecurity } from "@webiny/app-security";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -8,7 +8,12 @@ export const CmsContext = React.createContext({});
 
 const apolloClientsCache = {};
 
-export function CmsProvider(props) {
+type CmsProviderProps = {
+    createApolloClient: (params: { uri: string }) => ApolloClient<any>;
+    children: React.ReactNode;
+};
+
+export function CmsProvider(props: CmsProviderProps) {
     const { identity } = useSecurity();
     const { getCurrentLocale } = useI18N();
 
@@ -20,7 +25,7 @@ export function CmsProvider(props) {
     }
 
     if (currentLocale && !apolloClientsCache[currentLocale]) {
-        apolloClientsCache[currentLocale] = createApolloClient({
+        apolloClientsCache[currentLocale] = props.createApolloClient({
             uri: `${process.env.REACT_APP_API_URL}/cms/manage/${currentLocale}`
         });
     }
@@ -28,7 +33,7 @@ export function CmsProvider(props) {
     const value = {
         getApolloClient(locale: string) {
             if (!apolloClientsCache[locale]) {
-                apolloClientsCache[locale] = createApolloClient({
+                apolloClientsCache[locale] = props.createApolloClient({
                     uri: `${process.env.REACT_APP_API_URL}/cms/manage/${locale}`
                 });
             }
