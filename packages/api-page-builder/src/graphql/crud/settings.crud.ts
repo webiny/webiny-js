@@ -77,7 +77,7 @@ const plugin: ContextPlugin<PbContext> = {
                         return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(options),
                             SK: this.SK
-                        });
+                        }) as Promise<DefaultSettings>;
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
@@ -131,24 +131,18 @@ const plugin: ContextPlugin<PbContext> = {
                             const p = previous?.pages?.[specialType];
                             const n = next?.pages?.[specialType];
                             if (p !== n) {
-                                const page = await context.pageBuilder.pages.getPublished({
-                                    id: n
-                                });
-                                if (!page) {
+                                if (!n) {
                                     throw new Error(
-                                        `Cannot set page "${page.title}" as ${specialType} because it's not published`,
-                                        "CANNOT_SET_SPECIAL_NOT_PUBLISHED"
+                                        `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
+                                        "CANNOT_UNSET_SPECIAL_PAGE"
                                     );
                                 }
 
-                                changedPages.push([
-                                    specialType,
-                                    p,
-                                    n,
-                                    await context.pageBuilder.pages.getPublished({
-                                        id: n
-                                    })
-                                ]);
+                                const page = await context.pageBuilder.pages.getPublished({
+                                    id: n
+                                });
+
+                                changedPages.push([specialType, p, n, page]);
                             }
                         }
 
@@ -197,7 +191,7 @@ const plugin: ContextPlugin<PbContext> = {
                         return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(),
                             SK: this.SK
-                        });
+                        }) as Promise<InstallSettings>;
                     },
                     async update(next) {
                         let current = await this.get();
