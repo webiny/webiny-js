@@ -1,3 +1,6 @@
+import { plugins } from "@webiny/plugins";
+import { PbEditorResponsiveModePlugin } from "../../../types";
+
 export const WIDTH_UNIT_OPTIONS = [
     {
         label: "%",
@@ -43,3 +46,16 @@ export const HEIGHT_UNIT_OPTIONS = [
         value: "auto"
     }
 ];
+
+export const createInitialPerDeviceSettingValue = (defaultValue: any) => {
+    const value = {};
+    // Get responsive editor modes from plugins.
+    const editorModes = plugins
+        .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+        .map(pl => pl.config);
+    // Set default value for each mode.
+    editorModes.forEach(({ name }) => {
+        value[name] = defaultValue;
+    });
+    return value;
+};
