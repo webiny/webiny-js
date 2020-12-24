@@ -38,7 +38,7 @@ export const ContentModelFieldModel = withFields({
                 instanceOf: withFields({
                     label: string(),
                     value: string()
-                })
+                })()
             })
         })()
     }),
