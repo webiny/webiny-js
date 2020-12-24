@@ -38,7 +38,7 @@ function FieldRenderer({ getBind, Label, field }) {
 
                                     const urls = files.map(f => f.src);
                                     if (index === -1) {
-                                        onChange([...value, ...urls]);
+                                        onChange([...(value || []), ...urls]);
                                     } else {
                                         onChange([
                                             ...value.slice(0, index),
