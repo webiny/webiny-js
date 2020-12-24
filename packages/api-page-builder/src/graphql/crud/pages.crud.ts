@@ -961,6 +961,14 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             throw new Error(`Page "${pageId}" is not published.`);
                         }
 
+                        const settings = await context.pageBuilder.settings.default.get();
+                        const pages = settings?.pages || {};
+                        for (const key in pages) {
+                            if (pages[key] === page.pid) {
+                                throw new Error(`Cannot unpublish page because it's set as ${key}`);
+                            }
+                        }
+
                         await executeHookCallbacks(hookPlugins, "beforeUnpublish", context, page);
 
                         page.status = STATUS_UNPUBLISHED;
