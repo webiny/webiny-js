@@ -110,6 +110,8 @@ export type SettingsCrud = {
         get: DataLoader<{ PK: string; SK: string }, DefaultSettings | InstallSettings, string>;
     };
     default: {
+        PK: (options: Record<string, any>) => string;
+        SK: "default";
         get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
         getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
         update: (
@@ -119,6 +121,8 @@ export type SettingsCrud = {
         getSettingsCacheKey: (options: DefaultSettingsCrudOptions) => string;
     };
     install: {
+        PK: () => string;
+        SK: "install";
         get: () => Promise<InstallSettings>;
         update: (data: Record<string, any>) => Promise<InstallSettings>;
     };
