@@ -9,14 +9,34 @@ import { MenuItem, Menu } from "@webiny/ui/Menu";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { css } from "emotion";
-import { Mutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
-import { setHomePage } from "./graphql";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
 import { getPlugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
+import gql from "graphql-tag";
+import { useMutation } from "react-apollo";
+import { SecureView } from "@webiny/app-security";
+
+const PUBLISH_PAGE = gql`
+    mutation PbPublishPage($id: ID!) {
+        pageBuilder {
+            publishPage(id: $id) {
+                data {
+                    id
+                    path
+                    status
+                    locked
+                }
+                error {
+                    code
+                    message
+                }
+            }
+        }
+    }
+`;
 
 const menuStyles = css({
     width: 250,
@@ -30,22 +50,31 @@ const menuStyles = css({
 
 const PageOptionsMenu = props => {
     const { page } = props;
-    const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
+    const {
+        settings,
+        isSpecialPage,
+        getPageUrl,
+        getWebsiteUrl,
+        updateSettingsMutation
+    } = usePageBuilderSettings();
 
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
     const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
         getWebsiteUrl(),
         refreshSiteStatus
     );
 
+    const publishPageMutation = useMutation(PUBLISH_PAGE);
+
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog({
-        title: "Delete page",
+        title: "Set as homepage",
         message: (
             <span>
                 You&#39;re about to set the <strong>{page.title}</strong> page as your new homepage,
                 are you sure you want to continue?{" "}
-                {!page.published && "Note that your page will be automatically published."}
+                {page.status !== "published" &&
+                    "Note that your page will be automatically published."}
             </span>
         )
     });
@@ -83,37 +112,45 @@ const PageOptionsMenu = props => {
                 {previewButtonLabel}
             </MenuItem>
 
-            <Mutation mutation={setHomePage}>
-                {update => (
-                    <MenuItem
-                        className={classNames({ disabled: page.isHomePage })}
-                        onClick={() => {
-                            showConfirmation(async () => {
-                                const response = await update({
-                                    variables: {
-                                        id: page.id
-                                    }
+            <SecureView permission={"pb.settings"}>
+                <MenuItem
+                    className={classNames({ disabled: isSpecialPage(page, "home") })}
+                    onClick={() => {
+                        showConfirmation(async () => {
+                            if (!page.locked) {
+                                const [publish] = publishPageMutation;
+                                await publish({
+                                    variables: { id: page.id }
                                 });
+                            }
 
-                                const { error } = response.data.pageBuilder.setHomePage;
-                                if (error) {
-                                    showSnackbar(error.message);
-                                } else {
-                                    showSnackbar("Homepage set successfully!");
-                                    if (!page.published) {
-                                        props.refreshPages();
+                            const [updateSettings] = updateSettingsMutation;
+                            const response = await updateSettings({
+                                variables: {
+                                    data: {
+                                        pages: {
+                                            ...settings.pages,
+                                            home: page.id
+                                        }
                                     }
                                 }
                             });
-                        }}
-                    >
-                        <ListItemGraphic>
-                            <Icon icon={<HomeIcon />} />
-                        </ListItemGraphic>
-                        Set as homepage
-                    </MenuItem>
-                )}
-            </Mutation>
+
+                            const { error } = response.data.pageBuilder.updateSettings;
+                            if (error) {
+                                showSnackbar(error.message);
+                            } else {
+                                showSnackbar("Homepage set successfully!");
+                            }
+                        });
+                    }}
+                >
+                    <ListItemGraphic>
+                        <Icon icon={<HomeIcon />} />
+                    </ListItemGraphic>
+                    Set as homepage
+                </MenuItem>
+            </SecureView>
 
             {getPlugins<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
                 "pb-page-details-header-right-options-menu-item"
