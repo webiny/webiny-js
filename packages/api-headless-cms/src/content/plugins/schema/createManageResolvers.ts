@@ -15,41 +15,6 @@ import { resolveUnpublish } from "../utils/resolvers/resolveUnpublish";
 import { resolveCreateFrom } from "../utils/resolvers/resolveCreateFrom";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
-// const createPermissionChecker = (checker, model) => {
-//     return ({ args, context, permission }) => {
-//         return checker({ args, context, permission, model });
-//     };
-// };
-//
-// const checkContentEntryUpdatePermission = async ({ context, permission, model }) => {
-//     let allowed = true;
-//     const { CmsContentModelGroup } = context.models;
-//     const identity = context.security.getIdentity();
-//
-//     if (allowed && permission.own) {
-//         // Check if the model is created by the user
-//         allowed = model.createdBy === identity.id;
-//     }
-//
-//     if (allowed && Array.isArray(permission.models) && permission.models.length) {
-//         allowed = permission.models.includes(model.modelId);
-//     }
-//
-//     if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
-//         const contentModelGroupData = await CmsContentModelGroup.find({
-//             query: { slug: { $in: permission.groups } }
-//         });
-//
-//         if (Array.isArray(contentModelGroupData)) {
-//             const contentModelGroup = await model.group;
-//
-//             allowed = contentModelGroupData.some(item => item.id === contentModelGroup.id);
-//         }
-//     }
-//
-//     return allowed;
-// };
-
 export interface CreateManageResolvers {
     (params: {
         models: CmsContentModelType[];
@@ -106,8 +71,9 @@ export const createManageResolvers: CreateManageResolvers = ({
             status(entry) {
                 return entry.status;
             },
-            revisions(entry, args, context: CmsContext) {
-                return context.cms.entries.listRevisions(entry.id);
+            async revisions(entry, args, context: CmsContext) {
+                const revisions = await context.cms.entries.listRevisions(entry.id);
+                return revisions.sort((a, b) => b.version - a.version);
             }
         }
     };
