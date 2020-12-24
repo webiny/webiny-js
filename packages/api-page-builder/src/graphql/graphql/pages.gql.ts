@@ -18,6 +18,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPage {
                 id: ID
+                pid: ID
                 uniquePageId: ID
                 editor: String
                 createdFrom: ID
@@ -39,6 +40,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPageRevision {
                 id: ID
+                pid: ID
                 version: Int
                 title: String
                 status: String
@@ -52,6 +54,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
             type PbPageListItem {
                 id: ID
+                pid: ID
                 uniquePageId: ID
                 editor: String
                 status: String

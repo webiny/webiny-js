@@ -22,6 +22,7 @@ const GET_PAGE = gql`
             getPage(id: $id) {
                 data {
                     id
+                    pid
                     title
                     path
                     version
