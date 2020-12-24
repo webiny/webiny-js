@@ -29,7 +29,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {}, text: dataText } = element.data || {};
     const { justifyContent } = elementStyle;
-    const defaultValue = typeof dataText === "string" ? dataText : "Click me";
+    const defaultValue = typeof dataText.data.text === "string" ? dataText.data.text : "Click me";
     const value = useRef<string>(defaultValue);
 
     const { svg = null, position = "left" } = icon || {};
@@ -55,7 +55,14 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
             elements: [],
             data: {
                 ...element.data,
-                text: value.current as string
+                text: {
+                    alignment: "left",
+                    typography: "",
+                    tag: "span",
+                    data: {
+                        text: value.current
+                    }
+                }
             }
         };
         eventActionHandler.trigger(
