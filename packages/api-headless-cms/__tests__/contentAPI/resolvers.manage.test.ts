@@ -83,7 +83,9 @@ describe("MANAGE - Resolvers", () => {
         const { createCategory, getCategory, listCategories } = useCategoryManageHandler(
             manageOpts
         );
+
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
+
         const { id } = create.data.createCategory.data;
 
         // Need to wait until the new entry is propagated to Elastic Search index
@@ -92,9 +94,9 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const [get] = await getCategory({ revision: id });
+        const [response] = await getCategory({ revision: id });
 
-        expect(get.data.getCategory.data).toMatchObject({
+        expect(response.data.getCategory.data).toMatchObject({
             id,
             createdOn: /^20/,
             savedOn: /^20/,

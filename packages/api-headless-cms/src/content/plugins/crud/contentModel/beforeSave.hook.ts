@@ -8,11 +8,18 @@ import Error from "@webiny/error";
 type ArgsType = {
     context: CmsContext;
     model: CmsContentModelType;
+    // data that is being updated in the database
+    // modify it, not the model
+    data: Partial<CmsContentModelType>;
 };
 export const beforeSaveHook = async (args: ArgsType) => {
-    const { context, model } = args;
+    const { context, model, data } = args;
     let { titleFieldId } = model;
-    const { fields, lockedFields = [] } = model;
+    // there should be fields/locked fields in either model or data to be updated
+    const { fields = [], lockedFields = [] } = {
+        ...model,
+        ...data
+    };
 
     if (titleFieldId) {
         const target = fields.find(f => f.fieldId === titleFieldId);
@@ -49,7 +56,8 @@ export const beforeSaveHook = async (args: ArgsType) => {
             );
         }
     }
-    model.titleFieldId = titleFieldId || null;
+    // must assign titleFieldId to data to be updated into the db
+    data.titleFieldId = titleFieldId || null;
 
     const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
         "cms-model-locked-field"

@@ -137,11 +137,7 @@ export default (): ContextPlugin<CmsContext> => ({
              * @internal
              */
             async updateModel(model, data: Partial<CmsContentModelType>) {
-                const combinedModel: CmsContentModelType = {
-                    ...model,
-                    ...data
-                };
-                await beforeSaveHook({ context, model: combinedModel });
+                await beforeSaveHook({ context, model, data });
                 await db.update({
                     ...utils.defaults.db,
                     query: {
@@ -150,6 +146,12 @@ export default (): ContextPlugin<CmsContext> => ({
                     },
                     data
                 });
+
+                const combinedModel: CmsContentModelType = {
+                    ...model,
+                    ...data
+                };
+
                 await afterSaveHook({ context, model: combinedModel });
 
                 await updateManager(context, combinedModel);
@@ -185,18 +187,18 @@ export default (): ContextPlugin<CmsContext> => ({
                     savedOn: new Date().toISOString()
                 };
 
-                const fullModel: CmsContentModelType = {
-                    ...model,
-                    ...modelData
-                };
-
-                await beforeSaveHook({ context, model: fullModel });
+                await beforeSaveHook({ context, model, data: modelData });
 
                 await db.update({
                     ...utils.defaults.db,
                     query: { PK: PK_CONTENT_MODEL(), SK: modelId },
                     data: modelData
                 });
+
+                const fullModel: CmsContentModelType = {
+                    ...model,
+                    ...modelData
+                };
 
                 await updateManager(context, fullModel);
 

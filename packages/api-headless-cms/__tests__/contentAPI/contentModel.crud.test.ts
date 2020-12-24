@@ -5,6 +5,8 @@ import {
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
+import models from "./mocks/contentModels";
+import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
@@ -21,9 +23,12 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation, elasticSearch } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const {
+        createContentModelMutation,
+        updateContentModelMutation,
+        createContentModelGroupMutation,
+        elasticSearch
+    } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroupType;
 
@@ -226,6 +231,64 @@ describe("content model test", () => {
                 deleteContentModel: {
                     data: true,
                     error: null
+                }
+            }
+        });
+    });
+
+    test("cannot delete content model that has entries", async () => {
+        const { deleteContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const { createCategory, until, listCategories } = useCategoryManageHandler(
+            manageHandlerOpts
+        );
+        const category = models.find(m => m.modelId === "category");
+
+        // Create initial record
+        const [createContentModelResponse] = await createContentModelMutation({
+            data: {
+                name: category.name,
+                modelId: category.modelId,
+                group: contentModelGroup.id
+            }
+        });
+
+        const [updateContentModelResponse] = await updateContentModelMutation({
+            modelId: createContentModelResponse.data.createContentModel.data.modelId,
+            data: {
+                fields: category.fields,
+                layout: category.layout
+            }
+        });
+
+        const model = updateContentModelResponse.data.updateContentModel.data;
+
+        await createCategory({
+            data: {
+                title: "Category",
+                slug: "title"
+            }
+        });
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 1,
+            { name: "list categories to check ES has indexed newly created" }
+        );
+
+        const [response] = await deleteContentModelMutation({
+            modelId: model.modelId
+        });
+
+        expect(response).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: null,
+                    error: {
+                        message: `Cannot delete content model "${model.modelId}" because there are existing entries.`,
+                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
+                        data: null
+                    }
                 }
             }
         });
