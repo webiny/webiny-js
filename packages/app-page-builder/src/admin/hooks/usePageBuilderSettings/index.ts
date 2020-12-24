@@ -1,1 +1,1 @@
-export { usePageBuilderSettings } from "./usePageBuilderSettings";
+export * from "./usePageBuilderSettings";
