@@ -79,4 +79,24 @@ describe("getting published pages", () => {
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[4])
         );
     });
+
+    test("should be able to get an unpublished page by ID, with preview flag set to true", async () => {
+        // This should fail, we must only be able to get a page for preview if exact ID was specified.
+        await getPublishedPage({ path: "/path-z", preview: true }).then(([res]) =>
+            expect(res.data.pageBuilder.getPublishedPage).toEqual({
+                data: null,
+                error: {
+                    code: "NOT_FOUND",
+                    data: null,
+                    message: "Page not found."
+                }
+            })
+        );
+
+        // This should work.
+        await getPublishedPage({ id: initiallyCreatedPagesIds[1], preview: true }).then(([res]) => {
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(initiallyCreatedPagesIds[1]);
+            expect(res.data.pageBuilder.getPublishedPage.data.status).toBe("draft");
+        });
+    });
 });

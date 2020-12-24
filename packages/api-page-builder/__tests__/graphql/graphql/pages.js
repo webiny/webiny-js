@@ -246,9 +246,9 @@ export const GET_PAGE = /* GraphQL */ `
 `;
 
 export const GET_PUBLISHED_PAGE = /* GraphQL */ `
-    query GetPublishedPage($id: ID, $path: String) {
+    query GetPublishedPage($id: ID, $path: String, $preview: Boolean, $returnErrorPage: Boolean, $returnNotFoundPage: Boolean) {
         pageBuilder {
-            getPublishedPage(id: $id, path: $path) {
+            getPublishedPage(id: $id, path: $path, preview: $preview, returnErrorPage: $returnErrorPage, returnNotFoundPage: $returnNotFoundPage) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
