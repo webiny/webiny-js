@@ -33,7 +33,7 @@ const ContentDetails = ({ contentModel }) => {
 
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
-    
+
     const { READ_CONTENT } = useMemo(() => {
         return {
             READ_CONTENT: GQL.createReadQuery(contentModel)

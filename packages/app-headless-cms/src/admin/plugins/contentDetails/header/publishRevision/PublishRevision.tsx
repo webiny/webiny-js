@@ -24,13 +24,13 @@ const PublishRevision = ({ entry, contentModel, getLoading, setLoading }) => {
 
     const onPublish = useCallback(async () => {
         setLoading(true);
-        
+
         const response = await publishContentMutation({
             variables: { revision: entry.id }
         });
 
         setLoading(false);
-        
+
         const contentData = get(response, "data.content");
         if (contentData.error) {
             return showSnackbar(contentData.error.message);

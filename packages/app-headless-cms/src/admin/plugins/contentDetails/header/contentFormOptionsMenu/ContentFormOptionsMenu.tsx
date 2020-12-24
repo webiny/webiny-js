@@ -30,7 +30,7 @@ const menuStyles = css({
     }
 });
 
-const ContentFormOptionsMenu = ({ contentModel, entry, refresh, getLoading, setLoading }) => {
+const ContentFormOptionsMenu = ({ contentModel, entry, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
@@ -65,9 +65,9 @@ const ContentFormOptionsMenu = ({ contentModel, entry, refresh, getLoading, setL
             });
 
             setLoading(false);
-            
+
             // TODO: update list cache
-            
+
             const { error } = get(res, "content");
             if (error) {
                 return showDialog(error.message, { title: t`Could not delete content` });

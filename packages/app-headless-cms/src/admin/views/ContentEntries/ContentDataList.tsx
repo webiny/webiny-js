@@ -61,7 +61,9 @@ const ContentDataList = ({ contentModel }) => {
                             <UIList.ListItemText
                                 onClick={() => {
                                     history.push(
-                                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(item.id)}`
+                                        `/cms/content-entries/${
+                                            contentModel.modelId
+                                        }?id=${encodeURIComponent(item.id)}`
                                     );
                                 }}
                             >

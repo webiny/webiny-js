@@ -105,7 +105,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             if (error) {
                 return showSnackbar(error.message);
             }
-            
+
             // TODO: update list cache
 
             showSnackbar("A new revision was created!");
