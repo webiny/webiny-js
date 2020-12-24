@@ -22,9 +22,9 @@ import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
-import { useRouter } from "@webiny/react-router";
-import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+import { useRevision } from "./useRevision";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -36,7 +36,7 @@ const revisionsMenu = css({
     left: "auto !important"
 });
 
-const getIcon = (rev: CmsEditorContentModel) => {
+const getIcon = (rev: CmsEditorContentEntry) => {
     switch (true) {
         case rev.meta.locked && rev.meta.status !== "published":
             return {
@@ -56,11 +56,27 @@ const getIcon = (rev: CmsEditorContentModel) => {
     }
 };
 
-const Revision = props => {
-    const { revision, createContentFrom, deleteContent, publishContent, switchTab } = props;
-    const { icon, text: tooltipText } = getIcon(revision);
+type Props = {
+    revision: CmsEditorContentEntry;
+    setLoading: (loading: boolean) => void;
+    getLoading: () => boolean;
+    entry: CmsEditorContentEntry;
+    refetchContent: () => void;
+    contentModel: CmsEditorContentModel;
+    state: any;
+    setState: (state: any) => void;
+    switchTab: (index: number) => void;
+};
 
-    const { history } = useRouter();
+const Revision = (props: Props) => {
+    const { revision, setLoading, contentModel, entry, switchTab } = props;
+    const { createRevision, deleteRevision, publishRevision, editRevision } = useRevision({
+        contentModel,
+        entry,
+        revision,
+        setLoading
+    });
+    const { icon, text: tooltipText } = getIcon(revision);
 
     return (
         <ConfirmationDialog
@@ -94,7 +110,7 @@ const Revision = props => {
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
                         >
-                            <MenuItem onClick={() => createContentFrom(revision)}>
+                            <MenuItem onClick={createRevision}>
                                 <ListItemGraphic>
                                     <Icon icon={<AddIcon />} />
                                 </ListItemGraphic>
@@ -104,9 +120,7 @@ const Revision = props => {
                             {!revision.meta.locked && (
                                 <MenuItem
                                     onClick={() => {
-                                        const query = new URLSearchParams(location.search);
-                                        query.set("id", encodeURIComponent(revision.id));
-                                        history.push({ search: query.toString() });
+                                        editRevision();
                                         switchTab(0);
                                     }}
                                 >
@@ -118,7 +132,7 @@ const Revision = props => {
                             )}
 
                             {revision.meta.status !== "published" && (
-                                <MenuItem onClick={() => publishContent(revision)}>
+                                <MenuItem onClick={publishRevision}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
@@ -129,11 +143,7 @@ const Revision = props => {
                             {!revision.meta.locked && (
                                 <div>
                                     <MenuDivider />
-                                    <MenuItem
-                                        onClick={() =>
-                                            showConfirmation(() => deleteContent(revision))
-                                        }
-                                    >
+                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
                                         <ListItemGraphic>
                                             <Icon icon={<DeleteIcon />} />
                                         </ListItemGraphic>
