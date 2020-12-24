@@ -13,7 +13,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
-const ROLE_PB_SETTINGS = ["pb:settings"];
+const ROLE_PB_SETTINGS = ["pb.settings"];
 
 const plugins = [
     {
