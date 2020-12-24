@@ -137,11 +137,14 @@ export default (): ContextPlugin<CmsContext> => ({
             /**
              * @internal
              */
-            async updateModel(model: CmsContentModelType) {
+            async updateModel(model, data: Partial<CmsContentModelType>) {
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: PK_CONTENT_MODEL(), SK: model.modelId },
-                    data: model
+                    query: {
+                        PK: PK_CONTENT_MODEL(),
+                        SK: model.modelId
+                    },
+                    data
                 });
 
                 await updateManager(context, model);

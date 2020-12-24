@@ -17,10 +17,13 @@ const getTypeObject = (schema, type) => {
 jest.setTimeout(15000);
 
 describe("content model test", () => {
+    const esCmsIndex = "root-headless-cms";
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation, elasticSearch } = useContentGqlHandler(
+        manageHandlerOpts
+    );
 
     let contentModelGroup: CmsContentModelGroupType;
 
@@ -34,6 +37,17 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
+        try {
+            await elasticSearch.indices.create({ index: esCmsIndex });
+        } catch {
+            // Ignore errors
+        }
+    });
+
+    afterEach(async () => {
+        try {
+            await elasticSearch.indices.delete({ index: esCmsIndex });
+        } catch {}
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -179,6 +193,35 @@ describe("content model test", () => {
         });
 
         expect(deleteResponse).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("delete existing content model", async () => {
+        const { createContentModelMutation, deleteContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts
+        );
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        const contentModel = createResponse.data.createContentModel.data;
+
+        const [response] = await deleteContentModelMutation({
+            modelId: contentModel.modelId
+        });
+
+        expect(response).toEqual({
             data: {
                 deleteContentModel: {
                     data: true,

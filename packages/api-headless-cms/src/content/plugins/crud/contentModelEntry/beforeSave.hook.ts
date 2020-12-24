@@ -56,11 +56,14 @@ export const beforeSaveHook = async (args: ArgsType): Promise<void> => {
     model.lockedFields = existingLockedFields.concat(lockedFields);
 
     try {
-        await context.cms.models.updateModel(model);
+        await context.cms.models.updateModel(model, {
+            lockedFields: model.lockedFields
+        });
     } catch (ex) {
         throw new WebinyError(
-            `Could not update model "${model.modelId}" with locked fields.`,
-            "MODEL_LOCKED_FIELDS_UPDATE_FAILED"
+            `Could not update model "${model.modelId}" with new locked fields.`,
+            "MODEL_LOCKED_FIELDS_UPDATE_FAILED",
+            ex
         );
     }
 };

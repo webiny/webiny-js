@@ -310,7 +310,7 @@ export type CmsContentModelContextType = {
      * use only for directly updating model data with no validation
      * @internal
      */
-    updateModel: (model: CmsContentModelType) => Promise<void>;
+    updateModel: (model: CmsContentModelType, data: Partial<CmsContentModelType>) => Promise<void>;
     update: (modelId: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
     delete: (modelId: string) => Promise<void>;
     getManager: (modelId: string) => Promise<CmsContentModelManagerInterface>;

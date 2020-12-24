@@ -1,4 +1,5 @@
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import WebinyError from "@webiny/error";
 
 export const beforeDeleteHook = async (context: CmsContext, modelId: string) => {
     const manager = await context.cms.getModel(modelId);
@@ -8,5 +9,8 @@ export const beforeDeleteHook = async (context: CmsContext, modelId: string) => 
     if (entries.length === 0) {
         return;
     }
-    throw new Error(`Cannot delete content model "${modelId}" because there are existing entries.`);
+    throw new WebinyError(
+        `Cannot delete content model "${modelId}" because there are existing entries.`,
+        "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED"
+    );
 };
