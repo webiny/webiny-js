@@ -36,7 +36,7 @@ export default (): HandlerPlugin<DbContext, ArgsContext<HandlerArgs>> => ({
             if (!existingSettingsData) {
                 await db.create({
                     ...defaults.db,
-                    data: { PK, SK }
+                    data: { PK, SK, TYPE: "default", tenant: null, locale: null }
                 });
 
                 existingSettingsData = {};

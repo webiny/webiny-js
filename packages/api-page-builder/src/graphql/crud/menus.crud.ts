@@ -126,7 +126,9 @@ const plugin: ContextPlugin<PbContext> = {
                             ...createData,
                             PK: PK(),
                             SK: createDataModel.slug,
-                            TYPE
+                            TYPE,
+                            tenant: context.security.getTenant().id,
+                            locale: context.i18nContent.getLocale().code,
                         }
                     });
 

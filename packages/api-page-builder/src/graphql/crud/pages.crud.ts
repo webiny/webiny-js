@@ -388,6 +388,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     PK: PK_PAGE_LATEST(),
                                     SK: pid,
                                     TYPE: TYPE.PAGE_LATEST,
+                                    tenant: context.security.getTenant().id,
+                                    locale: context.i18nContent.getLocale().code,
                                     id
                                 }
                             })
@@ -480,6 +482,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     PK: PK_PAGE_LATEST(),
                                     SK: fromUniqueId,
                                     TYPE: TYPE.PAGE_LATEST,
+                                    tenant: context.security.getTenant().id,
+                                    locale: context.i18nContent.getLocale().code,
                                     id: nextId
                                 }
                             })
@@ -722,6 +726,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     PK: PK_PAGE_LATEST(),
                                     SK: pageUniqueId,
                                     TYPE: TYPE.PAGE_LATEST,
+                                    tenant: context.security.getTenant().id,
+                                    locale: context.i18nContent.getLocale().code,
                                     id: latestPage.id
                                 }
                             });
@@ -847,6 +853,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE_PUBLISHED(),
                                         SK: pageUniqueId,
                                         TYPE: TYPE.PAGE_PUBLISHED,
+                                        tenant: context.security.getTenant().id,
+                                        locale: context.i18nContent.getLocale().code,
                                         id: pageId
                                     }
                                 })
@@ -860,6 +868,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE_PUBLISHED_PATH(),
                                         SK: page.path,
                                         TYPE: TYPE.PAGE_PUBLISHED_PATH,
+                                        tenant: context.security.getTenant().id,
+                                        locale: context.i18nContent.getLocale().code,
                                         id: page.id,
                                         path: page.path
                                     }
@@ -872,6 +882,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE_PUBLISHED(),
                                         SK: pageUniqueId,
                                         TYPE: TYPE.PAGE_PUBLISHED,
+                                        tenant: context.security.getTenant().id,
+                                        locale: context.i18nContent.getLocale().code,
                                         id: pageId
                                     }
                                 })
@@ -881,6 +893,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE_PUBLISHED_PATH(),
                                         SK: page.path,
                                         TYPE: TYPE.PAGE_PUBLISHED_PATH,
+                                        tenant: context.security.getTenant().id,
+                                        locale: context.i18nContent.getLocale().code,
                                         id: page.id,
                                         path: page.path
                                     }
@@ -996,8 +1010,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             .update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_PAGE_PUBLISHED(),
-                                    SK: pageUniqueId
+                                    PK: PK_PAGE(),
+                                    SK: page.id
                                 },
                                 data: page
                             })
