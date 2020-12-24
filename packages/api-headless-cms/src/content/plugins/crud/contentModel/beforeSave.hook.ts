@@ -5,7 +5,12 @@ import {
 } from "@webiny/api-headless-cms/types";
 import Error from "@webiny/error";
 
-export const beforeSaveHook = async (context: CmsContext, model: CmsContentModelType) => {
+type ArgsType = {
+    context: CmsContext;
+    model: CmsContentModelType;
+};
+export const beforeSaveHook = async (args: ArgsType) => {
+    const { context, model } = args;
     let { titleFieldId } = model;
     const { fields, lockedFields = [] } = model;
 

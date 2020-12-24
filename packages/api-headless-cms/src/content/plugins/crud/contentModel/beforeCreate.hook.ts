@@ -3,7 +3,12 @@ import camelCase from "lodash/camelCase";
 
 const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 
-export const beforeCreateHook = async (context: CmsContext, model: CmsContentModelType) => {
+type ArgsType = {
+    context: CmsContext;
+    model: CmsContentModelType;
+};
+export const beforeCreateHook = async (args: ArgsType) => {
+    const { context, model } = args;
     const { name, modelId } = model;
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {

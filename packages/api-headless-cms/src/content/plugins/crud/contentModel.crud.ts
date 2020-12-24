@@ -42,7 +42,6 @@ export default (): ContextPlugin<CmsContext> => ({
             })
         };
 
-        // manager per request - something similar to dataloader
         const managers = new Map<string, CmsContentModelManagerInterface>();
         const updateManager = async (
             context: CmsContext,
@@ -116,7 +115,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     layout: []
                 };
 
-                await beforeCreateHook(context, model);
+                await beforeCreateHook({ context, model });
 
                 await db.create({
                     ...utils.defaults.db,
@@ -130,7 +129,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await updateManager(context, model);
 
-                await afterCreateHook(context, model);
+                await afterCreateHook({ context, model });
 
                 return model;
             },
@@ -138,6 +137,11 @@ export default (): ContextPlugin<CmsContext> => ({
              * @internal
              */
             async updateModel(model, data: Partial<CmsContentModelType>) {
+                const combinedModel: CmsContentModelType = {
+                    ...model,
+                    ...data
+                };
+                await beforeSaveHook({ context, model: combinedModel });
                 await db.update({
                     ...utils.defaults.db,
                     query: {
@@ -146,8 +150,9 @@ export default (): ContextPlugin<CmsContext> => ({
                     },
                     data
                 });
+                await afterSaveHook({ context, model: combinedModel });
 
-                await updateManager(context, model);
+                await updateManager(context, combinedModel);
             },
             async update(modelId, data) {
                 await checkPermissions("w");
@@ -174,13 +179,18 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 const updatedFields = await createFieldModels(model, data);
                 validateLayout(updatedDataJson, updatedFields);
-                const modelData: CmsContentModelType = {
+                const modelData: Partial<CmsContentModelType> = {
                     ...updatedDataJson,
                     fields: updatedFields,
                     savedOn: new Date().toISOString()
                 };
 
-                await beforeSaveHook(context, modelData);
+                const fullModel: CmsContentModelType = {
+                    ...model,
+                    ...modelData
+                };
+
+                await beforeSaveHook({ context, model: fullModel });
 
                 await db.update({
                     ...utils.defaults.db,
@@ -188,24 +198,18 @@ export default (): ContextPlugin<CmsContext> => ({
                     data: modelData
                 });
 
-                await updateManager(context, {
-                    ...model,
-                    ...modelData
-                });
+                await updateManager(context, fullModel);
 
-                await afterSaveHook(context);
+                await afterSaveHook({ context, model: fullModel });
 
-                return {
-                    ...model,
-                    ...modelData
-                };
+                return fullModel;
             },
             async delete(modelId) {
                 await checkPermissions("d");
 
                 const model = await context.cms.models.get(modelId);
 
-                await beforeDeleteHook(context, modelId);
+                await beforeDeleteHook({ context, model });
 
                 await db.delete({
                     ...utils.defaults.db,
@@ -215,7 +219,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
-                await afterDeleteHook(context);
+                await afterDeleteHook({ context, model });
 
                 managers.delete(model.modelId);
             },

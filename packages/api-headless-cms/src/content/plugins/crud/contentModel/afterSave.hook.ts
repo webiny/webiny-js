@@ -1,5 +1,10 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
 
-export const afterSaveHook = async (context: CmsContext) => {
+type ArgsType = {
+    context: CmsContext;
+    model: CmsContentModelType;
+};
+export const afterSaveHook = async (args: ArgsType) => {
+    const { context } = args;
     await context.cms.settings.updateContentModelLastChange();
 };
