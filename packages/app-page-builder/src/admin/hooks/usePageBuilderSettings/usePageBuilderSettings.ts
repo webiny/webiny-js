@@ -69,7 +69,13 @@ export function usePageBuilderSettings() {
     };
 
     const getPageUrl = (page, preview = false) => {
-        return getWebsiteUrl(preview) + page.path;
+        const url = getWebsiteUrl(preview) + page.path;
+        if (!preview || page.status === "published") {
+            return url;
+        }
+
+        // We must append `preview` query param if page status is not `published`.
+        return url + "?preview=" + encodeURIComponent(page.id);
     };
 
     const isSpecialPage = (page, type: "home" | "error" | "notFound") => {
