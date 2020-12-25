@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { PbElement } from "../../../../types";
+import { EditorMode } from "../../../recoil/modules";
 import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
@@ -21,7 +23,12 @@ const RootElement = styled("div")({
     }
 });
 
-const StyleSettingsTabContent = ({ element }) => {
+type StyleSettingsTabContentProps = { element: PbElement; editorMode: EditorMode };
+
+const StyleSettingsTabContent: React.FunctionComponent<StyleSettingsTabContentProps> = ({
+    element,
+    editorMode
+}) => {
     const elementStyleSettings = useElementStyleSettings();
 
     if (!element) {
@@ -39,7 +46,8 @@ const StyleSettingsTabContent = ({ element }) => {
                 elementStyleSettings.map(({ plugin, options }, index) => {
                     return React.cloneElement(plugin.render({ options }), {
                         key: index,
-                        defaultAccordionValue: index === 0
+                        defaultAccordionValue: index === 0,
+                        editorMode
                     });
                 })
             ) : (

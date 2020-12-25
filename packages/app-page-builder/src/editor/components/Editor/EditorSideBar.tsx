@@ -66,7 +66,10 @@ const EditorSideBar = () => {
         <Elevation z={1} className={rightSideBar}>
             <Tabs value={activeTabIndex} updateValue={setActiveTabIndex}>
                 <Tab label={"style"}>
-                    <StyleSettingsTabContent element={element} />
+                    <StyleSettingsTabContent
+                        element={element}
+                        editorMode={uiAtomValue.editorMode}
+                    />
                 </Tab>
                 <Tab label={"element"} disabled={!element}>
                     <ElementSettingsTabContent element={element} />
