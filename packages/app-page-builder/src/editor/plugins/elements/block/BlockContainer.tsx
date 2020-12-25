@@ -1,18 +1,16 @@
 import React, { CSSProperties } from "react";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import styled from "@emotion/styled";
-import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { IconButton } from "@webiny/ui/Button";
-import { css } from "emotion";
-import {
-    DropElementActionEvent,
-    TogglePluginActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilValue } from "recoil";
+import styled from "@emotion/styled";
+import { css } from "emotion";
+import kebabCase from "lodash/kebabCase";
+import { IconButton } from "@webiny/ui/Button";
+import DropZone from "../../../components/DropZone";
+import Element from "../../../components/Element";
+import { DragObjectWithTypeWithTargetType } from "../../../components/Droppable";
+import { useEventActionHandler } from "../../../provider";
+import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
+import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
+import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
@@ -26,7 +24,8 @@ const addIcon = css({
 });
 
 const BlockContainerInnerWrapStyled = styled("div")({
-    position: "relative"
+    position: "relative",
+    width: "100%"
 });
 
 type BlockContainerPropsType = {
@@ -43,11 +42,15 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     combineClassNames,
     elementId
 }) => {
+    const { editorMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { id, path, type, elements } = element;
 
-    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
+    const { width, ...containerStyle } = elementStyle;
+    // Use per-device style
+    const justifyContent = elementStyle[`--${kebabCase(editorMode)}-justify-content`];
+    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
 
     const onAddClick = () => {
         handler.trigger(
