@@ -140,6 +140,7 @@ export type PbElementDataType = {
     // this needs to be any since editor can be changed
     text?: PbElementDataTextType;
     image?: PbElementDataImageType;
+    buttonText?: string;
     link?: {
         href?: string;
         newTab?: boolean;
