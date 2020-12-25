@@ -5,7 +5,11 @@ import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import { plugins } from "@webiny/plugins";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
 import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
@@ -140,6 +144,12 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const advanced = get(element, `${valueKey}.${editorMode}.advanced`, false);
 
+    const { config: activeEditorModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.name === editorMode);
+    }, [editorMode]);
+
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: valueKey,
@@ -194,6 +204,11 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                     >
                         <LinkIcon />
                     </button>
+                </Tooltip>
+            }
+            icon={
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.name}`}>
+                    {activeEditorModeConfig.icon}
                 </Tooltip>
             }
         >
