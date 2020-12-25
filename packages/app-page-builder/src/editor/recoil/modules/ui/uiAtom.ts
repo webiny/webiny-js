@@ -6,6 +6,10 @@ export enum EditorMode {
     mobileLandscape = "mobileLandscape",
     mobilePortrait = "mobilePortrait"
 }
+export type PagePreviewDimension = {
+    width: number;
+    height: number;
+};
 
 export type UiAtomType = {
     isDragging: boolean;
@@ -17,6 +21,7 @@ export type UiAtomType = {
     sidebarActiveTabIndex: number;
     highlightElementTab: boolean;
     editorMode: EditorMode;
+    pagePreviewDimension: PagePreviewDimension;
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
@@ -29,6 +34,10 @@ export const uiAtom = connectedAtom<UiAtomType>({
         textEditorActive: false,
         sidebarActiveTabIndex: 0,
         highlightElementTab: false,
-        editorMode: EditorMode.desktop
+        editorMode: EditorMode.desktop,
+        pagePreviewDimension: {
+            width: 100,
+            height: 100
+        }
     }
 });

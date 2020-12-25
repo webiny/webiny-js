@@ -9,3 +9,4 @@ export * from "./textEditorActiveMutation";
 export * from "./updateSidebarActiveTabIndexMutation";
 export * from "./highlightElementTabMutation";
 export * from "./setEditorModeMutation";
+export * from "./setPagePreviewDimensionMutation";
