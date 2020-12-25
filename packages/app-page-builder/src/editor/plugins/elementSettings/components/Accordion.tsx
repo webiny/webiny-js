@@ -14,7 +14,7 @@ const classes = {
         width: "100%",
         borderBottom: `1px solid ${COLORS.gray}`
     }),
-    accordionTitle: css({
+    accordionHeader: css({
         position: "relative",
         color: "var(--mdc-theme-text-secondary-on-background)",
         cursor: "pointer",
@@ -24,8 +24,29 @@ const classes = {
         alignItems: "center",
         justifyContent: "space-between",
 
-        "& span": {
-            marginLeft: 16
+        "& .accordion-header--left": {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            "& .accordion-title": {
+                span: {
+                    marginLeft: 16
+                }
+            },
+            "& .icon-container": {
+                marginLeft: 16,
+                display: "flex",
+                "& svg": {
+                    fill: "currentColor",
+                    width: 14
+                }
+            }
+        },
+        "& .accordion-header--right": {
+            display: "flex",
+            "& .action-container": {
+                display: "none"
+            }
         },
 
         "&::before": {
@@ -40,9 +61,6 @@ const classes = {
             borderTop: "5px solid transparent",
             borderBottom: "5px solid transparent",
             borderLeft: "5px solid currentColor"
-        },
-        "& .action-container": {
-            display: "none"
         },
 
         "&.open": {
@@ -79,23 +97,29 @@ type AccordionProps = {
     title: string;
     children: ReactElement;
     action?: ReactElement;
+    icon?: ReactElement;
     defaultValue?: boolean;
 };
 
-const Accordion = ({ title, children, action, defaultValue = false }: AccordionProps) => {
+const Accordion = ({ title, children, action, icon, defaultValue = false }: AccordionProps) => {
     const [isOpen, setOpen] = useState(defaultValue);
     const toggleOpen = useCallback(() => setOpen(!isOpen), [isOpen]);
 
     return (
         <div className={classes.accordionWrapper}>
             <div
-                className={classNames(classes.accordionTitle, { open: isOpen })}
+                className={classNames(classes.accordionHeader, { open: isOpen })}
                 onClick={toggleOpen}
             >
-                <div>
-                    <Typography use={"subtitle1"}>{title}</Typography>
+                <div className="accordion-header--left">
+                    <div className={"accordion-title"}>
+                        <Typography use={"subtitle1"}>{title}</Typography>
+                    </div>
+                    <div className={"icon-container"}>{icon}</div>
                 </div>
-                <div className={"action-container"}>{action}</div>
+                <div className="accordion-header--right">
+                    <div className={"action-container"}>{action}</div>
+                </div>
             </div>
             <div className={classNames(classes.accordionItem, { collapsed: !isOpen })}>
                 <div className="accordion-content">{children}</div>
