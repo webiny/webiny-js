@@ -5,7 +5,7 @@ import {
     EventActionHandlerActionCallableResponseType,
     EventActionHandlerMetaType
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { EditorMode, PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
@@ -540,7 +540,10 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
     onSave: (element: PbElement) => PbElement;
 };
 
-export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue?: boolean };
+export type PbEditorPageElementSettingsRenderComponentProps = {
+    defaultAccordionValue?: boolean;
+    editorMode?: EditorMode;
+};
 
 export type PbConfigPluginType = Plugin & {
     type: "pb-config";
