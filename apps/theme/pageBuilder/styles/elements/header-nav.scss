@@ -1,13 +1,19 @@
 @keyframes slide-in {
-  100% { transform: translateX(0%); }
+  100% {
+    transform: translateX(0%);
+  }
 }
 
 @keyframes slide-out {
-  0% { transform: translateX(0%); }
-  100% {transform: translateX(200%);}
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 
-.webiny-pb-section-header-spacer{
+.webiny-pb-section-header-spacer {
   height: 50px;
   background-color: transparent;
   width: 100%;
@@ -23,7 +29,7 @@
   height: 40px;
   padding-top: 10px;
 
-  &__wrapper{
+  &__wrapper {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -34,19 +40,20 @@
 }
 
 // desktop header
-@include desktop-and-tablet{
+.webiny-pb-page-document-mode--desktop,
+.webiny-pb-page-document-mode--tablet {
   .webiny-pb-section-header {
     padding: 10px 0 5px 0;
 
-    &__logo{
+    &__logo {
       flex: 1;
       margin-left: 0;
-      img{
+      img {
         max-height: 30px;
       }
     }
 
-    &__site-name{
+    &__site-name {
       font-size: 1.1rem;
     }
 
@@ -62,11 +69,11 @@
         text-decoration: none;
       }
 
-      ul{
+      ul {
         display: flex;
         justify-content: flex-end;
 
-        li{
+        li {
           display: inline-block;
           position: relative;
           margin-left: 25px;
@@ -75,21 +82,21 @@
           font-weight: 400;
           cursor: pointer;
           padding: 10px;
-          transition: background-color .2s;
-          ul{
+          transition: background-color 0.2s;
+          ul {
             display: none;
           }
-          &:hover{
+          &:hover {
             background-color: var(--webiny-theme-color-background, #eaecec);
             border-radius: var(--webiny-theme-border-radius, 2px);
-            ul{
+            ul {
               display: block;
               position: absolute;
               top: 35px;
               left: 0;
               width: 150px;
               background-color: var(--webiny-theme-color-background, #eaecec);
-              li{
+              li {
                 padding: 10px;
                 margin: 0;
                 width: 100%;
@@ -104,22 +111,23 @@
 }
 
 // mobile header
-@include mobile{
+.webiny-pb-page-document-mode--mobile-landscape,
+.webiny-pb-page-document-mode--mobile-portrait {
   .webiny-pb-section-header {
-    &__mobile-icon{
+    &__mobile-icon {
       position: fixed;
       top: 18px;
       right: 25px;
       z-index: 12;
     }
 
-    &__mobile-site-name{
+    &__mobile-site-name {
       position: fixed;
       width: 100%;
       right: -25px;
       top: 28px;
       z-index: 12;
-      a{
+      a {
         font-size: 1.2rem;
         color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
         text-transform: uppercase;
@@ -127,26 +135,26 @@
       }
     }
 
-    &__mobile-overlay{
+    &__mobile-overlay {
       opacity: 0;
-      transition: opacity .25s ease-in-out;
+      transition: opacity 0.25s ease-in-out;
       background-color: var(--webiny-theme-color-on-background, #131313);
-      &--active{
+      &--active {
         opacity: 0.5;
         position: fixed;
         width: 100vw;
         height: 100vh;
         z-index: 10;
         overflow: hidden;
-        top:0;
+        top: 0;
         left: 0;
       }
     }
 
-    &__logo{
+    &__logo {
       margin-left: 25px;
       width: 50%;
-      img{
+      img {
         max-height: 30px;
       }
     }
@@ -166,7 +174,7 @@
       top: 0;
       z-index: 11;
       transform: translateX(200%);
-      &--mobile-active{
+      &--mobile-active {
         animation: slide-in 0.5s forwards;
         display: block;
       }
@@ -176,28 +184,26 @@
         text-decoration: none;
       }
 
-      ul{
+      ul {
         font-size: 1.2rem;
         margin-top: 75px;
         margin-left: 35px;
         box-sizing: border-box;
         font-weight: 400;
         text-transform: uppercase;
-        li{
+        li {
           margin-bottom: 15px;
-          ul{
+          ul {
             margin: 10px 0 0 25px;
           }
         }
       }
-
     }
-
   }
 }
 
 // adjust some styles in case when we render the full layout inside the page editor
-.webiny-pb-editor-content-preview{
+.webiny-pb-editor-content-preview {
   .webiny-pb-section-header {
     position: absolute;
     padding: 10px;
@@ -205,7 +211,7 @@
     z-index: 0;
     height: 50px;
   }
-  .webiny-pb-section-header-spacer{
+  .webiny-pb-section-header-spacer {
     height: 55px;
     background-color: white;
   }
