@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -10,8 +10,10 @@ import {
     contentSelector,
     isPluginActiveSelector,
     layoutSelector,
-    uiAtom
+    uiAtom,
+    setPagePreviewDimensionMutation
 } from "../../recoil/modules";
+import { updateConnectedValue } from "../../recoil/modules/connected";
 
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import Element from "../Element";
@@ -56,6 +58,34 @@ const Content = () => {
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
     const { editorMode } = useRecoilValue(uiAtom);
+    const pagePreviewRef = useRef();
+
+    const setPagePreviewDimension = useCallback(
+        pagePreviewDimension => {
+            updateConnectedValue(uiAtom, prev =>
+                setPagePreviewDimensionMutation(prev, pagePreviewDimension)
+            );
+        },
+        [uiAtom]
+    );
+
+    const resizeObserver = useMemo(() => {
+        // @ts-ignore
+        return new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                setPagePreviewDimension({ width, height });
+            }
+        });
+    }, []);
+    // Set resize observer
+    useEffect(() => {
+        // webiny-pb-editor-content-preview
+        if (pagePreviewRef.current) {
+            // Add resize observer
+            resizeObserver.observe(pagePreviewRef.current);
+        }
+    }, []);
 
     const { theme } = usePageBuilder();
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
@@ -76,7 +106,7 @@ const Content = () => {
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
                 )}
-                <BaseContainer className={"webiny-pb-editor-content-preview"}>
+                <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
                     {renderContent(themeLayout, rootElement, renderLayout)}
                 </BaseContainer>
             </ContentContainer>
