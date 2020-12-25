@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton } from "@webiny/ui/Button";
 import {
     PbEditorPageElementPlugin,
     PbElement,
-    PbEditorPageElementSettingsRenderComponentProps
-} from "@webiny/app-page-builder/types";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -57,13 +60,22 @@ enum AlignmentsTypeEnum {
 }
 
 const alignments = Object.keys(icons);
+const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 
 const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
-    defaultAccordionValue = false
+    defaultAccordionValue = false,
+    editorMode
 }) => {
+    const propName = `${DATA_NAMESPACE}.${editorMode}`;
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const align = get(element, "data.settings.horizontalAlignFlex", AlignmentsTypeEnum.CENTER);
+    const align = get(element, propName, AlignmentsTypeEnum.CENTER);
+
+    const { config: activeEditorModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.name === editorMode);
+    }, [editorMode]);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
@@ -75,16 +87,8 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
     };
 
     const onClick = (type: AlignmentsTypeEnum) => {
-        updateElement({
-            ...element,
-            data: {
-                ...element.data,
-                settings: {
-                    ...element.data.settings,
-                    horizontalAlignFlex: type
-                }
-            }
-        });
+        const newElement = merge({}, element, set({}, propName, type));
+        updateElement(newElement);
     };
 
     const plugin = plugins
@@ -96,7 +100,15 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
     }
 
     return (
-        <Accordion title={"Horizontal align"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Horizontal align"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.name}`}>
+                    {activeEditorModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper>
                 {alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>
