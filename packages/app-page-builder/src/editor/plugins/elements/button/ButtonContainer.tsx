@@ -27,9 +27,9 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
     const { textEditorActive } = uiAtomValue;
     const element = useRecoilValue(elementByIdSelector(elementId));
-    const { type = "default", icon = {}, text: dataText } = element.data || {};
+    const { type = "default", icon = {}, buttonText } = element.data || {};
     const { justifyContent } = elementStyle;
-    const defaultValue = typeof dataText.data.text === "string" ? dataText.data.text : "Click me";
+    const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
     const value = useRef<string>(defaultValue);
 
     const { svg = null, position = "left" } = icon || {};

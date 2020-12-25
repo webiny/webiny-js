@@ -43,7 +43,7 @@ export default () => {
                     type: "button",
                     elements: [],
                     data: {
-                        text: "Click me",
+                        buttonText: "Click me",
                         settings: {
                             margin: createInitialPerDeviceSettingValue({ all: "0px" }),
                             padding: createInitialPerDeviceSettingValue({ all: "0px" }),
