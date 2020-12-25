@@ -1,4 +1,6 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
+import merge from "lodash/merge";
+import set from "lodash/set";
 import SimpleEditableText from "./SimpleEditableText";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
@@ -11,6 +13,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useRecoilState, useRecoilValue } from "recoil";
 
+const DATA_NAMESPACE = "data.buttonText";
 type ButtonContainerPropsType = {
     getAllClasses: (...classes: string[]) => string;
     elementStyle: CSSProperties;
@@ -50,25 +53,18 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         if (value.current === defaultValue) {
             return;
         }
-        const newElement: PbElement = {
-            ...element,
-            elements: [],
-            data: {
-                ...element.data,
-                text: {
-                    alignment: "left",
-                    typography: "",
-                    tag: "span",
-                    data: {
-                        text: value.current
-                    }
-                }
-            }
-        };
+
+        const newElement: PbElement = merge(
+            {},
+            element,
+            set({ elements: [] }, DATA_NAMESPACE, value.current)
+        );
+
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history: true
+                history: true,
+                merge: true
             })
         );
     }, [elementId]);
