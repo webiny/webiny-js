@@ -1,13 +1,9 @@
 import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbEditorResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
 
-const vertical = {
-    start: "flex-start",
-    center: "center",
-    end: "flex-end"
-};
-
-const plugins: PbRenderElementStylePlugin[] = [
+export default [
     {
         name: "pb-render-page-element-style-horizontal-align",
         type: "pb-render-page-element-style",
@@ -27,7 +23,21 @@ const plugins: PbRenderElementStylePlugin[] = [
             if (!horizontalAlignFlex) {
                 return style;
             }
-            return { ...style, justifyContent: horizontalAlignFlex };
+
+            // Get editor modes
+            const editorModes = plugins
+                .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+                .map(pl => pl.config);
+
+            // Set per-device property value
+            editorModes.forEach(({ name: deviceName }) => {
+                style[`--${kebabCase(deviceName)}-justify-content`] = get(
+                    horizontalAlignFlex,
+                    deviceName
+                );
+            });
+
+            return style;
         }
     },
     {
@@ -38,9 +48,18 @@ const plugins: PbRenderElementStylePlugin[] = [
             if (!verticalAlign) {
                 return style;
             }
-            return { ...style, alignItems: vertical[verticalAlign] };
+
+            // Get editor modes
+            const editorModes = plugins
+                .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+                .map(pl => pl.config);
+
+            // Set per-device property value
+            editorModes.forEach(({ name: deviceName }) => {
+                style[`--${kebabCase(deviceName)}-align-items`] = get(verticalAlign, deviceName);
+            });
+
+            return style;
         }
     }
-];
-
-export default plugins;
+] as PbRenderElementStylePlugin[];
