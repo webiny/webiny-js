@@ -1,8 +1,10 @@
 import React, { CSSProperties } from "react";
+import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
-import Element from "@webiny/app-page-builder/editor/components/Element";
 import { css } from "emotion";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbElement } from "../../../../types";
+import Element from "../../../components/Element";
+import { EditorMode } from "../../../recoil/modules";
 
 const StyledGrid = styled("div")({
     display: "flex",
@@ -10,25 +12,27 @@ const StyledGrid = styled("div")({
     alignItems: "center",
     flexDirection: "row"
 });
-const CellContainer = styled("div")(({ size }: any) => ({
-    width: `${(100 / 12) * size}%`
-}));
+const CELL_CLASSNAME = "webiny-pb-layout-grid-cell";
+
 type GridPropsType = {
     combineClassNames: (...classes: string[]) => string;
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
     element: PbElement;
+    editorMode: EditorMode;
 };
 const Grid: React.FunctionComponent<GridPropsType> = ({
     elementStyle,
     elementAttributes,
     customClasses,
     combineClassNames,
-    element
+    element,
+    editorMode
 }) => {
-    const { width, alignItems, ...containerStyle } = elementStyle || {};
-
+    const { width, ...containerStyle } = elementStyle || {};
+    // Use per-device style
+    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
     return (
         <StyledGrid
             className={combineClassNames(
@@ -38,14 +42,17 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             {...elementAttributes}
             style={{
                 width: width ? width : "100%",
-                alignItems: alignItems
+                alignItems
             }}
         >
             {element.elements.map(child => {
                 return (
-                    <CellContainer size={child.data.settings?.grid?.size} key={`cell-${child.id}`}>
+                    <div
+                        key={`cell-${child.id}`}
+                        className={`${CELL_CLASSNAME} ${CELL_CLASSNAME}-${child.data.settings?.grid?.size}`}
+                    >
                         <Element id={child.id} />
-                    </CellContainer>
+                    </div>
                 );
             })}
         </StyledGrid>
