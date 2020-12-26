@@ -64,6 +64,17 @@ export const GET_MENU = /* GraphQL */ `
     }
 `;
 
+export const GET_PUBLIC_MENU = /* GraphQL */ `
+    query GetPublicMenu($slug: String!) {
+        pageBuilder {
+            getPublicMenu(slug: $slug) {
+                data ${DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export const DELETE_MENU = /* GraphQL */ `
     mutation DeleteMenu($slug: String!) {
         pageBuilder {

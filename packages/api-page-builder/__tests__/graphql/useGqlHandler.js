@@ -13,7 +13,7 @@ import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
-import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU } from "./graphql/menus";
+import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU, GET_PUBLIC_MENU } from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
     DELETE_PAGE_ELEMENT,
@@ -62,7 +62,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 region: "local"
             })
         })
-    })
+    });
 
     const handler = createHandler(
         dbPlugins({
@@ -212,6 +212,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async getMenu(variables) {
             return invoke({ body: { query: GET_MENU, variables } });
+        },
+        async getPublicMenu(variables) {
+            return invoke({ body: { query: GET_PUBLIC_MENU, variables } });
         },
 
         // Categories.

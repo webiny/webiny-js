@@ -10,6 +10,7 @@ import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
+import prepareMenuItems from "./menus/prepareMenuItems";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -66,10 +67,14 @@ const plugin: ContextPlugin<PbContext> = {
                 async getPublic(slug) {
                     const [[menu]] = await db.read<Menu>({
                         ...defaults.db,
-                        query: { PK: PK(), SK: slug },
-                        limit: 1
+                        query: { PK: PK(), SK: slug }
                     });
 
+                    if (!menu) {
+                        throw new NotFoundError();
+                    }
+
+                    menu.items = await prepareMenuItems({ menu, context });
                     return menu;
                 },
 
@@ -128,7 +133,7 @@ const plugin: ContextPlugin<PbContext> = {
                             SK: createDataModel.slug,
                             TYPE,
                             tenant: context.security.getTenant().id,
-                            locale: context.i18nContent.getLocale().code,
+                            locale: context.i18nContent.getLocale().code
                         }
                     });
 
