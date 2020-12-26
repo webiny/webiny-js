@@ -1,5 +1,5 @@
 import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { createTypeName } from "../utils/createTypeName";
+// import { createTypeName } from "../utils/createTypeName";
 import { createReadTypeName } from "../utils/createTypeName";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {

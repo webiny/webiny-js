@@ -7,9 +7,11 @@ export const elasticSearchQueryBuilderNotContainsPlugin = (): ElasticSearchQuery
     apply(query, { field, value }) {
         query.mustNot.push({
             // eslint-disable-next-line @typescript-eslint/camelcase
-            simple_query_string: {
+            query_string: {
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                allow_leading_wildcard: true,
                 fields: [field],
-                query: `*${value}*`
+                query: value
             }
         });
     }

@@ -24,7 +24,7 @@ export const createListQuery = model => {
 
 export const createGetQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
-    
+
     return gql`
         query CmsGet${ucFirstModelId}($revision:ID!) {
             content: get${ucFirstModelId}(revision: $revision) {
