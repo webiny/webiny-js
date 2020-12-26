@@ -225,6 +225,11 @@ describe("Settings Test", () => {
                         getDefaultSettings: {
                             data: {
                                 name: "test 1",
+                                pages: {
+                                    error: null,
+                                    home: null,
+                                    notFound: null
+                                },
                                 prerendering: {
                                     app: {
                                         url: "https://www.app.com"
@@ -287,6 +292,11 @@ describe("Settings Test", () => {
                         getDefaultSettings: {
                             data: {
                                 name: "test 1",
+                                pages: {
+                                    error: null,
+                                    home: null,
+                                    notFound: null
+                                },
                                 prerendering: {
                                     app: {
                                         url: "https://www.app.com"

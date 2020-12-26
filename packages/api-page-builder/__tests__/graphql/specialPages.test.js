@@ -63,7 +63,7 @@ describe("Settings Test", () => {
             })
         );
 
-        await updateSettings({
+        const aa = await updateSettings({
             data: {
                 pages: {
                     home: page.id
