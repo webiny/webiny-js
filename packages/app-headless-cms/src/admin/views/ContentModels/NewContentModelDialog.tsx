@@ -53,7 +53,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onC
             history.push("/cms/content-models/" + model.modelId);
         }
     });
-    
+
     const { data } = useQuery(GQL.LIST_MENU_CONTENT_GROUPS_MODELS, {
         skip: !open
     });

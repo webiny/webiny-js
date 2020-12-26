@@ -10,7 +10,7 @@ const backStyles = css({
 
 const BackButton = React.memo(() => {
     const router = useRouter();
-    
+
     return (
         <IconButton
             data-testid="cms-editor-back-button"

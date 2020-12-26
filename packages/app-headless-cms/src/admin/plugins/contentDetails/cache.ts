@@ -40,7 +40,7 @@ export const removeRevisionFromEntryCache = (model, cache, entry, revision) => {
     const { content } = cache.readQuery(gqlParams);
     const index = content.data.meta.revisions.findIndex(item => item.id === revision.id);
     const newContent = dotProp.delete(content, `data.meta.revisions.${index}`);
-    
+
     cache.writeQuery({
         ...gqlParams,
         data: {
