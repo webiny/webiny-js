@@ -543,6 +543,7 @@ type ElasticSearchQueryMustNotParamType = {
         [key: string]: any[];
     };
     range?: ElasticSearchQueryRangeParamType;
+    query_string?: ElasticSearchQueryQueryParamType;
     simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];

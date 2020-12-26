@@ -73,15 +73,14 @@ const compare = (key: string, compareValue: any, value: any): boolean => {
 };
 
 const whereFilterFactory = (where: Record<string, any> = {}) => {
-    const whereKeys = Object.keys(where);
     return model => {
-        for (const whereKey of whereKeys) {
-            if (where.hasOwnProperty(whereKey) === false) {
+        for (const key in where) {
+            if (where.hasOwnProperty(key) === false) {
                 continue;
             }
-            const whereValue = where[whereKey];
-            const value = model[removeWhereKeySuffix(whereKey)];
-            return compare(whereKey, whereValue, value);
+            const whereValue = where[key];
+            const value = model[removeWhereKeySuffix(key)];
+            return compare(key, whereValue, value);
         }
         return true;
     };

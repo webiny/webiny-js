@@ -177,7 +177,7 @@ const createInitialQueryValue = (
 const execElasticSearchBuildQueryPlugins = (
     args: CreateElasticSearchQueryArgsType
 ): ElasticSearchQueryType => {
-    const { where = {}, modelFields, parentObject, context } = args;
+    const { where, modelFields, parentObject, context } = args;
     const query = createInitialQueryValue(args);
 
     const withParentObject = (field: string) => {
@@ -190,6 +190,9 @@ const execElasticSearchBuildQueryPlugins = (
     const plugins = context.plugins.byType<ElasticSearchQueryBuilderPlugin>(
         "elastic-search-query-builder"
     );
+    if (!where || Object.keys(where).length === 0) {
+        return query;
+    }
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
