@@ -1,6 +1,7 @@
 export const DATA_FIELD = /* GraphQL */ `
     {
         id
+        pid
         editor
         category {
             slug
