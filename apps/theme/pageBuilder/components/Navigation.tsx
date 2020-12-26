@@ -17,7 +17,7 @@ const Navigation = ({ data }) => {
                             <ul>
                                 {item.children.map((item, index) => (
                                     <li key={item.id + index}>
-                                        <Link to={item.url}>{item.title}</Link>
+                                        <Link to={item.path || item.url}>{item.title}</Link>
                                     </li>
                                 ))}
                             </ul>
@@ -27,7 +27,7 @@ const Navigation = ({ data }) => {
 
                 return (
                     <li key={item.id + index}>
-                        <Link to={item.url}>{item.title}</Link>
+                        <Link to={item.path || item.url}>{item.title}</Link>
                     </li>
                 );
             })}
