@@ -133,14 +133,16 @@ describe("Prepared Menus Test", () => {
                                     {
                                         id: "kj2vizx6",
                                         title: "A link",
-                                        type: "link"
+                                        type: "link",
+                                        url: "https://www.google.com"
                                     },
                                     {
                                         children: [
                                             {
                                                 id: "kj2vjcuu",
                                                 title: "A link in folder",
-                                                type: "link"
+                                                type: "link",
+                                                url: "https://www.webiny.com"
                                             }
                                         ],
                                         id: "kj2vj8cg",

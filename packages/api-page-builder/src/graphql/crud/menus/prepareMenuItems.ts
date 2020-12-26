@@ -14,8 +14,8 @@ const applyCleanup = async items => {
             continue;
         }
 
-        const { title, children, path, id, type } = items[i];
-        items[i] = { title, path, children, id, type };
+        const { title, children, path, url, id, type } = items[i];
+        items[i] = { title, path, url, children, id, type };
 
         await applyCleanup(items[i].children);
     }
