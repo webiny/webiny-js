@@ -104,6 +104,43 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return item;
             },
+            listIdIn: async (model: CmsContentModelType, idList: string[]) => {
+                const permission = await checkPermissions({ rwd: "r" });
+                utils.checkEntryAccess(context, permission, model);
+
+                const batch = db.batch();
+                for (const id of idList) {
+                    batch.read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(),
+                            SK: id
+                        }
+                    });
+                }
+                const results = (await batch.execute()) as [CmsContentModelEntryType[]][];
+
+                const items = results
+                    .filter(result => {
+                        if (!result[0] || !result[0][0]) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map(result => {
+                        const items = result[0];
+
+                        return items[0];
+                    });
+
+                const meta = {
+                    hasMoreItems: false,
+                    cursor: null,
+                    totalCount: items.length
+                };
+
+                return [items, meta];
+            },
             list: async (model: CmsContentModelType, args = {}, options = {}) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkEntryAccess(context, permission, model);

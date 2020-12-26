@@ -118,27 +118,122 @@ describe("MANAGE - Resolvers", () => {
                 ]
             }
         });
-
-        // TODO: test all other querying possibilities (by title, by slug)
     });
 
-    test.skip(`list categories (no parameters)`, async () => {
+    test(`list categories (no parameters)`, async () => {
         await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            {
-                listCategories {
-                    data {
-                        id
-                        title
-                        slug
-                    }
-                    error {
-                        message
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory, listCategories } = useCategoryManageHandler(
+            manageOpts
+        );
+
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const category = create.data.createCategory.data;
+        const { id } = category;
+
+        // Publish it so it becomes available in the "read" API
+        await publishCategory({ revision: id });
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].meta.status === "published",
+            { name: "wait for entry to be published" }
+        );
+
+        const [response] = await listCategories();
+
+        expect(response).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: category.id,
+                            title: category.title,
+                            slug: category.slug,
+                            createdOn: category.createdOn,
+                            savedOn: category.savedOn,
+                            meta: {
+                                locked: true,
+                                modelId: "category",
+                                publishedOn: /^20/,
+                                revisions: [
+                                    {
+                                        id: /^([a-zA-Z0-9]+)$/,
+                                        slug: "slug-1",
+                                        title: "Title 1"
+                                    }
+                                ],
+                                status: "published",
+                                title: "Title 1",
+                                version: 1
+                            }
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: /^([a-zA-Z0-9]+)$/
                     }
                 }
             }
-        `;
+        });
+    });
+
+    test("list entries filtered by given id list", async () => {
+        await setupContentModel();
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory, listCategories } = useCategoryManageHandler(
+            manageOpts
+        );
+
+        const [fruitsResponse] = await createCategory({
+            data: {
+                title: "Fruits",
+                slug: "fruits"
+            }
+        });
+        const fruits = fruitsResponse.data.createCategory.data;
+        await createCategory({
+            data: {
+                title: "Vegetables",
+                slug: "vegetables"
+            }
+        });
+
+        const [animalsResponse] = await createCategory({
+            data: {
+                title: "Animals",
+                slug: "animals"
+            }
+        });
+        const animals = animalsResponse.data.createCategory.data;
+        await createCategory({
+            data: {
+                title: "Trees",
+                slug: "trees"
+            }
+        });
+
+        const [response] = await listCategories({
+            ids: [fruits.id, animals.id]
+        });
+
+        expect(response).toEqual({
+            data: {
+                listCategories: {
+                    data: [fruits, animals],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
     });
 
     test.skip(`list entries (limit)`, async () => {

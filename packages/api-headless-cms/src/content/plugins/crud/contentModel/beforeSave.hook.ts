@@ -14,12 +14,13 @@ type ArgsType = {
 };
 export const beforeSaveHook = async (args: ArgsType) => {
     const { context, model, data } = args;
-    let { titleFieldId } = model;
-    // there should be fields/locked fields in either model or data to be updated
-    const { fields = [], lockedFields = [] } = {
+    const combinedModel = {
         ...model,
         ...data
     };
+    let { titleFieldId } = combinedModel;
+    // there should be fields/locked fields in either model or data to be updated
+    const { fields = [], lockedFields = [] } = combinedModel;
 
     if (titleFieldId) {
         const target = fields.find(f => f.fieldId === titleFieldId);

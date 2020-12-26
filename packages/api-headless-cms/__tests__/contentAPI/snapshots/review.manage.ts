@@ -102,6 +102,7 @@ export default /* GraphQL */ `
         getReview(revision: ID!): ReviewResponse
 
         listReviews(
+            ids: [ID!]
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
             limit: Int

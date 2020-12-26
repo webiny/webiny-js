@@ -138,6 +138,7 @@ export default /* GraphQL */ `
         getProduct(revision: ID!): ProductResponse
 
         listProducts(
+            ids: [ID!]
             where: ProductListWhereInput
             sort: [ProductListSorter]
             limit: Int

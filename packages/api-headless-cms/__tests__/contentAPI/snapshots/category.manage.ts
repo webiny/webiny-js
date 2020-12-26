@@ -98,6 +98,7 @@ export default /* GraphQL */ `
         getCategory(revision: ID!): CategoryResponse
 
         listCategories(
+            ids: [ID!]
             where: CategoryListWhereInput
             sort: [CategoryListSorter]
             limit: Int

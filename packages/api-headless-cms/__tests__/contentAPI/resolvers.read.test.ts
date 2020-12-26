@@ -8,40 +8,39 @@ const categoryManagerHelper = async manageOpts => {
     // Use "manage" API to create and publish entries
     const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
 
-    // Create an entry
-    const [firstCategoryResponse] = await createCategory({
-        data: { title: "First", slug: "first-slug" }
-    });
-    const firstCategory = firstCategoryResponse.data.createCategory.data;
-    const { id: firstCategoryId } = firstCategory;
-    const [secondCategoryResponse] = await createCategory({
+    const [fruitsResponse] = await createCategory({
         data: {
-            title: "Second",
-            slug: "second-slug"
+            title: "Fruits",
+            slug: "fruits"
         }
     });
-    const secondCategory = secondCategoryResponse.data.createCategory.data;
-    const { id: secondCategoryId } = secondCategory;
-    const [thirdCategoryResponse] = await createCategory({
+    const fruits = fruitsResponse.data.createCategory.data;
+    const [vegetablesResponse] = await createCategory({
         data: {
-            title: "Third",
-            slug: "third-slug"
+            title: "Vegetables",
+            slug: "vegetables"
         }
     });
-    const thirdCategory = thirdCategoryResponse.data.createCategory.data;
-    const { id: thirdCategoryId } = thirdCategory;
+    const vegetables = vegetablesResponse.data.createCategory.data;
+    const [animalsResponse] = await createCategory({
+        data: {
+            title: "Animals",
+            slug: "animals"
+        }
+    });
+    const animals = animalsResponse.data.createCategory.data;
 
     // Publish categories so then become available in the "read" API
-    await publishCategory({ revision: firstCategoryId });
-    await publishCategory({ revision: secondCategoryId });
-    await publishCategory({ revision: thirdCategoryId });
+    await publishCategory({ revision: fruits.id });
+    await publishCategory({ revision: vegetables.id });
+    await publishCategory({ revision: animals.id });
 
     return {
         sleep,
         until,
-        firstCategory,
-        secondCategory,
-        thirdCategory,
+        fruits,
+        vegetables,
+        animals,
         createCategory,
         publishCategory
     };
@@ -174,13 +173,14 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    test(`should return a list of published entries (no parameters)`, async () => {
+    test(`list entries`, async () => {
         // Use "manage" API to create and publish entries
         const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const { id } = create.data.createCategory.data;
+        const category = create.data.createCategory.data;
+        const { id } = category;
 
         // Publish it so it becomes available in the "read" API
         await publishCategory({ revision: id });
@@ -191,13 +191,37 @@ describe("READ - Resolvers", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === id
+            ({ data }) => data.listCategories.data.length > 0
         );
+
+        const [response] = await listCategories();
+
+        expect(response).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: category.id,
+                            title: category.title,
+                            slug: category.slug,
+                            createdOn: category.createdOn,
+                            savedOn: category.savedOn
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: /^([a-zA-Z0-9]+)$/
+                    }
+                }
+            }
+        });
     });
 
     test(`list entries (limit)`, async () => {
         // create categories and return until from manage handler
-        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
+        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -217,18 +241,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         }
                     ],
                     meta: {
@@ -244,9 +268,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries (limit + after)`, async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -265,11 +287,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -300,11 +322,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         }
                     ],
                     meta: {
@@ -335,11 +357,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         }
                     ],
                     meta: {
@@ -369,18 +391,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         },
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         }
                     ],
                     meta: {
@@ -396,9 +418,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries (sort ASC)`, async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -416,25 +436,25 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         },
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -450,9 +470,7 @@ describe("READ - Resolvers", () => {
 
     test(`list entries (sort DESC)`, async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -471,25 +489,25 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         },
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -505,7 +523,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that contains given value", async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory } = await categoryManagerHelper(manageOpts);
+        const { until, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -515,10 +533,10 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        title_contains: "first"
+                        title_contains: "*NIMal*"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length > 0
+            ({ data }) => data.listCategories.data[0].id === animals.id
         );
 
         expect(result).toMatchObject({
@@ -526,11 +544,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -546,7 +564,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that do not contains given value", async () => {
         // create categories and return until from manage handler
-        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
+        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -556,7 +574,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        title_not_contains: "first"
+                        title_not_contains: "fruits"
                     }
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 2
@@ -567,18 +585,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         }
                     ],
                     meta: {
@@ -594,7 +612,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are in given values", async () => {
         // create categories and return until from manage handler
-        const { until, secondCategory, thirdCategory } = await categoryManagerHelper(manageOpts);
+        const { until, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -604,7 +622,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        slug_in: [secondCategory.slug, thirdCategory.slug]
+                        slug_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 2
@@ -615,18 +633,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         }
                     ],
                     meta: {
@@ -642,9 +660,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are not in given values", async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -654,7 +670,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        slug_not_in: [secondCategory.slug, thirdCategory.slug]
+                        slug_not_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data.length === 1
@@ -665,11 +681,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         }
                     ],
                     meta: {
@@ -685,9 +701,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are created after given date", async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -711,25 +725,25 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         },
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -745,7 +759,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are created after or at given date: one returned", async () => {
         // create categories and return until from manage handler
-        const { until, thirdCategory } = await categoryManagerHelper(manageOpts);
+        const { until, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
@@ -754,7 +768,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        createdOn_gte: thirdCategory.createdOn
+                        createdOn_gte: animals.createdOn
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
@@ -766,11 +780,11 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {
@@ -822,7 +836,7 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are created before or at given date: one returned", async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory } = await categoryManagerHelper(manageOpts);
+        const { until, fruits, vegetables } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
@@ -832,7 +846,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     where: {
                         // eslint-disable-next-line @typescript-eslint/camelcase
-                        savedOn_lte: secondCategory.savedOn
+                        savedOn_lte: vegetables.savedOn
                     },
                     sort: ["savedOn_ASC"]
                 }).then(([data]) => data),
@@ -844,18 +858,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         },
                         {
-                            id: secondCategory.id,
-                            createdOn: secondCategory.createdOn,
-                            savedOn: secondCategory.savedOn,
-                            slug: secondCategory.slug,
-                            title: secondCategory.title
+                            id: vegetables.id,
+                            createdOn: vegetables.createdOn,
+                            savedOn: vegetables.savedOn,
+                            slug: vegetables.slug,
+                            title: vegetables.title
                         }
                     ],
                     meta: {
@@ -871,15 +885,13 @@ describe("READ - Resolvers", () => {
 
     test("list entries that are not created between given dates", async () => {
         // create categories and return until from manage handler
-        const { until, firstCategory, secondCategory, thirdCategory } = await categoryManagerHelper(
-            manageOpts
-        );
+        const { until, fruits, vegetables, animals } = await categoryManagerHelper(manageOpts);
 
         const { listCategories } = useCategoryReadHandler(readOpts);
 
-        const from = new Date(secondCategory.savedOn);
+        const from = new Date(vegetables.savedOn);
         from.setTime(from.getTime() - 10);
-        const to = new Date(secondCategory.savedOn);
+        const to = new Date(vegetables.savedOn);
         to.setTime(to.getTime() + 10);
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const result = await until(
@@ -899,18 +911,18 @@ describe("READ - Resolvers", () => {
                 listCategories: {
                     data: [
                         {
-                            id: firstCategory.id,
-                            createdOn: firstCategory.createdOn,
-                            savedOn: firstCategory.savedOn,
-                            slug: firstCategory.slug,
-                            title: firstCategory.title
+                            id: fruits.id,
+                            createdOn: fruits.createdOn,
+                            savedOn: fruits.savedOn,
+                            slug: fruits.slug,
+                            title: fruits.title
                         },
                         {
-                            id: thirdCategory.id,
-                            createdOn: thirdCategory.createdOn,
-                            savedOn: thirdCategory.savedOn,
-                            slug: thirdCategory.slug,
-                            title: thirdCategory.title
+                            id: animals.id,
+                            createdOn: animals.createdOn,
+                            savedOn: animals.savedOn,
+                            slug: animals.slug,
+                            title: animals.title
                         }
                     ],
                     meta: {

@@ -90,6 +90,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             get${typeName}(revision: ID!): ${mTypeName}Response
 
             list${pluralizedTypeName(typeName)}(
+                ids: [ID!]
                 where: ${mTypeName}ListWhereInput
                 sort: [${mTypeName}ListSorter]
                 limit: Int

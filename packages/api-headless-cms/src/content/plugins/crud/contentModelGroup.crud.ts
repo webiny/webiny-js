@@ -72,7 +72,7 @@ const compare = (key: string, compareValue: any, value: any): boolean => {
     return compareValue === value;
 };
 
-const whereFilterFactory = (where: Record<string, any>) => {
+const whereFilterFactory = (where: Record<string, any> = {}) => {
     const whereKeys = Object.keys(where);
     return model => {
         for (const whereKey of whereKeys) {

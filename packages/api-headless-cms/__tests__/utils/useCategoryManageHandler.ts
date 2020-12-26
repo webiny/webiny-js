@@ -44,12 +44,13 @@ const getCategoryQuery = /* GraphQL */ `
 
 const listCategoriesQuery = /* GraphQL */ `
     query ListCategories(
+        $ids: [ID!]
         $where: CategoryListWhereInput
         $sort: [CategoryListSorter]
         $limit: Int
         $after: String
     ) {
-        listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
+        listCategories(ids: $ids, where: $where, sort: $sort, limit: $limit, after: $after) {
             data {
                 ${categoryFields}
             }

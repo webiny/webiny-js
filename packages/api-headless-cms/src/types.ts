@@ -445,6 +445,10 @@ export type CmsContentModelEntryContextType = {
         model: CmsContentModelType,
         args?: CmsContentModelEntryGetArgsType
     ) => Promise<CmsContentModelEntryType | null>;
+    listIdIn: (
+        model: CmsContentModelType,
+        idList: string[]
+    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     list: (
         model: CmsContentModelType,
         args?: CmsContentModelEntryListArgsType,
@@ -546,6 +550,11 @@ type ElasticSearchQueryRangeParamType = {
         lte?: string | number | Date;
     };
 };
+type ElasticSearchQueryQueryParamType = {
+    allow_leading_wildcard?: boolean;
+    fields: string[];
+    query: string;
+};
 type ElasticSearchQuerySimpleQueryParamType = {
     fields: string[];
     query: string;
@@ -558,6 +567,7 @@ type ElasticSearchQueryMustParamType = {
         [key: string]: any[];
     };
     range?: ElasticSearchQueryRangeParamType;
+    query_string?: ElasticSearchQueryQueryParamType;
     simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
 };
 type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
