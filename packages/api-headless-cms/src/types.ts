@@ -1,9 +1,8 @@
-import { GraphQLSchemaModule } from "apollo-graphql";
 import { Plugin } from "@webiny/plugins/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { Context as BaseContext } from "@webiny/handler/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { GraphQLFieldResolver, GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
@@ -159,7 +158,7 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
         createSchema?(params: {
             models: CmsContentModelType[];
             model: CmsContentModelType;
-        }): GraphQLSchemaModule;
+        }): GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
         createListFilters?(params: {
@@ -169,7 +168,7 @@ export type CmsModelFieldToGraphQLPlugin = Plugin & {
         createSchema?(params: {
             models: CmsContentModelType[];
             model: CmsContentModelType;
-        }): GraphQLSchemaModule;
+        }): GraphQLSchemaDefinition<CmsContext>;
         createTypeField(params: {
             model: CmsContentModelType;
             field: CmsContentModelFieldType;
@@ -296,6 +295,7 @@ export interface CmsContentModelManagerInterface {
     listLatest(
         args?: CmsContentModelEntryListArgsType
     ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    getPublishedByIds(ids: string[]): Promise<CmsContentModelEntryType[]>;
     get(args?: CmsContentModelEntryGetArgsType): Promise<CmsContentModelEntryType>;
     create(data: Record<string, any>): Promise<CmsContentModelEntryType>;
     update(id: string, data: Record<string, any>): Promise<CmsContentModelEntryType>;
@@ -369,45 +369,6 @@ export type CmsContentModelEntryListWhereType = {
     id_in?: string[];
     id_not?: string;
     id_not_in?: string[];
-    // createdOn
-    // createdOn?: Date;
-    // createdOn_in?: Date[];
-    // createdOn_not?: Date;
-    // createdOn_not_in?: Date[];
-    // createdOn_between: [Date, Date];
-    // createdOn_not_between: [Date, Date];
-    // createdOn_lt?: Date;
-    // createdOn_lte?: Date;
-    // createdOn_gt?: Date;
-    // createdOn_gte?: Date;
-    // // savedOn
-    // savedOn?: Date;
-    // savedOn_in?: Date[];
-    // savedOn_not?: Date;
-    // savedOn_not_in?: Date[];
-    // savedOn_between?: [Date, Date];
-    // savedOn_not_between?: [Date, Date];
-    // savedOn_lt?: Date;
-    // savedOn_lte?: Date;
-    // savedOn_gt?: Date;
-    // savedOn_gte?: Date;
-    // // createdBy.id
-    // createdById?: string;
-    // createdById_in?: string[];
-    // createdById_not?: string;
-    // createdById_not_in?: string[];
-    // // createdBy.type
-    // createdByType?: string;
-    // createdByType_in?: string[];
-    // createdByType_not?: string;
-    // createdByType_not_in?: string[];
-    // // modelId
-    // modelId?: string;
-    // modelId_in?: string[];
-    // modelId_not?: string;
-    // modelId_not_in?: string[];
-    // modelId_contains?: string;
-    // modelId_not_contains?: string;
     [key: string]: any;
 };
 
@@ -435,19 +396,17 @@ export type CmsContentModelEntryMetaType = {
 };
 
 export type CmsContentModelEntryContextType = {
-    manageGet: (
+    getByRevisionId: (
         model: CmsContentModelType,
-        args: {
-            revision: string;
-        }
+        revision: string
     ) => Promise<CmsContentModelEntryType | null>;
     get: (
         model: CmsContentModelType,
         args?: CmsContentModelEntryGetArgsType
     ) => Promise<CmsContentModelEntryType | null>;
-    listIdIn: (
+    listByIds: (
         model: CmsContentModelType,
-        idList: string[]
+        ids: string[]
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
     list: (
         model: CmsContentModelType,
@@ -462,6 +421,10 @@ export type CmsContentModelEntryContextType = {
         model: CmsContentModelType,
         args?: CmsContentModelEntryListArgsType
     ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+    getPublishedByIds: (
+        model: CmsContentModelType,
+        ids: string[]
+    ) => Promise<CmsContentModelEntryType[]>;
     create: (
         model: CmsContentModelType,
         data: Record<string, any>
