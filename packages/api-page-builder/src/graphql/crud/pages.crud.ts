@@ -216,7 +216,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 throw notFoundError;
                             }
 
-                            return context.pageBuilder.pages.getPublished({
+                            return context.pageBuilder.pages.getPublishedById({
                                 id: settings.pages.home
                             });
                         }

@@ -138,7 +138,7 @@ const plugin: ContextPlugin<PbContext> = {
                                     );
                                 }
 
-                                const page = await context.pageBuilder.pages.getPublished({
+                                const page = await context.pageBuilder.pages.getPublishedById({
                                     id: n
                                 });
 
