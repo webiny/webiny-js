@@ -224,6 +224,55 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 );
             },
+            getPublishedByIds: async (model: CmsContentModelType, ids: string[]) => {
+                const permission = await checkPermissions({ rwd: "r" });
+                utils.checkEntryAccess(context, permission, model);
+
+                const results = await db
+                    .batch()
+                    .read(
+                        ...ids.map(id => ({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY_PUBLISHED(),
+                                SK: id.split("#")[0]
+                            }
+                        }))
+                    )
+                    .execute();
+
+                const publishedIds = results
+                    .filter(result => {
+                        if (!result[0] || !result[0][0]) {
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map(result => {
+                        const items = result[0];
+                        return items[0] ? items[0].id : null;
+                    })
+                    .filter(Boolean);
+
+                if (!publishedIds.length) {
+                    return [];
+                }
+
+                const entries = await db
+                    .batch()
+                    .read(
+                        ...publishedIds.map(id => ({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY(),
+                                SK: id
+                            }
+                        }))
+                    )
+                    .execute();
+
+                return entries.map(result => result[0][0]);
+            },
             async create(model, inputData) {
                 const permission = await checkPermissions({ rwd: "w" });
                 utils.checkEntryAccess(context, permission, model);
