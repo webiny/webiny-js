@@ -37,6 +37,10 @@ class DefaultContentModelManager implements CmsContentModelManagerInterface {
     public async listLatest(args) {
         return this._context.cms.entries.listLatest(this._model, args);
     }
+    
+    public async getPublishedByIds(ids: string[]) {
+        return this._context.cms.entries.getPublishedByIds(this._model, ids);
+    }
 
     public async update(id, data) {
         return this._context.cms.entries.update(this._model, id, data);
