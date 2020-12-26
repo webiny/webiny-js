@@ -60,7 +60,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const PK_ENTRY = () => `${createCmsPK(context)}#CME`;
         const PK_ENTRY_LATEST = () => PK_ENTRY() + "#L";
-        const PK_ENTRY_PUBLISHED = () => PK_ENTRY + "#P";
+        const PK_ENTRY_PUBLISHED = () => PK_ENTRY() + "#P";
 
         const loaders = {
             revisions: createRevisionsDataLoader(context, { PK_ENTRY })
@@ -74,7 +74,7 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const entries: CmsContentModelEntryContextType = {
-            manageGet: async (model, { revision }) => {
+            getByRevisionId: async (model, revision) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkEntryAccess(context, permission, model);
 
@@ -104,20 +104,21 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return item;
             },
-            listIdIn: async (model: CmsContentModelType, idList: string[]) => {
+            listByIds: async (model: CmsContentModelType, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkEntryAccess(context, permission, model);
 
                 const batch = db.batch();
-                for (const id of idList) {
-                    batch.read({
+                batch.read(
+                    ...ids.map(id => ({
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY(),
                             SK: id
                         }
-                    });
-                }
+                    }))
+                );
+
                 const results = (await batch.execute()) as [CmsContentModelEntryType[]][];
 
                 const items = results

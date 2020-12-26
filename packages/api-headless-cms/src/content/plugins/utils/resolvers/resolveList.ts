@@ -14,7 +14,7 @@ export const resolveList: ResolverFactory = ({ model }) => async (root, args, { 
         }
         // when id_in sent we go directly to the database
         else if (args.ids && Array.isArray(args.ids) === true) {
-            response = await cms.entries.listIdIn(model, args.ids);
+            response = await cms.entries.listByIds(model, args.ids);
         } else {
             response = await cms.entries.listLatest(model, args);
         }

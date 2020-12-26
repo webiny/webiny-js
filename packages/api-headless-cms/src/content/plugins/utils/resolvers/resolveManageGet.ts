@@ -3,7 +3,7 @@ import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@web
 
 export const resolveManageGet: ResolverFactory = ({ model }) => async (root, args, context) => {
     try {
-        const entry = await context.cms.entries.manageGet(model, args);
+        const entry = await context.cms.entries.getByRevisionId(model, args.revision);
         return new Response(entry);
     } catch (e) {
         return new ErrorResponse(e);
