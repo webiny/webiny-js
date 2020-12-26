@@ -7,9 +7,14 @@ const ERROR_FIELDS = `
 `;
 
 const BASE_CONTENT_MODEL_FIELDS = `
+    description
     modelId
     name
     savedOn
+    group {
+        id
+        name
+    }
 `;
 
 // Fetches data needed for constructing content models list in the main menu.
@@ -43,9 +48,7 @@ export const CREATE_CONTENT_MODEL = gql`
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
             data {
-                name
-                description
-                modelId
+                ${BASE_CONTENT_MODEL_FIELDS}
             }
             error {
                 message
@@ -56,7 +59,7 @@ export const CREATE_CONTENT_MODEL = gql`
 `;
 
 export const DELETE_CONTENT_MODEL = gql`
-    mutation HeadlessCmsDeleteContentModel($modelId: ID!) {
+    mutation CmsDeleteContentModel($modelId: ID!) {
         deleteContentModel(modelId: $modelId) {
             data
             error {

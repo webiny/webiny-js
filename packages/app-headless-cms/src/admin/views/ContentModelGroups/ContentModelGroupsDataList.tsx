@@ -83,24 +83,6 @@ const ContentModelGroupsDataList = () => {
             data={data}
             title={t`Content Model Groups`}
             refresh={listQuery.refetch}
-            sorters={[
-                {
-                    label: t`Newest to oldest`,
-                    sorters: { createdOn: -1 }
-                },
-                {
-                    label: t`Oldest to newest`,
-                    sorters: { createdOn: 1 }
-                },
-                {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
-                },
-                {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
-                }
-            ]}
         >
             {({ data }) => (
                 <List data-testid="default-data-list">

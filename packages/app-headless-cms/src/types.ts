@@ -76,6 +76,10 @@ export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
 export type CmsEditorContentModel = {
     id: CmsEditorFieldId;
+    group: {
+        id: string;
+        name: string;
+    };
     version: number;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
