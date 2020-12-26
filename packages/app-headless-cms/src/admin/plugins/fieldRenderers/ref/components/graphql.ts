@@ -1,18 +1,19 @@
 import gql from "graphql-tag";
 import upperFirst from "lodash/upperFirst";
+import pluralize from "pluralize";
 
 export const createListQuery = model => {
-    const ucFirstPluralizedModelId = upperFirst(model.pluralizedModelId);
+    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query List${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
+        query CmsList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
             content: list${ucFirstPluralizedModelId}(where: $where) {
                 data {
                     id
                     meta {
-                        published
-                        model
+                        status
+                        modelId
                         title
                     }
                 }
@@ -23,14 +24,15 @@ export const createListQuery = model => {
 
 export const createGetQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
+    
     return gql`
-        query Get${ucFirstModelId}($where: ${ucFirstModelId}GetWhereInput!) {
-            content: get${ucFirstModelId}(where: $where) {
+        query CmsGet${ucFirstModelId}($revision:ID!) {
+            content: get${ucFirstModelId}(revision: $revision) {
                 data {
                     id
                     meta {
-                        published
-                        model
+                        status
+                        modelId
                         title
                     }
                 }

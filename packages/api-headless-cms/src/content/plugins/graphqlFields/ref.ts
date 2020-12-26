@@ -10,8 +10,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSearchable: false,
     read: {
         createTypeField({ field }) {
-            const { modelId } = field.settings;
-            const gqlType = createReadTypeName(modelId);
+            const { models } = field.settings;
+            // For now we only use the first model in the list. Support for multiple models will come in the future.
+            const gqlType = createReadTypeName(models[0].modelId);
 
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
@@ -22,27 +23,39 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         }
     },
     manage: {
+        createSchema() {
+            return {
+                typeDefs: `
+                    type RefField {
+                        modelId: String!
+                        entryId: ID!
+                    }
+                    
+                    input RefFieldInput {
+                        modelId: String!
+                        entryId: ID!
+                    }
+                `
+            };
+        },
         createResolver({ field }) {
             return instance => {
                 return instance.values[field.fieldId];
             };
         },
         createTypeField({ field }) {
-            const { modelId } = field.settings;
-            const refModelIdType = createTypeName(modelId);
-
             if (field.multipleValues) {
-                return `${field.fieldId}: [${refModelIdType}]`;
+                return `${field.fieldId}: [RefField]`;
             }
 
-            return `${field.fieldId}: ${refModelIdType}`;
+            return `${field.fieldId}: RefField`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": [RefInput]";
+                return field.fieldId + ": [RefFieldInput]";
             }
 
-            return field.fieldId + ": RefInput";
+            return field.fieldId + ": RefFieldInput";
         }
     }
 };

@@ -33,7 +33,7 @@ export type Resolvers<TContext> =
 
 export type GraphQLSchemaDefinition<TContext> = {
     typeDefs: Types;
-    resolvers: Resolvers<TContext>;
+    resolvers?: Resolvers<TContext>;
 };
 
 export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
