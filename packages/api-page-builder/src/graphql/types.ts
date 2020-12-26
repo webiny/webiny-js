@@ -57,11 +57,15 @@ export type RenderArgs = {
 };
 
 export type PagesCrud = {
+    dataLoaders: {
+        getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
+    };
     get(id: string): Promise<Page>;
     listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
     listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;
-    getPublished(args: { id?: string; path?: string; preview?: boolean }): Promise<Page>;
+    getPublishedById(args: { id: string; preview?: boolean }): Promise<Page>;
+    getPublishedByPath(args: { path: string }): Promise<Page>;
     listPageRevisions(id: string): Promise<Page[]>;
     create(category: string): Promise<Page>;
     createFrom(page: string): Promise<Page>;

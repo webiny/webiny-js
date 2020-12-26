@@ -312,8 +312,25 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return resolve(() => context.pageBuilder.pages.listTags(args));
                 },
 
-                getPublishedPage: async (_, args: { id?: string; path?: string }, context) => {
-                    return resolve(() => context.pageBuilder.pages.getPublished(args));
+                getPublishedPage: async (
+                    _,
+                    args: { id?: string; path?: string; preview?: boolean },
+                    context
+                ) => {
+                    if (args.id) {
+                        return resolve(() =>
+                            context.pageBuilder.pages.getPublishedById({
+                                id: args.id,
+                                preview: args.preview
+                            })
+                        );
+                    }
+
+                    return resolve(() =>
+                        context.pageBuilder.pages.getPublishedByPath({
+                            path: args.path
+                        })
+                    );
                 },
 
                 oembedData: async (_, args: { url: string; width?: string; height?: string }) => {

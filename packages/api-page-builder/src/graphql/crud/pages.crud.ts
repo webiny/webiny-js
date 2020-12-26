@@ -10,6 +10,8 @@ import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
+import DataLoader from "dataloader";
+
 import {
     PageHookPlugin,
     PbContext,
@@ -98,6 +100,88 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
             context.pageBuilder = {
                 ...context.pageBuilder,
                 pages: {
+                    dataLoaders: {
+                        getPublishedById: new DataLoader(
+                            async argsArray => {
+                                const batch = db.batch();
+                                const notFoundError = new NotFoundError("Page not found.");
+                                const idNotProvidedError = new Error(
+                                    'Cannot get published page - "id" not provided.'
+                                );
+
+                                const errorsAndResults = [];
+
+                                let batchResultIndex = 0;
+                                for (let i = 0; i < argsArray.length; i++) {
+                                    const args = argsArray[i];
+
+                                    if (!args.id) {
+                                        errorsAndResults.push(idNotProvidedError);
+                                        continue;
+                                    }
+
+                                    // If we have a full ID, then try to load it directly.
+                                    const [pid, version] = args.id.split("#");
+
+                                    if (version) {
+                                        errorsAndResults.push(batchResultIndex++);
+                                        batch.read({
+                                            ...defaults.db,
+                                            query: { PK: PK_PAGE(), SK: args.id }
+                                        });
+                                        continue;
+                                    }
+
+                                    // If we only have unique page ID (previously know as `parent`),
+                                    // then let's find out which version is published.
+                                    const [[pagePublished]] = await db.read<PagePublished>({
+                                        ...defaults.db,
+                                        query: { PK: PK_PAGE_PUBLISHED(), SK: pid }
+                                    });
+
+                                    if (!pagePublished) {
+                                        errorsAndResults.push(notFoundError);
+                                        continue;
+                                    }
+
+                                    errorsAndResults.push(batchResultIndex++);
+                                    batch.read({
+                                        ...defaults.db,
+                                        query: { PK: PK_PAGE(), SK: pagePublished.id }
+                                    });
+                                }
+
+                                // Replace batch result indexes with actual results.
+                                const batchResults = await batch.execute();
+                                for (let i = 0; i < errorsAndResults.length; i++) {
+                                    const errorResult = errorsAndResults[i];
+                                    if (typeof errorResult !== "number") {
+                                        continue;
+                                    }
+
+                                    const [[page]] = batchResults[errorResult];
+                                    if (!page) {
+                                        errorsAndResults[i] = notFoundError;
+                                        continue;
+                                    }
+
+                                    // If preview enabled, return the page, without checking if the page
+                                    // is published. The preview flag is not utilized anywhere else.
+                                    if (argsArray[i].preview || page.status === "published") {
+                                        errorsAndResults[i] = page;
+                                        continue;
+                                    }
+
+                                    errorsAndResults[i] = notFoundError;
+                                }
+
+                                return errorsAndResults;
+                            },
+                            {
+                                cacheKeyFn: key => key.id + key.preview
+                            }
+                        )
+                    },
                     async get(id) {
                         const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                             rwd: "r"
@@ -112,6 +196,52 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         checkOwnPermissions(identity, permission, page, "ownedBy");
 
                         return page;
+                    },
+
+                    async getPublishedById(args) {
+                        return this.dataLoaders.getPublishedById.load(args);
+                    },
+
+                    async getPublishedByPath(args) {
+                        if (!args.path) {
+                            throw new Error('Cannot get published page - "path" not provided.');
+                        }
+
+                        const notFoundError = new NotFoundError("Page not found.");
+
+                        const normalizedPath = normalizePath(args.path);
+                        if (normalizedPath === "/") {
+                            const settings = await context.pageBuilder.settings.default.get();
+                            if (!settings?.pages?.home) {
+                                throw notFoundError;
+                            }
+
+                            return context.pageBuilder.pages.getPublished({
+                                id: settings.pages.home
+                            });
+                        }
+
+                        const [[pagePublishedPath]] = await db.read<PagePublishedPath>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath },
+                            limit: 1
+                        });
+
+                        if (!pagePublishedPath) {
+                            throw notFoundError;
+                        }
+
+                        const [[page]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(), SK: pagePublishedPath.id },
+                            limit: 1
+                        });
+
+                        if (page) {
+                            return page;
+                        }
+
+                        throw notFoundError;
                     },
 
                     async listLatest(args) {
@@ -221,103 +351,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         });
 
                         return pages;
-                    },
-
-                    async getPublished(args) {
-                        if (!args.id && !args.path) {
-                            throw new Error(
-                                'Cannot get published page - must specify either "id" or "path".'
-                            );
-                        }
-
-                        const notFoundError = new NotFoundError("Page not found.");
-
-                        // 1. If we received `args.id`, then...
-                        if (args.id) {
-                            // If we have a full ID, then try to load it directly.
-                            const [uniquePageId, version] = args.id.split("#");
-                            if (version) {
-                                const [[page]] = await db.read<Page>({
-                                    ...defaults.db,
-                                    query: { PK: PK_PAGE(), SK: args.id },
-                                    limit: 1
-                                });
-
-                                // The preview flag only works with full IDs. In other words, you cannot get
-                                // a page for preview via URL or PID. Only the exact `PID#VERSION` works here.
-                                if (page) {
-                                    // So, if preview enabled, return the page, without checking if the page
-                                    // is published. The preview flag is not utilized anywhere else.
-                                    if (args.preview) {
-                                        return page;
-                                    }
-
-                                    if (page.status === "published") {
-                                        return page;
-                                    }
-                                }
-
-                                throw notFoundError;
-                            }
-
-                            // If we only have unique page ID (previously know as `parent`),
-                            // then let's find out which version is published.
-                            const [[pagePublished]] = await db.read<PagePublished>({
-                                ...defaults.db,
-                                query: { PK: PK_PAGE_PUBLISHED(), SK: uniquePageId },
-                                limit: 1
-                            });
-
-                            if (!pagePublished) {
-                                throw notFoundError;
-                            }
-
-                            const [[page]] = await db.read<Page>({
-                                ...defaults.db,
-                                query: { PK: PK_PAGE(), SK: pagePublished.id },
-                                limit: 1
-                            });
-
-                            if (page) {
-                                return page;
-                            }
-                            throw notFoundError;
-                        }
-
-                        // 2. If we received `args.path`, then...
-                        const normalizedPath = normalizePath(args.path);
-                        if (normalizedPath === "/") {
-                            const settings = await context.pageBuilder.settings.default.get();
-                            if (!settings?.pages?.home) {
-                                throw notFoundError;
-                            }
-
-                            return context.pageBuilder.pages.getPublished({
-                                id: settings.pages.home
-                            });
-                        }
-
-                        const [[pagePublishedPath]] = await db.read<PagePublishedPath>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath },
-                            limit: 1
-                        });
-
-                        if (!pagePublishedPath) {
-                            throw notFoundError;
-                        }
-
-                        const [[page]] = await db.read<Page>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE(), SK: pagePublishedPath.id },
-                            limit: 1
-                        });
-
-                        if (page) {
-                            return page;
-                        }
-
-                        throw notFoundError;
                     },
 
                     async create(categorySlug) {
