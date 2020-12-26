@@ -1,7 +1,5 @@
-import get from "lodash/get";
-
-export const getOptions = (list, extraOptions = null) => {
-    return get(list, "data.content.data", [])
+export const getOptions = (entries = [], extraOptions = null) => {
+    return entries
         .map(item => {
             const name = item.meta.title;
 

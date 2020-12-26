@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useMemo } from "react";
 import get from "lodash/get";
 import debounce from "lodash/debounce";

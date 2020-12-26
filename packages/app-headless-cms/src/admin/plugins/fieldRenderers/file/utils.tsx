@@ -5,7 +5,7 @@ import { ReactComponent as FileIcon } from "../../fields/icons/round_insert_driv
 export const imageExtensions = [".jpg", ".jpeg", ".gif", ".png", ".svg"];
 
 export const imageWrapperStyles = css({
-    height: 232
+    height: "auto"
 });
 
 const fileLabel = css({

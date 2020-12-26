@@ -9,7 +9,7 @@ export const elasticSearchQueryBuilderNotContainsPlugin = (): ElasticSearchQuery
             // eslint-disable-next-line @typescript-eslint/camelcase
             simple_query_string: {
                 fields: [field],
-                query: value
+                query: `*${value}*`
             }
         });
     }

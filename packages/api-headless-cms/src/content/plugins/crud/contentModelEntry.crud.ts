@@ -127,6 +127,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 let response;
                 try {
+                    console.log(JSON.stringify(body, null, 2));
                     response = await elasticSearch.search({
                         ...utils.defaults.es(context),
                         body
