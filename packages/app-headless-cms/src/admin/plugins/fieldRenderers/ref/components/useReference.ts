@@ -17,7 +17,7 @@ const emptyValue = {
     name: ""
 };
 
-export const useSingleRef = ({ bind, field }) => {
+export const useReference = ({ bind, field }) => {
     const client = useApolloClient();
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);

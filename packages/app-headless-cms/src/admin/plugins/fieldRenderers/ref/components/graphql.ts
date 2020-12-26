@@ -7,8 +7,8 @@ export const createListQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query CmsList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
-            content: list${ucFirstPluralizedModelId}(where: $where) {
+        query CmsList${ucFirstPluralizedModelId}($ids: [ID!], $where: ${ucFirstModelId}ListWhereInput) {
+            content: list${ucFirstPluralizedModelId}(ids: $ids, where: $where) {
                 data {
                     id
                     meta {
@@ -17,6 +17,10 @@ export const createListQuery = model => {
                         title
                     }
                 }
+                error {
+                    code
+                    message
+                }
             }
         }
     `;
@@ -24,7 +28,7 @@ export const createListQuery = model => {
 
 export const createGetQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
-    
+
     return gql`
         query CmsGet${ucFirstModelId}($revision:ID!) {
             content: get${ucFirstModelId}(revision: $revision) {
