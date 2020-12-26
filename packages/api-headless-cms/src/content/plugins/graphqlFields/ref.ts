@@ -1,5 +1,4 @@
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { createTypeName } from "../utils/createTypeName";
+import { CmsContext, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { createReadTypeName } from "../utils/createTypeName";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
@@ -17,8 +16,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
+            return async (instance, args, context: CmsContext) => {
+                const { modelId } = field.settings.models[0];
+                
+                // Get model manager, to get access to CRUD methods
+                const model = await context.cms.getModel(modelId);
+                
+                // Get field value for this entry
+                const value = instance.values[field.fieldId];
+
+                if (field.multipleValues) {
+                    const ids = value.map(ref => ref.entryId);
+
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    return await model.getPublishedByIds(ids);
+                }
+
+                return (await model.getPublishedByIds([value.entryId]))[0];
             };
         }
     },
