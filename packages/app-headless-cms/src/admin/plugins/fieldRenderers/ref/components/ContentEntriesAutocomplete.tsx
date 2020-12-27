@@ -14,7 +14,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
     const { modelId } = field.settings.models[0];
 
     const unpublishedEntryInfo =
-        !value.published &&
+        value.id && !value.published &&
         t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`(
             {
                 publishItLink: (
