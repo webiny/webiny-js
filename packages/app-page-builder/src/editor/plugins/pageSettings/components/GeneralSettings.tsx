@@ -52,10 +52,13 @@ const GeneralSettings = ({ form, data, Bind, setValue }) => {
                 <Cell span={12}>
                     <Bind
                         name={"path"}
-                        validators={validation.create("required")}
+                        validators={validation.create("required,minLength:2")}
                         beforeChange={toSlug}
                     >
-                        <Input label="Path" description="Page path (e.g. /about-us)" />
+                        <Input
+                            label="Path"
+                            description={`For example: "/about-us". Must contain at least two characters.`}
+                        />
                     </Bind>
                 </Cell>
                 <Cell span={12}>
