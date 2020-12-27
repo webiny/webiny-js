@@ -27,7 +27,10 @@ const api = new Graphql({
         DEBUG: String(process.env.DEBUG),
         S3_BUCKET: fileManager.bucket.id,
         DB_TABLE: dynamoDb.table.name,
-        PRERENDERING_HANDLER: prerenderingService.functions.render.arn
+        PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
+        PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
+        PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
+        PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn
     }
 });
 
@@ -84,4 +87,4 @@ export const region = process.env.AWS_REGION;
 export const apiUrl = cloudfront.cloudfront.domainName.apply(value => `https://${value}`);
 export const cognitoUserPoolId = cognito.userPool.id;
 export const cognitoAppClientId = cognito.userPoolClient.id;
-export const updatePageBuilderSettingsFunction = pageBuilder.functions.updateSettings.arn;
+export const updatePbSettingsFunction = pageBuilder.functions.updateSettings.arn;
