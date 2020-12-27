@@ -18,10 +18,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createResolver({ field }) {
             return async (instance, args, context: CmsContext) => {
                 const { modelId } = field.settings.models[0];
-                
+
                 // Get model manager, to get access to CRUD methods
                 const model = await context.cms.getModel(modelId);
-                
+
                 // Get field value for this entry
                 const value = instance.values[field.fieldId];
 
@@ -29,7 +29,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     const ids = value.map(ref => ref.entryId);
 
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    return await model.getPublishedByIds(ids);
+                    const entries = await model.getPublishedByIds(ids);
+                    return entries.filter(Boolean);
                 }
 
                 return (await model.getPublishedByIds([value.entryId]))[0];

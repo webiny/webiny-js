@@ -1,7 +1,7 @@
 import {
-    CmsContentModelEntryListOptionsType,
-    CmsContentModelEntryListSortType,
-    CmsContentModelEntryListWhereType,
+    CmsContentEntryListOptionsType,
+    CmsContentEntryListSortType,
+    CmsContentEntryListWhereType,
     CmsContentModelType,
     CmsContext,
     CmsModelFieldToGraphQLPlugin,
@@ -21,8 +21,8 @@ type ModelFieldType = {
 type ModelFieldsType = Record<string, ModelFieldType>;
 
 type CreateElasticSearchParamsArgType = {
-    where?: CmsContentModelEntryListWhereType;
-    sort?: CmsContentModelEntryListSortType;
+    where?: CmsContentEntryListWhereType;
+    sort?: CmsContentEntryListSortType;
     limit: number;
     after?: string;
 };
@@ -33,11 +33,11 @@ type CreateElasticSearchParamsType = {
     args: CreateElasticSearchParamsArgType;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentModelEntryListOptionsType;
+    options?: CmsContentEntryListOptionsType;
 };
 
 type CreateElasticSearchSortParamsType = {
-    sort: CmsContentModelEntryListSortType;
+    sort: CmsContentEntryListSortType;
     modelFields: ModelFieldsType;
     parentObject?: string;
     model: CmsContentModelType;
@@ -46,11 +46,11 @@ type CreateElasticSearchSortParamsType = {
 type CreateElasticSearchQueryArgsType = {
     model: CmsContentModelType;
     context: CmsContext;
-    where: CmsContentModelEntryListWhereType;
+    where: CmsContentEntryListWhereType;
     modelFields: ModelFieldsType;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentModelEntryListOptionsType;
+    options?: CmsContentEntryListOptionsType;
 };
 
 type ElasticSearchSortParamType = {

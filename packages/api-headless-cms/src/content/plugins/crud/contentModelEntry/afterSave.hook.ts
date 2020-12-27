@@ -1,12 +1,12 @@
 import {
-    CmsContentModelEntryType,
+    CmsContentEntryType,
     CmsContentModelType,
     CmsContext
 } from "@webiny/api-headless-cms/types";
 
 type ArgsType = {
     model: CmsContentModelType;
-    entry: CmsContentModelEntryType;
+    entry: CmsContentEntryType;
     context: CmsContext;
 };
 // eslint-disable-next-line

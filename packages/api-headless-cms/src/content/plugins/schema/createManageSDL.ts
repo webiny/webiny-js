@@ -74,6 +74,11 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             data: ${mTypeName}
             error: CmsError
         }
+        
+        type ${mTypeName}ArrayResponse {
+            data: [${mTypeName}]
+            error: CmsError
+        }
 
         type ${mTypeName}ListResponse {
             data: [${mTypeName}]
@@ -88,9 +93,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
         extend type Query {
             get${typeName}(revision: ID!): ${mTypeName}Response
+            
+            get${pluralizedTypeName(typeName)}ByIds(revisions: [ID!]!): ${mTypeName}ArrayResponse
 
             list${pluralizedTypeName(typeName)}(
-                ids: [ID!]
                 where: ${mTypeName}ListWhereInput
                 sort: [${mTypeName}ListSorter]
                 limit: Int
