@@ -121,14 +121,14 @@ export const graphQLHandlerFactory = (
             });
         }
 
+        if (http.method !== "POST") {
+            return next();
+        }
+
         try {
             await checkEndpointAccess(context);
         } catch (ex) {
             return respond(http, new NotAuthorizedResponse());
-        }
-
-        if (http.method !== "POST") {
-            return next();
         }
 
         try {
