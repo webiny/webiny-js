@@ -178,7 +178,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
             event.stopPropagation();
             getUpdateValue(`${editorMode}.advanced`)(!advanced);
         },
-        [advanced]
+        [advanced, editorMode, getUpdateValue]
     );
 
     const [top, right, bottom, left] = useMemo(() => {
