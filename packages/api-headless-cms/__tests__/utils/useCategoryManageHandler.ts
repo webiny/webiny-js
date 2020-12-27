@@ -42,15 +42,25 @@ const getCategoryQuery = /* GraphQL */ `
     }
 `;
 
+const getCategoriesByIdsQuery = /* GraphQL */ `
+    query GetCategories($revisions: [ID!]!) {
+        getCategoriesByIds(revisions: $revisions) {
+            data {
+                ${categoryFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
 const listCategoriesQuery = /* GraphQL */ `
     query ListCategories(
-        $ids: [ID!]
         $where: CategoryListWhereInput
         $sort: [CategoryListSorter]
         $limit: Int
         $after: String
     ) {
-        listCategories(ids: $ids, where: $where, sort: $sort, limit: $limit, after: $after) {
+        listCategories(where: $where, sort: $sort, limit: $limit, after: $after) {
             data {
                 ${categoryFields}
             }
@@ -125,6 +135,11 @@ export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) =>
         async getCategory(variables) {
             return await contentHandler.invoke({
                 body: { query: getCategoryQuery, variables }
+            });
+        },
+        async getCategoriesByIds(variables) {
+            return await contentHandler.invoke({
+                body: { query: getCategoriesByIdsQuery, variables }
             });
         },
         async listCategories(variables = {}) {
