@@ -97,7 +97,7 @@ export const useReferences = ({ bind, field }) => {
         client.query({ query: GET_BY_IDS, variables: { revisions: values } }).then(res => {
             setLoading(false);
             const entries = res.data.content.data;
-            
+
             // Calculate a couple of props for the Autocomplete component.
             setValueEntries(
                 entries.map(entry => ({

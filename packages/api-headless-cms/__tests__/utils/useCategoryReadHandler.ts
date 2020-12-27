@@ -13,6 +13,7 @@ const errorFields = `
     error {
         code
         message
+        data
     }
 `;
 
@@ -57,14 +58,16 @@ export const useCategoryReadHandler = (options: GQLHandlerCallableArgsType) => {
 
     return {
         ...contentHandler,
-        async getCategory(variables) {
+        async getCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getCategoryQuery, variables }
+                body: { query: getCategoryQuery, variables },
+                headers
             });
         },
-        async listCategories(variables = {}) {
+        async listCategories(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listCategoriesQuery, variables }
+                body: { query: listCategoriesQuery, variables },
+                headers
             });
         }
     };

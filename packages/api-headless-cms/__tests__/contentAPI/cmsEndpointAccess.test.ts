@@ -14,7 +14,15 @@ describe("MANAGE - Resolvers", () => {
     const previewOpts = { path: "preview/en-US" };
     const defaultPermissions = [
         {
-            name: "content.i18n"
+            name: "content.i18n",
+            locales: ["en-US"]
+        },
+        {
+            name: "cms.settings"
+        },
+        {
+            name: "cms.manage.contentModelEntry",
+            rwd: "rwd"
         }
     ];
 
@@ -131,7 +139,9 @@ describe("MANAGE - Resolvers", () => {
             error: {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
-                data: null
+                data: {
+                    position: "endpoint access"
+                }
             }
         });
     });
@@ -187,7 +197,9 @@ describe("MANAGE - Resolvers", () => {
             error: {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
-                data: null
+                data: {
+                    position: "endpoint access"
+                }
             }
         });
     });
@@ -243,7 +255,9 @@ describe("MANAGE - Resolvers", () => {
             error: {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
-                data: null
+                data: {
+                    position: "endpoint access"
+                }
             }
         });
     });

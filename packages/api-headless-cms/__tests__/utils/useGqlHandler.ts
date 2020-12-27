@@ -3,13 +3,15 @@ import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import i18nContext from "@webiny/api-i18n/plugins/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
+import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
+import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
-import { SecurityIdentity } from "@webiny/api-security";
+import { SecurityIdentity } from "@webiny/api-security/types";
 import { Client } from "@elastic/elasticsearch";
-import { createAuthenticate, createGetPermissions, until, PermissionsArgType } from "./helpers";
+import { createIdentity, createPermissions, until, PermissionsArgType } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -27,6 +29,7 @@ import {
 } from "./graphql/contentModel";
 
 import { INTROSPECTION } from "./graphql/schema";
+import { ApiKey } from "@webiny/api-security-tenancy/types";
 
 export type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
@@ -58,12 +61,34 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         {
             type: "context",
+            name: "context-security-tenant",
             apply(context) {
                 if (!context.security) {
                     context.security = {};
                 }
                 context.security.getTenant = () => {
                     return tenant;
+                };
+                context.security.apiKeys = {
+                    getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
+                        if (!token || token !== "aToken") {
+                            return null;
+                        }
+                        const apiKey = "a1234567890";
+                        return {
+                            id: apiKey,
+                            name: apiKey,
+                            permissions: identity.permissions || [],
+                            token,
+                            createdBy: {
+                                id: "test",
+                                displayName: "test",
+                                type: "admin"
+                            },
+                            description: "test",
+                            createdOn: new Date().toISOString()
+                        };
+                    }
                 };
             }
         },
@@ -86,17 +111,31 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
             }
         },
         securityPlugins(),
+        apiKeyAuthentication({ identityType: "api-key" }),
+        apiKeyAuthorization({ identityType: "api-key" }),
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
-            getPermissions: createGetPermissions(permissions)
+            getPermissions: context => {
+                const { headers = {} } = context.http || {};
+                if (headers["Authorization"] || headers["authorization"]) {
+                    return;
+                }
+                return createPermissions(permissions);
+            }
         },
         {
             type: "security-authentication",
-            authenticate: createAuthenticate(identity)
+            authenticate: async context => {
+                const { headers = {} } = context.http || {};
+                if (headers["Authorization"] || headers["authorization"]) {
+                    return;
+                }
+                return createIdentity(identity);
+            }
         },
         {
             type: "context",

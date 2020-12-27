@@ -74,6 +74,14 @@ const compare = (key: string, compareValue: any, value: any): boolean => {
 
 const whereFilterFactory = (where: Record<string, any> = {}) => {
     return model => {
+        if (!where) {
+            return true;
+        }
+        if (!where.hasOwnProperty) {
+            throw new Error(
+                `Argument "where" does not "hasOwnProperty" because it is a "${typeof where}"`
+            );
+        }
         for (const key in where) {
             if (where.hasOwnProperty(key) === false) {
                 continue;
