@@ -52,6 +52,17 @@ const getESPublishedEntryData = (entry: CmsContentModelEntryType) => {
     return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
+const arrayChunk = (arr: any[], size: number): any[][] => {
+    const len = arr.length;
+    const tmp = [];
+
+    for (let i = 0; i < len; i += size) {
+        tmp.push(arr.slice(i, i + size));
+    }
+
+    return tmp;
+};
+
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-entry",
@@ -108,31 +119,31 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkEntryAccess(context, permission, model);
 
-                const batch = db.batch();
-                batch.read(
-                    ...ids.map(id => ({
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY(),
-                            SK: id
-                        }
-                    }))
-                );
+                const idList = arrayChunk(ids, 100);
+                const results: [CmsContentModelEntryType[]][] = [];
+                while (idList.length > 0) {
+                    const batch = db.batch();
+                    const targetIds = idList.shift();
+                    batch.read(
+                        ...targetIds.map(id => ({
+                            ...utils.defaults.db,
+                            query: {
+                                PK: PK_ENTRY(),
+                                SK: id
+                            }
+                        }))
+                    );
 
-                const results = (await batch.execute()) as [CmsContentModelEntryType[]][];
+                    results.push(...(await batch.execute()));
+                }
 
-                const items = results
-                    .filter(result => {
-                        if (!result[0] || !result[0][0]) {
-                            return false;
-                        }
-                        return true;
-                    })
-                    .map(result => {
-                        const items = result[0];
-
-                        return items[0];
-                    });
+                const items = results.reduce((arr, result) => {
+                    if (Array.isArray(result[0]) === false || !result[0][0]) {
+                        return arr;
+                    }
+                    arr.push(result[0][0]);
+                    return arr;
+                }, []);
 
                 const meta = {
                     hasMoreItems: false,

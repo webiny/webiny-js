@@ -18,10 +18,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createResolver({ field }) {
             return async (instance, args, context: CmsContext) => {
                 const { modelId } = field.settings.models[0];
-                
+
                 // Get model manager, to get access to CRUD methods
                 const model = await context.cms.getModel(modelId);
-                
+
                 // Get field value for this entry
                 const value = instance.values[field.fieldId];
 
