@@ -11,7 +11,7 @@ export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
                 ...utils.defaults.db,
                 query: {
                     PK: PK_ENTRY(),
-                    SK: { $beginsWith: keys[i].split("#")[0] }
+                    SK: { $beginsWith: keys[i] }
                 }
             });
 

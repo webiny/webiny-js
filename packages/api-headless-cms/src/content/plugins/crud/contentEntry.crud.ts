@@ -12,17 +12,17 @@ import {
     DbItemTypes
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
-import { validateModelEntryData } from "./contentModelEntry/entryDataValidation";
+import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
     createElasticSearchParams,
     createElasticSearchLimit
-} from "./contentModelEntry/elasticSearchHelpers";
-import * as dataLoaders from "./contentModelEntry/dataLoaders";
+} from "./contentEntry/elasticSearchHelpers";
+import * as dataLoaders from "./contentEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
-import { beforeCreateHook } from "./contentModelEntry/beforeCreate.hook";
-import { afterCreateHook } from "./contentModelEntry/afterCreate.hook";
-import { beforeSaveHook } from "./contentModelEntry/beforeSave.hook";
-import { afterSaveHook } from "./contentModelEntry/afterSave.hook";
+import { beforeCreateHook } from "./contentEntry/beforeCreate.hook";
+import { afterCreateHook } from "./contentEntry/afterCreate.hook";
+import { beforeSaveHook } from "./contentEntry/beforeSave.hook";
+import { afterSaveHook } from "./contentEntry/afterSave.hook";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -66,14 +66,16 @@ export default (): ContextPlugin<CmsContext> => ({
         const loaders = {
             getAllEntryRevisions: dataLoaders.getAllEntryRevisions(context, { PK_ENTRY }),
             getRevisionById: dataLoaders.getRevisionById(context, { PK_ENTRY }),
-            getPublishedRevisionById: dataLoaders.getPublishedRevisionById(context, { PK_ENTRY_PUBLISHED })
+            getPublishedRevisionById: dataLoaders.getPublishedRevisionById(context, {
+                PK_ENTRY_PUBLISHED
+            })
         };
 
         const checkPermissions = (check: {
             rwd?: string;
             rcpu?: string;
         }): Promise<CmsContentEntryPermissionType> => {
-            return utils.checkPermissions(context, "cms.manage.contentModelEntry", check);
+            return utils.checkPermissions(context, "cms.manage.contentEntry", check);
         };
 
         const entries: CmsContentEntryContextType = {
@@ -107,8 +109,8 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
-            getEntryRevisions: async id => {
-                return loaders.getAllEntryRevisions.load(id);
+            getEntryRevisions: async entryId => {
+                return loaders.getAllEntryRevisions.load(entryId);
             },
             get: async (model, args) => {
                 const permission = await checkPermissions({ rwd: "r" });
@@ -283,7 +285,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return entry;
             },
-            createRevisionFrom: async (model, sourceId) => {
+            createRevisionFrom: async (model, sourceId, data = {}) => {
                 const permission = await checkPermissions({ rwd: "w" });
                 utils.checkEntryAccess(context, permission, model);
 
@@ -328,7 +330,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: { ...entry.values }
+                    values: { ...entry.values, ...data }
                 };
 
                 await db
@@ -735,6 +737,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 );
 
                 await elasticSearch.bulk({ body: esOperations });
+
+                // Clear DataLoader cache for this entry.
+                loaders.getAllEntryRevisions.clear(uniqueId);
 
                 return entry;
             },

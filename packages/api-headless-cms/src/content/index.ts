@@ -1,6 +1,6 @@
 import contentModelGroupCrud from "./plugins/crud/contentModelGroup.crud";
 import contentModelCrud from "./plugins/crud/contentModel.crud";
-import contentModelEntry from "./plugins/crud/contentModelEntry.crud";
+import contentEntry from "./plugins/crud/contentEntry.crud";
 import pluginsCrudSetup from "../plugins/crud";
 import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
 import contextSetup from "./contextSetup";
@@ -19,7 +19,7 @@ export default (options: CmsContentPluginsIndexArgsType = {}) => [
     contextSetup(options),
     contentModelGroupCrud(),
     contentModelCrud(),
-    contentModelEntry(),
+    contentEntry(),
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
     validatorsPlugins(),

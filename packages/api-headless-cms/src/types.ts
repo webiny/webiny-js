@@ -421,18 +421,16 @@ export type CmsContentEntryContextType = {
         model: CmsContentModelType,
         ids: string[]
     ) => Promise<CmsContentEntryType[]>;
-    create: (
-        model: CmsContentModelType,
-        data: Record<string, any>
-    ) => Promise<CmsContentEntryType>;
+    create: (model: CmsContentModelType, data: Record<string, any>) => Promise<CmsContentEntryType>;
     createRevisionFrom: (
         model: CmsContentModelType,
-        id: string
+        id: string,
+        data: Record<string, any>
     ) => Promise<CmsContentEntryType>;
     update: (
         model: CmsContentModelType,
         id: string,
-        data: Record<string, any>
+        data?: Record<string, any>
     ) => Promise<CmsContentEntryType>;
     delete: (model: CmsContentModelType, id: string) => Promise<void>;
     publish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
