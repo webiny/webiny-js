@@ -20,15 +20,16 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
     const client = useApolloClient();
     const { modelId } = contentModel;
 
-    const { CREATE_REVISION, DELETE_REVISION, PUBLISH_REVISION } = useMemo(() => {
+    const { CREATE_REVISION, DELETE_REVISION, PUBLISH_REVISION, UNPUBLISH_REVISION } = useMemo(() => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
             DELETE_REVISION: GQL.createDeleteMutation(contentModel),
-            PUBLISH_REVISION: GQL.createPublishMutation(contentModel)
+            PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
+            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
         };
     }, [modelId]);
 
-    const { createRevision, editRevision, deleteRevision, publishRevision } = useHandlers(null, {
+    const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } = useHandlers(null, {
         createRevision: () => async () => {
             setLoading(true);
             const { data: res } = await client.mutate({
@@ -107,14 +108,28 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                     Successfully published revision <strong>#{revision.version}</strong>!
                 </span>
             );
+        },
+        unpublishRevision: () => async () => {
+            setLoading(true);
+            const { data } = await client.mutate({
+                mutation: UNPUBLISH_REVISION,
+                variables: { revision: revision.id }
+            });
+
+            setLoading(false);
+
+            const { error } = data.content;
+            if (error) {
+                return showSnackbar(error.message);
+            }
+
+            showSnackbar(
+                <span>
+                    Successfully unpublished revision <strong>#{revision.version}</strong>!
+                </span>
+            );
         }
-        // unpublishRevision: () => async () => {
-        //     await client.mutate({
-        //         mutation: UNPUBLISH_REVISION,
-        //         variables: { id: revision.id }
-        //     });
-        // }
     });
 
-    return { createRevision, editRevision, deleteRevision, publishRevision };
+    return { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision };
 };

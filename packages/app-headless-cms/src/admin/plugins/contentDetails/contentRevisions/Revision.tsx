@@ -21,6 +21,7 @@ import { ReactComponent as GestureIcon } from "@webiny/app-headless-cms/admin/ic
 import { ReactComponent as AddIcon } from "@webiny/app-headless-cms/admin/icons/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-headless-cms/admin/icons/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
+import { ReactComponent as UnpublishIcon } from "@webiny/app-headless-cms/admin/icons/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
 import { CmsEditorContentModel, CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
@@ -70,7 +71,13 @@ type Props = {
 
 const Revision = (props: Props) => {
     const { revision, setLoading, contentModel, entry, switchTab } = props;
-    const { createRevision, deleteRevision, publishRevision, editRevision } = useRevision({
+    const {
+        createRevision,
+        deleteRevision,
+        publishRevision,
+        unpublishRevision,
+        editRevision
+    } = useRevision({
         contentModel,
         entry,
         revision,
@@ -137,6 +144,15 @@ const Revision = (props: Props) => {
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
                                     {t`Publish`}
+                                </MenuItem>
+                            )}
+
+                            {revision.meta.status === "published" && (
+                                <MenuItem onClick={unpublishRevision}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<UnpublishIcon />} />
+                                    </ListItemGraphic>
+                                    {t`Unpublish`}
                                 </MenuItem>
                             )}
 
