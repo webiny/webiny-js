@@ -1,6 +1,6 @@
 import slugify from "slugify";
 import {
-    CmsContentModelEntryPermissionType,
+    CmsContentEntryPermissionType,
     CmsContentModelPermissionType,
     CmsContentModelType,
     CmsContext,
@@ -168,7 +168,7 @@ export const validateModelAccess = (
 
 export const checkEntryAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelEntryPermissionType>,
+    permission: SecurityPermission<CmsContentEntryPermissionType>,
     model: CmsContentModelType
 ): void => {
     if (validateEntryAccess(context, permission, model)) {
@@ -179,7 +179,7 @@ export const checkEntryAccess = (
 
 export const validateEntryAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelEntryPermissionType>,
+    permission: SecurityPermission<CmsContentEntryPermissionType>,
     model: CmsContentModelType
 ): boolean => {
     return validateModelAccess(context, permission, model);
