@@ -563,3 +563,12 @@ export type PbEditorResponsiveModePlugin = Plugin & {
         icon: React.ReactElement;
     };
 };
+
+export type PbRenderResponsiveModePlugin = Plugin & {
+    type: "pb-render-responsive-mode";
+    config: {
+        name: string;
+        maxWidth: number;
+        minWidth: number;
+    };
+};
