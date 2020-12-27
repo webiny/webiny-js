@@ -259,7 +259,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         data: {
                             PK: PK_ENTRY(),
                             SK: id,
-                            TYPE: DbItemTypes.CMS_CONTENT_MODEL_ENTRY,
+                            TYPE: TYPE_ENTRY,
                             ...entry
                         }
                     })
@@ -693,6 +693,8 @@ export default (): ContextPlugin<CmsContext> => ({
                                 SK: uniqueId
                             },
                             data: {
+                                PK: PK_ENTRY_PUBLISHED(),
+                                SK: uniqueId,
                                 ...publishedEntryData,
                                 ...omit(entry, ["PK", "SK", "TYPE"])
                             }
@@ -921,14 +923,14 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY_PUBLISHED(),
-                            SK: id
+                            SK: uniqueId
                         }
                     })
                     .update({
                         ...utils.defaults.db,
                         query: {
-                            PK: PK_ENTRY_PUBLISHED(),
-                            SK: uniqueId
+                            PK: PK_ENTRY(),
+                            SK: id
                         },
                         data: entry
                     })

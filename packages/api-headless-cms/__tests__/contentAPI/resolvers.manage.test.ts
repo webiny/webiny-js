@@ -6,6 +6,8 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
+jest.setTimeout(10000);
+
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
@@ -185,9 +187,7 @@ describe("MANAGE - Resolvers", () => {
     test("get entries by given ids", async () => {
         await setupContentModel();
         // Use "manage" API to create and publish entries
-        const { createCategory, getCategoriesByIds } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { createCategory, getCategoriesByIds } = useCategoryManageHandler(manageOpts);
 
         const [fruitsResponse] = await createCategory({
             data: {
@@ -231,7 +231,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test.skip(`list entries (limit)`, async () => {
+    test(`list entries (limit)`, async () => {
         await setupContentModel();
         const query = /* GraphQL */ `
             {
@@ -244,7 +244,7 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test.skip(`list categories (sort ASC)`, async () => {
+    test(`list categories (sort ASC)`, async () => {
         await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
@@ -258,7 +258,7 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test.skip(`list categories (sort DESC)`, async () => {
+    test(`list categories (sort DESC)`, async () => {
         await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
@@ -272,7 +272,7 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test.skip(`list categories (contains, not_contains, in, not_in)`, async () => {
+    test(`list categories (contains, not_contains, in, not_in)`, async () => {
         await setupContentModel();
         // Test resolvers
         const query = /* GraphQL */ `
@@ -511,13 +511,15 @@ describe("MANAGE - Resolvers", () => {
         expect(meta.revisions[0].id).toEqual(id2);
     });
 
-    test.skip(`publish and unpublish a category`, async () => {
+    test(`publish and unpublish a category`, async () => {
+        await setupContentModel();
         const {
             until,
             createCategory,
             createCategoryFrom,
             listCategories: listLatestCategories,
-            publishCategory
+            publishCategory,
+            unpublishCategory
         } = useCategoryManageHandler(manageOpts);
 
         const { listCategories: listPublishedCategories } = useCategoryReadHandler(readOpts);
@@ -556,6 +558,30 @@ describe("MANAGE - Resolvers", () => {
             { name: "publish latest revision" }
         );
 
-        // TODO: finish unpublishing
+        const [unpublish] = await unpublishCategory({ revision: id3 });
+        
+        if(unpublish.data.unpublishCategory.error) {
+            console.log(unpublish.data.unpublishCategory.error);
+            process.exit(1);
+        }
+        
+        expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
+
+        // Wait until there are no categories available in READ API
+        await until(
+            () => listPublishedCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === 0,
+            { name: "unpublish revision" }
+        );
+        
+        // Publish the latest revision again
+        const [publish2] = await publishCategory({ revision: id3 });
+
+        // Wait until the previous revision is indexed in Elastic as "published"
+        await until(
+            () => listPublishedCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === id3,
+            { name: "publish latest revision again" }
+        );
     });
 });

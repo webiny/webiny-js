@@ -127,6 +127,17 @@ const publishCategoryMutation = /* GraphQL */ `
     }
 `;
 
+const unpublishCategoryMutation = /* GraphQL */ `
+    mutation UnpublishCategory($revision: ID!) {
+        unpublishCategory(revision: $revision) {
+            data {
+                ${categoryFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
 export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) => {
     const contentHandler = useContentGqlHandler(options);
 
@@ -177,6 +188,14 @@ export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) =>
             return await contentHandler.invoke({
                 body: {
                     query: publishCategoryMutation,
+                    variables
+                }
+            });
+        },
+        async unpublishCategory(variables) {
+            return await contentHandler.invoke({
+                body: {
+                    query: unpublishCategoryMutation,
                     variables
                 }
             });
