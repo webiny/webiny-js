@@ -11,6 +11,7 @@ import omit from "lodash/omit";
 import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
+import jsonpack from "jsonpack";
 
 import {
     PageHookPlugin,
@@ -80,6 +81,32 @@ type PagePublishedPath = {
 };
 
 const PERMISSION_NAME = TYPE.PAGE;
+
+const extractContent = (contentProp: Record<string, any>): Record<string, any> => {
+    if (!contentProp || !contentProp.compression) {
+        return null;
+    }
+
+    try {
+        return jsonpack.unpack(contentProp.content);
+    } catch {
+        return null;
+    }
+};
+
+const compressContent = (content: Record<string, any> = null): Record<string, any> => {
+    let compressed = null;
+    if (content) {
+        try {
+            compressed = jsonpack.pack(content);
+        } catch {}
+    }
+
+    return {
+        compression: "jsonpack",
+        content: compressed
+    };
+};
 
 const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbContext> => {
     const plugin: ContextPlugin<PbContext> = {
@@ -169,6 +196,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     // is published. The preview flag is not utilized anywhere else.
                                     if (argsArray[i].preview || page.status === "published") {
                                         errorsAndResults[i] = page;
+
+                                        // Extract compressed page content.
+                                        errorsAndResults[i].content = await extractContent(
+                                            errorsAndResults[i].content
+                                        );
+
                                         continue;
                                     }
 
@@ -195,6 +228,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const identity = context.security.getIdentity();
                         checkOwnPermissions(identity, permission, page, "ownedBy");
 
+                        // Extract compressed page content.
+                        page.content = await extractContent(page.content);
                         return page;
                     },
 
@@ -238,6 +273,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         });
 
                         if (page) {
+                            // Extract compressed page content.
+                            page.content = await extractContent(page.content);
+                            
                             return page;
                         }
 
@@ -407,7 +445,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             savedOn: new Date().toISOString(),
                             createdOn: new Date().toISOString(),
                             ownedBy: owner,
-                            createdBy: owner
+                            createdBy: owner,
+                            content: compressContent()
                         };
 
                         await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
@@ -437,7 +476,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
-                        return omit(data, ["PK", "SK"]);
+                        return omit(data, ["PK", "SK", "content"]);
                     },
 
                     async createFrom(from) {
@@ -482,7 +521,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const nextId = `${fromUniqueId}#${getZeroPaddedVersionNumber(nextVersion)}`;
                         const identity = context.security.getIdentity();
 
-                        const data = {
+                        const data: Record<string, any> = {
                             ...page,
                             SK: nextId,
                             id: nextId,
@@ -531,7 +570,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
-                        return data;
+                        // Extract compressed page content.
+                        page.content = await extractContent(page.content);
+                        return data as Page;
                     },
 
                     async update(id, data) {
@@ -581,6 +622,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         updateData.savedOn = new Date().toISOString();
 
                         await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
+
+                        if (updateData.content) {
+                            updateData.content = compressContent(updateData.content);
+                        }
 
                         await db.update({
                             ...defaults.db,

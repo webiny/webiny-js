@@ -55,6 +55,7 @@ export type Page = {
     title: string;
     path: string;
     category: string;
+    content: Record<string, any>;
     publishedOn: string;
     version: number;
     settings?: {
