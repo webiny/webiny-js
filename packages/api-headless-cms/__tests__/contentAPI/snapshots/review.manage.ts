@@ -10,7 +10,7 @@ export default /* GraphQL */ `
         savedOn: DateTime
         meta: ReviewMeta
         text: String
-        product: Product
+        product: RefField
         rating: Number
     }
 
@@ -27,7 +27,7 @@ export default /* GraphQL */ `
 
     input ReviewInput {
         text: String
-        product: RefInput
+        product: RefFieldInput
         rating: Number
     }
 
@@ -78,6 +78,11 @@ export default /* GraphQL */ `
         data: Review
         error: CmsError
     }
+    
+    type ReviewArrayResponse {
+        data: [Review]
+        error: CmsError
+    }
 
     type ReviewListResponse {
         data: [Review]
@@ -100,9 +105,10 @@ export default /* GraphQL */ `
 
     extend type Query {
         getReview(revision: ID!): ReviewResponse
+        
+        getReviewsByIds(revisions: [ID!]!): ReviewArrayResponse
 
         listReviews(
-            ids: [ID!]
             where: ReviewListWhereInput
             sort: [ReviewListSorter]
             limit: Int

@@ -141,8 +141,7 @@ const models: CmsContentModelType[] = [
                     }
                 ],
                 settings: {
-                    type: "one",
-                    modelId: "category"
+                    models: [{ modelId: "category" }]
                 },
                 placeholderText: "placeholder text",
                 predefinedValues: {
@@ -282,8 +281,7 @@ const models: CmsContentModelType[] = [
                 fieldId: "product",
                 validation: [],
                 settings: {
-                    type: "one",
-                    modelId: "product"
+                    models: [{ modelId: "product" }]
                 },
                 placeholderText: "placeholder text",
                 predefinedValues: {
