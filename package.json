@@ -10,7 +10,9 @@
       "api/code/graphql",
       "api/code/fileManager/*",
       "api/code/pageBuilder/*",
-      "api/code/prerenderingService/*"
+      "api/code/prerenderingService/render",
+      "api/code/prerenderingService/flush",
+      "api/code/prerenderingService/queue/*"
     ]
   },
   "contributors": [
