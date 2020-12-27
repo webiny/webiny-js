@@ -20,7 +20,7 @@ const Button = ({ element }: { element: PbElement }) => {
     const content = (
         <>
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <p>{element.data.text}</p>
+            <p>{element.data.buttonText}</p>
         </>
     );
 
