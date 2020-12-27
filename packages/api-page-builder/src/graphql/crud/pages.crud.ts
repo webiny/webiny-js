@@ -402,9 +402,15 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         }
 
                         const title = "Untitled";
-                        const pagePath = normalizePath(
-                            path.join(category.url, "untitled-" + uniqid.time())
-                        );
+
+                        let pagePath = "";
+                        if (category.slug === "static") {
+                            pagePath = normalizePath("untitled-" + uniqid.time());
+                        } else {
+                            pagePath = normalizePath(
+                                path.join(category.url, "untitled-" + uniqid.time())
+                            );
+                        }
 
                         const identity = context.security.getIdentity();
                         new CreateDataModel().populate({ category: category.slug }).validate();
