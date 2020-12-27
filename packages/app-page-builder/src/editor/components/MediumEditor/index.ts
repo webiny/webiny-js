@@ -63,15 +63,14 @@ const ReactMediumEditor = ({
         });
 
         const handleChange = (data, editable) => {
-            if (onChange) {
+            if (typeof onChange === "function") {
                 onChange(editable.innerHTML);
             }
         };
 
-        const handleSelect = (data, editable) => {
-            if (onSelect) {
+        const handleSelect = () => {
+            if (typeof onSelect === "function") {
                 onSelect();
-                onChange(editable.innerHTML);
             }
         };
 
