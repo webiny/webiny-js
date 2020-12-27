@@ -10,7 +10,7 @@ export default /* GraphQL */ `
         savedOn: DateTime
         meta: ProductMeta
         title: String
-        category: Category
+        category: RefField
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -30,7 +30,7 @@ export default /* GraphQL */ `
 
     input ProductInput {
         title: String
-        category: RefInput
+        category: RefFieldInput
         price: Number
         inStock: Boolean
         itemsInStock: Number
@@ -108,6 +108,11 @@ export default /* GraphQL */ `
         data: Product
         error: CmsError
     }
+    
+    type ProductArrayResponse {
+        data: [Product]
+        error: CmsError
+    }
 
     type ProductListResponse {
         data: [Product]
@@ -136,9 +141,10 @@ export default /* GraphQL */ `
 
     extend type Query {
         getProduct(revision: ID!): ProductResponse
+        
+        getProductsByIds(revisions: [ID!]!): ProductArrayResponse
 
         listProducts(
-            ids: [ID!]
             where: ProductListWhereInput
             sort: [ProductListSorter]
             limit: Int

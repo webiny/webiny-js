@@ -182,12 +182,10 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test("list entries filtered by given id list", async () => {
+    test("get entries by given ids", async () => {
         await setupContentModel();
         // Use "manage" API to create and publish entries
-        const { until, createCategory, publishCategory, listCategories } = useCategoryManageHandler(
-            manageOpts
-        );
+        const { createCategory, getCategoriesByIds } = useCategoryManageHandler(manageOpts);
 
         const [fruitsResponse] = await createCategory({
             data: {
@@ -217,19 +215,14 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        const [response] = await listCategories({
-            ids: [fruits.id, animals.id]
+        const [response] = await getCategoriesByIds({
+            revisions: [fruits.id, animals.id]
         });
 
         expect(response).toEqual({
             data: {
-                listCategories: {
+                getCategoriesByIds: {
                     data: [fruits, animals],
-                    meta: {
-                        hasMoreItems: false,
-                        totalCount: 2,
-                        cursor: null
-                    },
                     error: null
                 }
             }

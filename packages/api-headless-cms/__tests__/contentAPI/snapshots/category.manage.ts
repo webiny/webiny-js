@@ -74,6 +74,11 @@ export default /* GraphQL */ `
         data: Category
         error: CmsError
     }
+        
+    type CategoryArrayResponse {
+        data: [Category]
+        error: CmsError
+    }
 
     type CategoryListResponse {
         data: [Category]
@@ -96,9 +101,10 @@ export default /* GraphQL */ `
 
     extend type Query {
         getCategory(revision: ID!): CategoryResponse
+        
+        getCategoriesByIds(revisions: [ID!]!): CategoryArrayResponse
 
         listCategories(
-            ids: [ID!]
             where: CategoryListWhereInput
             sort: [CategoryListSorter]
             limit: Int

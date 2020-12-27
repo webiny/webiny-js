@@ -29,7 +29,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     const ids = value.map(ref => ref.entryId);
 
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    return await model.getPublishedByIds(ids);
+                    const entries = await model.getPublishedByIds(ids);
+                    return entries.filter(Boolean);
                 }
 
                 return (await model.getPublishedByIds([value.entryId]))[0];

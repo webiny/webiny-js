@@ -109,11 +109,15 @@ export const useReference = ({ bind, field }) => {
             const entry = res.data.content.data;
 
             // Calculate a couple of props for the Autocomplete component.
-            setValueEntry({
-                id: entry.id,
-                published: entry.meta.status === "published",
-                name: entry.meta.title
-            });
+            setValueEntry(
+                entry
+                    ? {
+                          id: entry.id,
+                          published: entry.meta.status === "published",
+                          name: entry.meta.title
+                      }
+                    : emptyValue
+            );
         });
     }, [value, GET_CONTENT, model]);
 

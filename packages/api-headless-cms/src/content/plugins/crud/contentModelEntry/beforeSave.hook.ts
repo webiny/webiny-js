@@ -1,5 +1,5 @@
 import {
-    CmsContentModelEntryType,
+    CmsContentEntryType,
     CmsContentModelType,
     CmsContext,
     CmsModelLockedFieldPlugin
@@ -8,7 +8,7 @@ import WebinyError from "@webiny/error";
 
 type ArgsType = {
     model: CmsContentModelType;
-    entry: CmsContentModelEntryType;
+    entry: CmsContentEntryType;
     context: CmsContext;
 };
 export const beforeSaveHook = async (args: ArgsType): Promise<void> => {

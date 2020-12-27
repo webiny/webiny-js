@@ -7,6 +7,7 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveManageGet } from "../utils/resolvers/resolveManageGet";
 import { resolveList } from "../utils/resolvers/resolveList";
+import { resolveGetByIds } from "../utils/resolvers/resolveGetByIds";
 import { resolveCreate } from "../utils/resolvers/resolveCreate";
 import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
 import { resolveDelete } from "../utils/resolvers/resolveDelete";
@@ -35,6 +36,7 @@ export const createManageResolvers: CreateManageResolvers = ({
     return {
         Query: {
             [`get${typeName}`]: resolveManageGet({ model }),
+            [`get${pluralizedTypeName(typeName)}ByIds`]: resolveGetByIds({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         Mutation: {
@@ -72,7 +74,7 @@ export const createManageResolvers: CreateManageResolvers = ({
                 return entry.status;
             },
             async revisions(entry, args, context: CmsContext) {
-                const revisions = await context.cms.entries.listRevisions(entry.id);
+                const revisions = await context.cms.entries.getEntryRevisions(entry.id);
                 return revisions.sort((a, b) => b.version - a.version);
             }
         }

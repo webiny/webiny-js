@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
-import { createListQuery, GET_CONTENT_MODEL } from "./graphql";
+import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODEL } from "./graphql";
 import { getOptions } from "./getOptions";
 import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
@@ -17,6 +17,7 @@ export const useReferences = ({ bind, field }) => {
     const [loading, setLoading] = useState(false);
     const [model, setModel] = useState<CmsEditorContentModel>(null);
     const [LIST_CONTENT, setListContent] = useState(null);
+    const [GET_BY_IDS, setGetByIds] = useState(null);
     const [entries, setEntries] = useState([]);
     const [latestEntries, setLatestEntries] = useState([]);
     const [valueEntries, setValueEntries] = useState<ValueEntry[]>([]);
@@ -62,6 +63,7 @@ export const useReferences = ({ bind, field }) => {
 
         // Once we have the refContentModel loaded, this will construct proper list and get queries.
         setListContent(createListQuery(refContentModel));
+        setGetByIds(createGetByIdsQuery(refContentModel));
 
         setLoading(false);
     };
@@ -86,13 +88,13 @@ export const useReferences = ({ bind, field }) => {
     }, [LIST_CONTENT]);
 
     useEffect(() => {
-        if (!values || !values.length || !model || !model.titleFieldId || !LIST_CONTENT) {
+        if (!values || !values.length || !model || !model.titleFieldId || !GET_BY_IDS) {
             return;
         }
 
         setLoading(true);
         // eslint-disable-next-line @typescript-eslint/camelcase
-        client.query({ query: LIST_CONTENT, variables: { ids: values } }).then(res => {
+        client.query({ query: GET_BY_IDS, variables: { revisions: values } }).then(res => {
             setLoading(false);
             const entries = res.data.content.data;
 
@@ -105,7 +107,7 @@ export const useReferences = ({ bind, field }) => {
                 }))
             );
         });
-    }, [bind.value, LIST_CONTENT, model]);
+    }, [bind.value, GET_BY_IDS, model]);
 
     // Format options for the Autocomplete component.
     const options = useMemo(() => getOptions(entries), [entries]);

@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { CmsContentModelEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryResolverFactoryType as ResolverFactory } from "@webiny/api-headless-cms/types";
 
 export const resolveGet: ResolverFactory = ({ model }) => async (root, args, context) => {
     try {

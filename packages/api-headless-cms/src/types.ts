@@ -286,19 +286,19 @@ export type CmsContentModelManagerListArgsType = {
 
 export interface CmsContentModelManagerInterface {
     list(
-        args?: CmsContentModelEntryListArgsType,
-        options?: CmsContentModelEntryListOptionsType
-    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        args?: CmsContentEntryListArgsType,
+        options?: CmsContentEntryListOptionsType
+    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     listPublished(
-        args?: CmsContentModelEntryListArgsType
-    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        args?: CmsContentEntryListArgsType
+    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     listLatest(
-        args?: CmsContentModelEntryListArgsType
-    ): Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
-    getPublishedByIds(ids: string[]): Promise<CmsContentModelEntryType[]>;
-    get(args?: CmsContentModelEntryGetArgsType): Promise<CmsContentModelEntryType>;
-    create(data: Record<string, any>): Promise<CmsContentModelEntryType>;
-    update(id: string, data: Record<string, any>): Promise<CmsContentModelEntryType>;
+        args?: CmsContentEntryListArgsType
+    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
+    getPublishedByIds(ids: string[]): Promise<CmsContentEntryType[]>;
+    get(args?: CmsContentEntryGetArgsType): Promise<CmsContentEntryType>;
+    create(data: Record<string, any>): Promise<CmsContentEntryType>;
+    update(id: string, data: Record<string, any>): Promise<CmsContentEntryType>;
     delete(id: string): Promise<void>;
 }
 
@@ -340,14 +340,14 @@ export type CmsContentModelFieldInputType = {
     settings?: Record<string, any>;
 };
 
-type CmsContentModelEntryStatusType =
+type CmsContentEntryStatusType =
     | "published"
     | "unpublished"
     | "reviewRequested"
     | "changesRequested"
     | "draft";
 
-export type CmsContentModelEntryType = {
+export type CmsContentEntryType = {
     id: string;
     createdBy: CreatedByType;
     ownedBy: CreatedByType;
@@ -358,12 +358,12 @@ export type CmsContentModelEntryType = {
     publishedOn?: string;
     version: number;
     locked: boolean;
-    status: CmsContentModelEntryStatusType;
+    status: CmsContentEntryStatusType;
     values: Record<string, any>;
 };
 
 // this is base list args
-export type CmsContentModelEntryListWhereType = {
+export type CmsContentEntryListWhereType = {
     // id
     id?: string;
     id_in?: string[];
@@ -372,78 +372,68 @@ export type CmsContentModelEntryListWhereType = {
     [key: string]: any;
 };
 
-export type CmsContentModelEntryListSortType = string[];
+export type CmsContentEntryListSortType = string[];
 
-export type CmsContentModelEntryGetArgsType = {
-    where?: CmsContentModelEntryListWhereType;
-    sort?: CmsContentModelEntryListSortType;
+export type CmsContentEntryGetArgsType = {
+    where?: CmsContentEntryListWhereType;
+    sort?: CmsContentEntryListSortType;
 };
 
-export type CmsContentModelEntryListArgsType = {
-    where?: CmsContentModelEntryListWhereType;
-    sort?: CmsContentModelEntryListSortType;
+export type CmsContentEntryListArgsType = {
+    where?: CmsContentEntryListWhereType;
+    sort?: CmsContentEntryListSortType;
     limit?: number;
     after?: string;
 };
-export type CmsContentModelEntryListOptionsType = {
+export type CmsContentEntryListOptionsType = {
     type?: string;
 };
 
-export type CmsContentModelEntryMetaType = {
+export type CmsContentEntryMetaType = {
     cursor: string;
     hasMoreItems: boolean;
     totalCount: number;
 };
 
-export type CmsContentModelEntryContextType = {
-    getByRevisionId: (
-        model: CmsContentModelType,
-        revision: string
-    ) => Promise<CmsContentModelEntryType | null>;
+export type CmsContentEntryContextType = {
     get: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryGetArgsType
-    ) => Promise<CmsContentModelEntryType | null>;
-    listByIds: (
+        args?: CmsContentEntryGetArgsType
+    ) => Promise<CmsContentEntryType | null>;
+    getByIds: (
         model: CmsContentModelType,
-        ids: string[]
-    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        revisions: string[]
+    ) => Promise<CmsContentEntryType[] | null>;
     list: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryListArgsType,
-        options?: CmsContentModelEntryListOptionsType
-    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        args?: CmsContentEntryListArgsType,
+        options?: CmsContentEntryListOptionsType
+    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     listLatest: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryListArgsType
-    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        args?: CmsContentEntryListArgsType
+    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     listPublished: (
         model: CmsContentModelType,
-        args?: CmsContentModelEntryListArgsType
-    ) => Promise<[CmsContentModelEntryType[], CmsContentModelEntryMetaType]>;
+        args?: CmsContentEntryListArgsType
+    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     getPublishedByIds: (
         model: CmsContentModelType,
         ids: string[]
-    ) => Promise<CmsContentModelEntryType[]>;
-    create: (
-        model: CmsContentModelType,
-        data: Record<string, any>
-    ) => Promise<CmsContentModelEntryType>;
-    createRevisionFrom: (
-        model: CmsContentModelType,
-        id: string
-    ) => Promise<CmsContentModelEntryType>;
+    ) => Promise<CmsContentEntryType[]>;
+    create: (model: CmsContentModelType, data: Record<string, any>) => Promise<CmsContentEntryType>;
+    createRevisionFrom: (model: CmsContentModelType, id: string) => Promise<CmsContentEntryType>;
     update: (
         model: CmsContentModelType,
         id: string,
         data: Record<string, any>
-    ) => Promise<CmsContentModelEntryType>;
+    ) => Promise<CmsContentEntryType>;
     delete: (model: CmsContentModelType, id: string) => Promise<void>;
-    publish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
-    unpublish(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
-    requestReview(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
-    requestChanges(model: CmsContentModelType, id: string): Promise<CmsContentModelEntryType>;
-    listRevisions(id: string): Promise<CmsContentModelEntryType[]>;
+    publish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
+    unpublish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
+    requestReview(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
+    requestChanges(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
+    getEntryRevisions(id: string): Promise<CmsContentEntryType[]>;
 };
 
 export type CmsCrudContextType = {
@@ -452,7 +442,7 @@ export type CmsCrudContextType = {
         groups: CmsContentModelGroupContextType;
         models: CmsContentModelContextType;
         getModel: (modelId: string) => Promise<CmsContentModelManagerInterface>;
-        entries: CmsContentModelEntryContextType;
+        entries: CmsContentEntryContextType;
     };
 };
 
@@ -475,16 +465,16 @@ export enum DbItemTypes {
     CMS_CONTENT_MODEL_ENTRY = "cms.modelEntry"
 }
 
-type CmsContentModelEntryResolverFactoryParamsType = {
+type CmsContentEntryResolverFactoryParamsType = {
     model: CmsContentModelType;
 };
 
-export type CmsContentModelEntryResolverFactoryType<
+export type CmsContentEntryResolverFactoryType<
     TSource = any,
     TArgs = any,
     TContext = CmsContext
 > = {
-    (params: CmsContentModelEntryResolverFactoryParamsType): GraphQLFieldResolver<
+    (params: CmsContentEntryResolverFactoryParamsType): GraphQLFieldResolver<
         TSource,
         TArgs,
         TContext
@@ -607,7 +597,7 @@ export type CmsContentModelGroupPermissionType = SecurityPermission<{
     rwd: string;
 }>;
 
-export type CmsContentModelEntryPermissionType = SecurityPermission<{
+export type CmsContentEntryPermissionType = SecurityPermission<{
     own: boolean;
     rwd: string;
     rcpu: string;
