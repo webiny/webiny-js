@@ -19,6 +19,7 @@ const t = i18n.ns(
 
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
+import { removeEntryFromListCache } from "@webiny/app-headless-cms/admin/plugins/contentDetails/cache";
 
 const menuStyles = css({
     width: 250,
@@ -60,24 +61,24 @@ const ContentFormOptionsMenu = ({ contentModel, entry, getLoading, setLoading })
         showConfirmation(async () => {
             setLoading(true);
             const [uniqueId] = entry.id.split("#");
-            const { data: res } = await deleteContentMutation({
-                variables: { revision: uniqueId }
+            await deleteContentMutation({
+                variables: { revision: uniqueId },
+                update(cache, { data }) {
+                    const { error } = data.content;
+                    if (error) {
+                        return showDialog(error.message, { title: t`Could not delete content` });
+                    }
+
+                    removeEntryFromListCache(contentModel, cache, entry);
+                    
+                    showSnackbar(
+                        t`{title} was deleted successfully!`({ title: <strong>{title}</strong> })
+                    );
+                    history.push(`/cms/content-entries/${contentModel.modelId}`);
+                }
             });
 
             setLoading(false);
-
-            // TODO: update list cache
-
-            const { error } = get(res, "content");
-            if (error) {
-                return showDialog(error.message, { title: t`Could not delete content` });
-            }
-
-            showSnackbar(t`{title} was deleted successfully!`({ title: <strong>{title}</strong> }));
-
-            const query = new URLSearchParams(location.search);
-            query.delete("id");
-            history.push({ search: query.toString() });
         });
     }, null);
 

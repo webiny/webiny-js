@@ -23,13 +23,13 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
         const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
-            item => {
-                return item.field.type === field.type;
-            }
+            item => item.field.type === field.type
         );
 
-        if (fieldPlugin.field.graphql && fieldPlugin.field.graphql.queryField) {
-            return `${field.fieldId} ${fieldPlugin.field.graphql.queryField}`;
+        const { graphql } = fieldPlugin.field;
+
+        if (graphql && graphql.queryField) {
+            return `${field.fieldId} ${graphql.queryField}`;
         }
 
         return field.fieldId;
@@ -81,9 +81,7 @@ export const createListQuery = model => {
                     id
                     savedOn
                     meta {
-                        title
-                        version
-                        status
+                        ${CONTENT_META_FIELDS}
                     }
                 }
                 error ${ERROR_FIELD}
@@ -154,7 +152,9 @@ export const createUpdateMutation = model => {
                     id
                     ${createFieldsList(model)}
                     savedOn
-                    meta { ${CONTENT_META_FIELDS} }
+                    meta { 
+                        ${CONTENT_META_FIELDS} 
+                    }
                 }
                 error ${ERROR_FIELD}
             }

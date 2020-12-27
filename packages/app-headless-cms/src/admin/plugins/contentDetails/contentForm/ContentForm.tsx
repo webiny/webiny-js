@@ -1,18 +1,21 @@
 import React, { useCallback, useMemo } from "react";
 import get from "lodash/get";
-import cloneDeep from "lodash/cloneDeep";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
+import { addEntryToListCache, updateLatestRevisionInListCache } from "../cache";
 
 const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
-    const query = new URLSearchParams(location.search);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
-    const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM, LIST_CONTENT } = useMemo(() => {
+    const goToRevision = useCallback(id => {
+        history.push(`/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(id)}`);
+    }, []);
+
+    const { CREATE_CONTENT, UPDATE_CONTENT, CREATE_CONTENT_FROM } = useMemo(() => {
         return {
             LIST_CONTENT: GQL.createListQuery(contentModel),
             CREATE_CONTENT: GQL.createCreateMutation(contentModel),
@@ -30,32 +33,26 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             setLoading(true);
             const response = await createMutation({
                 variables: { data },
-                update(cache, response) {
-                    if (response.data.content.error) {
+                update(cache, { data }) {
+                    const { data: entry, error } = data.content;
+                    if (error) {
                         return;
                     }
 
-                    // Prepend the newly created item to the content list.
-                    const data = cloneDeep(
-                        cache.readQuery<any>({
-                            query: LIST_CONTENT
-                        })
-                    );
-                    data.content.data = [response.data.content.data, ...data.content.data];
-                    cache.writeQuery({ query: LIST_CONTENT, data: data });
+                    addEntryToListCache(contentModel, cache, entry);
                 }
             });
             setLoading(false);
 
             if (response.data.content.error) {
-                return showSnackbar(response.data.content.message);
+                showSnackbar(response.data.content.message);
+                return null;
             }
 
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            const { id } = response.data.content.data;
-            query.set("id", id);
-            history.push({ search: query.toString() });
-            return response;
+            const { data: entry } = response.data.content;
+            goToRevision(entry.id);
+            return entry;
         },
         [contentModel.modelId]
     );
@@ -70,49 +67,47 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
 
             const { error } = response.data.content;
             if (error) {
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return null;
             }
 
             showSnackbar("Content saved successfully.");
-            return response;
+            const { data: entry } = response.data.content;
+            return entry;
         },
         [contentModel.modelId]
     );
 
     const createContentFrom = useCallback(
-        async (revision, data) => {
+        async (revision, formData) => {
             setLoading(true);
             const response = await createFromMutation({
-                variables: { revision, data },
-                update(cache, response) {
-                    if (response.data.content.error) {
+                variables: { revision, data: formData },
+                update(cache, { data }) {
+                    const { data: newRevision, error } = data.content;
+                    if (error) {
                         return;
                     }
 
-                    const data = cloneDeep(
-                        cache.readQuery<any>({ query: LIST_CONTENT })
+                    updateLatestRevisionInListCache(contentModel, cache, newRevision);
+
+                    showSnackbar("A new revision was created!");
+                    history.push(
+                        `/cms/content-entries/${contentModel.modelId}?id=${encodeURIComponent(
+                            newRevision.id
+                        )}`
                     );
-                    const previousItemIndex = data.content.data.findIndex(
-                        item => item.id === revision
-                    );
-                    data.content.data.splice(previousItemIndex, 1, response.data.content.data);
-                    cache.writeQuery({ query: LIST_CONTENT, data });
                 }
             });
             setLoading(false);
 
-            const { data: newRevision, error } = response.data.content;
+            const { data, error } = response.data.content;
             if (error) {
-                return showSnackbar(error.message);
+                showSnackbar(error.message);
+                return null;
             }
 
-            // TODO: update list cache
-
-            showSnackbar("A new revision was created!");
-            query.set("id", newRevision.id);
-            history.push({ search: query.toString() });
-
-            return response;
+            return data;
         },
         [contentModel.modelId]
     );

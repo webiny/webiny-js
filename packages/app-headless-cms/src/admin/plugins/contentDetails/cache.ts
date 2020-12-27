@@ -1,5 +1,21 @@
 import dotProp from "dot-prop-immutable";
+import { CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
 import * as GQL from "../../views/components/ContentModelForm/graphql";
+
+export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry) => {
+    const gqlParams = { query: GQL.createListQuery(model) };
+    const { content } = cache.readQuery(gqlParams);
+
+    cache.writeQuery({
+        ...gqlParams,
+        data: {
+            content: {
+                ...content,
+                data: [entry, ...content.data]
+            }
+        }
+    });
+};
 
 export const updateLatestRevisionInListCache = (model, cache, revision) => {
     const gqlParams = { query: GQL.createListQuery(model) };
@@ -21,7 +37,8 @@ export const removeEntryFromListCache = (model, cache, revision) => {
     // Delete the item from list cache
     const gqlParams = { query: GQL.createListQuery(model) };
     const { content } = cache.readQuery(gqlParams);
-    const index = content.data.findIndex(item => item.id === revision.id);
+    const entryId = revision.id.split("#")[0];
+    const index = content.data.findIndex(item => item.id.startsWith(entryId));
 
     cache.writeQuery({
         ...gqlParams,

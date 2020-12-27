@@ -32,6 +32,7 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
             });
 
             const contentData = get(response, "data.content");
+            console.log("onPublish", contentData);
             setLoading(false);
             if (contentData.error) {
                 return showSnackbar(contentData.error.message);
@@ -55,12 +56,12 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
             className={buttonStyles}
             onClick={() => {
                 showConfirmation(async () => {
-                    const response = await state.contentForm.submit();
-                    if (response.data.content.error) {
+                    const entry = await state.contentForm.submit();
+                    if (!entry) {
                         return;
                     }
-                    const { id } = response.data.content.data;
-                    await onPublish(id);
+                    console.log("save publish", entry);
+                    await onPublish(entry.id);
                 });
             }}
             disabled={getLoading()}
