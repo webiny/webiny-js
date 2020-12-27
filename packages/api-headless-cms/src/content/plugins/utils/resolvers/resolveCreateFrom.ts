@@ -5,7 +5,11 @@ type ResolveCreateFrom = ResolverFactory<any, { revision: string; data: Record<s
 
 export const resolveCreateFrom: ResolveCreateFrom = ({ model }) => async (root, args, { cms }) => {
     try {
-        const newRevision = await cms.entries.createRevisionFrom(model, args.revision, args.data || {});
+        const newRevision = await cms.entries.createRevisionFrom(
+            model,
+            args.revision,
+            args.data || {}
+        );
         return new Response(newRevision);
     } catch (e) {
         return new ErrorResponse(e);

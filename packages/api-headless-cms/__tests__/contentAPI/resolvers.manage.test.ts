@@ -559,12 +559,12 @@ describe("MANAGE - Resolvers", () => {
         );
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
-        
-        if(unpublish.data.unpublishCategory.error) {
+
+        if (unpublish.data.unpublishCategory.error) {
             console.log(unpublish.data.unpublishCategory.error);
             process.exit(1);
         }
-        
+
         expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
 
         // Wait until there are no categories available in READ API
@@ -573,7 +573,7 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 0,
             { name: "unpublish revision" }
         );
-        
+
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
 

@@ -36,7 +36,7 @@ export const createPermissions = (permissions: PermissionsArgType[]): Permission
             rwd: "rwd"
         },
         {
-            name: "cms.manage.contentModelEntry",
+            name: "cms.manage.contentEntry",
             rwd: "rwd"
         },
         {

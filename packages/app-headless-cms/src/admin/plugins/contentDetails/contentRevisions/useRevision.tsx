@@ -20,16 +20,27 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
     const client = useApolloClient();
     const { modelId } = contentModel;
 
-    const { CREATE_REVISION, DELETE_REVISION, PUBLISH_REVISION, UNPUBLISH_REVISION } = useMemo(() => {
+    const {
+        CREATE_REVISION,
+        DELETE_REVISION,
+        PUBLISH_REVISION,
+        UNPUBLISH_REVISION
+    } = useMemo(() => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
             DELETE_REVISION: GQL.createDeleteMutation(contentModel),
             PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
-            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
+            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel)
         };
     }, [modelId]);
 
-    const { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision } = useHandlers(null, {
+    const {
+        createRevision,
+        editRevision,
+        deleteRevision,
+        publishRevision,
+        unpublishRevision
+    } = useHandlers(null, {
         createRevision: () => async () => {
             setLoading(true);
             const { data: res } = await client.mutate({

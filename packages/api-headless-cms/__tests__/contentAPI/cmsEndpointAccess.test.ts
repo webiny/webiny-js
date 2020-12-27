@@ -21,7 +21,7 @@ describe("MANAGE - Resolvers", () => {
             name: "cms.settings"
         },
         {
-            name: "cms.manage.contentModelEntry",
+            name: "cms.manage.contentEntry",
             rwd: "rwd"
         }
     ];
@@ -140,7 +140,7 @@ describe("MANAGE - Resolvers", () => {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
-                    position: "endpoint access"
+                    reason: "endpoint access"
                 }
             }
         });
@@ -198,7 +198,7 @@ describe("MANAGE - Resolvers", () => {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
-                    position: "endpoint access"
+                    reason: "endpoint access"
                 }
             }
         });
@@ -256,7 +256,7 @@ describe("MANAGE - Resolvers", () => {
                 message: "Not authorized!",
                 code: "SECURITY_NOT_AUTHORIZED",
                 data: {
-                    position: "endpoint access"
+                    reason: "endpoint access"
                 }
             }
         });

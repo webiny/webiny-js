@@ -96,7 +96,7 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     if (!type) {
         throw new NotAuthorizedError({
             data: {
-                position: `missing context type`
+                reason: `missing context type`
             }
         });
     }
@@ -104,7 +104,7 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     if (!permission) {
         throw new NotAuthorizedError({
             data: {
-                position: `endpoint access`
+                reason: `endpoint access`
             }
         });
     }
@@ -140,7 +140,7 @@ export const graphQLHandlerFactory = (
                 http,
                 new NotAuthorizedResponse({
                     data: {
-                        position: "endpoint access"
+                        reason: "endpoint access"
                     }
                 })
             );

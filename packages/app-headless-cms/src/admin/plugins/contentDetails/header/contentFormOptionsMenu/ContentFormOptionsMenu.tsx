@@ -70,7 +70,7 @@ const ContentFormOptionsMenu = ({ contentModel, entry, getLoading, setLoading })
                     }
 
                     removeEntryFromListCache(contentModel, cache, entry);
-                    
+
                     showSnackbar(
                         t`{title} was deleted successfully!`({ title: <strong>{title}</strong> })
                     );

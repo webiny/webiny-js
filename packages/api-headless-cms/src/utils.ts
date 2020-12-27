@@ -59,7 +59,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!contentPermission) {
         throw new NotAuthorizedError({
             data: {
-                position: "contentPermission"
+                reason: "contentPermission"
             }
         });
     }
@@ -69,7 +69,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!Array.isArray(contentPermission.locales) || !contentPermission.locales.includes(code)) {
         throw new NotAuthorizedError({
             data: {
-                position: `missing locale "${code}"`
+                reason: `missing locale "${code}"`
             }
         });
     }
@@ -79,7 +79,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!permission) {
         throw new NotAuthorizedError({
             data: {
-                position: `missing permission "${name}"`
+                reason: `missing permission "${name}"`
             }
         });
     }
@@ -93,7 +93,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (check.rwd && !hasRwd(permission, check.rwd)) {
         throw new NotAuthorizedError({
             data: {
-                position: `missing rwd "${check.rwd}"`
+                reason: `missing rwd "${check.rwd}"`
             }
         });
     }
@@ -105,7 +105,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (check.rcpu && !hasRcpu(permission, check.rcpu)) {
         throw new NotAuthorizedError({
             data: {
-                position: `missing rcpu "${check.rcpu}"`
+                reason: `missing rcpu "${check.rcpu}"`
             }
         });
     }
@@ -128,7 +128,7 @@ export const checkOwnership = (
     if (!identity || record[field].id !== identity.id) {
         throw new NotAuthorizedError({
             data: {
-                position: `ownership`
+                reason: `ownership`
             }
         });
     }
@@ -161,7 +161,7 @@ export const checkModelAccess = (
     }
     throw new NotAuthorizedError({
         data: {
-            position: `model access`
+            reason: `model access`
         }
     });
 };
@@ -207,7 +207,7 @@ export const checkEntryAccess = (
     }
     throw new NotAuthorizedError({
         data: {
-            position: `entry access`
+            reason: `entry access`
         }
     });
 };

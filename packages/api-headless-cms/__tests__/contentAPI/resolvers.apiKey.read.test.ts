@@ -98,12 +98,7 @@ describe("READ - resolvers - api key", () => {
 
     test("get entry", async () => {
         // Use "manage" API to create and publish entries
-        const {
-            until,
-            createCategory,
-            publishCategory,
-            getCategory: getCategoryViaManager
-        } = useCategoryManageHandler(manageOpts);
+        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
 
         // Create an entry
         const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
@@ -118,32 +113,24 @@ describe("READ - resolvers - api key", () => {
             ...readOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentModelEntry",
+                    name: "cms.manage.contentEntry",
                     rwd: "r"
-                    // rcpu: "rcpu",
                 }
             ])
         });
 
+        const queryArgs = {
+            where: {
+                id: categoryId
+            }
+        };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
-            () =>
-                getCategoryViaManager({
-                    revision: categoryId
-                }).then(([data]) => data),
+            () => getCategory(queryArgs).then(([data]) => data),
             ({ data }) => data.getCategory.data.id === categoryId
         );
 
-        const [result] = await getCategory(
-            {
-                where: {
-                    id: categoryId
-                }
-            },
-            {
-                Authorization: API_TOKEN
-            }
-        );
+        const [result] = await getCategory(queryArgs);
 
         expect(result).toEqual({
             data: {
@@ -212,7 +199,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            position: `missing permission "cms.manage.contentModelEntry"`
+                            reason: `missing permission "cms.manage.contentEntry"`
                         }
                     }
                 }
@@ -244,7 +231,7 @@ describe("READ - resolvers - api key", () => {
             ...readOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentModelEntry",
+                    name: "cms.manage.contentEntry",
                     rwd: rwd
                 }
             ])
@@ -278,7 +265,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            position: `missing rwd "r"`
+                            reason: `missing rwd "r"`
                         }
                     }
                 }
