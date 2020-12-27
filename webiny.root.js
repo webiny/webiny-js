@@ -58,14 +58,14 @@ module.exports = {
                         })
                         .then(({ stdout }) => JSON.parse(stdout));
 
-                    // 3. Let's update relevant Page Builde app's URLs, by invoking the `updateSettings` function,
+                    // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
                     // which has been exported from the `api` stack for this exact purpose.
                     try {
                         const lambdaClient = new LambdaClient({ region: apiExports.region });
 
                         const response = await lambdaClient
                             .invoke({
-                                FunctionName: apiExports.updatePageBuilderSettingsFunction,
+                                FunctionName: apiExports.updatePbSettingsFunction,
                                 Payload: JSON.stringify({
                                     data: {
                                         websiteUrl: siteExports.deliveryURL,
@@ -76,6 +76,11 @@ module.exports = {
                                             },
                                             storage: {
                                                 name: siteExports.deliveryStorage
+                                            },
+                                            meta: {
+                                                cloudfront: {
+                                                    distributionId: siteExports.deliveryId
+                                                }
                                             }
                                         }
                                     }
