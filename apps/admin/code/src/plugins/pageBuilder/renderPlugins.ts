@@ -33,6 +33,8 @@ import shadow from "@webiny/app-page-builder/render/plugins/elementSettings/shad
 import padding from "@webiny/app-page-builder/render/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
+// Responsive mode
+import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 export default [
     // Elements
@@ -69,5 +71,6 @@ export default [
     shadow,
     padding,
     margin,
-    textSetting
+    textSetting,
+    responsiveMode()
 ];
