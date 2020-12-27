@@ -9,44 +9,47 @@ export default (): ReactRouterOnLinkPlugin => {
         name: "react-router-on-link-pb",
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
-            if (process.env.REACT_APP_ENV === "browser") {
-                if (
-                    typeof path !== "string" ||
-                    !path.startsWith("/") ||
-                    preloadedPaths.includes(path)
-                ) {
-                    return;
-                }
+            if (process.env.REACT_APP_ENV !== "browser") {
+                return;
+            }
 
-                preloadedPaths.push(path);
+            if (
+                typeof path !== "string" ||
+                !path.startsWith("/") ||
+                preloadedPaths.includes(path)
+            ) {
+                return;
+            }
 
-                const pageState = await fetch(path + `graphql.json`)
-                    .then(res => res.json())
-                    .catch(() => null);
+            preloadedPaths.push(path);
 
-                if (pageState) {
-                    for (let i = 0; i < pageState.length; i++) {
-                        const { query, variables, data } = pageState[i];
-                        apolloClient.writeQuery({
-                            query: gql`
-                                ${query}
-                            `,
-                            data,
-                            variables
-                        });
-                    }
-                } else {
-                    apolloClient.query({
-                        query: GET_PUBLISHED_PAGE(),
-                        variables: {
-                            id: null,
-                            path,
-                            preview: false,
-                            returnErrorPage: true,
-                            returnNotFoundPage: true
-                        }
+            const fetchPath = path !== '/' ? path + `/graphql.json` : '/graphql.json';
+            const pageState = await fetch(fetchPath)
+                .then(res => res.json())
+                .catch(() => null);
+
+            if (pageState) {
+                for (let i = 0; i < pageState.length; i++) {
+                    const { query, variables, data } = pageState[i];
+                    apolloClient.writeQuery({
+                        query: gql`
+                            ${query}
+                        `,
+                        data,
+                        variables
                     });
                 }
+            } else {
+                apolloClient.query({
+                    query: GET_PUBLISHED_PAGE(),
+                    variables: {
+                        id: null,
+                        path,
+                        preview: false,
+                        returnErrorPage: true,
+                        returnNotFoundPage: true
+                    }
+                });
             }
         }
     };
