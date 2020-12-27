@@ -124,13 +124,16 @@ describe("READ - resolvers - api key", () => {
                 id: categoryId
             }
         };
+        const headers = {
+            Authorization: API_TOKEN
+        };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
-            () => getCategory(queryArgs).then(([data]) => data),
+            () => getCategory(queryArgs, headers).then(([data]) => data),
             ({ data }) => data.getCategory.data.id === categoryId
         );
 
-        const [result] = await getCategory(queryArgs);
+        const [result] = await getCategory(queryArgs, headers);
 
         expect(result).toEqual({
             data: {
@@ -171,6 +174,14 @@ describe("READ - resolvers - api key", () => {
             identity: createIdentity()
         });
 
+        const queryArgs = {
+            where: {
+                id: categoryId
+            }
+        };
+        const headers = {
+            Authorization: API_TOKEN
+        };
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () =>
@@ -180,16 +191,7 @@ describe("READ - resolvers - api key", () => {
             ({ data }) => data.getCategory.data.id === categoryId
         );
 
-        const [result] = await getCategory(
-            {
-                where: {
-                    id: categoryId
-                }
-            },
-            {
-                Authorization: API_TOKEN
-            }
-        );
+        const [result] = await getCategory(queryArgs, headers);
 
         expect(result).toEqual({
             data: {
@@ -207,69 +209,71 @@ describe("READ - resolvers - api key", () => {
         });
     });
 
-    const notAllowedRwd = [["w"], ["d"]];
+    const notAllowedRwd = [["w"], ["d"], ["wd"]];
 
-    test.each(notAllowedRwd)(`can not get entry - missing "r" permission`, async rwd => {
-        // Use "manage" API to create and publish entries
-        const {
-            until,
-            createCategory,
-            publishCategory,
-            getCategory: getCategoryViaManager
-        } = useCategoryManageHandler(manageOpts);
+    test.each(notAllowedRwd)(
+        `can not get entry - missing "r" permission - having "%s"`,
+        async rwd => {
+            // Use "manage" API to create and publish entries
+            const {
+                until,
+                createCategory,
+                publishCategory,
+                getCategory: getCategoryViaManager
+            } = useCategoryManageHandler(manageOpts);
 
-        // Create an entry
-        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
-        const category = create.data.createCategory.data;
-        const { id: categoryId } = category;
+            // Create an entry
+            const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+            const category = create.data.createCategory.data;
+            const { id: categoryId } = category;
 
-        // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+            // Publish it so it becomes available in the "read" API
+            await publishCategory({ revision: categoryId });
 
-        // See if entries are available via "read" API
-        const { getCategory } = useCategoryReadHandler({
-            ...readOpts,
-            identity: createIdentity([
-                {
-                    name: "cms.manage.contentEntry",
-                    rwd: rwd
-                }
-            ])
-        });
+            // See if entries are available via "read" API
+            const { getCategory } = useCategoryReadHandler({
+                ...readOpts,
+                identity: createIdentity([
+                    {
+                        name: "cms.manage.contentEntry",
+                        rwd: rwd
+                    }
+                ])
+            });
 
-        // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        await until(
-            () =>
-                getCategoryViaManager({
-                    revision: categoryId
-                }).then(([data]) => data),
-            ({ data }) => data.getCategory.data.id === categoryId
-        );
-
-        const [result] = await getCategory(
-            {
+            const queryArgs = {
                 where: {
                     id: categoryId
                 }
-            },
-            {
+            };
+            const headers = {
                 Authorization: API_TOKEN
-            }
-        );
+            };
+            // If this `until` resolves successfully, we know entry is accessible via the "read" API
+            await until(
+                () =>
+                    getCategoryViaManager({
+                        revision: categoryId
+                    }).then(([data]) => data),
+                ({ data }) => data.getCategory.data.id === categoryId
+            );
 
-        expect(result).toEqual({
-            data: {
-                getCategory: {
-                    data: null,
-                    error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: `missing rwd "r"`
+            const [result] = await getCategory(queryArgs, headers);
+
+            expect(result).toEqual({
+                data: {
+                    getCategory: {
+                        data: null,
+                        error: {
+                            code: "SECURITY_NOT_AUTHORIZED",
+                            message: `Not authorized!`,
+                            data: {
+                                reason: `missing "cms.manage.contentEntry" rwd "r"`
+                            }
                         }
                     }
                 }
-            }
-        });
-    });
+            });
+        }
+    );
 });

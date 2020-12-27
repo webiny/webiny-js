@@ -93,7 +93,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (check.rwd && !hasRwd(permission, check.rwd)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing rwd "${check.rwd}"`
+                reason: `missing "${name}" rwd "${check.rwd}"`
             }
         });
     }
@@ -105,7 +105,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (check.rcpu && !hasRcpu(permission, check.rcpu)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing rcpu "${check.rcpu}"`
+                reason: `missing "${name}" rcpu "${check.rcpu}"`
             }
         });
     }
