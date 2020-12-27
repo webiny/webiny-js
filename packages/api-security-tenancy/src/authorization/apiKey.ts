@@ -13,10 +13,11 @@ export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin =
 
         const identity = security.getIdentity();
 
-        if (identity && identity.type === identityType) {
-            // We can expect `permissions` to exist on the identity, because api-key authentication
-            // plugin sets them on the identity instance to avoid loading them from DB here.
-            return Array.isArray(identity.permissions) ? identity.permissions : [];
+        if (!identity || identity.type !== identityType) {
+            return;
         }
+        // We can expect `permissions` to exist on the identity, because api-key authentication
+        // plugin sets them on the identity instance to avoid loading them from DB here.
+        return Array.isArray(identity.permissions) ? identity.permissions : [];
     }
 });

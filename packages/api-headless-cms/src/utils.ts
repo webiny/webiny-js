@@ -57,26 +57,45 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     const contentPermission: any = await context.security.getPermission("content.i18n");
 
     if (!contentPermission) {
-        throw new NotAuthorizedError();
+        throw new NotAuthorizedError({
+            data: {
+                position: "contentPermission"
+            }
+        });
     }
 
     // We need to check this manually as CMS locale comes from the URL and not the default i18n app.
-    return (
-        !Array.isArray(contentPermission.locales) ||
-        contentPermission.locales.includes(context.cms.getLocale().code)
-    );
+    const code = context.cms.getLocale().code;
+    if (!Array.isArray(contentPermission.locales) || !contentPermission.locales.includes(code)) {
+        throw new NotAuthorizedError({
+            data: {
+                position: `missing locale "${code}"`
+            }
+        });
+    }
 
     const permission = await context.security.getPermission<TPermission>(name);
 
     if (!permission) {
-        throw new NotAuthorizedError();
+        throw new NotAuthorizedError({
+            data: {
+                position: `missing permission "${name}"`
+            }
+        });
     }
 
+    if (!check) {
+        return permission;
+    }
     // r = read
     // w = write
     // d = delete
     if (check.rwd && !hasRwd(permission, check.rwd)) {
-        throw new NotAuthorizedError();
+        throw new NotAuthorizedError({
+            data: {
+                position: `missing rwd "${check.rwd}"`
+            }
+        });
     }
 
     // r = request review
@@ -84,7 +103,11 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     // p = publish
     // u = unpublish
     if (check.rcpu && !hasRcpu(permission, check.rcpu)) {
-        throw new NotAuthorizedError();
+        throw new NotAuthorizedError({
+            data: {
+                position: `missing rcpu "${check.rcpu}"`
+            }
+        });
     }
 
     return permission;
@@ -103,7 +126,11 @@ export const checkOwnership = (
     const identity = context.security.getIdentity();
 
     if (!identity || record[field].id !== identity.id) {
-        throw new NotAuthorizedError();
+        throw new NotAuthorizedError({
+            data: {
+                position: `ownership`
+            }
+        });
     }
 };
 
@@ -132,7 +159,11 @@ export const checkModelAccess = (
     if (validateModelAccess(context, permission, model)) {
         return;
     }
-    throw new NotAuthorizedError();
+    throw new NotAuthorizedError({
+        data: {
+            position: `model access`
+        }
+    });
 };
 export const validateModelAccess = (
     context: CmsContext,
@@ -174,7 +205,11 @@ export const checkEntryAccess = (
     if (validateEntryAccess(context, permission, model)) {
         return;
     }
-    throw new NotAuthorizedError();
+    throw new NotAuthorizedError({
+        data: {
+            position: `entry access`
+        }
+    });
 };
 
 export const validateEntryAccess = (

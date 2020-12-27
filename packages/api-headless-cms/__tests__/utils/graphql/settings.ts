@@ -6,6 +6,7 @@ export const IS_INSTALLED_QUERY = /* GraphQL */ `
                 error {
                     message
                     code
+                    data
                 }
             }
         }
@@ -20,6 +21,7 @@ export const INSTALL_MUTATION = /* GraphQL */ `
                 error {
                     message
                     code
+                    data
                 }
             }
         }

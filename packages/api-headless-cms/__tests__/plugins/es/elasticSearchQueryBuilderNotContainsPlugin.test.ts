@@ -16,7 +16,9 @@ describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
             mustNot: [
                 {
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    simple_query_string: {
+                    query_string: {
+                        // eslint-disable-next-line @typescript-eslint/camelcase
+                        allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "John"
                     }

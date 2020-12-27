@@ -50,7 +50,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         modelId: String!
                         entryId: ID!
                     }
-                `
+                `,
+                resolvers: {}
             };
         },
         createResolver({ field }) {

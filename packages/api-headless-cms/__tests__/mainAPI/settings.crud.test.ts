@@ -72,7 +72,8 @@ describe("Settings crud test", () => {
                         data: null,
                         error: {
                             message: "The app is already installed.",
-                            code: "CMS_INSTALLATION_ERROR"
+                            code: "CMS_INSTALLATION_ERROR",
+                            data: null
                         }
                     }
                 }

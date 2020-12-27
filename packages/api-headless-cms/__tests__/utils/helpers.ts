@@ -3,7 +3,9 @@ import { SecurityIdentity } from "@webiny/api-security";
 
 export type PermissionsArgType = {
     name: string;
+    locales?: string[];
     rwd?: string;
+    rcpu?: string;
 };
 
 export const identity = {
@@ -16,34 +18,51 @@ const getSecurityIdentity = () => {
     return new SecurityIdentity(identity);
 };
 
-export const createGetPermissions = (permissions: PermissionsArgType[]) => {
-    return (): PermissionsArgType[] => {
-        if (!permissions) {
-            return [
-                {
-                    name: "cms.manage.settings",
-                    rwd: "rwd"
-                },
-                {
-                    name: "cms.manage.contentModel",
-                    rwd: "rwd"
-                },
-                {
-                    name: "*"
-                }
-            ];
-        }
+export const createPermissions = (permissions: PermissionsArgType[]): PermissionsArgType[] => {
+    if (permissions) {
         return permissions;
-    };
+    }
+    return [
+        {
+            name: "cms.manage.settings",
+            rwd: "rwd"
+        },
+        {
+            name: "cms.manage.contentModel",
+            rwd: "rwd"
+        },
+        {
+            name: "cms.manage.contentModelGroup",
+            rwd: "rwd"
+        },
+        {
+            name: "cms.manage.contentModelEntry",
+            rwd: "rwd"
+        },
+        {
+            name: "cms.settings"
+        },
+        {
+            name: "cms.endpoint.read"
+        },
+        {
+            name: "cms.endpoint.manage"
+        },
+        {
+            name: "cms.endpoint.preview"
+        },
+        {
+            name: "content.i18n",
+            locales: ["en-US"]
+        }
+    ];
 };
 
-export const createAuthenticate = (identity?: SecurityIdentity) => {
-    return (): SecurityIdentity => {
-        if (!identity) {
-            return getSecurityIdentity();
-        }
-        return identity;
-    };
+export const createIdentity = (identity?: SecurityIdentity) => {
+    if (!identity) {
+        return getSecurityIdentity();
+    }
+    return identity;
 };
 
 export const getModelCreateInputObject = model => {

@@ -113,9 +113,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return loaders.getAllEntryRevisions.load(id);
             },
             get: async (model, args) => {
-                const permission = await checkPermissions({ rwd: "r" });
-                utils.checkEntryAccess(context, permission, model);
-
+                await checkPermissions({ rwd: "r" });
                 const [[item]] = await context.cms.entries.list(model, {
                     ...args,
                     limit: 1
