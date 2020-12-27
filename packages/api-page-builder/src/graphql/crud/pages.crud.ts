@@ -11,7 +11,6 @@ import omit from "lodash/omit";
 import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
-import jsonpack from "jsonpack";
 
 import {
     PageHookPlugin,
@@ -25,6 +24,7 @@ import checkOwnPermissions from "./utils/checkOwnPermissions";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
 import normalizePath from "./pages/normalizePath";
+import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
 import {
     getESLatestPageData,
