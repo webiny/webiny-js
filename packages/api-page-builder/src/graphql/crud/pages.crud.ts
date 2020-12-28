@@ -615,21 +615,18 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         // 1. Load the page and latest / published page (revision) data.
                         const [[[page]], [[latestPageData]], [[publishedPageData]]] = await db
-                            .batch()
+                            .batch<[[Page]], [[DbPageLatest]], [[DbPagePublished]]>()
                             .read({
                                 ...defaults.db,
-                                query: { PK: PK_PAGE(), SK: pageId },
-                                limit: 1
+                                query: { PK: PK_PAGE(), SK: pageId }
                             })
                             .read({
                                 ...defaults.db,
-                                query: { PK: PK_PAGE_LATEST(), SK: pageUniqueId },
-                                limit: 1
+                                query: { PK: PK_PAGE_LATEST(), SK: pageUniqueId }
                             })
                             .read({
                                 ...defaults.db,
-                                query: { PK: PK_PAGE_PUBLISHED(), SK: pageUniqueId },
-                                limit: 1
+                                query: { PK: PK_PAGE_PUBLISHED(), SK: pageUniqueId }
                             })
                             .execute();
 
