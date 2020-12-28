@@ -111,7 +111,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                                     // If we only have unique page ID (previously know as `parent`),
                                     // then let's find out which version is published.
-                                    const [[pagePublished]] = await db.read<PagePublished>({
+                                    const [[pagePublished]] = await db.read<DbPagePublished>({
                                         ...defaults.db,
                                         query: { PK: PK_PAGE_PUBLISHED(), SK: pid }
                                     });
@@ -206,7 +206,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             });
                         }
 
-                        const [[pagePublishedPath]] = await db.read<PagePublishedPath>({
+                        const [[pagePublishedPath]] = await db.read<DbPagePublishedPath>({
                             ...defaults.db,
                             query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath },
                             limit: 1
@@ -225,7 +225,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         if (page) {
                             // Extract compressed page content.
                             page.content = await extractContent(page.content);
-                            
+
                             return page;
                         }
 
@@ -443,7 +443,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const [fromUniqueId] = from.split("#");
 
                         const [[[page]], [[latestPageData]]] = await db
-                            .batch<[[Page]], [[PageLatest]]>()
+                            .batch<[[Page]], [[DbPageLatest]]>()
                             .read({
                                 ...defaults.db,
                                 query: {
