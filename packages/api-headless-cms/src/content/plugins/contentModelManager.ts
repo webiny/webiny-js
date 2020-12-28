@@ -19,7 +19,11 @@ class DefaultContentModelManager implements CmsContentModelManagerInterface {
     }
 
     public async delete(id: string) {
-        return this._context.cms.entries.delete(this._model, id);
+        if (id.includes("#")) {
+            return this._context.cms.entries.deleteRevision(this._model, id);
+        }
+
+        return this._context.cms.entries.deleteEntry(this._model, id);
     }
 
     public async get(args) {

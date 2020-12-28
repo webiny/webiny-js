@@ -432,7 +432,8 @@ export type CmsContentEntryContextType = {
         id: string,
         data?: Record<string, any>
     ) => Promise<CmsContentEntryType>;
-    delete: (model: CmsContentModelType, id: string) => Promise<void>;
+    deleteRevision: (model: CmsContentModelType, id: string) => Promise<void>;
+    deleteEntry: (model: CmsContentModelType, id: string) => Promise<void>;
     publish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
     unpublish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
     requestReview(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;

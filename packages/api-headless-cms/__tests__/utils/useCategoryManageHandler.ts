@@ -155,7 +155,7 @@ export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) =>
                 headers
             });
         },
-        async listCategories(variables, headers: Record<string, any> = {}) {
+        async listCategories(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listCategoriesQuery, variables },
                 headers
