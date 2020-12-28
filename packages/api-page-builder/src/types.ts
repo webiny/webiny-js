@@ -1,5 +1,47 @@
 export * from "./graphql/types";
 
+// DB types.
+export enum TYPE {
+    PAGE = "pb.page",
+    PAGE_LATEST = "pb.page.l",
+    PAGE_PUBLISHED = "pb.page.p",
+    PAGE_PUBLISHED_PATH = "pb.page.p.path"
+}
+
+// Represents a database entry that contains information (exact page ID) about the latest revision of a page.
+export type DbPageLatest = {
+    PK: string;
+    SK: string;
+    TYPE: TYPE.PAGE_LATEST;
+    locale: string;
+    tenant: string;
+    id: string;
+};
+
+// Represents a database entry that contains information (exact page ID) about the published revision of a page.
+// It also contains the path with which the page was published. This entry is used to query published pages by ID.
+export type DbPagePublished = {
+    PK: string;
+    SK: string;
+    TYPE: TYPE.PAGE_PUBLISHED;
+    locale: string;
+    tenant: string;
+    id: string;
+    path: string;
+};
+
+// Represents a database entry that contains information (exact page URL path) about the published revision of a page.
+// It also contains the ID with which the page was published. This entry is used to query published pages by path.
+export type DbPagePublishedPath = {
+    PK: string;
+    SK: string;
+    TYPE: TYPE.PAGE_PUBLISHED_PATH;
+    locale: string;
+    tenant: string;
+    path: string;
+    id: string;
+};
+
 // Entities.
 export type PageElement = {
     name: string;
@@ -114,6 +156,7 @@ export type DefaultSettings = {
         storage: {
             name: string;
         };
+        meta: Record<string, any>;
     };
     social: {
         facebook: string;

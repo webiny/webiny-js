@@ -10,6 +10,8 @@ import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import {
     Category,
+    DbPageLatest,
+    DbPagePublished,
     DefaultSettings,
     InstallSettings,
     Menu,
@@ -20,7 +22,14 @@ import {
 
 export type HandlerConfiguration = {
     prerendering: {
-        handler: string;
+        handlers: {
+            queue: {
+                add: string;
+                process: string;
+            };
+            render: string;
+            flush: string;
+        };
     };
 };
 
@@ -51,7 +60,13 @@ export type ListMeta = {
 
 // Pages CRUD.
 export type Tag = { id?: string; class?: string };
+
 export type RenderArgs = {
+    tags?: Tag[];
+    paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
+};
+
+export type FlushArgs = {
     tags?: Tag[];
     paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
 };
@@ -76,7 +91,10 @@ export type PagesCrud = {
     requestReview(id: string): Promise<Page>;
     requestChanges(id: string): Promise<Page>;
     setAs(page: string, specialType: PageSpecialType): Promise<void>;
-    render(args: RenderArgs): Promise<void>;
+    prerendering: {
+        render(args: RenderArgs): Promise<void>;
+        flush(args: FlushArgs): Promise<void>;
+    };
 };
 
 export type PageElementsCrud = {
@@ -189,37 +207,46 @@ export type HookCallbackFunction<A1 = any, A2 = any, A3 = any> = (
     arg2: A2,
     arg3: A3
 ) => void | Promise<void>;
-export type HookPlugin<TType, TData, TExtraHooks = {}> = {
-    type: TType;
-    beforeCreate?: HookCallbackFunction<TData>;
-    afterCreate?: HookCallbackFunction<TData>;
-    beforeUpdate?: HookCallbackFunction<TData>;
-    afterUpdate?: HookCallbackFunction<TData>;
-    beforeDelete?: HookCallbackFunction<TData>;
-    afterDelete?: HookCallbackFunction<TData>;
-};
 
-export type PageHookPlugin = HookPlugin<
-    "pb-page-hook",
-    Page,
-    {
-        beforePublish?: HookCallbackFunction<Page>;
-        afterPublish?: HookCallbackFunction<Page>;
-        beforeUnpublish?: HookCallbackFunction<Page>;
-        afterUnpublish?: HookCallbackFunction<Page>;
-    }
->;
+export type PageHookPlugin = Plugin<{
+    type: "pb-page-hook";
+    beforeCreate?: HookCallbackFunction<Page>;
+    afterCreate?: HookCallbackFunction<Page>;
+    beforeUpdate?: HookCallbackFunction<Page>;
+    afterUpdate?: HookCallbackFunction<Page>;
+    beforeDelete?: HookCallbackFunction<{
+        page: Page;
+        latestPageData: DbPageLatest;
+        publishedPageData?: DbPagePublished;
+    }>;
+    afterDelete?: HookCallbackFunction<{
+        page: Page;
+        latestPageData: DbPageLatest;
+        publishedPageData?: DbPagePublished;
+    }>;
+    beforePublish?: HookCallbackFunction<{
+        page: Page;
+        latestPageData: DbPageLatest;
+        publishedPageData?: DbPagePublished;
+    }>;
+    afterPublish?: HookCallbackFunction<{
+        page: Page;
+        latestPageData: DbPageLatest;
+        publishedPageData?: DbPagePublished;
+    }>;
+    beforeUnpublish?: HookCallbackFunction<Page>;
+    afterUnpublish?: HookCallbackFunction<Page>;
+}>;
 
-export type MenuHookPlugin = HookPlugin<
-    "pb-menu-hook",
-    Menu,
-    {
-        beforePublish?: HookCallbackFunction<Page>;
-        afterPublish?: HookCallbackFunction<Page>;
-        beforeUnpublish?: HookCallbackFunction<Page>;
-        afterUnpublish?: HookCallbackFunction<Page>;
-    }
->;
+export type MenuHookPlugin = Plugin<{
+    type: "pb-menu-hook";
+    beforeCreate?: HookCallbackFunction<Menu>;
+    afterCreate?: HookCallbackFunction<Menu>;
+    beforeUpdate?: HookCallbackFunction<Menu>;
+    afterUpdate?: HookCallbackFunction<Menu>;
+    beforeDelete?: HookCallbackFunction<Menu>;
+    afterDelete?: HookCallbackFunction<Menu>;
+}>;
 
 type SettingsHookPluginPreviousSettings = DefaultSettings;
 type SettingsHookPluginNextSettings = DefaultSettings;
