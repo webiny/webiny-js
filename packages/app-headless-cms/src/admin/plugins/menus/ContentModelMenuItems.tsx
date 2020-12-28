@@ -1,5 +1,6 @@
 import React from "react";
-import get from "lodash.get";
+import get from "lodash/get";
+import pluralize from "pluralize";
 import { i18n } from "@webiny/app/i18n";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
@@ -34,7 +35,7 @@ const ContentModelMenuItems = ({ Section, Item }) => {
                 {contentModelGroup.contentModels.map(contentModel => (
                     <Item
                         key={contentModel.modelId}
-                        label={contentModel.name}
+                        label={pluralize(contentModel.name)}
                         path={`/cms/content-entries/${contentModel.modelId}`}
                     />
                 ))}
