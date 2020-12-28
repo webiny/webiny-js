@@ -201,6 +201,8 @@ export type PbPageLayoutComponentPlugin = Plugin & {
 };
 
 export type PbPageData = {
+    id: string;
+    path: string;
     title?: string;
     content: any;
     settings?: {
