@@ -1,7 +1,12 @@
-import { get, startCase, upperFirst } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import {
+    PbRenderElementStylePlugin,
+    PbRenderResponsiveModePlugin
+} from "@webiny/app-page-builder/types";
+import { plugins } from "@webiny/plugins";
 
-const borderRadiusSides = ["topLeft", "topRight", "bottomLeft", "bottomRight"];
+const borderRadiusSides = ["top-left", "top-right", "bottom-left", "bottom-right"];
 const boxSides = ["top", "right", "bottom", "left"];
 
 export default {
@@ -13,20 +18,35 @@ export default {
             return style;
         }
 
+        // Get display modes
+        const displayModeConfigs = plugins
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
+            .map(pl => pl.config);
+
+        // Set "per-side" border style
         boxSides.forEach((side, index) => {
-            const Side = startCase(side);
-            style[`border${Side}Style`] = border.style;
-            style[`border${Side}Color`] = border.color;
-            // Set "border-width".
-            const allSideWidth = border?.width?.all;
-            style[`border${Side}Width`] =
-                ((allSideWidth ? allSideWidth : border?.width?.[side]) || 0) + "px";
-            // Set "border-radius".
-            const borderRadiusSide = borderRadiusSides[index];
-            const BorderRadiusSide = upperFirst(borderRadiusSide);
-            const allSideRadius = border?.radius?.all;
-            style[`border${BorderRadiusSide}Radius`] =
-                ((allSideRadius ? allSideRadius : border?.radius?.[borderRadiusSide]) || 0) + "px";
+            // Set "per-device" property value
+            displayModeConfigs.forEach(({ displayMode }) => {
+                style[`--${kebabCase(displayMode)}-border-${side}-style`] = get(
+                    border,
+                    `${displayMode}.style`
+                );
+                style[`--${kebabCase(displayMode)}-border-${side}-color`] = get(
+                    border,
+                    `${displayMode}.color`
+                );
+                // Set "border-width".
+                const allWidth = get(border, `${displayMode}.width.all`, 0);
+                const sideWidth = get(border, `${displayMode}.width.${side}`, 0);
+                style[`--${kebabCase(displayMode)}-border-${side}-width`] =
+                    (allWidth ? allWidth : sideWidth) + "px";
+                // Set "border-radius".
+                const borderRadiusSide = borderRadiusSides[index];
+                const allRadius = get(border, `${displayMode}.radius.all`, 0);
+                const sideRadius = get(border, `${displayMode}.radius.${side}`, 0);
+                style[`--${kebabCase(displayMode)}-border-${kebabCase(borderRadiusSide)}-radius`] =
+                    (allRadius ? allRadius : sideRadius) + "px";
+            });
         });
 
         return style;
