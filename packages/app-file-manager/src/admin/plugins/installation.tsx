@@ -65,14 +65,17 @@ const FMInstaller = ({ onInstalled }) => {
             });
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing File Manager...`
+    );
+
     return (
         <SimpleForm>
-            <CircularProgress label={t`Installing File Manager...`} />
-            {error && (
-                <Alert title={t`Something went wrong`} type={"danger"}>
-                    {error}
-                </Alert>
-            )}
+            <CircularProgress label={label} />
             <SimpleFormContent>
                 <SimpleFormPlaceholder />
             </SimpleFormContent>

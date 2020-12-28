@@ -6,10 +6,10 @@ import RevisionsList from "./RevisionsList";
 const plugin: FbFormDetailsPluginType = {
     name: "forms-form-details-revision-content-revisions",
     type: "forms-form-details-revision-content",
-    render({ form, loading }) {
+    render({ form, revisions, loading }) {
         return (
             <Tab label={"Revisions"} disabled={loading}>
-                <RevisionsList form={form} loading={loading} />
+                <RevisionsList form={form} revisions={revisions} loading={loading} />
             </Tab>
         );
     }

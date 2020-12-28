@@ -51,32 +51,15 @@ export const CREATE_FORM = gql`
 `;
 
 export const GET_FORM = gql`
-    query FormsGetForm($id: ID!) {
+    query FbGetForm($revision: ID!) {
         formBuilder {
-            form: getForm(id: $id) {
+            form: getForm(revision: $revision) {
                 data {
                     ${BASE_FORM_FIELDS}
                     overallStats {
                         views
                         submissions
                         conversionRate
-                    }
-                    revisions {
-                        id
-                        savedOn
-                        name
-                        version
-                        published
-                        createdBy {
-                            id
-                            displayName
-                        }
-                        status
-                        stats {
-                            views
-                            submissions
-                            conversionRate
-                        }
                     }
                 }
                 error {
@@ -86,6 +69,22 @@ export const GET_FORM = gql`
         }
     }
 `;
+
+export const GET_FORM_REVISIONS = gql`
+    query FbGetFormRevisions($id: ID!) {
+        formBuilder {
+            revisions: getFormRevisions(id: $id) {
+                data {
+                    ${BASE_FORM_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
 
 export const LIST_FORM_SUBMISSIONS = gql`
     query FbListFormSubmissions(

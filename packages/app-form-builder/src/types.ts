@@ -83,9 +83,23 @@ export type FbBuilderFieldPlugin = Plugin & {
     };
 };
 
+export type FbRevisionModel = {
+    id: string;
+    name: string;
+    version: number;
+    published: boolean;
+    status: string;
+    savedOn: string;
+    createdBy: {
+        id: string;
+        displayName: string;
+    };
+};
+
 export type FbFormDetailsPluginRenderParams = {
     refreshForms: () => Promise<void>;
     form: FbFormModel;
+    revisions: FbRevisionModel[];
     loading: boolean;
 };
 
@@ -109,7 +123,7 @@ export type FbFormModel = {
     settings: any;
     status: string;
     savedOn: string;
-    revisions: any[];
+    revisions: FbRevisionModel[];
     overallStats: {
         submissions: number;
         views: number;

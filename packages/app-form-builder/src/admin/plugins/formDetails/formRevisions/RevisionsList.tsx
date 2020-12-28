@@ -19,15 +19,15 @@ const listWrapper = css({
     }
 });
 
-const RevisionsList = ({ form, loading }) => {
+const RevisionsList = ({ form, revisions, loading }) => {
     return (
         form && (
             <Elevation className={listWrapper} z={2}>
                 <div style={{ position: "relative" }}>
                     {loading && <CircularProgress />}
                     <List nonInteractive twoLine>
-                        {Array.isArray(form.revisions)
-                            ? form.revisions.map(rev => (
+                        {Array.isArray(revisions)
+                            ? revisions.map(rev => (
                                   <Revision form={form} revision={rev} key={rev.id} />
                               ))
                             : null}

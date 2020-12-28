@@ -1,5 +1,5 @@
 import dotProp from "dot-prop-immutable";
-import { GET_FORM, LIST_FORMS } from "../graphql";
+import { GET_FORM_REVISIONS, LIST_FORMS } from "../graphql";
 
 export const updateLatestRevisionInListCache = (cache, revision) => {
     const gqlParams = { query: LIST_FORMS };
@@ -17,9 +17,25 @@ export const updateLatestRevisionInListCache = (cache, revision) => {
     });
 };
 
-/**
- * Remove form from the list cache
- */
+export const addRevisionToRevisionsCache = (cache, newRevision) => {
+    const gqlParams = {
+        query: GET_FORM_REVISIONS,
+        variables: { id: newRevision.id.split("#")[0] }
+    };
+
+    const { formBuilder } = cache.readQuery(gqlParams);
+
+    cache.writeQuery({
+        ...gqlParams,
+        data: {
+            formBuilder: dotProp.set(formBuilder, `revisions.data`, [
+                newRevision,
+                ...formBuilder.revisions.data
+            ])
+        }
+    });
+};
+
 export const removeFormFromListCache = (cache, form) => {
     // Delete the form from list cache
     const gqlParams = { query: LIST_FORMS };
@@ -36,14 +52,14 @@ export const removeFormFromListCache = (cache, form) => {
 
 export const removeRevisionFromFormCache = (cache, form, revision) => {
     const gqlParams = {
-        query: GET_FORM,
-        variables: { id: form.id }
+        query: GET_FORM_REVISIONS,
+        variables: { id: form.id.split("#")[0] }
     };
 
     let { formBuilder } = cache.readQuery(gqlParams);
-    const index = formBuilder.form.data.revisions.findIndex(item => item.id === revision.id);
+    const index = formBuilder.revisions.data.findIndex(item => item.id === revision.id);
 
-    formBuilder = dotProp.delete(formBuilder, `form.data.revisions.${index}`);
+    formBuilder = dotProp.delete(formBuilder, `revisions.data.${index}`);
 
     cache.writeQuery({
         ...gqlParams,
@@ -53,5 +69,5 @@ export const removeRevisionFromFormCache = (cache, form, revision) => {
     });
 
     // Return new revisions
-    return formBuilder.form.data.revisions;
+    return formBuilder.revisions.data;
 };

@@ -65,14 +65,17 @@ const FBInstaller = ({ onInstalled }) => {
             });
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing Form Builder...`
+    );
+
     return (
         <SimpleForm>
-            <CircularProgress label={t`Installing Form Builder...`} />
-            {error && (
-                <Alert title={t`Something went wrong`} type={"danger"}>
-                    {error}
-                </Alert>
-            )}
+            <CircularProgress label={label} />
             <SimpleFormContent>
                 <SimpleFormPlaceholder />
             </SimpleFormContent>

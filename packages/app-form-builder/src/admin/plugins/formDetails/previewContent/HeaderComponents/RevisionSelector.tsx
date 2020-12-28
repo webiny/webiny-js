@@ -23,18 +23,18 @@ const menuList = css({
     }
 });
 
-const RevisionSelector = ({ revision, form, selectRevision }) => {
+const RevisionSelector = ({ revisions, revision, selectRevision }) => {
     return (
         <Menu
             className={menuList}
-            onSelect={evt => selectRevision(form.revisions[evt.detail.index])}
+            onSelect={evt => selectRevision(revisions[evt.detail.index])}
             handle={
                 <ButtonDefault className={buttonStyle}>
                     v{revision.version} <Icon icon={<DownButton />} />
                 </ButtonDefault>
             }
         >
-            {(form?.revisions || []).map(rev => (
+            {(revisions || []).map(rev => (
                 <MenuItem key={rev.id}>
                     <Typography use={"body2"}>v{rev.version}</Typography>
                     <Typography use={"caption"}>({rev.status})</Typography>
