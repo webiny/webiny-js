@@ -29,9 +29,10 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
     element,
     displayMode
 }) => {
-    const { width, ...containerStyle } = elementStyle || {};
+    const containerStyle = elementStyle || {};
     // Use per-device style
     const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+    const width = elementStyle[`--${kebabCase(displayMode)}-width`];
     return (
         <StyledGrid
             className={combineClassNames(
@@ -40,7 +41,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
             )}
             {...elementAttributes}
             style={{
-                width: width ? width : "100%",
+                width,
                 alignItems
             }}
         >

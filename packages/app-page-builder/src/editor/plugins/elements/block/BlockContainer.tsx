@@ -47,10 +47,11 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { id, path, type, elements } = element;
 
-    const { width, ...containerStyle } = elementStyle;
+    const containerStyle = elementStyle;
     // Use per-device style
     const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
     const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+    const width = elementStyle[`--${kebabCase(displayMode)}-width`];
 
     const onAddClick = () => {
         handler.trigger(
@@ -83,7 +84,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
         >
             <div
                 style={{
-                    width: width ? width : "100%"
+                    width
                 }}
                 className={combineClassNames(...customClasses)}
             >

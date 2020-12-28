@@ -1,5 +1,7 @@
-import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbRenderElementStylePlugin, PbRenderResponsiveModePlugin } from "../../../../types";
 
 export default {
     name: "pb-render-page-element-style-width",
@@ -10,7 +12,15 @@ export default {
         if (!width) {
             return style;
         }
+        // Get display modes
+        const displayModeConfigs = plugins
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
+            .map(pl => pl.config);
+        // Set per-device property value
+        displayModeConfigs.forEach(({ displayMode }) => {
+            style[`--${kebabCase(displayMode)}-width`] = get(width, `${displayMode}.value`, "100%");
+        });
 
-        return { ...style, maxWidth: width.value };
+        return style;
     }
 } as PbRenderElementStylePlugin;

@@ -39,7 +39,7 @@ export default (): PbEditorPageElementPlugin => {
                 elements: [],
                 data: {
                     settings: {
-                        width: { value: "100%" },
+                        width: createInitialPerDeviceSettingValue({ value: "100%" }),
                         margin: {
                             ...createInitialPerDeviceSettingValue({
                                 top: "0px",
