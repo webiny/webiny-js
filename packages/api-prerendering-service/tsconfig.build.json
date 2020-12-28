@@ -11,7 +11,6 @@
     "../commodo",
     "../handler",
     "../handler-db",
-    "../handler-ssr",
     "../validation",
     "../api-i18n",
     "../handler-graphql",
@@ -41,9 +40,6 @@
     },
     {
       "path": "../handler-db/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-ssr/tsconfig.build.json"
     },
     {
       "path": "../validation/tsconfig.build.json"

@@ -26,9 +26,6 @@
       "path": "../handler-db"
     },
     {
-      "path": "../handler-ssr"
-    },
-    {
       "path": "../validation"
     },
     {
