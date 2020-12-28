@@ -34,79 +34,30 @@ import {
 import {
     HandlerArgs as RenderHandlerArgs,
     Args as RenderArgs
-} from "@webiny/api-prerendering-service/render";
+} from "@webiny/api-prerendering-service/render/types";
+
+import {
+    HandlerArgs as FlushHandlerArgs,
+    Args as FlushArgs
+} from "@webiny/api-prerendering-service/flush/types";
+
+import {
+    TYPE,
+    DbPageLatest,
+    DbPagePublished,
+    DbPagePublishedPath
+} from "@webiny/api-page-builder/types";
+
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
 const STATUS_DRAFT = "draft";
 const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
 
-const DEFAULT_EDITOR = "page-builder";
-
 const getZeroPaddedVersionNumber = number => String(number).padStart(4, "0");
 
-enum TYPE {
-    PAGE = "pb.page",
-    PAGE_LATEST = "pb.page.l",
-    PAGE_PUBLISHED = "pb.page.p",
-    PAGE_PUBLISHED_PATH = "pb.page.p.path"
-}
-
-type PagePublished = {
-    PK: string;
-    SK: string;
-    TYPE: TYPE.PAGE_PUBLISHED;
-    locale: string;
-    tenant: string;
-    id: string;
-};
-
-type PageLatest = {
-    PK: string;
-    SK: string;
-    TYPE: TYPE.PAGE_LATEST;
-    locale: string;
-    tenant: string;
-    id: string;
-};
-
-type PagePublishedPath = {
-    PK: string;
-    SK: string;
-    TYPE: TYPE.PAGE_PUBLISHED_PATH;
-    locale: string;
-    tenant: string;
-    path: string;
-    id: string;
-};
-
-const PERMISSION_NAME = TYPE.PAGE;
-
-const extractContent = (contentProp: Record<string, any>): Record<string, any> => {
-    if (!contentProp || !contentProp.compression) {
-        return null;
-    }
-
-    try {
-        return jsonpack.unpack(contentProp.content);
-    } catch {
-        return null;
-    }
-};
-
-const compressContent = (content: Record<string, any> = null): Record<string, any> => {
-    let compressed = null;
-    if (content) {
-        try {
-            compressed = jsonpack.pack(content);
-        } catch {}
-    }
-
-    return {
-        compression: "jsonpack",
-        content: compressed
-    };
-};
+const DEFAULT_EDITOR = "page-builder";
+const PERMISSION_NAME = "pb.page";
 
 const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbContext> => {
     const plugin: ContextPlugin<PbContext> = {
@@ -118,7 +69,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
             const PK_PAGE_LATEST = () => PK_PAGE() + "#L";
             const PK_PAGE_PUBLISHED = () => PK_PAGE() + "#P";
             const PK_PAGE_PUBLISHED_PATH = () => PK_PAGE_PUBLISHED() + "#PATH";
-            const PK_PAGE_RENDER_QUEUE = () => `PB#PRQ`;
             const ES_DEFAULTS = () => defaults.es(context);
 
             // Used in a couple of key events - (un)publishing and pages deletion.
