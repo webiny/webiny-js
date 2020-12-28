@@ -309,7 +309,6 @@ describe("versioning and publishing pages", () => {
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p2.id });
         await getPublishedPage({ path: "/pages-test" }).then(([res]) => {
-            const a = 123;
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p2.id);
         });
 
@@ -317,6 +316,64 @@ describe("versioning and publishing pages", () => {
         await publishPage({ id: p1.id });
         await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1.id)
+        );
+    });
+
+    test("if we changed the path of the page, previously published URL must be deleted", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const p1v1 = await createPage({ category: "slug" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updatePage({ id: p1v1.id, data: { path: "/pages-test" } }).then(([res]) =>
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v1.id)
+        );
+
+        // Try publishing 2nd page, it should work.
+        await publishPage({ id: p1v1.id });
+
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) => {
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1v1.id);
+        });
+
+        const p1v2 = await createPage({ from: p1v1.id }).then(
+            async ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updatePage({ id: p1v2.id, data: { path: "/pages-test-updated" } }).then(([res]) =>
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v2.id)
+        );
+        // Now, if we try to publish 1st page, we should still be able to do it.
+        await publishPage({ id: p1v2.id });
+
+        await getPublishedPage({ path: "/pages-test-updated" }).then(([res]) =>
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1v2.id)
+        );
+
+        // This one should not return any results - it's an old URL.
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
+            expect(res).toEqual({
+                data: {
+                    pageBuilder: {
+                        getPublishedPage: {
+                            data: null,
+                            error: {
+                                code: "NOT_FOUND",
+                                data: null,
+                                message: "Page not found."
+                            }
+                        }
+                    }
+                }
+            })
         );
     });
 });
