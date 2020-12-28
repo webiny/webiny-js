@@ -2,12 +2,12 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import renderPlugins from "@webiny/api-prerendering-service/render";
-import renderAwsPlugins from "@webiny/api-prerendering-service-aws/render";
+import flushPlugins from "@webiny/api-prerendering-service/flush";
+import flushAwsPlugins from "@webiny/api-prerendering-service-aws/flush";
 
 export const handler = createHandler(
-    renderPlugins(),
-    renderAwsPlugins(),
+    flushPlugins(),
+    flushAwsPlugins(),
     dbPlugins({
         table: process.env.DB_TABLE,
         driver: new DynamoDbDriver({
@@ -16,5 +16,5 @@ export const handler = createHandler(
                 region: process.env.AWS_REGION
             })
         })
-    }),
+    })
 );
