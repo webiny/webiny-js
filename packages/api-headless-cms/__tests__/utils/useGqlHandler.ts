@@ -121,7 +121,11 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
             name: "security-authorization",
             getPermissions: context => {
                 const { headers = {} } = context.http || {};
-                if (headers["Authorization"] || headers["authorization"]) {
+                if (
+                    headers["Authorization"] ||
+                    headers["authorization"] ||
+                    (identity && identity.type === "api-key")
+                ) {
                     return;
                 }
                 return createPermissions(permissions);
@@ -131,7 +135,11 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
             type: "security-authentication",
             authenticate: async context => {
                 const { headers = {} } = context.http || {};
-                if (headers["Authorization"] || headers["authorization"]) {
+                if (
+                    headers["Authorization"] ||
+                    headers["authorization"] ||
+                    (identity && identity.type === "api-key")
+                ) {
                     return;
                 }
                 return createIdentity(identity);
