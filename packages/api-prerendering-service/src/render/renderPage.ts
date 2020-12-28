@@ -3,6 +3,8 @@ import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
 import injectApolloState from "./injectApolloState";
 import injectApolloPrefetching from "./injectApolloPrefetching";
+import path from "path";
+import getPsTags from "./getPsTags";
 
 const windowSet = (page, name, value) => {
     page.evaluateOnNewDocument(`
@@ -13,11 +15,11 @@ const windowSet = (page, name, value) => {
     })`);
 };
 
-export type File = { type: string; body: any; name: string };
+export type File = { type: string; body: any; name: string; meta: {} };
 
 let browser;
-export default async (url: string): Promise<File[]> => {
-    console.log(`-> Rendering "${url}"`);
+export default async (url: string, { log }): Promise<File[]> => {
+    log(`Rendering "${url}"`);
     if (!browser) {
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
@@ -63,7 +65,7 @@ export default async (url: string): Promise<File[]> => {
                 const { operationName, query, variables } = operations[i];
 
                 if (operationName === "PbGetPublishedPage") {
-                    prefetchApolloState.push(`${variables.path}/graphql.json`);
+                    prefetchApolloState.push(path.join(variables.path, "graphql.json"));
                 }
                 requests.push(`${url}: ${operationName} ${JSON.stringify(variables)}`);
                 gqlCache.push({
@@ -74,39 +76,35 @@ export default async (url: string): Promise<File[]> => {
             }
             return;
         }
-        requests.push(url);
     });
 
     // Load URL and wait for all network requests to settle.
     await browserPage.goto(url, { waitUntil: "networkidle0" });
 
     // Process HTML
-    console.log("-> Processing HTML");
+    log("Processing HTML");
     const { html } = await posthtml([
         noopener(),
-        injectApolloState(browserPage),
-        injectApolloPrefetching(prefetchApolloState)
+        injectApolloState(browserPage, { log }),
+        injectApolloPrefetching(prefetchApolloState, { log })
     ]).process(await browserPage.content());
 
-    const meta = { requests };
-
-    console.log("-> Done!\n");
+    log("Done!");
 
     return [
         {
             name: "index.html",
             body: html,
-            type: "text/html"
+            type: "text/html",
+            meta: {
+                tags: getPsTags(html)
+            }
         },
         {
             name: "graphql.json",
             body: JSON.stringify(gqlCache),
-            type: "application/json"
-        },
-        {
-            name: "meta.json",
-            body: JSON.stringify(meta),
-            type: "application/json"
+            type: "application/json",
+            meta: {}
         }
     ];
 };

@@ -1,37 +1,38 @@
-import { HandlerPlugin } from "@webiny/handler/types";
-import { ArgsContext } from "@webiny/handler-args/types";
 import renderPage from "./renderPage";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
+import getStorageName from "./../utils/getStorageName";
+import getStorageFolder from "./../utils/getStorageFolder";
+import getDbNamespace from "./../utils/getDbNamespace";
+import getRenderUrl from "./../utils/getRenderUrl";
+import { HandlerPlugin, Configuration, RenderHookPlugin } from "./types";
+import { DbRender, HandlerResponse } from "@webiny/api-prerendering-service/types";
+import debug from "debug";
+import defaults from "./../utils/defaults";
+import omit from "lodash/omit";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-export type Configuration = {
-    website?: {
-        url?: string;
-    };
-    storage?: {
-        name?: string;
-        folder?: string;
-    };
+const log = debug("wby:api-prerendering-service:render");
+
+const storeFile = ({ key, contentType, body, storageName }) => {
+    return s3
+        .putObject({
+            Bucket: storageName,
+            Key: key,
+            ACL: "public-read",
+            ContentType: contentType,
+            Body: body
+        })
+        .promise();
 };
 
-export type Args = {
-    configuration?: Configuration;
-    url?: string;
-    path?: string;
-};
-
-export type HandlerArgs = Args | Args[];
-export type HandlerResponse = { data: Record<string, any>; error: Record<string, any> };
-
-const log = (message, ...rest) => console.log(`[api-prerendering-service] ${message}`, ...rest);
-
-export default (configuration?: Configuration): HandlerPlugin<ArgsContext<HandlerArgs>> => ({
+export default (configuration?: Configuration): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         const { invocationArgs } = context;
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
+        const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
 
         const promises = [];
 
@@ -43,17 +44,53 @@ export default (configuration?: Configuration): HandlerPlugin<ArgsContext<Handle
 
                 promises.push(
                     new Promise(async resolve => {
-                        const url = getRenderUrl(args, configuration);
-                        const files = await renderPage(url);
-
+                        const dbNamespace = getDbNamespace(args, configuration);
                         const storageName = getStorageName(args, configuration);
                         const storageFolder = getStorageFolder(args, configuration);
+                        const url = getRenderUrl(args, configuration);
+
+                        // Check if render data for given URL already exists. If so, delete it.
+                        const PK = [dbNamespace, "PS", "RENDER"].filter(Boolean).join("#");
+                        const [[render]] = await context.db.read<DbRender>({
+                            ...defaults.db,
+                            query: {
+                                PK,
+                                SK: url
+                            }
+                        });
+
+                        // TODO: will need to add flushing of all files created in the render process.
+                        if (render) {
+                            await context.db.delete({
+                                ...defaults.db,
+                                query: {
+                                    PK,
+                                    SK: url
+                                }
+                            });
+                        }
+
+                        for (let j = 0; j < handlerHookPlugins.length; j++) {
+                            const plugin = handlerHookPlugins[j];
+                            if (typeof plugin.beforeRender === "function") {
+                                await plugin.beforeRender({
+                                    log,
+                                    context,
+                                    configuration,
+                                    args
+                                });
+                            }
+                        }
+
+                        const files = await renderPage(url, {
+                            log
+                        });
 
                         for (let j = 0; j < files.length; j++) {
                             const file = files[j];
-
                             const key = path.join(storageFolder, file.name);
 
+                            log(`Storing file "${key}" to storage "${storageName}".`);
                             await storeFile({
                                 storageName,
                                 key,
@@ -61,6 +98,32 @@ export default (configuration?: Configuration): HandlerPlugin<ArgsContext<Handle
                                 contentType: file.type
                             });
                         }
+
+                        await context.db.create({
+                            ...defaults.db,
+                            data: {
+                                PK,
+                                SK: url,
+                                TYPE: "ps.render",
+                                url,
+                                args,
+                                configuration,
+                                files: files.map(item => omit(item, ["body"]))
+                            }
+                        });
+
+                        for (let j = 0; j < handlerHookPlugins.length; j++) {
+                            const plugin = handlerHookPlugins[j];
+                            if (typeof plugin.afterRender === "function") {
+                                await plugin.afterRender({
+                                    log,
+                                    context,
+                                    configuration,
+                                    args
+                                });
+                            }
+                        }
+
                         resolve();
                     })
                 );
@@ -75,32 +138,3 @@ export default (configuration?: Configuration): HandlerPlugin<ArgsContext<Handle
         }
     }
 });
-
-const getRenderUrl = (args: Args, configuration: Configuration) => {
-    if (args.url) {
-        return args.url;
-    }
-
-    const websiteUrl = args?.configuration?.website.url || configuration?.website?.url;
-    return path.join(websiteUrl, args.path);
-};
-
-const getStorageName = (args: Args, configuration: Configuration) => {
-    return args?.configuration?.storage.name || configuration?.storage.name;
-};
-
-const getStorageFolder = (args: Args, configuration: Configuration) => {
-    return args?.configuration?.storage.folder ?? configuration?.storage.folder;
-};
-
-const storeFile = ({ key, contentType, body, storageName }) => {
-    return s3
-        .putObject({
-            Bucket: storageName,
-            Key: key,
-            ACL: "public-read",
-            ContentType: contentType,
-            Body: body
-        })
-        .promise();
-};

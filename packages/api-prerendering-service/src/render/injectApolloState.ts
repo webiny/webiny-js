@@ -1,5 +1,6 @@
-export default page => async tree => {
-    console.log("-> Injecting Apollo state into HTML");
+export default (page, { log }) => async tree => {
+    log("Injecting Apollo state into HTML");
+
     const apolloState = await page.evaluate(() => {
         // @ts-ignore
         return window.getApolloState();
