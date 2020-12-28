@@ -1,12 +1,13 @@
 import React from "react";
 import { css } from "emotion";
+import { get } from "lodash";
 import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as DownButton } from "@webiny/app-headless-cms/admin/icons/round-arrow_drop_down-24px.svg";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { get } from "lodash";
+import { ReactComponent as DownButton } from "../../../../icons/round-arrow_drop_down-24px.svg";
+
 const buttonStyle = css({
     "&.mdc-button": {
         color: "var(--mdc-theme-text-primary-on-background) !important"
@@ -24,7 +25,7 @@ const menuStyles = css({
     }
 });
 
-const RevisionSelector = ({ entry, getLoading }) => {
+const RevisionSelector = ({ entry, revisions, getLoading }) => {
     const { location, history } = useRouter();
     const query = new URLSearchParams(location.search);
 
@@ -33,9 +34,9 @@ const RevisionSelector = ({ entry, getLoading }) => {
         status: get(entry, "meta.status", "draft")
     };
 
-    const allRevisions = get(entry, "meta.revisions", [
-        { id: "new", meta: { version: 1, status: "draft" } }
-    ]);
+    const allRevisions = revisions.length
+        ? revisions
+        : [{ id: "new", meta: { version: 1, status: "draft" } }];
 
     return (
         <Menu

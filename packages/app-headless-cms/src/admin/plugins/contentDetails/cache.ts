@@ -48,23 +48,63 @@ export const removeEntryFromListCache = (model, cache, revision) => {
     });
 };
 
-export const removeRevisionFromEntryCache = (model, cache, entry, revision) => {
+export const removeRevisionFromEntryCache = (model, cache, revision) => {
     const gqlParams = {
-        query: GQL.createReadQuery(model),
-        variables: { revision: entry.id }
+        query: GQL.createRevisionsQuery(model),
+        variables: { id: revision.id.split("#")[0] }
     };
 
-    const { content } = cache.readQuery(gqlParams);
-    const index = content.data.meta.revisions.findIndex(item => item.id === revision.id);
-    const newContent = dotProp.delete(content, `data.meta.revisions.${index}`);
+    const { revisions } = cache.readQuery(gqlParams);
+    const index = revisions.data.findIndex(item => item.id === revision.id);
+    const newRevisions = dotProp.delete(revisions, `data.${index}`);
 
     cache.writeQuery({
         ...gqlParams,
         data: {
-            content: newContent
+            revisions: newRevisions
         }
     });
 
     // Return new revisions
-    return newContent.data.meta.revisions;
+    return newRevisions.data;
+};
+
+export const addRevisionToRevisionsCache = (model, cache, revision) => {
+    const gqlParams = {
+        query: GQL.createRevisionsQuery(model),
+        variables: { id: revision.id.split("#")[0] }
+    };
+
+    const { revisions } = cache.readQuery(gqlParams);
+
+    cache.writeQuery({
+        ...gqlParams,
+        data: {
+            revisions: dotProp.set(revisions, `data`, [revision, ...revisions.data])
+        }
+    });
+};
+
+export const unpublishPreviouslyPublishedRevision = (model, cache, publishedId) => {
+    const gqlParams = {
+        query: GQL.createRevisionsQuery(model),
+        variables: { id: publishedId.split("#")[0] }
+    };
+
+    const { revisions } = cache.readQuery(gqlParams);
+    
+    const prevPublished = revisions.data.findIndex(
+        item => item.id !== publishedId && item.meta.status === "published"
+    );
+
+    if (prevPublished === -1) {
+        return;
+    }
+
+    cache.writeQuery({
+        ...gqlParams,
+        data: {
+            revisions: dotProp.set(revisions, `data.${prevPublished}.meta.status`, "unpublished")
+        }
+    });
 };

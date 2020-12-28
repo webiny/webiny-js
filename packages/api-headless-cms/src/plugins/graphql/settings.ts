@@ -26,9 +26,9 @@ export default {
             }
         },
         CmsMutation: {
-            install: async (_, __, context: CmsContext) => {
+            install: async (_, __, { cms }: CmsContext) => {
                 try {
-                    await context.cms.settings.install();
+                    await cms.settings.install();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);

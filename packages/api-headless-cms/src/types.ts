@@ -470,7 +470,6 @@ export enum DbItemTypes {
     CMS_CONTENT_MODEL_GROUP = "cms.group",
     CMS_CONTENT_MODEL = "cms.model",
     CMS_SETTINGS = "cms.settings",
-    CMS_CONTENT_MODEL_ENTRY = "cms.modelEntry"
 }
 
 type CmsContentEntryResolverFactoryParamsType = {

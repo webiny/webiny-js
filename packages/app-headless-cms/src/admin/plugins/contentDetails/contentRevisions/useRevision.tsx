@@ -40,107 +40,118 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
         deleteRevision,
         publishRevision,
         unpublishRevision
-    } = useHandlers(null, {
-        createRevision: () => async () => {
-            setLoading(true);
-            const { data: res } = await client.mutate({
-                mutation: CREATE_REVISION,
-                variables: { revision: revision.id },
-                update(cache, { data }) {
-                    GQLCache.updateLatestRevisionInListCache(
-                        contentModel,
-                        cache,
-                        data.content.data
-                    );
-                }
-            });
+    } = useHandlers(
+        { entry },
+        {
+            createRevision: () => async () => {
+                setLoading(true);
+                const { data: res } = await client.mutate({
+                    mutation: CREATE_REVISION,
+                    variables: { revision: revision.id },
+                    update(cache, { data }) {
+                        const newRevision = data.content.data;
 
-            setLoading(false);
-
-            const { data, error } = res.content;
-
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            history.push(`/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`);
-        },
-        editRevision: () => () => {
-            history.push(`/cms/content-entries/${modelId}/?id=${encodeURIComponent(revision.id)}`);
-        },
-        deleteRevision: () => async () => {
-            setLoading(true);
-            await client.mutate({
-                mutation: DELETE_REVISION,
-                variables: { revision: revision.id },
-                update: (cache, { data }) => {
-                    const { error } = data.content;
-                    if (error) {
-                        return showSnackbar(error.message);
+                        GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                        GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
                     }
+                });
 
-                    // We have other revisions, update entry's cache
-                    const revisions = GQLCache.removeRevisionFromEntryCache(
-                        contentModel,
-                        cache,
-                        entry,
-                        revision
-                    );
+                setLoading(false);
 
-                    if (revision.id === entry.id) {
-                        GQLCache.updateLatestRevisionInListCache(contentModel, cache, revisions[0]);
-                        // Redirect to the first revision in the list of all entry revisions.
-                        return history.push(
-                            `/cms/content-entries/${modelId}?id=` +
-                                encodeURIComponent(revisions[0].id)
+                const { data, error } = res.content;
+
+                if (error) {
+                    return showSnackbar(error.message);
+                }
+
+                history.push(`/cms/content-entries/${modelId}?id=${encodeURIComponent(data.id)}`);
+            },
+            editRevision: () => () => {
+                history.push(
+                    `/cms/content-entries/${modelId}/?id=${encodeURIComponent(revision.id)}`
+                );
+            },
+            deleteRevision: ({ entry }) => async () => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: DELETE_REVISION,
+                    variables: { revision: revision.id },
+                    update: (cache, { data }) => {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        // We have other revisions, update entry's cache
+                        const revisions = GQLCache.removeRevisionFromEntryCache(
+                            contentModel,
+                            cache,
+                            revision
+                        );
+
+                        if (revision.id === entry.id) {
+                            GQLCache.updateLatestRevisionInListCache(
+                                contentModel,
+                                cache,
+                                revisions[0]
+                            );
+                            // Redirect to the first revision in the list of all entry revisions.
+                            return history.push(
+                                `/cms/content-entries/${modelId}?id=` +
+                                    encodeURIComponent(revisions[0].id)
+                            );
+                        }
+                    }
+                });
+
+                setLoading(false);
+            },
+            publishRevision: () => async () => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: PUBLISH_REVISION,
+                    variables: { revision: revision.id },
+                    update(cache, { data }) {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        GQLCache.unpublishPreviouslyPublishedRevision(contentModel, cache, revision.id);
+
+                        showSnackbar(
+                            <span>
+                                Successfully published revision <strong>#{revision.version}</strong>
+                                !
+                            </span>
                         );
                     }
+                });
+
+                setLoading(false);
+            },
+            unpublishRevision: () => async () => {
+                setLoading(true);
+                const { data } = await client.mutate({
+                    mutation: UNPUBLISH_REVISION,
+                    variables: { revision: revision.id }
+                });
+
+                setLoading(false);
+
+                const { error } = data.content;
+                if (error) {
+                    return showSnackbar(error.message);
                 }
-            });
 
-            setLoading(false);
-        },
-        publishRevision: () => async () => {
-            setLoading(true);
-            const { data } = await client.mutate({
-                mutation: PUBLISH_REVISION,
-                variables: { revision: revision.id }
-            });
-
-            setLoading(false);
-
-            const { error } = data.content;
-            if (error) {
-                return showSnackbar(error.message);
+                showSnackbar(
+                    <span>
+                        Successfully unpublished revision <strong>#{revision.version}</strong>!
+                    </span>
+                );
             }
-
-            showSnackbar(
-                <span>
-                    Successfully published revision <strong>#{revision.version}</strong>!
-                </span>
-            );
-        },
-        unpublishRevision: () => async () => {
-            setLoading(true);
-            const { data } = await client.mutate({
-                mutation: UNPUBLISH_REVISION,
-                variables: { revision: revision.id }
-            });
-
-            setLoading(false);
-
-            const { error } = data.content;
-            if (error) {
-                return showSnackbar(error.message);
-            }
-
-            showSnackbar(
-                <span>
-                    Successfully unpublished revision <strong>#{revision.version}</strong>!
-                </span>
-            );
         }
-    });
+    );
 
     return { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision };
 };

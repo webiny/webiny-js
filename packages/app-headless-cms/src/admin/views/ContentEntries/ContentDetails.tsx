@@ -33,6 +33,8 @@ const ContentDetails = ({ contentModel }) => {
 
     const query = new URLSearchParams(location.search);
     const contentId = query.get("id");
+    const revisionId = contentId ? decodeURIComponent(contentId) : null;
+    const entryId = revisionId ? revisionId.split("#")[0] : null;
 
     const { READ_CONTENT } = useMemo(() => {
         return {
@@ -40,7 +42,13 @@ const ContentDetails = ({ contentModel }) => {
         };
     }, [contentModel.modelId]);
 
-    const { data, loading: readQueryLoading, refetch } = useQuery(READ_CONTENT, {
+    const { GET_REVISIONS } = useMemo(() => {
+        return {
+            GET_REVISIONS: GQL.createRevisionsQuery(contentModel)
+        };
+    }, [contentModel.modelId]);
+
+    const getEntry = useQuery(READ_CONTENT, {
         variables: { revision: decodeURIComponent(contentId) },
         skip: !contentId,
         onCompleted: data => {
@@ -50,16 +58,24 @@ const ContentDetails = ({ contentModel }) => {
 
             const { error } = data.content;
             if (error) {
-                query.delete("id");
-                history.push({ search: query.toString() });
+                history.push(`/cms/content-entries/${contentModel.modelId}`);
                 showSnackbar(error.message);
             }
         }
     });
 
-    const getLoading = useCallback(() => readQueryLoading || loading, [loading, readQueryLoading]);
+    const getRevisions = useQuery(GET_REVISIONS, {
+        variables: { id: entryId },
+        skip: !entryId
+    });
 
-    const entry = get(data, "content.data") || {};
+    const getLoading = useCallback(() => getEntry.loading || getRevisions.loading, [
+        getEntry.loading,
+        getRevisions.loading
+    ]);
+
+    const entry = get(getEntry, "data.content.data") || {};
+    const revisions = get(getRevisions, "data.revisions.data") || {};
 
     return (
         <DetailsContainer>
@@ -68,7 +84,8 @@ const ContentDetails = ({ contentModel }) => {
                     setLoading,
                     getLoading,
                     entry,
-                    refetchContent: refetch,
+                    revisions,
+                    refetchContent: getEntry.refetch,
                     contentModel,
                     state,
                     setState
