@@ -647,9 +647,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         }
 
                         // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                        await executeHookCallbacks(hookPlugins, "beforeDelete", context, page);
+                        await executeHookCallbacks(hookPlugins, "beforeDelete", context, {
+                            page,
+                            latestPageData,
+                            publishedPageData
+                        });
 
-                        // If we are deleting the initial version, we need to remove all versions and all of the extra data.
+                        // If we are deleting the initial version, we need to remove all versions and all of the meta data.
                         if (pageVersion === getZeroPaddedVersionNumber(1)) {
                             // 4.1. We delete pages in batches of 10.
                             while (true) {
@@ -709,6 +713,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         }
                                     }
                                 ]
+                            });
+
+                            await executeHookCallbacks(hookPlugins, "afterDelete", context, {
+                                page,
+                                latestPageData,
+                                publishedPageData
                             });
 
                             return [page, null];
@@ -787,7 +797,11 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             await elasticSearch.bulk({ body: esOperations });
                         }
 
-                        await executeHookCallbacks(hookPlugins, "afterDelete", context, page);
+                        await executeHookCallbacks(hookPlugins, "afterDelete", context, {
+                            page,
+                            latestPageData,
+                            publishedPageData
+                        });
 
                         // 7. Done. We return both the deleted page, and the new latest one (if there is one).
                         return [page, latestPage];
