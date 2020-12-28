@@ -13,7 +13,12 @@ const cognito = new Cognito();
 const elasticSearch = new ElasticSearch();
 const fileManager = new FileManager();
 
-const prerenderingService = new PrerenderingService();
+const prerenderingService = new PrerenderingService({
+    env: {
+        DEBUG: String(process.env.DEBUG),
+        DB_TABLE: dynamoDb.table.name,
+    }
+});
 
 const pageBuilder = new PageBuilder({
     dbTable: dynamoDb.table
@@ -21,10 +26,10 @@ const pageBuilder = new PageBuilder({
 
 const api = new Graphql({
     env: {
+        DEBUG: String(process.env.DEBUG),
         ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
-        DEBUG: String(process.env.DEBUG),
         S3_BUCKET: fileManager.bucket.id,
         DB_TABLE: dynamoDb.table.name,
         PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,

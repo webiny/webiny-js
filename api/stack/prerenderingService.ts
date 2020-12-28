@@ -15,7 +15,7 @@ class PageBuilder {
             process: aws.lambda.Function;
         };
     };
-    constructor() {
+    constructor({ env }: { env: Record<string, any> }) {
         const render = new aws.lambda.Function("ps-render", {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
@@ -27,7 +27,7 @@ class PageBuilder {
             ],
             environment: {
                 variables: {
-                    DEBUG: "wby*"
+                    ...env
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
@@ -48,7 +48,7 @@ class PageBuilder {
             memorySize: 512,
             environment: {
                 variables: {
-                    DEBUG: "wby*"
+                    ...env
                 }
             },
             description: "Flushes previously render pages.",
@@ -69,7 +69,7 @@ class PageBuilder {
             memorySize: 512,
             environment: {
                 variables: {
-                    DEBUG: "wby*"
+                    ...env
                 }
             },
             description: "Adds a prerendering task to the prerendering queue.",
@@ -90,7 +90,7 @@ class PageBuilder {
             memorySize: 2048,
             environment: {
                 variables: {
-                    DEBUG: "wby*"
+                    ...env
                 }
             },
             description: "Processes all tasks added to the prerendering queue.",
