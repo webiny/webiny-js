@@ -25,7 +25,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     };
 };
 
-describe("READ - resolvers - api key", () => {
+describe("MANAGE - resolvers - api key", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
     const API_TOKEN = "aToken";
