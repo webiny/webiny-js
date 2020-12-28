@@ -143,61 +143,70 @@ export const useCategoryManageHandler = (options: GQLHandlerCallableArgsType) =>
 
     return {
         ...contentHandler,
-        async getCategory(variables) {
+        async getCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getCategoryQuery, variables }
+                body: { query: getCategoryQuery, variables },
+                headers
             });
         },
-        async getCategoriesByIds(variables) {
+        async getCategoriesByIds(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: getCategoriesByIdsQuery, variables }
+                body: { query: getCategoriesByIdsQuery, variables },
+                headers
             });
         },
-        async listCategories(variables = {}) {
+        async listCategories(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: listCategoriesQuery, variables }
+                body: { query: listCategoriesQuery, variables },
+                headers
             });
         },
-        async createCategory(variables) {
+        async createCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createCategoryMutation, variables }
+                body: { query: createCategoryMutation, variables },
+                headers
             });
         },
-        async createCategoryFrom(variables) {
+        async createCategoryFrom(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
-                body: { query: createCategoryFromMutation, variables }
+                body: { query: createCategoryFromMutation, variables },
+                headers
             });
         },
-        async updateCategory(variables) {
+        async updateCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: updateCategoryMutation,
                     variables
-                }
+                },
+                headers
             });
         },
-        async deleteCategory(variables) {
+        async deleteCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: deleteCategoryMutation,
                     variables
-                }
+                },
+                headers
             });
         },
-        async publishCategory(variables) {
+        async publishCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: publishCategoryMutation,
                     variables
-                }
+                },
+                headers
             });
         },
-        async unpublishCategory(variables) {
+        async unpublishCategory(variables, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishCategoryMutation,
                     variables
-                }
+                },
+                headers
             });
         }
     };
