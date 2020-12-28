@@ -847,7 +847,11 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             throw new NotFoundError(`Page "${pageId}" is already published.`);
                         }
 
-                        await executeHookCallbacks(hookPlugins, "beforePublish", context, page);
+                        await executeHookCallbacks(hookPlugins, "beforePublish", context, {
+                            page,
+                            latestPageData,
+                            publishedPageData
+                        });
 
                         // Change loaded page's status to published.
                         page.status = STATUS_PUBLISHED;
@@ -876,13 +880,40 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             // page's data so that we can update its status within a batch operation. If, hopefully,
                             // they introduce a true update batch operation, remove this `read` call.
 
-                            const [[previouslyPublishedPage]] = await db.read<Page>({
-                                ...defaults.db,
-                                query: { PK: PK_PAGE(), SK: publishedPageData.id },
-                                limit: 1
-                            });
+                            const previouslyPublishedPageDataBatch = db
+                                .batch<[[Page]], [[DbPagePublishedPath]]>()
+                                .read({
+                                    ...defaults.db,
+                                    query: { PK: PK_PAGE(), SK: publishedPageData.id }
+                                })
+                                .read({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_PAGE_PUBLISHED_PATH(),
+                                        SK: publishedPageData.path
+                                    }
+                                });
+
+                            const [
+                                [[previouslyPublishedPage]],
+                                [[publishedPagePathData]]
+                            ] = await previouslyPublishedPageDataBatch.execute();
 
                             previouslyPublishedPage.status = STATUS_UNPUBLISHED;
+
+                            // If the paths are different, delete previous `DbPagePublishedPath` entry.
+                            if (
+                                previouslyPublishedPage.id === publishedPagePathData.id &&
+                                page.path !== publishedPagePathData.path
+                            ) {
+                                batch.delete({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_PAGE_PUBLISHED_PATH(),
+                                        SK: previouslyPublishedPage.path
+                                    }
+                                });
+                            }
 
                             batch
                                 .update({
@@ -905,7 +936,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         TYPE: TYPE.PAGE_PUBLISHED,
                                         tenant: context.security.getTenant().id,
                                         locale: context.i18nContent.getLocale().code,
-                                        id: pageId
+                                        id: pageId,
+                                        path: page.path
                                     }
                                 })
                                 .update({
@@ -934,7 +966,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         TYPE: TYPE.PAGE_PUBLISHED,
                                         tenant: context.security.getTenant().id,
                                         locale: context.i18nContent.getLocale().code,
-                                        id: pageId
+                                        id: pageId,
+                                        path: page.path
                                     }
                                 })
                                 .create({
@@ -988,7 +1021,11 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await elasticSearch.bulk({ body: esOperations });
 
-                        await executeHookCallbacks(hookPlugins, "afterPublish", context, page);
+                        await executeHookCallbacks(hookPlugins, "afterPublish", context, {
+                            page,
+                            latestPageData,
+                            publishedPageData
+                        });
 
                         return page;
                     },
