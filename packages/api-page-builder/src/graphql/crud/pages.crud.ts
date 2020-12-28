@@ -641,6 +641,14 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const identity = context.security.getIdentity();
                         checkOwnPermissions(identity, permission, page, "ownedBy");
 
+                        const settings = await context.pageBuilder.settings.default.get();
+                        const pages = settings?.pages || {};
+                        for (const key in pages) {
+                            if (pages[key] === page.pid) {
+                                throw new Error(`Cannot delete page because it's set as ${key}.`);
+                            }
+                        }
+
                         // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
                         await executeHookCallbacks(hookPlugins, "beforeDelete", context, page);
 
