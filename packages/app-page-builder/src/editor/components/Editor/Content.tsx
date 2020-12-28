@@ -101,7 +101,9 @@ const Content = () => {
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
                 theme={theme}
-                className={`webiny-pb-page-document-mode--${kebabCase(editorMode)}`}
+                className={`webiny-pb-editor-device--${kebabCase(
+                    editorMode
+                )} webiny-pb-media-query--${kebabCase(editorMode)}`}
             >
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
