@@ -80,6 +80,10 @@ const PagePreview = ({ page }: PagePreviewProps) => {
             // Add resize observer
             resizeObserver.observe(pagePreviewRef.current);
         }
+        // Cleanup
+        return () => {
+            resizeObserver.disconnect();
+        };
     }, []);
     // Handle document resize
     const handlerResize = React.useCallback(

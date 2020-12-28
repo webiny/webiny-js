@@ -79,11 +79,15 @@ const Content = () => {
     }, []);
     // Set resize observer
     useEffect(() => {
-        // webiny-pb-editor-content-preview
         if (pagePreviewRef.current) {
             // Add resize observer
             resizeObserver.observe(pagePreviewRef.current);
         }
+
+        // Cleanup
+        return () => {
+            resizeObserver.disconnect();
+        };
     }, []);
 
     const { theme } = usePageBuilder();
