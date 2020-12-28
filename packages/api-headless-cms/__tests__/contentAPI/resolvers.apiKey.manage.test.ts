@@ -290,17 +290,18 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        const a = 12;
-        
-        const [deleteResponse] = await deleteCategory({
-            revision: updatedCategory.id
-        }, headers);
+        const [deleteResponse] = await deleteCategory(
+            {
+                revision: updatedCategory.id
+            },
+            headers
+        );
 
         expect(deleteResponse).toEqual({
             data: {
                 deleteCategory: {
                     data: true,
-                    error: null,
+                    error: null
                 }
             }
         });

@@ -1,7 +1,10 @@
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 
 describe("Settings crud test", () => {
-    const { isInstalledQuery, installMutation, elasticSearch } = useAdminGqlHandler();
+    const { installMutation, elasticSearch } = useAdminGqlHandler();
+    const { isInstalledQuery } = useAdminGqlHandler({
+        permissions: []
+    });
 
     const esCmsIndex = "root-headless-cms";
 

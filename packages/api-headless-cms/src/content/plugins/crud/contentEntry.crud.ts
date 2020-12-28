@@ -497,7 +497,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 const esOperations = [];
 
                 const isLatest = latestEntryData ? latestEntryData.id === revisionId : false;
-                const isPublished = publishedEntryData ? publishedEntryData.id === revisionId : false;
+                const isPublished = publishedEntryData
+                    ? publishedEntryData.id === revisionId
+                    : false;
 
                 // If the entry is published, remove published data, both from DB and ES.
                 if (isPublished) {

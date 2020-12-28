@@ -9,6 +9,10 @@ import {
     DbItemTypes
 } from "../../types";
 
+type SettingsGetOptionsArgsType = {
+    auth?: boolean;
+};
+
 const initialContentModelGroup = {
     name: "Ungrouped",
     slug: "ungrouped",
@@ -32,8 +36,11 @@ export default {
 
         const settings: CmsSettingsContextType = {
             contentModelLastChange: new Date(),
-            get: async (): Promise<CmsSettingsType | null> => {
-                await checkPermissions();
+            get: async (options): Promise<CmsSettingsType | null> => {
+                const { auth = true } = options || {};
+                if (auth !== false) {
+                    await checkPermissions();
+                }
 
                 const [[settings]] = await db.read<CmsSettingsType>({
                     ...utils.defaults.db,

@@ -210,9 +210,12 @@ export type CmsSettingsType = {
     contentModelLastChange: Date;
 };
 
+type CmsSettingsGetOptionsArgsType = {
+    auth?: boolean;
+};
 export type CmsSettingsContextType = {
     contentModelLastChange: Date;
-    get: () => Promise<CmsSettingsType>;
+    get: (options?: CmsSettingsGetOptionsArgsType) => Promise<CmsSettingsType>;
     install: () => Promise<CmsSettingsType>;
     updateContentModelLastChange: () => Promise<CmsSettingsType>;
     getContentModelLastChange: () => Date;
